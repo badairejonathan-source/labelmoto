@@ -1,4 +1,4 @@
-import type { Brand } from '@/lib/types';
+import { Brand } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Bike } from 'lucide-react';
 
