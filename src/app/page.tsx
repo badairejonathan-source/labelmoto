@@ -36,10 +36,10 @@ const Home: React.FC = () => {
       </header>
 
       <main className="flex-1 flex relative overflow-hidden">
-        <div className={cn("w-full h-full", { 'hidden': currentView !== 'ADVICE' })}>
+        <div style={{ display: currentView === 'ADVICE' ? 'block' : 'none' }} className="w-full h-full">
           <AdviceList articles={MOCK_ADVICE_POSTS} />
         </div>
-        <div className={cn("w-full h-full", { 'hidden': currentView !== 'LOCATOR' })}>
+        <div style={{ display: currentView === 'LOCATOR' ? 'block' : 'none' }} className="w-full h-full">
           <Locator />
         </div>
       </main>
