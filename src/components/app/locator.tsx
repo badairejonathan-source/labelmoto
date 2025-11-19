@@ -65,7 +65,7 @@ export function Locator() {
     const handleSelect = (id: string) => { setSelectedId(id); if (window.innerWidth < 768) { setIsMobileListOpen(true); }};
   
     return (
-        <div className="flex-1 flex relative overflow-hidden">
+        <>
             <div className="hidden md:flex md:w-1/3 lg:w-1/4 flex-col bg-white border-r border-gray-200 z-10 shadow-[4px_0_24px_rgba(0,0,0,0.05)] h-full">
               <FilterSection filters={filters} setFilters={setFilters} />
               <div className="p-4 border-b border-gray-100 text-gray-500 text-sm font-medium flex justify-between items-center bg-white shrink-0"><span>{filteredDealerships.length} concession(s)</span><span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">Résultats</span></div>
@@ -98,6 +98,6 @@ export function Locator() {
                </div>
                <StickyCTA />
             </div>
-        </div>
+        </>
     );
 }
