@@ -1,0 +1,108 @@
+import { Brand, DealershipType, Service, type Dealership, type AdvicePost } from './types';
+
+export const MOCK_DEALERSHIPS: Dealership[] = [
+  {
+    id: 'yamaha-elite',
+    name: 'Yamaha Center Elite',
+    brand: Brand.YAMAHA,
+    types: [DealershipType.OFFICIAL],
+    services: [Service.SALES, Service.REPAIR],
+    address: '123 Avenue de la Grande Armée, 75017 Paris',
+    phone: '01 23 45 67 89',
+    position: [48.875, 2.29],
+    openNow: true,
+    stockCount: 45,
+    rating: 4.9,
+  },
+  {
+    id: 'ducati-perf',
+    name: 'Ducati Store Performance',
+    brand: Brand.DUCATI,
+    types: [DealershipType.OFFICIAL],
+    services: [Service.SALES, Service.RENTAL],
+    address: '45 Boulevard Gouvion-Saint-Cyr, 75017 Paris',
+    phone: '01 98 76 54 32',
+    position: [48.8825, 2.3075],
+    openNow: false,
+    stockCount: 12,
+    rating: 4.5,
+  },
+  {
+    id: 'honda-red',
+    name: 'Honda Red Power',
+    brand: Brand.HONDA,
+    types: [DealershipType.PARTNER],
+    services: [Service.REPAIR, Service.SALES],
+    address: '8 Rue de la Roquette, 75011 Paris',
+    phone: '01 11 22 33 44',
+    position: [48.852, 2.37],
+    openNow: true,
+    stockCount: 30,
+    rating: 3.8,
+  },
+  {
+    id: 'bmw-horizon',
+    name: 'BMW Motorrad Horizon',
+    brand: Brand.BMW,
+    types: [DealershipType.OFFICIAL],
+    services: [Service.SALES, Service.REPAIR, Service.RENTAL],
+    address: '25 Avenue de Wagram, 75017 Paris',
+    phone: '01 55 66 77 88',
+    position: [48.878, 2.298],
+    openNow: true,
+    stockCount: 55,
+    rating: 4.8,
+  },
+  {
+    id: 'kawasaki-green',
+    name: 'Kawasaki Green City',
+    brand: Brand.KAWASAKI,
+    types: [DealershipType.INDEPENDENT],
+    services: [Service.REPAIR],
+    address: '99 Boulevard de l\'Hôpital, 75013 Paris',
+    phone: '01 44 33 22 11',
+    position: [48.835, 2.36],
+    openNow: false,
+    stockCount: 8,
+    rating: 4.2,
+  },
+];
+
+export const MOCK_ADVICE_POSTS: AdvicePost[] = [
+    {
+        id: 'advice-1',
+        title: '5 conseils pour entretenir sa chaîne de moto',
+        category: 'Entretien',
+        summary: 'Découvrez les étapes essentielles pour garder votre chaîne en parfait état et prolonger la durée de vie de votre transmission.',
+        readTime: 5,
+        date: '2024-07-15T10:00:00Z',
+    },
+    {
+        id: 'advice-2',
+        title: 'Comment choisir son premier casque moto ?',
+        category: 'Équipement',
+        summary: 'Sécurité, confort, budget... Un guide complet pour vous aider à faire le bon choix pour votre première protection.',
+        readTime: 8,
+        date: '2024-07-12T14:30:00Z',
+    },
+    {
+        id: 'advice-3',
+        title: 'Préparer sa moto pour un long voyage',
+        category: 'Road Trip',
+        summary: 'La checklist ultime avant de partir à l\'aventure : points de contrôle mécaniques, bagagerie et accessoires indispensables.',
+        readTime: 12,
+        date: '2024-07-10T09:00:00Z',
+    },
+    {
+        id: 'advice-4',
+        title: 'Conduite sous la pluie : les techniques à maîtriser',
+        category: 'Sécurité',
+        summary: 'Ne laissez plus la météo gâcher vos sorties. Apprenez à anticiper et à réagir correctement sur route mouillée.',
+        readTime: 7,
+        date: '2024-07-08T18:00:00Z',
+    },
+];
+
+
+export const BRANDS = Object.values(Brand);
+export const SERVICES = Object.values(Service);
