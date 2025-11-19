@@ -8,6 +8,7 @@ import { MotoTrustLogo } from '@/components/app/icons';
 import { Locator } from '@/components/app/locator';
 import { MOCK_ADVICE_POSTS } from '@/lib/constants';
 import { BookOpen, Layout, Briefcase } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type ViewMode = 'LOCATOR' | 'ADVICE';
 
@@ -35,7 +36,12 @@ const Home: React.FC = () => {
       </header>
 
       <main className="flex-1 flex relative overflow-hidden">
-        {currentView === 'ADVICE' ? (<AdviceList articles={MOCK_ADVICE_POSTS} />) : <Locator />}
+        <div className={cn("w-full h-full", { 'hidden': currentView !== 'ADVICE' })}>
+          <AdviceList articles={MOCK_ADVICE_POSTS} />
+        </div>
+        <div className={cn("w-full h-full", { 'hidden': currentView !== 'LOCATOR' })}>
+          <Locator />
+        </div>
       </main>
     </div>
   );
