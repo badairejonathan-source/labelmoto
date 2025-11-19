@@ -1,3 +1,4 @@
+
 export enum Brand {
   YAMAHA = 'YAMAHA',
   DUCATI = 'DUCATI',
@@ -7,15 +8,15 @@ export enum Brand {
 }
 
 export enum DealershipType {
-  OFFICIAL = 'OFFICIAL',
-  INDEPENDENT = 'INDEPENDENT',
-  PARTNER = 'PARTNER',
+  OFFICIAL = 'Officiel',
+  INDEPENDENT = 'Indépendant',
+  PARTNER = 'Partenaire',
 }
 
 export enum Service {
-  SALES = 'SALES',
-  REPAIR = 'REPAIR',
-  RENTAL = 'RENTAL',
+  SALES = 'Vente',
+  REPAIR = 'Atelier',
+  RENTAL = 'Location',
 }
 
 export type Dealership = {
@@ -37,6 +38,6 @@ export type AdvicePost = {
   title: string;
   category: string;
   summary: string;
-  readTime: number; // in minutes
-  date: string; // ISO string
+  readTime: string;
+  date: string;
 };
