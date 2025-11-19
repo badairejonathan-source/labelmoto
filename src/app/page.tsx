@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AdviceList } from '@/components/app/advice-list';
 import { AdSpace } from '@/components/app/ad-space';
 import { MotoTrustLogo } from '@/components/app/icons';
@@ -41,10 +41,10 @@ const Home: React.FC = () => {
       </header>
 
       <main className="flex-1 flex relative overflow-hidden">
-        <div style={{ display: currentView === 'ADVICE' ? 'block' : 'none' }} className="w-full h-full">
+        <div className={cn('w-full h-full', { hidden: currentView !== 'ADVICE' })}>
           <AdviceList articles={MOCK_ADVICE_POSTS} />
         </div>
-        <div style={{ display: currentView === 'LOCATOR' ? 'flex' : 'none' }} className="w-full h-full">
+        <div className={cn('w-full h-full', { hidden: currentView !== 'LOCATOR' })}>
           <Locator />
         </div>
       </main>
