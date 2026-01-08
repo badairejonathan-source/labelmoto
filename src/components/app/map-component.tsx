@@ -51,8 +51,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       
       // Ajouter les nouveaux marqueurs
       dealerships.forEach((dealer) => {
+        if (isNaN(dealer.latitude) || isNaN(dealer.longitude)) return;
+        
         const position: [number, number] = [dealer.latitude, dealer.longitude];
-        if (isNaN(position[0]) || isNaN(position[1])) return;
         
         const marker = L.marker(position).addTo(mapInstance.current!);
         marker.bindPopup(`

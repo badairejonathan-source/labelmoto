@@ -51,8 +51,8 @@ export default function Home() {
     samedi: d.samedi,
     dimanche: d.dimanche,
     lundi: d.lundi,
-    latitude: typeof d.latitude === 'string' ? parseFloat(d.latitude) : d.latitude,
-    longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude) : d.longitude,
+    latitude: typeof d.latitude === 'string' ? parseFloat(d.latitude.replace(',', '.')) : d.latitude,
+    longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude.replace(',', '.')) : d.longitude,
   })).filter(d => d.title && !isNaN(d.latitude) && !isNaN(d.longitude));
 
 
