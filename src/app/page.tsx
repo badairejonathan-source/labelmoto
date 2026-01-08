@@ -54,7 +54,12 @@ const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
 
 const getBrands = (dealerships: Dealership[]) => {
   const brandSet = new Set<string>();
-  const brandKeywords = ['BMW', 'Ducati', 'Yamaha', 'Kawasaki', 'KTM', 'Husqvarna', 'Honda', 'Suzuki', 'Triumph', 'Harley-Davidson', 'Indian', 'Peugeot', 'Voge', 'Sym', 'ZERO', 'Aprilia', 'Gilera', 'Kymco', 'Askoll', 'Royal Enfield', 'Mash', 'Gasgas', 'Hytrack', 'Segway', 'Moto Guzzi'];
+  const brandKeywords = [
+    'Yamaha', 'Honda', 'Kawasaki', 'Suzuki', 'BMW', 'Triumph', 'Ducati', 'Aprilia', 'KTM', 
+    'Benelli', 'Royal Enfield', 'Piaggio', 'Vespa', 'Peugeot', 'Harley-Davidson',
+    'Moto Guzzi', 'Husqvarna', 'GasGas', 'Indian', 'MV Agusta', 'Sym', 'Kymco', 'Voge', 
+    'Mash', 'Zontes', 'Orcal', 'CFMoto', 'Segway', 'Askoll', 'Gilera', 'ZERO'
+  ];
   
   dealerships.forEach(d => {
     brandKeywords.forEach(brand => {
