@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Globe, MapPin, Phone } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
-import { Badge } from '../ui/badge';
 
 interface DealershipCardProps {
   dealership: Dealership;
