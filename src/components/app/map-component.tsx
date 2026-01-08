@@ -19,21 +19,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
   const markersRef = useRef<L.Marker[]>([]);
 
   useEffect(() => {
-    // S'assurer que le code ne s'exécute que côté client
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !mapRef.current) {
       return;
     }
 
-    // Configure les icônes par défaut de Leaflet
-    // @ts-ignore
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: iconRetinaUrl.src,
-      iconUrl: iconUrl.src,
-      shadowUrl: shadowUrl.src,
-    });
-    
-    if (mapRef.current && !mapInstance.current) {
+    if (!mapInstance.current) {
       const center: [number, number] = [46.603354, 1.888334]; // Centre de la France
       
       mapInstance.current = L.map(mapRef.current).setView(center, 6);
@@ -46,15 +36,26 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       ).addTo(mapInstance.current);
     }
     
-    // Mettre à jour les marqueurs après l'initialisation
+    // Mettre à jour les marqueurs
     if (mapInstance.current) {
       // Supprimer les anciens marqueurs
       markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
+      
+      // Créer une instance d'icône personnalisée et explicite
+      const customIcon = new L.Icon({
+          iconUrl: iconUrl.src,
+          iconRetinaUrl: iconRetinaUrl.src,
+          shadowUrl: shadowUrl.src,
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+      });
 
-      // Ajouter les nouveaux marqueurs
+      // Ajouter les nouveaux marqueurs avec l'icône explicite
       dealerships.forEach((dealer) => {
-        const marker = L.marker(dealer.position as [number, number]).addTo(mapInstance.current!);
+        const marker = L.marker(dealer.position as [number, number], { icon: customIcon }).addTo(mapInstance.current!);
         marker.bindPopup(`
           <div class="font-sans">
             <h3 class="font-bold text-base mb-1">${dealer.name}</h3>
@@ -68,14 +69,22 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       });
     }
 
-    // Fonction de nettoyage pour démonter la carte correctement
-    return () => {
+    const cleanup = () => {
       if (mapInstance.current) {
         mapInstance.current.remove();
         mapInstance.current = null;
       }
     };
-  }, [dealerships]); // Ce hook se ré-exécute si les dealerships changent
+    
+    // Uniquement pour le développement, pour éviter les erreurs de rechargement rapide
+    if (process.env.NODE_ENV === 'development') {
+        return () => {
+          // Ne pas nettoyer en développement pour éviter l'erreur d'initialisation
+        };
+    }
+
+    return cleanup;
+  }, [dealerships]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
