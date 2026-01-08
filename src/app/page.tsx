@@ -39,7 +39,7 @@ export default function Home() {
   ] as any[];
   
   const dealerships: Dealership[] = allDealerships.map((d, index) => ({
-    id: d.id || `${index}`,
+    id: d.placeUrl || `${d.title}-${index}`,
     placeUrl: d.placeUrl,
     title: d.title,
     address: d.address,
@@ -55,7 +55,7 @@ export default function Home() {
     lundi: d.lundi,
     latitude: typeof d.latitude === 'string' ? parseFloat(d.latitude.replace(',', '.')) : d.latitude,
     longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude.replace(',', '.')) : d.longitude,
-  })).filter(d => d.title && !isNaN(d.latitude) && !isNaN(d.longitude));
+  })).filter(d => d.title && d.placeUrl && !isNaN(d.latitude) && !isNaN(d.longitude));
 
 
   return (
