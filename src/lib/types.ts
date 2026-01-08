@@ -6,4 +6,8 @@ export interface Dealership {
   phone: string;
   url: string;
   position: [number, number];
+  latitude?: number;
+  longitude?: number;
 }
+
+    
