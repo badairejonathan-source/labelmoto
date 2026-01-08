@@ -1,0 +1,21 @@
+
+[
+  {
+    "id": "clwrt1z2u000008l4df2h36x1",
+    "name": "Exemple Concession Yamaha",
+    "brand": "YAMAHA",
+    "address": "123 Rue de la Moto, 75001 Paris, France",
+    "phone": "+33123456789",
+    "url": "https://www.exemple-yamaha.fr",
+    "position": [48.8566, 2.3522]
+  },
+  {
+    "id": "clwrt2a9v000108l41y1o2h9j",
+    "name": "Garage Indépendant du Centre",
+    "brand": "MULTI",
+    "address": "45 Avenue des Motards, 69002 Lyon, France",
+    "phone": "+33987654321",
+    "url": "https://www.garage-centre-lyon.fr",
+    "position": [45.7500, 4.8500]
+  }
+]
