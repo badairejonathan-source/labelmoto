@@ -30,8 +30,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
   const rating = dealership.rating ? parseFloat(dealership.rating.replace(',', '.')) : 0;
 
   return (
-    <Card className="w-full overflow-hidden transition-all hover:shadow-lg border rounded-lg">
-      <CardContent className="p-0 flex">
+    <Card className="w-full overflow-hidden transition-all hover:shadow-lg border rounded-lg h-28">
+      <CardContent className="p-0 flex h-full">
         <div className="w-28 h-full relative flex-shrink-0">
           {dealership.imgUrl && (
             <Image
@@ -49,11 +49,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
         <div className="p-3 flex flex-col justify-between flex-grow">
           <div>
             <div className="flex justify-between items-start">
-              <h3 className="font-bold text-md text-primary dark:text-primary-foreground leading-tight truncate pr-2">
+              <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight truncate pr-2">
                 {dealership.title}
               </h3>
               {rating > 0 && (
-                <div className="flex items-center gap-1 text-sm font-bold text-amber-500 flex-shrink-0">
+                <div className="flex items-center gap-1 text-xs font-bold text-amber-500 flex-shrink-0">
                   <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
                   <span>{rating.toFixed(1)}</span>
                 </div>
