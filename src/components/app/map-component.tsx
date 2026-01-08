@@ -5,17 +5,28 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
 
+// Importer directement les images pour une meilleure compatibilité
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
+
 // Correction pour l'icône par défaut de Leaflet avec Next.js
 try {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  // Supprime la référence à l'ancienne méthode de récupération d'URL
+  if (L.Icon.Default.prototype instanceof L.Icon) {
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+  }
+
   L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default.src,
-    iconUrl: require('leaflet/dist/images/marker-icon.png').default.src,
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png').default.src,
+    iconRetinaUrl: iconRetinaUrl.src,
+    iconUrl: iconUrl.src,
+    shadowUrl: shadowUrl.src,
   });
 } catch (e) {
   console.error("Erreur lors de la configuration des icônes Leaflet", e);
 }
+
 
 interface MapComponentProps {
   dealerships: Dealership[];
@@ -33,7 +44,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       mapInstance.current = L.map(mapRef.current).setView(center, 6);
 
       L.tileLayer(
-        `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${process.env.NEXT_PUBLIC_MAP_API_KEY}`,
+        `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png`,
         {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         }
