@@ -60,7 +60,7 @@ const getBrands = (dealerships: Dealership[]) => {
     'Yamaha', 'Honda', 'Kawasaki', 'Suzuki', 'BMW', 'Triumph', 'Ducati', 'Aprilia', 'KTM', 
     'Benelli', 'Royal Enfield', 'Piaggio', 'Vespa', 'Peugeot', 'Harley-Davidson',
     'Moto Guzzi', 'Husqvarna', 'GasGas', 'Indian', 'MV Agusta', 'Sym', 'Kymco', 'Voge', 
-    'Mash', 'Zontes', 'Orcal', 'CFMoto', 'Segway', 'Askoll', 'Gilera', 'ZERO'
+    'Mash', 'Orcal', 'CFMoto', 'Segway', 'Askoll', 'Gilera', 'ZERO'
   ];
   
   dealerships.forEach(d => {
