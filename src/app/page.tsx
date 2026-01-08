@@ -58,7 +58,7 @@ export default function Home() {
     lundi: d.lundi,
     latitude: typeof d.latitude === 'string' ? parseFloat(d.latitude.replace(',', '.')) : d.latitude,
     longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude.replace(',', '.')) : d.longitude,
-  })).filter(d => d.title && d.placeUrl && !isNaN(d.latitude) && !isNaN(d.longitude));
+  })).filter(d => d.title && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
 
 
   return (
