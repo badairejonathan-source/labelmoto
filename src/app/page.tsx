@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Search, MapPin, Navigation } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 const MotoTrustLogo = () => (
   <svg viewBox="0 0 100 100" className="w-12 h-12 text-primary" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="4"/>
-    <path d="M50 50 L 50 15" stroke="hsl(var(--accent))" strokeWidth="5" strokeLinecap="round" transform-origin="center" transform="rotate(135)"/>
+    <path d="M50 50 L 50 15" stroke="hsl(var(--accent))" strokeWidth="5" strokeLinecap="round" style={{ transformOrigin: 'center' }} transform="rotate(135)"/>
     <text x="50" y="70" textAnchor="middle" fontWeight="bold" fontSize="12" fill="currentColor" fontFamily="sans-serif">120</text>
     <text x="50" y="82" textAnchor="middle" fontWeight="normal" fontSize="8" fill="currentColor" fontFamily="sans-serif">km/h</text>
     <circle cx="50" cy="50" r="4" fill="hsl(var(--accent))"/>
