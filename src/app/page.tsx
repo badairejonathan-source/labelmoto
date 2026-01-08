@@ -96,7 +96,9 @@ export default function Home() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
-  
+  const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
+  const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
+
   const availableBrands = useMemo(() => getBrands(allDealerships), []);
 
   const handleDepartmentChange = useCallback((department: string) => {
@@ -157,8 +159,17 @@ export default function Home() {
     }
 
     setFilteredDealerships(dealerships);
+    setSelectedDealershipId(null);
 
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
+
+  const dealershipsToDisplay = useMemo(() => {
+    if (selectedDealershipId) {
+      const selected = allDealerships.find(d => d.id === selectedDealershipId);
+      return selected ? [selected] : [];
+    }
+    return filteredDealerships;
+  }, [selectedDealershipId, filteredDealerships]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -182,8 +193,16 @@ export default function Home() {
             </div>
           </aside>
         )}
-        <div className="flex-1 relative">
-          <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} />
+        <div className={cn("flex-1 relative", { 'hidden': viewMode === 'list' })}>
+          <MapComponent 
+            dealerships={filteredDealerships} 
+            center={mapCenter} 
+            zoom={mapZoom} 
+            hoveredDealershipId={hoveredDealershipId}
+            onMarkerClick={(id) => setSelectedDealershipId(id)}
+            onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
+            onMarkerMouseOut={() => setHoveredDealershipId(null)}
+          />
           <div className="absolute top-4 right-4 z-10 flex items-center space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
             <Button variant={viewMode === 'list' ? 'default' : 'ghost'} onClick={() => setViewMode('list')} className="rounded-full">
               <List className="mr-2 h-4 w-4" />
@@ -198,10 +217,15 @@ export default function Home() {
             <aside className="w-full md:w-[35%] lg:w-[30%] h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 absolute left-0 top-0 bottom-0 z-10 overflow-y-auto">
               <ScrollArea className="h-full">
                 <div className="p-4 space-y-4">
-                  {filteredDealerships.map((dealer, index) => (
+                  {dealershipsToDisplay.map((dealer, index) => (
                     <React.Fragment key={dealer.id}>
-                      <DealershipCard dealership={dealer} />
-                      {index === 2 && <AdCard />}
+                      <div 
+                        onMouseEnter={() => setHoveredDealershipId(dealer.id)}
+                        onMouseLeave={() => setHoveredDealershipId(null)}
+                      >
+                        <DealershipCard dealership={dealer} />
+                      </div>
+                      {index === 2 && !selectedDealershipId && <AdCard />}
                     </React.Fragment>
                   ))}
                 </div>

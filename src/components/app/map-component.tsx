@@ -10,6 +10,24 @@ import type { Dealership } from '@/lib/types';
 // Cela supprime une configuration incorrecte qui cherche les images au mauvais endroit.
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
+const defaultIcon = L.icon({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const highlightedIcon = L.icon({
+  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmOTczMTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXAtcGluIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiLz48cGF0aCBkPSJNMTIgMmE4IDggMCAwIDAtOCA4YzAgNS40IDcuMSAxMC41IDggMTEuNWExIDEgMCAwIDAgMS44IDBsOC0xMS41YTEwIDEwIDAgMCAwLTEwLTEwWiIvPjwvc3ZnPg==',
+  iconSize: [35, 35],
+  iconAnchor: [17, 35],
+  popupAnchor: [1, -34],
+});
+
+
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
@@ -21,12 +39,24 @@ interface MapComponentProps {
   dealerships: Dealership[];
   center: [number, number];
   zoom: number;
+  hoveredDealershipId?: string | null;
+  onMarkerClick: (id: string) => void;
+  onMarkerMouseOver: (id: string) => void;
+  onMarkerMouseOut: () => void;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ dealerships, center, zoom }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ 
+  dealerships, 
+  center, 
+  zoom, 
+  hoveredDealershipId,
+  onMarkerClick,
+  onMarkerMouseOver,
+  onMarkerMouseOut 
+}) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const markersRef = useRef<Record<string, L.Marker>>({});
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current) {
@@ -47,17 +77,26 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships, center, zoom }
     }
     
     // Mettre à jour les marqueurs
-    if (mapInstance.current) {
-      // Supprimer les anciens marqueurs
-      markersRef.current.forEach(marker => marker.remove());
-      markersRef.current = [];
+    const currentMarkers = markersRef.current;
+    const newMarkerIds = new Set(dealerships.map(d => d.id));
+
+    // Supprimer les anciens marqueurs
+    Object.keys(currentMarkers).forEach(id => {
+      if (!newMarkerIds.has(id)) {
+        currentMarkers[id].remove();
+        delete currentMarkers[id];
+      }
+    });
+
+    // Ajouter/Mettre à jour les marqueurs
+    dealerships.forEach((dealer) => {
+      if (isNaN(dealer.latitude) || isNaN(dealer.longitude)) return;
       
-      // Ajouter les nouveaux marqueurs
-      dealerships.forEach((dealer) => {
-        if (isNaN(dealer.latitude) || isNaN(dealer.longitude)) return;
-        
-        const position: [number, number] = [dealer.latitude, dealer.longitude];
-        
+      const position: [number, number] = [dealer.latitude, dealer.longitude];
+      
+      if (currentMarkers[dealer.id]) {
+        currentMarkers[dealer.id].setLatLng(position);
+      } else {
         const marker = L.marker(position).addTo(mapInstance.current!);
         marker.bindPopup(`
           <div class="font-sans">
@@ -68,11 +107,37 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships, center, zoom }
             </a>
           </div>
         `);
-        markersRef.current.push(marker);
-      });
-    }
+
+        marker.on('click', () => onMarkerClick(dealer.id));
+        marker.on('mouseover', () => {
+          marker.openPopup();
+          onMarkerMouseOver(dealer.id)
+        });
+        marker.on('mouseout', () => {
+          marker.closePopup();
+          onMarkerMouseOut();
+        });
+        
+        currentMarkers[dealer.id] = marker;
+      }
+    });
+
+    markersRef.current = currentMarkers;
     
-  }, [dealerships, center, zoom]);
+  }, [dealerships, center, zoom, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+
+  useEffect(() => {
+    Object.entries(markersRef.current).forEach(([id, marker]) => {
+      if (id === hoveredDealershipId) {
+        marker.setIcon(highlightedIcon);
+        marker.setZIndexOffset(1000);
+        marker.openPopup();
+      } else {
+        marker.setIcon(defaultIcon);
+        marker.setZIndexOffset(0);
+      }
+    });
+  }, [hoveredDealershipId]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
