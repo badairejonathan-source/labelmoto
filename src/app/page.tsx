@@ -9,6 +9,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
+import { List, Map as MapIcon } from 'lucide-react';
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -85,6 +86,7 @@ const getBrands = (dealerships: Dealership[]) => {
 }
 
 export default function Home() {
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -149,7 +151,7 @@ export default function Home() {
     // Filter by brands
     if (selectedBrands.length > 0) {
       dealerships = dealerships.filter(d =>
-        d.title && typeof d.title === 'string' && selectedBrands.some(brand => d.title!.toLowerCase().includes(brand.toLowerCase()))
+        d.title && typeof d.title === 'string' && selectedBrands.some(brand => d.title.toLowerCase().includes(brand.toLowerCase()))
       );
     }
 
@@ -168,32 +170,45 @@ export default function Home() {
        />
        <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-[30%] h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex space-x-2">
-              <Button variant={selectedCategory === 'Tout voir' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Tout voir')}>Tout voir</Button>
-              <Button variant={selectedCategory === 'Concessionnaires' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Concessionnaires')}>Concessionnaires</Button>
-              <Button variant={selectedCategory === 'Réparateurs' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Réparateurs')}>Réparateurs</Button>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <span className="text-sm text-muted-foreground">{filteredDealerships.length} RÉSULTATS</span>
+        {viewMode === 'list' && (
+          <aside className="w-[30%] h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex space-x-2">
-                <Button variant="outline" className="rounded-full">Note</Button>
-                <Button variant="outline" className="rounded-full">Avis</Button>
+                <Button variant={selectedCategory === 'Tout voir' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Tout voir')}>Tout voir</Button>
+                <Button variant={selectedCategory === 'Concessionnaires' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Concessionnaires')}>Concessionnaires</Button>
+                <Button variant={selectedCategory === 'Réparateurs' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Réparateurs')}>Réparateurs</Button>
+              </div>
+              <div className="flex items-center justify-between mt-4">
+                <span className="text-sm text-muted-foreground">{filteredDealerships.length} RÉSULTATS</span>
+                <div className="flex space-x-2">
+                  <Button variant="outline" className="rounded-full">Note</Button>
+                  <Button variant="outline" className="rounded-full">Avis</Button>
+                </div>
               </div>
             </div>
-          </div>
-          <ScrollArea className="flex-1">
-            <div className="p-4 space-y-4">
-              {filteredDealerships.map(dealer => (
-                <DealershipCard key={dealer.id} dealership={dealer} />
-              ))}
-            </div>
-          </ScrollArea>
-        </aside>
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-4">
+                {filteredDealerships.map(dealer => (
+                  <DealershipCard key={dealer.id} dealership={dealer} />
+                ))}
+              </div>
+            </ScrollArea>
+          </aside>
+        )}
 
         {/* Map Area */}
-        <main className="w-[70%] h-full relative">
+        <main className="flex-1 h-full relative">
+          <div className="absolute top-4 right-4 z-10 flex space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
+            <Button variant={viewMode === 'list' ? 'default' : 'outline'} onClick={() => setViewMode('list')} className="rounded-full">
+              <List className="mr-2 h-4 w-4" />
+              Liste
+            </Button>
+            <Button variant={viewMode === 'map' ? 'default' : 'outline'} onClick={() => setViewMode('map')} className="rounded-full">
+              <MapIcon className="mr-2 h-4 w-4" />
+              Carte
+            </Button>
+          </div>
+
           <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
             <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg">

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { MapPin, User, List, Map, ListFilter } from 'lucide-react';
+import { User, ListFilter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -105,14 +105,6 @@ const Header: React.FC<HeaderProps> = ({ onDepartmentChange, onCityChange, avail
         </DropdownMenu>
       </div>
       <div className="flex items-center space-x-2">
-        <Button variant="outline">
-          <List className="mr-2 h-4 w-4" />
-          Liste
-        </Button>
-        <Button variant="default">
-          <Map className="mr-2 h-4 w-4" />
-          Carte
-        </Button>
         <Button size="icon" variant="outline">
           <User className="h-5 w-5" />
         </Button>
