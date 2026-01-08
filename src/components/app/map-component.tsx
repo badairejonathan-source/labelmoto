@@ -72,9 +72,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         }
       ).addTo(mapInstance.current);
-    } else {
-        mapInstance.current.setView(center, zoom);
-    }
+    } 
     
     // Mettre à jour les marqueurs
     const currentMarkers = markersRef.current;
@@ -124,14 +122,23 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
     markersRef.current = currentMarkers;
     
-  }, [dealerships, center, zoom, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+
+  useEffect(() => {
+    if (mapInstance.current) {
+        mapInstance.current.setView(center, zoom);
+    }
+  }, [center, zoom]);
+
 
   useEffect(() => {
     Object.entries(markersRef.current).forEach(([id, marker]) => {
       if (id === hoveredDealershipId) {
         marker.setIcon(highlightedIcon);
         marker.setZIndexOffset(1000);
-        marker.openPopup();
+        if(!marker.isPopupOpen()) {
+            marker.openPopup();
+        }
       } else {
         marker.setIcon(defaultIcon);
         marker.setZIndexOffset(0);
