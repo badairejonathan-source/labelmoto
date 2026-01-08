@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { Search, User, List, Map } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import React, { useState, useEffect } from 'react';
+import { MapPin, User, List, Map } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import locations from '@/data/locations.json';
 
 const MotoTrustLogo = () => (
   <svg width="150" height="40" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,25 +17,63 @@ const MotoTrustLogo = () => (
 );
 
 interface HeaderProps {
-  onSearch: (query: string) => void;
+  onDepartmentChange: (department: string) => void;
+  onCityChange: (city: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearch }) => {
+const Header: React.FC<HeaderProps> = ({ onDepartmentChange, onCityChange }) => {
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState('');
+
+  const departments = Object.keys(locations);
+
+  useEffect(() => {
+    if (selectedDepartment) {
+      setCities((locations as any)[selectedDepartment] || []);
+      setSelectedCity(''); // Reset city when department changes
+      onCityChange('');
+    } else {
+      setCities([]);
+    }
+    onDepartmentChange(selectedDepartment);
+  }, [selectedDepartment, onDepartmentChange, onCityChange]);
+
+  const handleDepartmentChange = (value: string) => {
+    setSelectedDepartment(value);
+  };
+  
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    onCityChange(value);
+  }
+
   return (
     <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center">
         <MotoTrustLogo />
       </div>
-      <div className="flex-1 max-w-xl mx-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <Input
-            type="search"
-            placeholder="Rechercher un nom, une ville, un département..."
-            className="pl-10 w-full"
-            onChange={(e) => onSearch(e.target.value)}
-          />
-        </div>
+      <div className="flex-1 max-w-xl mx-4 flex space-x-2">
+        <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
+          <SelectTrigger>
+            <SelectValue placeholder="Choisir un département" />
+          </SelectTrigger>
+          <SelectContent>
+            {departments.map(dep => (
+              <SelectItem key={dep} value={dep}>{dep}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
+          <SelectTrigger>
+            <SelectValue placeholder="Choisir une ville" />
+          </SelectTrigger>
+          <SelectContent>
+            {cities.map(city => (
+              <SelectItem key={city} value={city}>{city}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex items-center space-x-2">
         <Button variant="outline">

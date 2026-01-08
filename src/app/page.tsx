@@ -74,14 +74,15 @@ const getBrands = (dealerships: Dealership[]) => {
 
 export default function Home() {
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   
   const availableBrands = useMemo(() => getBrands(allDealerships), []);
 
   useEffect(() => {
-    if (!searchQuery && selectedCategory === 'Tout voir' && selectedBrands.length === 0) {
+    if (!selectedDepartment && !selectedCity && selectedCategory === 'Tout voir' && selectedBrands.length === 0) {
       setFilteredDealerships([]);
       return;
     }
@@ -95,13 +96,18 @@ export default function Home() {
       dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'));
     }
     
-    // Filter by search query (name, city, department)
-    if (searchQuery) {
-      const lowerCaseQuery = searchQuery.toLowerCase();
+    // Filter by location
+    if (selectedCity) {
+      const lowerCaseCity = selectedCity.toLowerCase();
       dealerships = dealerships.filter(d => 
-        d.title.toLowerCase().includes(lowerCaseQuery) ||
-        (d.address && d.address.toLowerCase().includes(lowerCaseQuery))
+        (d.address && d.address.toLowerCase().includes(lowerCaseCity))
       );
+    } else if (selectedDepartment) {
+        // A rough way to filter by department number in address
+        const depCode = selectedDepartment.split(' ')[0];
+        dealerships = dealerships.filter(d => 
+          (d.address && d.address.includes(depCode))
+        );
     }
     
     // Filter by brands
@@ -113,7 +119,7 @@ export default function Home() {
 
     setFilteredDealerships(dealerships);
 
-  }, [searchQuery, selectedCategory, selectedBrands]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
   const handleBrandChange = (brand: string) => {
     setSelectedBrands(prev => 
@@ -123,7 +129,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen">
-       <Header onSearch={setSearchQuery} />
+       <Header onDepartmentChange={setSelectedDepartment} onCityChange={setSelectedCity} />
        <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-[30%] h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
