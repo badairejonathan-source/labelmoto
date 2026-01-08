@@ -1,13 +1,12 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Dealership } from '@/lib/types';
+import type { Dealership } from '@/lib/types';
 
 // Correction pour l'icône par défaut de Leaflet avec Next.js
-// Cette partie est cruciale pour que les icônes s'affichent correctement avec Webpack/Next.js
 try {
   delete (L.Icon.Default.prototype as any)._getIconUrl;
   L.Icon.Default.mergeOptions({
