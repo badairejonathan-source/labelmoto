@@ -40,7 +40,7 @@ export default function Home() {
         if (file.name.endsWith('.json')) {
           const newDealerships = JSON.parse(content);
           if (Array.isArray(newDealerships)) {
-            setDealerships(newDealerships);
+            setDealerships(newDealerships.filter(d => d.position && Array.isArray(d.position) && d.position.length === 2));
           }
         } else if (file.name.endsWith('.csv')) {
           const lines = content.split('\n');
@@ -56,19 +56,21 @@ export default function Home() {
             const dealer: any = { id: `csv-${index}` };
             header.forEach((key, i) => {
                 const value = data[i]?.trim().replace(/"/g, '');
-                if (key === 'latitude' || key === 'longitude') {
-                    // Handled below
-                } else {
+                if (key !== 'latitude' && key !== 'longitude') {
                     dealer[key] = value;
                 }
             });
 
             const latIndex = header.indexOf('latitude');
             const lonIndex = header.indexOf('longitude');
-            const lat = parseFloat(data[latIndex]);
-            const lon = parseFloat(data[lonIndex]);
+            if(latIndex > -1 && lonIndex > -1) {
+              const lat = parseFloat(data[latIndex]);
+              const lon = parseFloat(data[lonIndex]);
 
-            dealer.position = [lat, lon] as [number, number];
+              if (!isNaN(lat) && !isNaN(lon)) {
+                dealer.position = [lat, lon] as [number, number];
+              }
+            }
 
             return dealer as Dealership;
           }).filter(d => d.position && !isNaN(d.position[0]) && !isNaN(d.position[1]));
@@ -135,5 +137,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
