@@ -5,28 +5,9 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
 
-// Importer directement les images pour une meilleure compatibilité
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
-
-
-// Correction pour l'icône par défaut de Leaflet avec Next.js
-try {
-  // Supprime la référence à l'ancienne méthode de récupération d'URL
-  if (L.Icon.Default.prototype instanceof L.Icon) {
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-  }
-
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: iconRetinaUrl.src,
-    iconUrl: iconUrl.src,
-    shadowUrl: shadowUrl.src,
-  });
-} catch (e) {
-  console.error("Erreur lors de la configuration des icônes Leaflet", e);
-}
-
 
 interface MapComponentProps {
   dealerships: Dealership[];
@@ -38,6 +19,15 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
   const markersRef = useRef<L.Marker[]>([]);
 
   useEffect(() => {
+    // Configure default icon paths
+    // @ts-ignore
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: iconRetinaUrl.src,
+      iconUrl: iconUrl.src,
+      shadowUrl: shadowUrl.src,
+    });
+    
     if (mapRef.current && !mapInstance.current) {
       const center: [number, number] = [46.603354, 1.888334]; // Centre de la France
       
