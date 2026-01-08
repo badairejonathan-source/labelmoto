@@ -5,9 +5,16 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
 
-import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
-import iconUrl from 'leaflet/dist/images/marker-icon.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+// Correction pour un problème connu avec Next.js et Leaflet
+if (typeof window !== 'undefined') {
+  delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  });
+}
 
 interface MapComponentProps {
   dealerships: Dealership[];
@@ -42,20 +49,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
       
-      // Créer une instance d'icône personnalisée et explicite
-      const customIcon = new L.Icon({
-          iconUrl: iconUrl.src,
-          iconRetinaUrl: iconRetinaUrl.src,
-          shadowUrl: shadowUrl.src,
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41]
-      });
-
-      // Ajouter les nouveaux marqueurs avec l'icône explicite
+      // Ajouter les nouveaux marqueurs
       dealerships.forEach((dealer) => {
-        const marker = L.marker(dealer.position as [number, number], { icon: customIcon }).addTo(mapInstance.current!);
+        const marker = L.marker(dealer.position as [number, number]).addTo(mapInstance.current!);
         marker.bindPopup(`
           <div class="font-sans">
             <h3 class="font-bold text-base mb-1">${dealer.name}</h3>
@@ -76,10 +72,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       }
     };
     
-    // Uniquement pour le développement, pour éviter les erreurs de rechargement rapide
     if (process.env.NODE_ENV === 'development') {
         return () => {
-          // Ne pas nettoyer en développement pour éviter l'erreur d'initialisation
+          // Ne pas nettoyer en développement
         };
     }
 
