@@ -31,14 +31,17 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 
 
 export default function Home() {
-  const allDealerships = [
+  const allDealershipsRaw = [
     ...initialDealerships,
     ...data34,
     ...data78,
     ...data92,
   ] as any[];
-  
-  const dealerships: Dealership[] = allDealerships.map((d, index) => ({
+
+  // Deduplicate dealerships based on placeUrl
+  const uniqueDealershipsRaw = Array.from(new Map(allDealershipsRaw.map(d => [d.placeUrl, d])).values());
+
+  const dealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
     id: d.placeUrl || `${d.title}-${index}`,
     placeUrl: d.placeUrl,
     title: d.title,
