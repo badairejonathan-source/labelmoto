@@ -1,31 +1,35 @@
 'use client';
 
 import React from 'react';
-import { Search, MapPin, Navigation } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { Search, Navigation } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import dealerships from '@/data/dealerships.json';
 
-// Logo Component
 const MotoTrustLogo = () => (
   <svg viewBox="0 0 100 100" className="w-12 h-12 text-primary" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="4"/>
-    <path d="M50 50 L 50 15" stroke="hsl(var(--accent))" strokeWidth="5" strokeLinecap="round" style={{ transformOrigin: 'center' }} transform="rotate(135)"/>
+    <path d="M50 50 L 50 15" stroke="hsl(var(--accent))" strokeWidth="5" strokeLinecap="round" style={{ transformOrigin: 'center', transform: 'rotate(135deg)' }}/>
     <text x="50" y="70" textAnchor="middle" fontWeight="bold" fontSize="12" fill="currentColor" fontFamily="sans-serif">120</text>
     <text x="50" y="82" textAnchor="middle" fontWeight="normal" fontSize="8" fill="currentColor" fontFamily="sans-serif">km/h</text>
     <circle cx="50" cy="50" r="4" fill="hsl(var(--accent))"/>
   </svg>
 );
 
+// Importation dynamique du composant de la carte
+const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>
+});
+
 
 export default function Home() {
   return (
     <div className="relative h-screen w-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
       {/* Map Area */}
-      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800">
-        {/* Placeholder for the map */}
-        <div className="w-full h-full flex items-center justify-center">
-            <MapPin className="w-16 h-16 text-gray-400 dark:text-gray-600" />
-        </div>
+      <div className="absolute inset-0">
+        <MapComponent dealerships={dealerships} />
       </div>
 
       {/* Header / Search bar */}
