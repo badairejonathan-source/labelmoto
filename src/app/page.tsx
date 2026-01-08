@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
+import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
@@ -121,11 +122,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!selectedDepartment && !selectedCity && selectedCategory === 'Tout voir' && selectedBrands.length === 0) {
-      setFilteredDealerships([]);
-      return;
-    }
-
     let dealerships = allDealerships;
 
     // Filter by category
@@ -147,6 +143,12 @@ export default function Home() {
         dealerships = dealerships.filter(d => 
           d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
         );
+    } else {
+        // if no department/city is selected, don't show any results
+        if (selectedCategory === 'Tout voir' && selectedBrands.length === 0) {
+            setFilteredDealerships([]);
+            return;
+        }
     }
     
     // Filter by brands
@@ -159,11 +161,22 @@ export default function Home() {
     setFilteredDealerships(dealerships);
 
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
+  
+  const ResultsDisplay = () => (
+    <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      {filteredDealerships.map((dealer, index) => (
+        <React.Fragment key={dealer.id}>
+          <DealershipCard dealership={dealer} />
+          {index === 2 && <AdCard />}
+        </React.Fragment>
+      ))}
+    </div>
+  );
 
   const Sidebar = () => (
     <aside className={cn(
       "h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700",
-      viewMode === 'map' ? 'w-[30%]' : 'w-full'
+      viewMode === 'map' ? 'w-full md:w-[30%]' : 'w-full'
     )}>
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex space-x-2">
@@ -180,11 +193,15 @@ export default function Home() {
         </div>
       </div>
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
-          {filteredDealerships.map(dealer => (
-            <DealershipCard key={dealer.id} dealership={dealer} />
-          ))}
-        </div>
+        {viewMode === 'map' ? (
+          <div className="p-4 space-y-4">
+            {filteredDealerships.map(dealer => (
+              <DealershipCard key={dealer.id} dealership={dealer} />
+            ))}
+          </div>
+        ) : (
+          <ResultsDisplay />
+        )}
       </ScrollArea>
     </aside>
   );
@@ -198,38 +215,24 @@ export default function Home() {
         selectedBrands={selectedBrands}
         onBrandChange={handleBrandChange}
        />
-       <div className="flex flex-1 overflow-hidden">
-        { (viewMode === 'list' || viewMode === 'map') && <Sidebar />}
+       <div className="flex flex-1 overflow-hidden relative">
+         {(viewMode === 'list' || (viewMode === 'map' )) && <Sidebar />}
 
         {viewMode === 'map' && (
-            <main className="flex-1 h-full relative">
-              <div className="absolute top-4 right-4 z-10 flex space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
-                <Button variant={viewMode === 'list' ? 'secondary' : 'default'} onClick={() => setViewMode('list')} className="rounded-full">
-                  <List className="mr-2 h-4 w-4" />
-                  Liste
-                </Button>
-                <Button variant={viewMode === 'map' ? 'default' : 'secondary'} onClick={() => setViewMode('map')} className="rounded-full">
-                  <MapIcon className="mr-2 h-4 w-4" />
-                  Carte
-                </Button>
-              </div>
-
+            <main className="flex-1 h-full hidden md:block">
               <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} />
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
-                <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Espace publicitaire monétisable</p>
-                </div>
-              </div>
             </main>
         )}
-         {viewMode === 'list' && (
-          <div className="w-full flex justify-center p-4">
-              <Button onClick={() => setViewMode('map')} >
-                  <MapIcon className="mr-2 h-4 w-4" />
-                  Retour à la carte
-              </Button>
-          </div>
-        )}
+        <div className="absolute top-4 right-4 z-10 flex space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
+          <Button variant={viewMode === 'list' ? 'default' : 'ghost'} onClick={() => setViewMode('list')} className="rounded-full">
+            <List className="mr-2 h-4 w-4" />
+            Liste
+          </Button>
+          <Button variant={viewMode === 'map' ? 'default' : 'ghost'} onClick={() => setViewMode('map')} className="rounded-full">
+            <MapIcon className="mr-2 h-4 w-4" />
+            Carte
+          </Button>
+        </div>
       </div>
     </div>
   );
