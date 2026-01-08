@@ -82,7 +82,7 @@ export default function Home() {
           </div>
         </div>
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-4 flex flex-col items-center">
             {dealerships.map(dealer => (
               <DealershipCard key={dealer.id} dealership={dealer} />
             ))}

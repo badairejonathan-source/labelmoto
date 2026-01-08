@@ -12,66 +12,58 @@ interface DealershipCardProps {
 }
 
 const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
-  const isOpen = () => {
-    // This is a placeholder. A real implementation would parse the opening hours
-    // and compare with the current time.
-    return Math.random() > 0.5;
-  };
-  
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
-      <CardContent className="p-4">
-        <div className="flex gap-4">
-          {dealership.imgUrl && (
-             <div className="w-24 h-24 relative flex-shrink-0">
-                <Image
-                src={dealership.imgUrl}
-                alt={`Photo de ${dealership.title}`}
-                fill
-                className="rounded-md object-cover"
-                sizes="100px"
-                />
-            </div>
+    <Card className="overflow-hidden transition-all hover:shadow-md w-full">
+      <CardContent className="p-0">
+        {dealership.imgUrl && (
+          <div className="w-full h-32 relative">
+            <Image
+              src={dealership.imgUrl}
+              alt={`Photo de ${dealership.title}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
+        )}
+        <div className="p-4 space-y-2">
+          <h3 className="font-bold text-lg text-primary dark:text-primary-foreground leading-tight truncate">
+            {dealership.title}
+          </h3>
+
+          {dealership.address && (
+            <a
+              href={dealership.placeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+            >
+              <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <span className="break-words">{dealership.address}</span>
+            </a>
           )}
-          <div className="flex-1 space-y-1 min-w-0">
-            <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight truncate">
-              {dealership.title}
-            </h3>
-            
-            {dealership.address && (
-              <a 
-                href={dealership.placeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+
+          <div className="flex flex-col space-y-2 pt-1">
+            {dealership.phoneNum && (
+              <a
+                href={`tel:${dealership.phoneNum}`}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
               >
-                <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span className="break-words">{dealership.address}</span>
+                <Phone className="h-4 w-4" />
+                <span>{dealership.phoneNum}</span>
               </a>
             )}
-
-            <div className="flex flex-wrap items-center gap-4 pt-1">
-              {dealership.phoneNum && (
-                <a 
-                  href={`tel:${dealership.phoneNum}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
-                >
-                  <Phone className="h-4 w-4" />
-                  <span>{dealership.phoneNum}</span>
-                </a>
-              )}
-              {dealership.website && (
-                 <a 
-                  href={dealership.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
-                >
-                  <Globe className="h-4 w-4" />
-                  <span>Site web</span>
-                </a>
-              )}
-            </div>
+            {dealership.website && (
+              <a
+                href={dealership.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+              >
+                <Globe className="h-4 w-4" />
+                <span className="truncate">Site web</span>
+              </a>
+            )}
           </div>
         </div>
       </CardContent>
