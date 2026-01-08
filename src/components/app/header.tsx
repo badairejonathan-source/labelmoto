@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ onDepartmentChange, onCityChange }) => 
 
   useEffect(() => {
     if (selectedDepartment) {
-      setCities((locations as any)[selectedDepartment] || []);
+      setCities((locations as any)[selectedDepartment]?.cities || []);
       setSelectedCity(''); // Reset city when department changes
       onCityChange('');
     } else {

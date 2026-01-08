@@ -14,6 +14,8 @@ import data78 from '@/data/78csvjson.json';
 import data92 from '@/data/92 Phantom_json.json';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
+import locations from '@/data/locations.json';
+
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -78,8 +80,23 @@ export default function Home() {
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
+  const [mapZoom, setMapZoom] = useState(6);
   
   const availableBrands = useMemo(() => getBrands(allDealerships), []);
+
+  const handleDepartmentChange = (department: string) => {
+    setSelectedDepartment(department);
+    setSelectedCity('');
+    if (department && (locations as any)[department]) {
+      setMapCenter((locations as any)[department].center as [number, number]);
+      setMapZoom(9);
+    } else {
+      setMapCenter([46.603354, 1.888334]);
+      setMapZoom(6);
+    }
+  };
+
 
   useEffect(() => {
     if (!selectedDepartment && !selectedCity && selectedCategory === 'Tout voir' && selectedBrands.length === 0) {
@@ -129,7 +146,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen">
-       <Header onDepartmentChange={setSelectedDepartment} onCityChange={setSelectedCity} />
+       <Header onDepartmentChange={handleDepartmentChange} onCityChange={setSelectedCity} />
        <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-[30%] h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
@@ -179,7 +196,7 @@ export default function Home() {
 
         {/* Map Area */}
         <main className="w-[70%] h-full relative">
-          <MapComponent dealerships={filteredDealerships} />
+          <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
             <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg">
               <p className="text-sm text-gray-600 dark:text-gray-300">Espace publicitaire monétisable</p>

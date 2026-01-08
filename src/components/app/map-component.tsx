@@ -19,9 +19,11 @@ L.Icon.Default.mergeOptions({
 
 interface MapComponentProps {
   dealerships: Dealership[];
+  center: [number, number];
+  zoom: number;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ dealerships, center, zoom }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -32,9 +34,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
     }
 
     if (!mapInstance.current) {
-      const center: [number, number] = [46.603354, 1.888334]; // Centre de la France
-      
-      mapInstance.current = L.map(mapRef.current).setView(center, 6);
+      mapInstance.current = L.map(mapRef.current).setView(center, zoom);
 
       L.tileLayer(
         `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png`,
@@ -42,6 +42,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         }
       ).addTo(mapInstance.current);
+    } else {
+        mapInstance.current.setView(center, zoom);
     }
     
     // Mettre à jour les marqueurs
@@ -70,7 +72,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       });
     }
     
-  }, [dealerships]);
+  }, [dealerships, center, zoom]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
