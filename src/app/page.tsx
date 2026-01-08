@@ -16,11 +16,8 @@ import type { Dealership } from '@/lib/types';
 
 const MotoTrustLogo = () => (
   <svg viewBox="0 0 100 100" className="w-10 h-10 text-primary" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="4"/>
-    <path d="M50 50 L 50 15" stroke="hsl(var(--accent))" strokeWidth="5" strokeLinecap="round" style={{ transformOrigin: 'center', transform: 'rotate(135deg)' }}/>
-    <text x="50" y="70" textAnchor="middle" fontWeight="bold" fontSize="12" fill="currentColor" fontFamily="sans-serif">120</text>
-    <text x="50" y="82" textAnchor="middle" fontWeight="normal" fontSize="8" fill="currentColor" fontFamily="sans-serif">km/h</text>
-    <circle cx="50" cy="50" r="4" fill="hsl(var(--accent))"/>
+    <path d="M68.3333 43.3333C68.3333 38.2166 65.2333 33.6833 60.55 31.35L50 25L39.45 31.35C34.7667 33.6833 31.6667 38.2166 31.6667 43.3333V60.8333C31.6667 63.3833 32.7333 65.75 34.5333 67.2833L50 80L65.4667 67.2833C67.2667 65.75 68.3333 63.3833 68.3333 60.8333V43.3333Z" stroke="currentColor" strokeWidth="6" strokeLinejoin="round" />
+    <path d="M50 54.1667C52.2962 54.1667 54.1667 52.2962 54.1667 50C54.1667 47.7038 52.2962 45.8333 50 45.8333C47.7038 45.8333 45.8333 47.7038 45.8333 50C45.8333 52.2962 47.7038 54.1667 50 54.1667Z" stroke="currentColor" strokeWidth="6" strokeLinejoin="round" />
   </svg>
 );
 
@@ -58,6 +55,8 @@ export default function Home() {
     lundi: d.lundi,
     latitude: typeof d.latitude === 'string' ? parseFloat(d.latitude.replace(',', '.')) : d.latitude,
     longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude.replace(',', '.')) : d.longitude,
+    rating: d.rating,
+    category: d.category,
   })).filter(d => d.title && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
 
 
@@ -88,7 +87,8 @@ export default function Home() {
             ))}
           </div>
         </ScrollArea>
-        <footer className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <footer className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <MotoTrustLogo />
           <p className="text-xs text-center text-gray-500">
             MotoTrust © {new Date().getFullYear()}
           </p>

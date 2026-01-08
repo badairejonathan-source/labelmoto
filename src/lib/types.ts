@@ -16,4 +16,6 @@ export interface Dealership {
   latitude: number;
   longitude: number;
   position?: [number, number];
+  rating?: string;
+  category?: string;
 }
