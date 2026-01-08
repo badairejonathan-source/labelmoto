@@ -12,6 +12,9 @@ import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
 import data78 from '@/data/78csvjson.json';
 import data92 from '@/data/92 Phantom_json.json';
+import data77 from '@/data/77json.json';
+import data91 from '@/data/91json.json';
+import data94 from '@/data/94son.json';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
@@ -27,6 +30,9 @@ const allDealershipsRaw = [
   ...data34,
   ...data78,
   ...data92,
+  ...data77,
+  ...data91,
+  ...data94,
 ] as any[];
 
 // Deduplicate and clean data once
@@ -51,7 +57,7 @@ const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
   longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude.replace(',', '.')) : d.longitude,
   rating: d.rating,
   category: d.category,
-})).filter(d => d.title && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
+})).filter(d => d.title && typeof d.title === 'string' && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
 
 
 const getBrands = (dealerships: Dealership[]) => {
@@ -65,7 +71,7 @@ const getBrands = (dealerships: Dealership[]) => {
   
   dealerships.forEach(d => {
     brandKeywords.forEach(brand => {
-      if (d.title.toLowerCase().includes(brand.toLowerCase())) {
+      if (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes(brand.toLowerCase())) {
         brandSet.add(brand);
       }
     });
@@ -112,29 +118,29 @@ export default function Home() {
 
     // Filter by category
     if (selectedCategory === 'Concessionnaires') {
-      dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || d.title.toLowerCase().includes('concession'));
+      dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
     } else if (selectedCategory === 'Réparateurs') {
-      dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'));
+      dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
     }
     
     // Filter by location
     if (selectedCity) {
       const lowerCaseCity = selectedCity.toLowerCase();
       dealerships = dealerships.filter(d => 
-        (d.address && d.address.toLowerCase().includes(lowerCaseCity))
+        d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
       );
     } else if (selectedDepartment) {
         // A rough way to filter by department number in address
         const depCode = selectedDepartment.split(' ')[0];
         dealerships = dealerships.filter(d => 
-          (d.address && d.address.includes(depCode))
+          d.address && typeof d.address === 'string' && d.address.includes(depCode)
         );
     }
     
     // Filter by brands
     if (selectedBrands.length > 0) {
       dealerships = dealerships.filter(d =>
-        selectedBrands.some(brand => d.title.toLowerCase().includes(brand.toLowerCase()))
+        d.title && typeof d.title === 'string' && selectedBrands.some(brand => d.title!.toLowerCase().includes(brand.toLowerCase()))
       );
     }
 
@@ -211,3 +217,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
