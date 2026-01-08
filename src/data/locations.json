@@ -34,7 +34,7 @@
   "31 - Haute-Garonne": { "cities": [], "center": [43.416667, 1.333333] },
   "32 - Gers": { "cities": [], "center": [43.666667, 0.5] },
   "33 - Gironde": { "cities": [], "center": [44.75, -0.5] },
-  "34 - Hérault": { "cities": ["Montpellier","Mauguio","Lattes","Saint-Jean-de-Védas","Mireval","Pézenas","Sète","Frontignan","Gigean","Castelnau-le-Lez","Le Crès","Jacou","Saint-Paul-et-Valmalle"], "center": [43.45, 3.5] },
+  "34 - Hérault": { "cities": ["Montpellier", "Lattes", "Mauguio", "Saint-Jean-de-Védas", "Mireval", "Pézenas", "Sète", "Frontignan", "Gigean", "Le Crès", "Jacou", "Saint-Paul-et-Valmalle", "Castelnau-le-Lez"], "center": [43.45, 3.5] },
   "35 - Ille-et-Vilaine": { "cities": [], "center": [48.166667, -1.6] },
   "36 - Indre": { "cities": [], "center": [46.8, 1.5] },
   "37 - Indre-et-Loire": { "cities": [], "center": [47.233333, 0.683333] },
@@ -75,9 +75,9 @@
   "72 - Sarthe": { "cities": [], "center": [48.083333, 0.25] },
   "73 - Savoie": { "cities": [], "center": [45.5, 6.5] },
   "74 - Haute-Savoie": { "cities": [], "center": [46.066667, 6.4] },
-  "75 - Paris": { "cities": [], "center": [48.856614, 2.3522219] },
+  "75 - Paris": { "cities": ["Paris"], "center": [48.856614, 2.3522219] },
   "76 - Seine-Maritime": { "cities": [], "center": [49.6, 0.8] },
-  "77 - Seine-et-Marne": { "cities": [], "center": [48.583333, 3] },
+  "77 - Seine-et-Marne": { "cities": ["Melun", "Vert-Saint-Denis", "Dammarie-les-Lys", "Bobigny", "Mareuil-lès-Meaux", "Meaux", "Villenoy", "Trilport", "Presles-en-Brie", "Jossigny", "Brie-Comte-Robert", "Soignolles-en-Brie", "Roissy-en-Brie", "Pontault-Combault", "Pézarches", "Touquin", "Coulommiers", "Pommeuse", "Misy-sur-Yonne", "Ville-Saint-Jacques", "Moret-Loing-et-Orvanne", "Châtenay-sur-Seine", "Montigny-Lencoup", "Verneuil-l'Étang"], "center": [48.583333, 3] },
   "78 - Yvelines": { "cities": ["Versailles", "Le Chesnay-Rocquencourt", "Buc", "Bougival", "Coignières", "Plaisir", "Chambourcy", "Le Port-Marly", "Saint-Germain-en-Laye", "Voisins-le-Bretonneux", "Magny-les-Hameaux", "Rambouillet", "Gazeran", "Jouars-Pontchartrain", "Ablis", "Guyancourt", "Meulan-en-Yvelines", "Buchelay", "Trappes", "Bois-d'Arcy", "Hardricourt", "Maule", "Ecquevilly", "Les Mureaux", "Carrières-sous-Poissy", "Montesson", "Poissy", "Achères"], "center": [48.8, 1.95] },
   "79 - Deux-Sèvres": { "cities": [], "center": [46.5, -0.333333] },
   "80 - Somme": { "cities": [], "center": [49.9, 2.4] },
@@ -91,9 +91,10 @@
   "88 - Vosges": { "cities": [], "center": [48.166667, 6.5] },
   "89 - Yonne": { "cities": [], "center": [47.9, 3.5] },
   "90 - Territoire de Belfort": { "cities": [], "center": [47.633333, 6.9] },
-  "91 - Essonne": { "cities": [], "center": [48.5, 2.25] },
-  "92 - Hauts-de-Seine": { "cities": ["Nanterre", "Antony", "La Garenne-Colombes", "Boulogne-Billancourt", "Issy-les-Moulineaux", "Malakoff", "Suresnes", "Chaville", "Meudon", "Clichy", "Saint-Cloud", "Garches", "Sèvres", "Puteaux"], "center": [48.85, 2.26] },
-  "93 - Seine-Saint-Denis": { "cities": [], "center": [48.9, 2.45] },
-  "94 - Val-de-Marne": { "cities": [], "center": [48.783333, 2.466667] },
-  "95 - Val-d'Oise": { "cities": [], "center": [49.083333, 2.166667] }
+  "91 - Essonne": { "cities": ["Ris-Orangis", "Villiers-sur-Marne", "Lisses", "Montlhéry", "Corbeil-Essonnes", "Sainte-Geneviève-des-Bois", "La Ville-du-Bois", "Villemoisson-sur-Orge", "Athis-Mons", "Ballainvilliers", "Champlan", "Longjumeau", "Saulx-les-Chartreux", "Villejust", "Boissy-sous-Saint-Yon", "Saclas", "Étampes", "Ormoy", "Ormoy-la-Rivière", "Morigny-Champigny"], "center": [48.5, 2.25] },
+  "92 - Hauts-de-Seine": { "cities": ["Nanterre", "Antony", "La Garenne-Colombes", "Boulogne-Billancourt", "Issy-les-Moulineaux", "Malakoff", "Suresnes", "Chaville", "Meudon", "Clichy", "Saint-Cloud", "Garches", "Sèvres", "Puteaux", "Rueil-Malmaison", "Courbevoie"], "center": [48.85, 2.26] },
+  "93 - Seine-Saint-Denis": { "cities": ["Bobigny", "Pantin", "Romainville", "Bagnolet", "La Courneuve", "Saint-Denis", "Montreuil", "Aulnay-sous-Bois", "Livry-Gargan", "Rosny-sous-Bois", "Noisy-le-Sec", "Villemomble", "Villetaneuse", "Le Blanc-Mesnil", "Garges-lès-Gonesse"], "center": [48.9, 2.45] },
+  "94 - Val-de-Marne": { "cities": ["Créteil", "Villiers-sur-Marne", "Saint-Maur-des-Fossés", "Maisons-Alfort", "Champigny-sur-Marne", "Bonneuil-sur-Marne", "Le Perreux-sur-Marne", "Nogent-sur-Marne", "Fontenay-sous-Bois", "Saint-Mandé", "Charenton-le-Pont", "Ivry-sur-Seine", "Alfortville", "Villeneuve-Saint-Georges", "Valenton"], "center": [48.783333, 2.466667] },
+  "95 - Val-d'Oise": { "cities": ["Conflans-Sainte-Honorine", "Saint-Ouen-l'Aumône", "Pierrelaye", "Éragny", "Marines", "Argenteuil", "Soisy-sous-Montmorency", "Deuil-la-Barre", "Eaubonne", "Le Plessis-Bouchard", "Saint-Leu-la-Forêt", "Montigny-lès-Cormeilles", "Herblay-sur-Seine", "Bezons", "Carrières-sur-Seine", "Houilles", "Sannois", "Montmorency", "Saint-Brice-sous-Forêt", "Garges-lès-Gonesse", "Goussainville", "Chaumontel", "Attainville", "Ennery"], "center": [49.083333, 2.166667] }
 }
+
