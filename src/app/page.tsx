@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -15,6 +16,8 @@ import data92 from '@/data/92 Phantom_json.json';
 import data77 from '@/data/77json.json';
 import data91 from '@/data/91json.json';
 import data94 from '@/data/94son.json';
+import data95 from '@/data/95json.json';
+import data93 from '@/data/93json.json';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
@@ -33,6 +36,8 @@ const allDealershipsRaw = [
   ...data77,
   ...data91,
   ...data94,
+  ...data93,
+  ...data95,
 ] as any[];
 
 // Deduplicate and clean data once
@@ -57,7 +62,7 @@ const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
   longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude.replace(',', '.')) : d.longitude,
   rating: d.rating,
   category: d.category,
-})).filter(d => d.title && typeof d.title === 'string' && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
+})).filter(d => d.title && typeof d.title === 'string' && d.address && typeof d.address === 'string' && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
 
 
 const getBrands = (dealerships: Dealership[]) => {
