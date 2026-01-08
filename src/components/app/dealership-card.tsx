@@ -33,8 +33,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
                 />
             </div>
           )}
-          <div className="flex-1 space-y-1">
-            <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight">
+          <div className="flex-1 space-y-1 min-w-0">
+            <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight truncate">
               {dealership.title}
             </h3>
             
@@ -46,7 +46,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
                 className="flex items-start gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
               >
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>{dealership.address}</span>
+                <span className="break-words">{dealership.address}</span>
               </a>
             )}
 
