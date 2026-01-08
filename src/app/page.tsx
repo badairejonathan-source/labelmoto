@@ -6,6 +6,9 @@ import { Search, Navigation } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import initialDealerships from '@/data/dealerships.json';
+import data34 from '@/data/34json.json';
+import data78 from '@/data/78csvjson.json';
+import data92 from '@/data/92 Phantom_json.json';
 import type { Dealership } from '@/lib/types';
 
 const MotoTrustLogo = () => (
@@ -26,7 +29,32 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 
 
 export default function Home() {
-  const dealerships: Dealership[] = initialDealerships.map(d => ({...d, position: [d.latitude, d.longitude]} as Dealership));
+  const allDealerships = [
+    ...initialDealerships,
+    ...data34,
+    ...data78,
+    ...data92,
+  ] as any[];
+  
+  const dealerships: Dealership[] = allDealerships.map((d, index) => ({
+    id: d.id || `${index}`,
+    placeUrl: d.placeUrl,
+    title: d.title,
+    address: d.address,
+    website: d.website,
+    phoneNum: d.phoneNumber || d.phoneNum,
+    imgUrl: d.imgUrl,
+    mardi: d.mardi,
+    mercredi: d.mercredi,
+    jeudi: d.jeudi,
+    vendredi: d.vendredi,
+    samedi: d.samedi,
+    dimanche: d.dimanche,
+    lundi: d.lundi,
+    latitude: typeof d.latitude === 'string' ? parseFloat(d.latitude) : d.latitude,
+    longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude) : d.longitude,
+  })).filter(d => d.title && !isNaN(d.latitude) && !isNaN(d.longitude));
+
 
   return (
     <div className="relative h-screen w-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
