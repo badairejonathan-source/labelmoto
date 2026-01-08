@@ -6,8 +6,9 @@ import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { ListFilter } from 'lucide-react';
+import type { Dealership } from '@/lib/types';
+import Header from '@/components/app/header';
+import locations from '@/data/locations.json';
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -18,10 +19,6 @@ import data91 from '@/data/91json.json';
 import data94 from '@/data/94son.json';
 import data95 from '@/data/95json.json';
 import data93 from '@/data/93json.json';
-import type { Dealership } from '@/lib/types';
-import Header from '@/components/app/header';
-import locations from '@/data/locations.json';
-
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -64,14 +61,14 @@ const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
   category: d.category,
 })).filter(d => d.title && typeof d.title === 'string' && d.address && typeof d.address === 'string' && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
 
-
 const getBrands = (dealerships: Dealership[]) => {
   const brandSet = new Set<string>();
   const brandKeywords = [
-    'Yamaha', 'Honda', 'Kawasaki', 'Suzuki', 'BMW', 'Triumph', 'Ducati', 'Aprilia', 'KTM', 
-    'Benelli', 'Royal Enfield', 'Piaggio', 'Vespa', 'Peugeot', 'Harley-Davidson',
-    'Moto Guzzi', 'Husqvarna', 'GasGas', 'Indian', 'MV Agusta', 'Sym', 'Kymco', 'Voge', 
-    'Mash', 'Orcal', 'CFMoto', 'Segway', 'Askoll', 'Gilera', 'ZERO'
+    'Aprilia', 'Askoll', 'Benelli', 'BMW', 'CFMoto', 'Ducati', 'GasGas', 
+    'Gilera', 'Harley-Davidson', 'Honda', 'Husqvarna', 'Indian', 'Kawasaki', 
+    'KTM', 'Kymco', 'Mash', 'Moto Guzzi', 'MV Agusta', 'Orcal', 'Peugeot', 
+    'Piaggio', 'Royal Enfield', 'Segway', 'Suzuki', 'Sym', 'Triumph', 'Vespa', 
+    'Voge', 'Yamaha', 'ZERO'
   ];
   
   dealerships.forEach(d => {
@@ -114,6 +111,11 @@ export default function Home() {
       setSelectedCity(city);
   }, []);
 
+  const handleBrandChange = useCallback((brand: string) => {
+    setSelectedBrands(prev => 
+      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
+    );
+  }, []);
 
   useEffect(() => {
     if (!selectedDepartment && !selectedCity && selectedCategory === 'Tout voir' && selectedBrands.length === 0) {
@@ -140,7 +142,7 @@ export default function Home() {
         // A rough way to filter by department number in address
         const depCode = selectedDepartment.split(' ')[0];
         dealerships = dealerships.filter(d => 
-          d.address && typeof d.address === 'string' && d.address.includes(depCode)
+          d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
         );
     }
     
@@ -155,15 +157,15 @@ export default function Home() {
 
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
-  const handleBrandChange = (brand: string) => {
-    setSelectedBrands(prev => 
-      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
-    );
-  };
-
   return (
     <div className="flex flex-col h-screen">
-       <Header onDepartmentChange={handleDepartmentChange} onCityChange={handleCityChange} />
+       <Header 
+        onDepartmentChange={handleDepartmentChange} 
+        onCityChange={handleCityChange}
+        availableBrands={availableBrands}
+        selectedBrands={selectedBrands}
+        onBrandChange={handleBrandChange}
+       />
        <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-[30%] h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
@@ -176,29 +178,6 @@ export default function Home() {
             <div className="flex items-center justify-between mt-4">
               <span className="text-sm text-muted-foreground">{filteredDealerships.length} RÉSULTATS</span>
               <div className="flex space-x-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="rounded-full">
-                      {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
-                      <ListFilter className="ml-2 h-4 w-4"/>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel>Marques</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <ScrollArea className="h-72">
-                      {availableBrands.map(brand => (
-                        <DropdownMenuCheckboxItem
-                          key={brand}
-                          checked={selectedBrands.includes(brand)}
-                          onCheckedChange={() => handleBrandChange(brand)}
-                        >
-                          {brand}
-                        </DropdownMenuCheckboxItem>
-                      ))}
-                    </ScrollArea>
-                  </DropdownMenuContent>
-                </DropdownMenu>
                 <Button variant="outline" className="rounded-full">Note</Button>
                 <Button variant="outline" className="rounded-full">Avis</Button>
               </div>
@@ -226,7 +205,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    

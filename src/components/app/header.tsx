@@ -1,9 +1,12 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { MapPin, User, List, Map } from 'lucide-react';
+import { MapPin, User, List, Map, ListFilter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import locations from '@/data/locations.json';
 
 const MotoTrustLogo = () => (
@@ -19,9 +22,12 @@ const MotoTrustLogo = () => (
 interface HeaderProps {
   onDepartmentChange: (department: string) => void;
   onCityChange: (city: string) => void;
+  availableBrands: string[];
+  selectedBrands: string[];
+  onBrandChange: (brand: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onDepartmentChange, onCityChange }) => {
+const Header: React.FC<HeaderProps> = ({ onDepartmentChange, onCityChange, availableBrands, selectedBrands, onBrandChange }) => {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState('');
@@ -74,6 +80,29 @@ const Header: React.FC<HeaderProps> = ({ onDepartmentChange, onCityChange }) => 
             ))}
           </SelectContent>
         </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="shrink-0">
+              {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
+              <ListFilter className="ml-2 h-4 w-4"/>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>Marques</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <ScrollArea className="h-72">
+              {availableBrands.map(brand => (
+                <DropdownMenuCheckboxItem
+                  key={brand}
+                  checked={selectedBrands.includes(brand)}
+                  onCheckedChange={() => onBrandChange(brand)}
+                >
+                  {brand}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </ScrollArea>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="flex items-center space-x-2">
         <Button variant="outline">
