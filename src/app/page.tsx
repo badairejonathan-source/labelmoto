@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
-import { Search, Navigation, Upload } from 'lucide-react';
+import { Search, Navigation } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import initialDealerships from '@/data/dealerships.json';
@@ -26,74 +26,7 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 
 
 export default function Home() {
-  const [dealerships, setDealerships] = useState<Dealership[]>(
-    initialDealerships.map(d => ({...d, position: [d.latitude, d.longitude]} as Dealership))
-  );
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      try {
-        if (file.name.endsWith('.json')) {
-          const newDealerships: Omit<Dealership, 'position'>[] = JSON.parse(content);
-          if (Array.isArray(newDealerships)) {
-            setDealerships(newDealerships.map(d => ({...d, position: [d.latitude, d.longitude]})).filter(d => d.position && !isNaN(d.position[0]) && !isNaN(d.position[1])) as Dealership[]);
-          }
-        } else if (file.name.endsWith('.csv')) {
-          const lines = content.split('\n');
-          const header = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-          const requiredHeaders = ['title', 'address', 'latitude', 'longitude'];
-          if(!requiredHeaders.every(h => header.includes(h))) {
-            alert('Le fichier CSV doit contenir les colonnes : ' + requiredHeaders.join(', '));
-            return;
-          }
-
-          const newDealerships: Dealership[] = lines.slice(1).map((line, index) => {
-            const data = line.split(',');
-            const dealer: any = { id: `csv-${index}` };
-            header.forEach((key, i) => {
-                const value = data[i]?.trim().replace(/"/g, '');
-                if (key !== 'latitude' && key !== 'longitude') {
-                    dealer[key] = value;
-                }
-            });
-
-            const latIndex = header.indexOf('latitude');
-            const lonIndex = header.indexOf('longitude');
-            if(latIndex > -1 && lonIndex > -1) {
-              const lat = parseFloat(data[latIndex]);
-              const lon = parseFloat(data[lonIndex]);
-
-              if (!isNaN(lat) && !isNaN(lon)) {
-                dealer.position = [lat, lon] as [number, number];
-                dealer.latitude = lat;
-                dealer.longitude = lon;
-              }
-            }
-
-            return dealer as Dealership;
-          }).filter(d => d.position && !isNaN(d.position[0]) && !isNaN(d.position[1]));
-          
-          setDealerships(newDealerships);
-        } else {
-            alert("Format de fichier non supporté. Veuillez utiliser un fichier .json ou .csv");
-        }
-      } catch (error) {
-        console.error("Erreur lors du traitement du fichier:", error);
-        alert("Erreur lors de la lecture du fichier.");
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
-  };
+  const dealerships: Dealership[] = initialDealerships.map(d => ({...d, position: [d.latitude, d.longitude]} as Dealership));
 
   return (
     <div className="relative h-screen w-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
@@ -118,16 +51,6 @@ export default function Home() {
              <Button size="icon" className="h-12 w-12 flex-shrink-0 bg-accent hover:bg-accent/90">
               <Navigation className="h-5 w-5" />
             </Button>
-            <Button size="icon" variant="outline" onClick={triggerFileUpload} className="h-12 w-12 flex-shrink-0">
-              <Upload className="h-5 w-5" />
-            </Button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-              className="hidden"
-              accept=".csv, .json"
-            />
           </div>
         </div>
       </header>
