@@ -19,7 +19,12 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
   const markersRef = useRef<L.Marker[]>([]);
 
   useEffect(() => {
-    // Configure default icon paths
+    // S'assurer que le code ne s'exécute que côté client
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Configure les icônes par défaut de Leaflet
     // @ts-ignore
     delete L.Icon.Default.prototype._getIconUrl;
     L.Icon.Default.mergeOptions({
@@ -40,9 +45,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
         }
       ).addTo(mapInstance.current);
     }
-  }, []); // Le tableau de dépendances vide garantit que ce code ne s'exécute qu'une seule fois
-
-  useEffect(() => {
+    
+    // Mettre à jour les marqueurs après l'initialisation
     if (mapInstance.current) {
       // Supprimer les anciens marqueurs
       markersRef.current.forEach(marker => marker.remove());
@@ -63,7 +67,15 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
         markersRef.current.push(marker);
       });
     }
-  }, [dealerships]); // Ce code s'exécute à chaque fois que la liste des concessions change
+
+    // Fonction de nettoyage pour démonter la carte correctement
+    return () => {
+      if (mapInstance.current) {
+        mapInstance.current.remove();
+        mapInstance.current = null;
+      }
+    };
+  }, [dealerships]); // Ce hook se ré-exécute si les dealerships changent
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
