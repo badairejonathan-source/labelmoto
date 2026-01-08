@@ -27,7 +27,7 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 
 export default function Home() {
   const [dealerships, setDealerships] = useState<Dealership[]>(
-    initialDealerships.map(d => ({...d, position: [d.latitude, d.longitude]}))
+    initialDealerships.map(d => ({...d, position: [d.latitude, d.longitude]} as Dealership))
   );
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -40,9 +40,9 @@ export default function Home() {
       const content = e.target?.result as string;
       try {
         if (file.name.endsWith('.json')) {
-          const newDealerships: Dealership[] = JSON.parse(content);
+          const newDealerships: Omit<Dealership, 'position'>[] = JSON.parse(content);
           if (Array.isArray(newDealerships)) {
-            setDealerships(newDealerships.map(d => ({...d, position: [d.latitude, d.longitude]})).filter(d => d.position && !isNaN(d.position[0]) && !isNaN(d.position[1])));
+            setDealerships(newDealerships.map(d => ({...d, position: [d.latitude, d.longitude]})).filter(d => d.position && !isNaN(d.position[0]) && !isNaN(d.position[1])) as Dealership[]);
           }
         } else if (file.name.endsWith('.csv')) {
           const lines = content.split('\n');

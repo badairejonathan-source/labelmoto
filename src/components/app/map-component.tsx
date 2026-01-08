@@ -51,7 +51,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       
       // Ajouter les nouveaux marqueurs
       dealerships.forEach((dealer) => {
-        if (!dealer.position) return;
+        if (!dealer.position || isNaN(dealer.position[0]) || isNaN(dealer.position[1])) return;
         const marker = L.marker(dealer.position as [number, number]).addTo(mapInstance.current!);
         marker.bindPopup(`
           <div class="font-sans">
@@ -65,21 +65,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
         markersRef.current.push(marker);
       });
     }
-
-    const cleanup = () => {
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-      }
-    };
     
-    if (process.env.NODE_ENV === 'development') {
-        return () => {
-          // Ne pas nettoyer en développement
-        };
-    }
-
-    return cleanup;
   }, [dealerships]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
