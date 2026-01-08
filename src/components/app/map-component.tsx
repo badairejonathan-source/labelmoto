@@ -1,18 +1,24 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Dealership } from '@/lib/types';
 
 // Correction pour l'icône par défaut de Leaflet avec Next.js
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
-  iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
-});
+// Cette partie est cruciale pour que les icônes s'affichent correctement avec Webpack/Next.js
+try {
+  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  });
+} catch (e) {
+  console.error("Erreur lors de la configuration des icônes Leaflet", e);
+}
+
 
 interface MapComponentProps {
   dealerships: Dealership[];
@@ -25,7 +31,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
     <MapContainer center={center} zoom={6} scrollWheelZoom={true} className="h-full w-full z-0">
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        url={`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${process.env.NEXT_PUBLIC_MAP_API_KEY}`}
       />
       {dealerships.map((dealer) => (
         <Marker key={dealer.id} position={dealer.position as [number, number]}>
