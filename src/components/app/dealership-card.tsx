@@ -27,54 +27,58 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
 
   const category = getCategory(dealership.title);
   const brands = getBrands(dealership.title);
-  const rating = dealership.rating ? parseFloat(dealership.rating.replace(',', '.')) : 0;
+  
+  // Handle rating which can be a string with a comma
+  const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
+  const rating = isNaN(ratingValue) ? 0 : ratingValue;
 
   return (
-    <Card className="w-full overflow-hidden transition-all hover:shadow-lg border rounded-lg h-28">
-      <CardContent className="p-0 flex h-full">
-        <div className="w-28 h-full relative flex-shrink-0">
-          {dealership.imgUrl && (
-            <Image
-              src={dealership.imgUrl}
-              alt={`Photo de ${dealership.title}`}
-              fill
-              className="object-cover"
-              sizes="112px"
-            />
-          )}
-           <div className="absolute top-1 left-1 bg-white rounded-full">
-            <CheckCircle className="h-5 w-5 text-green-500" />
+    <Card className="w-full overflow-hidden transition-all hover:shadow-md border rounded-lg">
+      <CardContent className="p-3">
+        <div className="flex items-center space-x-4">
+          <div className="w-24 h-24 relative flex-shrink-0">
+            {dealership.imgUrl ? (
+              <Image
+                src={dealership.imgUrl}
+                alt={`Photo de ${dealership.title}`}
+                fill
+                className="object-cover rounded-md"
+                sizes="96px"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                <MapPin className="w-8 h-8 text-gray-400" />
+              </div>
+            )}
           </div>
-        </div>
-        <div className="p-3 flex flex-col justify-between flex-grow">
-          <div>
+          <div className="flex-grow">
             <div className="flex justify-between items-start">
-              <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight truncate pr-2">
+              <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight truncate pr-2">
                 {dealership.title}
               </h3>
               {rating > 0 && (
-                <div className="flex items-center gap-1 text-xs font-bold text-amber-500 flex-shrink-0">
+                <div className="flex items-center gap-1 text-sm font-bold text-amber-500 flex-shrink-0">
                   <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
                   <span>{rating.toFixed(1)}</span>
                 </div>
               )}
             </div>
-
+            
             {dealership.address && (
-              <div
-                className="flex items-center gap-2 text-xs text-muted-foreground mt-1"
-              >
-                <MapPin className="h-3 w-3 flex-shrink-0" />
-                <span className="truncate">{dealership.address.split(',')[0]}</span>
-              </div>
+              <p className="text-xs text-muted-foreground mt-1 truncate">{dealership.address}</p>
             )}
-          </div>
+            
+            <div className="flex items-center mt-2">
+               <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+               <span className="text-xs text-muted-foreground">Vérifié</span>
+            </div>
 
-          <div className="flex flex-wrap gap-1 mt-2">
-            {category && <Badge variant="outline" className="text-xs">{category}</Badge>}
-            {brands.slice(0, 2).map(brand => (
-              <Badge key={brand} variant="secondary" className="text-xs bg-gray-200 text-gray-700">{brand}</Badge>
-            ))}
+            <div className="flex flex-wrap gap-1 mt-2">
+              {category && <Badge variant="outline" className="text-xs">{category}</Badge>}
+              {brands.slice(0, 2).map(brand => (
+                <Badge key={brand} variant="secondary" className="text-xs bg-gray-200 text-gray-700">{brand}</Badge>
+              ))}
+            </div>
           </div>
         </div>
       </CardContent>
