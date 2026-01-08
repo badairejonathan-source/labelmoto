@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -85,7 +85,7 @@ export default function Home() {
   
   const availableBrands = useMemo(() => getBrands(allDealerships), []);
 
-  const handleDepartmentChange = (department: string) => {
+  const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
     setSelectedCity('');
     if (department && (locations as any)[department]) {
@@ -95,7 +95,11 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-  };
+  }, []);
+
+  const handleCityChange = useCallback((city: string) => {
+      setSelectedCity(city);
+  }, []);
 
 
   useEffect(() => {
@@ -146,7 +150,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen">
-       <Header onDepartmentChange={handleDepartmentChange} onCityChange={setSelectedCity} />
+       <Header onDepartmentChange={handleDepartmentChange} onCityChange={handleCityChange} />
        <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-[30%] h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
