@@ -176,28 +176,41 @@ export default function Home() {
             <Button variant={selectedCategory === 'Concessionnaires' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Concessionnaires')}>Concessionnaires</Button>
             <Button variant={selectedCategory === 'Réparateurs' ? 'default' : 'outline'} className="rounded-full" onClick={() => setSelectedCategory('Réparateurs')}>Réparateurs</Button>
           </div>
-          <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
-            <Button variant={viewMode === 'list' ? 'default' : 'ghost'} onClick={() => setViewMode('list')} className="rounded-full">
-              <List className="mr-2 h-4 w-4" />
-              Liste
-            </Button>
-            <Button variant={viewMode === 'map' ? 'default' : 'ghost'} onClick={() => setViewMode('map')} className="rounded-full">
-              <MapIcon className="mr-2 h-4 w-4" />
-              Carte
-            </Button>
-          </div>
         </div>
         <div className="flex items-center justify-between mt-4">
           <span className="text-sm text-muted-foreground">{filteredDealerships.length} RÉSULTATS</span>
-          <div className="flex space-x-2">
-            <Button variant="outline" className="rounded-full">Note</Button>
-            <Button variant="outline" className="rounded-full">Avis</Button>
-          </div>
         </div>
       </div>
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
+        {viewMode === 'list' && (
+           <aside className="w-full h-full bg-white dark:bg-gray-800">
+             <ScrollArea className="h-full">
+               <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 {filteredDealerships.map((dealer, index) => (
+                   <React.Fragment key={dealer.id}>
+                     <DealershipCard dealership={dealer} />
+                     {index === 2 && <AdCard />}
+                   </React.Fragment>
+                 ))}
+               </div>
+             </ScrollArea>
+           </aside>
+        )}
+         <main className={cn("flex-1 h-full", viewMode === 'list' && "hidden")}>
+            <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} />
+        </main>
+        <div className="absolute top-4 right-4 z-10 flex items-center space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
+          <Button variant={viewMode === 'list' ? 'default' : 'ghost'} onClick={() => setViewMode('list')} className="rounded-full">
+            <List className="mr-2 h-4 w-4" />
+            Liste
+          </Button>
+          <Button variant={viewMode === 'map' ? 'default' : 'ghost'} onClick={() => setViewMode('map')} className="rounded-full">
+            <MapIcon className="mr-2 h-4 w-4" />
+            Carte
+          </Button>
+        </div>
         {viewMode === 'map' && (
-          <aside className="w-full md:w-[35%] h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+          <aside className="w-full md:w-[35%] lg:w-[30%] h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 absolute left-0 top-0 bottom-0 z-10 overflow-y-auto">
             <ScrollArea className="h-full">
               <div className="p-4 space-y-4">
                 {filteredDealerships.map((dealer, index) => (
@@ -210,20 +223,6 @@ export default function Home() {
             </ScrollArea>
           </aside>
         )}
-        <main className={cn("flex-1 h-full", viewMode === 'list' && "overflow-y-auto")}>
-          {viewMode === 'map' ? (
-            <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} />
-          ) : (
-            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredDealerships.map((dealer, index) => (
-                <React.Fragment key={dealer.id}>
-                  <DealershipCard dealership={dealer} />
-                  {index === 2 && <AdCard />}
-                </React.Fragment>
-              ))}
-            </div>
-          )}
-        </main>
       </div>
     </div>
   );
