@@ -1,8 +1,7 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
 
@@ -10,43 +9,62 @@ import type { Dealership } from '@/lib/types';
 try {
   delete (L.Icon.Default.prototype as any)._getIconUrl;
   L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default.src,
+    iconUrl: require('leaflet/dist/images/marker-icon.png').default.src,
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png').default.src,
   });
 } catch (e) {
   console.error("Erreur lors de la configuration des icônes Leaflet", e);
 }
-
 
 interface MapComponentProps {
   dealerships: Dealership[];
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
-  const center: [number, number] = [46.603354, 1.888334]; // Centre de la France
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
-  return (
-    <MapContainer center={center} zoom={6} scrollWheelZoom={true} className="h-full w-full z-0">
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url={`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${process.env.NEXT_PUBLIC_MAP_API_KEY}`}
-      />
-      {dealerships.map((dealer) => (
-        <Marker key={dealer.id} position={dealer.position as [number, number]}>
-          <Popup>
-            <div className="font-sans">
-              <h3 className="font-bold text-base mb-1">{dealer.name}</h3>
-              <p className="text-sm text-gray-600 mb-2">{dealer.address}</p>
-              <a href={dealer.url} target="_blank" rel="noreferrer" className="text-accent hover:underline text-sm">
-                Visiter le site
-              </a>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
-  );
+  useEffect(() => {
+    if (mapRef.current && !mapInstance.current) {
+      const center: [number, number] = [46.603354, 1.888334]; // Centre de la France
+      
+      mapInstance.current = L.map(mapRef.current).setView(center, 6);
+
+      L.tileLayer(
+        `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${process.env.NEXT_PUBLIC_MAP_API_KEY}`,
+        {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        }
+      ).addTo(mapInstance.current);
+    }
+  }, []); // Le tableau de dépendances vide garantit que ce code ne s'exécute qu'une seule fois
+
+  useEffect(() => {
+    if (mapInstance.current) {
+      // Supprimer les anciens marqueurs
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+
+      // Ajouter les nouveaux marqueurs
+      dealerships.forEach((dealer) => {
+        const marker = L.marker(dealer.position as [number, number]).addTo(mapInstance.current!);
+        marker.bindPopup(`
+          <div class="font-sans">
+            <h3 class="font-bold text-base mb-1">${dealer.name}</h3>
+            <p class="text-sm text-gray-600 mb-2">${dealer.address}</p>
+            <a href=${dealer.url} target="_blank" rel="noreferrer" class="text-accent hover:underline text-sm">
+              Visiter le site
+            </a>
+          </div>
+        `);
+        markersRef.current.push(marker);
+      });
+    }
+  }, [dealerships]); // Ce code s'exécute à chaque fois que la liste des concessions change
+
+  return <div ref={mapRef} className="h-full w-full z-0" />;
 };
 
 export default MapComponent;
