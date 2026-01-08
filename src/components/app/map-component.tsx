@@ -51,13 +51,14 @@ const MapComponent: React.FC<MapComponentProps> = ({ dealerships }) => {
       
       // Ajouter les nouveaux marqueurs
       dealerships.forEach((dealer) => {
+        if (!dealer.position) return;
         const marker = L.marker(dealer.position as [number, number]).addTo(mapInstance.current!);
         marker.bindPopup(`
           <div class="font-sans">
-            <h3 class="font-bold text-base mb-1">${dealer.name}</h3>
+            <h3 class="font-bold text-base mb-1">${dealer.title}</h3>
             <p class="text-sm text-gray-600 mb-2">${dealer.address}</p>
-            <a href=${dealer.url} target="_blank" rel="noreferrer" class="text-accent hover:underline text-sm">
-              Visiter le site
+            <a href=${dealer.placeUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline text-sm">
+              Voir sur Google Maps
             </a>
           </div>
         `);

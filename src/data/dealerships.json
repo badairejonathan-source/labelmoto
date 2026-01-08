@@ -1,21 +1,39 @@
 
 [
   {
-    "id": "clwrt1z2u000008l4df2h36x1",
-    "name": "Exemple Concession Yamaha",
-    "brand": "YAMAHA",
-    "address": "123 Rue de la Moto, 75001 Paris, France",
-    "phone": "+33123456789",
-    "url": "https://www.exemple-yamaha.fr",
-    "position": [48.8566, 2.3522]
+    "id": "1",
+    "placeUrl": "https://www.google.com/maps/search/?api=1&query=Team+Urg+69+Av.+du+Maréchal+Joffre",
+    "title": "Team Urgence",
+    "address": "69 Av. du Maréchal Joffre, 92000 Nanterre",
+    "website": "https://teamurgence.com/",
+    "phoneNum": "01 41 20 00 00",
+    "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipN_...",
+    "mardi": "09:00-19:00",
+    "mercredi": "09:00-19:00",
+    "jeudi": "09:00-19:00",
+    "vendredi": "09:00-19:00",
+    "samedi": "09:00-19:00",
+    "dimanche": "Fermé",
+    "lundi": "09:00-19:00",
+    "latitude": 48.88431,
+    "longitude": 2.193313
   },
   {
-    "id": "clwrt2a9v000108l41y1o2h9j",
-    "name": "Garage Indépendant du Centre",
-    "brand": "MULTI",
-    "address": "45 Avenue des Motards, 69002 Lyon, France",
-    "phone": "+33987654321",
-    "url": "https://www.garage-centre-lyon.fr",
-    "position": [45.7500, 4.8500]
+    "id": "2",
+    "placeUrl": "https://www.google.com/maps/search/?api=1&query=Equip+Scoot+12+Av.+du+Maréchal+Joffre",
+    "title": "Equip Scoot",
+    "address": "12 Av. du Maréchal Joffre, 92000 Nanterre",
+    "website": "https://www.equip-scoot.fr/",
+    "phoneNum": "01 47 21 21 21",
+    "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipM_...",
+    "mardi": "11:00-20:00",
+    "mercredi": "11:00-20:00",
+    "jeudi": "11:00-20:00",
+    "vendredi": "11:00-20:00",
+    "samedi": "11:30-20:00",
+    "dimanche": "Fermé",
+    "lundi": "11:00-20:00",
+    "latitude": 48.88669,
+    "longitude": 2.198938
   }
 ]

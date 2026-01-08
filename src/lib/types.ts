@@ -1,13 +1,19 @@
 export interface Dealership {
   id: string;
-  name: string;
-  brand: string;
+  placeUrl: string;
+  title: string;
   address: string;
-  phone: string;
-  url: string;
-  position: [number, number];
-  latitude?: number;
-  longitude?: number;
+  website: string;
+  phoneNum: string;
+  imgUrl: string;
+  mardi: string;
+  mercredi: string;
+  jeudi: string;
+  vendredi: string;
+  samedi: string;
+  dimanche: string;
+  lundi: string;
+  latitude: number;
+  longitude: number;
+  position?: [number, number];
 }
-
-    

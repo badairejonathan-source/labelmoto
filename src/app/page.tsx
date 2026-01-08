@@ -26,7 +26,9 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 
 
 export default function Home() {
-  const [dealerships, setDealerships] = useState<Dealership[]>(initialDealerships);
+  const [dealerships, setDealerships] = useState<Dealership[]>(
+    initialDealerships.map(d => ({...d, position: [d.latitude, d.longitude]}))
+  );
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,14 +40,14 @@ export default function Home() {
       const content = e.target?.result as string;
       try {
         if (file.name.endsWith('.json')) {
-          const newDealerships = JSON.parse(content);
+          const newDealerships: Dealership[] = JSON.parse(content);
           if (Array.isArray(newDealerships)) {
-            setDealerships(newDealerships.filter(d => d.position && Array.isArray(d.position) && d.position.length === 2));
+            setDealerships(newDealerships.map(d => ({...d, position: [d.latitude, d.longitude]})).filter(d => d.position && !isNaN(d.position[0]) && !isNaN(d.position[1])));
           }
         } else if (file.name.endsWith('.csv')) {
           const lines = content.split('\n');
           const header = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-          const requiredHeaders = ['name', 'brand', 'address', 'phone', 'url', 'latitude', 'longitude'];
+          const requiredHeaders = ['title', 'address', 'latitude', 'longitude'];
           if(!requiredHeaders.every(h => header.includes(h))) {
             alert('Le fichier CSV doit contenir les colonnes : ' + requiredHeaders.join(', '));
             return;
@@ -69,6 +71,8 @@ export default function Home() {
 
               if (!isNaN(lat) && !isNaN(lon)) {
                 dealer.position = [lat, lon] as [number, number];
+                dealer.latitude = lat;
+                dealer.longitude = lon;
               }
             }
 
