@@ -75,11 +75,13 @@ const getBrands = (dealerships: Dealership[]) => {
   ];
   
   dealerships.forEach(d => {
-    brandKeywords.forEach(brand => {
-      if (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes(brand.toLowerCase())) {
-        brandSet.add(brand);
-      }
-    });
+    if (d.title && typeof d.title === 'string') {
+        brandKeywords.forEach(brand => {
+            if (d.title.toLowerCase().includes(brand.toLowerCase())) {
+                brandSet.add(brand);
+            }
+        });
+    }
   });
 
   return Array.from(brandSet).sort();
@@ -184,15 +186,17 @@ export default function Home() {
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Marques</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {availableBrands.map(brand => (
-                      <DropdownMenuCheckboxItem
-                        key={brand}
-                        checked={selectedBrands.includes(brand)}
-                        onCheckedChange={() => handleBrandChange(brand)}
-                      >
-                        {brand}
-                      </DropdownMenuCheckboxItem>
-                    ))}
+                    <ScrollArea className="h-72">
+                      {availableBrands.map(brand => (
+                        <DropdownMenuCheckboxItem
+                          key={brand}
+                          checked={selectedBrands.includes(brand)}
+                          onCheckedChange={() => handleBrandChange(brand)}
+                        >
+                          {brand}
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </ScrollArea>
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button variant="outline" className="rounded-full">Note</Button>
@@ -222,5 +226,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
