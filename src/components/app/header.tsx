@@ -15,8 +15,11 @@ const MotoTrustLogo = () => (
   </svg>
 );
 
+interface HeaderProps {
+  onSearch: (query: string) => void;
+}
 
-const Header = () => {
+const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   return (
     <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center">
@@ -27,8 +30,9 @@ const Header = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <Input
             type="search"
-            placeholder="Rechercher un nom, une ville..."
+            placeholder="Rechercher un nom, une ville, un département..."
             className="pl-10 w-full"
+            onChange={(e) => onSearch(e.target.value)}
           />
         </div>
       </div>
