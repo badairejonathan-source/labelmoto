@@ -196,11 +196,12 @@ export default function Home() {
         selectedBrands={selectedBrands}
         onBrandChange={handleBrandChange}
       />
-       <div className="flex-1 flex overflow-hidden">
+       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 p-4 overflow-hidden">
+        <aside className="hidden md:block md:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
         {viewMode === 'list' ? (
-          <aside className="w-full h-full bg-white dark:bg-gray-800 overflow-y-auto">
+          <main className="col-span-12 md:col-span-8 h-full bg-white dark:bg-gray-800 overflow-y-auto">
             <ScrollArea className="h-full">
-              <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredDealerships.map((dealer, index) => (
                   <React.Fragment key={dealer.id}>
                     <div
@@ -210,7 +211,7 @@ export default function Home() {
                       <DealershipCard dealership={dealer} />
                     </div>
                     {(index + 1) % 4 === 0 && (
-                      <div className="my-4 md:col-span-2">
+                      <div className="md:col-span-2">
                         <AdCard />
                       </div>
                     )}
@@ -218,10 +219,10 @@ export default function Home() {
                 ))}
               </div>
             </ScrollArea>
-          </aside>
+          </main>
         ) : (
-          <>
-            <aside className="w-full md:w-[35%] lg:w-[30%] h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col overflow-y-auto">
+          <main className="col-span-12 md:col-span-8 h-full grid grid-cols-1 md:grid-cols-12 gap-4">
+            <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex-col overflow-y-auto rounded-lg">
               <ScrollArea className="h-full">
                 <div className="p-4 space-y-4">
                   {dealershipsToDisplay.map((dealer) => (
@@ -236,7 +237,7 @@ export default function Home() {
                 </div>
               </ScrollArea>
             </aside>
-            <div className="flex-1 relative">
+            <div className="col-span-12 md:col-span-7 lg:col-span-8 relative rounded-lg overflow-hidden">
               <MapComponent 
                 dealerships={filteredDealerships} 
                 center={mapCenter} 
@@ -247,8 +248,9 @@ export default function Home() {
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
             </div>
-          </>
+          </main>
         )}
+        <aside className="hidden md:block md:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
       </div>
       {renderViewToggle()}
     </div>
