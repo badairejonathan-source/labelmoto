@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -7,11 +5,12 @@ import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
-import AdBanner from '@/components/app/ad-banner';
+import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
 import { List, Map as MapIcon } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -198,15 +197,26 @@ export default function Home() {
       />
        <div className="flex-1 flex overflow-hidden">
         {viewMode === 'list' ? (
-           <aside className="w-full h-full bg-white dark:bg-gray-800 overflow-y-auto">
-             <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredDealerships.map((dealer) => (
-                <DealershipCard key={dealer.id} dealership={dealer} />
-              ))}
-            </div>
-            <div className="p-4">
-              <AdBanner />
-            </div>
+          <aside className="w-full h-full bg-white dark:bg-gray-800 overflow-y-auto">
+            <ScrollArea className="h-full">
+              <div className="p-4 space-y-4">
+                {filteredDealerships.map((dealer, index) => (
+                  <React.Fragment key={dealer.id}>
+                    <div
+                      onMouseEnter={() => setHoveredDealershipId(dealer.id)}
+                      onMouseLeave={() => setHoveredDealershipId(null)}
+                    >
+                      <DealershipCard dealership={dealer} />
+                    </div>
+                    {(index + 1) % 4 === 0 && (
+                      <div className="my-4">
+                        <AdCard />
+                      </div>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </ScrollArea>
           </aside>
         ) : (
           <>
