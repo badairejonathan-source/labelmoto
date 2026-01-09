@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Star, CheckCircle, Phone, Globe, ExternalLink, Clock } from 'lucide-react';
+import { MapPin, Star, CheckCircle, Phone, Globe, ExternalLink, Clock, X } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -78,10 +78,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
               </p>
             )}
              {dealership.phoneNum && (
-              <p className="text-xs text-muted-foreground mt-1 flex items-center">
-                <Phone className="h-3 w-3 mr-1.5" />
-                {dealership.phoneNum}
-              </p>
+                <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="text-xs text-muted-foreground mt-1 flex items-center hover:text-accent hover:underline">
+                    <Phone className="h-3 w-3 mr-1.5" />
+                    {dealership.phoneNum}
+                </a>
             )}
           </div>
 
