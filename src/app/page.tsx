@@ -10,7 +10,7 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { List, Map as MapIcon } from 'lucide-react';
+import { List, Map as MapIcon, ArrowLeft } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 import initialDealerships from '@/data/dealerships.json';
@@ -215,8 +215,6 @@ export default function Home() {
                       <React.Fragment key={dealer.id}>
                         <div
                           onClick={() => handleCardClick(dealer.id)}
-                          onMouseEnter={() => setHoveredDealershipId(dealer.id)}
-                          onMouseLeave={() => setHoveredDealershipId(null)}
                         >
                           <DealershipCard 
                             dealership={dealer} 
@@ -243,6 +241,16 @@ export default function Home() {
         ) : (
           <div className="h-full grid grid-cols-1 md:grid-cols-12 gap-4 p-4">
             <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex flex-col rounded-lg overflow-hidden">
+             {selectedDealershipId && (
+                <Button
+                  variant="ghost"
+                  onClick={handleCloseExpandedCard}
+                  className="flex items-center justify-start p-4 text-sm font-medium"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Retour à la liste
+                </Button>
+              )}
               <ScrollArea className="h-full">
                   <div className="p-4 space-y-2">
                     {dealershipsToDisplay.map((dealer, index) => (
@@ -255,7 +263,6 @@ export default function Home() {
                            <DealershipCard 
                               dealership={dealer} 
                               isExpanded={selectedDealershipId === dealer.id}
-                              onClose={handleCloseExpandedCard}
                            />
                         </div>
                         {(index + 1) % 6 === 0 && <AdCard />}
