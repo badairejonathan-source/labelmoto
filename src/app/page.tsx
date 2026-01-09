@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -199,7 +200,7 @@ export default function Home() {
         {viewMode === 'list' ? (
           <aside className="w-full h-full bg-white dark:bg-gray-800 overflow-y-auto">
             <ScrollArea className="h-full">
-              <div className="p-4 space-y-4">
+              <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 {filteredDealerships.map((dealer, index) => (
                   <React.Fragment key={dealer.id}>
                     <div
@@ -253,3 +254,4 @@ export default function Home() {
     </div>
   );
 }
+
