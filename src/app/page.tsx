@@ -10,8 +10,10 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { List, Map as MapIcon, ArrowLeft } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -93,7 +95,7 @@ export default function Home() {
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
 
-  const [viewMode, setViewMode] = useState<'list' | 'map'>(isMobile ? 'list' : 'map');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -107,20 +109,26 @@ export default function Home() {
   const availableBrands = useMemo(() => getBrands(allDealerships), []);
 
   useEffect(() => {
-    setViewMode(isMobile ? 'list' : 'map');
+    if(isMobile) {
+      setViewMode('map');
+    }
   }, [isMobile]);
 
+  const [cities, setCities] = useState<string[]>([]);
+  const departments = Object.keys(locations);
 
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
     setSelectedCity('');
     if (department && (locations as any)[department]) {
       const locationData = (locations as any)[department];
+      setCities(locationData.cities || []);
       if(locationData.center) {
         setMapCenter(locationData.center as [number, number]);
         setMapZoom(9);
       }
     } else {
+      setCities([]);
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
@@ -242,7 +250,59 @@ export default function Home() {
         </div>
       </ScrollArea>
     </main>
-  )
+  );
+
+  const renderFilters = () => (
+    <div className="flex flex-col md:flex-row md:flex-1 md:max-w-xl md:mx-4 space-y-2 md:space-y-0 md:space-x-2">
+      <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
+        <SelectTrigger>
+          <SelectValue placeholder="Choisir un département" />
+        </SelectTrigger>
+        <SelectContent>
+          <ScrollArea className="h-72">
+            {departments.map(dep => (
+              <SelectItem key={dep} value={dep}>{dep}</SelectItem>
+            ))}
+          </ScrollArea>
+        </SelectContent>
+      </Select>
+      <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
+        <SelectTrigger>
+          <SelectValue placeholder="Choisir une ville" />
+        </SelectTrigger>
+        <SelectContent>
+          <ScrollArea className="h-72">
+            {cities.map(city => (
+              <SelectItem key={city} value={city}>{city}</SelectItem>
+            ))}
+          </ScrollArea>
+        </SelectContent>
+      </Select>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="shrink-0 justify-between">
+            {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
+            <ListFilter className="ml-2 h-4 w-4"/>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Marques</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <ScrollArea className="h-72">
+            {availableBrands.map(brand => (
+              <DropdownMenuCheckboxItem
+                key={brand}
+                checked={selectedBrands.includes(brand)}
+                onCheckedChange={() => handleBrandChange(brand)}
+              >
+                {brand}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </ScrollArea>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 
   return (
     <div className="flex flex-col h-screen">
@@ -253,9 +313,26 @@ export default function Home() {
         selectedBrands={selectedBrands}
         onBrandChange={handleBrandChange}
       />
-       <div className="flex-1 overflow-hidden md:p-4 md:pt-0">
+       <div className="flex-1 overflow-hidden md:p-4 md:pt-0 relative">
         {isMobile ? (
-           <div className="h-full">
+           <div className="h-full relative">
+            <div className="absolute top-4 right-4 z-[1000]">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="default" size="icon" className="rounded-full shadow-lg">
+                      <SlidersHorizontal className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Filtres</SheetTitle>
+                    </SheetHeader>
+                    <div className="py-4">
+                      {renderFilters()}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+            </div>
             {viewMode === 'list' && renderList()}
             {viewMode === 'map' && (
                <MapComponent 
@@ -333,4 +410,6 @@ export default function Home() {
     </div>
   );
 }
+
+
 

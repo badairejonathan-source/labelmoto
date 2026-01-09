@@ -2,12 +2,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, ListFilter, SlidersHorizontal } from 'lucide-react';
+import { User, ListFilter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import locations from '@/data/locations.json';
 import MotoTrustLogo from './logo';
 import useWindowSize from '@/hooks/use-window-size';
@@ -108,25 +107,7 @@ const Header: React.FC<HeaderProps> = ({ onDepartmentChange, onCityChange, avail
         <MotoTrustLogo />
       </div>
       
-      {isMobile ? (
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon">
-              <SlidersHorizontal className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Filtres</SheetTitle>
-            </SheetHeader>
-            <div className="py-4">
-              {renderFilters()}
-            </div>
-          </SheetContent>
-        </Sheet>
-      ) : (
-        renderFilters()
-      )}
+      {!isMobile && renderFilters()}
       
       <div className="flex items-center space-x-2">
         <Button size="icon" variant="outline">
