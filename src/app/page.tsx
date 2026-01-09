@@ -203,7 +203,7 @@ export default function Home() {
                {filteredDealerships.map((dealer, index) => (
                <React.Fragment key={dealer.id}>
                    <DealershipCard dealership={dealer} />
-                   {index > 0 && index % 8 === 0 && <AdCard />}
+                   {index > 0 && index % 4 === 0 && <AdCard />}
                </React.Fragment>
                ))}
            </div>
