@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -10,11 +11,10 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter } from 'lucide-react';
+import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter, X, GripHorizontal } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -106,6 +106,7 @@ export default function Home() {
   const [mapZoom, setMapZoom] = useState(6);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
+  const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), []);
 
@@ -114,6 +115,14 @@ export default function Home() {
       setViewMode('map');
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile && filteredDealerships.length > 0) {
+      setIsMobileSheetOpen(true);
+    } else {
+      setIsMobileSheetOpen(false);
+    }
+  }, [isMobile, filteredDealerships]);
 
   const [cities, setCities] = useState<string[]>([]);
   const departments = Object.keys(locations);
@@ -346,32 +355,33 @@ export default function Home() {
                 onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
-              {filteredDealerships.length > 0 && (
-                <div className="absolute bottom-4 left-0 right-0 z-[1000]">
-                    <Carousel opts={{
-                      align: "start",
-                      loop: false,
-                    }} className="w-full">
-                      <CarouselContent className="-ml-2">
-                        {filteredDealerships.map((dealer) => (
-                          <CarouselItem key={dealer.id} className="pl-4 basis-4/5 md:basis-1/3">
-                            <div
-                              onMouseEnter={() => setHoveredDealershipId(dealer.id)}
-                              onMouseLeave={() => setHoveredDealershipId(null)}
-                              onClick={() => handleCardClick(dealer.id)}
-                            >
-                              <DealershipCard 
-                                dealership={dealer} 
-                                isExpanded={selectedDealershipId === dealer.id}
-                                onClose={handleCloseExpandedCard}
-                                />
-                            </div>
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                    </Carousel>
-                </div>
-              )}
+              <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
+                <SheetContent side="bottom" className="h-[40vh]">
+                  <div className="flex justify-center py-2">
+                    <GripHorizontal className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <ScrollArea className="h-full pb-10">
+                    <div className="p-4 space-y-4">
+                      {filteredDealerships.map((dealer, index) => (
+                        <React.Fragment key={dealer.id}>
+                          <div 
+                            onClick={() => handleCardClick(dealer.id)}
+                            onMouseEnter={() => setHoveredDealershipId(dealer.id)}
+                            onMouseLeave={() => setHoveredDealershipId(null)}
+                          >
+                            <DealershipCard 
+                              dealership={dealer} 
+                              isExpanded={selectedDealershipId === dealer.id}
+                              onClose={handleCloseExpandedCard}
+                            />
+                          </div>
+                          {(index + 1) % 4 === 0 && <AdCard />}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </SheetContent>
+              </Sheet>
               </>
             )}
            </div>
