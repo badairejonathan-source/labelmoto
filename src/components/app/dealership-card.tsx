@@ -4,15 +4,17 @@ import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Star, CheckCircle, Phone } from 'lucide-react';
+import { MapPin, Star, CheckCircle, Phone, Globe, ExternalLink, Clock } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
+import { cn } from '@/lib/utils';
 
 interface DealershipCardProps {
   dealership: Dealership;
+  isExpanded?: boolean;
 }
 
-const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
+const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false }) => {
   const getCategory = (title: string) => {
     if (title.toLowerCase().includes('concession')) return 'Concess.';
     if (title.toLowerCase().includes('garage')) return 'Garage';
@@ -32,10 +34,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
 
+  const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+
   return (
-    <Card className="w-full overflow-hidden transition-transform duration-200 ease-in-out hover:scale-105 hover:z-10 relative">
+    <Card className={cn(
+      "w-full overflow-hidden transition-all duration-300 ease-in-out",
+      isExpanded ? "scale-105 z-10" : "hover:scale-105 hover:z-10"
+    )}>
       <div className="flex">
-        <div className="relative w-20 h-20 flex-shrink-0">
+        <div className="relative w-20 h-full flex-shrink-0">
           {dealership.imgUrl ? (
             <Image
               src={dealership.imgUrl}
@@ -45,7 +52,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
               sizes="80px"
             />
           ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
               <MotoTrustLogo className="w-16 h-16 text-gray-400" />
             </div>
           )}
@@ -65,7 +72,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
             </div>
             
             {dealership.address && (
-              <p className="text-xs text-muted-foreground mt-1">{dealership.address}</p>
+              <p className="text-xs text-muted-foreground mt-1 flex">
+                <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
+                <span className='break-words'>{dealership.address}</span>
+              </p>
             )}
              {dealership.phoneNum && (
               <p className="text-xs text-muted-foreground mt-1 flex items-center">
@@ -76,7 +86,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
           </div>
 
           <div className="mt-1">
-            <div className="flex items-center mb-1">
+            <div className="flex items-center mb-2">
                <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
                <span className="text-xs text-muted-foreground font-medium">Vérifié</span>
             </div>
@@ -88,6 +98,34 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
               ))}
             </div>
           </div>
+          
+          {isExpanded && (
+            <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+              {dealership.website && (
+                 <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center mb-2">
+                   <Globe className="h-3 w-3 mr-1.5" />
+                   Visiter le site web
+                 </a>
+              )}
+               <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center mb-2">
+                 <ExternalLink className="h-3 w-3 mr-1.5" />
+                 Voir sur Google Maps
+               </a>
+              <div>
+                <h4 className="text-xs font-semibold mb-1 flex items-center"><Clock className="h-3 w-3 mr-1.5" /> Horaires</h4>
+                <div className="grid grid-cols-2 gap-x-2 text-xs text-muted-foreground">
+                  {weekDays.map(day => (
+                    dealership[day] && (
+                      <div key={day} className="flex justify-between">
+                        <span className="capitalize">{day.substring(0,3)}.</span>
+                        <span>{dealership[day] === "Fermé" ? "Fermé" : dealership[day]}</span>
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </div>
     </Card>

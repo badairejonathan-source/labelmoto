@@ -167,12 +167,20 @@ export default function Home() {
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
   const dealershipsToDisplay = useMemo(() => {
-    if (selectedDealershipId) {
+    if (selectedDealershipId && viewMode === 'map') {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : filteredDealerships;
     }
     return filteredDealerships;
-  }, [selectedDealershipId, filteredDealerships]);
+  }, [selectedDealershipId, filteredDealerships, viewMode]);
+  
+  const handleCardClick = (id: string) => {
+    if (viewMode === 'list') {
+      setSelectedDealershipId(prevId => prevId === id ? null : id);
+    } else {
+      setSelectedDealershipId(id);
+    }
+  }
 
   const renderViewToggle = () => (
     <div className="fixed bottom-6 right-6 z-[1001] flex items-center space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
@@ -206,10 +214,14 @@ export default function Home() {
                     {filteredDealerships.map((dealer, index) => (
                       <React.Fragment key={dealer.id}>
                         <div
+                          onClick={() => handleCardClick(dealer.id)}
                           onMouseEnter={() => setHoveredDealershipId(dealer.id)}
                           onMouseLeave={() => setHoveredDealershipId(null)}
                         >
-                          <DealershipCard dealership={dealer} />
+                          <DealershipCard 
+                            dealership={dealer} 
+                            isExpanded={selectedDealershipId === dealer.id}
+                          />
                         </div>
                         {(index + 1) % 4 === 0 && (
                           <div className="md:col-span-2">
@@ -236,6 +248,7 @@ export default function Home() {
                     {dealershipsToDisplay.map((dealer, index) => (
                       <React.Fragment key={dealer.id}>
                         <div 
+                           onClick={() => handleCardClick(dealer.id)}
                           onMouseEnter={() => setHoveredDealershipId(dealer.id)}
                           onMouseLeave={() => setHoveredDealershipId(null)}
                         >
