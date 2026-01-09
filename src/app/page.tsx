@@ -161,7 +161,14 @@ export default function Home() {
       );
     }
 
-    setFilteredDealerships(dealerships);
+    // Sort by rating
+    const sortedDealerships = dealerships.sort((a, b) => {
+        const ratingA = a.rating ? parseFloat(String(a.rating).replace(',', '.')) : 0;
+        const ratingB = b.rating ? parseFloat(String(b.rating).replace(',', '.')) : 0;
+        return (isNaN(ratingB) ? 0 : ratingB) - (isNaN(ratingA) ? 0 : ratingA);
+    });
+
+    setFilteredDealerships(sortedDealerships);
     setSelectedDealershipId(null);
 
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
@@ -219,6 +226,7 @@ export default function Home() {
                           <DealershipCard 
                             dealership={dealer} 
                             isExpanded={selectedDealershipId === dealer.id}
+                            onClose={handleCloseExpandedCard}
                           />
                         </div>
                         {(index + 1) % 4 === 0 && (
@@ -263,6 +271,7 @@ export default function Home() {
                            <DealershipCard 
                               dealership={dealer} 
                               isExpanded={selectedDealershipId === dealer.id}
+                              onClose={handleCloseExpandedCard}
                            />
                         </div>
                         {(index + 1) % 6 === 0 && <AdCard />}
