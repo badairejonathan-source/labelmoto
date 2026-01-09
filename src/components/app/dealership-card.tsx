@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Star, CheckCircle } from 'lucide-react';
+import { MapPin, Star, CheckCircle, Phone } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 
 interface DealershipCardProps {
@@ -65,6 +65,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
             
             {dealership.address && (
               <p className="text-xs text-muted-foreground mt-1">{dealership.address}</p>
+            )}
+             {dealership.phoneNum && (
+              <p className="text-xs text-muted-foreground mt-1 flex items-center">
+                <Phone className="h-3 w-3 mr-1.5" />
+                {dealership.phoneNum}
+              </p>
             )}
           </div>
 
