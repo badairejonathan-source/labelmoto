@@ -14,6 +14,7 @@ import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter } from '
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -335,6 +336,7 @@ export default function Home() {
             </div>
             {viewMode === 'list' && renderList()}
             {viewMode === 'map' && (
+              <>
                <MapComponent 
                 dealerships={filteredDealerships} 
                 center={mapCenter} 
@@ -344,6 +346,33 @@ export default function Home() {
                 onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
+              {filteredDealerships.length > 0 && (
+                <div className="absolute bottom-4 left-0 right-0 z-[1000]">
+                    <Carousel opts={{
+                      align: "start",
+                      loop: false,
+                    }} className="w-full">
+                      <CarouselContent className="-ml-2">
+                        {filteredDealerships.map((dealer) => (
+                          <CarouselItem key={dealer.id} className="pl-4 basis-4/5 md:basis-1/3">
+                            <div
+                              onMouseEnter={() => setHoveredDealershipId(dealer.id)}
+                              onMouseLeave={() => setHoveredDealershipId(null)}
+                              onClick={() => handleCardClick(dealer.id)}
+                            >
+                              <DealershipCard 
+                                dealership={dealer} 
+                                isExpanded={selectedDealershipId === dealer.id}
+                                onClose={handleCloseExpandedCard}
+                                />
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                    </Carousel>
+                </div>
+              )}
+              </>
             )}
            </div>
         ) : (
@@ -410,7 +439,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-
-
