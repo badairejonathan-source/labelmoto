@@ -229,7 +229,7 @@ export default function Home() {
     </div>
   );
   
-  const renderList = () => {
+ const renderList = () => {
     const listContent = selectedDealershipId
       ? allDealerships.find(d => d.id === selectedDealershipId)
       : filteredDealerships;
@@ -377,7 +377,7 @@ export default function Home() {
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
               <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
-                <SheetContent side="bottom" className="h-[40vh]">
+                <SheetContent side="bottom" className="h-[40vh]" showOverlay={false}>
                    <SheetHeader className="p-4 pt-2">
                     <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto" />
                     <SheetTitle className="sr-only">Résultats</SheetTitle>
