@@ -10,7 +10,7 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal } from 'lucide-react';
+import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -410,6 +410,7 @@ export default function Home() {
     </div>
   );
 }
+
 
 
 
