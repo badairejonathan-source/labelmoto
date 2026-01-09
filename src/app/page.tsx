@@ -174,23 +174,18 @@ export default function Home() {
     return filteredDealerships;
   }, [selectedDealershipId, filteredDealerships]);
 
-  const renderViewToggle = (isFloating = false) => {
-    const commonClasses = "flex items-center space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md";
-    const floatingClasses = "absolute top-4 right-4 z-[1001]";
-    
-    return (
-      <div className={cn(commonClasses, { [floatingClasses]: isFloating })}>
-        <Button variant={viewMode === 'list' ? 'default' : 'ghost'} onClick={() => setViewMode('list')} className="rounded-full">
-          <List className="mr-2 h-4 w-4" />
-          Liste
-        </Button>
-        <Button variant={viewMode === 'map' ? 'default' : 'ghost'} onClick={() => setViewMode('map')} className="rounded-full">
-          <MapIcon className="mr-2 h-4 w-4" />
-          Carte
-        </Button>
-      </div>
-    );
-  };
+  const renderViewToggle = () => (
+    <div className="fixed bottom-6 right-6 z-[1001] flex items-center space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-md">
+      <Button variant={viewMode === 'list' ? 'default' : 'ghost'} onClick={() => setViewMode('list')} className="rounded-full">
+        <List className="mr-2 h-4 w-4" />
+        Liste
+      </Button>
+      <Button variant={viewMode === 'map' ? 'default' : 'ghost'} onClick={() => setViewMode('map')} className="rounded-full">
+        <MapIcon className="mr-2 h-4 w-4" />
+        Carte
+      </Button>
+    </div>
+  );
   
   return (
     <div className="flex flex-col h-screen">
@@ -203,7 +198,7 @@ export default function Home() {
       />
        <div className="flex-1 flex overflow-hidden">
         {viewMode === 'list' ? (
-           <aside className="w-full h-full bg-white dark:bg-gray-800 overflow-y-auto relative">
+           <aside className="w-full h-full bg-white dark:bg-gray-800 overflow-y-auto">
            <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                {filteredDealerships.map((dealer, index) => (
                <React.Fragment key={dealer.id}>
@@ -212,12 +207,6 @@ export default function Home() {
                </React.Fragment>
                ))}
            </div>
-            <div className="absolute bottom-6 right-6 z-10">
-              <Button variant={'default'} onClick={() => setViewMode('map')} className="rounded-full shadow-lg">
-                  <MapIcon className="mr-2 h-4 w-4" />
-                  Carte
-              </Button>
-            </div>
           </aside>
         ) : (
           <>
@@ -248,12 +237,11 @@ export default function Home() {
                 onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
-              {renderViewToggle(true)}
             </div>
           </>
         )}
       </div>
+      {renderViewToggle()}
     </div>
   );
 }
-
