@@ -225,10 +225,9 @@ export default function Home() {
           </div>
         ) : (
           <div className="h-full grid grid-cols-1 md:grid-cols-12 gap-4 p-4">
-            <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex-col overflow-y-auto rounded-lg">
-              <ScrollArea className="h-full">
-                <div className="p-4 space-y-4">
-                  {dealershipsToDisplay.map((dealer) => (
+            <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex flex-col rounded-lg overflow-hidden">
+                <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
+                  {dealershipsToDisplay.slice(0, 4).map((dealer) => (
                       <div 
                         key={dealer.id}
                         onMouseEnter={() => setHoveredDealershipId(dealer.id)}
@@ -238,7 +237,6 @@ export default function Home() {
                       </div>
                   ))}
                 </div>
-              </ScrollArea>
             </aside>
             <div className="col-span-12 md:col-span-7 lg:col-span-8 relative rounded-lg overflow-hidden">
               <MapComponent 
@@ -258,4 +256,3 @@ export default function Home() {
     </div>
   );
 }
-
