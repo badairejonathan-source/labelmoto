@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Star, CheckCircle, Phone } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
+import MotoTrustLogo from './logo';
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -45,7 +46,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-gray-400" />
+              <MotoTrustLogo className="w-16 h-16 text-gray-400" />
             </div>
           )}
         </div>
