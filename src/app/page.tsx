@@ -218,6 +218,11 @@ export default function Home() {
                         )}
                       </React.Fragment>
                     ))}
+                    {filteredDealerships.length > 0 && filteredDealerships.length < 4 && (
+                      <div className="md:col-span-2">
+                        <AdCard />
+                      </div>
+                    )}
                   </div>
                 </ScrollArea>
               </main>
@@ -260,3 +265,4 @@ export default function Home() {
     </div>
   );
 }
+
