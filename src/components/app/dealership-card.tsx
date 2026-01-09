@@ -32,16 +32,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
 
   return (
-    <Card className="w-full overflow-hidden transition-transform duration-200 ease-in-out hover:scale-[1.02] hover:z-10 relative">
+    <Card className="w-full overflow-hidden transition-transform duration-200 ease-in-out hover:scale-105 hover:z-10 relative">
       <div className="flex">
-        <div className="relative w-24 h-24 flex-shrink-0">
+        <div className="relative w-20 h-20 flex-shrink-0">
           {dealership.imgUrl ? (
             <Image
               src={dealership.imgUrl}
               alt={`Photo de ${dealership.title}`}
               fill
               className="object-cover"
-              sizes="96px"
+              sizes="80px"
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
@@ -64,7 +64,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
             </div>
             
             {dealership.address && (
-              <p className="text-xs text-muted-foreground mt-1 truncate">{dealership.address}</p>
+              <p className="text-xs text-muted-foreground mt-1">{dealership.address}</p>
             )}
           </div>
 
