@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -231,37 +229,56 @@ export default function Home() {
     </div>
   );
   
-  const renderList = () => (
-    <main className="col-span-12 h-full bg-white dark:bg-gray-800 overflow-y-auto">
-      <ScrollArea className="h-full">
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredDealerships.map((dealer, index) => (
-            <React.Fragment key={dealer.id}>
-              <div
-                onClick={() => handleCardClick(dealer.id)}
-              >
-                <DealershipCard 
-                  dealership={dealer} 
-                  isExpanded={selectedDealershipId === dealer.id}
-                  onClose={handleCloseExpandedCard}
-                />
-              </div>
-              {(index + 1) % 6 === 0 && (
-                <div className="md:col-span-2 lg:col-span-3">
-                  <AdCard />
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-          {filteredDealerships.length > 0 && filteredDealerships.length < 4 && (
-            <div className="md:col-span-2 lg:col-span-3">
-              <AdCard />
-            </div>
+  const renderList = () => {
+    const listContent = selectedDealershipId
+      ? allDealerships.find(d => d.id === selectedDealershipId)
+      : filteredDealerships;
+  
+    const itemsToRender = Array.isArray(listContent) ? listContent : (listContent ? [listContent] : []);
+  
+    return (
+      <main className="col-span-12 h-full bg-white dark:bg-gray-800 overflow-y-auto">
+        <ScrollArea className="h-full">
+          {selectedDealershipId && (
+            <Button
+              variant="ghost"
+              onClick={handleCloseExpandedCard}
+              className="flex items-center justify-start p-4 text-sm font-medium"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour à la liste
+            </Button>
           )}
-        </div>
-      </ScrollArea>
-    </main>
-  );
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {itemsToRender.map((dealer, index) => (
+              <React.Fragment key={dealer.id}>
+                <div
+                   className={selectedDealershipId ? 'col-span-full' : ''}
+                   onClick={() => handleCardClick(dealer.id)}
+                >
+                  <DealershipCard 
+                    dealership={dealer} 
+                    isExpanded={selectedDealershipId === dealer.id}
+                    onClose={handleCloseExpandedCard}
+                  />
+                </div>
+                {(index + 1) % 6 === 0 && !selectedDealershipId && (
+                  <div className="md:col-span-2 lg:col-span-3">
+                    <AdCard />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+            {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+              <div className="md:col-span-2 lg:col-span-3">
+                <AdCard />
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </main>
+    );
+  };
 
   const renderFilters = () => (
     <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
@@ -338,8 +355,10 @@ export default function Home() {
                     <SheetHeader>
                       <SheetTitle>Filtres</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4 space-y-4">
-                      {renderFilters()}
+                    <div className="py-4 space-y-4 flex flex-col flex-1">
+                      <div className="flex-1 space-y-4">
+                        {renderFilters()}
+                      </div>
                       <Button onClick={() => setIsFilterSheetOpen(false)} className="w-full">Valider</Button>
                     </div>
                   </SheetContent>
