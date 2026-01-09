@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -33,8 +32,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
 
   return (
-    <Card className="w-full overflow-hidden transition-all hover:shadow-md border rounded-lg flex flex-col h-full">
-      <div className="relative w-full h-48">
+    <Card className="w-full overflow-hidden transition-transform duration-200 ease-in-out hover:scale-105 hover:z-10 relative">
+      <div className="relative w-full h-32">
         {dealership.imgUrl ? (
           <Image
             src={dealership.imgUrl}
@@ -49,10 +48,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
           </div>
         )}
       </div>
-      <CardContent className="p-4 flex-grow flex flex-col justify-between">
+      <CardContent className="p-3">
         <div>
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-bold text-lg text-primary dark:text-primary-foreground leading-tight">
+          <div className="flex justify-between items-start mb-1">
+            <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight">
               {dealership.title}
             </h3>
             {rating > 0 && (
@@ -64,20 +63,20 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership }) => {
           </div>
           
           {dealership.address && (
-            <p className="text-sm text-muted-foreground mt-1">{dealership.address}</p>
+            <p className="text-xs text-muted-foreground mt-1">{dealership.address}</p>
           )}
         </div>
 
-        <div className="mt-3">
+        <div className="mt-2">
           <div className="flex items-center mb-2">
              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
              <span className="text-xs text-muted-foreground font-medium">Vérifié</span>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {category && <Badge variant="outline">{category}</Badge>}
+          <div className="flex flex-wrap gap-1">
+            {category && <Badge variant="outline" className="text-xs">{category}</Badge>}
             {brands.slice(0, 2).map(brand => (
-              <Badge key={brand} variant="secondary" className="bg-gray-200 text-gray-700">{brand}</Badge>
+              <Badge key={brand} variant="secondary" className="bg-gray-200 text-gray-700 text-xs">{brand}</Badge>
             ))}
           </div>
         </div>
