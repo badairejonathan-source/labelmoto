@@ -38,11 +38,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
 
   return (
     <Card className={cn(
-      "w-full overflow-hidden transition-all duration-300 ease-in-out",
-      isExpanded ? "scale-105 z-10" : "hover:scale-105 hover:z-10"
+      "w-full overflow-hidden transition-all duration-300 ease-in-out cursor-pointer",
+      isExpanded ? "scale-100" : "hover:scale-105 hover:z-10"
     )}>
       <div className="flex">
-        <div className="relative w-20 h-full flex-shrink-0">
+        <div className="relative w-20 h-20 flex-shrink-0">
           {dealership.imgUrl ? (
             <Image
               src={dealership.imgUrl}
@@ -74,7 +74,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             {dealership.address && (
               <p className="text-xs text-muted-foreground mt-1 flex">
                 <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
-                <span className='break-words'>{dealership.address}</span>
+                <span>{dealership.address}</span>
               </p>
             )}
              {dealership.phoneNum && (
@@ -85,8 +85,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             )}
           </div>
 
-          <div className="mt-1">
-            <div className="flex items-center mb-2">
+          <div className="mt-1 flex items-center justify-between">
+            <div className="flex items-center">
                <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
                <span className="text-xs text-muted-foreground font-medium">Vérifié</span>
             </div>
@@ -133,3 +133,5 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
 };
 
 export default DealershipCard;
+
+    

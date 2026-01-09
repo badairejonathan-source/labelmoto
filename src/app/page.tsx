@@ -168,18 +168,14 @@ export default function Home() {
 
   const dealershipsToDisplay = useMemo(() => {
     if (selectedDealershipId && viewMode === 'map') {
-      const selected = allDealerships.find(d => d.id === selectedDealershipId);
+      const selected = filteredDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : filteredDealerships;
     }
     return filteredDealerships;
   }, [selectedDealershipId, filteredDealerships, viewMode]);
   
   const handleCardClick = (id: string) => {
-    if (viewMode === 'list') {
       setSelectedDealershipId(prevId => prevId === id ? null : id);
-    } else {
-      setSelectedDealershipId(id);
-    }
   }
 
   const renderViewToggle = () => (
@@ -252,7 +248,10 @@ export default function Home() {
                           onMouseEnter={() => setHoveredDealershipId(dealer.id)}
                           onMouseLeave={() => setHoveredDealershipId(null)}
                         >
-                          <DealershipCard dealership={dealer} />
+                           <DealershipCard 
+                              dealership={dealer} 
+                              isExpanded={selectedDealershipId === dealer.id}
+                           />
                         </div>
                         {(index + 1) % 6 === 0 && <AdCard />}
                       </React.Fragment>
@@ -279,3 +278,6 @@ export default function Home() {
   );
 }
 
+
+
+    
