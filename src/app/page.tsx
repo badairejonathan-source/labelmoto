@@ -210,7 +210,7 @@ export default function Home() {
                       <DealershipCard dealership={dealer} />
                     </div>
                     {(index + 1) % 4 === 0 && (
-                      <div className="my-4">
+                      <div className="my-4 md:col-span-2">
                         <AdCard />
                       </div>
                     )}
@@ -254,4 +254,3 @@ export default function Home() {
     </div>
   );
 }
-
