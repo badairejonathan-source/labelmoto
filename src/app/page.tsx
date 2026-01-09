@@ -356,11 +356,12 @@ export default function Home() {
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
               <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
-                <SheetContent side="bottom" className="h-[40vh]">
-                  <div className="flex justify-center py-2">
-                    <GripHorizontal className="h-6 w-6 text-gray-400" />
-                  </div>
-                  <ScrollArea className="h-full pb-10">
+                <SheetContent side="bottom" className="h-[40vh]" closeButton={false}>
+                   <SheetHeader className="p-4 pt-2">
+                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto" />
+                    <SheetTitle className="sr-only">Résultats</SheetTitle>
+                  </SheetHeader>
+                  <ScrollArea className="h-full pb-4">
                     <div className="p-4 space-y-4">
                       {filteredDealerships.map((dealer, index) => (
                         <React.Fragment key={dealer.id}>
@@ -449,3 +450,4 @@ export default function Home() {
     </div>
   );
 }
+
