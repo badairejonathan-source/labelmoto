@@ -4,17 +4,19 @@ import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Star, CheckCircle, Phone, Globe, ExternalLink, Clock } from 'lucide-react';
+import { MapPin, Star, CheckCircle, Phone, Globe, ExternalLink, Clock, X } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
+import { Button } from '../ui/button';
 
 interface DealershipCardProps {
   dealership: Dealership;
   isExpanded?: boolean;
+  onClose?: () => void;
 }
 
-const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false }) => {
+const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false, onClose }) => {
   const getCategory = (title: string) => {
     if (title.toLowerCase().includes('concession')) return 'Concess.';
     if (title.toLowerCase().includes('garage')) return 'Garage';
@@ -36,11 +38,29 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 
+  const handleCloseClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onClose) {
+      onClose();
+    }
+  }
+
   return (
     <Card className={cn(
       "w-full overflow-hidden transition-all duration-300 ease-in-out cursor-pointer",
       isExpanded ? "scale-100" : "hover:scale-105 hover:z-10"
     )}>
+       {isExpanded && onClose && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-1 right-1 h-6 w-6 z-20"
+          onClick={handleCloseClick}
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Fermer</span>
+        </Button>
+      )}
       <div className="flex">
         <div className="relative w-20 h-20 flex-shrink-0">
           {dealership.imgUrl ? (
@@ -133,5 +153,3 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
 };
 
 export default DealershipCard;
-
-    

@@ -168,14 +168,18 @@ export default function Home() {
 
   const dealershipsToDisplay = useMemo(() => {
     if (selectedDealershipId && viewMode === 'map') {
-      const selected = filteredDealerships.find(d => d.id === selectedDealershipId);
-      return selected ? [selected] : filteredDealerships;
+      const selected = allDealerships.find(d => d.id === selectedDealershipId);
+      return selected ? [selected] : [];
     }
     return filteredDealerships;
   }, [selectedDealershipId, filteredDealerships, viewMode]);
   
   const handleCardClick = (id: string) => {
       setSelectedDealershipId(prevId => prevId === id ? null : id);
+  }
+  
+  const handleCloseExpandedCard = () => {
+    setSelectedDealershipId(null);
   }
 
   const renderViewToggle = () => (
@@ -251,6 +255,7 @@ export default function Home() {
                            <DealershipCard 
                               dealership={dealer} 
                               isExpanded={selectedDealershipId === dealer.id}
+                              onClose={handleCloseExpandedCard}
                            />
                         </div>
                         {(index + 1) % 6 === 0 && <AdCard />}
@@ -277,7 +282,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-
-    
