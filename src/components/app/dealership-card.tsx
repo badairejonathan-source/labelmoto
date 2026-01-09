@@ -12,9 +12,10 @@ import { cn } from '@/lib/utils';
 interface DealershipCardProps {
   dealership: Dealership;
   isExpanded?: boolean;
+  onClose?: () => void;
 }
 
-const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false }) => {
+const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false, onClose }) => {
   const getCategory = (title: string) => {
     if (title.toLowerCase().includes('concession')) return 'Concess.';
     if (title.toLowerCase().includes('garage')) return 'Garage';
@@ -35,6 +36,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+
+  const handleClose = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClose?.();
+  };
 
   return (
     <Card className={cn(
@@ -57,7 +63,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             </div>
           )}
         </div>
-        <CardContent className="p-2 flex-grow">
+        <CardContent className="p-2 flex-grow relative">
+          {isExpanded && onClose && (
+            <button
+              onClick={handleClose}
+              className="absolute top-1 right-1 p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+              aria-label="Fermer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
           <div>
             <div className="flex justify-between items-start mb-1">
               <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight">
@@ -72,16 +87,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             </div>
             
             {dealership.address && (
-              <p className="text-xs text-muted-foreground mt-1 flex">
+              <p className="text-xs text-muted-foreground mt-1 flex items-start">
                 <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
                 <span>{dealership.address}</span>
               </p>
             )}
              {dealership.phoneNum && (
-                <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="text-xs text-muted-foreground mt-1 flex items-center hover:text-accent hover:underline">
+                <div className="text-xs text-muted-foreground mt-1 flex items-center">
                     <Phone className="h-3 w-3 mr-1.5" />
-                    {dealership.phoneNum}
-                </a>
+                    <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
+                      {dealership.phoneNum}
+                    </a>
+                </div>
             )}
           </div>
 
