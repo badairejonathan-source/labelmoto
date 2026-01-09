@@ -228,14 +228,16 @@ export default function Home() {
             <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex flex-col rounded-lg overflow-hidden">
               <ScrollArea className="h-full">
                   <div className="p-4 space-y-2">
-                    {dealershipsToDisplay.map((dealer) => (
+                    {dealershipsToDisplay.map((dealer, index) => (
+                      <React.Fragment key={dealer.id}>
                         <div 
-                          key={dealer.id}
                           onMouseEnter={() => setHoveredDealershipId(dealer.id)}
                           onMouseLeave={() => setHoveredDealershipId(null)}
                         >
                           <DealershipCard dealership={dealer} />
                         </div>
+                        {(index + 1) % 6 === 0 && <AdCard />}
+                      </React.Fragment>
                     ))}
                   </div>
               </ScrollArea>
