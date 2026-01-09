@@ -196,32 +196,35 @@ export default function Home() {
         selectedBrands={selectedBrands}
         onBrandChange={handleBrandChange}
       />
-       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 p-4 overflow-hidden">
-        <aside className="hidden md:block md:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+       <div className="flex-1 overflow-hidden">
         {viewMode === 'list' ? (
-          <main className="col-span-12 md:col-span-8 h-full bg-white dark:bg-gray-800 overflow-y-auto">
-            <ScrollArea className="h-full">
-              <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredDealerships.map((dealer, index) => (
-                  <React.Fragment key={dealer.id}>
-                    <div
-                      onMouseEnter={() => setHoveredDealershipId(dealer.id)}
-                      onMouseLeave={() => setHoveredDealershipId(null)}
-                    >
-                      <DealershipCard dealership={dealer} />
-                    </div>
-                    {(index + 1) % 4 === 0 && (
-                      <div className="md:col-span-2">
-                        <AdCard />
-                      </div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            </ScrollArea>
-          </main>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 h-full">
+             <aside className="hidden md:block md:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+              <main className="col-span-12 md:col-span-8 h-full bg-white dark:bg-gray-800 overflow-y-auto">
+                <ScrollArea className="h-full">
+                  <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredDealerships.map((dealer, index) => (
+                      <React.Fragment key={dealer.id}>
+                        <div
+                          onMouseEnter={() => setHoveredDealershipId(dealer.id)}
+                          onMouseLeave={() => setHoveredDealershipId(null)}
+                        >
+                          <DealershipCard dealership={dealer} />
+                        </div>
+                        {(index + 1) % 4 === 0 && (
+                          <div className="md:col-span-2">
+                            <AdCard />
+                          </div>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </main>
+            <aside className="hidden md:block md:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+          </div>
         ) : (
-          <main className="col-span-12 md:col-span-8 h-full grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="h-full grid grid-cols-1 md:grid-cols-12 gap-4 p-4">
             <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex-col overflow-y-auto rounded-lg">
               <ScrollArea className="h-full">
                 <div className="p-4 space-y-4">
@@ -248,11 +251,11 @@ export default function Home() {
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
             </div>
-          </main>
+          </div>
         )}
-        <aside className="hidden md:block md:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
       </div>
       {renderViewToggle()}
     </div>
   );
 }
+
