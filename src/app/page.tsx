@@ -169,7 +169,7 @@ export default function Home() {
   const dealershipsToDisplay = useMemo(() => {
     if (selectedDealershipId) {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
-      return selected ? [selected] : [];
+      return selected ? [selected] : filteredDealerships;
     }
     return filteredDealerships;
   }, [selectedDealershipId, filteredDealerships]);
@@ -198,7 +198,7 @@ export default function Home() {
       />
        <div className="flex-1 overflow-hidden">
         {viewMode === 'list' ? (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 h-full">
+           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 h-full">
              <aside className="hidden md:block md:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
               <main className="col-span-12 md:col-span-8 h-full bg-white dark:bg-gray-800 overflow-y-auto">
                 <ScrollArea className="h-full">
@@ -226,17 +226,19 @@ export default function Home() {
         ) : (
           <div className="h-full grid grid-cols-1 md:grid-cols-12 gap-4 p-4">
             <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex flex-col rounded-lg overflow-hidden">
-                <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
-                  {dealershipsToDisplay.slice(0, 4).map((dealer) => (
-                      <div 
-                        key={dealer.id}
-                        onMouseEnter={() => setHoveredDealershipId(dealer.id)}
-                        onMouseLeave={() => setHoveredDealershipId(null)}
-                      >
-                        <DealershipCard dealership={dealer} />
-                      </div>
-                  ))}
-                </div>
+              <ScrollArea className="h-full">
+                  <div className="p-4 space-y-2">
+                    {dealershipsToDisplay.map((dealer) => (
+                        <div 
+                          key={dealer.id}
+                          onMouseEnter={() => setHoveredDealershipId(dealer.id)}
+                          onMouseLeave={() => setHoveredDealershipId(null)}
+                        >
+                          <DealershipCard dealership={dealer} />
+                        </div>
+                    ))}
+                  </div>
+              </ScrollArea>
             </aside>
             <div className="col-span-12 md:col-span-7 lg:col-span-8 relative rounded-lg overflow-hidden">
               <MapComponent 
