@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -6,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
-import AdCard from '@/components/app/ad-card';
+import AdBanner from '@/components/app/ad-banner';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
@@ -199,14 +200,14 @@ export default function Home() {
        <div className="flex-1 flex overflow-hidden">
         {viewMode === 'list' ? (
            <aside className="w-full h-full bg-white dark:bg-gray-800 overflow-y-auto">
-           <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-               {filteredDealerships.map((dealer, index) => (
-               <React.Fragment key={dealer.id}>
-                   <DealershipCard dealership={dealer} />
-                   {index > 0 && index % 4 === 0 && <AdCard />}
-               </React.Fragment>
-               ))}
-           </div>
+             <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredDealerships.map((dealer) => (
+                <DealershipCard key={dealer.id} dealership={dealer} />
+              ))}
+            </div>
+            <div className="p-4">
+              <AdBanner />
+            </div>
           </aside>
         ) : (
           <>
@@ -221,7 +222,6 @@ export default function Home() {
                       >
                         <DealershipCard dealership={dealer} />
                       </div>
-                      {index === 2 && !selectedDealershipId && <AdCard />}
                     </React.Fragment>
                   ))}
                 </div>
