@@ -12,7 +12,6 @@ import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
 import { List, Map as MapIcon } from 'lucide-react';
-import { cn } from "@/lib/utils";
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -214,15 +213,14 @@ export default function Home() {
             <aside className="w-full md:w-[35%] lg:w-[30%] h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col overflow-y-auto">
               <ScrollArea className="h-full">
                 <div className="p-4 space-y-4">
-                  {dealershipsToDisplay.map((dealer, index) => (
-                    <React.Fragment key={dealer.id}>
+                  {dealershipsToDisplay.map((dealer) => (
                       <div 
+                        key={dealer.id}
                         onMouseEnter={() => setHoveredDealershipId(dealer.id)}
                         onMouseLeave={() => setHoveredDealershipId(null)}
                       >
                         <DealershipCard dealership={dealer} />
                       </div>
-                    </React.Fragment>
                   ))}
                 </div>
               </ScrollArea>
