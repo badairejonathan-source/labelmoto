@@ -9,7 +9,7 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter, X } from 'lucide-react';
+import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -377,7 +377,7 @@ export default function Home() {
                 onMarkerMouseOut={() => setHoveredDealershipId(null)}
               />
               <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
-                <SheetContent side="bottom" className="h-[40vh]" closeButton={false}>
+                <SheetContent side="bottom" className="h-[40vh]">
                    <SheetHeader className="p-4 pt-2">
                     <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto" />
                     <SheetTitle className="sr-only">Résultats</SheetTitle>
@@ -412,7 +412,7 @@ export default function Home() {
             {viewMode === 'list' ? (
               <>
                  <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-                 <div className="col-span-12 xl:col-span-8 h-full">
+                 <div className="col-span-12 xl:col-span-8 h-full overflow-y-auto">
                   {renderList()}
                  </div>
                 <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
