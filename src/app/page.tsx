@@ -11,7 +11,7 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter, X, GripHorizontal } from 'lucide-react';
+import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -107,6 +107,7 @@ export default function Home() {
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), []);
 
@@ -327,19 +328,20 @@ export default function Home() {
         {isMobile ? (
            <div className="h-full relative">
             <div className="absolute top-4 right-4 z-[1000]">
-                <Sheet>
+                <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
                   <SheetTrigger asChild>
                     <Button variant="default" size="icon" className="rounded-full shadow-lg">
                       <SlidersHorizontal className="h-5 w-5" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent>
+                  <SheetContent className="flex flex-col">
                     <SheetHeader>
                       <SheetTitle>Filtres</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4">
+                    <div className="py-4 flex-1">
                       {renderFilters()}
                     </div>
+                     <Button onClick={() => setIsFilterSheetOpen(false)}>Valider</Button>
                   </SheetContent>
                 </Sheet>
             </div>
