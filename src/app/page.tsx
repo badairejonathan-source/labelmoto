@@ -118,12 +118,12 @@ export default function Home() {
   }, [isMobile]);
 
   useEffect(() => {
-    if (isMobile && filteredDealerships.length > 0) {
+    if (isMobile && filteredDealerships.length > 0 && !isFilterSheetOpen) {
       setIsMobileSheetOpen(true);
     } else {
       setIsMobileSheetOpen(false);
     }
-  }, [isMobile, filteredDealerships]);
+  }, [isMobile, filteredDealerships, isFilterSheetOpen]);
 
   const [cities, setCities] = useState<string[]>([]);
   const departments = Object.keys(locations);
@@ -264,7 +264,7 @@ export default function Home() {
   );
 
   const renderFilters = () => (
-    <div className="flex flex-col md:flex-row md:flex-1 md:max-w-xl md:mx-4 space-y-2 md:space-y-0 md:space-x-2">
+    <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
       <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
         <SelectTrigger>
           <SelectValue placeholder="Choisir un département" />
@@ -338,10 +338,10 @@ export default function Home() {
                     <SheetHeader>
                       <SheetTitle>Filtres</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4 flex-1">
+                    <div className="py-4 space-y-4">
                       {renderFilters()}
+                      <Button onClick={() => setIsFilterSheetOpen(false)} className="w-full">Valider</Button>
                     </div>
-                     <Button onClick={() => setIsFilterSheetOpen(false)}>Valider</Button>
                   </SheetContent>
                 </Sheet>
             </div>
@@ -452,4 +452,3 @@ export default function Home() {
     </div>
   );
 }
-
