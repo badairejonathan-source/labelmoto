@@ -13,6 +13,7 @@ import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter } from '
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { cn } from "@/lib/utils";
 
 import initialDealerships from '@/data/dealerships.json';
 import data34 from '@/data/34json.json';
@@ -95,7 +96,7 @@ export default function Home() {
   const isMobile = width ? width < 768 : false;
 
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
+  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>(allDealerships);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
@@ -158,6 +159,11 @@ export default function Home() {
   useEffect(() => {
     let dealerships = allDealerships;
 
+    if (selectedCategory === 'Tout voir' && selectedBrands.length === 0 && !selectedCity && !selectedDepartment) {
+        setFilteredDealerships(allDealerships);
+        return;
+    }
+
     // Filter by category
     if (selectedCategory === 'Concessionnaires') {
       dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
@@ -177,11 +183,6 @@ export default function Home() {
         dealerships = dealerships.filter(d => 
           d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
         );
-    } else {
-        if (selectedCategory === 'Tout voir' && selectedBrands.length === 0) {
-            setFilteredDealerships([]);
-            return;
-        }
     }
     
     if (selectedBrands.length > 0) {
@@ -231,104 +232,68 @@ export default function Home() {
     </div>
   );
   
- const renderList = () => (
-    <main className="col-span-12 h-full bg-white dark:bg-gray-800 overflow-y-auto">
-      <ScrollArea className="h-full">
-        {selectedDealershipId && (
-          <Button
-            variant="ghost"
-            onClick={handleCloseExpandedCard}
-            className="flex items-center justify-start p-4 text-sm font-medium"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour à la liste
-          </Button>
-        )}
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredDealerships.map((dealer, index) => (
-            <React.Fragment key={dealer.id}>
-              <div
-                  className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
-                  onClick={() => handleCardClick(dealer.id)}
-              >
-                <DealershipCard 
-                  dealership={dealer} 
-                  isExpanded={selectedDealershipId === dealer.id}
-                  onClose={handleCloseExpandedCard}
-                />
-              </div>
-              {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                <div className="md:col-span-2 lg:col-span-3">
-                  <AdCard />
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-          {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
-            <div className="md:col-span-2 lg:col-span-3">
-              <AdCard />
-            </div>
-          )}
-        </div>
-      </ScrollArea>
-    </main>
-  );
-
-  const renderFilters = () => (
-    <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
-      <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
-        <SelectTrigger>
-          <SelectValue placeholder="Choisir un département" />
-        </SelectTrigger>
-        <SelectContent>
-          <ScrollArea className="h-72">
-            {departments.map(dep => (
-              <SelectItem key={dep} value={dep}>{dep}</SelectItem>
-            ))}
-          </ScrollArea>
-        </SelectContent>
-      </Select>
-      <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
-        <SelectTrigger>
-          <SelectValue placeholder="Choisir une ville" />
-        </SelectTrigger>
-        <SelectContent>
-          <ScrollArea className="h-72">
-            {cities.map(city => (
-              <SelectItem key={city} value={city}>{city}</SelectItem>
-            ))}
-          </ScrollArea>
-        </SelectContent>
-      </Select>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="shrink-0 justify-between">
-            {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
-            <ListFilter className="ml-2 h-4 w-4"/>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuLabel>Marques</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <ScrollArea className="h-72">
-            {availableBrands.map(brand => (
-              <DropdownMenuCheckboxItem
-                key={brand}
-                checked={selectedBrands.includes(brand)}
-                onCheckedChange={() => handleBrandChange(brand)}
-              >
-                {brand}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </ScrollArea>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
+  const renderFilters = (isMobileView = false) => {
+    const commonClasses = "flex flex-col space-y-2";
+    const desktopClasses = "md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2";
+    
+    return (
+      <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
+        <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
+          <SelectTrigger>
+            <SelectValue placeholder="Choisir un département" />
+          </SelectTrigger>
+          <SelectContent>
+            <ScrollArea className="h-72">
+              {departments.map(dep => (
+                <SelectItem key={dep} value={dep}>{dep}</SelectItem>
+              ))}
+            </ScrollArea>
+          </SelectContent>
+        </Select>
+        <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
+          <SelectTrigger>
+            <SelectValue placeholder="Choisir une ville" />
+          </SelectTrigger>
+          <SelectContent>
+            <ScrollArea className="h-72">
+              {cities.map(city => (
+                <SelectItem key={city} value={city}>{city}</SelectItem>
+              ))}
+            </ScrollArea>
+          </SelectContent>
+        </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="shrink-0 justify-between">
+              {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
+              <ListFilter className="ml-2 h-4 w-4"/>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Marques</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <ScrollArea className="h-72">
+              {availableBrands.map(brand => (
+                <DropdownMenuCheckboxItem
+                  key={brand}
+                  checked={selectedBrands.includes(brand)}
+                  onCheckedChange={() => handleBrandChange(brand)}
+                >
+                  {brand}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </ScrollArea>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen">
-      <Header />
+      <Header>
+        {!isMobile && renderFilters()}
+      </Header>
        <div className="flex-1 overflow-hidden md:p-4 md:pt-0 relative">
         {isMobile ? (
            <div className="h-full relative">
@@ -345,74 +310,74 @@ export default function Home() {
                     </SheetHeader>
                     <div className="py-4 space-y-4 flex flex-col flex-1">
                       <div className="flex-1 space-y-4">
-                        {renderFilters()}
+                        {renderFilters(true)}
                       </div>
                       <Button onClick={() => setIsFilterSheetOpen(false)} className="w-full">Valider</Button>
                     </div>
                   </SheetContent>
                 </Sheet>
             </div>
-            {viewMode === 'list' && renderList()}
-            {viewMode === 'map' && (
-              <>
-               <MapComponent 
-                dealerships={filteredDealerships} 
-                center={mapCenter} 
-                zoom={mapZoom} 
-                hoveredDealershipId={hoveredDealershipId}
-                onMarkerClick={(id) => setSelectedDealershipId(id)}
-                onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
-                onMarkerMouseOut={() => setHoveredDealershipId(null)}
-              />
-              <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
-                <SheetContent side="bottom" className="h-[40vh]" showOverlay={false}>
-                   <SheetHeader className="p-4 pt-2">
-                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto" />
-                    <SheetTitle className="sr-only">Résultats</SheetTitle>
-                  </SheetHeader>
-                  <ScrollArea className="h-full pb-4">
-                    <div className="p-4 space-y-4">
-                      {filteredDealerships.map((dealer, index) => (
-                        <React.Fragment key={dealer.id}>
-                          <div 
-                            onClick={() => handleCardClick(dealer.id)}
-                            onMouseEnter={() => setHoveredDealershipId(dealer.id)}
-                            onMouseLeave={() => setHoveredDealershipId(null)}
-                          >
-                            <DealershipCard 
-                              dealership={dealer} 
-                              isExpanded={selectedDealershipId === dealer.id}
-                              onClose={handleCloseExpandedCard}
-                            />
-                          </div>
-                          {(index + 1) % 4 === 0 && <AdCard />}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </SheetContent>
-              </Sheet>
-              </>
+            
+            <MapComponent 
+              dealerships={filteredDealerships} 
+              center={mapCenter} 
+              zoom={mapZoom} 
+              hoveredDealershipId={hoveredDealershipId}
+              onMarkerClick={(id) => setSelectedDealershipId(id)}
+              onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
+              onMarkerMouseOut={() => setHoveredDealershipId(null)}
+            />
+
+            {filteredDealerships.length > 0 && (
+            <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
+              <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} closeButton={false}>
+                  <SheetHeader className="p-4 pt-2 text-center">
+                  <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
+                  <SheetTitle className="sr-only">Résultats</SheetTitle>
+                </SheetHeader>
+                <ScrollArea className="h-full pb-4">
+                  <div className="p-4 space-y-4">
+                    {dealershipsToDisplay.map((dealer, index) => (
+                      <React.Fragment key={dealer.id}>
+                        <div 
+                          onClick={() => handleCardClick(dealer.id)}
+                          onMouseEnter={() => setHoveredDealershipId(dealer.id)}
+                          onMouseLeave={() => setHoveredDealershipId(null)}
+                        >
+                          <DealershipCard 
+                            dealership={dealer} 
+                            isExpanded={selectedDealershipId === dealer.id}
+                            onClose={handleCloseExpandedCard}
+                          />
+                        </div>
+                        {(index + 1) % 4 === 0 && !selectedDealershipId && <AdCard />}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
             )}
+
            </div>
         ) : (
           <div className="h-full grid grid-cols-1 md:grid-cols-12 gap-4">
             {viewMode === 'list' ? (
               <>
                  <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-                 <div className="col-span-12 xl:col-span-8 h-full overflow-y-auto">
+                 <div className="col-span-12 xl:col-span-8 h-full">
                   <ScrollArea className="h-full">
                     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {filteredDealerships.map((dealer, index) => (
+                      {dealershipsToDisplay.map((dealer, index) => (
                         <React.Fragment key={dealer.id}>
-                          <div
+                           <div
                               className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
-                              onClick={() => handleCardClick(dealer.id)}
-                          >
+                           >
                             <DealershipCard 
                               dealership={dealer} 
                               isExpanded={selectedDealershipId === dealer.id}
                               onClose={handleCloseExpandedCard}
+                              onClick={() => handleCardClick(dealer.id)}
                             />
                           </div>
                           {(index + 1) % 6 === 0 && !selectedDealershipId && (
@@ -467,7 +432,7 @@ export default function Home() {
                     </div>
                 </ScrollArea>
               </div>
-              <div className="col-span-12 md:col-span-6 relative rounded-lg overflow-hidden">
+              <div className="col-span-12 md:col-span-4 relative rounded-lg overflow-hidden">
                 <MapComponent 
                   dealerships={filteredDealerships} 
                   center={mapCenter} 

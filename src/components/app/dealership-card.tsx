@@ -13,9 +13,10 @@ interface DealershipCardProps {
   dealership: Dealership;
   isExpanded?: boolean;
   onClose?: () => void;
+  onClick?: () => void;
 }
 
-const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false, onClose }) => {
+const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false, onClose, onClick }) => {
   const getCategory = (title: string) => {
     if (title.toLowerCase().includes('concession')) return 'Concess.';
     if (title.toLowerCase().includes('garage')) return 'Garage';
@@ -42,11 +43,20 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
     onClose?.();
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
-    <Card className={cn(
-      "w-full overflow-hidden transition-all duration-300 ease-in-out cursor-pointer",
-      isExpanded ? "scale-100" : "hover:scale-105 hover:z-10"
-    )}>
+    <Card 
+      onClick={handleCardClick}
+      className={cn(
+        "w-full overflow-hidden transition-all duration-300 ease-in-out cursor-pointer",
+        isExpanded ? "scale-100" : "hover:scale-105 hover:z-10"
+      )}
+    >
       <div className="flex">
         <div className="relative w-20 h-20 flex-shrink-0">
           {dealership.imgUrl ? (
