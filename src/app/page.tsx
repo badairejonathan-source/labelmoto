@@ -97,7 +97,7 @@ export default function Home() {
   const isMobile = width ? width < 768 : false;
 
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
+  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>(allDealerships);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
@@ -124,12 +124,12 @@ export default function Home() {
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
   useEffect(() => {
-    if (isMobile && filteredDealerships.length > 0 && !isFilterSheetOpen) {
+    if (isMobile && filteredDealerships.length > 0 && hasActiveFilters && !isFilterSheetOpen) {
       setIsMobileSheetOpen(true);
     } else {
       setIsMobileSheetOpen(false);
     }
-  }, [isMobile, filteredDealerships, isFilterSheetOpen]);
+  }, [isMobile, filteredDealerships, hasActiveFilters, isFilterSheetOpen]);
 
   const [cities, setCities] = useState<string[]>([]);
   const departments = Object.keys(locations);
@@ -165,7 +165,7 @@ export default function Home() {
     let dealerships = allDealerships;
     
     if (!hasActiveFilters) {
-      setFilteredDealerships([]);
+      setFilteredDealerships(allDealerships);
       return;
     }
     
@@ -214,7 +214,7 @@ export default function Home() {
       return selected ? [selected] : [];
     }
     return filteredDealerships;
-  }, [selectedDealershipId, filteredDealerships, viewMode]);
+  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships]);
   
   const handleCardClick = (id: string) => {
       setSelectedDealershipId(prevId => prevId === id ? null : id);
@@ -331,13 +331,13 @@ export default function Home() {
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {filteredDealerships.length > 0 && !isFilterSheetOpen && (
-            <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
-              <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} closeButton={false}>
-                <SheetHeader className="p-4 pt-2 text-center">
-                  <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
-                  <SheetTitle className="sr-only">Résultats</SheetTitle>
-                </SheetHeader>
+            {isMobileSheetOpen && (
+            <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
+               <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} onInteractOutside={(e) => e.preventDefault()} >
+                 <SheetHeader className="p-4 pt-2 text-center">
+                   <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
+                   <SheetTitle>Résultats</SheetTitle>
+                 </SheetHeader>
                 <ScrollArea className="h-full pb-4">
                   <div className="p-4 space-y-4">
                     {dealershipsToDisplay.map((dealer, index) => (
@@ -368,8 +368,8 @@ export default function Home() {
             {viewMode === 'list' ? (
               <>
                 <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-                <div className="col-span-12 xl:col-span-8 h-full">
-                  <ScrollArea className="h-full">
+                <div className="col-span-12 xl:col-span-8 h-full flex flex-col">
+                  <ScrollArea className="flex-grow">
                     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {dealershipsToDisplay.map((dealer, index) => (
                         <React.Fragment key={dealer.id}>
