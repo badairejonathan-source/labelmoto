@@ -94,7 +94,7 @@ export default function Home() {
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
 
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -112,6 +112,8 @@ export default function Home() {
   useEffect(() => {
     if(isMobile) {
       setViewMode('map');
+    } else {
+      setViewMode('list');
     }
   }, [isMobile]);
 
@@ -229,56 +231,48 @@ export default function Home() {
     </div>
   );
   
- const renderList = () => {
-    const listContent = selectedDealershipId
-      ? allDealerships.find(d => d.id === selectedDealershipId)
-      : filteredDealerships;
-  
-    const itemsToRender = Array.isArray(listContent) ? listContent : (listContent ? [listContent] : []);
-  
-    return (
-      <main className="col-span-12 h-full bg-white dark:bg-gray-800 overflow-y-auto">
-        <ScrollArea className="h-full">
-          {selectedDealershipId && (
-            <Button
-              variant="ghost"
-              onClick={handleCloseExpandedCard}
-              className="flex items-center justify-start p-4 text-sm font-medium"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Retour à la liste
-            </Button>
-          )}
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {itemsToRender.map((dealer, index) => (
-              <React.Fragment key={dealer.id}>
-                <div
-                   className={selectedDealershipId ? 'col-span-full' : ''}
-                   onClick={() => handleCardClick(dealer.id)}
-                >
-                  <DealershipCard 
-                    dealership={dealer} 
-                    isExpanded={selectedDealershipId === dealer.id}
-                    onClose={handleCloseExpandedCard}
-                  />
-                </div>
-                {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                  <div className="md:col-span-2 lg:col-span-3">
-                    <AdCard />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-            {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
-              <div className="md:col-span-2 lg:col-span-3">
-                <AdCard />
+ const renderList = () => (
+    <main className="col-span-12 h-full bg-white dark:bg-gray-800 overflow-y-auto">
+      <ScrollArea className="h-full">
+        {selectedDealershipId && (
+          <Button
+            variant="ghost"
+            onClick={handleCloseExpandedCard}
+            className="flex items-center justify-start p-4 text-sm font-medium"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Retour à la liste
+          </Button>
+        )}
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredDealerships.map((dealer, index) => (
+            <React.Fragment key={dealer.id}>
+              <div
+                  className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
+                  onClick={() => handleCardClick(dealer.id)}
+              >
+                <DealershipCard 
+                  dealership={dealer} 
+                  isExpanded={selectedDealershipId === dealer.id}
+                  onClose={handleCloseExpandedCard}
+                />
               </div>
-            )}
-          </div>
-        </ScrollArea>
-      </main>
-    );
-  };
+              {(index + 1) % 6 === 0 && !selectedDealershipId && (
+                <div className="md:col-span-2 lg:col-span-3">
+                  <AdCard />
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+          {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+            <div className="md:col-span-2 lg:col-span-3">
+              <AdCard />
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+    </main>
+  );
 
   const renderFilters = () => (
     <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
@@ -334,13 +328,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen">
-      <Header 
-        onDepartmentChange={handleDepartmentChange} 
-        onCityChange={handleCityChange}
-        availableBrands={availableBrands}
-        selectedBrands={selectedBrands}
-        onBrandChange={handleBrandChange}
-      />
+      <Header />
        <div className="flex-1 overflow-hidden md:p-4 md:pt-0 relative">
         {isMobile ? (
            <div className="h-full relative">
@@ -413,13 +401,41 @@ export default function Home() {
               <>
                  <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
                  <div className="col-span-12 xl:col-span-8 h-full overflow-y-auto">
-                  {renderList()}
+                  <ScrollArea className="h-full">
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {filteredDealerships.map((dealer, index) => (
+                        <React.Fragment key={dealer.id}>
+                          <div
+                              className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
+                              onClick={() => handleCardClick(dealer.id)}
+                          >
+                            <DealershipCard 
+                              dealership={dealer} 
+                              isExpanded={selectedDealershipId === dealer.id}
+                              onClose={handleCloseExpandedCard}
+                            />
+                          </div>
+                          {(index + 1) % 6 === 0 && !selectedDealershipId && (
+                            <div className="md:col-span-2 lg:col-span-3">
+                              <AdCard />
+                            </div>
+                          )}
+                        </React.Fragment>
+                      ))}
+                      {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+                        <div className="md:col-span-2 lg:col-span-3">
+                          <AdCard />
+                        </div>
+                      )}
+                    </div>
+                  </ScrollArea>
                  </div>
                 <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
               </>
             ) : (
              <>
-              <aside className="col-span-12 md:col-span-5 lg:col-span-4 h-full bg-white dark:bg-gray-800 flex flex-col rounded-lg overflow-hidden">
+              <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+              <div className="col-span-12 md:col-span-4 h-full bg-white dark:bg-gray-800 flex flex-col rounded-lg overflow-hidden">
               {selectedDealershipId && (
                   <Button
                     variant="ghost"
@@ -450,8 +466,8 @@ export default function Home() {
                       ))}
                     </div>
                 </ScrollArea>
-              </aside>
-              <div className="col-span-12 md:col-span-7 lg:col-span-8 relative rounded-lg overflow-hidden">
+              </div>
+              <div className="col-span-12 md:col-span-6 relative rounded-lg overflow-hidden">
                 <MapComponent 
                   dealerships={filteredDealerships} 
                   center={mapCenter} 
@@ -462,12 +478,13 @@ export default function Home() {
                   onMarkerMouseOut={() => setHoveredDealershipId(null)}
                 />
               </div>
+              <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
             </>
             )}
           </div>
         )}
       </div>
-      {renderViewToggle()}
+      {!isMobile && renderViewToggle()}
     </div>
   );
 }
