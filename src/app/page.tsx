@@ -117,14 +117,18 @@ export default function Home() {
       setViewMode('list');
     }
   }, [isMobile]);
+  
+  const hasActiveFilters = useMemo(() => {
+    return selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
   useEffect(() => {
-    if (isMobile && filteredDealerships.length > 0 && !isFilterSheetOpen) {
+    if (isMobile && filteredDealerships.length > 0 && !isFilterSheetOpen && hasActiveFilters) {
       setIsMobileSheetOpen(true);
     } else {
       setIsMobileSheetOpen(false);
     }
-  }, [isMobile, filteredDealerships, isFilterSheetOpen]);
+  }, [isMobile, filteredDealerships, isFilterSheetOpen, hasActiveFilters]);
 
   const [cities, setCities] = useState<string[]>([]);
   const departments = Object.keys(locations);
@@ -159,11 +163,11 @@ export default function Home() {
   useEffect(() => {
     let dealerships = allDealerships;
 
-    if (selectedCategory === 'Tout voir' && selectedBrands.length === 0 && !selectedCity && !selectedDepartment) {
-        setFilteredDealerships(allDealerships);
-        return;
+    if (!hasActiveFilters) {
+      setFilteredDealerships([]);
+      return;
     }
-
+    
     // Filter by category
     if (selectedCategory === 'Concessionnaires') {
       dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
@@ -201,7 +205,7 @@ export default function Home() {
     setFilteredDealerships(sortedDealerships);
     setSelectedDealershipId(null);
 
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, hasActiveFilters]);
 
   const dealershipsToDisplay = useMemo(() => {
     if (selectedDealershipId && viewMode === 'map') {
