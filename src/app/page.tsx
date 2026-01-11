@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -96,7 +97,7 @@ export default function Home() {
   const isMobile = width ? width < 768 : false;
 
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>(allDealerships);
+  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
@@ -330,7 +331,7 @@ export default function Home() {
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {filteredDealerships.length > 0 && (
+            {filteredDealerships.length > 0 && !isFilterSheetOpen && (
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
               <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} closeButton={false}>
                 <SheetHeader className="p-4 pt-2 text-center">
@@ -400,7 +401,7 @@ export default function Home() {
                 <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
               </>
             ) : (
-             <>
+             <div className="col-span-12 h-full grid grid-cols-12 gap-4">
               <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
               <div className="col-span-12 md:col-span-4 h-full bg-white dark:bg-gray-800 flex flex-col rounded-lg overflow-hidden">
               {selectedDealershipId && (
@@ -434,7 +435,7 @@ export default function Home() {
                     </div>
                 </ScrollArea>
               </div>
-              <div className="col-span-12 md:col-span-4 relative rounded-lg overflow-hidden">
+              <div className="col-span-12 md:col-span-6 relative rounded-lg overflow-hidden">
                 <MapComponent 
                   dealerships={filteredDealerships} 
                   center={mapCenter} 
@@ -445,8 +446,8 @@ export default function Home() {
                   onMarkerMouseOut={() => setHoveredDealershipId(null)}
                 />
               </div>
-              <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-            </>
+              
+            </div>
             )}
           </div>
         )}
