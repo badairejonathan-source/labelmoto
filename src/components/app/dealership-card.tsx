@@ -68,7 +68,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
               sizes="80px"
             />
           ) : (
-             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+             <div className="w-full h-full bg-gray-200 flex items-center justify-center p-2">
               <MotoTrustLogo className="w-16 h-16 text-gray-400" />
             </div>
           )}

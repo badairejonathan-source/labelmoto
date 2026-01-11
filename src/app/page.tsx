@@ -123,12 +123,12 @@ export default function Home() {
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
   useEffect(() => {
-    if (isMobile && filteredDealerships.length > 0 && !isFilterSheetOpen && hasActiveFilters) {
+    if (isMobile && filteredDealerships.length > 0 && !isFilterSheetOpen) {
       setIsMobileSheetOpen(true);
     } else {
       setIsMobileSheetOpen(false);
     }
-  }, [isMobile, filteredDealerships, isFilterSheetOpen, hasActiveFilters]);
+  }, [isMobile, filteredDealerships, isFilterSheetOpen]);
 
   const [cities, setCities] = useState<string[]>([]);
   const departments = Object.keys(locations);
@@ -162,7 +162,7 @@ export default function Home() {
 
   useEffect(() => {
     let dealerships = allDealerships;
-
+    
     if (!hasActiveFilters) {
       setFilteredDealerships([]);
       return;
@@ -312,12 +312,10 @@ export default function Home() {
                     <SheetHeader>
                       <SheetTitle>Filtres</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4 space-y-4 flex flex-col flex-1">
-                      <div className="flex-1 space-y-4">
-                        {renderFilters(true)}
-                      </div>
-                      <Button onClick={() => setIsFilterSheetOpen(false)} className="w-full">Valider</Button>
+                    <div className="py-4 space-y-4 flex-1">
+                      {renderFilters(true)}
                     </div>
+                    <Button onClick={() => setIsFilterSheetOpen(false)} className="w-full">Valider</Button>
                   </SheetContent>
                 </Sheet>
             </div>
@@ -335,7 +333,7 @@ export default function Home() {
             {filteredDealerships.length > 0 && (
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
               <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} closeButton={false}>
-                  <SheetHeader className="p-4 pt-2 text-center">
+                <SheetHeader className="p-4 pt-2 text-center">
                   <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
                   <SheetTitle className="sr-only">Résultats</SheetTitle>
                 </SheetHeader>
@@ -368,8 +366,8 @@ export default function Home() {
           <div className="h-full grid grid-cols-1 md:grid-cols-12 gap-4">
             {viewMode === 'list' ? (
               <>
-                 <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-                 <div className="col-span-12 xl:col-span-8 h-full">
+                <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+                <div className="col-span-12 xl:col-span-8 h-full">
                   <ScrollArea className="h-full">
                     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {dealershipsToDisplay.map((dealer, index) => (
