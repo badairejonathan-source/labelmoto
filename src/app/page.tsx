@@ -26,7 +26,6 @@ import data94 from '@/data/94son.json';
 import data95 from '@/data/95json.json';
 import data93 from '@/data/93json.json';
 import useWindowSize from '@/hooks/use-window-size';
-import brandLogos from '@/data/brand-logos';
 
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
@@ -72,10 +71,11 @@ const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
 
 const getBrands = (dealerships: Dealership[]) => {
   const brandSet = new Set<string>();
+  const brandKeywords = ['BMW', 'Ducati', 'Yamaha', 'Kawasaki', 'KTM', 'Husqvarna', 'Honda', 'Suzuki', 'Triumph', 'Harley-Davidson', 'Indian', 'Royal Enfield', 'Mash', 'Peugeot'];
   
   dealerships.forEach(d => {
     if (d.title && typeof d.title === 'string') {
-        Object.keys(brandLogos).forEach(brand => {
+        brandKeywords.forEach(brand => {
             if (d.title.toLowerCase().includes(brand.toLowerCase())) {
                 brandSet.add(brand);
             }
@@ -126,9 +126,7 @@ export default function Home() {
   useEffect(() => {
     let dealerships = allDealerships;
     
-    const isLocationOrCategoryFilterActive = selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir';
-
-    if (isLocationOrCategoryFilterActive) {
+    if (selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir') {
         if (selectedCategory === 'Concessionnaires') {
           dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
         } else if (selectedCategory === 'Réparateurs') {
@@ -149,8 +147,8 @@ export default function Home() {
     } else {
         dealerships = [];
     }
-
-    const sortedDealerships = dealerships.sort((a, b) => {
+    
+    const sortedDealerships = [...dealerships].sort((a, b) => {
         const aIsBrand = brandHighlightIds.has(a.id);
         const bIsBrand = brandHighlightIds.has(b.id);
         
@@ -331,8 +329,8 @@ export default function Home() {
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
-              selectedBrands={selectedBrands}
               brandHighlightIds={brandHighlightIds}
+              selectedBrands={selectedBrands}
               onMarkerClick={(id) => handleCardClick(id)}
               onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
@@ -380,9 +378,9 @@ export default function Home() {
 
            </div>
         ) : (
-          <div className="h-full flex-1 flex flex-col">
+          <>
             {viewMode === 'list' ? (
-                <div className="h-full flex flex-col overflow-hidden">
+                <div className="h-full flex flex-col overflow-hidden flex-1">
                     <ScrollArea className="flex-grow">
                         <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {dealershipsToDisplay.map((dealer, index) => (
@@ -452,8 +450,8 @@ export default function Home() {
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
-                      selectedBrands={selectedBrands}
                       brandHighlightIds={brandHighlightIds}
+                      selectedBrands={selectedBrands}
                       onMarkerClick={(id) => setSelectedDealershipId(id)}
                       onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                       onMarkerMouseOut={() => setHoveredDealershipId(null)}
@@ -461,11 +459,10 @@ export default function Home() {
                 </div>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
       {!isMobile && renderViewToggle()}
     </div>
   );
 }
-
