@@ -116,46 +116,6 @@ export default function Home() {
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
   
   useEffect(() => {
-    if (isMobile) {
-      if (hasActiveFilters && !isFilterSheetOpen) {
-        setIsMobileSheetOpen(true);
-      } else {
-        setIsMobileSheetOpen(false);
-      }
-    }
-  }, [isMobile, hasActiveFilters, isFilterSheetOpen]);
-
-  const [cities, setCities] = useState<string[]>([]);
-  const departments = Object.keys(locations);
-
-  const handleDepartmentChange = useCallback((department: string) => {
-    setSelectedDepartment(department);
-    setSelectedCity('');
-    if (department && (locations as any)[department]) {
-      const locationData = (locations as any)[department];
-      setCities(locationData.cities || []);
-      if(locationData.center) {
-        setMapCenter(locationData.center as [number, number]);
-        setMapZoom(9);
-      }
-    } else {
-      setCities([]);
-      setMapCenter([46.603354, 1.888334]);
-      setMapZoom(6);
-    }
-  }, []);
-
-  const handleCityChange = useCallback((city: string) => {
-      setSelectedCity(city);
-  }, []);
-
-  const handleBrandChange = useCallback((brand: string) => {
-    setSelectedBrands(prev => 
-      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
-    );
-  }, []);
-
-  useEffect(() => {
     let dealerships = allDealerships;
     
     if (hasActiveFilters) {
@@ -185,8 +145,6 @@ export default function Home() {
             d.title && typeof d.title === 'string' && selectedBrands.some(brand => d.title.toLowerCase().includes(brand.toLowerCase()))
           );
         }
-    } else {
-      dealerships = allDealerships;
     }
     
     // Sort by rating
@@ -198,19 +156,62 @@ export default function Home() {
 
     setFilteredDealerships(sortedDealerships);
     setSelectedDealershipId(null);
+    if (isMobile) {
+      if(hasActiveFilters && !isFilterSheetOpen) {
+          setIsMobileSheetOpen(true);
+      } else {
+          setIsMobileSheetOpen(false);
+      }
+    }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, hasActiveFilters]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, hasActiveFilters, isMobile, isFilterSheetOpen]);
+
+  const cities = useMemo(() => {
+    if (selectedDepartment && (locations as any)[selectedDepartment]) {
+      return (locations as any)[selectedDepartment].cities || [];
+    }
+    return [];
+  }, [selectedDepartment]);
+  const departments = Object.keys(locations);
+
+  const handleDepartmentChange = useCallback((department: string) => {
+    setSelectedDepartment(department);
+    setSelectedCity('');
+    if (department && (locations as any)[department]) {
+      const locationData = (locations as any)[department];
+      if(locationData.center) {
+        setMapCenter(locationData.center as [number, number]);
+        setMapZoom(9);
+      }
+    } else {
+      setMapCenter([46.603354, 1.888334]);
+      setMapZoom(6);
+    }
+  }, []);
+
+  const handleCityChange = useCallback((city: string) => {
+      setSelectedCity(city);
+  }, []);
+
+  const handleBrandChange = useCallback((brand: string) => {
+    setSelectedBrands(prev => 
+      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
+    );
+  }, []);
 
   const dealershipsToDisplay = useMemo(() => {
-    if (selectedDealershipId && viewMode === 'map') {
+    if (selectedDealershipId && (viewMode === 'map' || isMobile)) {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
     return filteredDealerships;
-  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships]);
+  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
   
   const handleCardClick = (id: string) => {
       setSelectedDealershipId(prevId => prevId === id ? null : id);
+      if (isMobile) {
+        setIsMobileSheetOpen(true);
+      }
   }
   
   const handleCloseExpandedCard = () => {
@@ -292,7 +293,7 @@ export default function Home() {
       <Header>
         {!isMobile && renderFilters()}
       </Header>
-       <div className="flex-1 overflow-hidden md:p-4 md:pt-0">
+       <div className="flex-1 overflow-hidden">
         {isMobile ? (
            <div className="h-full relative">
             <div className="absolute top-4 right-4 z-[1000]">
@@ -309,7 +310,7 @@ export default function Home() {
                     <div className="py-4 space-y-4">
                       {renderFilters(true)}
                     </div>
-                     <Button onClick={() => setIsFilterSheetOpen(false)} className="w-full mt-auto">Valider</Button>
+                     <Button onClick={() => setIsFilterSheetOpen(false)} className="mt-auto">Valider</Button>
                   </SheetContent>
                 </Sheet>
             </div>
@@ -324,9 +325,13 @@ export default function Home() {
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {isMobileSheetOpen && (
+            {(isMobileSheetOpen && hasActiveFilters) && (
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
-               <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} onInteractOutside={(e) => e.preventDefault()} >
+               <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} onInteractOutside={(e) => {
+                 if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
+                   e.preventDefault();
+                 }
+               }} >
                  <SheetHeader className="p-4 pt-2 text-center">
                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
                    <SheetTitle>Résultats</SheetTitle>
@@ -357,12 +362,12 @@ export default function Home() {
 
            </div>
         ) : (
-          <div className="h-full grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="h-full grid grid-cols-1 md:grid-cols-12 md:gap-4 md:p-4 md:pt-0">
             {viewMode === 'list' ? (
               <>
                 <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
                 <div className="col-span-12 xl:col-span-8 h-full flex flex-col">
-                  <ScrollArea className="flex-grow h-full">
+                  <ScrollArea className="flex-grow">
                     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {dealershipsToDisplay.map((dealer, index) => (
                         <React.Fragment key={dealer.id}>
