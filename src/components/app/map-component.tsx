@@ -15,11 +15,12 @@ const defaultIcon = L.icon({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  iconSize: [13, 21],
+  iconAnchor: [6, 21],
+  popupAnchor: [1, -21],
+  shadowSize: [21, 21]
 });
+
 
 const highlightedIcon = L.icon({
   iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmOTczMTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXAtcGluIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiLz48cGF0aCBkPSJNMTIgMmE4IDggMCAwIDAtOCA4YzAgNS40IDcuMSAxMC41IDggMTEuNWExIDEgMCAwIDAgMS44IDBsOC0xMS41YTEwIDEwIDAgMCAwLTEwLTEwWiIvPjwvc3ZnPg==',
@@ -30,8 +31,8 @@ const highlightedIcon = L.icon({
 
 const brandIcon = L.icon({
     iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMzA2MzkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXAtcGluIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiLz48cGF0aCBkPSJNMTIgMmE4IDggMCAwIDAtOCA4YzAgNS40IDcuMSAxMC41IDggMTEuNWExIDEgMCAwIDAgMS44IDBsOC0xMS41YTEwIDEwIDAgMCAwLTEwLTEwWiIvPjwvc3ZnPg==',
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 });
 
