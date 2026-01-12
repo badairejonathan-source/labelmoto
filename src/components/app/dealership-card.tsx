@@ -84,12 +84,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             </button>
           )}
           <div className="flex-grow min-w-0">
-            <div className="flex justify-between items-start mb-1">
-               <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words pr-4 flex-1">
-                {dealership.title}
-              </h3>
+            <div className="flex justify-between items-start gap-2">
+               <div className="flex-grow min-w-0">
+                <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words">
+                  {dealership.title}
+                </h3>
+              </div>
               {rating > 0 && (
-                <div className="flex items-center gap-1 text-xs font-bold text-amber-500 flex-shrink-0 ml-2">
+                <div className="flex items-center gap-1 text-xs font-bold text-amber-500 flex-shrink-0">
                   <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
                   <span>{rating.toFixed(1)}</span>
                 </div>
