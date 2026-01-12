@@ -159,7 +159,7 @@ export default function Home() {
     if (isMobile) {
       if(hasActiveFilters && !isFilterSheetOpen) {
           setIsMobileSheetOpen(true);
-      } else {
+      } else if (!hasActiveFilters) {
           setIsMobileSheetOpen(false);
       }
     }
@@ -320,18 +320,23 @@ export default function Home() {
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
-              onMarkerClick={(id) => setSelectedDealershipId(id)}
+              onMarkerClick={(id) => handleCardClick(id)}
               onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {(isMobileSheetOpen && hasActiveFilters) && (
-            <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
-               <SheetContent side="bottom" className="h-[40vh]" showOverlay={false} onInteractOutside={(e) => {
-                 if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
-                   e.preventDefault();
-                 }
-               }} >
+            {(isMobileSheetOpen || (isMobile && !hasActiveFilters) ) && (
+            <Sheet open={isMobileSheetOpen || (isMobile && !hasActiveFilters)} onOpenChange={setIsMobileSheetOpen} >
+               <SheetContent 
+                 side="bottom" 
+                 className="h-[40vh]" 
+                 showOverlay={false} 
+                 onInteractOutside={(e) => {
+                   if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
+                     e.preventDefault();
+                   }
+                 }}
+               >
                  <SheetHeader className="p-4 pt-2 text-center">
                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
                    <SheetTitle>Résultats</SheetTitle>
@@ -364,40 +369,42 @@ export default function Home() {
         ) : (
           <div className="h-full grid grid-cols-1 md:grid-cols-12 md:gap-4 md:p-4 md:pt-0">
             {viewMode === 'list' ? (
-              <>
-                <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-                <div className="col-span-12 xl:col-span-8 h-full flex flex-col">
-                  <ScrollArea className="flex-grow">
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {dealershipsToDisplay.map((dealer, index) => (
-                        <React.Fragment key={dealer.id}>
-                           <div
-                              className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
-                           >
-                            <DealershipCard 
-                              dealership={dealer} 
-                              isExpanded={selectedDealershipId === dealer.id}
-                              onClose={handleCloseExpandedCard}
-                              onClick={() => handleCardClick(dealer.id)}
-                            />
-                          </div>
-                          {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                            <div className="md:col-span-2 lg:col-span-3">
-                              <AdCard />
+              <div className="col-span-12 h-full flex flex-col">
+                <div className="grid grid-cols-12 flex-1 overflow-hidden">
+                  <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+                  <div className="col-span-12 xl:col-span-8 h-full">
+                    <ScrollArea className="h-full">
+                      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {dealershipsToDisplay.map((dealer, index) => (
+                          <React.Fragment key={dealer.id}>
+                            <div
+                                onClick={() => handleCardClick(dealer.id)}
+                                className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
+                            >
+                              <DealershipCard 
+                                dealership={dealer} 
+                                isExpanded={selectedDealershipId === dealer.id}
+                                onClose={handleCloseExpandedCard}
+                              />
                             </div>
-                          )}
-                        </React.Fragment>
-                      ))}
-                      {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
-                        <div className="md:col-span-2 lg:col-span-3">
-                          <AdCard />
-                        </div>
-                      )}
-                    </div>
-                  </ScrollArea>
-                 </div>
-                <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-              </>
+                            {(index + 1) % 6 === 0 && !selectedDealershipId && (
+                              <div className="md:col-span-2 lg:col-span-3">
+                                <AdCard />
+                              </div>
+                            )}
+                          </React.Fragment>
+                        ))}
+                        {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+                          <div className="md:col-span-2 lg:col-span-3">
+                            <AdCard />
+                          </div>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                  <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+                </div>
+              </div>
             ) : (
              <div className="col-span-12 h-full grid grid-cols-12 gap-4">
                 <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
@@ -453,3 +460,4 @@ export default function Home() {
     </div>
   );
 }
+
