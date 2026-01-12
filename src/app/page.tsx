@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuChe
 import { cn } from "@/lib/utils";
 
 import initialDealerships from '@/data/dealerships.json';
+import data33 from '@/data/33json.json';
 import data34 from '@/data/34json.json';
 import data78 from '@/data/78csvjson.json';
 import data92 from '@/data/92 Phantom_json.json';
@@ -26,6 +27,7 @@ import data94 from '@/data/94son.json';
 import data95 from '@/data/95json.json';
 import data93 from '@/data/93json.json';
 import useWindowSize from '@/hooks/use-window-size';
+import brandLogos from '@/data/brand-logos';
 
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
@@ -35,6 +37,7 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 
 const allDealershipsRaw = [
   ...initialDealerships,
+  ...data33,
   ...data34,
   ...data78,
   ...data92,
@@ -71,7 +74,7 @@ const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
 
 const getBrands = (dealerships: Dealership[]) => {
   const brandSet = new Set<string>();
-  const brandKeywords = ['BMW', 'Ducati', 'Yamaha', 'Kawasaki', 'KTM', 'Husqvarna', 'Honda', 'Suzuki', 'Triumph', 'Harley-Davidson', 'Indian', 'Royal Enfield', 'Mash', 'Peugeot'];
+  const brandKeywords = Object.keys(brandLogos);
   
   dealerships.forEach(d => {
     if (d.title && typeof d.title === 'string') {
