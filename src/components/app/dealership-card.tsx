@@ -73,7 +73,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             </div>
           )}
         </div>
-        <CardContent className="p-2 flex-grow relative">
+        <CardContent className="p-2 flex-grow relative flex flex-col min-w-0">
           {isExpanded && onClose && (
             <button
               onClick={handleClose}
@@ -83,9 +83,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
               <X className="h-4 w-4" />
             </button>
           )}
-          <div>
+          <div className="flex-grow min-w-0">
             <div className="flex justify-between items-start mb-1">
-              <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight">
+              <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words">
                 {dealership.title}
               </h3>
               {rating > 0 && (
@@ -99,7 +99,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             {dealership.address && (
               <p className="text-xs text-muted-foreground mt-1 flex items-start">
                 <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
-                <span>{dealership.address}</span>
+                <span className="break-words">{dealership.address}</span>
               </p>
             )}
              {dealership.phoneNum && (
@@ -112,13 +112,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             )}
           </div>
 
-          <div className="mt-1 flex items-center justify-between">
+          <div className="mt-2 pt-1 border-t border-transparent flex items-center justify-between">
             <div className="flex items-center">
                <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
                <span className="text-xs text-muted-foreground font-medium">Vérifié</span>
             </div>
 
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 justify-end">
               {category && <Badge variant="outline" className="text-xs">{category}</Badge>}
               {brands.slice(0, 1).map(brand => (
                 <Badge key={brand} variant="secondary" className="bg-gray-200 text-gray-700 text-xs">{brand}</Badge>
