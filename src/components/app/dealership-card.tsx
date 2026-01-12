@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -85,7 +86,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
           )}
           <div className="flex-grow min-w-0">
             <div className="flex justify-between items-start gap-2">
-               <div className="flex-grow min-w-0">
+               <div className="flex-grow min-w-0 flex-shrink">
                 <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words">
                   {dealership.title}
                 </h3>

@@ -2,9 +2,10 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
+import brandLogos from '@/data/brand-logos';
 
 
 // Correction pour un problème connu avec Next.js et Leaflet où les icônes ne se chargent pas.
@@ -30,7 +31,7 @@ const highlightedIcon = L.icon({
 });
 
 const brandIcon = L.icon({
-    iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMzA2MzkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXAtcGluIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiLz48cGF0aCBkPSJNMTIgMmE4IDggMCAwIDAtOCA4YzAgNS40IDcuMSAxMC41IDggMTEuNWExIDEgMCAwIDAgMS44IDBsOC0xMS41YTEwIDEwIDAgMCAwLTEwLTEwWiIvPjwvc3ZnPg==',
+    iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMzA2MzkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXAtcGluIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiLz48cGF0aCBkPSJNMTIgMmE4IDggMCAwIDAtOCA4YzAgNS44IDcuMSAxMC41IDggMTEuNWExIDEgMCAwIDAgMS44IDBsOC0xMS41YTEwIDEwIDAgMCAwLTEwLTEwWiIvPjwvc3ZnPg==',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -49,6 +50,7 @@ interface MapComponentProps {
   center: [number, number];
   zoom: number;
   hoveredDealershipId?: string | null;
+  selectedBrands?: string[];
   brandHighlightIds?: Set<string>;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
@@ -60,6 +62,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   center, 
   zoom, 
   hoveredDealershipId,
+  selectedBrands = [],
   brandHighlightIds = new Set(),
   onMarkerClick,
   onMarkerMouseOver,
@@ -68,6 +71,22 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
+
+  const brandIcons = useMemo(() => {
+    const icons: { [key: string]: L.Icon } = {};
+    selectedBrands.forEach(brand => {
+      const brandData = brandLogos[brand as keyof typeof brandLogos];
+      if (brandData && brandData.logo) {
+        icons[brand] = L.icon({
+          iconUrl: brandData.logo,
+          iconSize: [25, 25],
+          iconAnchor: [12, 25],
+          popupAnchor: [1, -24],
+        });
+      }
+    });
+    return icons;
+  }, [selectedBrands]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current) {
@@ -144,25 +163,33 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   useEffect(() => {
     Object.entries(markersRef.current).forEach(([id, marker]) => {
+      const dealer = dealerships.find(d => d.id === id);
       let iconToUse = defaultIcon;
+      let zIndexOffset = 0;
+
       if (id === hoveredDealershipId) {
         iconToUse = highlightedIcon;
+        zIndexOffset = 1000;
       } else if (brandHighlightIds.has(id)) {
-        iconToUse = brandIcon;
+        const matchingBrand = selectedBrands.find(brand => dealer?.title.toLowerCase().includes(brand.toLowerCase()));
+        if (matchingBrand && brandIcons[matchingBrand]) {
+            iconToUse = brandIcons[matchingBrand];
+        } else {
+            iconToUse = brandIcon;
+        }
+        zIndexOffset = 500;
       }
 
       marker.setIcon(iconToUse);
+      marker.setZIndexOffset(zIndexOffset);
 
       if (id === hoveredDealershipId) {
-        marker.setZIndexOffset(1000);
         if(!marker.isPopupOpen()) {
             marker.openPopup();
         }
-      } else {
-        marker.setZIndexOffset(brandHighlightIds.has(id) ? 500 : 0);
       }
     });
-  }, [hoveredDealershipId, brandHighlightIds]);
+  }, [hoveredDealershipId, brandHighlightIds, selectedBrands, brandIcons, dealerships]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };

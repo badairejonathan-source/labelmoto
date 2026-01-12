@@ -26,6 +26,7 @@ import data94 from '@/data/94son.json';
 import data95 from '@/data/95json.json';
 import data93 from '@/data/93json.json';
 import useWindowSize from '@/hooks/use-window-size';
+import brandLogos from '@/data/brand-logos';
 
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
@@ -71,17 +72,10 @@ const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
 
 const getBrands = (dealerships: Dealership[]) => {
   const brandSet = new Set<string>();
-  const brandKeywords = [
-    'Aprilia', 'Askoll', 'Benelli', 'BMW', 'Can-Am', 'CFMoto', 'Ducati', 'GasGas', 'Gilera', 
-    'Harley-Davidson', 'Honda', 'Husqvarna', 'Hyosung', 'Hytrack', 'Indian', 
-    'Kawasaki', 'KTM', 'Kymco', 'Mash', 'Moto Guzzi', 'MV Agusta', 'Neco', 'Orcal', 
-    'Peugeot', 'Piaggio', 'Royal Enfield', 'Segway', 'Sherco', 'Suzuki', 'Sym', 
-    'Triumph', 'Vespa', 'Voge', 'Yamaha', 'YCF', 'ZERO'
-  ];
   
   dealerships.forEach(d => {
     if (d.title && typeof d.title === 'string') {
-        brandKeywords.forEach(brand => {
+        Object.keys(brandLogos).forEach(brand => {
             if (d.title.toLowerCase().includes(brand.toLowerCase())) {
                 brandSet.add(brand);
             }
@@ -114,51 +108,55 @@ export default function Home() {
   const hasActiveFilters = useMemo(() => {
     return selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
-
-  const brandHighlightIds = useMemo(() => {
-    if (selectedBrands.length === 0) return new Set();
-    const brandLower = selectedBrands.map(b => b.toLowerCase());
-    return new Set(
-        filteredDealerships
-            .filter(d => d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand)))
-            .map(d => d.id)
-    );
-  }, [filteredDealerships, selectedBrands]);
   
+  const brandHighlightIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (selectedBrands.length > 0) {
+      const brandLower = selectedBrands.map(b => b.toLowerCase());
+      allDealerships.forEach(d => {
+        if (d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))) {
+          ids.add(d.id);
+        }
+      });
+    }
+    return ids;
+  }, [selectedBrands]);
+
+
   useEffect(() => {
     let dealerships = allDealerships;
     
-    // Check if any location or category filter is active
     const isLocationOrCategoryFilterActive = selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir';
 
     if (isLocationOrCategoryFilterActive) {
-        // Filter by category
         if (selectedCategory === 'Concessionnaires') {
           dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
         } else if (selectedCategory === 'Réparateurs') {
           dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
         }
         
-        // Filter by location
         if (selectedCity) {
           const lowerCaseCity = selectedCity.toLowerCase();
           dealerships = dealerships.filter(d => 
             d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
           );
         } else if (selectedDepartment) {
-            // A rough way to filter by department number in address
             const depCode = selectedDepartment.split(' ')[0];
             dealerships = dealerships.filter(d => 
               d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
             );
         }
-
     } else {
         dealerships = [];
     }
-    
-    // Sort by rating
+
     const sortedDealerships = dealerships.sort((a, b) => {
+        const aIsBrand = brandHighlightIds.has(a.id);
+        const bIsBrand = brandHighlightIds.has(b.id);
+        
+        if (aIsBrand && !bIsBrand) return -1;
+        if (!aIsBrand && bIsBrand) return 1;
+
         const ratingA = a.rating ? parseFloat(String(a.rating).replace(',', '.')) : 0;
         const ratingB = b.rating ? parseFloat(String(b.rating).replace(',', '.')) : 0;
         return (isNaN(ratingB) ? 0 : ratingB) - (isNaN(ratingA) ? 0 : ratingA);
@@ -166,6 +164,7 @@ export default function Home() {
 
     setFilteredDealerships(sortedDealerships);
     setSelectedDealershipId(null);
+
     const shouldOpenSheet = selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir';
 
     if (isMobile) {
@@ -176,7 +175,7 @@ export default function Home() {
       }
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen]);
+  }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && (locations as any)[selectedDepartment]) {
@@ -332,14 +331,15 @@ export default function Home() {
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
+              selectedBrands={selectedBrands}
               brandHighlightIds={brandHighlightIds}
               onMarkerClick={(id) => handleCardClick(id)}
               onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {(isMobileSheetOpen || (isMobile && hasActiveFilters && selectedBrands.length === 0) ) && (
-            <Sheet open={isMobileSheetOpen || (isMobile && hasActiveFilters && selectedBrands.length === 0)} onOpenChange={setIsMobileSheetOpen} >
+            {(isMobileSheetOpen || (isMobile && hasActiveFilters) ) && (
+            <Sheet open={isMobileSheetOpen || (isMobile && hasActiveFilters)} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent 
                  side="bottom" 
                  className="h-[40vh]" 
@@ -382,38 +382,38 @@ export default function Home() {
         ) : (
           <div className="h-full flex-1 flex flex-col">
             {viewMode === 'list' ? (
-              <div className="h-full overflow-hidden">
-                <ScrollArea className="h-full">
-                  <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {dealershipsToDisplay.map((dealer, index) => (
-                    <React.Fragment key={dealer.id}>
-                        <div
-                            onClick={() => handleCardClick(dealer.id)}
-                            className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
-                        >
-                        <DealershipCard 
-                            dealership={dealer} 
-                            isExpanded={selectedDealershipId === dealer.id}
-                            onClose={handleCloseExpandedCard}
-                        />
+                <div className="h-full flex flex-col overflow-hidden">
+                    <ScrollArea className="flex-grow">
+                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {dealershipsToDisplay.map((dealer, index) => (
+                            <React.Fragment key={dealer.id}>
+                                <div
+                                    onClick={() => handleCardClick(dealer.id)}
+                                    className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
+                                >
+                                <DealershipCard 
+                                    dealership={dealer} 
+                                    isExpanded={selectedDealershipId === dealer.id}
+                                    onClose={handleCloseExpandedCard}
+                                />
+                                </div>
+                                {(index + 1) % 6 === 0 && !selectedDealershipId && (
+                                <div className="md:col-span-2 lg:col-span-3">
+                                    <AdCard />
+                                </div>
+                                )}
+                            </React.Fragment>
+                            ))}
+                            {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+                            <div className="md:col-span-2 lg:col-span-3">
+                                <AdCard />
+                            </div>
+                            )}
                         </div>
-                        {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                        <div className="md:col-span-2 lg:col-span-3">
-                            <AdCard />
-                        </div>
-                        )}
-                    </React.Fragment>
-                    ))}
-                    {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
-                    <div className="md:col-span-2 lg:col-span-3">
-                        <AdCard />
-                    </div>
-                    )}
-                  </div>
-                </ScrollArea>
-              </div>
+                    </ScrollArea>
+                </div>
             ) : (
-             <div className="grid grid-cols-12 md:gap-4 md:pt-0 flex-1 overflow-hidden">
+             <div className="grid grid-cols-12 flex-1 overflow-hidden">
                 <div className="col-span-4 h-full flex flex-col">
                     {selectedDealershipId && (
                       <Button
@@ -452,6 +452,7 @@ export default function Home() {
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
+                      selectedBrands={selectedBrands}
                       brandHighlightIds={brandHighlightIds}
                       onMarkerClick={(id) => setSelectedDealershipId(id)}
                       onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
@@ -467,3 +468,4 @@ export default function Home() {
     </div>
   );
 }
+

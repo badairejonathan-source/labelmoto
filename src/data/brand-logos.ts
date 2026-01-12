@@ -1,0 +1,35 @@
+
+const brandLogos = {
+    "BMW": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/2048px-BMW.svg.png" },
+    "Ducati": { "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/f/f1/Logo_Ducati.svg/1200px-Logo_Ducati.svg.png" },
+    "Yamaha": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Yamaha_logo.svg/2560px-Yamaha_logo.svg.png" },
+    "Kawasaki": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Kawasaki_logo.svg/2560px-Kawasaki_logo.svg.png" },
+    "KTM": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/KTM-Logo.svg/2560px-KTM-Logo.svg.png" },
+    "Husqvarna": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Husqvarna_Logo.svg/2560px-Husqvarna_Logo.svg.png" },
+    "Honda": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Honda.svg/2560px-Honda.svg.png" },
+    "Suzuki": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Suzuki_logo.svg/2560px-Suzuki_logo.svg.png" },
+    "Triumph": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Triumph_Motorcycles_logo.svg/2560px-Triumph_Motorcycles_logo.svg.png" },
+    "Harley-Davidson": { "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/b/b0/Harley-Davidson_logo.svg/1200px-Harley-Davidson_logo.svg.png" },
+    "Indian": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Indian_Motorcycle_logo.svg/2560px-Indian_Motorcycle_logo.svg.png" },
+    "ZERO": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Zero_Motorcycles_logo.svg/2560px-Zero_Motorcycles_logo.svg.png"},
+    "Peugeot": { "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/c/c3/Logo_Peugeot_2021.svg/1200px-Logo_Peugeot_2021.svg.png"},
+    "Voge": { "logo": ""},
+    "Sym": { "logo": ""},
+    "Royal Enfield": { "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/7/7b/Royal_Enfield_logo.svg/1200px-Royal_Enfield_logo.svg.png"},
+    "Mash": { "logo": ""},
+    "Piaggio": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Piaggio_Logo.svg/2560px-Piaggio_Logo.svg.png"},
+    "Vespa": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Vespa_logo.svg/2560px-Vespa_logo.svg.png"},
+    "Aprilia": { "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/f/f2/Aprilia-logo.svg/1200px-Aprilia-logo.svg.png"},
+    "Gilera": { "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Gilera_logo.svg/2560px-Gilera_logo.svg.png"},
+    "Kymco": { "logo": ""},
+    "Askoll": { "logo": ""},
+    "GASGAS": { "logo": ""},
+    "Hytrack": { "logo": ""},
+    "Segway": { "logo": ""},
+    "Benelli": { "logo": ""},
+    "CFMOTO": { "logo": ""},
+    "BSA": { "logo": ""},
+    "SHERCO": { "logo": ""}
+  };
+  
+  export default brandLogos;
