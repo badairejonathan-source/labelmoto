@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -27,6 +28,13 @@ const highlightedIcon = L.icon({
   popupAnchor: [1, -34],
 });
 
+const brandIcon = L.icon({
+    iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMzA2MzkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXAtcGluIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiLz48cGF0aCBkPSJNMTIgMmE4IDggMCAwIDAtOCA4YzAgNS40IDcuMSAxMC41IDggMTEuNWExIDEgMCAwIDAgMS44IDBsOC0xMS41YTEwIDEwIDAgMCAwLTEwLTEwWiIvPjwvc3ZnPg==',
+    iconSize: [35, 35],
+    iconAnchor: [17, 35],
+    popupAnchor: [1, -34],
+});
+
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -40,6 +48,7 @@ interface MapComponentProps {
   center: [number, number];
   zoom: number;
   hoveredDealershipId?: string | null;
+  brandHighlightIds?: Set<string>;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
@@ -50,6 +59,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   center, 
   zoom, 
   hoveredDealershipId,
+  brandHighlightIds = new Set(),
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut 
@@ -133,18 +143,25 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   useEffect(() => {
     Object.entries(markersRef.current).forEach(([id, marker]) => {
+      let iconToUse = defaultIcon;
       if (id === hoveredDealershipId) {
-        marker.setIcon(highlightedIcon);
+        iconToUse = highlightedIcon;
+      } else if (brandHighlightIds.has(id)) {
+        iconToUse = brandIcon;
+      }
+
+      marker.setIcon(iconToUse);
+
+      if (id === hoveredDealershipId) {
         marker.setZIndexOffset(1000);
         if(!marker.isPopupOpen()) {
             marker.openPopup();
         }
       } else {
-        marker.setIcon(defaultIcon);
-        marker.setZIndexOffset(0);
+        marker.setZIndexOffset(brandHighlightIds.has(id) ? 500 : 0);
       }
     });
-  }, [hoveredDealershipId]);
+  }, [hoveredDealershipId, brandHighlightIds]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
