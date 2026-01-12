@@ -369,49 +369,42 @@ export default function Home() {
 
            </div>
         ) : (
-          <div className="h-full flex-1 overflow-hidden">
+          <div className="h-full flex-1">
             {viewMode === 'list' ? (
               <div className="h-full flex flex-col">
                 <div className="flex-1 overflow-hidden">
                   <ScrollArea className="h-full">
-                    <div className="grid grid-cols-12">
-                      <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-                      <div className="col-span-12 xl:col-span-8">
-                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {dealershipsToDisplay.map((dealer, index) => (
-                          <React.Fragment key={dealer.id}>
-                              <div
-                                  onClick={() => handleCardClick(dealer.id)}
-                                  className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
-                              >
-                              <DealershipCard 
-                                  dealership={dealer} 
-                                  isExpanded={selectedDealershipId === dealer.id}
-                                  onClose={handleCloseExpandedCard}
-                              />
-                              </div>
-                              {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                              <div className="md:col-span-2 lg:col-span-3">
-                                  <AdCard />
-                              </div>
-                              )}
-                          </React.Fragment>
-                          ))}
-                          {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {dealershipsToDisplay.map((dealer, index) => (
+                      <React.Fragment key={dealer.id}>
+                          <div
+                              onClick={() => handleCardClick(dealer.id)}
+                              className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
+                          >
+                          <DealershipCard 
+                              dealership={dealer} 
+                              isExpanded={selectedDealershipId === dealer.id}
+                              onClose={handleCloseExpandedCard}
+                          />
+                          </div>
+                          {(index + 1) % 6 === 0 && !selectedDealershipId && (
                           <div className="md:col-span-2 lg:col-span-3">
                               <AdCard />
                           </div>
                           )}
-                        </div>
+                      </React.Fragment>
+                      ))}
+                      {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+                      <div className="md:col-span-2 lg:col-span-3">
+                          <AdCard />
                       </div>
-                      <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
+                      )}
                     </div>
                   </ScrollArea>
                 </div>
               </div>
             ) : (
              <div className="h-full grid grid-cols-12 md:gap-4 md:pt-0">
-                <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
                 <div className="col-span-12 md:col-span-4 h-full flex flex-col">
                     {selectedDealershipId && (
                       <Button
@@ -444,7 +437,7 @@ export default function Home() {
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="col-span-12 md:col-span-6 rounded-lg overflow-hidden h-full">
+                <div className="col-span-12 md:col-span-8 rounded-lg overflow-hidden h-full">
                     <MapComponent 
                       dealerships={filteredDealerships} 
                       center={mapCenter} 
@@ -464,4 +457,3 @@ export default function Home() {
     </div>
   );
 }
-
