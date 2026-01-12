@@ -85,7 +85,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
           )}
           <div className="flex-grow min-w-0">
             <div className="flex justify-between items-start mb-1">
-              <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words">
+               <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words min-w-0">
                 {dealership.title}
               </h3>
               {rating > 0 && (
