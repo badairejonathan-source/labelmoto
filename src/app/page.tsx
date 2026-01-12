@@ -369,9 +369,9 @@ export default function Home() {
 
            </div>
         ) : (
-          <div className="h-full grid grid-cols-1 md:grid-cols-12 md:gap-4 md:p-4 md:pt-0 flex-1">
+          <div className="h-full flex-1 overflow-hidden">
             {viewMode === 'list' ? (
-                <div className="col-span-12 h-full flex flex-col">
+                <div className="h-full flex flex-col">
                     <div className="grid grid-cols-12 flex-1 overflow-hidden">
                     <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
                     <div className="col-span-12 xl:col-span-8 h-full">
@@ -408,9 +408,8 @@ export default function Home() {
                     </div>
                 </div>
             ) : (
-             <div className="col-span-12 h-full grid grid-cols-12 gap-4">
-                <aside className="hidden xl:block xl:col-span-2 bg-gray-100 dark:bg-gray-800 rounded-lg"></aside>
-                <div className="col-span-12 md:col-span-4 h-full flex flex-col rounded-lg bg-white dark:bg-gray-900">
+             <div className="h-full grid grid-cols-12 md:gap-4 md:p-4 md:pt-0">
+                <div className="col-span-12 md:col-span-4 h-full flex flex-col">
                     {selectedDealershipId && (
                       <Button
                         variant="ghost"
@@ -442,7 +441,7 @@ export default function Home() {
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="col-span-12 md:col-span-6 rounded-lg overflow-hidden h-full">
+                <div className="col-span-12 md:col-span-8 rounded-lg overflow-hidden h-full">
                     <MapComponent 
                       dealerships={filteredDealerships} 
                       center={mapCenter} 
@@ -462,3 +461,4 @@ export default function Home() {
     </div>
   );
 }
+
