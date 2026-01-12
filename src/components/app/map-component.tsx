@@ -10,18 +10,35 @@ import brandLogos from '@/data/brand-logos';
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 const defaultIcon = L.icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzYjgxZjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiIGZpbGw9IiMzYjgxZjYiIC8+PHBhdGggZD0iTTEyIDJhOCA4IDAgMCAwLTggOGMwIDUuOCA3LjEgMTAuNSA4IDExLjVhMSAxIDAgMCAwIDEuOCAwbDgtMTEuNWExMCAxMCAwIDAgMC0xMC0xMFoiIGZpbGw9IiMzYjgxZjYiIC8+PC9zdmc+',
-  iconSize: [13, 21],
-  iconAnchor: [6, 21],
-  popupAnchor: [1, -21],
-  shadowSize: [21, 21]
+    iconUrl: `data:image/svg+xml;base64,${btoa(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="41">
+            <path fill="#2563eb" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
+            <g transform="translate(12, 8) scale(0.4)">
+                <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="1"/>
+                <circle cx="0" cy="0" r="2" fill="black"/>
+                <path d="M0-9L0-7M0 9L0 7M-9 0L-7 0M9 0L7 0M-6.36-6.36L-4.95-4.95M6.36 6.36L4.95 4.95M-6.36 6.36L-4.95 4.95M6.36-6.36L4.95-4.95" stroke="black" stroke-width="1"/>
+            </g>
+        </svg>
+    `)}`,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
 });
 
 const highlightedIcon = L.icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmOTczMTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXAtcGluIj48cGF0aCBkPSJNOSAxMGMwLTIuMiAxLjgtNSA0LTUgczQgMi44IDQgNWMwIDEuNC0uNiAyLjgtMS41IDMuNWwtMi41IDIuNWMtLjEuMS0uMjUuMS0uMzggMEw5IDEzLjVjLS45LS43LTEuNS0yLjEtMS41LTMuNXoiLz48cGF0aCBkPSJNMTIgMmE4IDggMCAwIDAtOCA4YzAgNS44IDcuMSAxMC41IDggMTEuNWExIDEgMCAwIDAgMS44IDBsOC0xMS41YTEwIDEwIDAgMCAwLTEwLTEwWiIvPjwvc3ZnPg==',
-  iconSize: [35, 35],
-  iconAnchor: [17, 35],
-  popupAnchor: [1, -34],
+    iconUrl: `data:image/svg+xml;base64,${btoa(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="51">
+            <path fill="#f97316" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
+            <g transform="translate(12, 8) scale(0.4)">
+                <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="1"/>
+                <circle cx="0" cy="0" r="2" fill="black"/>
+                <path d="M0-9L0-7M0 9L0 7M-9 0L-7 0M9 0L7 0M-6.36-6.36L-4.95-4.95M6.36 6.36L4.95 4.95M-6.36 6.36L-4.95 4.95M6.36-6.36L4.95-4.95" stroke="black" stroke-width="1"/>
+            </g>
+        </svg>
+    `)}`,
+    iconSize: [35, 51],
+    iconAnchor: [17, 51],
+    popupAnchor: [1, -48],
 });
 
 
