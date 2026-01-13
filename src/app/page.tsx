@@ -16,7 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from "@/lib/utils";
 
-import allDealershipsRaw from '@/data/alldealerships.json';
+import allDealershipsInitial from '@/data/alldealerships.json';
+import data30 from '@/data/30json.json';
 import useWindowSize from '@/hooks/use-window-size';
 import brandLogos from '@/data/brand-logos';
 
@@ -25,6 +26,9 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
   ssr: false,
   loading: () => <div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>
 });
+
+const allDealershipsRaw = [...allDealershipsInitial, ...data30];
+
 
 // Deduplicate and clean data once
 const uniqueDealershipsRaw = Array.from(new Map(allDealershipsRaw.map((d: any) => [d.placeUrl, d])).values());
@@ -455,5 +459,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
