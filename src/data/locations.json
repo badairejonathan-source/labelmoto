@@ -12,7 +12,7 @@
   "10 - Aube": { "cities": [], "center": [48.366667, 4.25] },
   "11 - Aude": { "cities": [], "center": [43.1, 2.4] },
   "12 - Aveyron": { "cities": [], "center": [44.25, 2.616667] },
-  "13 - Bouches-du-Rhône": { "cities": [], "center": [43.5, 5.166667] },
+  "13 - Bouches-du-Rhône": { "cities": ["Marseille", "Roquevaire", "Gardanne", "Les Pennes-Mirabeau", "La Penne-sur-Huveaune", "Aubagne", "Vitrolles", "Septèmes-les-Vallons"], "center": [43.5, 5.166667] },
   "14 - Calvados": { "cities": [], "center": [49.083333, -0.25] },
   "15 - Cantal": { "cities": [], "center": [45.066667, 2.666667] },
   "16 - Charente": { "cities": [], "center": [45.75, 0.25] },
@@ -27,13 +27,13 @@
   "24 - Dordogne": { "cities": [], "center": [45.033333, 0.716667] },
   "25 - Doubs": { "cities": [], "center": [47.166667, 6.333333] },
   "26 - Drôme": { "cities": [], "center": [44.833333, 5.083333] },
-  "27 - Eure": { "cities": [], "center": [49.066667, 1.05] },
+  "27 - Eure": { "cities": ["Évreux", "Val-de-Reuil", "Crosville-la-Vieille", "Pacy-sur-Eure", "Villegats", "Verneuil d'Avre et d'Iton", "Gisors", "Gamaches-en-Vexin", "Vernon", "Le Lesme", "Breteuil", "Saint-André-de-l'Eure", "Le Theil-Nolent", "Beaumont-le-Roger", "Mesnils-sur-Iton", "La Neuve-Lyre", "Criquebeuf-sur-Seine", "La Trinité-de-Thouberville", "Brionne", "Serquigny", "Appeville-Annebault", "Menneval", "Thiberville", "Saint-Symphorien", "Cadaujac", "Caorches-Saint-Nicolas", "Bourg-Achard", "Parville", "Gauville-la-Campagne", "Normanville", "Conches-en-Ouche", "Nagel-Séez-Mesnil", "Le Mesnil-Simon", "Terres de Bord", "Saint-Jean-d'Illac", "La Boissière", "Mousseaux-Neuville", "Champigny-la-Futelaye", "La Couture-Boussey", "Fontenay-sur-Eure", "Gaillon", "Louviers", "Saint-Aubin-de-Médoc", "Manneville-la-Raoult", "Beuzeville", "Epaignes"], "center": [49.066667, 1.05] },
   "28 - Eure-et-Loir": { "cities": [], "center": [48.4, 1.3] },
   "29 - Finistère": { "cities": [], "center": [48.25, -4] },
   "30 - Gard": { "cities": [], "center": [44, 4.166667] },
   "31 - Haute-Garonne": { "cities": [], "center": [43.416667, 1.333333] },
   "32 - Gers": { "cities": [], "center": [43.666667, 0.5] },
-  "33 - Gironde": { "cities": [], "center": [44.75, -0.5] },
+  "33 - Gironde": { "cities": ["Bordeaux", "Cestas", "Le Haillan", "Mérignac", "Bègles", "Villenave-d'Ornon", "Latresne", "Toulenne", "Saint-Symphorien", "La Teste-de-Buch", "Arcachon", "Hostens", "La Rivière", "Cadaujac", "Pessac", "Saint-Jean-d'Illac", "Talence", "Le Bouscat", "Lormont", "Cenon", "Saint-André-de-Cubzac", "La Lande-de-Fronsac", "Virelade", "Podensac", "Libourne", "Saint-Maixant", "Langon", "Fontet", "Bazas", "Montferrier-sur-Lez", "Blaye"], "center": [44.75, -0.5] },
   "34 - Hérault": { "cities": ["Montpellier", "Lattes", "Mauguio", "Saint-Jean-de-Védas", "Mireval", "Pézenas", "Sète", "Frontignan", "Gigean", "Le Crès", "Jacou", "Saint-Paul-et-Valmalle", "Castelnau-le-Lez"], "center": [43.45, 3.5] },
   "35 - Ille-et-Vilaine": { "cities": [], "center": [48.166667, -1.6] },
   "36 - Indre": { "cities": [], "center": [46.8, 1.5] },
@@ -98,3 +98,5 @@
   "95 - Val-d'Oise": { "cities": ["Conflans-Sainte-Honorine", "Saint-Ouen-l'Aumône", "Pierrelaye", "Éragny", "Marines", "Argenteuil", "Soisy-sous-Montmorency", "Deuil-la-Barre", "Eaubonne", "Le Plessis-Bouchard", "Saint-Leu-la-Forêt", "Montigny-lès-Cormeilles", "Herblay-sur-Seine", "Bezons", "Carrières-sur-Seine", "Houilles", "Sannois", "Montmorency", "Saint-Brice-sous-Forêt", "Garges-lès-Gonesse", "Goussainville", "Chaumontel", "Attainville", "Ennery"], "center": [49.083333, 2.166667] }
 }
 
+
+    
