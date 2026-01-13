@@ -16,20 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from "@/lib/utils";
 
-import initialDealerships from '@/data/dealerships.json';
-import data33 from '@/data/33json.json';
-import data34 from '@/data/34json.json';
-import data78 from '@/data/78csvjson.json';
-import data92 from '@/data/92 Phantom_json.json';
-import data77 from '@/data/77json.json';
-import data91 from '@/data/91json.json';
-import data94 from '@/data/94son.json';
-import data95 from '@/data/95json.json';
-import data93 from '@/data/93json.json';
-import data27 from '@/data/27json.json';
-import data13 from '@/data/13marseillejson.json';
-import data06part1 from '@/data/06part1json.json';
-import data06part2 from '@/data/06part2json.json';
+import allDealershipsRaw from '@/data/alldealerships.json';
 import useWindowSize from '@/hooks/use-window-size';
 import brandLogos from '@/data/brand-logos';
 
@@ -39,27 +26,10 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
   loading: () => <div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>
 });
 
-const allDealershipsRaw = [
-  ...initialDealerships,
-  ...data33,
-  ...data34,
-  ...data78,
-  ...data92,
-  ...data77,
-  ...data91,
-  ...data94,
-  ...data93,
-  ...data95,
-  ...data27,
-  ...data13,
-  ...data06part1,
-  ...data06part2,
-] as any[];
-
 // Deduplicate and clean data once
-const uniqueDealershipsRaw = Array.from(new Map(allDealershipsRaw.map(d => [d.placeUrl, d])).values());
+const uniqueDealershipsRaw = Array.from(new Map((allDealershipsRaw as any).data.map((d: any) => [d.placeUrl, d])).values());
 
-const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d, index) => ({
+const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d: any, index: number) => ({
   id: d.placeUrl || `${d.title}-${index}`,
   placeUrl: d.placeUrl,
   title: d.title,
@@ -275,7 +245,7 @@ export default function Home() {
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
-              {cities.map(city => (
+              {cities.map((city:any) => (
                 <SelectItem key={city} value={city}>{city}</SelectItem>
               ))}
             </ScrollArea>
@@ -479,3 +449,8 @@ export default function Home() {
 }
 
     
+
+    
+
+
+
