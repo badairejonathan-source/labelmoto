@@ -254,7 +254,7 @@ export default function Home() {
     return (
       <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
-          <SelectTrigger>
+          <SelectTrigger variant="filter">
             <SelectValue placeholder="Choisir un département" />
           </SelectTrigger>
           <SelectContent>
@@ -266,7 +266,7 @@ export default function Home() {
           </SelectContent>
         </Select>
         <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
-          <SelectTrigger>
+          <SelectTrigger variant="filter">
             <SelectValue placeholder="Choisir une ville" />
           </SelectTrigger>
           <SelectContent>
