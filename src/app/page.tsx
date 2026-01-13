@@ -28,6 +28,8 @@ import data95 from '@/data/95json.json';
 import data93 from '@/data/93json.json';
 import data27 from '@/data/27json.json';
 import data13 from '@/data/13marseillejson.json';
+import data06part1 from '@/data/06.part1json.json';
+import data06part2 from '@/data/06part2json.json';
 import useWindowSize from '@/hooks/use-window-size';
 import brandLogos from '@/data/brand-logos';
 
@@ -50,6 +52,8 @@ const allDealershipsRaw = [
   ...data95,
   ...data27,
   ...data13,
+  ...data06part1,
+  ...data06part2,
 ] as any[];
 
 // Deduplicate and clean data once
