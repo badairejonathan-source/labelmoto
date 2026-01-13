@@ -12,7 +12,7 @@ delete (L.Icon.Default.prototype as any)._getIconUrl;
 const defaultIcon = L.icon({
     iconUrl: `data:image/svg+xml;base64,${btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="41">
-            <path fill="#2563eb" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
+            <path fill="#0F2A44" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
             <g transform="translate(12, 8) scale(0.4)">
                 <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="1"/>
                 <circle cx="0" cy="0" r="2" fill="black"/>
@@ -28,7 +28,7 @@ const defaultIcon = L.icon({
 const highlightedIcon = L.icon({
     iconUrl: `data:image/svg+xml;base64,${btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="51">
-            <path fill="#f97316" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
+            <path fill="#FF6A00" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
             <g transform="translate(12, 8) scale(0.4)">
                 <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="1"/>
                 <circle cx="0" cy="0" r="2" fill="black"/>
