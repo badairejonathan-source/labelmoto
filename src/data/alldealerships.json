@@ -1,56 +1,55 @@
-{
-    "data": [
-        {
-            "placeUrl": "https://www.google.com/maps/place/KTM+NANTES/data=!4m7!3m6!1s0x4805ef41f92cf0cf:0xb8a49c6934c98782!8m2!3d47.24097!4d-1.50352!16s%2Fg%2F1tdy0m9s!19sChIJz5Qo6aH_A0gR8ocZ3EnkK4g",
-            "title": "KTM NANTES",
-            "rating": "4,6",
-            "reviewCount": "517",
-            "category": "Magasin de motos",
-            "address": "11 Rue de la Garde, 44300 Nantes",
-            "plusCode": "6FRW+9H Nantes",
-            "website": "https://www.ktm-nantes.com/",
-            "phoneNumber": "02 51 83 67 17",
-            "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipNqO5-h8KqH8Bf1Hl-yLw-q0-jF5pGz1J8YkQ4=w408-h272-k-no"
-        },
-        {
-            "placeUrl": "https://www.google.com/maps/place/CITY+BIKE+NANTES/data=!4m7!3m6!1s0x4805ef41f92cf0cf:0x5e2365920d39e236!8m2!3d47.24097!4d-1.50352!16s%2Fg%2F1tfd4f_l!19sChIJg_DTIF_A0gQRbrk50RXZo14",
-            "title": "CITY BIKE NANTES",
-            "rating": "4,2",
-            "reviewCount": "321",
-            "category": "Concessionnaire de motos",
-            "address": "11 Rue de la Garde, 44300 Nantes",
-            "plusCode": "6FRW+9H Nantes",
-            "website": "https://www.city-bike-nantes.com/",
-            "phoneNumber": "02 40 40 10 10",
-            "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipNqO5-h8KqH8Bf1Hl-yLw-q0-jF5pGz1J8YkQ4=w408-h272-k-no"
-        },
-        {
-            "placeUrl": "https://www.google.com/maps/place/FG+Motos/@43.8407039,4.3718098,17z/data=!3m1!4b1!4m6!3m5!1s0x12b42d1355b74893:0x8855065f88550684!8m2!3d43.8407039!4d4.3718098!16s%2Fg%2F1vgn4xsm",
-            "title": "FG Motos",
-            "rating": "4,1",
-            "reviewCount": 130,
-            "category": "Concessionnaire de motos",
-            "attributes": "· Achats en magasin · Retrait en magasin",
-            "address": "1 Rue Sully, 30000 Nîmes, France",
-            "plusCode": "R9RC+7P Nîmes, France",
-            "website": "http://www.fgmotos.com/",
-            "phoneNumber": "+33 4 66 67 06 26",
-            "currentStatus": "Ouvert ⋅ Ferme à 12:00 · Rouvre à 14:00",
-            "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipMSJ-oy3rY-8qr-IO80HvvwveBwbg4pC9OtGDG3=w408-h306-k-no",
-            "isClaimed": true,
-            "mercredi": "08:30–12:00, 14:00–18:30",
-            "jeudi": "08:30–12:00, 14:00–18:30",
-            "vendredi": "08:30–12:00, 14:00–18:30",
-            "samedi": "09:00–12:00",
-            "dimanche": "Fermé",
-            "lundi": "Fermé",
-            "mardi": "08:30–12:00, 14:00–18:30",
-            "latitude": 43.840687500000016,
-            "longitude": 4.37181249999999,
-            "query": "concession moto f g motos autos 1 rue sully 30000 nimes",
-            "timestamp": "2025-11-26T09:15:58.037Z",
-            "info": "",
-            "error": ""
-        }
-    ]
-}
+
+[
+    {
+        "placeUrl": "https://www.google.com/maps/place/KTM+NANTES/data=!4m7!3m6!1s0x4805ef41f92cf0cf:0xb8a49c6934c98782!8m2!3d47.24097!4d-1.50352!16s%2Fg%2F1tdy0m9s!19sChIJz5Qo6aH_A0gR8ocZ3EnkK4g",
+        "title": "KTM NANTES",
+        "rating": "4,6",
+        "reviewCount": "517",
+        "category": "Magasin de motos",
+        "address": "11 Rue de la Garde, 44300 Nantes",
+        "plusCode": "6FRW+9H Nantes",
+        "website": "https://www.ktm-nantes.com/",
+        "phoneNumber": "02 51 83 67 17",
+        "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipNqO5-h8KqH8Bf1Hl-yLw-q0-jF5pGz1J8YkQ4=w408-h272-k-no"
+    },
+    {
+        "placeUrl": "https://www.google.com/maps/place/CITY+BIKE+NANTES/data=!4m7!3m6!1s0x4805ef41f92cf0cf:0x5e2365920d39e236!8m2!3d47.24097!4d-1.50352!16s%2Fg%2F1tfd4f_l!19sChIJg_DTIF_A0gQRbrk50RXZo14",
+        "title": "CITY BIKE NANTES",
+        "rating": "4,2",
+        "reviewCount": "321",
+        "category": "Concessionnaire de motos",
+        "address": "11 Rue de la Garde, 44300 Nantes",
+        "plusCode": "6FRW+9H Nantes",
+        "website": "https://www.city-bike-nantes.com/",
+        "phoneNumber": "02 40 40 10 10",
+        "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipNqO5-h8KqH8Bf1Hl-yLw-q0-jF5pGz1J8YkQ4=w408-h272-k-no"
+    },
+    {
+      "placeUrl": "https://www.google.com/maps/place/FG+Motos/@43.8407039,4.3718098,17z/data=!3m1!4b1!4m6!3m5!1s0x12b42d1355b74893:0x8855065f88550684!8m2!3d43.8407039!4d4.3718098!16s%2Fg%2F1vgn4xsm",
+      "title": "FG Motos",
+      "rating": "4,1",
+      "reviewCount": 130,
+      "category": "Concessionnaire de motos",
+      "attributes": "· Achats en magasin · Retrait en magasin",
+      "address": "1 Rue Sully, 30000 Nîmes, France",
+      "plusCode": "R9RC+7P Nîmes, France",
+      "website": "http://www.fgmotos.com/",
+      "phoneNumber": "+33 4 66 67 06 26",
+      "currentStatus": "Ouvert ⋅ Ferme à 12:00 · Rouvre à 14:00",
+      "imgUrl": "https://lh3.googleusercontent.com/p/AF1QipMSJ-oy3rY-8qr-IO80HvvwveBwbg4pC9OtGDG3=w408-h306-k-no",
+      "isClaimed": true,
+      "mercredi": "08:30–12:00, 14:00–18:30",
+      "jeudi": "08:30–12:00, 14:00–18:30",
+      "vendredi": "08:30–12:00, 14:00–18:30",
+      "samedi": "09:00–12:00",
+      "dimanche": "Fermé",
+      "lundi": "Fermé",
+      "mardi": "08:30–12:00, 14:00–18:30",
+      "latitude": 43.840687500000016,
+      "longitude": 4.37181249999999,
+      "query": "concession moto f g motos autos 1 rue sully 30000 nimes",
+      "timestamp": "2025-11-26T09:15:58.037Z",
+      "info": "",
+      "error": ""
+    }
+]

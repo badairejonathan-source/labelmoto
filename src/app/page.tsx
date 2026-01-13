@@ -27,7 +27,7 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 });
 
 // Deduplicate and clean data once
-const uniqueDealershipsRaw = Array.from(new Map((allDealershipsRaw as any).data.map((d: any) => [d.placeUrl, d])).values());
+const uniqueDealershipsRaw = Array.from(new Map(allDealershipsRaw.map((d: any) => [d.placeUrl, d])).values());
 
 const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d: any, index: number) => ({
   id: d.placeUrl || `${d.title}-${index}`,
