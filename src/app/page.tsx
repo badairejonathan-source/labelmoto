@@ -252,7 +252,7 @@ export default function Home() {
     const desktopClasses = "md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2";
     
     return (
-      <div className={cn(commonClasses, !isMobileView && desktopClasses, "bg-sidebar text-sidebar-foreground p-2 rounded-md")}>
+      <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
           <SelectTrigger>
             <SelectValue placeholder="Choisir un département" />
