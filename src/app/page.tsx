@@ -107,7 +107,7 @@ export default function Home() {
   useEffect(() => {
     let dealerships = allDealerships;
     
-    if (selectedDepartment !== '') {
+    if (selectedDepartment) {
         let filtered = dealerships;
 
         if (selectedCategory === 'Concessionnaires') {
