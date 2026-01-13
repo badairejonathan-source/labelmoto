@@ -6,6 +6,7 @@ import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MotoTrustLogo from './logo';
 import useWindowSize from '@/hooks/use-window-size';
+import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   children?: React.ReactNode;
@@ -16,15 +17,17 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
   const isMobile = width ? width < 768 : false;
 
   return (
-    <header className="flex items-center justify-between p-2 md:p-4 bg-primary text-primary-foreground border-b border-gray-200 dark:border-gray-700">
+    <header className={cn("flex items-center justify-between p-2 md:p-4 bg-primary text-primary-foreground border-b border-gray-200 dark:border-gray-700",
+      "[&_button]:text-primary-foreground [&_button]:border-primary-foreground/50"
+    )}>
       <div className="flex items-center">
-        <MotoTrustLogo />
+        <MotoTrustLogo className="[&>path]:stroke-primary-foreground"/>
       </div>
       
       {children}
       
       <div className="flex items-center space-x-2">
-        <Button size="icon" variant="outline" className="bg-primary text-primary-foreground">
+        <Button size="icon" variant="outline" className="bg-primary hover:bg-primary/80">
           <User className="h-5 w-5" />
         </Button>
       </div>
