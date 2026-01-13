@@ -107,24 +107,27 @@ export default function Home() {
   useEffect(() => {
     let dealerships = allDealerships;
     
-    if (selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir') {
+    if (selectedDepartment !== '') {
+        let filtered = dealerships;
+
         if (selectedCategory === 'Concessionnaires') {
-          dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
+          filtered = filtered.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
         } else if (selectedCategory === 'Réparateurs') {
-          dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
+          filtered = filtered.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
         }
         
         if (selectedCity) {
           const lowerCaseCity = selectedCity.toLowerCase();
-          dealerships = dealerships.filter(d => 
+          filtered = filtered.filter(d => 
             d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
           );
         } else if (selectedDepartment) {
             const depCode = selectedDepartment.split(' ')[0];
-            dealerships = dealerships.filter(d => 
+            filtered = filtered.filter(d => 
               d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
             );
         }
+        dealerships = filtered;
     } else {
         dealerships = [];
     }
@@ -449,8 +452,3 @@ export default function Home() {
 }
 
     
-
-    
-
-
-
