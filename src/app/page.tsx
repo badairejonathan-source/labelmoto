@@ -72,7 +72,7 @@ export default function Home() {
   const isMobile = width ? width < 768 : false;
 
   const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
-  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
+  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>(allDealerships);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
@@ -106,32 +106,30 @@ export default function Home() {
 
   useEffect(() => {
     let dealerships = allDealerships;
-    
-    if (selectedDepartment) {
-        let filtered = dealerships;
 
-        if (selectedCategory === 'Concessionnaires') {
-          filtered = filtered.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
-        } else if (selectedCategory === 'Réparateurs') {
-          filtered = filtered.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
-        }
-        
-        if (selectedCity) {
-          const lowerCaseCity = selectedCity.toLowerCase();
-          filtered = filtered.filter(d => 
-            d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
-          );
-        } else if (selectedDepartment) {
-            const depCode = selectedDepartment.split(' ')[0];
-            filtered = filtered.filter(d => 
-              d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
-            );
-        }
-        dealerships = filtered;
-    } else {
-        dealerships = [];
+    let filtered = dealerships;
+
+    if (selectedCategory === 'Concessionnaires') {
+        filtered = filtered.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
+    } else if (selectedCategory === 'Réparateurs') {
+        filtered = filtered.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
     }
-    
+
+    if (selectedCity) {
+        const lowerCaseCity = selectedCity.toLowerCase();
+        filtered = filtered.filter(d =>
+            d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
+        );
+    } else if (selectedDepartment) {
+        const depCode = selectedDepartment.split(' ')[0];
+        const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
+        filtered = filtered.filter(d =>
+            d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
+        );
+    }
+
+    dealerships = filtered;
+
     const sortedDealerships = [...dealerships].sort((a, b) => {
         const aIsBrand = brandHighlightIds.has(a.id);
         const bIsBrand = brandHighlightIds.has(b.id);
@@ -146,8 +144,8 @@ export default function Home() {
 
     setFilteredDealerships(sortedDealerships);
     setSelectedDealershipId(null);
-
-    const shouldOpenSheet = selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir';
+    
+    const shouldOpenSheet = selectedDepartment !== '' || selectedCity !== '';
 
     if (isMobile) {
       if(shouldOpenSheet && !isFilterSheetOpen) {
@@ -184,7 +182,14 @@ export default function Home() {
 
   const handleCityChange = useCallback((city: string) => {
       setSelectedCity(city);
-  }, []);
+      if(city){
+        const depData = (locations as any)[selectedDepartment];
+        if(depData && depData.cityCoords && depData.cityCoords[city]){
+           setMapCenter(depData.cityCoords[city] as [number, number]);
+           setMapZoom(12);
+        }
+      }
+  }, [selectedDepartment]);
 
   const handleBrandChange = useCallback((brand: string) => {
     setSelectedBrands(prev => 
