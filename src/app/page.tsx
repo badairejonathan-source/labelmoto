@@ -254,7 +254,7 @@ export default function Home() {
     return (
       <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
-          <SelectTrigger>
+          <SelectTrigger className="text-primary">
             <SelectValue placeholder="Choisir un département" />
           </SelectTrigger>
           <SelectContent>
@@ -266,7 +266,7 @@ export default function Home() {
           </SelectContent>
         </Select>
         <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
-          <SelectTrigger>
+          <SelectTrigger className="text-primary">
             <SelectValue placeholder="Choisir une ville" />
           </SelectTrigger>
           <SelectContent>
@@ -279,7 +279,7 @@ export default function Home() {
         </Select>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="shrink-0 justify-between">
+            <Button variant="outline" className="shrink-0 justify-between text-primary">
               {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
               <ListFilter className="ml-2 h-4 w-4"/>
             </Button>
@@ -473,6 +473,8 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
 
