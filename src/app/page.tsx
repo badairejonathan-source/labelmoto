@@ -252,9 +252,9 @@ export default function Home() {
     const desktopClasses = "md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2";
     
     return (
-      <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
+      <div className={cn(commonClasses, !isMobileView && desktopClasses, "bg-sidebar text-sidebar-foreground p-2 rounded-md")}>
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
-          <SelectTrigger className="text-primary">
+          <SelectTrigger>
             <SelectValue placeholder="Choisir un département" />
           </SelectTrigger>
           <SelectContent>
@@ -266,7 +266,7 @@ export default function Home() {
           </SelectContent>
         </Select>
         <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
-          <SelectTrigger className="text-primary">
+          <SelectTrigger>
             <SelectValue placeholder="Choisir une ville" />
           </SelectTrigger>
           <SelectContent>
@@ -279,7 +279,7 @@ export default function Home() {
         </Select>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="shrink-0 justify-between text-primary">
+            <Button variant="filter" className="shrink-0 justify-between">
               {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
               <ListFilter className="ml-2 h-4 w-4"/>
             </Button>
@@ -389,12 +389,12 @@ export default function Home() {
             {viewMode === 'list' ? (
                 <div className="h-full flex flex-col overflow-hidden flex-1">
                     <ScrollArea className="flex-grow">
-                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {dealershipsToDisplay.map((dealer, index) => (
                             <React.Fragment key={dealer.id}>
                                 <div
                                     onClick={() => handleCardClick(dealer.id)}
-                                    className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3' : ''}
+                                    className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3 xl:col-span-4' : ''}
                                 >
                                 <DealershipCard 
                                     dealership={dealer} 
@@ -403,14 +403,14 @@ export default function Home() {
                                 />
                                 </div>
                                 {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                                <div className="md:col-span-2 lg:col-span-3">
+                                <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
                                     <AdCard />
                                 </div>
                                 )}
                             </React.Fragment>
                             ))}
                             {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
-                            <div className="md:col-span-2 lg:col-span-3">
+                            <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
                                 <AdCard />
                             </div>
                             )}
@@ -473,9 +473,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
-
-    
