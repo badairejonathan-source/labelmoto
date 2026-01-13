@@ -15,11 +15,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from "@/lib/utils";
+import useWindowSize from '@/hooks/use-window-size';
+import brandLogos from '@/data/brand-logos';
 
 import allDealershipsInitial from '@/data/alldealerships.json';
 import data30 from '@/data/30json.json';
-import useWindowSize from '@/hooks/use-window-size';
-import brandLogos from '@/data/brand-logos';
 
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
@@ -111,28 +111,27 @@ export default function Home() {
   useEffect(() => {
     let dealerships = allDealerships;
 
-    let filtered = dealerships;
-
-    if (selectedCategory === 'Concessionnaires') {
-        filtered = filtered.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
-    } else if (selectedCategory === 'Réparateurs') {
-        filtered = filtered.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
-    }
-
-    if (selectedCity) {
-        const lowerCaseCity = selectedCity.toLowerCase();
-        filtered = filtered.filter(d =>
-            d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
-        );
-    } else if (selectedDepartment) {
+    if (selectedDepartment) {
         const depCode = selectedDepartment.split(' ')[0];
         const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
-        filtered = filtered.filter(d =>
+        dealerships = dealerships.filter(d =>
             d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
         );
     }
+    
+    if (selectedCity) {
+        const lowerCaseCity = selectedCity.toLowerCase();
+        dealerships = dealerships.filter(d =>
+            d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
+        );
+    }
 
-    dealerships = filtered;
+    if (selectedCategory === 'Concessionnaires') {
+        dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
+    } else if (selectedCategory === 'Réparateurs') {
+        dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
+    }
+
 
     const sortedDealerships = [...dealerships].sort((a, b) => {
         const aIsBrand = brandHighlightIds.has(a.id);
@@ -147,7 +146,6 @@ export default function Home() {
     });
 
     setFilteredDealerships(sortedDealerships);
-    setSelectedDealershipId(null);
     
     const shouldOpenSheet = selectedDepartment !== '' || selectedCity !== '';
 
@@ -157,6 +155,10 @@ export default function Home() {
       } else if (!shouldOpenSheet) {
           setIsMobileSheetOpen(false);
       }
+    }
+    
+    if(!selectedDepartment && !selectedCity){
+        setSelectedDealershipId(null);
     }
 
   }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds]);
@@ -329,8 +331,8 @@ export default function Home() {
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {(isMobileSheetOpen || (isMobile && hasActiveFilters) ) && (
-            <Sheet open={isMobileSheetOpen || (isMobile && hasActiveFilters)} onOpenChange={setIsMobileSheetOpen} >
+            {(isMobileSheetOpen || hasActiveFilters ) && (
+            <Sheet open={isMobileSheetOpen || hasActiveFilters} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent 
                  side="bottom" 
                  className="h-[40vh]" 
@@ -459,3 +461,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

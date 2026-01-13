@@ -12,7 +12,7 @@ delete (L.Icon.Default.prototype as any)._getIconUrl;
 const defaultIcon = L.icon({
     iconUrl: `data:image/svg+xml;base64,${btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="41">
-            <path fill="#0F2A44" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
+            <path fill="#0A2540" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
             <g transform="translate(12, 8) scale(0.4)">
                 <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="1"/>
                 <circle cx="0" cy="0" r="2" fill="black"/>
@@ -176,6 +176,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
       } else if (brandMatch && brandIcons[brandMatch]) {
         iconToUse = brandIcons[brandMatch];
         zIndexOffset = 500;
+      } else if (brandHighlightIds.has(id)) {
+        iconToUse = highlightedIcon;
+        zIndexOffset = 500;
       }
 
       marker.setIcon(iconToUse);
@@ -187,9 +190,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
         }
       }
     });
-  }, [hoveredDealershipId, brandIcons, selectedBrands, dealerships]);
+  }, [hoveredDealershipId, brandHighlightIds, brandIcons, selectedBrands, dealerships]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
 
 export default MapComponent;
+
+    
