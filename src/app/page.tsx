@@ -72,9 +72,11 @@ export default function Home() {
       const data = snapshot.val();
       if (data) {
         const firebaseDealerships: Dealership[] = [];
-        Object.values(data).forEach((dept: any) => {
-            if(typeof dept === 'object' && dept !== null) {
-                Object.values(dept).forEach((dealer: any) => {
+        // Loop through all departments in the data (e.g., '30', '95')
+        Object.values(data).forEach((deptData: any) => {
+            if(typeof deptData === 'object' && deptData !== null) {
+                // Loop through all dealerships within a department
+                Object.values(deptData).forEach((dealer: any) => {
                     if(dealer && dealer.id) {
                         firebaseDealerships.push(dealer as Dealership);
                     }
@@ -216,8 +218,9 @@ export default function Home() {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
-    return filteredDealerships.length > 0 ? filteredDealerships : allDealerships;
-  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
+    // If there are active filters, show filtered results. Otherwise, show all.
+    return hasActiveFilters ? filteredDealerships : allDealerships;
+  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile, hasActiveFilters]);
   
   const handleCardClick = (id: string) => {
       setSelectedDealershipId(prevId => prevId === id ? null : id);
@@ -255,6 +258,7 @@ export default function Home() {
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
+              <SelectItem value="">Tout voir</SelectItem>
               {departments.map(dep => (
                 <SelectItem key={dep} value={dep}>{dep}</SelectItem>
               ))}
@@ -467,3 +471,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
