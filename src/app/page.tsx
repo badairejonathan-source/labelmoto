@@ -55,7 +55,7 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -101,7 +101,7 @@ export default function Home() {
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
   
   const hasActiveFilters = useMemo(() => {
-    return selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+    return selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
   
   const brandHighlightIds = useMemo(() => {
@@ -121,11 +121,10 @@ export default function Home() {
   useEffect(() => {
     let dealerships = allDealerships;
 
-    if (selectedDepartment) {
+    if (selectedDepartment && selectedDepartment !== 'all') {
         const depCode = selectedDepartment.split(' ')[0];
-        const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
         dealerships = dealerships.filter(d =>
-            d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
+            d.address && typeof d.address === 'string' && d.address.includes(depCode)
         );
     }
     
@@ -157,7 +156,7 @@ export default function Home() {
 
     setFilteredDealerships(sortedDealerships);
     
-    const shouldOpenSheet = selectedDepartment !== '' || selectedCity !== '';
+    const shouldOpenSheet = selectedDepartment !== 'all' || selectedCity !== '';
 
     if (isMobile) {
       if(shouldOpenSheet && !isFilterSheetOpen) {
@@ -167,14 +166,14 @@ export default function Home() {
       }
     }
     
-    if(!selectedDepartment && !selectedCity){
+    if(selectedDepartment === 'all' && !selectedCity){
         setSelectedDealershipId(null);
     }
 
   }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds, allDealerships]);
 
   const cities = useMemo(() => {
-    if (selectedDepartment && (locations as any)[selectedDepartment]) {
+    if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
       return (locations as any)[selectedDepartment].cities || [];
     }
     return [];
@@ -184,7 +183,7 @@ export default function Home() {
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
     setSelectedCity('');
-    if (department && (locations as any)[department]) {
+    if (department && department !== 'all' && (locations as any)[department]) {
       const locationData = (locations as any)[department];
       if(locationData.center) {
         setMapCenter(locationData.center as [number, number]);
@@ -258,14 +257,14 @@ export default function Home() {
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
-              <SelectItem value="">Tout voir</SelectItem>
+              <SelectItem value="all">Tout voir</SelectItem>
               {departments.map(dep => (
                 <SelectItem key={dep} value={dep}>{dep}</SelectItem>
               ))}
             </ScrollArea>
           </SelectContent>
         </Select>
-        <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment}>
+        <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment || selectedDepartment === 'all'}>
           <SelectTrigger variant="filter">
             <SelectValue placeholder="Choisir une ville" />
           </SelectTrigger>
