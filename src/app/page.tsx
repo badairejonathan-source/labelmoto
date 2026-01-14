@@ -220,11 +220,12 @@ export default function Home() {
   }, []);
 
   const dealershipsToDisplay = useMemo(() => {
+    if (!hasActiveFilters) return [];
     if (selectedDealershipId && (viewMode === 'map' || isMobile)) {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
-    return hasActiveFilters ? filteredDealerships : [];
+    return filteredDealerships;
   }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile, hasActiveFilters]);
   
   const handleCardClick = (id: string) => {
@@ -348,7 +349,7 @@ export default function Home() {
             </div>
             
             <MapComponent 
-              dealerships={allDealerships} 
+              dealerships={hasActiveFilters ? filteredDealerships : []}
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
@@ -358,8 +359,8 @@ export default function Home() {
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {(isMobileSheetOpen || hasActiveFilters ) && (
-            <Sheet open={isMobileSheetOpen || hasActiveFilters} onOpenChange={(isOpen) => {
+            {(isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)) && (
+            <Sheet open={isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)} onOpenChange={(isOpen) => {
                 if (!isOpen) {
                     setSelectedDepartment('all');
                     setSelectedCity('');
@@ -523,3 +524,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
