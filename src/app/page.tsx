@@ -16,47 +16,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from "@/lib/utils";
 import useWindowSize from '@/hooks/use-window-size';
-import brandLogos from '@/data/brand-logos';
-
-import allDealershipsInitial from '@/data/alldealerships.json';
-import data30 from '@/data/30json.json';
-
+import { db } from '@/lib/firebase';
+import { ref, onValue } from 'firebase/database';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
   loading: () => <div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>
 });
 
-const allDealershipsRaw = [...allDealershipsInitial, ...data30];
-
-
-// Deduplicate and clean data once
-const uniqueDealershipsRaw = Array.from(new Map(allDealershipsRaw.map((d: any) => [d.placeUrl, d])).values());
-
-const allDealerships: Dealership[] = uniqueDealershipsRaw.map((d: any, index: number) => ({
-  id: d.placeUrl || `${d.title}-${index}`,
-  placeUrl: d.placeUrl,
-  title: d.title,
-  address: d.address,
-  website: d.website,
-  phoneNum: d.phoneNumber || d.phoneNum,
-  imgUrl: d.imgUrl,
-  mardi: d.mardi,
-  mercredi: d.mercredi,
-  jeudi: d.jeudi,
-  vendredi: d.vendredi,
-  samedi: d.samedi,
-  dimanche: d.dimanche,
-  lundi: d.lundi,
-  latitude: typeof d.latitude === 'string' ? parseFloat(d.latitude.replace(',', '.')) : d.latitude,
-  longitude: typeof d.longitude === 'string' ? parseFloat(d.longitude.replace(',', '.')) : d.longitude,
-  rating: d.rating,
-  category: d.category,
-})).filter(d => d.title && typeof d.title === 'string' && d.address && typeof d.address === 'string' && d.placeUrl && d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
+const brandKeywords = [
+    'Aprilia', 'Benelli', 'BMW', 'Can-Am', 'CFMOTO', 'Daelim', 'Ducati', 'Fantic', 'GasGas', 'Harley-Davidson', 
+    'Honda', 'Husqvarna', 'Hyosung', 'Indian', 'Kawasaki', 'Keeway', 'KTM', 'Kymco', 'Mash', 'Moto Guzzi', 
+    'MV Agusta', 'Orcal', 'Peugeot', 'Piaggio', 'Royal Enfield', 'Suzuki', 'SWM', 'Sym', 'Triumph', 'Vespa', 
+    'Yamaha', 'Zontes'
+];
 
 const getBrands = (dealerships: Dealership[]) => {
   const brandSet = new Set<string>();
-  const brandKeywords = Object.keys(brandLogos);
   
   dealerships.forEach(d => {
     if (d.title && typeof d.title === 'string') {
@@ -76,7 +52,8 @@ export default function Home() {
   const isMobile = width ? width < 768 : false;
 
   const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
-  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>(allDealerships);
+  const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
+  const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tout voir');
@@ -88,7 +65,18 @@ export default function Home() {
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
-  const availableBrands = useMemo(() => getBrands(allDealerships), []);
+  useEffect(() => {
+    const concessionsRef = ref(db, 'concessions/95');
+    onValue(concessionsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const dealerships: Dealership[] = Object.values(data);
+        setAllDealerships(dealerships);
+      }
+    });
+  }, []);
+
+  const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
   
   const hasActiveFilters = useMemo(() => {
     return selectedDepartment !== '' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
@@ -105,7 +93,7 @@ export default function Home() {
       });
     }
     return ids;
-  }, [selectedBrands]);
+  }, [selectedBrands, allDealerships]);
 
 
   useEffect(() => {
@@ -161,7 +149,7 @@ export default function Home() {
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds]);
+  }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds, allDealerships]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && (locations as any)[selectedDepartment]) {
@@ -461,5 +449,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

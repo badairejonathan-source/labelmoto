@@ -2,10 +2,9 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
-import brandLogos from '@/data/brand-logos';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
@@ -54,7 +53,6 @@ interface MapComponentProps {
   zoom: number;
   hoveredDealershipId?: string | null;
   brandHighlightIds: Set<string>;
-  selectedBrands?: string[];
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
@@ -66,7 +64,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   zoom, 
   hoveredDealershipId,
   brandHighlightIds = new Set(),
-  selectedBrands = [],
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut 
@@ -74,23 +71,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
-
-  const brandIcons = useMemo(() => {
-    const icons: { [key: string]: L.Icon } = {};
-    if (selectedBrands.length > 0) {
-      selectedBrands.forEach(brand => {
-        if (brandLogos[brand]) {
-          icons[brand] = L.icon({
-            iconUrl: brandLogos[brand],
-            iconSize: [35, 35],
-            iconAnchor: [17, 35],
-            popupAnchor: [1, -34],
-          });
-        }
-      });
-    }
-    return icons;
-  }, [selectedBrands]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current) {
@@ -167,15 +147,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
       let iconToUse = defaultIcon;
       let zIndexOffset = 0;
 
-      const dealer = dealerships.find(d => d.id === id);
-      const brandMatch = selectedBrands.find(brand => dealer?.title.toLowerCase().includes(brand.toLowerCase()));
-
       if (id === hoveredDealershipId) {
         iconToUse = highlightedIcon;
         zIndexOffset = 1000;
-      } else if (brandMatch && brandIcons[brandMatch]) {
-        iconToUse = brandIcons[brandMatch];
-        zIndexOffset = 500;
       } else if (brandHighlightIds.has(id)) {
         iconToUse = highlightedIcon;
         zIndexOffset = 500;
@@ -190,11 +164,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
         }
       }
     });
-  }, [hoveredDealershipId, brandHighlightIds, brandIcons, selectedBrands, dealerships]);
+  }, [hoveredDealershipId, brandHighlightIds]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
 
 export default MapComponent;
-
-    
