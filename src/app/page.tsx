@@ -51,10 +51,10 @@ export default function Home() {
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
 
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>(isMobile ? 'map' : 'map');
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
@@ -122,9 +122,9 @@ export default function Home() {
             d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
         );
     }
-
+    
     setFilteredDealerships(dealerships);
-
+    
     const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedBrands.length > 0;
     
     if (isMobile) {
@@ -220,7 +220,7 @@ export default function Home() {
     
     return (
       <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
-        <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
+        <Select onValueChange={handleDepartmentChange} value={selectedDepartment || "all"}>
           <SelectTrigger variant="filter">
             <SelectValue placeholder="Departements" />
           </SelectTrigger>
@@ -393,7 +393,7 @@ export default function Home() {
                               {(index + 1) % 6 === 0 && !selectedDealershipId && <AdCard />}
                             </React.Fragment>
                           ))}
-                           {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                           {dealershipsToDisplay.length === 0 && (selectedDepartment || selectedCity || selectedBrands.length > 0) && (
                                 <div className="text-center text-muted-foreground pt-20">
                                     <p>Aucun résultat trouvé.</p>
                                     <p className="text-sm">Essayez d'ajuster vos filtres.</p>
@@ -443,7 +443,7 @@ export default function Home() {
                                 <AdCard />
                             </div>
                             )}
-                             {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                             {dealershipsToDisplay.length === 0 && (selectedDepartment || selectedCity || selectedBrands.length > 0) && (
                                 <div className="text-center text-muted-foreground pt-20 col-span-full">
                                     <p>Aucun résultat trouvé.</p>
                                     <p className="text-sm">Essayez d'ajuster vos filtres.</p>
@@ -460,3 +460,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
