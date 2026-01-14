@@ -56,7 +56,6 @@ export default function Home() {
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedCity, setSelectedCity] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Tout voir');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
@@ -124,15 +123,9 @@ export default function Home() {
         );
     }
 
-    if (selectedCategory === 'Concessionnaires') {
-        dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
-    } else if (selectedCategory === 'Réparateurs') {
-        dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
-    }
-
     setFilteredDealerships(dealerships);
 
-    const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+    const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedBrands.length > 0;
     
     if (isMobile) {
       if(hasActiveFilters && !isFilterSheetOpen) {
@@ -146,7 +139,7 @@ export default function Home() {
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, isFilterSheetOpen, isMobile]);
+  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isFilterSheetOpen, isMobile]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -276,21 +269,11 @@ export default function Home() {
             </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
-         <Select onValueChange={setSelectedCategory} value={selectedCategory}>
-            <SelectTrigger variant="filter">
-                <SelectValue placeholder="Catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="Tout voir">Tout voir</SelectItem>
-                <SelectItem value="Concessionnaires">Concessionnaires</SelectItem>
-                <SelectItem value="Réparateurs">Réparateurs</SelectItem>
-            </SelectContent>
-        </Select>
       </div>
     );
   };
   
-  const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+  const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedBrands.length > 0;
 
   return (
     <div className="flex flex-col h-screen">
