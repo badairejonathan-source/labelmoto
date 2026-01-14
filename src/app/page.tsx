@@ -18,7 +18,6 @@ import { cn } from "@/lib/utils";
 import useWindowSize from '@/hooks/use-window-size';
 import { db } from '@/lib/firebase';
 import { ref, onValue } from "firebase/database";
-import allDealershipsData from '@/data/alldealerships.json';
 
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
@@ -68,17 +67,6 @@ export default function Home() {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   useEffect(() => {
-    const initialDealerships: Dealership[] = Array.isArray(allDealershipsData) ? allDealershipsData.flat().filter(Boolean) : [];
-    
-    const uniqueDealerships = initialDealerships.reduce((acc: Dealership[], current) => {
-        if (!acc.find(item => item.id === current.id)) {
-            acc.push(current);
-        }
-        return acc;
-    }, []);
-
-    setAllDealerships(uniqueDealerships);
-    
     const concessionsRef = ref(db);
     const unsubscribe = onValue(concessionsRef, (snapshot) => {
       const data = snapshot.val();
@@ -94,18 +82,14 @@ export default function Home() {
             }
         });
         
-        setAllDealerships(prevDealerships => {
-          const combined = [...prevDealerships];
-          const existingIds = new Set(prevDealerships.map(d => d.id));
-          
-          firebaseDealerships.forEach(fd => {
-            if (!existingIds.has(fd.id)) {
-              combined.push(fd);
-              existingIds.add(fd.id);
+        const uniqueDealerships = firebaseDealerships.reduce((acc: Dealership[], current) => {
+            if (!acc.find(item => item.id === current.id)) {
+                acc.push(current);
             }
-          });
-          return combined;
-        });
+            return acc;
+        }, []);
+        
+        setAllDealerships(uniqueDealerships);
       }
     });
 
@@ -232,7 +216,7 @@ export default function Home() {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
-    return filteredDealerships;
+    return filteredDealerships.length > 0 ? filteredDealerships : allDealerships;
   }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
   
   const handleCardClick = (id: string) => {
