@@ -67,13 +67,27 @@ export default function Home() {
 
   useEffect(() => {
     const concessionsRef = ref(db, 'concessions/95');
-    onValue(concessionsRef, (snapshot) => {
+    const unsubscribe = onValue(concessionsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const dealerships: Dealership[] = Object.values(data);
-        setAllDealerships(dealerships);
+        const firebaseDealerships: Dealership[] = Object.values(data);
+        
+        setAllDealerships(prevDealerships => {
+          const combined = [...prevDealerships];
+          const existingIds = new Set(prevDealerships.map(d => d.id));
+          
+          firebaseDealerships.forEach(fd => {
+            if (!existingIds.has(fd.id)) {
+              combined.push(fd);
+              existingIds.add(fd.id);
+            }
+          });
+          return combined;
+        });
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
