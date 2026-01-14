@@ -19,20 +19,24 @@ interface DealershipCardProps {
 
 const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false, onClose, onClick }) => {
   const getCategory = (title: string) => {
-    if (title.toLowerCase().includes('concession')) return 'Concess.';
-    if (title.toLowerCase().includes('garage')) return 'Garage';
-    if (title.toLowerCase().includes('reparateur')) return 'Réparateur';
+    if (!title) return null;
+    const lowerTitle = title.toLowerCase();
+    if (lowerTitle.includes('concession')) return 'Concess.';
+    if (lowerTitle.includes('garage')) return 'Garage';
+    if (lowerTitle.includes('reparateur')) return 'Réparateur';
     return null;
   }
 
   const getBrands = (title: string) => {
+    if (!title) return [];
     const brands = ['BMW', 'Ducati', 'Yamaha', 'Kawasaki', 'KTM', 'Husqvarna', 'Honda', 'Suzuki', 'Triumph', 'Harley-Davidson', 'Indian'];
     const foundBrands = brands.filter(brand => title.toLowerCase().includes(brand.toLowerCase()));
     return foundBrands;
   }
 
-  const category = getCategory(dealership.title);
-  const brands = getBrands(dealership.title);
+  const title = dealership.title || '';
+  const category = getCategory(title);
+  const brands = getBrands(title);
   
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
@@ -63,7 +67,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
           {dealership.imgUrl ? (
             <Image
               src={dealership.imgUrl}
-              alt={`Photo de ${dealership.title}`}
+              alt={`Photo de ${title}`}
               fill
               className="object-cover"
               sizes="80px"
@@ -88,7 +92,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
             <div className="flex justify-between items-start gap-2">
                <div className="flex-grow min-w-0 flex-shrink">
                 <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words">
-                  {dealership.title}
+                  {title}
                 </h3>
               </div>
               {rating > 0 && (
