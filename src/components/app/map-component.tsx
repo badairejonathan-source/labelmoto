@@ -4,7 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
-import brandLogos from '@/data/brand-logos';
 
 // Supprimer la configuration par défaut qui pose problème avec Next.js
 if (typeof window !== 'undefined') {
@@ -23,43 +22,28 @@ const createIcon = (svg: string, size: [number, number], anchor: [number, number
         iconUrl: `data:image/svg+xml;base64,${btoa(svg)}`,
         iconSize: size,
         iconAnchor: anchor,
-        popupAnchor: [1, -size[1] / 2],
+        popupAnchor: [0, -size[1] / 1.5],
     });
 }
 
 const defaultIconSvg = `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="41">
-      <path fill="#0A2540" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
-      <g transform="translate(12, 8) scale(0.4)">
-          <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="1"/>
-          <circle cx="0" cy="0" r="2" fill="black"/>
-          <path d="M0-9L0-7M0 9L0 7M-9 0L-7 0M9 0L7 0M-6.36-6.36L-4.95-4.95M6.36 6.36L4.95 4.95M-6.36 6.36L-4.95 4.95M6.36-6.36L4.95-4.95" stroke="black" stroke-width="1"/>
-      </g>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="30" height="45">
+    <path fill="#D40000" d="M12 0C7.03 0 3 4.03 3 9c0 6.17 7.55 16.22 8.35 17.48a1 1 0 0 0 1.3 0C13.45 25.22 21 15.17 21 9c0-4.97-4.03-9-9-9z"/>
+    <circle cx="12" cy="9" r="4" fill="#fff"/>
   </svg>
 `;
 
-const highlightedIconSvg = (color: string = '#FF6A00') => `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="51">
-      <path fill="${color}" d="M12 0C7.589 0 4 3.589 4 8c0 4.411 8 16 8 16s8-11.589 8-16c0-4.411-3.589-8-8-8z"/>
-      <g transform="translate(12, 8) scale(0.4)">
-          <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="1"/>
-          <circle cx="0" cy="0" r="2" fill="black"/>
-          <path d="M0-9L0-7M0 9L0 7M-9 0L-7 0M9 0L7 0M-6.36-6.36L-4.95-4.95M6.36 6.36L4.95 4.95M-6.36 6.36L-4.95 4.95M6.36-6.36L4.95-4.95" stroke="black" stroke-width="1"/>
-      </g>
+const highlightedIconSvg = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="36" height="54">
+    <path fill="#D40000" d="M12 0C7.03 0 3 4.03 3 9c0 6.17 7.55 16.22 8.35 17.48a1 1 0 0 0 1.3 0C13.45 25.22 21 15.17 21 9c0-4.97-4.03-9-9-9z"
+      style="filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.4));"
+    />
+    <circle cx="12" cy="9" r="4" fill="#fff"/>
   </svg>
 `;
 
-const brandIconSvg = (logoSvg: string) => `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 58" width="35" height="51">
-        <path fill="#0A2540" d="M20 0C10.059 0 2 8.059 2 18c0 9.941 18 40 18 40s18-30.059 18-40C38 8.059 29.941 0 20 0z"/>
-        <g transform="translate(20, 18) scale(1)">
-            ${logoSvg}
-        </g>
-    </svg>
-`;
-
-const defaultIcon = createIcon(defaultIconSvg, [25, 41], [12, 41]);
-const highlightedIcon = createIcon(highlightedIconSvg(), [35, 51], [17, 51]);
+const defaultIcon = createIcon(defaultIconSvg, [30, 45], [15, 45]);
+const highlightedIcon = createIcon(highlightedIconSvg, [36, 54], [18, 54]);
 
 interface MapComponentProps {
   dealerships: Dealership[];
@@ -77,7 +61,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   center, 
   zoom, 
   hoveredDealershipId,
-  brandHighlightIds = new Set(),
+  brandHighlightIds = new Set(), // Gardé pour la compatibilité de l'interface, mais non utilisé
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut 
@@ -85,14 +69,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
-
-  const getBrandForDealership = (dealership: Dealership): string | undefined => {
-    if (!dealership.title || typeof dealership.title !== 'string') {
-        return undefined;
-    }
-    const title = dealership.title.toLowerCase();
-    return Object.keys(brandLogos).find(brand => title.includes(brand.toLowerCase()));
-  };
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current) {
@@ -126,16 +102,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
       if (isNaN(dealer.latitude) || isNaN(dealer.longitude)) return;
       
       const position: [number, number] = [dealer.latitude, dealer.longitude];
-      const brand = getBrandForDealership(dealer);
-      let icon = defaultIcon;
-      if (brand && (brandLogos as Record<string, string>)[brand]) {
-        icon = createIcon(brandIconSvg((brandLogos as Record<string, string>)[brand]), [35, 51], [17, 51]);
-      }
       
       if (currentMarkers[dealer.id]) {
-        currentMarkers[dealer.id].setLatLng(position).setIcon(icon);
+        currentMarkers[dealer.id].setLatLng(position).setIcon(defaultIcon);
       } else {
-        const marker = L.marker(position, { icon }).addTo(mapInstance.current!);
+        const marker = L.marker(position, { icon: defaultIcon }).addTo(mapInstance.current!);
         marker.bindPopup(`
           <div class="font-sans">
             <h3 class="font-bold text-base mb-1">${dealer.title}</h3>
@@ -173,21 +144,12 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   useEffect(() => {
     Object.entries(markersRef.current).forEach(([id, marker]) => {
-      const dealer = dealerships.find(d => d.id === id);
-      if(!dealer) return;
-
       let zIndexOffset = 0;
       let iconToUse: L.Icon;
-      const brand = getBrandForDealership(dealer);
 
       if (id === hoveredDealershipId) {
         iconToUse = highlightedIcon;
         zIndexOffset = 1000;
-      } else if (brandHighlightIds.has(id)) {
-        iconToUse = createIcon(highlightedIconSvg(), [35, 51], [17, 51]);
-        zIndexOffset = 500;
-      } else if (brand && (brandLogos as Record<string, string>)[brand]) {
-        iconToUse = createIcon(brandIconSvg((brandLogos as Record<string, string>)[brand]), [35, 51], [17, 51]);
       } else {
         iconToUse = defaultIcon;
       }
@@ -201,7 +163,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         }
       }
     });
-  }, [hoveredDealershipId, brandHighlightIds, dealerships]);
+  }, [hoveredDealershipId, dealerships]);
 
   return <div ref={mapRef} className="h-full w-full z-0" />;
 };
