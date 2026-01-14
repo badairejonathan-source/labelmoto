@@ -50,7 +50,7 @@ export default function Home() {
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
 
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('all');
@@ -74,7 +74,7 @@ export default function Home() {
           if (deptData && typeof deptData === 'object') {
             Object.values(deptData).forEach((dealer: any) => {
               if (dealer && dealer.placeUrl) {
-                const dealerWithId = { ...dealer, id: dealer.id || dealer.placeUrl };
+                const dealerWithId = { ...dealer, id: dealer.placeUrl };
                 firebaseDealerships.push(dealerWithId as Dealership);
               }
             });
@@ -89,7 +89,6 @@ export default function Home() {
         }, []);
         
         setAllDealerships(uniqueDealerships);
-        setFilteredDealerships(uniqueDealerships);
       }
     });
 
@@ -97,10 +96,6 @@ export default function Home() {
   }, []);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
-  
-  const hasActiveFilters = useMemo(() => {
-    return selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
   
   const brandHighlightIds = useMemo(() => {
     const ids = new Set<string>();
@@ -160,21 +155,16 @@ export default function Home() {
 
     setFilteredDealerships(sortedDealerships);
     
-    const shouldOpenSheet = hasActiveFilters;
-
-    if (isMobile) {
-      if(shouldOpenSheet && !isFilterSheetOpen) {
-          setIsMobileSheetOpen(true);
-      } else if (!shouldOpenSheet) {
-          setIsMobileSheetOpen(false);
-      }
+    const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+    if (isMobile && hasActiveFilters) {
+        setIsMobileSheetOpen(true);
     }
     
     if(!hasActiveFilters){
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, hasActiveFilters, isFilterSheetOpen, isMobile, brandHighlightIds]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, isMobile, brandHighlightIds]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -318,6 +308,8 @@ export default function Home() {
     );
   }
 
+  const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+
   return (
     <div className="flex flex-col h-screen">
       <Header>
@@ -357,7 +349,7 @@ export default function Home() {
             />
 
             {(isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)) && (
-            <Sheet open={isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)} onOpenChange={setIsMobileSheetOpen} >
+            <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent 
                  side="bottom" 
                  className="h-[40vh]" 

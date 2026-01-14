@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -7,14 +6,26 @@ import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
 import brandLogos from '@/data/brand-logos';
 
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+// Supprimer la configuration par défaut qui pose problème avec Next.js
+if (typeof window !== 'undefined') {
+  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  });
+}
 
-const createIcon = (svg: string, size: [number, number], anchor: [number, number]) => L.icon({
-    iconUrl: `data:image/svg+xml;base64,${btoa(svg)}`,
-    iconSize: size,
-    iconAnchor: anchor,
-    popupAnchor: [1, -size[1] / 2],
-});
+
+const createIcon = (svg: string, size: [number, number], anchor: [number, number]) => {
+    if (typeof window === 'undefined') return new L.Icon.Default();
+    return L.icon({
+        iconUrl: `data:image/svg+xml;base64,${btoa(svg)}`,
+        iconSize: size,
+        iconAnchor: anchor,
+        popupAnchor: [1, -size[1] / 2],
+    });
+}
 
 const defaultIconSvg = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="41">
@@ -49,12 +60,6 @@ const brandIconSvg = (logoSvg: string) => `
 
 const defaultIcon = createIcon(defaultIconSvg, [25, 41], [12, 41]);
 const highlightedIcon = createIcon(highlightedIconSvg(), [35, 51], [17, 51]);
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
 
 interface MapComponentProps {
   dealerships: Dealership[];
