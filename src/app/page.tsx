@@ -98,10 +98,6 @@ export default function Home() {
   }, []);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
-  
-  const hasActiveFilters = useMemo(() => {
-    return selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
   useEffect(() => {
     let dealerships = allDealerships;
@@ -135,13 +131,13 @@ export default function Home() {
     }
 
     setFilteredDealerships(dealerships);
-    
-    const shouldOpenSheet = selectedDepartment !== 'all' || selectedCity !== '';
 
+    const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+    
     if (isMobile) {
-      if(shouldOpenSheet && !isFilterSheetOpen) {
+      if(hasActiveFilters && !isFilterSheetOpen) {
           setIsMobileSheetOpen(true);
-      } else if (!shouldOpenSheet) {
+      } else if (!hasActiveFilters) {
           setIsMobileSheetOpen(false);
       }
     }
@@ -150,7 +146,7 @@ export default function Home() {
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, hasActiveFilters, isFilterSheetOpen, isMobile]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, isFilterSheetOpen, isMobile]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -293,6 +289,8 @@ export default function Home() {
       </div>
     );
   };
+  
+  const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
 
   return (
     <div className="flex flex-col h-screen">
@@ -479,3 +477,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
