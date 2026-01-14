@@ -103,67 +103,38 @@ export default function Home() {
     return selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
   }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
 
-  const brandHighlightIds = useMemo(() => {
-    const ids = new Set<string>();
-    if (selectedBrands.length > 0) {
-      const brandLower = selectedBrands.map(b => b.toLowerCase());
-      allDealerships.forEach(d => {
-        if (d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))) {
-          ids.add(d.id);
-        }
-      });
-    }
-    return ids;
-  }, [selectedBrands, allDealerships]);
-
   useEffect(() => {
     let dealerships = allDealerships;
 
-    if (hasActiveFilters) {
-        if (selectedDepartment && selectedDepartment !== 'all') {
-            const depCode = selectedDepartment.split(' ')[0];
-            const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
-            dealerships = dealerships.filter(d =>
-                d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
-            );
-        }
-        
-        if (selectedCity) {
-            const lowerCaseCity = selectedCity.toLowerCase();
-            dealerships = dealerships.filter(d =>
-                d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
-            );
-        }
-        
-        if (selectedBrands.length > 0) {
-            const brandLower = selectedBrands.map(b => b.toLowerCase());
-            dealerships = dealerships.filter(d => 
-                d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
-            );
-        }
-
-        if (selectedCategory === 'Concessionnaires') {
-            dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
-        } else if (selectedCategory === 'Réparateurs') {
-            dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
-        }
-
-        const sortedDealerships = [...dealerships].sort((a, b) => {
-            const aIsBrand = brandHighlightIds.has(a.id);
-            const bIsBrand = brandHighlightIds.has(b.id);
-            
-            if (aIsBrand && !bIsBrand) return -1;
-            if (!aIsBrand && bIsBrand) return 1;
-
-            const ratingA = a.rating ? parseFloat(String(a.rating).replace(',', '.')) : 0;
-            const ratingB = b.rating ? parseFloat(String(b.rating).replace(',', '.')) : 0;
-            return (isNaN(ratingB) ? 0 : ratingB) - (isNaN(ratingA) ? 0 : ratingA);
-        });
-
-        setFilteredDealerships(sortedDealerships);
-    } else {
-        setFilteredDealerships(allDealerships);
+    if (selectedDepartment && selectedDepartment !== 'all') {
+        const depCode = selectedDepartment.split(' ')[0];
+        const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
+        dealerships = dealerships.filter(d =>
+            d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
+        );
     }
+    
+    if (selectedCity) {
+        const lowerCaseCity = selectedCity.toLowerCase();
+        dealerships = dealerships.filter(d =>
+            d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
+        );
+    }
+    
+    if (selectedBrands.length > 0) {
+        const brandLower = selectedBrands.map(b => b.toLowerCase());
+        dealerships = dealerships.filter(d => 
+            d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
+        );
+    }
+
+    if (selectedCategory === 'Concessionnaires') {
+        dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
+    } else if (selectedCategory === 'Réparateurs') {
+        dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
+    }
+
+    setFilteredDealerships(dealerships);
     
     const shouldOpenSheet = selectedDepartment !== 'all' || selectedCity !== '';
 
@@ -179,7 +150,7 @@ export default function Home() {
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, hasActiveFilters, isFilterSheetOpen, isMobile, brandHighlightIds]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, hasActiveFilters, isFilterSheetOpen, isMobile]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -355,7 +326,7 @@ export default function Home() {
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
-              brandHighlightIds={brandHighlightIds}
+              brandHighlightIds={new Set()}
               onMarkerClick={(id) => handleCardClick(id)}
               onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
@@ -493,7 +464,7 @@ export default function Home() {
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
-                      brandHighlightIds={brandHighlightIds}
+                      brandHighlightIds={new Set()}
                       onMarkerClick={(id) => setSelectedDealershipId(id)}
                       onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                       onMarkerMouseOut={() => setHoveredDealershipId(null)}
@@ -508,5 +479,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
