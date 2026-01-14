@@ -17,7 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuChe
 import { cn } from "@/lib/utils";
 import useWindowSize from '@/hooks/use-window-size';
 import { db } from '@/lib/firebase';
-import { ref, onValue } from 'firebase/database';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -66,25 +66,33 @@ export default function Home() {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   useEffect(() => {
-    const concessionsRef = ref(db, 'concessions/95');
-    const unsubscribe = onValue(concessionsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const firebaseDealerships: Dealership[] = Object.values(data);
-        
-        setAllDealerships(prevDealerships => {
-          const combined = [...prevDealerships];
-          const existingIds = new Set(prevDealerships.map(d => d.id));
-          
-          firebaseDealerships.forEach(fd => {
-            if (!existingIds.has(fd.id)) {
-              combined.push(fd);
-              existingIds.add(fd.id);
+    // This will run only once on component mount.
+    const concessionsRef = collection(db, 'concessions');
+    const unsubscribe = onSnapshot(concessionsRef, (querySnapshot) => {
+      const firebaseDealerships: Dealership[] = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        // Assuming doc.data() has a structure where each department (like '95') is a key
+        // and its value is an object of dealerships.
+        Object.values(docData).forEach((dealer: any) => {
+            if(dealer.id) {
+               firebaseDealerships.push(dealer as Dealership);
             }
-          });
-          return combined;
         });
-      }
+      });
+      
+      setAllDealerships(prevDealerships => {
+        const combined = [...prevDealerships];
+        const existingIds = new Set(prevDealerships.map(d => d.id));
+        
+        firebaseDealerships.forEach(fd => {
+          if (!existingIds.has(fd.id)) {
+            combined.push(fd);
+            existingIds.add(fd.id);
+          }
+        });
+        return combined;
+      });
     });
 
     return () => unsubscribe();
