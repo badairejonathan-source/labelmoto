@@ -87,6 +87,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const markersRef = useRef<Record<string, L.Marker>>({});
 
   const getBrandForDealership = (dealership: Dealership): string | undefined => {
+    if (!dealership.title || typeof dealership.title !== 'string') {
+        return undefined;
+    }
     const title = dealership.title.toLowerCase();
     return Object.keys(brandLogos).find(brand => title.includes(brand.toLowerCase()));
   };
