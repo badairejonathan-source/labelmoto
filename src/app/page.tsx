@@ -222,7 +222,7 @@ export default function Home() {
       <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
           <SelectTrigger variant="filter">
-            <SelectValue placeholder="Choisir un département" />
+            <SelectValue placeholder="Departements" />
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
@@ -362,44 +362,7 @@ export default function Home() {
            </div>
         ) : (
           <>
-            {viewMode === 'list' ? (
-                <div className="h-full flex flex-col overflow-hidden flex-1">
-                    <ScrollArea className="flex-grow">
-                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {dealershipsToDisplay.map((dealer, index) => (
-                            <React.Fragment key={dealer.id}>
-                                <div
-                                    onClick={() => handleCardClick(dealer.id)}
-                                    className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3 xl:col-span-4' : ''}
-                                >
-                                <DealershipCard 
-                                    dealership={dealer} 
-                                    isExpanded={selectedDealershipId === dealer.id}
-                                    onClose={handleCloseExpandedCard}
-                                />
-                                </div>
-                                {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                                <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
-                                    <AdCard />
-                                </div>
-                                )}
-                            </React.Fragment>
-                            ))}
-                            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && !selectedDealershipId && (
-                            <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
-                                <AdCard />
-                            </div>
-                            )}
-                             {dealershipsToDisplay.length === 0 && hasActiveFilters && (
-                                <div className="text-center text-muted-foreground pt-20 col-span-full">
-                                    <p>Aucun résultat trouvé.</p>
-                                    <p className="text-sm">Essayez d'ajuster vos filtres.</p>
-                                </div>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </div>
-            ) : (
+            {viewMode === 'map' ? (
              <div className="grid grid-cols-12 flex-1 overflow-hidden">
                 <div className="col-span-4 h-full flex flex-col">
                     {selectedDealershipId && (
@@ -452,6 +415,43 @@ export default function Home() {
                     />
                 </div>
               </div>
+            ) : (
+                <div className="h-full flex flex-col overflow-hidden flex-1">
+                    <ScrollArea className="flex-grow">
+                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {dealershipsToDisplay.map((dealer, index) => (
+                            <React.Fragment key={dealer.id}>
+                                <div
+                                    onClick={() => handleCardClick(dealer.id)}
+                                    className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3 xl:col-span-4' : ''}
+                                >
+                                <DealershipCard 
+                                    dealership={dealer} 
+                                    isExpanded={selectedDealershipId === dealer.id}
+                                    onClose={handleCloseExpandedCard}
+                                />
+                                </div>
+                                {(index + 1) % 6 === 0 && !selectedDealershipId && (
+                                <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
+                                    <AdCard />
+                                </div>
+                                )}
+                            </React.Fragment>
+                            ))}
+                            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && !selectedDealershipId && (
+                            <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
+                                <AdCard />
+                            </div>
+                            )}
+                             {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                                <div className="text-center text-muted-foreground pt-20 col-span-full">
+                                    <p>Aucun résultat trouvé.</p>
+                                    <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                                </div>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </div>
             )}
           </>
         )}
@@ -460,5 +460,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
