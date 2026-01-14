@@ -119,12 +119,20 @@ export default function Home() {
 
 
   useEffect(() => {
+    if (!hasActiveFilters) {
+        setFilteredDealerships([]);
+        if(isMobile){
+            setIsMobileSheetOpen(false);
+        }
+        return;
+    }
+
     let dealerships = allDealerships;
 
     if (selectedDepartment && selectedDepartment !== 'all') {
         const depCode = selectedDepartment.split(' ')[0];
         dealerships = dealerships.filter(d =>
-            d.address && typeof d.address === 'string' && d.address.includes(depCode)
+            d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
         );
     }
     
@@ -170,7 +178,7 @@ export default function Home() {
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds, allDealerships]);
+  }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds, allDealerships, hasActiveFilters]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -217,8 +225,7 @@ export default function Home() {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
-    // If there are active filters, show filtered results. Otherwise, show all.
-    return hasActiveFilters ? filteredDealerships : allDealerships;
+    return hasActiveFilters ? filteredDealerships : [];
   }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile, hasActiveFilters]);
   
   const handleCardClick = (id: string) => {
@@ -270,6 +277,7 @@ export default function Home() {
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
+               <SelectItem value="">Toutes les villes</SelectItem>
               {cities.map((city:any) => (
                 <SelectItem key={city} value={city}>{city}</SelectItem>
               ))}
@@ -299,6 +307,16 @@ export default function Home() {
             </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
+         <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+            <SelectTrigger variant="filter">
+                <SelectValue placeholder="Catégorie" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="Tout voir">Tout voir</SelectItem>
+                <SelectItem value="Concessionnaires">Concessionnaires</SelectItem>
+                <SelectItem value="Réparateurs">Réparateurs</SelectItem>
+            </SelectContent>
+        </Select>
       </div>
     );
   }
@@ -342,7 +360,15 @@ export default function Home() {
             />
 
             {(isMobileSheetOpen || hasActiveFilters ) && (
-            <Sheet open={isMobileSheetOpen || hasActiveFilters} onOpenChange={setIsMobileSheetOpen} >
+            <Sheet open={isMobileSheetOpen || hasActiveFilters} onOpenChange={(isOpen) => {
+                if (!isOpen) {
+                    setSelectedDepartment('all');
+                    setSelectedCity('');
+                    setSelectedBrands([]);
+                    setSelectedCategory('Tout voir');
+                }
+                setIsMobileSheetOpen(isOpen);
+            }} >
                <SheetContent 
                  side="bottom" 
                  className="h-[40vh]" 
@@ -375,6 +401,12 @@ export default function Home() {
                         {(index + 1) % 4 === 0 && !selectedDealershipId && <AdCard />}
                       </React.Fragment>
                     ))}
+                     {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                        <div className="text-center text-muted-foreground pt-10">
+                            <p>Aucun résultat trouvé.</p>
+                            <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                        </div>
+                    )}
                   </div>
                 </ScrollArea>
               </SheetContent>
@@ -407,10 +439,21 @@ export default function Home() {
                                 )}
                             </React.Fragment>
                             ))}
-                            {filteredDealerships.length > 0 && filteredDealerships.length < 4 && !selectedDealershipId && (
+                            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && !selectedDealershipId && (
                             <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
                                 <AdCard />
                             </div>
+                            )}
+                             {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                                <div className="text-center text-muted-foreground pt-20 col-span-full">
+                                    <p>Aucun résultat trouvé.</p>
+                                    <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                                </div>
+                            )}
+                            {!hasActiveFilters && (
+                                 <div className="text-center text-muted-foreground pt-20 col-span-full">
+                                    <p>Veuillez sélectionner des filtres pour afficher les résultats.</p>
+                                </div>
                             )}
                         </div>
                     </ScrollArea>
@@ -446,12 +489,23 @@ export default function Home() {
                               {(index + 1) % 6 === 0 && <AdCard />}
                             </React.Fragment>
                           ))}
+                           {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                                <div className="text-center text-muted-foreground pt-20">
+                                    <p>Aucun résultat trouvé.</p>
+                                    <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                                </div>
+                            )}
+                            {!hasActiveFilters && (
+                                 <div className="text-center text-muted-foreground pt-20">
+                                    <p>Veuillez sélectionner des filtres pour afficher les résultats.</p>
+                                </div>
+                            )}
                         </div>
                     </ScrollArea>
                 </div>
                 <div className="col-span-8 rounded-lg overflow-hidden h-full">
                     <MapComponent 
-                      dealerships={allDealerships} 
+                      dealerships={hasActiveFilters ? filteredDealerships : []}
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
