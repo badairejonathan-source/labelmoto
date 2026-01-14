@@ -72,10 +72,8 @@ export default function Home() {
       const data = snapshot.val();
       if (data) {
         const firebaseDealerships: Dealership[] = [];
-        // Loop through all departments in the data (e.g., '30', '95')
         Object.values(data).forEach((deptData: any) => {
             if(typeof deptData === 'object' && deptData !== null) {
-                // Loop through all dealerships within a department
                 Object.values(deptData).forEach((dealer: any) => {
                     if(dealer && dealer.id) {
                         firebaseDealerships.push(dealer as Dealership);
@@ -204,11 +202,12 @@ export default function Home() {
   }, []);
 
   const handleCityChange = useCallback((city: string) => {
-      setSelectedCity(city);
-      if(city){
+      const cityValue = city === 'all-cities' ? '' : city;
+      setSelectedCity(cityValue);
+      if(cityValue){
         const depData = (locations as any)[selectedDepartment];
-        if(depData && depData.cityCoords && depData.cityCoords[city]){
-           setMapCenter(depData.cityCoords[city] as [number, number]);
+        if(depData && depData.cityCoords && depData.cityCoords[cityValue]){
+           setMapCenter(depData.cityCoords[cityValue] as [number, number]);
            setMapZoom(12);
         }
       }
@@ -271,13 +270,13 @@ export default function Home() {
             </ScrollArea>
           </SelectContent>
         </Select>
-        <Select onValueChange={handleCityChange} value={selectedCity} disabled={!selectedDepartment || selectedDepartment === 'all'}>
+        <Select onValueChange={handleCityChange} value={selectedCity || 'all-cities'} disabled={!selectedDepartment || selectedDepartment === 'all'}>
           <SelectTrigger variant="filter">
             <SelectValue placeholder="Choisir une ville" />
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
-               <SelectItem value="">Toutes les villes</SelectItem>
+               <SelectItem value="all-cities">Toutes les villes</SelectItem>
               {cities.map((city:any) => (
                 <SelectItem key={city} value={city}>{city}</SelectItem>
               ))}
@@ -524,5 +523,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
