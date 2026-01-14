@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -18,7 +17,6 @@ import { cn } from "@/lib/utils";
 import useWindowSize from '@/hooks/use-window-size';
 import { db } from '@/lib/firebase';
 import { ref, onValue } from "firebase/database";
-
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -67,16 +65,15 @@ export default function Home() {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   useEffect(() => {
-    const concessionsRef = ref(db);
+    const concessionsRef = ref(db, '/');
     const unsubscribe = onValue(concessionsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const firebaseDealerships: Dealership[] = [];
         Object.values(data).forEach((deptData: any) => {
-          if (Array.isArray(deptData)) {
-            deptData.forEach((dealer: any) => {
+          if (deptData && typeof deptData === 'object') {
+            Object.values(deptData).forEach((dealer: any) => {
               if (dealer && dealer.placeUrl) {
-                // Generate a unique ID if it doesn't exist
                 const dealerWithId = { ...dealer, id: dealer.id || dealer.placeUrl };
                 firebaseDealerships.push(dealerWithId as Dealership);
               }
@@ -92,6 +89,7 @@ export default function Home() {
         }, []);
         
         setAllDealerships(uniqueDealerships);
+        setFilteredDealerships(uniqueDealerships);
       }
     });
 
@@ -119,14 +117,6 @@ export default function Home() {
 
 
   useEffect(() => {
-    if (!hasActiveFilters) {
-        setFilteredDealerships([]);
-        if(isMobile){
-            setIsMobileSheetOpen(false);
-        }
-        return;
-    }
-
     let dealerships = allDealerships;
 
     if (selectedDepartment && selectedDepartment !== 'all') {
@@ -142,13 +132,19 @@ export default function Home() {
             d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
         );
     }
+    
+    if (selectedBrands.length > 0) {
+        const brandLower = selectedBrands.map(b => b.toLowerCase());
+        dealerships = dealerships.filter(d => 
+            d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
+        );
+    }
 
     if (selectedCategory === 'Concessionnaires') {
         dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
     } else if (selectedCategory === 'Réparateurs') {
         dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
     }
-
 
     const sortedDealerships = [...dealerships].sort((a, b) => {
         const aIsBrand = brandHighlightIds.has(a.id);
@@ -164,7 +160,7 @@ export default function Home() {
 
     setFilteredDealerships(sortedDealerships);
     
-    const shouldOpenSheet = selectedDepartment !== 'all' || selectedCity !== '';
+    const shouldOpenSheet = hasActiveFilters;
 
     if (isMobile) {
       if(shouldOpenSheet && !isFilterSheetOpen) {
@@ -174,11 +170,11 @@ export default function Home() {
       }
     }
     
-    if(selectedDepartment === 'all' && !selectedCity){
+    if(!hasActiveFilters){
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, isMobile, isFilterSheetOpen, selectedBrands, brandHighlightIds, allDealerships, hasActiveFilters]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, hasActiveFilters, isFilterSheetOpen, isMobile, brandHighlightIds]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -222,13 +218,12 @@ export default function Home() {
   }, []);
 
   const dealershipsToDisplay = useMemo(() => {
-    if (!hasActiveFilters) return [];
     if (selectedDealershipId && (viewMode === 'map' || isMobile)) {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
     return filteredDealerships;
-  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile, hasActiveFilters]);
+  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
   
   const handleCardClick = (id: string) => {
       setSelectedDealershipId(prevId => prevId === id ? null : id);
@@ -266,7 +261,7 @@ export default function Home() {
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
-              <SelectItem value="all">Tout voir</SelectItem>
+              <SelectItem value="all">France entière</SelectItem>
               {departments.map(dep => (
                 <SelectItem key={dep} value={dep}>{dep}</SelectItem>
               ))}
@@ -351,7 +346,7 @@ export default function Home() {
             </div>
             
             <MapComponent 
-              dealerships={hasActiveFilters ? filteredDealerships : []}
+              dealerships={filteredDealerships}
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
@@ -362,15 +357,7 @@ export default function Home() {
             />
 
             {(isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)) && (
-            <Sheet open={isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)} onOpenChange={(isOpen) => {
-                if (!isOpen) {
-                    setSelectedDepartment('all');
-                    setSelectedCity('');
-                    setSelectedBrands([]);
-                    setSelectedCategory('Tout voir');
-                }
-                setIsMobileSheetOpen(isOpen);
-            }} >
+            <Sheet open={isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent 
                  side="bottom" 
                  className="h-[40vh]" 
@@ -383,7 +370,7 @@ export default function Home() {
                >
                  <SheetHeader className="p-4 pt-2 text-center">
                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
-                   <SheetTitle>Résultats</SheetTitle>
+                   <SheetTitle>Résultats ({filteredDealerships.length})</SheetTitle>
                  </SheetHeader>
                 <ScrollArea className="h-full pb-4">
                   <div className="p-4 space-y-4">
@@ -452,11 +439,6 @@ export default function Home() {
                                     <p className="text-sm">Essayez d'ajuster vos filtres.</p>
                                 </div>
                             )}
-                            {!hasActiveFilters && (
-                                 <div className="text-center text-muted-foreground pt-20 col-span-full">
-                                    <p>Veuillez sélectionner des filtres pour afficher les résultats.</p>
-                                </div>
-                            )}
                         </div>
                     </ScrollArea>
                 </div>
@@ -488,7 +470,7 @@ export default function Home() {
                                     onClose={handleCloseExpandedCard}
                                 />
                               </div>
-                              {(index + 1) % 6 === 0 && <AdCard />}
+                              {(index + 1) % 6 === 0 && !selectedDealershipId && <AdCard />}
                             </React.Fragment>
                           ))}
                            {dealershipsToDisplay.length === 0 && hasActiveFilters && (
@@ -497,17 +479,12 @@ export default function Home() {
                                     <p className="text-sm">Essayez d'ajuster vos filtres.</p>
                                 </div>
                             )}
-                            {!hasActiveFilters && (
-                                 <div className="text-center text-muted-foreground pt-20">
-                                    <p>Veuillez sélectionner des filtres pour afficher les résultats.</p>
-                                </div>
-                            )}
                         </div>
                     </ScrollArea>
                 </div>
                 <div className="col-span-8 rounded-lg overflow-hidden h-full">
                     <MapComponent 
-                      dealerships={hasActiveFilters ? filteredDealerships : []}
+                      dealerships={filteredDealerships}
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
@@ -526,6 +503,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-    
