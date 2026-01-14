@@ -73,13 +73,15 @@ export default function Home() {
       if (data) {
         const firebaseDealerships: Dealership[] = [];
         Object.values(data).forEach((deptData: any) => {
-            if(typeof deptData === 'object' && deptData !== null) {
-                Object.values(deptData).forEach((dealer: any) => {
-                    if(dealer && dealer.id) {
-                        firebaseDealerships.push(dealer as Dealership);
-                    }
-                })
-            }
+          if (Array.isArray(deptData)) {
+            deptData.forEach((dealer: any) => {
+              if (dealer && dealer.placeUrl) {
+                // Generate a unique ID if it doesn't exist
+                const dealerWithId = { ...dealer, id: dealer.id || dealer.placeUrl };
+                firebaseDealerships.push(dealerWithId as Dealership);
+              }
+            });
+          }
         });
         
         const uniqueDealerships = firebaseDealerships.reduce((acc: Dealership[], current) => {
@@ -524,5 +526,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
