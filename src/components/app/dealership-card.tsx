@@ -19,7 +19,7 @@ interface DealershipCardProps {
 
 const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded = false, onClose, onClick }) => {
   const getCategory = (title: string) => {
-    if (!title) return null;
+    if (!title || typeof title !== 'string') return null;
     const lowerTitle = title.toLowerCase();
     if (lowerTitle.includes('concession')) return 'Concess.';
     if (lowerTitle.includes('garage')) return 'Garage';
@@ -28,7 +28,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, isExpanded 
   }
 
   const getBrands = (title: string) => {
-    if (!title) return [];
+    if (!title || typeof title !== 'string') return [];
     const brands = ['BMW', 'Ducati', 'Yamaha', 'Kawasaki', 'KTM', 'Husqvarna', 'Honda', 'Suzuki', 'Triumph', 'Harley-Davidson', 'Indian'];
     const foundBrands = brands.filter(brand => title.toLowerCase().includes(brand.toLowerCase()));
     return foundBrands;
