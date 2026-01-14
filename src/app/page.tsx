@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -375,7 +376,7 @@ export default function Home() {
                  <SheetHeader className="p-4 pt-2 text-center">
                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
                    <SheetTitle>Résultats ({filteredDealerships.length})</SheetTitle>
-                 </SHEETHEADER>
+                 </SheetHeader>
                 <ScrollArea className="h-full pb-4">
                   <div className="p-4 space-y-4">
                     {dealershipsToDisplay.map((dealer, index) => (
@@ -507,3 +508,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
