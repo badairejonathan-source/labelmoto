@@ -89,6 +89,7 @@ export default function Home() {
         }, []);
         
         setAllDealerships(uniqueDealerships);
+        setFilteredDealerships(uniqueDealerships);
       }
     });
 
@@ -97,6 +98,10 @@ export default function Home() {
 
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
   
+  const hasActiveFilters = useMemo(() => {
+    return selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands]);
+
   const brandHighlightIds = useMemo(() => {
     const ids = new Set<string>();
     if (selectedBrands.length > 0) {
@@ -110,61 +115,70 @@ export default function Home() {
     return ids;
   }, [selectedBrands, allDealerships]);
 
-
   useEffect(() => {
     let dealerships = allDealerships;
 
-    if (selectedDepartment && selectedDepartment !== 'all') {
-        const depCode = selectedDepartment.split(' ')[0];
-        dealerships = dealerships.filter(d =>
-            d.address && typeof d.address === 'string' && d.address.includes(` ${depCode}`)
-        );
-    }
-    
-    if (selectedCity) {
-        const lowerCaseCity = selectedCity.toLowerCase();
-        dealerships = dealerships.filter(d =>
-            d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
-        );
-    }
-    
-    if (selectedBrands.length > 0) {
-        const brandLower = selectedBrands.map(b => b.toLowerCase());
-        dealerships = dealerships.filter(d => 
-            d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
-        );
-    }
-
-    if (selectedCategory === 'Concessionnaires') {
-        dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
-    } else if (selectedCategory === 'Réparateurs') {
-        dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
-    }
-
-    const sortedDealerships = [...dealerships].sort((a, b) => {
-        const aIsBrand = brandHighlightIds.has(a.id);
-        const bIsBrand = brandHighlightIds.has(b.id);
+    if (hasActiveFilters) {
+        if (selectedDepartment && selectedDepartment !== 'all') {
+            const depCode = selectedDepartment.split(' ')[0];
+            const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
+            dealerships = dealerships.filter(d =>
+                d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
+            );
+        }
         
-        if (aIsBrand && !bIsBrand) return -1;
-        if (!aIsBrand && bIsBrand) return 1;
+        if (selectedCity) {
+            const lowerCaseCity = selectedCity.toLowerCase();
+            dealerships = dealerships.filter(d =>
+                d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
+            );
+        }
+        
+        if (selectedBrands.length > 0) {
+            const brandLower = selectedBrands.map(b => b.toLowerCase());
+            dealerships = dealerships.filter(d => 
+                d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
+            );
+        }
 
-        const ratingA = a.rating ? parseFloat(String(a.rating).replace(',', '.')) : 0;
-        const ratingB = b.rating ? parseFloat(String(b.rating).replace(',', '.')) : 0;
-        return (isNaN(ratingB) ? 0 : ratingB) - (isNaN(ratingA) ? 0 : ratingA);
-    });
+        if (selectedCategory === 'Concessionnaires') {
+            dealerships = dealerships.filter(d => (d.category && d.category.toLowerCase().includes('concession')) || (d.title && typeof d.title === 'string' && d.title.toLowerCase().includes('concession')));
+        } else if (selectedCategory === 'Réparateurs') {
+            dealerships = dealerships.filter(d => (d.category && (d.category.toLowerCase().includes('reparateur') || d.category.toLowerCase().includes('garage') || d.category.toLowerCase().includes('atelier'))) || (d.title && typeof d.title === 'string' && (d.title.toLowerCase().includes('reparateur') || d.title.toLowerCase().includes('garage'))));
+        }
 
-    setFilteredDealerships(sortedDealerships);
+        const sortedDealerships = [...dealerships].sort((a, b) => {
+            const aIsBrand = brandHighlightIds.has(a.id);
+            const bIsBrand = brandHighlightIds.has(b.id);
+            
+            if (aIsBrand && !bIsBrand) return -1;
+            if (!aIsBrand && bIsBrand) return 1;
+
+            const ratingA = a.rating ? parseFloat(String(a.rating).replace(',', '.')) : 0;
+            const ratingB = b.rating ? parseFloat(String(b.rating).replace(',', '.')) : 0;
+            return (isNaN(ratingB) ? 0 : ratingB) - (isNaN(ratingA) ? 0 : ratingA);
+        });
+
+        setFilteredDealerships(sortedDealerships);
+    } else {
+        setFilteredDealerships(allDealerships);
+    }
     
-    const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
-    if (isMobile && hasActiveFilters) {
-        setIsMobileSheetOpen(true);
+    const shouldOpenSheet = selectedDepartment !== 'all' || selectedCity !== '';
+
+    if (isMobile) {
+      if(shouldOpenSheet && !isFilterSheetOpen) {
+          setIsMobileSheetOpen(true);
+      } else if (!shouldOpenSheet) {
+          setIsMobileSheetOpen(false);
+      }
     }
     
     if(!hasActiveFilters){
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, isMobile, brandHighlightIds]);
+  }, [selectedDepartment, selectedCity, selectedCategory, selectedBrands, allDealerships, hasActiveFilters, isFilterSheetOpen, isMobile, brandHighlightIds]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -306,9 +320,7 @@ export default function Home() {
         </Select>
       </div>
     );
-  }
-
-  const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedCategory !== 'Tout voir' || selectedBrands.length > 0;
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -363,7 +375,7 @@ export default function Home() {
                  <SheetHeader className="p-4 pt-2 text-center">
                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
                    <SheetTitle>Résultats ({filteredDealerships.length})</SheetTitle>
-                 </SheetHeader>
+                 </SHEETHEADER>
                 <ScrollArea className="h-full pb-4">
                   <div className="p-4 space-y-4">
                     {dealershipsToDisplay.map((dealer, index) => (
