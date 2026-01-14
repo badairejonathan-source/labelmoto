@@ -125,7 +125,7 @@ export default function Home() {
     
     setFilteredDealerships(dealerships);
     
-    const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedBrands.length > 0;
+    const hasActiveFilters = selectedDepartment !== '' && selectedDepartment !== 'all' || selectedCity !== '' || selectedBrands.length > 0;
     
     if (isMobile) {
       if(hasActiveFilters && !isFilterSheetOpen) {
@@ -220,9 +220,10 @@ export default function Home() {
     
     return (
       <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
-        <Select onValueChange={handleDepartmentChange} value={selectedDepartment || "all"}>
+        <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
           <SelectTrigger variant="filter">
-            <SelectValue placeholder="Departements" />
+            <span className="mr-2">Departements:</span>
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <ScrollArea className="h-72">
@@ -273,7 +274,7 @@ export default function Home() {
     );
   };
   
-  const hasActiveFilters = selectedDepartment !== 'all' || selectedCity !== '' || selectedBrands.length > 0;
+  const hasActiveFilters = (selectedDepartment !== '' && selectedDepartment !== 'all') || selectedCity !== '' || selectedBrands.length > 0;
 
   return (
     <div className="flex flex-col h-screen">
@@ -393,7 +394,7 @@ export default function Home() {
                               {(index + 1) % 6 === 0 && !selectedDealershipId && <AdCard />}
                             </React.Fragment>
                           ))}
-                           {dealershipsToDisplay.length === 0 && (selectedDepartment || selectedCity || selectedBrands.length > 0) && (
+                           {dealershipsToDisplay.length === 0 && hasActiveFilters && (
                                 <div className="text-center text-muted-foreground pt-20">
                                     <p>Aucun résultat trouvé.</p>
                                     <p className="text-sm">Essayez d'ajuster vos filtres.</p>
@@ -443,7 +444,7 @@ export default function Home() {
                                 <AdCard />
                             </div>
                             )}
-                             {dealershipsToDisplay.length === 0 && (selectedDepartment || selectedCity || selectedBrands.length > 0) && (
+                             {dealershipsToDisplay.length === 0 && hasActiveFilters && (
                                 <div className="text-center text-muted-foreground pt-20 col-span-full">
                                     <p>Aucun résultat trouvé.</p>
                                     <p className="text-sm">Essayez d'ajuster vos filtres.</p>
