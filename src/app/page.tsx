@@ -17,7 +17,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuChe
 import { cn } from "@/lib/utils";
 import useWindowSize from '@/hooks/use-window-size';
 import { db } from '@/lib/firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { ref, onValue } from "firebase/database";
+import allDealershipsData from '@/data/alldealerships.json';
+
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -66,33 +68,45 @@ export default function Home() {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   useEffect(() => {
-    // This will run only once on component mount.
-    const concessionsRef = collection(db, 'concessions');
-    const unsubscribe = onSnapshot(concessionsRef, (querySnapshot) => {
-      const firebaseDealerships: Dealership[] = [];
-      querySnapshot.forEach((doc) => {
-        const docData = doc.data();
-        // Assuming doc.data() has a structure where each department (like '95') is a key
-        // and its value is an object of dealerships.
-        Object.values(docData).forEach((dealer: any) => {
-            if(dealer.id) {
-               firebaseDealerships.push(dealer as Dealership);
+    const initialDealerships: Dealership[] = Array.isArray(allDealershipsData) ? allDealershipsData.flat().filter(Boolean) : [];
+    
+    const uniqueDealerships = initialDealerships.reduce((acc: Dealership[], current) => {
+        if (!acc.find(item => item.id === current.id)) {
+            acc.push(current);
+        }
+        return acc;
+    }, []);
+
+    setAllDealerships(uniqueDealerships);
+    
+    const concessionsRef = ref(db);
+    const unsubscribe = onValue(concessionsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const firebaseDealerships: Dealership[] = [];
+        Object.values(data).forEach((dept: any) => {
+            if(typeof dept === 'object' && dept !== null) {
+                Object.values(dept).forEach((dealer: any) => {
+                    if(dealer && dealer.id) {
+                        firebaseDealerships.push(dealer as Dealership);
+                    }
+                })
             }
         });
-      });
-      
-      setAllDealerships(prevDealerships => {
-        const combined = [...prevDealerships];
-        const existingIds = new Set(prevDealerships.map(d => d.id));
         
-        firebaseDealerships.forEach(fd => {
-          if (!existingIds.has(fd.id)) {
-            combined.push(fd);
-            existingIds.add(fd.id);
-          }
+        setAllDealerships(prevDealerships => {
+          const combined = [...prevDealerships];
+          const existingIds = new Set(prevDealerships.map(d => d.id));
+          
+          firebaseDealerships.forEach(fd => {
+            if (!existingIds.has(fd.id)) {
+              combined.push(fd);
+              existingIds.add(fd.id);
+            }
+          });
+          return combined;
         });
-        return combined;
-      });
+      }
     });
 
     return () => unsubscribe();
@@ -330,12 +344,11 @@ export default function Home() {
             </div>
             
             <MapComponent 
-              dealerships={filteredDealerships} 
+              dealerships={allDealerships} 
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
               brandHighlightIds={brandHighlightIds}
-              selectedBrands={selectedBrands}
               onMarkerClick={(id) => handleCardClick(id)}
               onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
@@ -451,12 +464,11 @@ export default function Home() {
                 </div>
                 <div className="col-span-8 rounded-lg overflow-hidden h-full">
                     <MapComponent 
-                      dealerships={filteredDealerships} 
+                      dealerships={allDealerships} 
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
                       brandHighlightIds={brandHighlightIds}
-                      selectedBrands={selectedBrands}
                       onMarkerClick={(id) => setSelectedDealershipId(id)}
                       onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                       onMarkerMouseOut={() => setHoveredDealershipId(null)}
