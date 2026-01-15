@@ -137,12 +137,21 @@ const ListView: React.FC<{dealership: Dealership, isExpanded?: boolean, onClose?
             </div>
           )}
         </div>
+        
         {dealership.address && (
-          <p className="text-sm text-muted-foreground mt-1 flex items-start">
+          <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
             <MapPin className="h-4 w-4 mr-1.5 mt-0.5 shrink-0" />
-            <span>{dealership.address.split(',')[0]}</span>
-          </p>
+            <span>{dealership.address}</span>
+          </a>
         )}
+
+        {dealership.phoneNum && (
+          <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="text-sm text-muted-foreground mt-1 flex items-center hover:text-accent hover:underline">
+              <Phone className="h-4 w-4 mr-1.5 shrink-0" />
+              <span>{dealership.phoneNum}</span>
+          </a>
+        )}
+        
         <div className="flex flex-wrap gap-2 mt-3">
           {brands.slice(0, 3).map(brand => (
             <Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>
@@ -153,14 +162,6 @@ const ListView: React.FC<{dealership: Dealership, isExpanded?: boolean, onClose?
             <div className="mt-4 pt-4 border-t">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    {dealership.phoneNum && (
-                        <div className="text-sm text-muted-foreground mt-1 flex items-center">
-                            <Phone className="h-4 w-4 mr-2 shrink-0" />
-                            <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
-                              {dealership.phoneNum}
-                            </a>
-                        </div>
-                    )}
                     {dealership.website && (
                          <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center mt-2">
                            <Globe className="h-4 w-4 mr-2 shrink-0" />
@@ -249,5 +250,4 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 };
 
 export default DealershipCard;
-
     
