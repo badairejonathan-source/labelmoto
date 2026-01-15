@@ -343,6 +343,7 @@ export default function Home() {
                             dealership={dealer} 
                             isExpanded={selectedDealershipId === dealer.id}
                             onClose={handleCloseExpandedCard}
+                            view="list"
                           />
                         </div>
                         {(index + 1) % 4 === 0 && !selectedDealershipId && <AdCard />}
@@ -389,6 +390,7 @@ export default function Home() {
                                     dealership={dealer} 
                                     isExpanded={selectedDealershipId === dealer.id}
                                     onClose={handleCloseExpandedCard}
+                                    view="compact"
                                 />
                               </div>
                               {(index + 1) % 6 === 0 && !selectedDealershipId && <AdCard />}
@@ -419,28 +421,26 @@ export default function Home() {
             ) : (
                 <div className="h-full flex flex-col overflow-hidden flex-1">
                     <ScrollArea className="flex-grow">
-                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {dealershipsToDisplay.map((dealer, index) => (
                             <React.Fragment key={dealer.id}>
-                                <div
-                                    onClick={() => handleCardClick(dealer.id)}
-                                    className={selectedDealershipId === dealer.id ? 'md:col-span-2 lg:col-span-3 xl:col-span-4' : ''}
-                                >
                                 <DealershipCard 
                                     dealership={dealer} 
                                     isExpanded={selectedDealershipId === dealer.id}
                                     onClose={handleCloseExpandedCard}
+                                    onClick={() => handleCardClick(dealer.id)}
+                                    view={selectedDealershipId === dealer.id ? 'expanded' : 'list'}
+                                    className={selectedDealershipId === dealer.id ? 'sm:col-span-2 md:col-span-3 lg:col-span-4' : ''}
                                 />
-                                </div>
                                 {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                                <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
+                                <div className="sm:col-span-2 md:col-span-3 lg:col-span-4">
                                     <AdCard />
                                 </div>
                                 )}
                             </React.Fragment>
                             ))}
                             {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && !selectedDealershipId && (
-                            <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
+                            <div className="sm:col-span-2 md:col-span-3 lg:col-span-4">
                                 <AdCard />
                             </div>
                             )}
@@ -461,5 +461,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
