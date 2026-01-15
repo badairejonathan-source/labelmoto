@@ -42,14 +42,14 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     
     return (
         <div className="flex">
-            <div className="relative w-20 h-20 flex-shrink-0">
+            <div className="relative w-24 h-full flex-shrink-0">
               {dealership.imgUrl ? (
                 <Image
                   src={dealership.imgUrl}
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="80px"
+                  sizes="96px"
                 />
               ) : (
                  <div className="w-full h-full bg-gray-200 flex items-center justify-center p-2">
@@ -57,7 +57,7 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                 </div>
               )}
             </div>
-            <CardContent className="p-2 flex-grow relative flex flex-col min-w-0">
+            <CardContent className="p-3 flex-grow relative flex flex-col min-w-0">
                 <div className="flex-grow min-w-0">
                     <div className="flex justify-between items-start gap-2">
                        <div className="flex-grow min-w-0 flex-shrink">
@@ -73,10 +73,16 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                       )}
                     </div>
                     {dealership.address && (
-                      <p className="text-xs text-muted-foreground mt-1 flex items-start">
-                        <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
-                        <span className="break-words">{dealership.address}</span>
-                      </p>
+                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
+                            <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
+                            <span className="break-words">{dealership.address}</span>
+                        </a>
+                    )}
+                    {dealership.phoneNum && (
+                        <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="text-xs text-muted-foreground mt-1 flex items-center hover:text-accent hover:underline">
+                            <Phone className="h-3 w-3 mr-1.5 shrink-0" />
+                            <span>{dealership.phoneNum}</span>
+                        </a>
                     )}
                 </div>
                 <div className="mt-2 pt-1 border-t border-transparent flex items-center justify-between">
@@ -229,7 +235,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       className={cn(
         "overflow-hidden transition-all duration-300 ease-in-out flex flex-col",
         (view === 'list' && !isExpanded) && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
-        view === 'compact' && "cursor-pointer hover:bg-gray-50",
+        view === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
         className,
       )}
     >
@@ -243,3 +249,5 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 };
 
 export default DealershipCard;
+
+    
