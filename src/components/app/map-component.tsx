@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -15,42 +16,57 @@ if (typeof window !== 'undefined') {
   });
 }
 
-
 const createIcon = (svg: string, size: [number, number], anchor: [number, number]) => {
     if (typeof window === 'undefined') return new L.Icon.Default();
     return L.icon({
         iconUrl: `data:image/svg+xml;base64,${btoa(svg)}`,
         iconSize: size,
         iconAnchor: anchor,
-        popupAnchor: [0, -size[1] / 1.5],
+        popupAnchor: [0, -size[1] / 1.2],
     });
 }
 
 const defaultIconSvg = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="30" height="45">
-    <path fill="#D40000" d="M12 0C7.03 0 3 4.03 3 9c0 6.17 7.55 16.22 8.35 17.48a1 1 0 0 0 1.3 0C13.45 25.22 21 15.17 21 9c0-4.97-4.03-9-9-9z"/>
-    <circle cx="12" cy="9" r="4" fill="#fff"/>
+    <defs>
+      <linearGradient id="metallicBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#2a5298;stop-opacity:1" />
+      </linearGradient>
+      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.3"/>
+      </filter>
+    </defs>
+    <path fill="url(#metallicBlue)" stroke="#FFFFFF" stroke-width="1" d="M12 0C8.686 0 6 2.686 6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 14c-5 0-9 4.03-9 9 0 1.5.37 2.91 1.03 4.14L12 36l8.97-8.86A8.93 8.93 0 0 0 21 23c0-4.97-4-9-9-9z" transform="translate(0, -2)" style="filter:url(#shadow)"/>
+    <path d="M12 2C9.791 2 8 3.791 8 6s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4z" fill="none" stroke="#FFFFFF" stroke-width="1.5" />
   </svg>
 `;
 
 const highlightedIconSvg = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="36" height="54">
-    <path fill="#D40000" d="M12 0C7.03 0 3 4.03 3 9c0 6.17 7.55 16.22 8.35 17.48a1 1 0 0 0 1.3 0C13.45 25.22 21 15.17 21 9c0-4.97-4.03-9-9-9z"
-      style="filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.4));"
-    />
-    <circle cx="12" cy="9" r="4" fill="#fff"/>
+    <defs>
+      <linearGradient id="metallicBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#2a5298;stop-opacity:1" />
+      </linearGradient>
+       <filter id="shadowHighlight" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="2" dy="4" stdDeviation="2" flood-color="#000000" flood-opacity="0.4"/>
+      </filter>
+    </defs>
+    <path fill="url(#metallicBlue)" stroke="#FFFFFF" stroke-width="1" d="M12 0C8.686 0 6 2.686 6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 14c-5 0-9 4.03-9 9 0 1.5.37 2.91 1.03 4.14L12 36l8.97-8.86A8.93 8.93 0 0 0 21 23c0-4.97-4-9-9-9z" transform="translate(0, -2)" style="filter:url(#shadowHighlight)"/>
+    <path d="M12 2C9.791 2 8 3.791 8 6s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4z" fill="none" stroke="#FFFFFF" stroke-width="1.5" />
   </svg>
 `;
 
-const defaultIcon = createIcon(defaultIconSvg, [30, 45], [15, 45]);
-const highlightedIcon = createIcon(highlightedIconSvg, [36, 54], [18, 54]);
+
+const defaultIcon = createIcon(defaultIconSvg, [30, 45], [15, 42]);
+const highlightedIcon = createIcon(highlightedIconSvg, [36, 54], [18, 50]);
 
 interface MapComponentProps {
   dealerships: Dealership[];
   center: [number, number];
   zoom: number;
   hoveredDealershipId?: string | null;
-  brandHighlightIds: Set<string>;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
@@ -61,7 +77,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   center, 
   zoom, 
   hoveredDealershipId,
-  brandHighlightIds = new Set(), // Gardé pour la compatibilité de l'interface, mais non utilisé
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut 
@@ -99,7 +114,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
     // Add or update markers
     dealerships.forEach((dealer) => {
-      if (isNaN(dealer.latitude) || isNaN(dealer.longitude)) return;
+      if (!dealer.latitude || !dealer.longitude || isNaN(dealer.latitude) || isNaN(dealer.longitude)) return;
       
       const position: [number, number] = [dealer.latitude, dealer.longitude];
       
