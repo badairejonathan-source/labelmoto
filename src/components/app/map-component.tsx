@@ -5,23 +5,52 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
 
-// SVG for the custom marker icon
 const defaultIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 40 44" width="36" height="42">
-  <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
-    fill="#2185D0" stroke="#111" stroke-width="1.5" />
-  <circle cx="18" cy="18" r="14" fill="#2185D0" stroke="#F2711C" stroke-width="2.5"/>
-  <circle cx="18" cy="18" r="11" fill="#2185D0" stroke="#00B5AD" stroke-width="2.5"/>
-  <circle cx="18" cy="18" r="6" fill="#767676" stroke="#333" stroke-width="1.5"/>
-  <path d="M18 6 L18 1 M18 30 L18 35 M29.2 8.8 L33 5 M6.8 27.2 L3 31 M8.8 8.8 L5 5 M27.2 27.2 L31 31 M30 18 L35 18 M6 18 L1 18" stroke="#767676" stroke-width="3" stroke-linecap="round"/>
+    <defs>
+      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000" flood-opacity="0.3"/>
+      </filter>
+    </defs>
+    <g filter="url(#shadow)">
+      <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
+        fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="0.5" />
+    </g>
+    <g fill="hsl(var(--accent))" stroke="hsl(var(--accent))" stroke-width="2.5" stroke-linecap="round" transform="translate(0, -1)">
+        <circle cx="18" cy="18" r="8" fill="none" />
+        <circle cx="18" cy="18" r="3" stroke="none" />
+        <path d="M18 10 L18 12" />
+        <path d="M18 26 L18 24" />
+        <path d="M10 18 L12 18" />
+        <path d="M26 18 L24 18" />
+        <path d="M12.93 12.93 L14.34 14.34" />
+        <path d="M23.07 23.07 L21.66 21.66" />
+        <path d="M12.93 23.07 L14.34 21.66" />
+        <path d="M23.07 12.93 L21.66 14.34" />
+    </g>
 </svg>`;
 
 const highlightedIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 40 44" width="42" height="49">
-  <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
-    fill="#1678c2" stroke="#000" stroke-width="2" />
-  <circle cx="18" cy="18" r="14" fill="#1678c2" stroke="#e0681a" stroke-width="3"/>
-  <circle cx="18" cy="18" r="11" fill="#1678c2" stroke="#009c91" stroke-width="3"/>
-  <circle cx="18" cy="18" r="6" fill="#555" stroke="#111" stroke-width="2"/>
-  <path d="M18 6 L18 1 M18 30 L18 35 M29.2 8.8 L33 5 M6.8 27.2 L3 31 M8.8 8.8 L5 5 M27.2 27.2 L31 31 M30 18 L35 18 M6 18 L1 18" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+    <defs>
+      <filter id="shadow-highlight" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="2" dy="4" stdDeviation="2" flood-color="#000" flood-opacity="0.4"/>
+      </filter>
+    </defs>
+    <g filter="url(#shadow-highlight)">
+      <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
+        fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="0.5" />
+    </g>
+    <g fill="hsl(var(--accent))" stroke="hsl(var(--accent))" stroke-width="3" stroke-linecap="round" transform="translate(0, -1)">
+        <circle cx="18" cy="18" r="8" fill="none" />
+        <circle cx="18" cy="18" r="3" stroke="none" />
+        <path d="M18 10 L18 12" />
+        <path d="M18 26 L18 24" />
+        <path d="M10 18 L12 18" />
+        <path d="M26 18 L24 18" />
+        <path d="M12.93 12.93 L14.34 14.34" />
+        <path d="M23.07 23.07 L21.66 21.66" />
+        <path d="M12.93 23.07 L14.34 21.66" />
+        <path d="M23.07 12.93 L21.66 14.34" />
+    </g>
 </svg>`;
 
 const defaultIcon = L.divIcon({
