@@ -421,7 +421,7 @@ export default function Home() {
             ) : (
                 <div className="h-full flex flex-col overflow-hidden flex-1">
                     <ScrollArea className="flex-grow">
-                        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                             {dealershipsToDisplay.map((dealer, index) => (
                             <React.Fragment key={dealer.id}>
                                 <DealershipCard 
@@ -430,17 +430,17 @@ export default function Home() {
                                     onClose={handleCloseExpandedCard}
                                     onClick={() => handleCardClick(dealer.id)}
                                     view={selectedDealershipId === dealer.id ? 'expanded' : 'list'}
-                                    className={selectedDealershipId === dealer.id ? 'sm:col-span-2 md:col-span-3 lg:col-span-4' : ''}
+                                    className={selectedDealershipId === dealer.id ? 'sm:col-span-2 md:col-span-3' : ''}
                                 />
                                 {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                                <div className="sm:col-span-2 md:col-span-3 lg:col-span-4">
+                                <div className="sm:col-span-2 md:col-span-3">
                                     <AdCard />
                                 </div>
                                 )}
                             </React.Fragment>
                             ))}
                             {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && !selectedDealershipId && (
-                            <div className="sm:col-span-2 md:col-span-3 lg:col-span-4">
+                            <div className="sm:col-span-2 md:col-span-3">
                                 <AdCard />
                             </div>
                             )}

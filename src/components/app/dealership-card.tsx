@@ -133,7 +133,9 @@ const ListView: React.FC<{dealership: Dealership, isExpanded?: boolean, onClose?
       </div>
       <CardContent className="p-4 flex-grow flex flex-col">
         <div className="flex justify-between items-start gap-2">
-          <h3 className="font-bold text-base text-primary dark:text-primary-foreground">{title}</h3>
+          <div className="flex-grow min-w-0">
+            <h3 className="font-bold text-base text-primary dark:text-primary-foreground break-words">{title}</h3>
+          </div>
           {rating > 0 && (
             <div className="flex items-center gap-1 text-sm font-bold text-amber-500 flex-shrink-0 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-200">
               <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
