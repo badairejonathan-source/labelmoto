@@ -90,7 +90,6 @@ export default function Home() {
         const uniqueDealerships = Array.from(dealershipMap.values());
         
         setAllDealerships(uniqueDealerships);
-        setFilteredDealerships(uniqueDealerships);
       }
     });
 
@@ -98,35 +97,38 @@ export default function Home() {
   }, []);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
+  const hasActiveFilters = (selectedDepartment !== '' && selectedDepartment !== 'all') || selectedCity !== '' || selectedBrands.length > 0;
 
   useEffect(() => {
-    let dealerships = allDealerships;
+    if (hasActiveFilters) {
+        let dealerships = allDealerships;
 
-    if (selectedDepartment && selectedDepartment !== 'all') {
-        const depCode = selectedDepartment.split(' ')[0];
-        const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
-        dealerships = dealerships.filter(d =>
-            d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
-        );
+        if (selectedDepartment && selectedDepartment !== 'all') {
+            const depCode = selectedDepartment.split(' ')[0];
+            const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
+            dealerships = dealerships.filter(d =>
+                d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
+            );
+        }
+        
+        if (selectedCity) {
+            const lowerCaseCity = selectedCity.toLowerCase();
+            dealerships = dealerships.filter(d =>
+                d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
+            );
+        }
+        
+        if (selectedBrands.length > 0) {
+            const brandLower = selectedBrands.map(b => b.toLowerCase());
+            dealerships = dealerships.filter(d => 
+                d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
+            );
+        }
+        
+        setFilteredDealerships(dealerships);
+    } else {
+        setFilteredDealerships([]);
     }
-    
-    if (selectedCity) {
-        const lowerCaseCity = selectedCity.toLowerCase();
-        dealerships = dealerships.filter(d =>
-            d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
-        );
-    }
-    
-    if (selectedBrands.length > 0) {
-        const brandLower = selectedBrands.map(b => b.toLowerCase());
-        dealerships = dealerships.filter(d => 
-            d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
-        );
-    }
-    
-    setFilteredDealerships(dealerships);
-    
-    const hasActiveFilters = selectedDepartment !== '' && selectedDepartment !== 'all' || selectedCity !== '' || selectedBrands.length > 0;
     
     if (isMobile) {
       if(hasActiveFilters && !isFilterSheetOpen) {
@@ -140,7 +142,7 @@ export default function Home() {
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isFilterSheetOpen, isMobile]);
+  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isFilterSheetOpen, isMobile, hasActiveFilters]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -275,8 +277,6 @@ export default function Home() {
     );
   };
   
-  const hasActiveFilters = (selectedDepartment !== '' && selectedDepartment !== 'all') || selectedCity !== '' || selectedBrands.length > 0;
-
   return (
     <div className="flex flex-col h-screen">
       <Header>
@@ -462,7 +462,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
