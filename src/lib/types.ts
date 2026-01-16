@@ -4,7 +4,7 @@ export interface Dealership {
   title: string;
   address: string;
   website: string;
-  phoneNum: string;
+  phoneNumber: string;
   imgUrl: string;
   mardi: string;
   mercredi: string;

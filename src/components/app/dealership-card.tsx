@@ -80,9 +80,9 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                     )}
                     <div className="text-xs text-muted-foreground mt-1 flex items-center">
                         <Phone className="h-3 w-3 mr-1.5 shrink-0" />
-                        {dealership.phoneNum ? (
-                            <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
-                                <span>{dealership.phoneNum}</span>
+                        {dealership.phoneNumber ? (
+                            <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
+                                <span>{dealership.phoneNumber}</span>
                             </a>
                         ) : (
                             <span>Non disponible</span>
@@ -151,9 +151,9 @@ const ListView: React.FC<{dealership: Dealership, isExpanded?: boolean, onClose?
 
         <div className="text-sm text-muted-foreground mt-1 flex items-center">
             <Phone className="h-4 w-4 mr-1.5 shrink-0" />
-            {dealership.phoneNum ? (
-                <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
-                    <span>{dealership.phoneNum}</span>
+            {dealership.phoneNumber ? (
+                <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
+                    <span>{dealership.phoneNumber}</span>
                 </a>
             ) : (
                 <span>Non disponible</span>
