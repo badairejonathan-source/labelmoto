@@ -41,23 +41,23 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     const rating = isNaN(ratingValue) ? 0 : ratingValue;
     
     return (
-        <div className="flex">
-            <div className="relative w-24 h-full flex-shrink-0">
+        <div className="flex h-full">
+            <div className="relative w-20 h-full flex-shrink-0">
               {dealership.imgUrl ? (
                 <Image
                   src={dealership.imgUrl}
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="96px"
+                  sizes="80px"
                 />
               ) : (
-                 <div className="w-full h-full bg-gray-200 flex items-center justify-center p-2">
-                  <MotoTrustLogo className="w-16 h-16 text-gray-400" />
+                 <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
+                  <MotoTrustLogo className="w-12 h-12 text-gray-400" />
                 </div>
               )}
             </div>
-            <CardContent className="p-3 flex-grow relative flex flex-col min-w-0">
+            <CardContent className="p-2 flex-grow relative flex flex-col min-w-0">
                 <div className="flex-grow min-w-0">
                     <div className="flex justify-between items-start gap-2">
                        <div className="flex-grow min-w-0 flex-shrink">
@@ -82,14 +82,14 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                         <Phone className="h-3 w-3 mr-1.5 shrink-0" />
                         {dealership.phoneNumber ? (
                             <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
-                                <span>{dealership.phoneNumber}</span>
+                                <span className="break-all">{dealership.phoneNumber}</span>
                             </a>
                         ) : (
                             <span>Non disponible</span>
                         )}
                     </div>
                 </div>
-                <div className="mt-2 pt-1 border-t border-transparent flex items-center justify-between">
+                <div className="mt-1 pt-1 border-t border-transparent flex items-center justify-between">
                     <div className="flex items-center">
                        <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
                        <span className="text-xs text-muted-foreground font-medium">Vérifié</span>
