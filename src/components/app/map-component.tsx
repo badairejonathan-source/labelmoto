@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -6,20 +5,40 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
 
-// Correction pour le rendu côté serveur et Next.js
-if (typeof window !== 'undefined') {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-  });
-}
+// SVG for the custom marker icon
+const defaultIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 40 44" width="36" height="42">
+  <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
+    fill="#2185D0" stroke="#111" stroke-width="1.5" />
+  <circle cx="18" cy="18" r="14" fill="#2185D0" stroke="#F2711C" stroke-width="2.5"/>
+  <circle cx="18" cy="18" r="11" fill="#2185D0" stroke="#00B5AD" stroke-width="2.5"/>
+  <circle cx="18" cy="18" r="6" fill="#767676" stroke="#333" stroke-width="1.5"/>
+  <path d="M18 6 L18 1 M18 30 L18 35 M29.2 8.8 L33 5 M6.8 27.2 L3 31 M8.8 8.8 L5 5 M27.2 27.2 L31 31 M30 18 L35 18 M6 18 L1 18" stroke="#767676" stroke-width="3" stroke-linecap="round"/>
+</svg>`;
 
-// Utilisation de l'icône Leaflet par défaut
-const defaultIcon = new L.Icon.Default();
-const highlightedIcon = new L.Icon.Default(); // On utilise la même, le z-index fera la différence visuelle.
+const highlightedIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 40 44" width="42" height="49">
+  <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
+    fill="#1678c2" stroke="#000" stroke-width="2" />
+  <circle cx="18" cy="18" r="14" fill="#1678c2" stroke="#e0681a" stroke-width="3"/>
+  <circle cx="18" cy="18" r="11" fill="#1678c2" stroke="#009c91" stroke-width="3"/>
+  <circle cx="18" cy="18" r="6" fill="#555" stroke="#111" stroke-width="2"/>
+  <path d="M18 6 L18 1 M18 30 L18 35 M29.2 8.8 L33 5 M6.8 27.2 L3 31 M8.8 8.8 L5 5 M27.2 27.2 L31 31 M30 18 L35 18 M6 18 L1 18" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+</svg>`;
 
+const defaultIcon = L.divIcon({
+  html: defaultIconSvg,
+  className: '', // important to clear default styling for divIcon
+  iconSize: [36, 42],
+  iconAnchor: [18, 42],
+  popupAnchor: [0, -42],
+});
+
+const highlightedIcon = L.divIcon({
+  html: highlightedIconSvg,
+  className: '', // important to clear default styling for divIcon
+  iconSize: [42, 49],
+  iconAnchor: [21, 49],
+  popupAnchor: [0, -49],
+});
 
 interface MapComponentProps {
   dealerships: Dealership[];
@@ -119,7 +138,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   useEffect(() => {
     Object.entries(markersRef.current).forEach(([id, marker]) => {
       let zIndexOffset = 0;
-      let iconToUse: L.Icon;
+      let iconToUse: L.Icon | L.DivIcon;
 
       if (id === hoveredDealershipId) {
         iconToUse = highlightedIcon;
