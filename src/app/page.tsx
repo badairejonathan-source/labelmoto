@@ -69,24 +69,19 @@ export default function Home() {
     const unsubscribe = onValue(concessionsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const firebaseDealerships: Dealership[] = [];
+        const dealershipMap = new Map<string, Dealership>();
         Object.values(data).forEach((deptData: any) => {
           if (deptData && typeof deptData === 'object') {
             Object.values(deptData).forEach((dealer: any) => {
               if (dealer && dealer.placeUrl) {
-                const dealerWithId = { ...dealer, id: dealer.placeUrl };
-                firebaseDealerships.push(dealerWithId as Dealership);
+                const dealerWithId: Dealership = { ...dealer, id: dealer.placeUrl };
+                dealershipMap.set(dealer.placeUrl, dealerWithId);
               }
             });
           }
         });
         
-        const uniqueDealerships = firebaseDealerships.reduce((acc: Dealership[], current) => {
-            if (!acc.find(item => item.id === current.id)) {
-                acc.push(current);
-            }
-            return acc;
-        }, []);
+        const uniqueDealerships = Array.from(dealershipMap.values());
         
         setAllDealerships(uniqueDealerships);
         setFilteredDealerships(uniqueDealerships);
@@ -461,3 +456,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
