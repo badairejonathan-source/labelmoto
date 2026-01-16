@@ -78,12 +78,16 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                             <span className="break-words">{dealership.address}</span>
                         </a>
                     )}
-                    {dealership.phoneNum && (
-                        <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="text-xs text-muted-foreground mt-1 flex items-center hover:text-accent hover:underline">
-                            <Phone className="h-3 w-3 mr-1.5 shrink-0" />
-                            <span>{dealership.phoneNum}</span>
-                        </a>
-                    )}
+                    <div className="text-xs text-muted-foreground mt-1 flex items-center">
+                        <Phone className="h-3 w-3 mr-1.5 shrink-0" />
+                        {dealership.phoneNum ? (
+                            <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
+                                <span>{dealership.phoneNum}</span>
+                            </a>
+                        ) : (
+                            <span>Non disponible</span>
+                        )}
+                    </div>
                 </div>
                 <div className="mt-2 pt-1 border-t border-transparent flex items-center justify-between">
                     <div className="flex items-center">
@@ -145,12 +149,16 @@ const ListView: React.FC<{dealership: Dealership, isExpanded?: boolean, onClose?
           </a>
         )}
 
-        {dealership.phoneNum && (
-          <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="text-sm text-muted-foreground mt-1 flex items-center hover:text-accent hover:underline">
-              <Phone className="h-4 w-4 mr-1.5 shrink-0" />
-              <span>{dealership.phoneNum}</span>
-          </a>
-        )}
+        <div className="text-sm text-muted-foreground mt-1 flex items-center">
+            <Phone className="h-4 w-4 mr-1.5 shrink-0" />
+            {dealership.phoneNum ? (
+                <a href={`tel:${dealership.phoneNum.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
+                    <span>{dealership.phoneNum}</span>
+                </a>
+            ) : (
+                <span>Non disponible</span>
+            )}
+        </div>
         
         <div className="flex flex-wrap gap-2 mt-3">
           {brands.slice(0, 3).map(brand => (
@@ -250,8 +258,4 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 };
 
 export default DealershipCard;
-    
-
-    
-
     
