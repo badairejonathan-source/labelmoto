@@ -15,17 +15,9 @@ const defaultIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 4
       <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
         fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="0.5" />
     </g>
-    <g fill="hsl(var(--accent))" stroke="hsl(var(--accent))" stroke-width="2.5" stroke-linecap="round" transform="translate(0, -1)">
-        <circle cx="18" cy="18" r="8" fill="none" />
-        <circle cx="18" cy="18" r="3" stroke="none" />
-        <path d="M18 10 L18 12" />
-        <path d="M18 26 L18 24" />
-        <path d="M10 18 L12 18" />
-        <path d="M26 18 L24 18" />
-        <path d="M12.93 12.93 L14.34 14.34" />
-        <path d="M23.07 23.07 L21.66 21.66" />
-        <path d="M12.93 23.07 L14.34 21.66" />
-        <path d="M23.07 12.93 L21.66 14.34" />
+    <circle cx="18" cy="18" r="10.5" fill="hsl(var(--primary))" stroke="hsl(var(--accent))" stroke-width="3"/>
+    <g transform="translate(18,18) scale(0.6)" fill="hsl(var(--accent))">
+      <path transform="translate(-12, -12)" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
     </g>
 </svg>`;
 
@@ -39,17 +31,9 @@ const highlightedIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 
       <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
         fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="0.5" />
     </g>
-    <g fill="hsl(var(--accent))" stroke="hsl(var(--accent))" stroke-width="3" stroke-linecap="round" transform="translate(0, -1)">
-        <circle cx="18" cy="18" r="8" fill="none" />
-        <circle cx="18" cy="18" r="3" stroke="none" />
-        <path d="M18 10 L18 12" />
-        <path d="M18 26 L18 24" />
-        <path d="M10 18 L12 18" />
-        <path d="M26 18 L24 18" />
-        <path d="M12.93 12.93 L14.34 14.34" />
-        <path d="M23.07 23.07 L21.66 21.66" />
-        <path d="M12.93 23.07 L14.34 21.66" />
-        <path d="M23.07 12.93 L21.66 14.34" />
+    <circle cx="18" cy="18" r="10.5" fill="hsl(var(--primary))" stroke="hsl(var(--accent))" stroke-width="3"/>
+    <g transform="translate(18,18) scale(0.6)" fill="hsl(var(--accent))">
+      <path transform="translate(-12, -12)" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
     </g>
 </svg>`;
 
