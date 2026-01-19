@@ -328,6 +328,7 @@ export default function Home() {
               onMarkerClick={handleMarkerClick}
               onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
+              isMobile={isMobile}
             />
 
             {isMobileSheetOpen && (
@@ -435,6 +436,7 @@ export default function Home() {
                       onMarkerClick={handleMarkerClick}
                       onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                       onMarkerMouseOut={() => setHoveredDealershipId(null)}
+                      isMobile={isMobile}
                     />
                 </div>
               </div>

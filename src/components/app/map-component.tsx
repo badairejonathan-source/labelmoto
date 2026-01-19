@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -61,6 +62,7 @@ interface MapComponentProps {
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
+  isMobile?: boolean;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ 
@@ -70,7 +72,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
   hoveredDealershipId,
   onMarkerClick,
   onMarkerMouseOver,
-  onMarkerMouseOut 
+  onMarkerMouseOut,
+  isMobile
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
@@ -113,15 +116,23 @@ const MapComponent: React.FC<MapComponentProps> = ({
         currentMarkers[dealer.id].setLatLng(position).setIcon(defaultIcon);
       } else {
         const marker = L.marker(position, { icon: defaultIcon }).addTo(mapInstance.current!);
-        marker.bindPopup(`
+
+        const popupOptions: L.PopupOptions = {
+          autoPan: false,
+          maxWidth: isMobile ? 220 : 300,
+        };
+        
+        const popupContent = `
           <div class="font-sans">
-            <h3 class="font-bold text-base mb-1">${dealer.title}</h3>
-            <p class="text-sm text-gray-600 mb-2">${dealer.address}</p>
-            <a href=${dealer.placeUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline text-sm">
+            <h3 class="font-bold ${isMobile ? 'text-sm' : 'text-base'} mb-1">${dealer.title}</h3>
+            <p class="${isMobile ? 'text-xs' : 'text-sm'} text-gray-600 mb-2">${dealer.address}</p>
+            <a href=${dealer.placeUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline ${isMobile ? 'text-xs' : 'text-sm'}">
               Voir sur Google Maps
             </a>
           </div>
-        `, { autoPan: false });
+        `;
+
+        marker.bindPopup(popupContent, popupOptions);
 
         marker.on('click', () => onMarkerClick(dealer.id));
         marker.on('mouseover', () => {
@@ -139,7 +150,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
     markersRef.current = currentMarkers;
     
-  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, isMobile]);
 
   useEffect(() => {
     if (mapInstance.current) {
