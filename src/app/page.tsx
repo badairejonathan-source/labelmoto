@@ -130,19 +130,14 @@ export default function Home() {
         setFilteredDealerships([]);
     }
     
-    if (isMobile) {
-      if(hasActiveFilters && !isFilterSheetOpen) {
-          setIsMobileSheetOpen(true);
-      } else if (!hasActiveFilters) {
-          setIsMobileSheetOpen(false);
-      }
-    }
-    
     if(!hasActiveFilters){
         setSelectedDealershipId(null);
+        if (isMobile) {
+            setIsMobileSheetOpen(false);
+        }
     }
 
-  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isFilterSheetOpen, isMobile, hasActiveFilters]);
+  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isMobile, hasActiveFilters]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -155,7 +150,17 @@ export default function Home() {
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
     setSelectedCity('');
-  }, []);
+    if (isMobile && department && department !== 'all') {
+      const depData = (locations as any)[department];
+      if (depData && depData.center) {
+        setMapCenter(depData.center as [number, number]);
+        setMapZoom(9);
+      }
+    } else if (department === 'all') {
+      setMapCenter([46.603354, 1.888334]);
+      setMapZoom(6);
+    }
+  }, [isMobile]);
 
   const handleCityChange = useCallback((city: string) => {
       const cityValue = city === 'all-cities' ? '' : city;
@@ -308,7 +313,7 @@ export default function Home() {
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
-            {(isMobileSheetOpen || (hasActiveFilters && dealershipsToDisplay.length > 0)) && (
+            {isMobileSheetOpen && (
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent 
                  side="bottom" 
