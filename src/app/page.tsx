@@ -342,6 +342,9 @@ export default function Home() {
                    }
                  }}
                >
+                  <SheetHeader className="sr-only">
+                    <SheetTitle>Résultats</SheetTitle>
+                  </SheetHeader>
                  <div
                     className="py-2 text-center flex-shrink-0 cursor-pointer"
                     onClick={() => setIsSheetExpanded(!isSheetExpanded)}
