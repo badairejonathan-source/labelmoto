@@ -63,6 +63,7 @@ export default function Home() {
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
   useEffect(() => {
     const concessionsRef = ref(db, '/');
@@ -130,11 +131,8 @@ export default function Home() {
         setFilteredDealerships([]);
     }
     
-    if(!hasActiveFilters){
+    if(!hasActiveFilters && !isMobile){
         setSelectedDealershipId(null);
-        if (isMobile) {
-            setIsMobileSheetOpen(false);
-        }
     }
 
   }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isMobile, hasActiveFilters]);
@@ -165,7 +163,7 @@ export default function Home() {
   const handleCityChange = useCallback((city: string) => {
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-  }, [selectedDepartment]);
+  }, []);
 
   const handleBrandChange = useCallback((brand: string) => {
     setSelectedBrands(prev => 
@@ -191,15 +189,35 @@ export default function Home() {
         setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
         setMapZoom(14);
       }
-    }
-
-    if (isMobile) {
-      setIsMobileSheetOpen(true);
+      if (isMobile) {
+        setIsMobileSheetOpen(true);
+        setIsSheetExpanded(false);
+      }
+    } else {
+        if(isMobile) {
+            setIsMobileSheetOpen(false);
+        }
     }
   };
   
+  const handleMarkerClick = (id: string) => {
+    setSelectedDealershipId(id);
+    const selectedDealership = allDealerships.find(d => d.id === id);
+    if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
+      setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
+      setMapZoom(14);
+    }
+    if (isMobile) {
+      setIsMobileSheetOpen(true);
+      setIsSheetExpanded(false);
+    }
+  };
+
   const handleCloseExpandedCard = () => {
     setSelectedDealershipId(null);
+     if (isMobile) {
+      setIsMobileSheetOpen(false);
+    }
   }
 
   const renderViewToggle = () => (
@@ -307,26 +325,28 @@ export default function Home() {
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
-              brandHighlightIds={new Set()}
-              onMarkerClick={(id) => handleCardClick(id)}
+              onMarkerClick={handleMarkerClick}
               onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
               onMarkerMouseOut={() => setHoveredDealershipId(null)}
             />
 
             {isMobileSheetOpen && (
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
-               <SheetContent 
-                 side="bottom" 
-                 className="h-[90vh] flex flex-col"
-                 showOverlay={false} 
+               <SheetContent
+                 side="bottom"
+                 className={cn("flex flex-col transition-all duration-300", isSheetExpanded ? 'h-[90vh]' : 'h-[50vh]')}
+                 showOverlay={false}
                  onInteractOutside={(e) => {
                    if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
                      e.preventDefault();
                    }
                  }}
                >
-                 <SheetHeader className="p-2 pt-2 text-center flex-shrink-0">
-                   <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
+                 <SheetHeader 
+                    className="p-2 pt-2 text-center flex-shrink-0"
+                    onClick={() => setIsSheetExpanded(!isSheetExpanded)}
+                 >
+                   <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2 cursor-pointer" />
                    <SheetTitle>Résultats ({filteredDealerships.length})</SheetTitle>
                  </SheetHeader>
                 <ScrollArea className="flex-1 min-h-0">
@@ -410,8 +430,7 @@ export default function Home() {
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
-                      brandHighlightIds={new Set()}
-                      onMarkerClick={(id) => handleCardClick(id)}
+                      onMarkerClick={handleMarkerClick}
                       onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                       onMarkerMouseOut={() => setHoveredDealershipId(null)}
                     />
