@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -118,7 +117,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         const marker = L.marker(position, { icon: defaultIcon }).addTo(mapInstance.current!);
 
         const popupOptions: L.PopupOptions = {
-          autoPan: true,
+          autoPan: false,
           maxWidth: isMobile ? 220 : 300,
         };
         
