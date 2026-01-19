@@ -1,43 +1,59 @@
 import React from 'react';
 
 const MotoTrustLogo = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
-    <svg width="250" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
-    <g transform="translate(40, 45)">
-      <text x="0" y="45" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="50" fill="#FFFFFF">M</text>
-      
-      <g transform="translate(72, 23)">
-        <circle cx="20" cy="20" r="18" stroke="#FF8C00" strokeWidth="4" fill="none" />
-        <g fill="#FF8C00">
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(0 20 20)"/>
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(45 20 20)"/>
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(90 20 20)"/>
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(135 20 20)"/>
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(180 20 20)"/>
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(225 20 20)"/>
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(270 20 20)"/>
-          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(315 20 20)"/>
-        </g>
-        <g stroke="#FF8C00" strokeWidth="2">
-          <line x1="20" y1="20" x2="20" y2="5" />
-          <line x1="20" y1="20" x2="34" y2="28" />
-          <line x1="20" y1="20" x2="28" y2="35" />
-          <line x1="20" y1="20" x2="12" y2="35" />
-          <line x1="20" y1="20" x2="6" y2="28" />
-        </g>
-        <circle cx="20" cy="20" r="4" fill="#FF8C00" />
-      </g>
+    <svg width="300" height="60" viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+        {/* Wheel Icon */}
+        <g transform="translate(30,30)" fill="#f97316">
+            {/* Tire */}
+            <circle cx="0" cy="0" r="25" fill="none" stroke="#f97316" strokeWidth="4"/>
 
-      <text x="115" y="45" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="50" fill="#FFFFFF">
-        TO <tspan fill="#FF8C00">TRUST</tspan>
-      </text>
-      
-      <text x="115" y="75" fontFamily="Arial, sans-serif" fontWeight="400" fontSize="18" fill="#FFFFFF" letterSpacing="2">
-        TROUVE TA CONCESS
-      </text>
-      
-      <line x1="0" y1="90" x2="320" y2="90" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
-    </g>
-  </svg>
+            {/* Knobs */}
+            <g stroke="#f97316" strokeWidth="3" strokeLinecap="round">
+                {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(angle => (
+                    <path key={angle} d="M 0 -27 L 0 -22" transform={`rotate(${angle})`}/>
+                ))}
+            </g>
+            
+            {/* Spokes */}
+            <g stroke="#f97316" strokeWidth="1.5">
+                <path d="M -22 0 L 22 0"/>
+                <path d="M 0 -22 L 0 22"/>
+                <path d="M -15.5 -15.5 L 15.5 15.5"/>
+                <path d="M -15.5 15.5 L 15.5 -15.5"/>
+            </g>
+            
+            {/* Center hub */}
+            <circle cx="0" cy="0" r="3" fill="#f97316"/>
+        </g>
+
+        {/* Text */}
+        <g transform="translate(70, 12)" fontFamily="Arial, 'Helvetica Neue', Helvetica, sans-serif" fontWeight="900" letterSpacing="-0.5">
+            
+            <text x="0" y="30" fontSize="24" fill="white">M</text>
+            
+            {/* Gear for O */}
+            <g transform="translate(28, 30)">
+                <g fill="#f97316">
+                    {[0, 60, 120, 180, 240, 300].map(angle => (
+                        <rect key={angle} x="-1" y="-8" width="2" height="3" rx="0.5" transform={`rotate(${angle})`}/>
+                    ))}
+                </g>
+                <circle cx="0" cy="0" r="5" fill="none" stroke="#f97316" strokeWidth="1.5"/>
+                <circle cx="0" cy="0" r="2.5" fill="hsl(var(--primary))"/>
+            </g>
+
+            <text x="42" y="30" fontSize="24" fill="white">TO</text>
+            <text x="90" y="30" fontSize="24" fill="#f97316">TRUST</text>
+            
+            {/* Underline */}
+            <rect x="90" y="36" width="85" height="2" fill="white" />
+            
+            {/* "Trouve ta concess" text */}
+            <text x="90" y="52" fontSize="12" fill="white" fontWeight="400" letterSpacing="0.5">
+                Trouve ta concess
+            </text>
+        </g>
+    </svg>
 );
 
 export default MotoTrustLogo;
