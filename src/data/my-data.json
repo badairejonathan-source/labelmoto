@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Concession A",
+    "address": "123 Rue de la Moto, 75001 Paris",
+    "phone": "01 23 45 67 89",
+    "hours": "Lundi - Vendredi: 9h - 18h\nSamedi: 10h - 17h\nDimanche: Fermé"
+  },
+  {
+    "id": 2,
+    "name": "Garage du Centre",
+    "address": "45 Avenue des Champs-Élysées, 75008 Paris",
+    "phone": "01 98 76 54 32",
+    "hours": "Lundi - Samedi: 8h30 - 19h\nDimanche: Fermé"
+  },
+  {
+    "id": 3,
+    "name": "Moto Passion",
+    "address": "789 Boulevard Saint-Germain, 75006 Paris",
+    "phone": "01 11 22 33 44",
+    "hours": "Mardi - Samedi: 9h30 - 12h30, 14h - 18h30\nLundi, Dimanche: Fermé"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "MOTO PASSION",
+    "address": "123 Rue de la Vitesse, 75015 Paris",
+    "phone": "01 23 45 67 89",
+    "hours": {
+      "Lundi": "9:00 - 18:00",
+      "Mardi": "9:00 - 18:00",
+      "Mercredi": "9:00 - 18:00",
+      "Jeudi": "9:00 - 18:00",
+      "Vendredi": "9:00 - 18:00",
+      "Samedi": "10:00 - 17:00",
+      "Dimanche": "Fermé"
+    },
+    "description": "Concessionnaire exclusif des plus grandes marques. Vente, entretien et réparation. Un service d'experts pour les passionnés."
+  },
+  {
+    "id": 2,
+    "name": "L'AS DU GUIDON",
+    "address": "45 Avenue des Motards, 69002 Lyon",
+    "phone": "04 98 76 54 32",
+    "hours": {
+      "Lundi": "Fermé",
+      "Mardi": "8:30 - 19:00",
+      "Mercredi": "8:30 - 19:00",
+      "Jeudi": "8:30 - 19:00",
+      "Vendredi": "8:30 - 19:00",
+      "Samedi": "9:00 - 18:00",
+      "Dimanche": "Fermé"
+    },
+    "description": "Spécialiste de la moto d'occasion. Toutes nos motos sont révisées et garanties. Venez trouver la vôtre !"
+  },
+  {
+    "id": 3,
+    "name": "HORIZON MOTO",
+    "address": "78 Boulevard de la Plage, 13008 Marseille",
+    "phone": "04 12 34 56 78",
+    "hours": {
+      "Lundi": "9:30 - 12:30, 14:00 - 18:30",
+      "Mardi": "9:30 - 12:30, 14:00 - 18:30",
+      "Mercredi": "Fermé",
+      "Jeudi": "9:30 - 12:30, 14:00 - 18:30",
+      "Vendredi": "9:30 - 18:30",
+      "Samedi": "10:00 - 16:00",
+      "Dimanche": "Fermé"
+    },
+    "description": "Face à la mer, votre concession pour l'évasion. Essais sur route, financement et assurances sur-mesure."
+  }
+]

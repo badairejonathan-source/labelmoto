@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "name": "MOTO SPORT 13",
+    "description": "Concessionnaire Yamaha & Kawasaki",
+    "phone": "04 91 00 00 00",
+    "address": "123 Rue de la Moto, 13008 Marseille",
+    "hours": {
+      "lundi": "Fermé",
+      "mardi": "09:00 - 12:00, 14:00 - 19:00",
+      "mercredi": "09:00 - 12:00, 14:00 - 19:00",
+      "jeudi": "09:00 - 12:00, 14:00 - 19:00",
+      "vendredi": "09:00 - 12:00, 14:00 - 19:00",
+      "samedi": "09:00 - 17:00",
+      "dimanche": "Fermé"
+    }
+  },
+  {
+    "id": "2",
+    "name": "PASSION MOTO AIX",
+    "description": "Spécialiste Honda & Suzuki",
+    "phone": "04 42 00 00 00",
+    "address": "456 Avenue des Moteurs, 13100 Aix-en-Provence",
+    "hours": {
+      "lundi": "09:30 - 12:30, 14:00 - 18:30",
+      "mardi": "09:30 - 12:30, 14:00 - 18:30",
+      "mercredi": "Fermé",
+      "jeudi": "09:30 - 12:30, 14:00 - 18:30",
+      "vendredi": "09:30 - 12:30, 14:00 - 18:30",
+      "samedi": "10:00 - 16:00",
+      "dimanche": "Fermé"
+    }
+  },
+  {
+    "id": "3",
+    "name": "DUCATI ARLES",
+    "description": "Votre concessionnaire exclusif Ducati",
+    "phone": "04 90 00 00 00",
+    "address": "789 Boulevard des Arènes, 13200 Arles",
+    "hours": {
+      "lundi": "Fermé",
+      "mardi": "09:00 - 12:00, 14:00 - 18:00",
+      "mercredi": "09:00 - 12:00, 14:00 - 18:00",
+      "jeudi": "09:00 - 12:00, 14:00 - 18:00",
+      "vendredi": "09:00 - 12:00, 14:00 - 18:00",
+      "samedi": "09:00 - 12:00",
+      "dimanche": "Fermé"
+    }
+  }
+]
