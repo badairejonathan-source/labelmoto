@@ -121,7 +121,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
               Voir sur Google Maps
             </a>
           </div>
-        `);
+        `, { autoPan: false });
 
         marker.on('click', () => onMarkerClick(dealer.id));
         marker.on('mouseover', () => {

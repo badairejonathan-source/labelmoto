@@ -155,28 +155,11 @@ export default function Home() {
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
     setSelectedCity('');
-    if (department && department !== 'all' && (locations as any)[department]) {
-      const locationData = (locations as any)[department];
-      if(locationData.center) {
-        setMapCenter(locationData.center as [number, number]);
-        setMapZoom(9);
-      }
-    } else {
-      setMapCenter([46.603354, 1.888334]);
-      setMapZoom(6);
-    }
   }, []);
 
   const handleCityChange = useCallback((city: string) => {
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-      if(cityValue){
-        const depData = (locations as any)[selectedDepartment];
-        if(depData && depData.cityCoords && depData.cityCoords[cityValue]){
-           setMapCenter(depData.cityCoords[cityValue] as [number, number]);
-           setMapZoom(12);
-        }
-      }
   }, [selectedDepartment]);
 
   const handleBrandChange = useCallback((brand: string) => {
@@ -194,11 +177,21 @@ export default function Home() {
   }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
   
   const handleCardClick = (id: string) => {
-      setSelectedDealershipId(prevId => prevId === id ? null : id);
-      if (isMobile) {
-        setIsMobileSheetOpen(true);
+    const newSelectedId = selectedDealershipId === id ? null : id;
+    setSelectedDealershipId(newSelectedId);
+
+    if (newSelectedId) {
+      const selectedDealership = allDealerships.find(d => d.id === newSelectedId);
+      if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
+        setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
+        setMapZoom(14);
       }
-  }
+    }
+
+    if (isMobile) {
+      setIsMobileSheetOpen(true);
+    }
+  };
   
   const handleCloseExpandedCard = () => {
     setSelectedDealershipId(null);
@@ -413,7 +406,7 @@ export default function Home() {
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
                       brandHighlightIds={new Set()}
-                      onMarkerClick={(id) => setSelectedDealershipId(id)}
+                      onMarkerClick={(id) => handleCardClick(id)}
                       onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
                       onMarkerMouseOut={() => setHoveredDealershipId(null)}
                     />
