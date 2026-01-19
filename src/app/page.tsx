@@ -319,7 +319,7 @@ export default function Home() {
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent 
                  side="bottom" 
-                 className="h-[40vh]" 
+                 className="h-[90vh]" 
                  showOverlay={false} 
                  onInteractOutside={(e) => {
                    if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
@@ -327,12 +327,12 @@ export default function Home() {
                    }
                  }}
                >
-                 <SheetHeader className="p-4 pt-2 text-center">
+                 <SheetHeader className="p-2 pt-2 text-center">
                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2" />
                    <SheetTitle>Résultats ({filteredDealerships.length})</SheetTitle>
                  </SheetHeader>
-                <ScrollArea className="h-full pb-4">
-                  <div className="p-4 space-y-4">
+                <ScrollArea className="h-full pb-2">
+                  <div className="p-2 space-y-4">
                     {dealershipsToDisplay.map((dealer, index) => (
                       <React.Fragment key={dealer.id}>
                         <div 
