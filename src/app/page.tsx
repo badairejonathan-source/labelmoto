@@ -334,7 +334,7 @@ export default function Home() {
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent
                  side="bottom"
-                 className={cn("flex flex-col transition-all duration-300", isSheetExpanded ? 'h-[90vh]' : 'h-[50vh]')}
+                 className={cn("flex flex-col transition-all duration-300 p-0", isSheetExpanded ? 'h-[90vh]' : 'h-[50vh]')}
                  showOverlay={false}
                  onInteractOutside={(e) => {
                    if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
@@ -342,13 +342,12 @@ export default function Home() {
                    }
                  }}
                >
-                 <SheetHeader 
-                    className="p-2 pt-2 text-center flex-shrink-0"
+                 <div
+                    className="py-2 text-center flex-shrink-0 cursor-pointer"
                     onClick={() => setIsSheetExpanded(!isSheetExpanded)}
-                 >
-                   <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-2 cursor-pointer" />
-                   <SheetTitle>Résultats ({filteredDealerships.length})</SheetTitle>
-                 </SheetHeader>
+                  >
+                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto" />
+                  </div>
                 <ScrollArea className="flex-1 min-h-0">
                   <div className="p-2 space-y-4 pb-6">
                     {dealershipsToDisplay.map((dealer, index) => (
