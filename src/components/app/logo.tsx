@@ -1,13 +1,41 @@
 import React from 'react';
 
 const MotoTrustLogo = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
-  <svg width="150" height="40" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
-    <text x="48" y="22" fontFamily="Inter, sans-serif" fontSize="16" fontWeight="bold" className="fill-primary-foreground dark:fill-primary-foreground">MOTO</text>
-    <text x="95" y="22" fontFamily="Inter, sans-serif" fontSize="16" fontWeight="bold" className="fill-accent">TRUST</text>
-    <text x="48" y="35" fontFamily="Inter, sans-serif" fontSize="8" className="fill-muted-foreground">TROUVE TA CONCESS</text>
-    <path d="M20 5C9.72 5 1.5 12.3333 1.5 21.6667C1.5 31 9.72 38.3333 20 38.3333C30.28 38.3333 38.5 31 38.5 21.6667V11.6667" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary dark:text-primary-foreground" />
-    <g transform="translate(20, 21.6667) scale(0.45)" fill="hsl(var(--accent))">
-      <path transform="translate(-12, -12)" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61-.25-1.17-.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19-.15-.24-.42-.12-.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69-.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18-.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23-.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+    <svg width="250" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+    <g transform="translate(40, 45)">
+      <text x="0" y="45" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="50" fill="#FFFFFF">M</text>
+      
+      <g transform="translate(72, 23)">
+        <circle cx="20" cy="20" r="18" stroke="#FF8C00" strokeWidth="4" fill="none" />
+        <g fill="#FF8C00">
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(0 20 20)"/>
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(45 20 20)"/>
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(90 20 20)"/>
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(135 20 20)"/>
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(180 20 20)"/>
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(225 20 20)"/>
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(270 20 20)"/>
+          <rect x="18" y="0" width="4" height="6" rx="1" transform="rotate(315 20 20)"/>
+        </g>
+        <g stroke="#FF8C00" strokeWidth="2">
+          <line x1="20" y1="20" x2="20" y2="5" />
+          <line x1="20" y1="20" x2="34" y2="28" />
+          <line x1="20" y1="20" x2="28" y2="35" />
+          <line x1="20" y1="20" x2="12" y2="35" />
+          <line x1="20" y1="20" x2="6" y2="28" />
+        </g>
+        <circle cx="20" cy="20" r="4" fill="#FF8C00" />
+      </g>
+
+      <text x="115" y="45" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="50" fill="#FFFFFF">
+        TO <tspan fill="#FF8C00">TRUST</tspan>
+      </text>
+      
+      <text x="115" y="75" fontFamily="Arial, sans-serif" fontWeight="400" fontSize="18" fill="#FFFFFF" letterSpacing="2">
+        TROUVE TA CONCESS
+      </text>
+      
+      <line x1="0" y1="90" x2="320" y2="90" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
     </g>
   </svg>
 );
