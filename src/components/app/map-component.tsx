@@ -42,7 +42,6 @@ const defaultIcon = L.divIcon({
   className: '', // important to clear default styling for divIcon
   iconSize: [36, 42],
   iconAnchor: [18, 42],
-  popupAnchor: [0, -42],
 });
 
 const highlightedIcon = L.divIcon({
@@ -50,7 +49,6 @@ const highlightedIcon = L.divIcon({
   className: '', // important to clear default styling for divIcon
   iconSize: [42, 49],
   iconAnchor: [21, 49],
-  popupAnchor: [0, -49],
 });
 
 interface MapComponentProps {
@@ -115,31 +113,12 @@ const MapComponent: React.FC<MapComponentProps> = ({
         currentMarkers[dealer.id].setLatLng(position).setIcon(defaultIcon);
       } else {
         const marker = L.marker(position, { icon: defaultIcon }).addTo(mapInstance.current!);
-
-        const popupOptions: L.PopupOptions = {
-          autoPan: false,
-          maxWidth: isMobile ? 220 : 300,
-        };
         
-        const popupContent = `
-          <div class="font-sans">
-            <h3 class="font-bold ${isMobile ? 'text-sm' : 'text-base'} mb-1">${dealer.title}</h3>
-            <p class="${isMobile ? 'text-xs' : 'text-sm'} text-gray-600 mb-2">${dealer.address}</p>
-            <a href=${dealer.placeUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline ${isMobile ? 'text-xs' : 'text-sm'}">
-              Voir sur Google Maps
-            </a>
-          </div>
-        `;
-
-        marker.bindPopup(popupContent, popupOptions);
-
         marker.on('click', () => onMarkerClick(dealer.id));
         marker.on('mouseover', () => {
-          marker.openPopup();
           onMarkerMouseOver(dealer.id)
         });
         marker.on('mouseout', () => {
-          marker.closePopup();
           onMarkerMouseOut();
         });
         
@@ -172,12 +151,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
       marker.setIcon(iconToUse);
       marker.setZIndexOffset(zIndexOffset);
-
-      if (id === hoveredDealershipId) {
-        if(!marker.isPopupOpen()) {
-            marker.openPopup();
-        }
-      }
     });
   }, [hoveredDealershipId]);
 

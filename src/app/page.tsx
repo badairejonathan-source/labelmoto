@@ -171,6 +171,11 @@ export default function Home() {
     );
   }, []);
 
+  const hoveredDealership = useMemo(() => {
+    if (!hoveredDealershipId) return null;
+    return allDealerships.find(d => d.id === hoveredDealershipId);
+  }, [hoveredDealershipId, allDealerships]);
+
   const dealershipsToDisplay = useMemo(() => {
     if (selectedDealershipId && (viewMode === 'map' || isMobile)) {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
@@ -179,7 +184,7 @@ export default function Home() {
     return filteredDealerships;
   }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
   
-  const handleCardClick = (id: string) => {
+  const handleCardClick = useCallback((id: string) => {
     const newSelectedId = selectedDealershipId === id ? null : id;
     setSelectedDealershipId(newSelectedId);
 
@@ -198,9 +203,9 @@ export default function Home() {
             setIsMobileSheetOpen(false);
         }
     }
-  };
+  }, [selectedDealershipId, allDealerships, isMobile]);
   
-  const handleMarkerClick = (id: string) => {
+  const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(id);
     const selectedDealership = allDealerships.find(d => d.id === id);
     if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
@@ -211,7 +216,15 @@ export default function Home() {
       setIsMobileSheetOpen(true);
       setIsSheetExpanded(false);
     }
-  };
+  }, [allDealerships, isMobile]);
+
+  const handleMarkerMouseOver = useCallback((id: string) => {
+    setHoveredDealershipId(id);
+  }, []);
+
+  const handleMarkerMouseOut = useCallback(() => {
+    setHoveredDealershipId(null);
+  }, []);
 
   const handleCloseExpandedCard = () => {
     setSelectedDealershipId(null);
@@ -320,14 +333,29 @@ export default function Home() {
                 </Sheet>
             </div>
             
+            {hoveredDealership && !isMobileSheetOpen && (
+              <div
+                className="absolute top-20 left-1/2 -translate-x-1/2 z-[1000] w-[90%] max-w-sm"
+                onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
+                onMouseLeave={handleMarkerMouseOut}
+              >
+                <DealershipCard
+                  dealership={hoveredDealership}
+                  view="compact"
+                  className="shadow-2xl"
+                  onClick={() => handleCardClick(hoveredDealership.id)}
+                />
+              </div>
+            )}
+            
             <MapComponent 
               dealerships={filteredDealerships}
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
               onMarkerClick={handleMarkerClick}
-              onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
-              onMarkerMouseOut={() => setHoveredDealershipId(null)}
+              onMarkerMouseOver={handleMarkerMouseOver}
+              onMarkerMouseOut={handleMarkerMouseOut}
               isMobile={isMobile}
             />
 
@@ -336,6 +364,7 @@ export default function Home() {
                <SheetContent
                  side="bottom"
                  className={cn("flex flex-col transition-all duration-300 p-0", isSheetExpanded ? 'h-[90vh]' : 'h-[50vh]')}
+                 closeButton={false}
                  showOverlay={false}
                  onInteractOutside={(e) => {
                    if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
@@ -358,8 +387,8 @@ export default function Home() {
                       <React.Fragment key={dealer.id}>
                         <div 
                           onClick={() => handleCardClick(dealer.id)}
-                          onMouseEnter={() => setHoveredDealershipId(dealer.id)}
-                          onMouseLeave={() => setHoveredDealershipId(null)}
+                          onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                          onMouseLeave={handleMarkerMouseOut}
                         >
                           <DealershipCard 
                             dealership={dealer} 
@@ -405,8 +434,8 @@ export default function Home() {
                             <React.Fragment key={dealer.id}>
                               <div 
                                 onClick={() => handleCardClick(dealer.id)}
-                                onMouseEnter={() => setHoveredDealershipId(dealer.id)}
-                                onMouseLeave={() => setHoveredDealershipId(null)}
+                                onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                                onMouseLeave={handleMarkerMouseOut}
                               >
                                 <DealershipCard 
                                     dealership={dealer} 
@@ -427,15 +456,29 @@ export default function Home() {
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="col-span-8 rounded-lg overflow-hidden h-full">
+                <div className="col-span-8 rounded-lg overflow-hidden h-full relative">
+                    {hoveredDealership && (
+                      <div
+                        className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-sm px-4"
+                        onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
+                        onMouseLeave={handleMarkerMouseOut}
+                      >
+                        <DealershipCard
+                          dealership={hoveredDealership}
+                          view="compact"
+                          className="shadow-2xl"
+                          onClick={() => handleCardClick(hoveredDealership.id)}
+                        />
+                      </div>
+                    )}
                     <MapComponent 
                       dealerships={filteredDealerships}
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
                       onMarkerClick={handleMarkerClick}
-                      onMarkerMouseOver={(id) => setHoveredDealershipId(id)}
-                      onMarkerMouseOut={() => setHoveredDealershipId(null)}
+                      onMarkerMouseOver={handleMarkerMouseOver}
+                      onMarkerMouseOut={handleMarkerMouseOut}
                       isMobile={isMobile}
                     />
                 </div>
