@@ -9,6 +9,7 @@ import { MapPin, Star, CheckCircle, Phone, Globe, ExternalLink, Clock, X } from 
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -102,7 +103,6 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
 
 const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = ({ dealership, onClose }) => {
     const title = dealership.title || '';
-    const brands = getBrands(title);
     const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
     const rating = isNaN(ratingValue) ? 0 : ratingValue;
     const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
@@ -112,8 +112,10 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
         onClose?.();
     };
 
+    const allHoursMissing = weekDays.every(day => !dealership[day] || dealership[day].trim() === '');
+
     return (
-        <div className="relative flex flex-row h-[600px] max-h-[80vh] w-full">
+        <div className="relative flex flex-row w-full">
             {/* Image container */}
             <div className="relative w-2/5 flex-shrink-0 bg-gray-200">
                 {dealership.imgUrl ? (
@@ -126,16 +128,25 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
             </div>
 
             {/* Content container */}
-            <div className="w-3/5 p-6 flex flex-col overflow-y-auto">
+            <div className="w-3/5 p-6 flex flex-col">
                 {/* Header */}
                 <div className="flex justify-between items-start gap-2">
                     <h3 className="font-bold text-xl text-primary dark:text-primary-foreground">{title}</h3>
-                    {rating > 0 && (
-                        <div className="flex items-center gap-1 text-base font-bold text-amber-500 flex-shrink-0 bg-amber-50 rounded-full px-2.5 py-1 border border-amber-200">
-                            <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
-                            <span>{rating.toFixed(1)}</span>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {rating > 0 && (
+                            <div className="flex items-center gap-1 text-sm font-bold text-amber-500 flex-shrink-0 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-200">
+                                <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                                <span>{rating.toFixed(1)}</span>
+                            </div>
+                        )}
+                         <button
+                            onClick={handleClose}
+                            className="p-1 rounded-full text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            aria-label="Fermer"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Address & Phone */}
@@ -154,51 +165,27 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                     )}
                 </div>
 
-                {/* Brands */}
-                <div className="flex flex-wrap gap-2 mt-4">
-                    {brands.map(brand => (<Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>))}
-                </div>
-                
-                <div className="flex-grow" />
+                <Separator className="my-4" />
 
                 {/* Hours */}
-                <div className="border-t pt-4 space-y-2 mt-4">
+                <div className="space-y-2">
                     <h4 className="text-base font-semibold flex items-center"><Clock className="h-4 w-4 mr-2 shrink-0" /> Horaires</h4>
-                    <div className="grid grid-cols-1 text-sm text-muted-foreground">
-                        {weekDays.map(day => (
-                            dealership[day] && (
-                            <div key={day} className="flex justify-between text-xs py-1">
-                                <span className="capitalize font-medium">{day}</span>
-                                <span>{dealership[day] === "Fermé" ? "Fermé" : dealership[day]}</span>
-                            </div>
-                            )
-                        ))}
-                    </div>
-                </div>
-
-                {/* Links */}
-                <div className="border-t pt-4 flex flex-col space-y-3 mt-4">
-                    {dealership.website && (
-                        <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center">
-                            <Globe className="h-4 w-4 mr-2 shrink-0" />
-                            Visiter le site web
-                        </a>
+                    {allHoursMissing ? (
+                        <p className="text-sm text-muted-foreground">Horaires non disponibles.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 text-sm text-muted-foreground">
+                            {weekDays.map(day => (
+                                dealership[day] && dealership[day].trim() !== '' && (
+                                <div key={day} className="flex justify-between text-xs py-1">
+                                    <span className="capitalize font-medium">{day}</span>
+                                    <span className='text-right'>{dealership[day] === "Fermé" ? "Fermé" : dealership[day]}</span>
+                                </div>
+                                )
+                            ))}
+                        </div>
                     )}
-                    <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center">
-                        <ExternalLink className="h-4 w-4 mr-2 shrink-0" />
-                        Voir sur Google Maps
-                    </a>
                 </div>
             </div>
-
-            {/* Close Button */}
-            <button
-                onClick={handleClose}
-                className="absolute top-4 right-4 p-1.5 rounded-full text-gray-700 bg-white/80 hover:bg-white backdrop-blur-sm z-10"
-                aria-label="Fermer"
-            >
-                <X className="h-5 w-5" />
-            </button>
         </div>
     );
 };

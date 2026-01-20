@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -506,7 +505,7 @@ export default function Home() {
                                     <ArrowLeft className="mr-2 h-4 w-4" />
                                     Retour à la liste
                                 </Button>
-                                <div className="max-w-6xl mx-auto">
+                                <div className="max-w-5xl mx-auto">
                                     <DealershipCard
                                         dealership={selectedDealership}
                                         isExpanded={true}
@@ -524,7 +523,7 @@ export default function Home() {
                               <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                   {dealershipsToDisplay.map((dealer, index) => (
                                   <React.Fragment key={dealer.id}>
-                                      <div onClick={() => { handleCardClick(dealer.id) }}>
+                                      <div onClick={() => handleCardClick(dealer.id)}>
                                         <DealershipCard 
                                             dealership={dealer} 
                                             view={'list'}
