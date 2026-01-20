@@ -44,14 +44,14 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     
     return (
         <div className="flex h-full w-full">
-            <div className="relative w-24 h-full flex-shrink-0">
+            <div className="relative w-28 flex-shrink-0">
               {dealership.imgUrl ? (
                 <Image
                   src={dealership.imgUrl}
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="96px"
+                  sizes="112px"
                 />
               ) : (
                  <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
@@ -114,6 +114,11 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
 
     return (
         <div className="relative flex flex-col w-full h-full">
+             {onClose && (
+                <Button variant="ghost" onClick={onClose} className="absolute top-2 right-2 z-10 h-8 w-8 p-0 rounded-full bg-black/50 hover:bg-black/75 text-white">
+                    <X className="h-4 w-4" />
+                </Button>
+            )}
              <div className="relative aspect-[4/3] w-full flex-shrink-0">
                 {dealership.imgUrl ? (
                     <Image src={dealership.imgUrl} alt={`Photo de ${title}`} fill className="object-cover" sizes="(max-width: 768px) 90vw, (max-width: 1200px) 30vw, 400px"/>
@@ -276,7 +281,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   
   if (isExpanded) {
     return (
-      <div className={cn("overflow-hidden w-full rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
+      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )
@@ -288,10 +293,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     <Card 
       onClick={onClick ? handleCardClick : undefined}
       className={cn(
-        "overflow-hidden transition-all duration-300 ease-in-out flex",
-        view === 'list' ? "flex-col h-full" : "flex-row",
+        "overflow-hidden transition-all duration-300 ease-in-out flex h-32",
+        view === 'list' ? "flex-col" : "flex-row",
         (view === 'list' && !isExpanded) && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
-        view === 'compact' && "h-28 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
+        view === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
         className,
       )}
     >
