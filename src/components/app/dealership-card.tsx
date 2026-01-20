@@ -43,15 +43,15 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     const rating = isNaN(ratingValue) ? 0 : ratingValue;
     
     return (
-        <div className="flex h-full">
-            <div className="relative w-16 h-full flex-shrink-0">
+        <div className="flex h-full w-full">
+            <div className="relative w-24 h-full flex-shrink-0">
               {dealership.imgUrl ? (
                 <Image
                   src={dealership.imgUrl}
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="64px"
+                  sizes="96px"
                 />
               ) : (
                  <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
@@ -59,11 +59,11 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                 </div>
               )}
             </div>
-            <CardContent className="p-2 flex-grow relative flex flex-col min-w-0">
-                <div className="flex-grow min-w-0">
+            <CardContent className="p-3 flex-grow relative flex flex-col min-w-0 justify-between">
+                <div>
                     <div className="flex justify-between items-start gap-2">
                        <div className="flex-grow min-w-0 flex-shrink">
-                        <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight break-words">
+                        <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight truncate">
                           {title}
                         </h3>
                       </div>
@@ -77,24 +77,25 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                     {dealership.address && (
                         <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
                             <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
-                            <span className="break-words">{dealership.address}</span>
+                            <span className="line-clamp-2">{dealership.address}</span>
                         </a>
                     )}
-                    <div className="text-xs text-muted-foreground mt-1 flex items-center">
+                </div>
+
+                <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center text-muted-foreground min-w-0">
                         <Phone className="h-3 w-3 mr-1.5 shrink-0" />
                         {dealership.phoneNumber ? (
-                            <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
-                                <span className="break-all">{dealership.phoneNumber}</span>
+                            <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline truncate">
+                                <span>{dealership.phoneNumber}</span>
                             </a>
                         ) : (
                             <span>Non disponible</span>
                         )}
                     </div>
-                </div>
-                <div className="mt-1 pt-1 border-t border-transparent flex items-center justify-between">
-                    <div className="flex items-center">
-                       <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                       <span className="text-xs text-muted-foreground font-medium">Vérifié</span>
+                    <div className="flex items-center text-green-600 font-medium shrink-0 ml-2">
+                       <CheckCircle className="h-3 w-3 mr-1" />
+                       <span className="text-xs">Vérifié</span>
                     </div>
                 </div>
             </CardContent>
@@ -275,7 +276,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   
   if (isExpanded) {
     return (
-      <div className={cn("overflow-hidden w-full h-full rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
+      <div className={cn("overflow-hidden w-full rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )
@@ -287,9 +288,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     <Card 
       onClick={onClick ? handleCardClick : undefined}
       className={cn(
-        "overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-full",
+        "overflow-hidden transition-all duration-300 ease-in-out flex",
+        view === 'list' ? "flex-col h-full" : "flex-row",
         (view === 'list' && !isExpanded) && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
-        view === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
+        view === 'compact' && "h-28 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
         className,
       )}
     >
