@@ -10,6 +10,7 @@ import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '../ui/button';
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -43,18 +44,18 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     
     return (
         <div className="flex h-full">
-            <div className="relative w-20 h-full flex-shrink-0">
+            <div className="relative w-16 h-full flex-shrink-0">
               {dealership.imgUrl ? (
                 <Image
                   src={dealership.imgUrl}
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="80px"
+                  sizes="64px"
                 />
               ) : (
                  <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
-                  <MotoTrustLogo className="w-12 h-12 text-gray-400" />
+                  <MotoTrustLogo className="w-10 h-10 text-gray-400" />
                 </div>
               )}
             </div>
@@ -108,10 +109,11 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
     const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 
     const allHoursMissing = weekDays.every(day => !dealership[day] || dealership[day].trim() === '');
+    const brands = getBrands(title);
 
     return (
         <div className="relative flex flex-col w-full h-full">
-            <div className="relative aspect-video w-full flex-shrink-0">
+             <div className="relative aspect-[4/3] w-full flex-shrink-0">
                 {dealership.imgUrl ? (
                     <Image src={dealership.imgUrl} alt={`Photo de ${title}`} fill className="object-cover" sizes="(max-width: 768px) 90vw, (max-width: 1200px) 30vw, 400px"/>
                 ) : (
@@ -169,6 +171,12 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                             ))}
                         </div>
                     )}
+                </div>
+                 <div className="flex-grow" />
+                <div className="mt-4 flex flex-wrap gap-2">
+                    {brands.map(brand => (
+                        <Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>
+                    ))}
                 </div>
             </div>
         </div>
