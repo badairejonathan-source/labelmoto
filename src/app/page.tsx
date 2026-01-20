@@ -64,34 +64,42 @@ export default function Home() {
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
+  const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
 
   useEffect(() => {
     const concessionsRef = ref(db, '/');
-    const unsubscribe = onValue(concessionsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const dealershipMap = new Map<string, Dealership>();
-        const featureIdRegex = /\/g\/([a-zA-Z0-9_-]+)/;
-        
-        Object.values(data).forEach((deptData: any) => {
-          if (deptData && typeof deptData === 'object') {
-            Object.values(deptData).forEach((dealer: any) => {
-              if (dealer && dealer.placeUrl) {
-                const match = dealer.placeUrl.match(featureIdRegex);
-                const uniqueKey = match ? match[1] : dealer.placeUrl;
+    
+    const processNode = (node: any, dealershipsMap: Map<string, Dealership>) => {
+        if (node && typeof node === 'object') {
+            if (node.placeUrl && node.title && node.latitude && node.longitude) {
+                const uniqueKey = node.placeUrl.split('/g/')[1] || `${node.placeUrl}-${node.title}`;
                 
-                // Use the uniqueKey for the map to deduplicate, and as the item's ID
-                const dealerWithId: Dealership = { ...dealer, id: uniqueKey };
-                dealershipMap.set(uniqueKey, dealerWithId);
-              }
-            });
-          }
-        });
-        
-        const uniqueDealerships = Array.from(dealershipMap.values());
-        
-        setAllDealerships(uniqueDealerships);
-      }
+                const lat = parseFloat(String(node.latitude).replace(',', '.'));
+                const lng = parseFloat(String(node.longitude).replace(',', '.'));
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const dealerWithId: Dealership = { 
+                        ...node, 
+                        id: uniqueKey,
+                        latitude: lat,
+                        longitude: lng,
+                    };
+                    dealershipsMap.set(uniqueKey, dealerWithId);
+                }
+            } else {
+                Object.values(node).forEach(childNode => processNode(childNode, dealershipsMap));
+            }
+        }
+    };
+
+    const unsubscribe = onValue(concessionsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const dealershipMap = new Map<string, Dealership>();
+            processNode(data, dealershipMap);
+            const uniqueDealerships = Array.from(dealershipMap.values());
+            setAllDealerships(uniqueDealerships);
+        }
     });
 
     return () => unsubscribe();
@@ -101,9 +109,9 @@ export default function Home() {
   const hasActiveFilters = (selectedDepartment !== '' && selectedDepartment !== 'all') || selectedCity !== '' || selectedBrands.length > 0;
 
   useEffect(() => {
-    if (hasActiveFilters) {
-        let dealerships = allDealerships;
+    let dealerships = allDealerships;
 
+    if (hasActiveFilters) {
         if (selectedDepartment && selectedDepartment !== 'all') {
             const depCode = selectedDepartment.split(' ')[0];
             const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
@@ -126,9 +134,9 @@ export default function Home() {
             );
         }
         
-        setFilteredDealerships(dealerships);
+      setFilteredDealerships(dealerships);
     } else {
-        setFilteredDealerships([]);
+        setFilteredDealerships(allDealerships);
     }
     
     if(!hasActiveFilters && !isMobile){
@@ -177,15 +185,22 @@ export default function Home() {
   }, [hoveredDealershipId, allDealerships]);
 
   const dealershipsToDisplay = useMemo(() => {
-    if (selectedDealershipId && (viewMode === 'map' || isMobile)) {
+    if (selectedDealershipId && (viewMode === 'map' || isMobile) && !isDetailSheetOpen) {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
     return filteredDealerships;
-  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
+  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile, isDetailSheetOpen]);
   
   const handleCardClick = useCallback((id: string) => {
     const newSelectedId = selectedDealershipId === id ? null : id;
+    
+    if (viewMode === 'list' && !isMobile) {
+      setSelectedDealershipId(newSelectedId);
+      setIsDetailSheetOpen(!!newSelectedId);
+      return;
+    }
+
     setSelectedDealershipId(newSelectedId);
 
     if (newSelectedId) {
@@ -203,7 +218,7 @@ export default function Home() {
             setIsMobileSheetOpen(false);
         }
     }
-  }, [selectedDealershipId, allDealerships, isMobile]);
+  }, [selectedDealershipId, allDealerships, isMobile, viewMode]);
   
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(id);
@@ -227,6 +242,12 @@ export default function Home() {
   }, []);
 
   const handleCloseExpandedCard = () => {
+    if (viewMode === 'list' && !isMobile) {
+      setSelectedDealershipId(null);
+      setIsDetailSheetOpen(false);
+      return;
+    }
+
     setSelectedDealershipId(null);
      if (isMobile) {
       setIsMobileSheetOpen(false);
@@ -349,7 +370,7 @@ export default function Home() {
             )}
             
             <MapComponent 
-              dealerships={filteredDealerships}
+              dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
@@ -472,7 +493,7 @@ export default function Home() {
                       </div>
                     )}
                     <MapComponent 
-                      dealerships={filteredDealerships}
+                      dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
@@ -484,40 +505,59 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-                <div className="h-full flex flex-col overflow-hidden flex-1">
-                    <ScrollArea className="flex-grow">
-                        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {dealershipsToDisplay.map((dealer, index) => (
-                            <React.Fragment key={dealer.id}>
-                                <DealershipCard 
-                                    dealership={dealer} 
-                                    isExpanded={selectedDealershipId === dealer.id}
-                                    onClose={handleCloseExpandedCard}
-                                    onClick={() => handleCardClick(dealer.id)}
-                                    view={selectedDealershipId === dealer.id ? 'expanded' : 'list'}
-                                    className={selectedDealershipId === dealer.id ? 'sm:col-span-2 lg:col-span-3' : ''}
-                                />
-                                {(index + 1) % 6 === 0 && !selectedDealershipId && (
-                                <div className="sm:col-span-2 lg:col-span-3">
-                                    <AdCard />
-                                </div>
-                                )}
-                            </React.Fragment>
-                            ))}
-                            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && !selectedDealershipId && (
-                            <div className="sm:col-span-2 lg:col-span-3">
-                                <AdCard />
-                            </div>
-                            )}
-                             {dealershipsToDisplay.length === 0 && hasActiveFilters && (
-                                <div className="text-center text-muted-foreground pt-20 col-span-full">
-                                    <p>Aucun résultat trouvé.</p>
-                                    <p className="text-sm">Essayez d'ajuster vos filtres.</p>
-                                </div>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </div>
+                <>
+                  <div className="h-full flex flex-col overflow-hidden flex-1">
+                      <ScrollArea className="flex-grow">
+                          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                              {dealershipsToDisplay.map((dealer, index) => (
+                              <React.Fragment key={dealer.id}>
+                                  <DealershipCard 
+                                      dealership={dealer} 
+                                      onClick={() => handleCardClick(dealer.id)}
+                                      view={'list'}
+                                      className={cn(selectedDealershipId === dealer.id ? 'ring-2 ring-accent' : '')}
+                                  />
+                                  {(index + 1) % 6 === 0 && <AdCard />}
+                              </React.Fragment>
+                              ))}
+                              {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && (
+                              <div className="sm:col-span-2 lg:col-span-3">
+                                  <AdCard />
+                              </div>
+                              )}
+                              {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                                  <div className="text-center text-muted-foreground pt-20 col-span-full">
+                                      <p>Aucun résultat trouvé.</p>
+                                      <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                                  </div>
+                              )}
+                          </div>
+                      </ScrollArea>
+                  </div>
+                  <Sheet open={isDetailSheetOpen} onOpenChange={(open) => {
+                      if (!open) {
+                        handleCloseExpandedCard();
+                      }
+                  }}>
+                    <SheetContent className="w-full sm:max-w-lg p-0">
+                        <ScrollArea className="h-full">
+                          {(() => {
+                              const dealership = selectedDealershipId ? allDealerships.find(d => d.id === selectedDealershipId) : null;
+                              if (!dealership) return null;
+
+                              return (
+                                  <DealershipCard
+                                      dealership={dealership}
+                                      isExpanded={true}
+                                      view="list"
+                                      onClose={handleCloseExpandedCard}
+                                  />
+                              )
+                          })()}
+                        </ScrollArea>
+                    </SheetContent>
+                  </Sheet>
+                </>
             )}
           </>
         )}
@@ -526,3 +566,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
