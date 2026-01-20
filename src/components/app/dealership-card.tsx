@@ -15,7 +15,7 @@ interface DealershipCardProps {
   isExpanded?: boolean;
   onClose?: () => void;
   onClick?: () => void;
-  view?: 'list' | 'compact' | 'expanded';
+  view?: 'list' | 'compact';
   className?: string;
 }
 
@@ -100,18 +100,115 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     );
 };
 
-const ListView: React.FC<{dealership: Dealership, isExpanded?: boolean, onClose?: () => void}> = ({ dealership, isExpanded, onClose }) => {
+const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = ({ dealership, onClose }) => {
+    const title = dealership.title || '';
+    const brands = getBrands(title);
+    const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
+    const rating = isNaN(ratingValue) ? 0 : ratingValue;
+    const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+
+    const handleClose = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onClose?.();
+    };
+
+    return (
+        <div className="relative flex flex-row h-full w-full">
+            {/* Image container */}
+            <div className="relative w-2/5 flex-shrink-0 bg-gray-200">
+                {dealership.imgUrl ? (
+                    <Image src={dealership.imgUrl} alt={`Photo de ${title}`} fill className="object-cover" sizes="40vw"/>
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center p-4">
+                        <MotoTrustLogo className="w-24 h-24 text-gray-400" />
+                    </div>
+                )}
+            </div>
+
+            {/* Content container */}
+            <div className="w-3/5 p-6 flex flex-col space-y-4 overflow-y-auto">
+                {/* Header */}
+                <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-bold text-xl text-primary dark:text-primary-foreground">{title}</h3>
+                    {rating > 0 && (
+                        <div className="flex items-center gap-1 text-base font-bold text-amber-500 flex-shrink-0 bg-amber-50 rounded-full px-2.5 py-1 border border-amber-200">
+                            <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                            <span>{rating.toFixed(1)}</span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Address & Phone */}
+                <div className="space-y-2 text-sm text-muted-foreground">
+                    {dealership.address && (
+                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-start hover:text-accent hover:underline">
+                            <MapPin className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
+                            <span>{dealership.address}</span>
+                        </a>
+                    )}
+                    {dealership.phoneNumber && (
+                        <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex items-center hover:text-accent hover:underline">
+                            <Phone className="h-4 w-4 mr-2 shrink-0" />
+                            <span>{dealership.phoneNumber}</span>
+                        </a>
+                    )}
+                </div>
+
+                {/* Brands */}
+                <div className="flex flex-wrap gap-2">
+                    {brands.map(brand => (<Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>))}
+                </div>
+                
+                <div className="flex-grow" />
+
+                {/* Hours */}
+                <div className="border-t pt-4 space-y-2">
+                    <h4 className="text-base font-semibold flex items-center"><Clock className="h-4 w-4 mr-2 shrink-0" /> Horaires</h4>
+                    <div className="grid grid-cols-1 text-sm text-muted-foreground">
+                        {weekDays.map(day => (
+                            dealership[day] && (
+                            <div key={day} className="flex justify-between text-xs py-1">
+                                <span className="capitalize font-medium">{day}</span>
+                                <span>{dealership[day] === "Fermé" ? "Fermé" : dealership[day]}</span>
+                            </div>
+                            )
+                        ))}
+                    </div>
+                </div>
+
+                {/* Links */}
+                <div className="border-t pt-4 flex flex-col space-y-3">
+                    {dealership.website && (
+                        <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center">
+                            <Globe className="h-4 w-4 mr-2 shrink-0" />
+                            Visiter le site web
+                        </a>
+                    )}
+                    <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center">
+                        <ExternalLink className="h-4 w-4 mr-2 shrink-0" />
+                        Voir sur Google Maps
+                    </a>
+                </div>
+            </div>
+
+            {/* Close Button */}
+            <button
+                onClick={handleClose}
+                className="absolute top-4 right-4 p-1.5 rounded-full text-gray-700 bg-white/80 hover:bg-white backdrop-blur-sm z-10"
+                aria-label="Fermer"
+            >
+                <X className="h-5 w-5" />
+            </button>
+        </div>
+    );
+};
+
+const ListView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
   const title = dealership.title || '';
   const category = getCategory(title);
   const brands = getBrands(title);
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
-  const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
-
-  const handleClose = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onClose?.();
-  };
 
   const imageSection = (
     <div className="relative aspect-video w-full rounded-t-lg overflow-hidden">
@@ -131,84 +228,7 @@ const ListView: React.FC<{dealership: Dealership, isExpanded?: boolean, onClose?
       </div>
     </div>
   );
-
-  if (isExpanded) {
-    return (
-      <div className="relative flex flex-col h-full">
-          {imageSection}
-          <CardContent className="p-4 flex-grow flex flex-row">
-              <div className="w-1/2 md:w-2/3 pr-4 space-y-2">
-                  <div className="flex justify-between items-start gap-2">
-                      <div className="flex-grow min-w-0">
-                          <h3 className="font-bold text-base text-primary dark:text-primary-foreground break-words">{title}</h3>
-                      </div>
-                      {rating > 0 && (
-                          <div className="flex items-center gap-1 text-sm font-bold text-amber-500 flex-shrink-0 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-200">
-                              <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
-                              <span>{rating.toFixed(1)}</span>
-                          </div>
-                      )}
-                  </div>
-                  {dealership.address && (
-                      <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground pt-1 flex items-start hover:text-accent hover:underline">
-                          <MapPin className="h-4 w-4 mr-1.5 mt-0.5 shrink-0" />
-                          <span>{dealership.address}</span>
-                      </a>
-                  )}
-                  <div className="text-sm text-muted-foreground pt-1 flex items-center">
-                      <Phone className="h-4 w-4 mr-1.5 shrink-0" />
-                      {dealership.phoneNumber ? (
-                          <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
-                              <span>{dealership.phoneNumber}</span>
-                          </a>
-                      ) : (
-                          <span>Non disponible</span>
-                      )}
-                  </div>
-                  <div className="flex flex-wrap gap-2 pt-2">
-                      {brands.map(brand => (
-                          <Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>
-                      ))}
-                  </div>
-              </div>
-              <div className="w-1/2 md:w-1/3 pl-4 border-l space-y-2">
-                    <h4 className="text-sm font-semibold mb-2 flex items-center"><Clock className="h-4 w-4 mr-2 shrink-0" /> Horaires</h4>
-                  <div className="grid grid-cols-1 text-sm text-muted-foreground">
-                      {weekDays.map(day => (
-                          dealership[day] && (
-                          <div key={day} className="flex justify-between text-xs">
-                              <span className="capitalize font-medium">{day}</span>
-                              <span>{dealership[day] === "Fermé" ? "Fermé" : dealership[day]}</span>
-                          </div>
-                          )
-                      ))}
-                  </div>
-                  <div className="pt-2">
-                      {dealership.website && (
-                          <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center mt-2">
-                          <Globe className="h-4 w-4 mr-2 shrink-0" />
-                          Visiter le site web
-                          </a>
-                      )}
-                      <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center mt-2">
-                          <ExternalLink className="h-4 w-4 mr-2 shrink-0" />
-                          Voir sur Google Maps
-                      </a>
-                  </div>
-              </div>
-          </CardContent>
-          <button
-              onClick={handleClose}
-              className="absolute top-2 left-2 p-1.5 rounded-full text-white bg-black/50 hover:bg-black/70 backdrop-blur-sm"
-              aria-label="Fermer"
-          >
-              <X className="h-4 w-4" />
-          </button>
-      </div>
-    );
-  }
-
-  // Non-expanded view
+  
   return (
     <>
       {imageSection}
@@ -272,14 +292,22 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       onClick();
     }
   };
+  
+  if (isExpanded) {
+    return (
+      <div className={cn("overflow-hidden w-full h-full", className)}>
+        <ExpandedView dealership={dealership} onClose={onClose} />
+      </div>
+    )
+  }
 
-  const currentView = isExpanded ? 'expanded' : view;
+  const currentView = view;
 
   return (
     <Card 
       onClick={onClick ? handleCardClick : undefined}
       className={cn(
-        "overflow-hidden transition-all duration-300 ease-in-out flex flex-col",
+        "overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-full",
         (view === 'list' && !isExpanded) && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
         view === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
         className,
@@ -288,7 +316,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       {currentView === 'compact' ? (
         <CompactView dealership={dealership} />
       ) : (
-        <ListView dealership={dealership} isExpanded={isExpanded} onClose={onClose}/>
+        <ListView dealership={dealership}/>
       )}
     </Card>
   );
@@ -296,6 +324,3 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
 export default DealershipCard;
     
-
-    
-
