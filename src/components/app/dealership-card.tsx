@@ -113,7 +113,7 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
     };
 
     return (
-        <div className="relative flex flex-row h-full w-full">
+        <div className="relative flex flex-row h-[600px] max-h-[80vh] w-full">
             {/* Image container */}
             <div className="relative w-2/5 flex-shrink-0 bg-gray-200">
                 {dealership.imgUrl ? (
@@ -126,7 +126,7 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
             </div>
 
             {/* Content container */}
-            <div className="w-3/5 p-6 flex flex-col space-y-4 overflow-y-auto">
+            <div className="w-3/5 p-6 flex flex-col overflow-y-auto">
                 {/* Header */}
                 <div className="flex justify-between items-start gap-2">
                     <h3 className="font-bold text-xl text-primary dark:text-primary-foreground">{title}</h3>
@@ -139,7 +139,7 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                 </div>
 
                 {/* Address & Phone */}
-                <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="space-y-2 text-sm text-muted-foreground mt-4">
                     {dealership.address && (
                         <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-start hover:text-accent hover:underline">
                             <MapPin className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
@@ -155,14 +155,14 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                 </div>
 
                 {/* Brands */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mt-4">
                     {brands.map(brand => (<Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>))}
                 </div>
                 
                 <div className="flex-grow" />
 
                 {/* Hours */}
-                <div className="border-t pt-4 space-y-2">
+                <div className="border-t pt-4 space-y-2 mt-4">
                     <h4 className="text-base font-semibold flex items-center"><Clock className="h-4 w-4 mr-2 shrink-0" /> Horaires</h4>
                     <div className="grid grid-cols-1 text-sm text-muted-foreground">
                         {weekDays.map(day => (
@@ -177,7 +177,7 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                 </div>
 
                 {/* Links */}
-                <div className="border-t pt-4 flex flex-col space-y-3">
+                <div className="border-t pt-4 flex flex-col space-y-3 mt-4">
                     {dealership.website && (
                         <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center">
                             <Globe className="h-4 w-4 mr-2 shrink-0" />
@@ -295,7 +295,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   
   if (isExpanded) {
     return (
-      <div className={cn("overflow-hidden w-full h-full", className)}>
+      <div className={cn("overflow-hidden w-full rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )

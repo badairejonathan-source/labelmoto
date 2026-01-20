@@ -506,13 +506,12 @@ export default function Home() {
                                     <ArrowLeft className="mr-2 h-4 w-4" />
                                     Retour à la liste
                                 </Button>
-                                <div className="h-full max-h-[calc(100vh-150px)]">
+                                <div className="max-w-6xl mx-auto">
                                     <DealershipCard
                                         dealership={selectedDealership}
                                         isExpanded={true}
                                         view="list"
                                         onClose={handleCloseExpandedCard}
-                                        className="h-full"
                                     />
                                 </div>
                             </div>
@@ -525,11 +524,12 @@ export default function Home() {
                               <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                   {dealershipsToDisplay.map((dealer, index) => (
                                   <React.Fragment key={dealer.id}>
-                                      <DealershipCard 
-                                          dealership={dealer} 
-                                          onClick={() => handleCardClick(dealer.id)}
-                                          view={'list'}
-                                      />
+                                      <div onClick={() => { handleCardClick(dealer.id) }}>
+                                        <DealershipCard 
+                                            dealership={dealer} 
+                                            view={'list'}
+                                        />
+                                      </div>
                                       {(index + 1) % 6 === 0 && <AdCard />}
                                   </React.Fragment>
                                   ))}
