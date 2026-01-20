@@ -72,12 +72,12 @@ export default function Home() {
     const processNode = (node: any, dealershipsMap: Map<string, Dealership>) => {
         if (node && typeof node === 'object') {
             if (node.placeUrl && node.title && node.latitude && node.longitude) {
-                const uniqueKey = node.placeUrl.split('/g/')[1] || `${node.placeUrl}-${node.title}`;
+                const uniqueKey = node.placeUrl;
                 
                 const lat = parseFloat(String(node.latitude).replace(',', '.'));
                 const lng = parseFloat(String(node.longitude).replace(',', '.'));
 
-                if (!isNaN(lat) && !isNaN(lng)) {
+                if (!isNaN(lat) && !isNaN(lng) && !dealershipsMap.has(uniqueKey)) {
                     const dealerWithId: Dealership = { 
                         ...node, 
                         id: uniqueKey,
@@ -540,6 +540,9 @@ export default function Home() {
                       }
                   }}>
                     <SheetContent className="w-full sm:max-w-lg p-0">
+                        <SheetHeader className="sr-only">
+                          <SheetTitle>Détails de la concession</SheetTitle>
+                        </SheetHeader>
                         <ScrollArea className="h-full">
                           {(() => {
                               const dealership = selectedDealershipId ? allDealerships.find(d => d.id === selectedDealershipId) : null;
@@ -566,5 +569,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
