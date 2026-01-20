@@ -342,7 +342,7 @@ export default function Home() {
             
             {hoveredDealership && !isMobileSheetOpen && (
               <div
-                className="absolute top-20 left-1/2 -translate-x-1/2 z-[1000] w-[90%] max-w-sm"
+                className="absolute top-20 left-1/2 -translate-x-1/2 z-[1000] w-[90%] max-w-xs"
                 onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
                 onMouseLeave={handleMarkerMouseOut}
               >
@@ -466,7 +466,7 @@ export default function Home() {
                 <div className="col-span-8 rounded-lg overflow-hidden h-full relative">
                     {hoveredDealership && (
                       <div
-                        className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-sm px-4"
+                        className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
                         onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
                         onMouseLeave={handleMarkerMouseOut}
                       >
@@ -505,7 +505,7 @@ export default function Home() {
                                     <ArrowLeft className="mr-2 h-4 w-4" />
                                     Retour à la liste
                                 </Button>
-                                <div className="max-w-5xl mx-auto">
+                                <div className="max-w-4xl mx-auto">
                                     <DealershipCard
                                         dealership={selectedDealership}
                                         isExpanded={true}
