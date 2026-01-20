@@ -107,50 +107,30 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
     const rating = isNaN(ratingValue) ? 0 : ratingValue;
     const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 
-    const handleClose = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onClose?.();
-    };
-
     const allHoursMissing = weekDays.every(day => !dealership[day] || dealership[day].trim() === '');
 
     return (
-        <div className="relative flex flex-row w-full">
-            {/* Image container */}
-            <div className="relative w-2/5 flex-shrink-0 bg-gray-200">
+        <div className="relative flex flex-col w-full h-full">
+            <div className="relative aspect-video w-full flex-shrink-0">
                 {dealership.imgUrl ? (
-                    <Image src={dealership.imgUrl} alt={`Photo de ${title}`} fill className="object-cover" sizes="40vw"/>
+                    <Image src={dealership.imgUrl} alt={`Photo de ${title}`} fill className="object-cover" sizes="(max-width: 768px) 90vw, (max-width: 1200px) 30vw, 400px"/>
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center p-4">
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center p-4">
                         <MotoTrustLogo className="w-24 h-24 text-gray-400" />
                     </div>
                 )}
-            </div>
-
-            {/* Content container */}
-            <div className="w-3/5 p-6 flex flex-col">
-                {/* Header */}
-                <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-bold text-xl text-primary dark:text-primary-foreground">{title}</h3>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        {rating > 0 && (
-                            <div className="flex items-center gap-1 text-sm font-bold text-amber-500 flex-shrink-0 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-200">
-                                <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
-                                <span>{rating.toFixed(1)}</span>
-                            </div>
-                        )}
-                         <button
-                            onClick={handleClose}
-                            className="p-1 rounded-full text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                            aria-label="Fermer"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
+                 {rating > 0 && (
+                    <div className="absolute top-2 right-2 flex items-center gap-1 text-sm font-bold text-amber-500 bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 border border-amber-200">
+                        <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                        <span>{rating.toFixed(1)}</span>
                     </div>
-                </div>
+                )}
+            </div>
+            
+            <div className="p-4 flex flex-col flex-grow overflow-y-auto">
+                <h3 className="font-bold text-xl text-primary dark:text-primary-foreground mb-3">{title}</h3>
 
-                {/* Address & Phone */}
-                <div className="space-y-2 text-sm text-muted-foreground mt-4">
+                <div className="space-y-3 text-sm text-muted-foreground mb-4">
                     {dealership.address && (
                         <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-start hover:text-accent hover:underline">
                             <MapPin className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
@@ -163,11 +143,16 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                             <span>{dealership.phoneNumber}</span>
                         </a>
                     )}
+                    {dealership.website && (dealership.website.startsWith('http') || dealership.website.startsWith('www')) && (
+                        <a href={!dealership.website.startsWith('http') ? `https://${dealership.website}` : dealership.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline">
+                            <Globe className="h-4 w-4 mr-2 shrink-0" />
+                            <span>Visiter le site</span>
+                        </a>
+                    )}
                 </div>
 
-                <Separator className="my-4" />
+                <Separator className="my-2" />
 
-                {/* Hours */}
                 <div className="space-y-2">
                     <h4 className="text-base font-semibold flex items-center"><Clock className="h-4 w-4 mr-2 shrink-0" /> Horaires</h4>
                     {allHoursMissing ? (
@@ -282,7 +267,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   
   if (isExpanded) {
     return (
-      <div className={cn("overflow-hidden w-full rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
+      <div className={cn("overflow-hidden w-full h-full rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )
