@@ -44,14 +44,14 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     
     return (
         <div className="flex h-full w-full">
-            <div className="relative w-28 flex-shrink-0">
+            <div className="relative w-24 flex-shrink-0">
               {dealership.imgUrl ? (
                 <Image
                   src={dealership.imgUrl}
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="112px"
+                  sizes="96px"
                 />
               ) : (
                  <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
@@ -113,7 +113,7 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
     const brands = getBrands(title);
 
     return (
-        <div className="relative flex flex-col w-full h-full">
+        <div className="relative flex flex-col h-full">
              {onClose && (
                 <Button variant="ghost" onClick={onClose} className="absolute top-2 right-2 z-10 h-8 w-8 p-0 rounded-full bg-black/50 hover:bg-black/75 text-white">
                     <X className="h-4 w-4" />
@@ -191,70 +191,63 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
 
 const ListView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
   const title = dealership.title || '';
-  const category = getCategory(title);
-  const brands = getBrands(title);
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
 
-  const imageSection = (
-    <div className="relative aspect-video w-full rounded-t-lg overflow-hidden">
-      {dealership.imgUrl ? (
-        <Image src={dealership.imgUrl} alt={`Photo de ${title}`} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
-      ) : (
-        <div className="w-full h-full bg-gray-200 flex items-center justify-center p-4">
-          <MotoTrustLogo className="w-24 h-24 text-gray-400" />
-        </div>
-      )}
-      <div className="absolute top-2 right-2 flex flex-col items-end gap-2">
-          <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm text-green-600 border border-green-200">
-              <CheckCircle className="h-3 w-3 mr-1" />
-              Vérifié
-          </Badge>
-          {category && <Badge variant="secondary" className="bg-black/50 backdrop-blur-sm text-white">{category}</Badge>}
-      </div>
-    </div>
-  );
-  
   return (
     <>
-      {imageSection}
-      <CardContent className="p-4 flex-grow flex flex-col">
-        <div className="flex justify-between items-start gap-2">
-          <div className="flex-grow min-w-0">
-            <h3 className="font-bold text-base text-primary dark:text-primary-foreground break-words">{title}</h3>
+      <div className="relative w-1/3 flex-shrink-0">
+        {dealership.imgUrl ? (
+          <Image
+            src={dealership.imgUrl}
+            alt={`Photo de ${title}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 33vw, 200px"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
+            <MotoTrustLogo className="w-10 h-10 text-gray-400" />
           </div>
-          {rating > 0 && (
-            <div className="flex items-center gap-1 text-sm font-bold text-amber-500 flex-shrink-0 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-200">
-              <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
-              <span>{rating.toFixed(1)}</span>
-            </div>
-          )}
-        </div>
-        
-        {dealership.address && (
-          <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
-            <MapPin className="h-4 w-4 mr-1.5 mt-0.5 shrink-0" />
-            <span>{dealership.address}</span>
-          </a>
         )}
+      </div>
+      <CardContent className="p-4 flex-grow flex flex-col justify-between min-w-0">
+          <div>
+              <div className="flex justify-between items-start gap-2">
+                  <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight truncate">
+                  {title}
+                  </h3>
+                  {rating > 0 && (
+                  <div className="flex items-center gap-1 text-xs font-bold text-amber-500 flex-shrink-0">
+                      <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                      <span>{rating.toFixed(1)}</span>
+                  </div>
+                  )}
+              </div>
+              {dealership.address && (
+                  <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground mt-2 flex items-start hover:text-accent hover:underline">
+                      <MapPin className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
+                      <span className="line-clamp-2">{dealership.address}</span>
+                  </a>
+              )}
+          </div>
 
-        <div className="text-sm text-muted-foreground mt-1 flex items-center">
-            <Phone className="h-4 w-4 mr-1.5 shrink-0" />
-            {dealership.phoneNumber ? (
-                <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline">
-                    <span>{dealership.phoneNumber}</span>
-                </a>
-            ) : (
-                <span>Non disponible</span>
-            )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2 mt-3">
-          {brands.slice(0, 3).map(brand => (
-            <Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>
-          ))}
-        </div>
-        <div className="flex-grow" />
+          <div className="flex flex-col space-y-1 text-sm">
+              {dealership.phoneNumber && (
+                  <div className="flex items-center text-muted-foreground">
+                      <Phone className="h-4 w-4 mr-2 shrink-0" />
+                      <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline truncate">
+                          <span>{dealership.phoneNumber}</span>
+                      </a>
+                  </div>
+              )}
+              {dealership.website && (dealership.website.startsWith('http') || dealership.website.startsWith('www')) && (
+                  <a href={!dealership.website.startsWith('http') ? `https://${dealership.website}` : dealership.website} target="_blank" rel="noopener noreferrer" className="flex items-center text-muted-foreground hover:text-accent hover:underline">
+                      <Globe className="h-4 w-4 mr-2 shrink-0" />
+                      <span className="truncate">Visiter le site</span>
+                  </a>
+              )}
+          </div>
       </CardContent>
     </>
   );
@@ -281,7 +274,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   
   if (isExpanded) {
     return (
-      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
+      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg max-w-4xl mx-auto h-auto", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )
@@ -293,8 +286,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     <Card 
       onClick={onClick ? handleCardClick : undefined}
       className={cn(
-        "overflow-hidden transition-all duration-300 ease-in-out flex h-32",
-        view === 'list' ? "flex-col" : "flex-row",
+        "overflow-hidden transition-all duration-300 ease-in-out flex",
+        view === 'list' ? "flex-row h-48" : "flex-row h-32",
         (view === 'list' && !isExpanded) && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
         view === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
         className,
