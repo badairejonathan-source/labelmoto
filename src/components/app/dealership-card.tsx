@@ -221,6 +221,95 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
     );
 };
 
+const ListExpandedView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
+    const title = dealership.title || '';
+    const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+    const allHoursMissing = weekDays.every(day => !dealership[day] || dealership[day].trim() === '');
+    
+    return (
+        <div className="grid md:grid-cols-2 gap-6 p-6 h-full bg-card text-card-foreground">
+            {/* Left Column */}
+            <div className="flex flex-col space-y-4">
+                {/* Image */}
+                <div className="relative w-full rounded-lg overflow-hidden flex-grow min-h-[250px] bg-gray-200 dark:bg-gray-800">
+                     {dealership.imgUrl ? (
+                        <Image 
+                            src={dealership.imgUrl} 
+                            alt={`Photo de ${title}`} 
+                            fill 
+                            className="object-cover" 
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                            <MotoTrustLogo className="w-24 h-24 text-gray-400" />
+                        </div>
+                    )}
+                </div>
+                {/* Address + Phone */}
+                <div className="p-4 rounded-lg border space-y-3 bg-gray-50 dark:bg-gray-800/50">
+                     {dealership.address && (
+                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-start text-sm hover:text-accent hover:underline">
+                            <MapPin className="h-4 w-4 mr-3 mt-0.5 shrink-0" />
+                            <span>{dealership.address}</span>
+                        </a>
+                    )}
+                    {dealership.phoneNumber && (
+                        <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex items-center text-sm hover:text-accent hover:underline">
+                            <Phone className="h-4 w-4 mr-3 shrink-0" />
+                            <span>{dealership.phoneNumber}</span>
+                        </a>
+                    )}
+                </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="flex flex-col rounded-lg border p-4">
+                <h3 className="font-bold text-2xl text-primary dark:text-primary-foreground mb-4">{title}</h3>
+                
+                <div className="flex flex-col justify-between flex-grow space-y-4">
+                     {/* Schedule */}
+                    <div className="flex-grow">
+                        <div className="flex items-center mb-2">
+                            <Clock className="h-5 w-5 mr-2 shrink-0" />
+                            <h4 className="font-semibold text-lg text-foreground">Horaires</h4>
+                        </div>
+                        {allHoursMissing ? (
+                            <p className="pl-7 text-sm text-muted-foreground">Non disponibles.</p>
+                        ) : (
+                            <div className="pl-7 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                                {weekDays.map(day => (
+                                    dealership[day] && dealership[day].trim() !== '' && (
+                                    <React.Fragment key={day}>
+                                        <span className="capitalize font-medium">{day}</span>
+                                        <span className='text-right'>{dealership[day]}</span>
+                                    </React.Fragment>
+                                    )
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Links */}
+                    <div className="mt-auto pt-4 border-t space-y-3 text-sm">
+                        {dealership.website && (dealership.website.startsWith('http') || dealership.website.startsWith('www')) && (
+                            <a href={!dealership.website.startsWith('http') ? `https://${dealership.website}` : dealership.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline font-medium">
+                                <Globe className="h-4 w-4 mr-3 shrink-0" />
+                                <span>Visiter le site web</span>
+                            </a>
+                        )}
+                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline font-medium">
+                            <ExternalLink className="h-4 w-4 mr-3 shrink-0" />
+                            <span>Voir sur Google Maps</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
 const ListView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
   const title = dealership.title || '';
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
@@ -305,6 +394,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   };
   
   if (isExpanded) {
+    if (view === 'list') {
+      return (
+        <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg h-full", className)}>
+          <ListExpandedView dealership={dealership} />
+        </div>
+      );
+    }
     return (
       <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg h-full", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
@@ -340,3 +436,4 @@ export default DealershipCard;
     
 
     
+
