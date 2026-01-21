@@ -196,13 +196,13 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                         {allHoursMissing ? (
                             <p className="pl-7 text-sm">Non disponibles.</p>
                         ) : (
-                            <div className="pl-7 space-y-1 text-xs">
+                            <div className="pl-7 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-xs">
                                 {weekDays.map(day => (
                                     dealership[day] && dealership[day].trim() !== '' && (
-                                    <div key={day} className="flex justify-between">
+                                    <React.Fragment key={day}>
                                         <span className="capitalize font-medium">{day}</span>
-                                        <span className='text-right'>{dealership[day] === "Fermé" ? "Fermé" : dealership[day]}</span>
-                                    </div>
+                                        <span className='text-right'>{dealership[day]}</span>
+                                    </React.Fragment>
                                     )
                                 ))}
                             </div>
