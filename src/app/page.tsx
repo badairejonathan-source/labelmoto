@@ -154,7 +154,7 @@ export default function Home() {
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
     setSelectedCity('');
-    if (isMobile && department && department !== 'all') {
+    if (department && department !== 'all') {
       const depData = (locations as any)[department];
       if (depData && depData.center) {
         setMapCenter(depData.center as [number, number]);
@@ -164,7 +164,7 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-  }, [isMobile]);
+  }, []);
 
   const handleCityChange = useCallback((city: string) => {
       const cityValue = city === 'all-cities' ? '' : city;
@@ -424,7 +424,7 @@ export default function Home() {
           <>
             {viewMode === 'map' ? (
              <div className="grid grid-cols-12 flex-1 overflow-hidden">
-                <div className="col-span-4 h-full flex flex-col">
+                <div className="col-span-4 h-full flex flex-col relative z-10 bg-background shadow-lg">
                     {selectedDealershipId && (
                       <Button
                         variant="ghost"
@@ -520,7 +520,7 @@ export default function Home() {
                     return (
                       <div className="h-full flex flex-col overflow-hidden flex-1">
                           <ScrollArea className="flex-grow">
-                              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                              <div className="p-4 space-y-4 max-w-4xl mx-auto">
                                   {dealershipsToDisplay.map((dealer, index) => (
                                   <React.Fragment key={dealer.id}>
                                       <div onClick={() => handleCardClick(dealer.id)}>
@@ -533,7 +533,7 @@ export default function Home() {
                                   </React.Fragment>
                                   ))}
                                   {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && (
-                                  <div className="sm:col-span-2 lg:col-span-3">
+                                  <div className="col-span-full">
                                       <AdCard />
                                   </div>
                                   )}
