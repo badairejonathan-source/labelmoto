@@ -17,7 +17,7 @@ interface DealershipCardProps {
   isExpanded?: boolean;
   onClose?: () => void;
   onClick?: () => void;
-  view?: 'list' | 'compact';
+  view?: 'list' | 'compact' | 'hover';
   className?: string;
 }
 
@@ -36,6 +36,34 @@ const getBrands = (title: string) => {
   const foundBrands = brands.filter(brand => title.toLowerCase().includes(brand.toLowerCase()));
   return foundBrands;
 }
+
+const HoverView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
+    const title = dealership.title || '';
+    
+    return (
+        <div className="flex h-full w-full items-center">
+            <div className="relative w-24 flex-shrink-0 h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 p-2">
+              <MotoTrustLogo className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+            </div>
+            <CardContent className="p-3 flex-grow flex flex-col justify-around min-w-0">
+                <div>
+                  <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight truncate">
+                    {title}
+                  </h3>
+                  {dealership.address && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{dealership.address}</p>
+                  )}
+                </div>
+                 {dealership.phoneNumber && (
+                     <div className="flex items-center text-xs text-muted-foreground">
+                        <Phone className="h-3 w-3 mr-1.5 shrink-0" />
+                        <span className="truncate">{dealership.phoneNumber}</span>
+                     </div>
+                 )}
+            </CardContent>
+        </div>
+    );
+};
 
 const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     const title = dealership.title || '';
@@ -301,18 +329,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     <Card 
       onClick={onClick ? handleCardClick : undefined}
       className={cn(
-        "overflow-hidden transition-all duration-300 ease-in-out flex",
-        view === 'list' ? "flex-row h-48" : "flex-row h-32",
-        (view === 'list' && !isExpanded) && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
-        view === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
+        "overflow-hidden transition-all duration-300 ease-in-out flex flex-row",
+        currentView === 'list' && "h-48",
+        currentView === 'compact' && "h-32",
+        currentView === 'hover' && "h-28",
+        (currentView === 'list' || currentView === 'hover') && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
+        currentView === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
         className,
       )}
     >
-      {currentView === 'compact' ? (
-        <CompactView dealership={dealership} />
-      ) : (
-        <ListView dealership={dealership}/>
-      )}
+      {currentView === 'hover' ? <HoverView dealership={dealership} />
+      : currentView === 'compact' ? <CompactView dealership={dealership} />
+      : <ListView dealership={dealership}/>}
     </Card>
   );
 };

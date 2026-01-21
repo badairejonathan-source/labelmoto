@@ -348,7 +348,7 @@ export default function Home() {
               >
                 <DealershipCard
                   dealership={hoveredDealership}
-                  view="compact"
+                  view="hover"
                   className="shadow-2xl"
                   onClick={() => handleCardClick(hoveredDealership.id)}
                 />
@@ -472,7 +472,7 @@ export default function Home() {
                       >
                         <DealershipCard
                           dealership={hoveredDealership}
-                          view="compact"
+                          view="hover"
                           className="shadow-2xl"
                           onClick={() => handleCardClick(hoveredDealership.id)}
                         />
