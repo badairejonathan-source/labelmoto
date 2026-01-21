@@ -133,75 +133,70 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
 
 const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = ({ dealership, onClose }) => {
     const title = dealership.title || '';
-    const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
-    const rating = isNaN(ratingValue) ? 0 : ratingValue;
     const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 
     const allHoursMissing = weekDays.every(day => !dealership[day] || dealership[day].trim() === '');
-    const brands = getBrands(title);
-
+    
     return (
-        <div className="relative flex flex-row items-stretch">
+        <div className="relative flex flex-col h-full bg-card text-card-foreground">
             {onClose && (
                 <Button variant="ghost" onClick={onClose} className="absolute top-2 right-2 z-10 h-8 w-8 p-0 rounded-full bg-black/50 hover:bg-black/75 text-white">
                     <X className="h-4 w-4" />
                 </Button>
             )}
-
-            {/* Left: Image */}
-            <div className="relative w-2/5 flex-shrink-0">
+            
+            <div className="relative w-full h-48 flex-shrink-0 bg-gray-200 dark:bg-gray-800 rounded-t-lg">
                 {dealership.imgUrl ? (
-                    <Image src={dealership.imgUrl} alt={`Photo de ${title}`} fill className="object-cover rounded-l-lg" sizes="(max-width: 768px) 40vw, 33vw"/>
+                    <Image 
+                        src={dealership.imgUrl} 
+                        alt={`Photo de ${title}`} 
+                        fill 
+                        className="object-cover rounded-t-lg" 
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                    />
                 ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center p-4 rounded-l-lg">
+                    <div className="w-full h-full flex items-center justify-center p-4">
                         <MotoTrustLogo className="w-24 h-24 text-gray-400" />
                     </div>
                 )}
             </div>
 
-            {/* Right: Content, split into two columns */}
-            <div className="w-3/5 flex flex-row p-6 space-x-6">
-                {/* Middle column from user request */}
-                <div className="w-1/2 flex flex-col">
-                    <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-xl text-primary dark:text-primary-foreground pr-2">{title}</h3>
-                        {rating > 0 && (
-                            <div className="flex-shrink-0 flex items-center gap-1 text-sm font-bold text-amber-500">
-                                <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
-                                <span>{rating.toFixed(1)}</span>
-                            </div>
-                        )}
-                    </div>
-                    <div className="space-y-4 text-sm text-muted-foreground mt-4">
-                        {dealership.address && (
-                            <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-start hover:text-accent hover:underline">
-                                <MapPin className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
-                                <span>{dealership.address}</span>
-                            </a>
-                        )}
-                        {dealership.phoneNumber && (
-                            <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex items-center hover:text-accent hover:underline">
-                                <Phone className="h-4 w-4 mr-2 shrink-0" />
-                                <span>{dealership.phoneNumber}</span>
-                            </a>
-                        )}
-                    </div>
-                    <div className="flex-grow" />
-                    <div className="flex flex-wrap gap-2 mt-4">
-                        {brands.map(brand => (
-                            <Badge key={brand} variant="outline" className="text-xs">{brand}</Badge>
-                        ))}
-                    </div>
+            <div className="flex-grow p-4 overflow-y-auto">
+                <div className="py-3 border-y my-4">
+                    <h3 className="font-bold text-xl text-center text-primary dark:text-primary-foreground">{title}</h3>
                 </div>
 
-                {/* Right column from user request */}
-                <div className="w-1/2 flex flex-col border-l pl-6">
+                <div className="space-y-4 text-sm text-muted-foreground">
+                    {dealership.address && (
+                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-start hover:text-accent hover:underline">
+                            <MapPin className="h-4 w-4 mr-3 mt-0.5 shrink-0" />
+                            <span>{dealership.address}</span>
+                        </a>
+                    )}
+                    {dealership.phoneNumber && (
+                        <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex items-center hover:text-accent hover:underline">
+                            <Phone className="h-4 w-4 mr-3 shrink-0" />
+                            <span>{dealership.phoneNumber}</span>
+                        </a>
+                    )}
+                    {dealership.website && (dealership.website.startsWith('http') || dealership.website.startsWith('www')) && (
+                        <a href={!dealership.website.startsWith('http') ? `https://${dealership.website}` : dealership.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline">
+                            <Globe className="h-4 w-4 mr-3 shrink-0" />
+                            <span>Visiter le site web</span>
+                        </a>
+                    )}
+                    
+                    <Separator />
+
                     <div>
-                        <h4 className="text-base font-semibold flex items-center mb-2"><Clock className="h-4 w-4 mr-2 shrink-0" /> Horaires</h4>
+                        <div className="flex items-center mb-2">
+                            <Clock className="h-4 w-4 mr-3 shrink-0" />
+                            <h4 className="font-semibold text-foreground">Horaires</h4>
+                        </div>
                         {allHoursMissing ? (
-                            <p className="text-sm text-muted-foreground">Horaires non disponibles.</p>
+                            <p className="pl-7 text-sm">Non disponibles.</p>
                         ) : (
-                            <div className="space-y-1 text-sm text-muted-foreground">
+                            <div className="pl-7 space-y-1 text-sm">
                                 {weekDays.map(day => (
                                     dealership[day] && dealership[day].trim() !== '' && (
                                     <div key={day} className="flex justify-between text-xs">
@@ -213,19 +208,13 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                             </div>
                         )}
                     </div>
-                    <div className="flex-grow" />
-                    <div className="space-y-4 text-sm mt-6">
-                         {dealership.website && (dealership.website.startsWith('http') || dealership.website.startsWith('www')) && (
-                            <a href={!dealership.website.startsWith('http') ? `https://${dealership.website}` : dealership.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline font-medium">
-                                <Globe className="h-4 w-4 mr-2 shrink-0" />
-                                <span>Visiter le site web</span>
-                            </a>
-                        )}
-                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline font-medium">
-                            <ExternalLink className="h-4 w-4 mr-2 shrink-0" />
-                            <span>Voir sur Google Maps</span>
-                        </a>
-                    </div>
+                    
+                    <Separator />
+
+                    <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline">
+                        <ExternalLink className="h-4 w-4 mr-3 shrink-0" />
+                        <span>Voir sur Google Maps</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -317,7 +306,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   
   if (isExpanded) {
     return (
-      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg h-auto", className)}>
+      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg h-full", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )
@@ -346,4 +335,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 };
 
 export default DealershipCard;
+    
+
     
