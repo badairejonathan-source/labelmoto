@@ -17,17 +17,21 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
   const isMobile = width ? width < 768 : false;
 
   return (
-    <header className={cn("flex items-center justify-between p-2 md:p-4 bg-primary text-primary-foreground border-b border-gray-200 dark:border-gray-700")}>
-      <div className="flex items-center">
-        <MotoTrustLogo />
-      </div>
-      
-      {children}
-      
-      <div className="flex items-center space-x-2">
-        <Button size="icon" variant="outline" className="bg-primary hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
-          <User className="h-5 w-5" />
-        </Button>
+    <header className={cn(
+      "bg-road p-2 md:p-4 text-primary-foreground border-b border-gray-200 dark:border-gray-700"
+    )}>
+      <div className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center text-primary-foreground">
+          <MotoTrustLogo />
+        </div>
+        
+        {children}
+        
+        <div className="flex items-center space-x-2">
+          <Button size="icon" variant="outline" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
+            <User className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
     </header>
   );
