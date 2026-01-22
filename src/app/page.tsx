@@ -314,7 +314,7 @@ export default function Home() {
     );
   };
   
-  const adFrequencyInMap = dealershipsToDisplay.length < 5 ? 3 : 5;
+  const adFrequency = dealershipsToDisplay.length < 5 ? 3 : 5;
 
   return (
     <div className="flex flex-col h-screen">
@@ -407,9 +407,10 @@ export default function Home() {
                             view="list"
                           />
                         </div>
-                        {(index + 1) % 4 === 0 && !selectedDealershipId && <AdCard />}
+                        {(index + 1) % adFrequency === 0 && !selectedDealershipId && <AdCard />}
                       </React.Fragment>
                     ))}
+                    {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
                      {dealershipsToDisplay.length === 0 && hasActiveFilters && (
                         <div className="text-center text-muted-foreground pt-10">
                             <p>Aucun résultat trouvé.</p>
@@ -454,9 +455,10 @@ export default function Home() {
                                     view="compact"
                                 />
                               </div>
-                              {(index + 1) % adFrequencyInMap === 0 && !selectedDealershipId && <AdCard />}
+                              {(index + 1) % adFrequency === 0 && !selectedDealershipId && <AdCard />}
                             </React.Fragment>
                           ))}
+                          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
                            {dealershipsToDisplay.length === 0 && hasActiveFilters && (
                                 <div className="text-center text-muted-foreground pt-20">
                                     <p>Aucun résultat trouvé.</p>
@@ -532,7 +534,7 @@ export default function Home() {
                                             view={'list'}
                                         />
                                       </div>
-                                      {(index + 1) % 4 === 0 && <AdCard />}
+                                      {(index + 1) % adFrequency === 0 && <AdCard />}
                                   </React.Fragment>
                                   ))}
                                   {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
