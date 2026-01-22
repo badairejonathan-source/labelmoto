@@ -518,9 +518,9 @@ export default function Home() {
                     }
                     
                     return (
-                      <div className="h-full flex flex-col overflow-hidden flex-1">
-                          <ScrollArea className="flex-grow">
-                              <div className="p-4 space-y-4 max-w-4xl mx-auto">
+                      <div className="flex-1 overflow-y-auto">
+                          <div className="container mx-auto p-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                   {dealershipsToDisplay.map((dealer, index) => (
                                   <React.Fragment key={dealer.id}>
                                       <div onClick={() => handleCardClick(dealer.id)}>
@@ -529,22 +529,20 @@ export default function Home() {
                                             view={'list'}
                                         />
                                       </div>
-                                      {(index + 1) % 6 === 0 && <AdCard />}
+                                      {(index + 1) % 4 === 0 && <AdCard />}
                                   </React.Fragment>
                                   ))}
-                                  {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && (
-                                  <div className="col-span-full">
-                                      <AdCard />
-                                  </div>
+                                  {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
+                                    <AdCard />
                                   )}
                                   {dealershipsToDisplay.length === 0 && hasActiveFilters && (
-                                      <div className="text-center text-muted-foreground pt-20 col-span-full">
+                                      <div className="text-center text-muted-foreground py-20 md:col-span-2">
                                           <p>Aucun résultat trouvé.</p>
                                           <p className="text-sm">Essayez d'ajuster vos filtres.</p>
                                       </div>
                                   )}
                               </div>
-                          </ScrollArea>
+                          </div>
                       </div>
                     );
                 })()

@@ -314,6 +314,8 @@ const ListView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
   const title = dealership.title || '';
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
+  const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+  const hasHours = weekDays.some(day => dealership[day] && dealership[day].trim() !== '');
 
   return (
     <>
@@ -354,6 +356,12 @@ const ListView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
           </div>
 
           <div className="flex flex-col space-y-1 text-sm">
+              {hasHours && (
+                <div className="flex items-center text-muted-foreground">
+                    <Clock className="h-4 w-4 mr-2 shrink-0" />
+                    <span className="truncate">Voir les horaires</span>
+                </div>
+              )}
               {dealership.phoneNumber && (
                   <div className="flex items-center text-muted-foreground">
                       <Phone className="h-4 w-4 mr-2 shrink-0" />
@@ -436,4 +444,5 @@ export default DealershipCard;
     
 
     
+
 
