@@ -7,22 +7,28 @@ const MotoTrustLogo = ({ className, ...props }: React.SVGProps<SVGSVGElement>) =
             <text x="0" y="23" fontSize="26" fill="currentColor">M</text>
 
             {/* The "OTO" as a motorcycle icon */}
-            <g transform="translate(27, 5)" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round">
-                {/* Wheels (O, O) */}
-                <circle cx="8" cy="10" r="8" />
-                <circle cx="42" cy="10" r="8" />
+            <g transform="translate(27, 5)" fill="currentColor">
+                
+                {/* The bike body on top */}
+                <path d="M21,3 C26,-1,38,-1,43,4 L41,11 L23,11 Z" />
 
-                {/* Small dots in wheels */}
-                <circle cx="8" cy="10" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="42" cy="10" r="1.5" fill="currentColor" stroke="none" />
+                {/* The 'T' shape for handlebars and connection */}
+                <path d="M29,11 L29,18" stroke="currentColor" strokeWidth="2.5" />
+                <path d="M20,11 L40,11" stroke="currentColor" strokeWidth="2.5" />
 
-                {/* Seat/Handlebars (T) */}
-                <path d="M 25,11 L 25,4" />
-                <path d="M 19,4 L 31,4" />
+                {/* The wheels (O's) */}
+                <g stroke="currentColor" strokeWidth="2.5" fill="none">
+                    {/* Back Wheel */}
+                    <circle cx="8" cy="18" r="7"/>
+                    <path d="M 1,18 L 15,18" />
 
-                {/* Frame */}
-                <line x1="8" y1="10" x2="25" y2="10" />
-                <line x1="25" y1="10" x2="42" y2="10" />
+                    {/* Front Wheel */}
+                    <circle cx="46" cy="18" r="7"/>
+                    <path d="M 39,18 L 53,18" />
+                </g>
+
+                {/* The connection from 'T' to wheel axel */}
+                <path d="M29,18 L46,18" stroke="currentColor" strokeWidth="2.5" />
             </g>
 
             {/* The "TRUST" part */}
