@@ -17,11 +17,9 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
   const isMobile = width ? width < 768 : false;
 
   return (
-    <header className={cn("flex items-center justify-between p-2 md:p-4 bg-primary text-primary-foreground border-b border-gray-200 dark:border-gray-700",
-      "text-sidebar-foreground",
-    )}>
+    <header className={cn("flex items-center justify-between p-2 md:p-4 bg-primary text-primary-foreground border-b border-gray-200 dark:border-gray-700")}>
       <div className="flex items-center">
-        <MotoTrustLogo className="[&>path]:stroke-primary-foreground"/>
+        <MotoTrustLogo />
       </div>
       
       {children}
