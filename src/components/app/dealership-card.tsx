@@ -87,7 +87,7 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                 </div>
               )}
             </div>
-            <CardContent className="p-3 flex-grow relative flex flex-col min-w-0 justify-between">
+            <CardContent className="p-3 flex-grow relative flex flex-col min-w-0 justify-center gap-2">
                 <div>
                     <div className="flex justify-between items-start gap-2">
                        <div className="flex-grow min-w-0 flex-shrink">
@@ -446,3 +446,6 @@ export default DealershipCard;
     
 
 
+
+
+    
