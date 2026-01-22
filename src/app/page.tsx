@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -313,6 +314,8 @@ export default function Home() {
     );
   };
   
+  const adFrequencyInMap = dealershipsToDisplay.length < 5 ? 3 : 6;
+
   return (
     <div className="flex flex-col h-screen">
       <Header>
@@ -451,7 +454,7 @@ export default function Home() {
                                     view="compact"
                                 />
                               </div>
-                              {(index + 1) % 6 === 0 && !selectedDealershipId && <AdCard />}
+                              {(index + 1) % adFrequencyInMap === 0 && !selectedDealershipId && <AdCard />}
                             </React.Fragment>
                           ))}
                            {dealershipsToDisplay.length === 0 && hasActiveFilters && (
