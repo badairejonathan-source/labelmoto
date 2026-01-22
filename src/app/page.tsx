@@ -314,7 +314,7 @@ export default function Home() {
     );
   };
   
-  const adFrequencyInMap = dealershipsToDisplay.length < 5 ? 3 : 6;
+  const adFrequencyInMap = dealershipsToDisplay.length < 5 ? 3 : 5;
 
   return (
     <div className="flex flex-col h-screen">
