@@ -1,28 +1,29 @@
 import React from 'react';
 
 const MotoTrustLogo = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
-    <svg width="220" height="50" viewBox="0 0 220 50" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
-        <g fontFamily="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" textAnchor="start" fontWeight="800" letterSpacing="-1">
-            <text x="0" y="32" fontSize="26" fill="currentColor">M</text>
-
-            <g transform="translate(27, 5.5) scale(0.9)">
-                {/* Moto Body */}
-                <path d="M12 20.5 L 18 10 H 38 L 46 17 L 38 18 L 12 20.5Z M 20 9 L 34 9 L 32 3 L 22 3 Z" fill="#f97316"/>
-                {/* Back Wheel */}
-                <circle cx="8" cy="20" r="7" fill="currentColor"/>
-                <circle cx="8" cy="20" r="2" fill="#f97316"/>
-                {/* Front Wheel */}
-                <circle cx="40" cy="20" r="7" fill="currentColor"/>
-                <circle cx="40" cy="20" r="2" fill="#f97316"/>
-            </g>
-
-            <text x="82" y="32" fontSize="26">
-                <tspan fill="#f97316">TRUST</tspan>
-            </text>
+    <svg width="320" height="50" viewBox="0 0 320 50" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+        <g fontFamily="Inter, sans-serif" fontWeight="800" fontSize="36" letterSpacing="-1.5">
             
-            <text x="1.5" y="47" fontSize="11" fontWeight="500" letterSpacing="0.5" fill="currentColor">
-                Trouve ta concess
-            </text>
+            {/* MOTO part */}
+            <text x="0" y="38" fill="white">M</text>
+            
+            {/* First O (wheel) */}
+            <path d="M60,25 a15,15 0 1,0 -30,0 a15,15 0 1,0 30,0 zm-5,0 a10,10 0 1,1 -20,0 a10,10 0 1,1 20,0 z" fill="white"/>
+            
+            <text x="70" y="38" fill="white">T</text>
+            
+            {/* Second O (wheel) */}
+            <path d="M125,25 a15,15 0 1,0 -30,0 a15,15 0 1,0 30,0 zm-5,0 a10,10 0 1,1 -20,0 a10,10 0 1,1 20,0 z" fill="white"/>
+
+            {/* Moto outline */}
+            <path d="M 45,15 C 60,0, 90,5, 96,16 C 105,28, 90,30, 85,28 M 96,16 C 110,3, 130,12, 125,22" fill="none" stroke="#f97316" strokeWidth="4" strokeLinecap="round"/>
+            
+            {/* TRUST part */}
+            <text x="145" y="38" fill="#f97316">TRUST</text>
+            
+            {/* Sparkle */}
+            <path d="M285 42 L288 39 L291 42 L288 45 Z" fill="#f97316" />
+
         </g>
     </svg>
 );
