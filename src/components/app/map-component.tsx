@@ -1,160 +1,182 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import type { Dealership } from '@/lib/types';
-
-const defaultIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 40 44" width="36" height="42">
-    <defs>
-      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-        <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000" flood-opacity="0.3"/>
-      </filter>
-    </defs>
-    <g filter="url(#shadow)">
-      <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
-        fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="0.5" />
-    </g>
-    <circle cx="18" cy="18" r="10.5" fill="hsl(var(--primary))" stroke="hsl(var(--accent))" stroke-width="3"/>
-    <g transform="translate(18,18) scale(0.6)" fill="hsl(var(--accent))">
-      <path transform="translate(-12, -12)" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2-3.46c.12-.22.07-.49-.12.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
-    </g>
-</svg>`;
-
-const highlightedIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 40 44" width="42" height="49">
-    <defs>
-      <filter id="shadow-highlight" x="-50%" y="-50%" width="200%" height="200%">
-        <feDropShadow dx="2" dy="4" stdDeviation="2" flood-color="#000" flood-opacity="0.4"/>
-      </filter>
-    </defs>
-    <g filter="url(#shadow-highlight)">
-      <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0 Z"
-        fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="0.5" />
-    </g>
-    <circle cx="18" cy="18" r="10.5" fill="hsl(var(--primary))" stroke="hsl(var(--accent))" stroke-width="3"/>
-    <g transform="translate(18,18) scale(0.6)" fill="hsl(var(--accent))">
-      <path transform="translate(-12, -12)" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2-3.46c.12-.22.07-.49-.12.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
-    </g>
-</svg>`;
-
-const defaultIcon = L.divIcon({
-  html: defaultIconSvg,
-  className: '', // important to clear default styling for divIcon
-  iconSize: [36, 42],
-  iconAnchor: [18, 42],
-});
-
-const highlightedIcon = L.divIcon({
-  html: highlightedIconSvg,
-  className: '', // important to clear default styling for divIcon
-  iconSize: [42, 49],
-  iconAnchor: [21, 49],
-});
+import brandLogos from '@/data/brand-logos';
 
 interface MapComponentProps {
   dealerships: Dealership[];
   center: [number, number];
   zoom: number;
-  hoveredDealershipId?: string | null;
+  hoveredDealershipId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
-  isMobile?: boolean;
+  isMobile: boolean;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ 
-  dealerships, 
-  center, 
-  zoom, 
+const getBrandForDealership = (dealership: Dealership): string | null => {
+    if (!dealership || !dealership.title) return null;
+    const title = dealership.title.toLowerCase();
+    const brand = Object.keys(brandLogos).find(b => title.includes(b.toLowerCase()));
+    return brand || null;
+}
+
+const createIcon = (dealership: Dealership, isHovered: boolean) => {
+    const brand = getBrandForDealership(dealership);
+    const brandSvg = brand ? brandLogos[brand] : null;
+
+    const scale = isHovered ? 1.25 : 1;
+    const shadowOpacity = isHovered ? 0.6 : 0.3;
+    const strokeWidth = isHovered ? 2.5 : 0.5;
+
+    const iconHtml = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center;">
+        <defs>
+          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="${shadowOpacity}"/>
+          </filter>
+        </defs>
+        <g filter="url(#shadow)">
+          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="${strokeWidth}" />
+        </g>
+        ${brandSvg 
+          ? `<g transform="translate(18, 18) scale(0.9)">${brandSvg}</g>`
+          : `<circle cx="18" cy="18" r="8" fill="hsl(var(--accent))" />`
+        }
+      </svg>
+    `;
+
+    return L.divIcon({
+        html: iconHtml,
+        className: 'custom-marker',
+        iconSize: [36 * scale, 44 * scale],
+        iconAnchor: [18 * scale, 44 * scale],
+        popupAnchor: [0, -44 * scale]
+    });
+};
+
+export default function MapComponent({
+  dealerships,
+  center,
+  zoom,
   hoveredDealershipId,
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut,
-  isMobile
-}) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<L.Map | null>(null);
+}: MapComponentProps) {
+  const mapRef = useRef<L.Map | null>(null);
+  const clusterGroupRef = useRef<any>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !mapRef.current) {
-      return;
+    if (typeof window !== 'undefined' && !mapRef.current) {
+        const mapElement = document.getElementById('map-container');
+        if (mapElement && !(mapElement as any)._leaflet_id) {
+            mapRef.current = L.map('map-container').setView(center, zoom);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapRef.current);
+            
+            if ((L as any).markerClusterGroup) {
+                clusterGroupRef.current = (L as any).markerClusterGroup({
+                    maxClusterRadius: 40,
+                });
+                mapRef.current.addLayer(clusterGroupRef.current);
+            }
+        }
     }
 
-    if (!mapInstance.current) {
-      mapInstance.current = L.map(mapRef.current).setView(center, zoom);
-
-      L.tileLayer(
-        `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png`,
-        {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    return () => {
+        if (mapRef.current) {
+            // Check if map container is still in DOM
+            const mapContainer = document.getElementById('map-container');
+            if (mapContainer && (mapContainer as any)._leaflet_id) {
+                mapRef.current.remove();
+            }
+            mapRef.current = null;
         }
-      ).addTo(mapInstance.current);
-    } 
-    
-    const currentMarkers = markersRef.current;
-    const dealershipIds = new Set(dealerships.map(d => d.id));
-
-    // Remove old markers
-    Object.keys(currentMarkers).forEach(id => {
-      if (!dealershipIds.has(id)) {
-        currentMarkers[id].remove();
-        delete currentMarkers[id];
-      }
-    });
-
-    // Add or update markers
-    dealerships.forEach((dealer) => {
-      if (!dealer.latitude || !dealer.longitude || isNaN(dealer.latitude) || isNaN(dealer.longitude)) return;
-      
-      const position: [number, number] = [dealer.latitude, dealer.longitude];
-      
-      if (currentMarkers[dealer.id]) {
-        currentMarkers[dealer.id].setLatLng(position).setIcon(defaultIcon);
-      } else {
-        const marker = L.marker(position, { icon: defaultIcon }).addTo(mapInstance.current!);
-        
-        marker.on('click', () => onMarkerClick(dealer.id));
-        marker.on('mouseover', () => {
-          onMarkerMouseOver(dealer.id)
-        });
-        marker.on('mouseout', () => {
-          onMarkerMouseOut();
-        });
-        
-        currentMarkers[dealer.id] = marker;
-      }
-    });
-
-    markersRef.current = currentMarkers;
-    
-  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, isMobile]);
+    }
+  }, []); // Should only run once
 
   useEffect(() => {
-    if (mapInstance.current) {
-        mapInstance.current.setView(center, zoom);
+    if (mapRef.current) {
+      mapRef.current.setView(center, zoom);
     }
   }, [center, zoom]);
 
-
   useEffect(() => {
-    Object.entries(markersRef.current).forEach(([id, marker]) => {
-      let zIndexOffset = 0;
-      let iconToUse: L.Icon | L.DivIcon;
+    const clusterGroup = clusterGroupRef.current;
+    if (!clusterGroup) return;
 
-      if (id === hoveredDealershipId) {
-        iconToUse = highlightedIcon;
-        zIndexOffset = 1000;
-      } else {
-        iconToUse = defaultIcon;
+    const currentMarkerIds = Object.keys(markersRef.current);
+    const newDealershipIds = new Set(dealerships.map(d => d.id));
+
+    // Remove markers that are no longer in the dealerships list
+    currentMarkerIds.forEach(id => {
+      if (!newDealershipIds.has(id)) {
+        if (markersRef.current[id]) {
+            clusterGroup.removeLayer(markersRef.current[id]);
+            delete markersRef.current[id];
+        }
       }
-
-      marker.setIcon(iconToUse);
-      marker.setZIndexOffset(zIndexOffset);
     });
-  }, [hoveredDealershipId]);
 
-  return <div ref={mapRef} className="h-full w-full z-0" />;
-};
+    // Add new markers and update existing ones
+    dealerships.forEach((dealership) => {
+      if (!dealership.latitude || !dealership.longitude) return;
 
-export default MapComponent;
+      const isHovered = dealership.id === hoveredDealershipId;
+      const icon = createIcon(dealership, isHovered);
+
+      if (markersRef.current[dealership.id]) {
+        // Update existing marker
+        const marker = markersRef.current[dealership.id];
+        marker.setIcon(icon);
+        marker.setLatLng([dealership.latitude, dealership.longitude]);
+      } else {
+        // Create new marker
+        const marker = L.marker([dealership.latitude, dealership.longitude], { icon });
+        
+        marker.on('click', () => onMarkerClick(dealership.id));
+        marker.on('mouseover', () => onMarkerMouseOver(dealership.id));
+        marker.on('mouseout', () => onMarkerMouseOut());
+
+        markersRef.current[dealership.id] = marker;
+        clusterGroup.addLayer(marker);
+      }
+    });
+  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+
+  // Separate effect for hover state to avoid re-creating all markers
+  useEffect(() => {
+      if (!markersRef.current || !hoveredDealershipId) {
+        // Reset all to non-hovered if no ID is hovered
+        Object.keys(markersRef.current).forEach(id => {
+            const marker = markersRef.current[id];
+            const dealership = dealerships.find(d => d.id === id);
+            if (dealership && marker) {
+                marker.setIcon(createIcon(dealership, false));
+            }
+        });
+        return;
+      };
+
+      Object.keys(markersRef.current).forEach(id => {
+          const marker = markersRef.current[id];
+          const dealership = dealerships.find(d => d.id === id);
+          if (dealership && marker) {
+              const isHovered = id === hoveredDealershipId;
+              marker.setIcon(createIcon(dealership, isHovered));
+          }
+      });
+      
+  }, [hoveredDealershipId, dealerships]);
+
+  return <div id="map-container" className="w-full h-full min-h-0" />;
+}
