@@ -5,6 +5,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
+import 'leaflet.markercluster';
 import type { Dealership } from '@/lib/types';
 import brandLogos from '@/data/brand-logos';
 
@@ -76,12 +77,6 @@ export default function MapComponent({
     if (typeof window !== 'undefined' && !mapRef.current) {
         const mapElement = document.getElementById('map-container');
         if (mapElement && !(mapElement as any)._leaflet_id) {
-            
-            if (typeof (L as any).markerClusterGroup === 'undefined') {
-              console.error("Leaflet.markercluster is not loaded yet.");
-              return;
-            }
-
             mapRef.current = L.map('map-container').setView(center, zoom);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

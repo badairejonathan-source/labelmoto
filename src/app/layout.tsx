@@ -1,4 +1,3 @@
-import Script from 'next/script'
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -36,10 +35,6 @@ export default function RootLayout({
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
           <main>{children}</main>
         <Toaster />
-        <Script 
-          src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"
-          strategy="beforeInteractive" 
-        />
       </body>
     </html>
   );
