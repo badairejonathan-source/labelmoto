@@ -441,7 +441,7 @@ export default function Home() {
           <>
             {viewMode === 'map' ? (
              <div className="flex flex-row flex-1 overflow-hidden">
-                <aside className="w-[420px] flex-shrink-0 h-full flex flex-col relative z-10 bg-background shadow-lg border-r border-border">
+                <aside className="w-1/3 flex-shrink-0 h-full flex flex-col relative z-10 bg-background shadow-lg border-r border-border">
                     {selectedDealershipId && (
                       <Button
                         variant="ghost"
