@@ -17,7 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuChe
 import { cn } from "@/lib/utils";
 import useWindowSize from '@/hooks/use-window-size';
 import { db } from '@/lib/firebase';
-import { ref, onValue } from "firebase/database";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -66,36 +66,35 @@ export default function Home() {
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
   useEffect(() => {
-    const concessionsRef = ref(db, 'dealerships');
+    const concessionsRef = collection(db, 'concessions');
 
-    const unsubscribe = onValue(concessionsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data && typeof data === 'object') {
-            const dealershipMap = new Map<string, Dealership>();
+    const unsubscribe = onSnapshot(concessionsRef, (querySnapshot) => {
+        const dealershipMap = new Map<string, Dealership>();
 
-            Object.values(data).forEach((dealer: any) => {
-              if (dealer && dealer.placeUrl && dealer.title && dealer.latitude && dealer.longitude) {
-                const uniqueKey = dealer.placeUrl;
-                const lat = parseFloat(String(dealer.latitude).replace(',', '.'));
-                const lng = parseFloat(String(dealer.longitude).replace(',', '.'));
+        querySnapshot.docs.forEach((doc) => {
+          const dealer = doc.data();
+          const uniqueKey = doc.id;
 
-                if (!isNaN(lat) && !isNaN(lng) && !dealershipMap.has(uniqueKey)) {
-                  const dealerWithId: Dealership = {
-                    ...dealer,
-                    id: uniqueKey,
-                    latitude: lat,
-                    longitude: lng,
-                  };
-                  dealershipMap.set(uniqueKey, dealerWithId);
-                }
+          if (dealer && dealer.placeUrl && dealer.title && dealer.latitude && dealer.longitude) {
+            if (!dealershipMap.has(uniqueKey)) {
+              const lat = parseFloat(String(dealer.latitude).replace(',', '.'));
+              const lng = parseFloat(String(dealer.longitude).replace(',', '.'));
+
+              if (!isNaN(lat) && !isNaN(lng)) {
+                const dealerWithId: Dealership = {
+                  ...(dealer as any),
+                  id: uniqueKey,
+                  latitude: lat,
+                  longitude: lng,
+                };
+                dealershipMap.set(uniqueKey, dealerWithId);
               }
-            });
-            
-            const uniqueDealerships = Array.from(dealershipMap.values());
-            setAllDealerships(uniqueDealerships);
-        } else {
-            setAllDealerships([]);
-        }
+            }
+          }
+        });
+        
+        const uniqueDealerships = Array.from(dealershipMap.values());
+        setAllDealerships(uniqueDealerships);
     }, (error) => {
         console.error("Firebase read failed: " + error.message);
         setAllDealerships([]);
