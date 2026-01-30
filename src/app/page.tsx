@@ -440,8 +440,8 @@ export default function Home() {
         ) : (
           <>
             {viewMode === 'map' ? (
-             <div className="grid grid-cols-3 flex-1 overflow-hidden">
-                <aside className="col-span-1 h-full flex flex-col relative z-10 bg-background shadow-lg border-r border-border">
+             <div className="flex flex-row flex-1 overflow-hidden">
+                <aside className="w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
                     {selectedDealershipId && (
                       <Button
                         variant="ghost"
@@ -481,7 +481,7 @@ export default function Home() {
                         </div>
                     </ScrollArea>
                 </aside>
-                <main className="col-span-2 overflow-hidden h-full relative">
+                <main className="flex-1 overflow-hidden h-full relative">
                     {hoveredDealership && (
                       <div
                         className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
