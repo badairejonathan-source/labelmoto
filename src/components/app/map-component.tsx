@@ -71,38 +71,37 @@ export default function MapComponent({
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<any>(null);
-  const markersRef = useRef<Record<string, L.Marker>>({});
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !mapRef.current) {
         const mapElement = document.getElementById('map-container');
         if (mapElement && !(mapElement as any)._leaflet_id) {
+            
+            if (typeof (L as any).markerClusterGroup === 'undefined') {
+              console.error("Leaflet.markercluster is not loaded yet.");
+              return;
+            }
+
             mapRef.current = L.map('map-container').setView(center, zoom);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapRef.current);
             
-            if ((L as any).markerClusterGroup) {
-                clusterGroupRef.current = (L as any).markerClusterGroup({
-                    maxClusterRadius: 40,
-                });
-                mapRef.current.addLayer(clusterGroupRef.current);
-            }
+            clusterGroupRef.current = (L as any).markerClusterGroup({
+                maxClusterRadius: 40,
+            });
+            mapRef.current.addLayer(clusterGroupRef.current);
         }
     }
 
     return () => {
         if (mapRef.current) {
-            // Check if map container is still in DOM
-            const mapContainer = document.getElementById('map-container');
-            if (mapContainer && (mapContainer as any)._leaflet_id) {
-                mapRef.current.remove();
-            }
+            mapRef.current.remove();
             mapRef.current = null;
         }
     }
-  }, []); // Should only run once
+  }, []); 
 
   useEffect(() => {
     if (mapRef.current) {
@@ -112,71 +111,27 @@ export default function MapComponent({
 
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
-    if (!clusterGroup) return;
+    if (!clusterGroup) {
+      return;
+    }
 
-    const currentMarkerIds = Object.keys(markersRef.current);
-    const newDealershipIds = new Set(dealerships.map(d => d.id));
+    clusterGroup.clearLayers();
 
-    // Remove markers that are no longer in the dealerships list
-    currentMarkerIds.forEach(id => {
-      if (!newDealershipIds.has(id)) {
-        if (markersRef.current[id]) {
-            clusterGroup.removeLayer(markersRef.current[id]);
-            delete markersRef.current[id];
-        }
-      }
-    });
-
-    // Add new markers and update existing ones
     dealerships.forEach((dealership) => {
       if (!dealership.latitude || !dealership.longitude) return;
 
       const isHovered = dealership.id === hoveredDealershipId;
       const icon = createIcon(dealership, isHovered);
 
-      if (markersRef.current[dealership.id]) {
-        // Update existing marker
-        const marker = markersRef.current[dealership.id];
-        marker.setIcon(icon);
-        marker.setLatLng([dealership.latitude, dealership.longitude]);
-      } else {
-        // Create new marker
-        const marker = L.marker([dealership.latitude, dealership.longitude], { icon });
+      const marker = L.marker([dealership.latitude, dealership.longitude], { icon });
         
-        marker.on('click', () => onMarkerClick(dealership.id));
-        marker.on('mouseover', () => onMarkerMouseOver(dealership.id));
-        marker.on('mouseout', () => onMarkerMouseOut());
+      marker.on('click', () => onMarkerClick(dealership.id));
+      marker.on('mouseover', () => onMarkerMouseOver(dealership.id));
+      marker.on('mouseout', () => onMarkerMouseOut());
 
-        markersRef.current[dealership.id] = marker;
-        clusterGroup.addLayer(marker);
-      }
+      clusterGroup.addLayer(marker);
     });
-  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
-
-  // Separate effect for hover state to avoid re-creating all markers
-  useEffect(() => {
-      if (!markersRef.current || !hoveredDealershipId) {
-        // Reset all to non-hovered if no ID is hovered
-        Object.keys(markersRef.current).forEach(id => {
-            const marker = markersRef.current[id];
-            const dealership = dealerships.find(d => d.id === id);
-            if (dealership && marker) {
-                marker.setIcon(createIcon(dealership, false));
-            }
-        });
-        return;
-      };
-
-      Object.keys(markersRef.current).forEach(id => {
-          const marker = markersRef.current[id];
-          const dealership = dealerships.find(d => d.id === id);
-          if (dealership && marker) {
-              const isHovered = id === hoveredDealershipId;
-              marker.setIcon(createIcon(dealership, isHovered));
-          }
-      });
-      
-  }, [hoveredDealershipId, dealerships]);
+  }, [dealerships, hoveredDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
 
   return <div id="map-container" className="w-full h-full min-h-0" />;
 }
