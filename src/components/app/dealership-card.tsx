@@ -71,7 +71,7 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
     const rating = isNaN(ratingValue) ? 0 : ratingValue;
     
     return (
-        <div className="flex h-full w-full">
+        <>
             <div className="relative w-24 flex-shrink-0">
               {dealership.imgUrl ? (
                 <Image
@@ -127,7 +127,7 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                     </div>
                 </div>
             </CardContent>
-        </div>
+        </>
     );
 };
 
