@@ -66,39 +66,39 @@ export default function Home() {
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
   useEffect(() => {
-    const concessionsRef = ref(db, '/');
-    
-    const processNode = (node: any, dealershipsMap: Map<string, Dealership>) => {
-        if (node && typeof node === 'object') {
-             if (node.placeUrl && node.title && node.latitude && node.longitude) {
-                const uniqueKey = node.placeUrl;
-                
-                const lat = parseFloat(String(node.latitude).replace(',', '.'));
-                const lng = parseFloat(String(node.longitude).replace(',', '.'));
-
-                if (!isNaN(lat) && !isNaN(lng) && !dealershipsMap.has(uniqueKey)) {
-                    const dealerWithId: Dealership = { 
-                        ...node, 
-                        id: uniqueKey,
-                        latitude: lat,
-                        longitude: lng,
-                    };
-                    dealershipsMap.set(uniqueKey, dealerWithId);
-                }
-            } else {
-                Object.values(node).forEach(childNode => processNode(childNode, dealershipsMap));
-            }
-        }
-    };
+    const concessionsRef = ref(db, 'dealerships');
 
     const unsubscribe = onValue(concessionsRef, (snapshot) => {
         const data = snapshot.val();
-        if (data) {
+        if (data && typeof data === 'object') {
             const dealershipMap = new Map<string, Dealership>();
-            processNode(data, dealershipMap);
+
+            Object.values(data).forEach((dealer: any) => {
+              if (dealer && dealer.placeUrl && dealer.title && dealer.latitude && dealer.longitude) {
+                const uniqueKey = dealer.placeUrl;
+                const lat = parseFloat(String(dealer.latitude).replace(',', '.'));
+                const lng = parseFloat(String(dealer.longitude).replace(',', '.'));
+
+                if (!isNaN(lat) && !isNaN(lng) && !dealershipMap.has(uniqueKey)) {
+                  const dealerWithId: Dealership = {
+                    ...dealer,
+                    id: uniqueKey,
+                    latitude: lat,
+                    longitude: lng,
+                  };
+                  dealershipMap.set(uniqueKey, dealerWithId);
+                }
+              }
+            });
+            
             const uniqueDealerships = Array.from(dealershipMap.values());
             setAllDealerships(uniqueDealerships);
+        } else {
+            setAllDealerships([]);
         }
+    }, (error) => {
+        console.error("Firebase read failed: " + error.message);
+        setAllDealerships([]);
     });
 
     return () => unsubscribe();
@@ -411,10 +411,10 @@ export default function Home() {
                       </React.Fragment>
                     ))}
                     {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
-                     {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                     {dealershipsToDisplay.length === 0 && (
                         <div className="text-center text-muted-foreground pt-10">
                             <p>Aucun résultat trouvé.</p>
-                            <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                            {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
                         </div>
                     )}
                   </div>
@@ -459,10 +459,10 @@ export default function Home() {
                             </React.Fragment>
                           ))}
                           {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
-                           {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                           {dealershipsToDisplay.length === 0 && (
                                 <div className="text-center text-muted-foreground pt-20">
                                     <p>Aucun résultat trouvé.</p>
-                                    <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                                    {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
                                 </div>
                             )}
                         </div>
@@ -540,10 +540,10 @@ export default function Home() {
                                   {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
                                     <AdCard />
                                   )}
-                                  {dealershipsToDisplay.length === 0 && hasActiveFilters && (
+                                  {dealershipsToDisplay.length === 0 && (
                                       <div className="text-center text-muted-foreground py-20 md:col-span-2">
                                           <p>Aucun résultat trouvé.</p>
-                                          <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                                          {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
                                       </div>
                                   )}
                               </div>
