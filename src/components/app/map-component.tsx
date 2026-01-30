@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -21,7 +22,7 @@ interface MapComponentProps {
 }
 
 const getBrandForDealership = (dealership: Dealership): string | null => {
-    if (!dealership || !dealership.title) return null;
+    if (!dealership || typeof dealership.title !== 'string') return null;
     const title = dealership.title.toLowerCase();
     const brand = Object.keys(brandLogos).find(b => title.includes(b.toLowerCase()));
     return brand || null;
