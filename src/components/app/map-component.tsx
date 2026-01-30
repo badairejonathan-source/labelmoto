@@ -4,7 +4,7 @@
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { Dealership } from '@/lib/types';
@@ -19,6 +19,7 @@ interface MapComponentProps {
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
   isMobile: boolean;
+  onNearbyChange: (dealerships: Dealership[]) => void;
 }
 
 const getBrandForDealership = (dealership: Dealership): string | null => {
@@ -62,6 +63,12 @@ const createIcon = (dealership: Dealership, isHovered: boolean) => {
     });
 };
 
+const getDistanceSq = (latlng1: L.LatLng, latlng2: L.LatLng) => {
+    const dx = latlng1.lng - latlng2.lng;
+    const dy = latlng1.lat - latlng2.lat;
+    return dx * dx + dy * dy;
+};
+
 export default function MapComponent({
   dealerships,
   center,
@@ -70,31 +77,56 @@ export default function MapComponent({
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut,
+  onNearbyChange
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
+  const stableOnNearbyChange = useCallback(onNearbyChange, [onNearbyChange]);
+
   useEffect(() => {
     if (mapRef.current === null) {
-      const map = L.map('map-container').setView(center, zoom);
-      mapRef.current = map;
-
+      mapRef.current = L.map('map-container').setView(center, zoom);
+      
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
-
+      }).addTo(mapRef.current);
+      
       clusterGroupRef.current = L.markerClusterGroup({ maxClusterRadius: 40 });
-      map.addLayer(clusterGroupRef.current);
+      mapRef.current.addLayer(clusterGroupRef.current);
     }
     
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-        clusterGroupRef.current = null;
-      }
+    const map = mapRef.current;
+
+    const handleMoveEnd = () => {
+      const currentCenter = map.getCenter();
+      const bounds = map.getBounds();
+
+      const dealershipsInView = dealerships.filter(d => {
+          if (d.latitude == null || d.longitude == null) return false;
+          const dealerLatLng = new L.LatLng(d.latitude, d.longitude);
+          return bounds.contains(dealerLatLng);
+      });
+
+      const sortedDealerships = dealershipsInView.sort((a, b) => {
+          if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+          const latLngA = new L.LatLng(a.latitude, a.longitude);
+          const latLngB = new L.LatLng(b.latitude, b.longitude);
+          return getDistanceSq(currentCenter, latLngA) - getDistanceSq(currentCenter, latLngB);
+      });
+      
+      stableOnNearbyChange(sortedDealerships.slice(0, 50));
     };
-  }, []);
+
+    map.on('moveend', handleMoveEnd);
+
+    // Initial call to populate list
+    handleMoveEnd();
+
+    return () => {
+      map.off('moveend', handleMoveEnd);
+    };
+  }, [dealerships, stableOnNearbyChange]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -104,14 +136,12 @@ export default function MapComponent({
 
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
-    if (!clusterGroup) {
-      return;
-    }
+    if (!clusterGroup) return;
 
     clusterGroup.clearLayers();
 
     dealerships.forEach((dealership) => {
-      if (!dealership.latitude || !dealership.longitude) return;
+      if (dealership.latitude == null || dealership.longitude == null) return;
 
       const isHovered = dealership.id === hoveredDealershipId;
       const icon = createIcon(dealership, isHovered);
@@ -125,6 +155,16 @@ export default function MapComponent({
       clusterGroup.addLayer(marker);
     });
   }, [dealerships, hoveredDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    return () => {
+        if (map) {
+            map.remove();
+            mapRef.current = null;
+        }
+    };
+  }, []);
 
   return <div id="map-container" className="w-full h-full min-h-0" />;
 }

@@ -65,6 +65,8 @@ export default function Home() {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
+  const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
+
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
 
@@ -128,7 +130,7 @@ export default function Home() {
         if (selectedBrands.length > 0) {
             const brandLower = selectedBrands.map(b => b.toLowerCase());
             dealerships = dealerships.filter(d => 
-                d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
+                d.title && typeof d.title === 'string' && brandLower.some(brand => d.title.toLowerCase().includes(brand))
             );
         }
     }
@@ -179,18 +181,27 @@ export default function Home() {
     );
   }, []);
 
+  const handleNearbyChange = useCallback((dealerships: Dealership[]) => {
+      setNearbyDealerships(dealerships);
+  }, []);
+
   const hoveredDealership = useMemo(() => {
     if (!hoveredDealershipId) return null;
     return allDealerships.find(d => d.id === hoveredDealershipId);
   }, [hoveredDealershipId, allDealerships]);
 
   const dealershipsToDisplay = useMemo(() => {
-    if (selectedDealershipId && (viewMode === 'map' || isMobile)) {
+    if (selectedDealershipId) {
       const selected = allDealerships.find(d => d.id === selectedDealershipId);
       return selected ? [selected] : [];
     }
+    
+    if ((viewMode === 'map' && !isMobile) || (isMobile && isMobileSheetOpen)) {
+        return nearbyDealerships;
+    }
+
     return filteredDealerships;
-  }, [selectedDealershipId, filteredDealerships, viewMode, allDealerships, isMobile]);
+  }, [selectedDealershipId, allDealerships, viewMode, isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships]);
   
   const handleCardClick = useCallback((id: string) => {
     const newSelectedId = selectedDealershipId === id ? null : id;
@@ -368,6 +379,7 @@ export default function Home() {
               onMarkerMouseOver={handleMarkerMouseOver}
               onMarkerMouseOut={handleMarkerMouseOut}
               isMobile={isMobile}
+              onNearbyChange={handleNearbyChange}
             />
 
             {isMobileSheetOpen && (
@@ -493,6 +505,7 @@ export default function Home() {
                       onMarkerMouseOver={handleMarkerMouseOver}
                       onMarkerMouseOut={handleMarkerMouseOut}
                       isMobile={isMobile}
+                      onNearbyChange={handleNearbyChange}
                     />
                 </div>
               </div>
