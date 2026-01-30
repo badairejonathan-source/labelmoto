@@ -153,7 +153,7 @@ export default function Home() {
     }
     return [];
   }, [selectedDepartment]);
-  const departments = Object.keys(locations);
+  const departments = useMemo(() => Object.keys(locations), []);
 
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
