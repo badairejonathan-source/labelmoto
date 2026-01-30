@@ -131,17 +131,19 @@ export default function Home() {
                 d.title && brandLower.some(brand => d.title.toLowerCase().includes(brand))
             );
         }
-        
-      setFilteredDealerships(dealerships);
-    } else {
-        setFilteredDealerships(allDealerships);
+    }
+    
+    setFilteredDealerships(dealerships);
+
+    if (selectedDealershipId && !dealerships.some(d => d.id === selectedDealershipId)) {
+      setSelectedDealershipId(null);
     }
     
     if(!hasActiveFilters && !isMobile){
         setSelectedDealershipId(null);
     }
 
-  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isMobile, hasActiveFilters]);
+  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isMobile, hasActiveFilters, selectedDealershipId]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
