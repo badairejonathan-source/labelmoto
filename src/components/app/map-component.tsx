@@ -72,32 +72,29 @@ export default function MapComponent({
   onMarkerMouseOut,
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
-  const clusterGroupRef = useRef<any>(null);
+  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !mapRef.current) {
-        const mapElement = document.getElementById('map-container');
-        if (mapElement && !(mapElement as any)._leaflet_id) {
-            mapRef.current = L.map('map-container').setView(center, zoom);
+    if (mapRef.current === null) {
+      const map = L.map('map-container').setView(center, zoom);
+      mapRef.current = map;
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(mapRef.current);
-            
-            clusterGroupRef.current = (L as any).markerClusterGroup({
-                maxClusterRadius: 40,
-            });
-            mapRef.current.addLayer(clusterGroupRef.current);
-        }
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      clusterGroupRef.current = L.markerClusterGroup({ maxClusterRadius: 40 });
+      map.addLayer(clusterGroupRef.current);
     }
-
+    
     return () => {
-        if (mapRef.current) {
-            mapRef.current.remove();
-            mapRef.current = null;
-        }
-    }
-  }, []); 
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+        clusterGroupRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (mapRef.current) {
