@@ -114,8 +114,8 @@ const CompactView: React.FC<{dealership: Dealership}> = ({ dealership }) => {
                     <div className="flex items-center text-muted-foreground min-w-0">
                         <Phone className="h-3 w-3 mr-1.5 shrink-0" />
                         {dealership.phoneNumber ? (
-                            <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="hover:text-accent hover:underline truncate">
-                                <span>{dealership.phoneNumber}</span>
+                            <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex items-center min-w-0 hover:text-accent hover:underline">
+                                <span className="truncate">{dealership.phoneNumber}</span>
                             </a>
                         ) : (
                             <span>Non disponible</span>
@@ -138,7 +138,7 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
     const allHoursMissing = weekDays.every(day => !dealership[day] || dealership[day].trim() === '');
     
     return (
-        <div className="relative flex flex-col h-full bg-card text-card-foreground">
+        <div className="relative flex flex-col bg-card text-card-foreground">
             {onClose && (
                 <Button variant="ghost" onClick={onClose} className="absolute top-2 right-2 z-10 h-8 w-8 p-0 rounded-full bg-black/50 hover:bg-black/75 text-white">
                     <X className="h-4 w-4" />
@@ -161,7 +161,7 @@ const ExpandedView: React.FC<{dealership: Dealership, onClose?: () => void}> = (
                 )}
             </div>
 
-            <div className="flex-grow p-4 overflow-y-auto">
+            <div className="flex-grow p-4">
                 <div className="py-3 border-y my-4">
                     <h3 className="font-bold text-xl text-center text-primary dark:text-primary-foreground">{title}</h3>
                 </div>
@@ -410,7 +410,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       );
     }
     return (
-      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg h-full", className)}>
+      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )
@@ -424,7 +424,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       className={cn(
         "overflow-hidden transition-all duration-300 ease-in-out flex flex-row",
         currentView === 'list' && "h-48",
-        currentView === 'compact' && "h-32",
+        currentView === 'compact' && "h-36",
         currentView === 'hover' && "h-28",
         (currentView === 'list' || currentView === 'hover') && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
         currentView === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
@@ -447,5 +447,7 @@ export default DealershipCard;
 
 
 
+
+    
 
     
