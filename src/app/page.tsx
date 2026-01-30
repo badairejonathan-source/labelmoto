@@ -440,8 +440,8 @@ export default function Home() {
         ) : (
           <>
             {viewMode === 'map' ? (
-             <div className="grid grid-cols-12 flex-1 overflow-hidden">
-                <div className="col-span-4 h-full flex flex-col relative z-10 bg-background shadow-lg">
+             <div className="flex flex-row flex-1 overflow-hidden">
+                <aside className="w-[420px] flex-shrink-0 h-full flex flex-col relative z-10 bg-background shadow-lg border-r border-border">
                     {selectedDealershipId && (
                       <Button
                         variant="ghost"
@@ -480,8 +480,8 @@ export default function Home() {
                             )}
                         </div>
                     </ScrollArea>
-                </div>
-                <div className="col-span-8 rounded-lg overflow-hidden h-full relative">
+                </aside>
+                <main className="flex-1 overflow-hidden h-full relative">
                     {hoveredDealership && (
                       <div
                         className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
@@ -507,7 +507,7 @@ export default function Home() {
                       isMobile={isMobile}
                       onNearbyChange={handleNearbyChange}
                     />
-                </div>
+                </main>
               </div>
             ) : (
                 (() => {
