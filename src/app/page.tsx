@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -152,7 +151,11 @@ export default function Home() {
     }
     return [];
   }, [selectedDepartment]);
-  const departments = useMemo(() => Object.keys(locations), []);
+
+  const [departments, setDepartments] = useState<string[]>([]);
+  useEffect(() => {
+    setDepartments(Object.keys(locations));
+  }, []);
 
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
@@ -498,5 +501,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
