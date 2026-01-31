@@ -11,7 +11,7 @@ interface HeaderProps {
   children?: React.ReactNode;
 }
 
-const Header: React.FC<HeaderProps> = ({ children }) => {
+function Header({ children }): React.JSX.Element {
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
 
@@ -20,12 +20,16 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
       "bg-road p-2 md:p-4 text-primary-foreground border-b border-gray-200 dark:border-gray-700 z-30"
     )}>
       <div className="relative z-10 flex items-center justify-between">
+
+        {/* C'est ICI qu'on place le logo, à l'intérieur du return */}
         <div className="flex items-center text-primary-foreground">
-          <MotoTrustLogo />
+          <div className="w-32 md:w-48"> {/* Le code pour contrôler la taille */}
+            <MotoTrustLogo />
+          </div>
         </div>
-        
+
         {children}
-        
+
         <div className="flex items-center space-x-2">
           <Button size="icon" variant="outline" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
             <User className="h-5 w-5" />
@@ -34,6 +38,6 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
       </div>
     </header>
   );
-};
+}
 
 export default Header;
