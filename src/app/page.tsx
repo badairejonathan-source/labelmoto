@@ -10,7 +10,7 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { List, Map as MapIcon, ArrowLeft, SlidersHorizontal, ListFilter } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal, ListFilter } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -51,7 +51,6 @@ export default function Home() {
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
 
-  const [viewMode, setViewMode] = useState<'list' | 'map'>(isMobile ? 'map' : 'map');
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -196,12 +195,12 @@ export default function Home() {
       return selected ? [selected] : [];
     }
     
-    if ((viewMode === 'map' && !isMobile) || (isMobile && isMobileSheetOpen)) {
+    if (!isMobile || (isMobile && isMobileSheetOpen)) {
         return nearbyDealerships;
     }
 
     return filteredDealerships;
-  }, [selectedDealershipId, allDealerships, viewMode, isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships]);
+  }, [selectedDealershipId, allDealerships, isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships]);
   
   const handleCardClick = useCallback((id: string) => {
     const newSelectedId = selectedDealershipId === id ? null : id;
@@ -253,19 +252,6 @@ export default function Home() {
     }
   }
 
-  const renderViewToggle = () => (
-    <div className="fixed bottom-6 right-6 z-[1001] flex items-center space-x-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-lg">
-      <Button variant={viewMode === 'list' ? 'default' : 'ghost'} onClick={() => setViewMode('list')} className="rounded-full px-4 py-2">
-        <List className="h-5 w-5 md:mr-2" />
-        <span className="hidden md:inline">Liste</span>
-      </Button>
-      <Button variant={viewMode === 'map' ? 'default' : 'ghost'} onClick={() => setViewMode('map')} className="rounded-full px-4 py-2">
-        <MapIcon className="h-5 w-5 md:mr-2" />
-        <span className="hidden md:inline">Carte</span>
-      </Button>
-    </div>
-  );
-  
   const renderFilters = (isMobileView = false) => {
     const commonClasses = "flex flex-col space-y-2";
     const desktopClasses = "md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2";
@@ -438,138 +424,79 @@ export default function Home() {
 
            </div>
         ) : (
-          <>
-            {viewMode === 'map' ? (
-             <div className="flex flex-row flex-1 overflow-hidden">
-                <aside className="w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
-                    {selectedDealershipId && (
-                      <Button
-                        variant="ghost"
-                        onClick={handleCloseExpandedCard}
-                        className="flex items-center justify-start p-4 text-sm font-medium shrink-0"
-                      >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Retour à la liste
-                      </Button>
-                    )}
-                    <ScrollArea className="flex-grow h-0">
-                        <div className="p-4 space-y-2">
-                          {dealershipsToDisplay.map((dealer, index) => (
-                            <React.Fragment key={dealer.id}>
-                              <div 
-                                onClick={() => handleCardClick(dealer.id)}
-                                onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                                onMouseLeave={handleMarkerMouseOut}
-                              >
-                                <DealershipCard 
-                                    dealership={dealer} 
-                                    isExpanded={selectedDealershipId === dealer.id}
-                                    onClose={handleCloseExpandedCard}
-                                    view="compact"
-                                />
-                              </div>
-                              {(index + 1) % adFrequency === 0 && !selectedDealershipId && <AdCard />}
-                            </React.Fragment>
-                          ))}
-                          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
-                           {dealershipsToDisplay.length === 0 && (
-                                <div className="text-center text-muted-foreground pt-20">
-                                    <p>Aucun résultat trouvé.</p>
-                                    {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
-                                </div>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </aside>
-                <main className="flex-1 overflow-hidden h-full relative">
-                    {hoveredDealership && (
-                      <div
-                        className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
-                        onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
-                        onMouseLeave={handleMarkerMouseOut}
-                      >
-                        <DealershipCard
-                          dealership={hoveredDealership}
-                          view="hover"
-                          className="shadow-2xl"
-                          onClick={() => handleCardClick(hoveredDealership.id)}
-                        />
-                      </div>
-                    )}
-                    <MapComponent 
-                      dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
-                      center={mapCenter} 
-                      zoom={mapZoom} 
-                      hoveredDealershipId={hoveredDealershipId}
-                      onMarkerClick={handleMarkerClick}
-                      onMarkerMouseOver={handleMarkerMouseOver}
-                      onMarkerMouseOut={handleMarkerMouseOut}
-                      isMobile={isMobile}
-                      onNearbyChange={handleNearbyChange}
-                    />
-                </main>
-              </div>
-            ) : (
-                (() => {
-                    const selectedDealership = selectedDealershipId ? allDealerships.find(d => d.id === selectedDealershipId) : null;
-
-                    if (selectedDealership) {
-                        return (
-                            <div className="flex-1 p-4 md:p-6 overflow-y-auto">
-                                <Button
-                                    variant="ghost"
-                                    onClick={handleCloseExpandedCard}
-                                    className="flex items-center text-sm font-medium mb-4"
-                                >
-                                    <ArrowLeft className="mr-2 h-4 w-4" />
-                                    Retour à la liste
-                                </Button>
-                                <div className="max-w-4xl mx-auto">
-                                    <DealershipCard
-                                        dealership={selectedDealership}
-                                        isExpanded={true}
-                                        view="list"
-                                        onClose={handleCloseExpandedCard}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    }
-                    
-                    return (
-                      <div className="flex-1 overflow-y-auto">
-                          <div className="container mx-auto p-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                  {dealershipsToDisplay.map((dealer, index) => (
-                                  <React.Fragment key={dealer.id}>
-                                      <div onClick={() => handleCardClick(dealer.id)}>
-                                        <DealershipCard 
-                                            dealership={dealer} 
-                                            view={'list'}
-                                        />
-                                      </div>
-                                      {(index + 1) % adFrequency === 0 && <AdCard />}
-                                  </React.Fragment>
-                                  ))}
-                                  {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
-                                    <AdCard />
-                                  )}
-                                  {dealershipsToDisplay.length === 0 && (
-                                      <div className="text-center text-muted-foreground py-20 md:col-span-2">
-                                          <p>Aucun résultat trouvé.</p>
-                                          {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
-                                      </div>
-                                  )}
-                              </div>
+          <div className="flex flex-row flex-1 overflow-hidden">
+            <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
+                {selectedDealershipId && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleCloseExpandedCard}
+                    className="flex items-center justify-start p-4 text-sm font-medium shrink-0"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Retour à la liste
+                  </Button>
+                )}
+                <ScrollArea className="flex-grow h-0">
+                    <div className="p-4 space-y-2">
+                      {dealershipsToDisplay.map((dealer, index) => (
+                        <React.Fragment key={dealer.id}>
+                          <div 
+                            onClick={() => handleCardClick(dealer.id)}
+                            onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                            onMouseLeave={handleMarkerMouseOut}
+                          >
+                            <DealershipCard 
+                                dealership={dealer} 
+                                isExpanded={selectedDealershipId === dealer.id}
+                                onClose={handleCloseExpandedCard}
+                                view="compact"
+                            />
                           </div>
-                      </div>
-                    );
-                })()
-            )}
-          </>
+                          {(index + 1) % adFrequency === 0 && !selectedDealershipId && <AdCard />}
+                        </React.Fragment>
+                      ))}
+                      {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
+                       {dealershipsToDisplay.length === 0 && (
+                            <div className="text-center text-muted-foreground pt-20">
+                                <p>Aucun résultat trouvé.</p>
+                                {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
+                            </div>
+                        )}
+                    </div>
+                </ScrollArea>
+            </aside>
+            <main className="flex-1 overflow-hidden h-full relative">
+                {hoveredDealership && (
+                  <div
+                    className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
+                    onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
+                    onMouseLeave={handleMarkerMouseOut}
+                  >
+                    <DealershipCard
+                      dealership={hoveredDealership}
+                      view="hover"
+                      className="shadow-2xl"
+                      onClick={() => handleCardClick(hoveredDealership.id)}
+                    />
+                  </div>
+                )}
+                <MapComponent 
+                  dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
+                  center={mapCenter} 
+                  zoom={mapZoom} 
+                  hoveredDealershipId={hoveredDealershipId}
+                  onMarkerClick={handleMarkerClick}
+                  onMarkerMouseOver={handleMarkerMouseOver}
+                  onMarkerMouseOut={handleMarkerMouseOut}
+                  isMobile={isMobile}
+                  onNearbyChange={handleNearbyChange}
+                />
+            </main>
+          </div>
         )}
       </div>
-      {!isMobile && renderViewToggle()}
     </div>
   );
 }
+
+    

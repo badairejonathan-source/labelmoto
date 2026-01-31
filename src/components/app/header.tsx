@@ -7,11 +7,12 @@ import MotoTrustLogo from './logo';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from '@/lib/utils';
 
+// Cette interface corrige l'erreur rouge "implicitly has an any type"
 interface HeaderProps {
   children?: React.ReactNode;
 }
 
-function Header({ children }): React.JSX.Element {
+const Header: React.FC<HeaderProps> = ({ children }) => {
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
 
@@ -20,16 +21,18 @@ function Header({ children }): React.JSX.Element {
       "bg-road p-2 md:p-4 text-primary-foreground border-b border-gray-200 dark:border-gray-700 z-30"
     )}>
       <div className="relative z-10 flex items-center justify-between">
-
-        {/* C'est ICI qu'on place le logo, à l'intérieur du return */}
+        
+        {/* LOGO : On force sa taille ici (w-32 = mobile, w-48 = pc) */}
         <div className="flex items-center text-primary-foreground">
-          <div className="w-32 md:w-48"> {/* Le code pour contrôler la taille */}
-            <MotoTrustLogo />
-          </div>
+             <div className="w-32 md:w-48">
+                <MotoTrustLogo />
+             </div>
         </div>
-
+        
+        {/* Les éléments enfants (Barre de recherche, etc.) */}
         {children}
-
+        
+        {/* Bouton Utilisateur */}
         <div className="flex items-center space-x-2">
           <Button size="icon" variant="outline" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
             <User className="h-5 w-5" />
@@ -38,6 +41,6 @@ function Header({ children }): React.JSX.Element {
       </div>
     </header>
   );
-}
+};
 
 export default Header;
