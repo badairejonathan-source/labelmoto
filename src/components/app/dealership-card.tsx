@@ -391,16 +391,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   className 
 }) => {
   
-  const handleCardClick = (e: React.MouseEvent) => {
-    if (onClick) {
-      // Avoid expanding when clicking on a link
-      if (e.target instanceof HTMLElement && e.target.closest('a')) {
-        return;
-      }
-      onClick();
-    }
-  };
-  
   if (isExpanded) {
     if (view === 'list') {
       return (
@@ -420,14 +410,22 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   return (
     <Card 
-      onClick={onClick ? handleCardClick : undefined}
+      onClick={(e: React.MouseEvent) => {
+        if (onClick) {
+          // Avoid expanding when clicking on a link
+          if (e.target instanceof HTMLElement && e.target.closest('a')) {
+            return;
+          }
+          onClick();
+        }
+      }}
       className={cn(
         "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-row",
         currentView === 'list' && "h-48",
         currentView === 'compact' && "h-36",
         currentView === 'hover' && "h-28",
-        (currentView === 'list' || currentView === 'hover') && "cursor-pointer hover:shadow-xl hover:-translate-y-1",
-        currentView === 'compact' && "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
+        (currentView === 'list' || currentView === 'hover' || currentView === 'compact') && "cursor-pointer",
+        currentView !== 'compact' ? "hover:shadow-xl hover:-translate-y-1" : "hover:bg-gray-50 dark:hover:bg-gray-800",
         className,
       )}
     >
