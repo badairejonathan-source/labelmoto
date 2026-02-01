@@ -394,13 +394,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   if (isExpanded) {
     if (view === 'list') {
       return (
-        <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg h-full", className)}>
+        <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg h-full w-full", className)}>
           <ListExpandedView dealership={dealership} />
         </div>
       );
     }
     return (
-      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg", className)}>
+      <div className={cn("overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg w-full", className)}>
         <ExpandedView dealership={dealership} onClose={onClose} />
       </div>
     )
