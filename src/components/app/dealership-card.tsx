@@ -411,13 +411,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   return (
     <Card 
       onClick={(e: React.MouseEvent) => {
-        if (onClick) {
-          // Avoid expanding when clicking on a link
-          if (e.target instanceof HTMLElement && e.target.closest('a')) {
-            return;
-          }
-          onClick();
+        if (e.target instanceof HTMLElement && e.target.closest('a')) {
+          return;
         }
+        onClick?.();
       }}
       className={cn(
         "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-row",
@@ -426,6 +423,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         currentView === 'hover' && "h-28",
         (currentView === 'list' || currentView === 'hover' || currentView === 'compact') && "cursor-pointer",
         currentView !== 'compact' ? "hover:shadow-xl hover:-translate-y-1" : "hover:bg-gray-50 dark:hover:bg-gray-800",
+        "w-full",
         className,
       )}
     >

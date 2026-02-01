@@ -393,7 +393,7 @@ export default function Home() {
                 <AdCard />
               </div>
             )}
-              {dealershipsToDisplay.length === 0 &&
+              {dealershipsToDisplay.length === 0 && !selectedDealershipId &&
               (userHasInteracted ? (
                 <div className={cn("text-center text-muted-foreground pt-20", desktopView === 'list' && 'md:col-span-2')}>
                   <p>Aucun résultat trouvé.</p>
@@ -525,7 +525,7 @@ export default function Home() {
           <div className="flex flex-1 relative">
             {desktopView === 'split' ? (
               <>
-                <aside className="w-2/5 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
+                <aside className="w-2/5 max-w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
                   {listContent}
                 </aside>
                 <main className="flex-1 overflow-hidden h-full relative">
