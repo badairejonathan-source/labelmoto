@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -65,8 +65,6 @@ export default function Home() {
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
   
   const [userHasInteracted, setUserHasInteracted] = useState(false);
-  const isInitialMapLoad = useRef(true);
-
 
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
@@ -191,11 +189,10 @@ export default function Home() {
 
   const handleNearbyChange = useCallback((dealerships: Dealership[]) => {
       setNearbyDealerships(dealerships);
-      if (isInitialMapLoad.current) {
-        isInitialMapLoad.current = false;
-      } else {
-        if (!userHasInteracted) setUserHasInteracted(true);
-      }
+  }, []);
+
+  const handleMapMoveByUser = useCallback(() => {
+    if(!userHasInteracted) setUserHasInteracted(true);
   }, [userHasInteracted]);
 
   const hoveredDealership = useMemo(() => {
@@ -389,6 +386,7 @@ export default function Home() {
               onMarkerMouseOut={handleMarkerMouseOut}
               isMobile={isMobile}
               onNearbyChange={handleNearbyChange}
+              onMapMoveByUser={handleMapMoveByUser}
             />
 
             {isMobileSheetOpen && (
@@ -448,7 +446,7 @@ export default function Home() {
            </div>
         ) : (
           <div className="flex flex-row flex-1 overflow-hidden">
-            <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
+            <aside className="w-1/3 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
                 {selectedDealershipId && (
                   <Button
                     variant="ghost"
@@ -519,6 +517,7 @@ export default function Home() {
                   onMarkerMouseOut={handleMarkerMouseOut}
                   isMobile={isMobile}
                   onNearbyChange={handleNearbyChange}
+                  onMapMoveByUser={handleMapMoveByUser}
                 />
             </main>
           </div>

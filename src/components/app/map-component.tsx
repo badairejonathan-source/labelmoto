@@ -20,6 +20,7 @@ interface MapComponentProps {
   onMarkerMouseOut: () => void;
   isMobile: boolean;
   onNearbyChange: (dealerships: Dealership[]) => void;
+  onMapMoveByUser: () => void;
 }
 
 const getBrandForDealership = (dealership: Dealership): string | null => {
@@ -77,12 +78,15 @@ export default function MapComponent({
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut,
-  onNearbyChange
+  onNearbyChange,
+  onMapMoveByUser
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
   const stableOnNearbyChange = useCallback(onNearbyChange, [onNearbyChange]);
+  const stableOnMapMoveByUser = useCallback(onMapMoveByUser, [onMapMoveByUser]);
+
 
   useEffect(() => {
     if (mapRef.current === null) {
@@ -94,6 +98,9 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ maxClusterRadius: 40 });
       mapRef.current.addLayer(clusterGroupRef.current);
+
+      mapRef.current.on('dragstart', stableOnMapMoveByUser);
+      mapRef.current.on('zoomstart', stableOnMapMoveByUser);
     }
     
     const map = mapRef.current;
@@ -120,13 +127,15 @@ export default function MapComponent({
 
     map.on('moveend', handleMoveEnd);
 
-    // Initial call to populate list
+    // Initial population, relies on setView triggering moveend
     handleMoveEnd();
 
     return () => {
       map.off('moveend', handleMoveEnd);
+      map.off('dragstart', stableOnMapMoveByUser);
+      map.off('zoomstart', stableOnMapMoveByUser);
     };
-  }, [dealerships, stableOnNearbyChange]);
+  }, [dealerships, stableOnNearbyChange, stableOnMapMoveByUser, center, zoom]);
 
   useEffect(() => {
     if (mapRef.current) {
