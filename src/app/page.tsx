@@ -349,7 +349,10 @@ export default function Home() {
         </Button>
       )}
       <ScrollArea className="flex-grow h-0">
-          <div className="p-4 space-y-2">
+          <div className={cn(
+            "p-4",
+            desktopView === 'list' && !selectedDealershipId ? "grid md:grid-cols-2 gap-4" : "space-y-2"
+          )}>
             {dealershipsToDisplay.map((dealer, index) => (
               <React.Fragment key={dealer.id}>
                 <div 
@@ -361,21 +364,29 @@ export default function Home() {
                       dealership={dealer} 
                       isExpanded={selectedDealershipId === dealer.id}
                       onClose={handleCloseExpandedCard}
-                      view="compact"
+                      view={desktopView === 'list' ? 'list' : 'compact'}
                   />
                 </div>
-                {(index + 1) % adFrequency === 0 && !selectedDealershipId && <AdCard />}
+                {(index + 1) % adFrequency === 0 && !selectedDealershipId && (
+                  <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
+                    <AdCard />
+                  </div>
+                )}
               </React.Fragment>
             ))}
-            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
+            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && (
+              <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
+                <AdCard />
+              </div>
+            )}
               {dealershipsToDisplay.length === 0 &&
               (userHasInteracted ? (
-                <div className="text-center text-muted-foreground pt-20">
+                <div className={cn("text-center text-muted-foreground pt-20", desktopView === 'list' && 'md:col-span-2')}>
                   <p>Aucun résultat trouvé.</p>
                   <p className="text-sm">Essayez d'ajuster vos filtres.</p>
                 </div>
               ) : (
-                <div className="h-[60vh] flex items-center justify-center">
+                <div className={cn("h-[60vh] flex items-center justify-center", desktopView === 'list' && 'md:col-span-2')}>
                   <div className="w-full">
                       <AdCard />
                   </div>
