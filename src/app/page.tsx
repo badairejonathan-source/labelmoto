@@ -511,7 +511,7 @@ export default function Home() {
           <div className="flex flex-1 relative">
             {desktopView === 'split' ? (
               <>
-                <aside className="w-[400px] max-w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
+                <aside className="w-2/5 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
                   {listContent}
                 </aside>
                 <main className="flex-1 overflow-hidden h-full relative">

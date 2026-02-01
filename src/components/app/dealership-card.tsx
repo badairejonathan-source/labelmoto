@@ -422,7 +422,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     <Card 
       onClick={onClick ? handleCardClick : undefined}
       className={cn(
-        "overflow-hidden transition-all duration-300 ease-in-out flex flex-row",
+        "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-row",
         currentView === 'list' && "h-48",
         currentView === 'compact' && "h-36",
         currentView === 'hover' && "h-28",
