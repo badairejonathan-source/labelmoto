@@ -477,18 +477,15 @@ export default function Home() {
                         </React.Fragment>
                       ))}
                       {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
-                       {dealershipsToDisplay.length === 0 && (
-                            <div className="text-center text-muted-foreground pt-20">
-                                { userHasInteracted ? (
-                                    <>
-                                        <p>Aucun résultat trouvé.</p>
-                                        <p className="text-sm">Essayez d'ajuster vos filtres.</p>
-                                    </>
-                                ) : (
-                                    <p>Utilisez les filtres ou la carte pour trouver des concessions.</p>
-                                )}
-                            </div>
-                        )}
+                       {dealershipsToDisplay.length === 0 &&
+                        (userHasInteracted ? (
+                          <div className="text-center text-muted-foreground pt-20">
+                            <p>Aucun résultat trouvé.</p>
+                            <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                          </div>
+                        ) : (
+                          <AdCard />
+                        ))}
                     </div>
                 </ScrollArea>
             </aside>
