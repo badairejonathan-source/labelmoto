@@ -485,7 +485,11 @@ export default function Home() {
                             <p className="text-sm">Essayez d'ajuster vos filtres.</p>
                           </div>
                         ) : (
-                          <AdCard />
+                          <div className="h-[60vh] flex items-center justify-center">
+                            <div className="w-full">
+                                <AdCard />
+                            </div>
+                          </div>
                         ))}
                     </div>
                 </ScrollArea>
@@ -524,5 +528,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
