@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -62,8 +62,11 @@ export default function Home() {
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
-
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
+  
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const isInitialMapLoad = useRef(true);
+
 
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
@@ -158,6 +161,7 @@ export default function Home() {
   }, []);
 
   const handleDepartmentChange = useCallback((department: string) => {
+    if(!userHasInteracted) setUserHasInteracted(true);
     setSelectedDepartment(department);
     setSelectedCity('');
     if (department && department !== 'all') {
@@ -170,22 +174,29 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-  }, []);
+  }, [userHasInteracted]);
 
   const handleCityChange = useCallback((city: string) => {
+      if(!userHasInteracted) setUserHasInteracted(true);
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-  }, []);
+  }, [userHasInteracted]);
 
   const handleBrandChange = useCallback((brand: string) => {
+    if(!userHasInteracted) setUserHasInteracted(true);
     setSelectedBrands(prev => 
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
     );
-  }, []);
+  }, [userHasInteracted]);
 
   const handleNearbyChange = useCallback((dealerships: Dealership[]) => {
       setNearbyDealerships(dealerships);
-  }, []);
+      if (isInitialMapLoad.current) {
+        isInitialMapLoad.current = false;
+      } else {
+        if (!userHasInteracted) setUserHasInteracted(true);
+      }
+  }, [userHasInteracted]);
 
   const hoveredDealership = useMemo(() => {
     if (!hoveredDealershipId) return null;
@@ -198,14 +209,22 @@ export default function Home() {
       return selected ? [selected] : [];
     }
     
+    if (!userHasInteracted) {
+        return [];
+    }
+
     if (!isMobile || (isMobile && isMobileSheetOpen)) {
+        if (hasActiveFilters) {
+            return filteredDealerships;
+        }
         return nearbyDealerships;
     }
 
-    return filteredDealerships;
-  }, [selectedDealershipId, allDealerships, isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships]);
+    return [];
+  }, [selectedDealershipId, allDealerships, isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
   
   const handleCardClick = useCallback((id: string) => {
+    if (!userHasInteracted) setUserHasInteracted(true);
     const newSelectedId = selectedDealershipId === id ? null : id;
     
     setSelectedDealershipId(newSelectedId);
@@ -225,9 +244,10 @@ export default function Home() {
             setIsMobileSheetOpen(false);
         }
     }
-  }, [selectedDealershipId, allDealerships, isMobile]);
+  }, [selectedDealershipId, allDealerships, isMobile, userHasInteracted]);
   
   const handleMarkerClick = useCallback((id: string) => {
+    if (!userHasInteracted) setUserHasInteracted(true);
     setSelectedDealershipId(id);
     const selectedDealership = allDealerships.find(d => d.id === id);
     if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
@@ -238,7 +258,7 @@ export default function Home() {
       setIsMobileSheetOpen(true);
       setIsSheetExpanded(false);
     }
-  }, [allDealerships, isMobile]);
+  }, [allDealerships, isMobile, userHasInteracted]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
     setHoveredDealershipId(id);
@@ -416,7 +436,7 @@ export default function Home() {
                      {dealershipsToDisplay.length === 0 && (
                         <div className="text-center text-muted-foreground pt-10">
                             <p>Aucun résultat trouvé.</p>
-                            {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
+                            {userHasInteracted && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
                         </div>
                     )}
                   </div>
@@ -461,8 +481,14 @@ export default function Home() {
                       {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
                        {dealershipsToDisplay.length === 0 && (
                             <div className="text-center text-muted-foreground pt-20">
-                                <p>Aucun résultat trouvé.</p>
-                                {hasActiveFilters && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
+                                { userHasInteracted ? (
+                                    <>
+                                        <p>Aucun résultat trouvé.</p>
+                                        <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                                    </>
+                                ) : (
+                                    <p>Utilisez les filtres ou la carte pour trouver des concessions.</p>
+                                )}
                             </div>
                         )}
                     </div>
