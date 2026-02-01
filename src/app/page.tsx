@@ -402,7 +402,7 @@ export default function Home() {
       <Header>
         {!isMobile && renderFilters()}
       </Header>
-       <div className="flex-1 overflow-hidden flex relative">
+       <div className="flex-1 overflow-hidden flex flex-row">
         {isMobile ? (
            <div className="h-full relative flex-1">
             <div className="absolute top-4 right-4 z-[1000]">
@@ -508,13 +508,13 @@ export default function Home() {
 
            </div>
         ) : (
-          <>
+          <div className="flex flex-1 relative">
             {desktopView === 'split' ? (
               <>
-                <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
+                <aside className="w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
                   {listContent}
                 </aside>
-                <main className="w-[65%] overflow-hidden h-full relative">
+                <main className="flex-1 overflow-hidden h-full relative">
                     {hoveredDealership && (
                       <div
                         className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
@@ -568,7 +568,7 @@ export default function Home() {
                 </Button>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>
