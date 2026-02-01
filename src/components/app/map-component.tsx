@@ -20,7 +20,7 @@ interface MapComponentProps {
   onMarkerMouseOut: () => void;
   isMobile: boolean;
   onNearbyChange: (dealerships: Dealership[]) => void;
-  onMapMoveByUser: () => void;
+  onMapZoom: () => void;
 }
 
 const getBrandForDealership = (dealership: Dealership): string | null => {
@@ -79,13 +79,13 @@ export default function MapComponent({
   onMarkerMouseOver,
   onMarkerMouseOut,
   onNearbyChange,
-  onMapMoveByUser
+  onMapZoom
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
   const stableOnNearbyChange = useCallback(onNearbyChange, [onNearbyChange]);
-  const stableOnMapMoveByUser = useCallback(onMapMoveByUser, [onMapMoveByUser]);
+  const stableOnMapZoom = useCallback(onMapZoom, [onMapZoom]);
 
 
   useEffect(() => {
@@ -99,8 +99,7 @@ export default function MapComponent({
       clusterGroupRef.current = L.markerClusterGroup({ maxClusterRadius: 40 });
       mapRef.current.addLayer(clusterGroupRef.current);
 
-      mapRef.current.on('dragstart', stableOnMapMoveByUser);
-      mapRef.current.on('zoomstart', stableOnMapMoveByUser);
+      mapRef.current.on('zoomstart', stableOnMapZoom);
     }
     
     const map = mapRef.current;
@@ -132,10 +131,9 @@ export default function MapComponent({
 
     return () => {
       map.off('moveend', handleMoveEnd);
-      map.off('dragstart', stableOnMapMoveByUser);
-      map.off('zoomstart', stableOnMapMoveByUser);
+      map.off('zoomstart', stableOnMapZoom);
     };
-  }, [dealerships, stableOnNearbyChange, stableOnMapMoveByUser, center, zoom]);
+  }, [dealerships, stableOnNearbyChange, stableOnMapZoom, center, zoom]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -177,3 +175,5 @@ export default function MapComponent({
 
   return <div id="map-container" className="w-full h-full min-h-0" />;
 }
+
+    

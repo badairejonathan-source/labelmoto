@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -191,7 +192,7 @@ export default function Home() {
       setNearbyDealerships(dealerships);
   }, []);
 
-  const handleMapMoveByUser = useCallback(() => {
+  const handleMapZoom = useCallback(() => {
     if(!userHasInteracted) setUserHasInteracted(true);
   }, [userHasInteracted]);
 
@@ -386,7 +387,7 @@ export default function Home() {
               onMarkerMouseOut={handleMarkerMouseOut}
               isMobile={isMobile}
               onNearbyChange={handleNearbyChange}
-              onMapMoveByUser={handleMapMoveByUser}
+              onMapZoom={handleMapZoom}
             />
 
             {isMobileSheetOpen && (
@@ -514,7 +515,7 @@ export default function Home() {
                   onMarkerMouseOut={handleMarkerMouseOut}
                   isMobile={isMobile}
                   onNearbyChange={handleNearbyChange}
-                  onMapMoveByUser={handleMapMoveByUser}
+                  onMapZoom={handleMapZoom}
                 />
             </main>
           </div>
@@ -523,3 +524,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
