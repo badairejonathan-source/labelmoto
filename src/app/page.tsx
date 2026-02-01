@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -67,6 +67,7 @@ export default function Home() {
   
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [desktopView, setDesktopView] = useState<'split' | 'list'>('split');
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
@@ -260,11 +261,24 @@ export default function Home() {
   }, [allDealerships, isMobile, userHasInteracted]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
+    if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+        hoverTimeoutRef.current = null;
+    }
     setHoveredDealershipId(id);
   }, []);
 
-  const handleMarkerMouseOut = useCallback(() => {
-    setHoveredDealershipId(null);
+  const handleMouseOut = useCallback(() => {
+      hoverTimeoutRef.current = setTimeout(() => {
+          setHoveredDealershipId(null);
+      }, 100);
+  }, []);
+
+  const handleCardMouseOver = useCallback(() => {
+      if (hoverTimeoutRef.current) {
+          clearTimeout(hoverTimeoutRef.current);
+          hoverTimeoutRef.current = null;
+      }
   }, []);
 
   const handleCloseExpandedCard = () => {
@@ -358,7 +372,7 @@ export default function Home() {
                 <div 
                   onClick={() => handleCardClick(dealer.id)}
                   onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                  onMouseLeave={handleMarkerMouseOut}
+                  onMouseLeave={handleMouseOut}
                 >
                   <DealershipCard 
                       dealership={dealer} 
@@ -398,7 +412,7 @@ export default function Home() {
   );
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Header>
         {!isMobile && renderFilters()}
       </Header>
@@ -427,8 +441,8 @@ export default function Home() {
             {hoveredDealership && !isMobileSheetOpen && (
               <div
                 className="absolute top-20 left-1/2 -translate-x-1/2 z-[1000] w-[90%] max-w-xs"
-                onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
-                onMouseLeave={handleMarkerMouseOut}
+                onMouseEnter={handleCardMouseOver}
+                onMouseLeave={handleMouseOut}
               >
                 <DealershipCard
                   dealership={hoveredDealership}
@@ -446,7 +460,7 @@ export default function Home() {
               hoveredDealershipId={hoveredDealershipId}
               onMarkerClick={handleMarkerClick}
               onMarkerMouseOver={handleMarkerMouseOver}
-              onMarkerMouseOut={handleMarkerMouseOut}
+              onMarkerMouseOut={handleMouseOut}
               isMobile={isMobile}
               onNearbyChange={handleNearbyChange}
               onMapZoom={handleMapZoom}
@@ -481,7 +495,7 @@ export default function Home() {
                         <div 
                           onClick={() => handleCardClick(dealer.id)}
                           onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                          onMouseLeave={handleMarkerMouseOut}
+                          onMouseLeave={handleMouseOut}
                         >
                           <DealershipCard 
                             dealership={dealer} 
@@ -518,8 +532,8 @@ export default function Home() {
                     {hoveredDealership && (
                       <div
                         className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
-                        onMouseEnter={() => handleMarkerMouseOver(hoveredDealership.id)}
-                        onMouseLeave={handleMarkerMouseOut}
+                        onMouseEnter={handleCardMouseOver}
+                        onMouseLeave={handleMouseOut}
                       >
                         <DealershipCard
                           dealership={hoveredDealership}
@@ -536,7 +550,7 @@ export default function Home() {
                       hoveredDealershipId={hoveredDealershipId}
                       onMarkerClick={handleMarkerClick}
                       onMarkerMouseOver={handleMarkerMouseOver}
-                      onMarkerMouseOut={handleMarkerMouseOut}
+                      onMarkerMouseOut={handleMouseOut}
                       isMobile={isMobile}
                       onNearbyChange={handleNearbyChange}
                       onMapZoom={handleMapZoom}
@@ -574,3 +588,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
