@@ -370,7 +370,6 @@ export default function Home() {
             {dealershipsToDisplay.map((dealer, index) => (
               <React.Fragment key={dealer.id}>
                 <div 
-                  onClick={() => handleCardClick(dealer.id)}
                   onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
                   onMouseLeave={handleMouseOut}
                 >
@@ -378,6 +377,7 @@ export default function Home() {
                       dealership={dealer} 
                       isExpanded={selectedDealershipId === dealer.id}
                       onClose={handleCloseExpandedCard}
+                      onClick={() => handleCardClick(dealer.id)}
                       view={desktopView === 'list' ? 'list' : 'compact'}
                   />
                 </div>
@@ -492,8 +492,7 @@ export default function Home() {
                   <div className="p-2 space-y-4 pb-6">
                     {dealershipsToDisplay.map((dealer, index) => (
                       <React.Fragment key={dealer.id}>
-                        <div 
-                          onClick={() => handleCardClick(dealer.id)}
+                        <div
                           onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
                           onMouseLeave={handleMouseOut}
                         >
@@ -501,6 +500,7 @@ export default function Home() {
                             dealership={dealer} 
                             isExpanded={selectedDealershipId === dealer.id}
                             onClose={handleCloseExpandedCard}
+                            onClick={() => handleCardClick(dealer.id)}
                             view="list"
                           />
                         </div>
@@ -588,5 +588,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
