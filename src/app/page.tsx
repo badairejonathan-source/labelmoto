@@ -447,7 +447,7 @@ export default function Home() {
            </div>
         ) : (
           <div className="flex flex-row flex-1 overflow-hidden">
-            <aside className="w-1/3 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
+            <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border">
                 {selectedDealershipId && (
                   <Button
                     variant="ghost"
@@ -494,7 +494,7 @@ export default function Home() {
                     </div>
                 </ScrollArea>
             </aside>
-            <main className="flex-1 overflow-hidden h-full relative">
+            <main className="w-[65%] overflow-hidden h-full relative">
                 {hoveredDealership && (
                   <div
                     className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
@@ -528,7 +528,5 @@ export default function Home() {
     </div>
   );
 }
-
-    
 
     
