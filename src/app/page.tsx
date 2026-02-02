@@ -10,7 +10,7 @@ import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { ArrowLeft, SlidersHorizontal, ListFilter, List, Map as MapIcon } from 'lucide-react';
+import { SlidersHorizontal, ListFilter, List, Map as MapIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -59,10 +59,8 @@ export default function Home() {
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
-  const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
-  const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
   
   const [userHasInteracted, setUserHasInteracted] = useState(false);
@@ -139,15 +137,7 @@ export default function Home() {
     
     setFilteredDealerships(dealerships);
 
-    if (selectedDealershipId && !dealerships.some(d => d.id === selectedDealershipId)) {
-      setSelectedDealershipId(null);
-    }
-    
-    if(!hasActiveFilters && !isMobile){
-        setSelectedDealershipId(null);
-    }
-
-  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, isMobile, hasActiveFilters, selectedDealershipId]);
+  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, hasActiveFilters]);
 
   const cities = useMemo(() => {
     if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
@@ -197,18 +187,8 @@ export default function Home() {
   const handleMapZoom = useCallback(() => {
     if(!userHasInteracted) setUserHasInteracted(true);
   }, [userHasInteracted]);
-
-  const hoveredDealership = useMemo(() => {
-    if (!hoveredDealershipId) return null;
-    return allDealerships.find(d => d.id === hoveredDealershipId);
-  }, [hoveredDealershipId, allDealerships]);
-
+  
   const dealershipsToDisplay = useMemo(() => {
-    if (selectedDealershipId) {
-      const selected = allDealerships.find(d => d.id === selectedDealershipId);
-      return selected ? [selected] : [];
-    }
-    
     if (!userHasInteracted) {
         return [];
     }
@@ -221,34 +201,23 @@ export default function Home() {
     }
 
     return [];
-  }, [selectedDealershipId, allDealerships, isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
+  }, [isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
   
-  const handleCardClick = useCallback((id: string) => {
+  const handleCardClick = useCallback((dealership: Dealership) => {
     if (!userHasInteracted) setUserHasInteracted(true);
-    const newSelectedId = selectedDealershipId === id ? null : id;
     
-    setSelectedDealershipId(newSelectedId);
-
-    if (newSelectedId) {
-      const selectedDealership = allDealerships.find(d => d.id === newSelectedId);
-      if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
-        setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
-        setMapZoom(14);
-      }
-      if (isMobile) {
-        setIsMobileSheetOpen(true);
-        setIsSheetExpanded(false);
-      }
-    } else {
-        if(isMobile) {
-            setIsMobileSheetOpen(false);
-        }
+    if (dealership && dealership.latitude && dealership.longitude) {
+      setMapCenter([dealership.latitude, dealership.longitude]);
+      setMapZoom(14);
     }
-  }, [selectedDealershipId, allDealerships, isMobile, userHasInteracted]);
+    
+    if (isMobile) {
+      setIsMobileSheetOpen(true);
+    }
+  }, [isMobile, userHasInteracted]);
   
   const handleMarkerClick = useCallback((id: string) => {
     if (!userHasInteracted) setUserHasInteracted(true);
-    setSelectedDealershipId(id);
     const selectedDealership = allDealerships.find(d => d.id === id);
     if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
       setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
@@ -256,7 +225,6 @@ export default function Home() {
     }
     if (isMobile) {
       setIsMobileSheetOpen(true);
-      setIsSheetExpanded(false);
     }
   }, [allDealerships, isMobile, userHasInteracted]);
 
@@ -273,20 +241,6 @@ export default function Home() {
           setHoveredDealershipId(null);
       }, 100);
   }, []);
-
-  const handleCardMouseOver = useCallback(() => {
-      if (hoverTimeoutRef.current) {
-          clearTimeout(hoverTimeoutRef.current);
-          hoverTimeoutRef.current = null;
-      }
-  }, []);
-
-  const handleCloseExpandedCard = () => {
-    setSelectedDealershipId(null);
-     if (isMobile) {
-      setIsMobileSheetOpen(false);
-    }
-  }
 
   const renderFilters = (isMobileView = false) => {
     const commonClasses = "flex flex-col space-y-2";
@@ -351,49 +305,34 @@ export default function Home() {
   const adFrequency = dealershipsToDisplay.length < 5 ? 3 : 5;
 
   const listContent = (
-    <>
-      {selectedDealershipId && (
-        <Button
-          variant="ghost"
-          onClick={handleCloseExpandedCard}
-          className="flex items-center justify-start p-4 text-sm font-medium shrink-0"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Retour à la liste
-        </Button>
-      )}
       <ScrollArea className="flex-grow h-0">
           <div className={cn(
             "p-4",
-            desktopView === 'list' && !selectedDealershipId ? "grid md:grid-cols-2 gap-4" : "space-y-2"
+            desktopView === 'list' ? "grid md:grid-cols-2 gap-4" : "space-y-2"
           )}>
             {dealershipsToDisplay.map((dealer, index) => (
-              <React.Fragment key={dealer.id}>
-                <div 
-                  onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                  onMouseLeave={handleMouseOut}
-                >
-                  <DealershipCard 
-                      dealership={dealer} 
-                      isExpanded={selectedDealershipId === dealer.id}
-                      onClose={handleCloseExpandedCard}
-                      onClick={() => handleCardClick(dealer.id)}
-                      view={desktopView === 'list' ? 'list' : 'compact'}
-                  />
-                </div>
-                {(index + 1) % adFrequency === 0 && !selectedDealershipId && (
-                  <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
-                    <AdCard />
-                  </div>
-                )}
-              </React.Fragment>
+              <div 
+                key={dealer.id}
+                onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                onMouseLeave={handleMouseOut}
+              >
+                <DealershipCard 
+                    dealership={dealer} 
+                    onClick={() => handleCardClick(dealer)}
+                />
+              </div>
             ))}
-            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && (
+            {dealershipsToDisplay.length > 0 && (index + 1) % adFrequency === 0 && (
               <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
                 <AdCard />
               </div>
             )}
-              {dealershipsToDisplay.length === 0 && !selectedDealershipId &&
+            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
+              <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
+                <AdCard />
+              </div>
+            )}
+              {dealershipsToDisplay.length === 0 &&
               (userHasInteracted ? (
                 <div className={cn("text-center text-muted-foreground pt-20", desktopView === 'list' && 'md:col-span-2')}>
                   <p>Aucun résultat trouvé.</p>
@@ -408,7 +347,6 @@ export default function Home() {
               ))}
           </div>
       </ScrollArea>
-    </>
   );
 
   return (
@@ -438,21 +376,6 @@ export default function Home() {
                 </Sheet>
             </div>
             
-            {hoveredDealership && !isMobileSheetOpen && (
-              <div
-                className="absolute top-20 left-1/2 -translate-x-1/2 z-[1000] w-[90%] max-w-xs"
-                onMouseEnter={handleCardMouseOver}
-                onMouseLeave={handleMouseOut}
-              >
-                <DealershipCard
-                  dealership={hoveredDealership}
-                  view="hover"
-                  className="shadow-2xl"
-                  onClick={() => handleCardClick(hoveredDealership.id)}
-                />
-              </div>
-            )}
-            
             <MapComponent 
               dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
               center={mapCenter} 
@@ -470,7 +393,7 @@ export default function Home() {
             <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
                <SheetContent
                  side="bottom"
-                 className={cn("flex flex-col transition-all duration-300 p-0", isSheetExpanded ? 'h-[90vh]' : 'h-[50vh]')}
+                 className="flex flex-col transition-all duration-300 p-0 h-[50vh]"
                  closeButton={false}
                  showOverlay={false}
                  onInteractOutside={(e) => {
@@ -482,32 +405,23 @@ export default function Home() {
                   <SheetHeader className="sr-only">
                     <SheetTitle>Résultats</SheetTitle>
                   </SheetHeader>
-                 <div
-                    className="py-2 text-center flex-shrink-0 cursor-pointer"
-                    onClick={() => setIsSheetExpanded(!isSheetExpanded)}
-                  >
+                 <div className="py-2 text-center flex-shrink-0">
                     <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto" />
                   </div>
                 <ScrollArea className="flex-1 min-h-0">
                   <div className="p-2 space-y-4 pb-6">
-                    {dealershipsToDisplay.map((dealer, index) => (
-                      <React.Fragment key={dealer.id}>
-                        <div
-                          onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                          onMouseLeave={handleMouseOut}
-                        >
-                          <DealershipCard 
-                            dealership={dealer} 
-                            isExpanded={selectedDealershipId === dealer.id}
-                            onClose={handleCloseExpandedCard}
-                            onClick={() => handleCardClick(dealer.id)}
-                            view="list"
-                          />
-                        </div>
-                        {(index + 1) % adFrequency === 0 && !selectedDealershipId && <AdCard />}
-                      </React.Fragment>
+                    {dealershipsToDisplay.map((dealer) => (
+                      <div
+                        key={dealer.id}
+                        onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                        onMouseLeave={handleMouseOut}
+                      >
+                        <DealershipCard 
+                          dealership={dealer} 
+                          onClick={() => handleCardClick(dealer)}
+                        />
+                      </div>
                     ))}
-                    {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && !selectedDealershipId && <AdCard />}
                      {dealershipsToDisplay.length === 0 && (
                         <div className="text-center text-muted-foreground pt-10">
                             <p>Aucun résultat trouvé.</p>
@@ -529,20 +443,6 @@ export default function Home() {
                   {listContent}
                 </aside>
                 <main className="flex-1 overflow-hidden h-full relative">
-                    {hoveredDealership && (
-                      <div
-                        className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xs px-4"
-                        onMouseEnter={handleCardMouseOver}
-                        onMouseLeave={handleMouseOut}
-                      >
-                        <DealershipCard
-                          dealership={hoveredDealership}
-                          view="hover"
-                          className="shadow-2xl"
-                          onClick={() => handleCardClick(hoveredDealership.id)}
-                        />
-                      </div>
-                    )}
                     <MapComponent 
                       dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
                       center={mapCenter} 
