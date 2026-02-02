@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -42,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
         {/* Boutons Utilisateur & Filtres Mobile */}
         <div className="flex items-center space-x-2">
           {isMobile && (
-            <Sheet>
+            <Sheet modal={false}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
                   <SlidersHorizontal className="h-5 w-5" />

@@ -58,6 +58,7 @@ export default function Home() {
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   const userHasInteractedRef = useRef(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -111,9 +112,11 @@ export default function Home() {
         
         const uniqueDealerships = Array.from(dealershipMap.values());
         setAllDealerships(uniqueDealerships);
+        setIsLoading(false);
     }, (error) => {
         console.error("Firebase read failed: " + error.message);
         setAllDealerships([]);
+        setIsLoading(false);
     });
 
     return () => unsubscribe();
@@ -319,52 +322,60 @@ export default function Home() {
   const listContent = (
     <ScrollArea className="flex-grow h-0">
       <div className="p-4 px-2 w-full space-y-4">
-        {dealershipsToDisplay.flatMap((dealer, index) => {
-          const card = (
-            <div
-              key={dealer.id}
-              onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-              onMouseLeave={handleMouseOut}
-            >
-              <DealershipCard
-                dealership={dealer}
-                onClick={() => handleCardClick(dealer)}
-                isExpanded={dealer.id === selectedDealershipId}
-                className={cn(
-                  dealer.id === hoveredDealershipId ? "shadow-lg" : "",
-                  dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
-                )}
-              />
-            </div>
-          );
-
-          const ad = (index + 1) % adFrequency === 0 ? (
-            <div key={`ad-${index}`}>
-              <AdCard />
-            </div>
-          ) : null;
-
-          return [card, ad];
-        }).filter(Boolean)}
-
-        {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
-          <div>
-            <AdCard />
+        {isLoading ? (
+          <div className="text-center text-muted-foreground pt-20">
+            <p>Chargement des concessions...</p>
           </div>
-        )}
-        {dealershipsToDisplay.length === 0 &&
-          (userHasInteractedRef.current ? (
-            <div className="text-center text-muted-foreground pt-20">
-              <p>Aucun résultat trouvé.</p>
-              <p className="text-sm">Essayez d'ajuster vos filtres.</p>
-            </div>
-          ) : (
-             <div className="h-[60vh] flex items-center justify-center p-4">
-              <div className="w-full">
+        ) : (
+          <>
+            {dealershipsToDisplay.flatMap((dealer, index) => {
+              const card = (
+                <div
+                  key={dealer.id}
+                  onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                  onMouseLeave={handleMouseOut}
+                >
+                  <DealershipCard
+                    dealership={dealer}
+                    onClick={() => handleCardClick(dealer)}
+                    isExpanded={dealer.id === selectedDealershipId}
+                    className={cn(
+                      dealer.id === hoveredDealershipId ? "shadow-lg" : "",
+                      dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
+                    )}
+                  />
+                </div>
+              );
+
+              const ad = (index + 1) % adFrequency === 0 ? (
+                <div key={`ad-${index}`}>
+                  <AdCard />
+                </div>
+              ) : null;
+
+              return [card, ad];
+            }).filter(Boolean)}
+
+            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
+              <div>
                 <AdCard />
               </div>
-            </div>
-          ))}
+            )}
+            {dealershipsToDisplay.length === 0 &&
+              (userHasInteractedRef.current ? (
+                <div className="text-center text-muted-foreground pt-20">
+                  <p>Aucun résultat trouvé.</p>
+                  <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                </div>
+              ) : (
+                 <div className="h-[60vh] flex items-center justify-center p-4">
+                  <div className="w-full">
+                    <AdCard />
+                  </div>
+                </div>
+              ))}
+          </>
+        )}
       </div>
     </ScrollArea>
   );
