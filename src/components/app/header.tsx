@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
 
   return (
     <header className={cn(
-      "bg-road p-2 md:p-4 text-primary-foreground border-b border-gray-200 dark:border-gray-700 z-30"
+      "bg-road p-2 md:p-4 text-primary-foreground border-b border-gray-200 dark:border-gray-700 z-[2000]"
     )}>
       <div className="relative z-10 flex items-center justify-between">
         

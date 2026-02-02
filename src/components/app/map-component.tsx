@@ -178,5 +178,5 @@ export default function MapComponent({
     };
   }, []);
 
-  return <div id="map-container" className="w-full h-full min-h-0" />;
+  return <div id="map-container" className="w-full h-full min-h-0 z-[5]" />;
 }

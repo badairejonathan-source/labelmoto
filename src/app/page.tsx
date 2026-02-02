@@ -9,12 +9,10 @@ import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { SlidersHorizontal, ListFilter } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ListFilter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from "@/lib/utils";
-import useWindowSize from '@/hooks/use-window-size';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
 
@@ -47,9 +45,6 @@ const getBrands = (dealerships: Dealership[]) => {
 }
 
 export default function Home() {
-  const { width } = useWindowSize();
-  const isMobile = width ? width < 768 : false;
-
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -59,8 +54,6 @@ export default function Home() {
   const [mapZoom, setMapZoom] = useState(6);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
-  const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
-  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
   
   const [userHasInteracted, setUserHasInteracted] = useState(false);
@@ -193,15 +186,12 @@ export default function Home() {
         return [];
     }
 
-    if (!isMobile || (isMobile && isMobileSheetOpen)) {
-        if (hasActiveFilters) {
-            return filteredDealerships;
-        }
-        return nearbyDealerships;
+    if (hasActiveFilters) {
+        return filteredDealerships;
     }
+    return nearbyDealerships;
 
-    return [];
-  }, [isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
+  }, [nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(prevId => prevId === dealership.id ? null : dealership.id);
@@ -218,10 +208,7 @@ export default function Home() {
       setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
       setMapZoom(14);
     }
-    if (isMobile) {
-      setIsMobileSheetOpen(true);
-    }
-  }, [allDealerships, isMobile]);
+  }, [allDealerships]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
     if (hoverTimeoutRef.current) {
@@ -237,12 +224,9 @@ export default function Home() {
       }, 100);
   }, []);
 
-  const renderFilters = (isMobileView = false) => {
-    const commonClasses = "flex flex-col space-y-2";
-    const desktopClasses = "md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2";
-    
+  const renderFilters = () => {
     return (
-      <div className={cn(commonClasses, !isMobileView && desktopClasses)}>
+      <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
           <SelectTrigger variant="filter">
             <span className="mr-2">Departements:</span>
@@ -355,114 +339,27 @@ export default function Home() {
   return (
     <div className="flex flex-col h-[100svh] overflow-hidden">
       <Header>
-        {!isMobile && renderFilters()}
+        {renderFilters()}
       </Header>
        <div className="flex-1 overflow-hidden flex flex-row">
-        {isMobile ? (
-           <div className="h-full relative flex-1">
-            <div className="absolute top-4 right-4 z-[1000]">
-                <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="default" size="icon" className="rounded-full shadow-lg">
-                      <SlidersHorizontal className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent className="flex flex-col">
-                    <SheetHeader>
-                      <SheetTitle>Filtres</SheetTitle>
-                    </SheetHeader>
-                    <div className="py-4 space-y-4">
-                      {renderFilters(true)}
-                    </div>
-                     <Button onClick={() => setIsFilterSheetOpen(false)} className="mt-auto">Valider</Button>
-                  </SheetContent>
-                </Sheet>
-            </div>
-            
-            <MapComponent 
-              dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
-              center={mapCenter} 
-              zoom={mapZoom} 
-              hoveredDealershipId={hoveredDealershipId}
-              selectedDealershipId={selectedDealershipId}
-              onMarkerClick={handleMarkerClick}
-              onMarkerMouseOver={handleMarkerMouseOver}
-              onMarkerMouseOut={handleMouseOut}
-              isMobile={isMobile}
-              onNearbyChange={handleNearbyChange}
-              onMapZoom={handleMapZoom}
-            />
-
-            {isMobileSheetOpen && (
-            <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen} >
-               <SheetContent
-                 side="bottom"
-                 className="flex flex-col transition-all duration-300 p-0 h-[50vh]"
-                 closeButton={false}
-                 showOverlay={false}
-                 onInteractOutside={(e) => {
-                   if (e.target instanceof HTMLElement && e.target.closest('.leaflet-container')) {
-                     e.preventDefault();
-                   }
-                 }}
-               >
-                  <SheetHeader className="sr-only">
-                    <SheetTitle>Résultats</SheetTitle>
-                  </SheetHeader>
-                 <div className="py-2 text-center flex-shrink-0">
-                    <div className="w-12 h-1.5 rounded-full bg-gray-300 mx-auto" />
-                  </div>
-                <ScrollArea className="flex-1 min-h-0">
-                  <div className="p-2 space-y-4 pb-6">
-                    {dealershipsToDisplay.map((dealer) => (
-                      <div
-                        key={dealer.id}
-                        onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                        onMouseLeave={handleMouseOut}
-                      >
-                        <DealershipCard 
-                          dealership={dealer} 
-                          onClick={() => handleCardClick(dealer)}
-                          isExpanded={dealer.id === selectedDealershipId}
-                          className={dealer.id === selectedDealershipId ? "bg-accent/10 border-accent" : ""}
-                        />
-                      </div>
-                    ))}
-                     {dealershipsToDisplay.length === 0 && (
-                        <div className="text-center text-muted-foreground pt-10">
-                            <p>Aucun résultat trouvé.</p>
-                            {userHasInteracted && <p className="text-sm">Essayez d'ajuster vos filtres.</p>}
-                        </div>
-                    )}
-                  </div>
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
-            )}
-
-           </div>
-        ) : (
-          <>
-            <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background border-r border-border">
-              {listContent}
-            </aside>
-            <main className="w-[65%] h-full overflow-hidden">
-                <MapComponent 
-                  dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
-                  center={mapCenter} 
-                  zoom={mapZoom} 
-                  hoveredDealershipId={hoveredDealershipId}
-                  selectedDealershipId={selectedDealershipId}
-                  onMarkerClick={handleMarkerClick}
-                  onMarkerMouseOver={handleMarkerMouseOver}
-                  onMarkerMouseOut={handleMouseOut}
-                  isMobile={isMobile}
-                  onNearbyChange={handleNearbyChange}
-                  onMapZoom={handleMapZoom}
-                />
-            </main>
-          </>
-        )}
+          <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background border-r border-border">
+            {listContent}
+          </aside>
+          <main className="w-[65%] h-full overflow-hidden">
+              <MapComponent 
+                dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
+                center={mapCenter} 
+                zoom={mapZoom} 
+                hoveredDealershipId={hoveredDealershipId}
+                selectedDealershipId={selectedDealershipId}
+                onMarkerClick={handleMarkerClick}
+                onMarkerMouseOver={handleMarkerMouseOver}
+                onMarkerMouseOut={handleMouseOut}
+                isMobile={false}
+                onNearbyChange={handleNearbyChange}
+                onMapZoom={handleMapZoom}
+              />
+          </main>
       </div>
     </div>
   );
