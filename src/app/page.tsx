@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -204,20 +203,16 @@ export default function Home() {
   }, [isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
-    if (!userHasInteracted) setUserHasInteracted(true);
-    
     if (dealership && dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
     }
-    
     if (isMobile) {
       setIsMobileSheetOpen(true);
     }
-  }, [isMobile, userHasInteracted]);
+  }, [isMobile]);
   
   const handleMarkerClick = useCallback((id: string) => {
-    if (!userHasInteracted) setUserHasInteracted(true);
     const selectedDealership = allDealerships.find(d => d.id === id);
     if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
       setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
@@ -226,7 +221,7 @@ export default function Home() {
     if (isMobile) {
       setIsMobileSheetOpen(true);
     }
-  }, [allDealerships, isMobile, userHasInteracted]);
+  }, [allDealerships, isMobile]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
     if (hoverTimeoutRef.current) {
@@ -310,23 +305,29 @@ export default function Home() {
             "p-4",
             desktopView === 'list' ? "grid md:grid-cols-2 gap-4" : "space-y-2"
           )}>
-            {dealershipsToDisplay.map((dealer, index) => (
-              <div 
-                key={dealer.id}
-                onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                onMouseLeave={handleMouseOut}
-              >
-                <DealershipCard 
-                    dealership={dealer} 
-                    onClick={() => handleCardClick(dealer)}
-                />
-              </div>
-            ))}
-            {dealershipsToDisplay.length > 0 && (index + 1) % adFrequency === 0 && (
-              <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
-                <AdCard />
-              </div>
-            )}
+            {dealershipsToDisplay.flatMap((dealer, index) => {
+              const card = (
+                <div 
+                  key={dealer.id}
+                  onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                  onMouseLeave={handleMouseOut}
+                >
+                  <DealershipCard 
+                      dealership={dealer} 
+                      onClick={() => handleCardClick(dealer)}
+                  />
+                </div>
+              );
+
+              const ad = (index + 1) % adFrequency === 0 ? (
+                <div key={`ad-${index}`} className={cn(desktopView === 'list' && 'md:col-span-2')}>
+                  <AdCard />
+                </div>
+              ) : null;
+              
+              return [card, ad];
+            }).filter(Boolean)}
+
             {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
               <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
                 <AdCard />
@@ -439,7 +440,7 @@ export default function Home() {
           <div className="flex flex-1 relative">
             {desktopView === 'split' ? (
               <>
-                <aside className="w-2/5 max-w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
+                <aside className="w-2/5 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
                   {listContent}
                 </aside>
                 <main className="flex-1 overflow-hidden h-full relative">
