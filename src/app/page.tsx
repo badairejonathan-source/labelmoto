@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -58,12 +59,14 @@ export default function Home() {
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
   
-  const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const userHasInteractedRef = useRef(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
   const [isListSheetOpen, setIsListSheetOpen] = useState(false);
+  
+  const [departments] = useState<string[]>(Object.keys(locations));
 
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
@@ -75,17 +78,30 @@ export default function Home() {
           const dealer = doc.data();
           const uniqueKey = doc.id;
 
-          if (dealer && dealer.placeUrl && dealer.title && dealer.latitude && dealer.longitude) {
-            if (!dealershipMap.has(uniqueKey)) {
-              const lat = parseFloat(String(dealer.latitude).replace(',', '.'));
-              const lng = parseFloat(String(dealer.longitude).replace(',', '.'));
+          if (dealer && dealer.title && dealer.latitude && dealer.longitude) {
+            const lat = parseFloat(String(dealer.latitude).replace(',', '.'));
+            const lng = parseFloat(String(dealer.longitude).replace(',', '.'));
 
-              if (!isNaN(lat) && !isNaN(lng)) {
+            if (!isNaN(lat) && !isNaN(lng)) {
+              if (!dealershipMap.has(uniqueKey)) {
                 const dealerWithId: Dealership = {
-                  ...(dealer as any),
                   id: uniqueKey,
+                  placeUrl: dealer.placeUrl || '',
+                  title: dealer.title,
+                  address: dealer.address || '',
+                  website: dealer.website || '',
+                  phoneNumber: dealer.phoneNumber || '',
+                  imgUrl: dealer.imgUrl || '',
+                  mardi: dealer.mardi || 'Non renseigné',
+                  mercredi: dealer.mercredi || 'Non renseigné',
+                  jeudi: dealer.jeudi || 'Non renseigné',
+                  vendredi: dealer.vendredi || 'Non renseigné',
+                  samedi: dealer.samedi || 'Non renseigné',
+                  dimanche: dealer.dimanche || 'Non renseigné',
+                  lundi: dealer.lundi || 'Non renseigné',
                   latitude: lat,
                   longitude: lng,
+                  rating: dealer.rating || undefined,
                 };
                 dealershipMap.set(uniqueKey, dealerWithId);
               }
@@ -95,16 +111,13 @@ export default function Home() {
         
         const uniqueDealerships = Array.from(dealershipMap.values());
         setAllDealerships(uniqueDealerships);
-        if (!userHasInteracted) {
-          setNearbyDealerships(uniqueDealerships);
-        }
     }, (error) => {
         console.error("Firebase read failed: " + error.message);
         setAllDealerships([]);
     });
 
     return () => unsubscribe();
-  }, [userHasInteracted]);
+  }, []);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
   const hasActiveFilters = (selectedDepartment !== '' && selectedDepartment !== 'all') || selectedCity !== '' || selectedBrands.length > 0;
@@ -147,13 +160,14 @@ export default function Home() {
     return [];
   }, [selectedDepartment]);
 
-  const [departments, setDepartments] = useState<string[]>([]);
-  useEffect(() => {
-    setDepartments(Object.keys(locations));
-  }, []);
-
+  const setUserHasInteracted = () => {
+    if (!userHasInteractedRef.current) {
+        userHasInteractedRef.current = true;
+    }
+  };
+  
   const handleDepartmentChange = useCallback((department: string) => {
-    if(!userHasInteracted) setUserHasInteracted(true);
+    setUserHasInteracted();
     setSelectedDepartment(department);
     setSelectedCity('');
     if (department && department !== 'all') {
@@ -166,35 +180,35 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-  }, [userHasInteracted]);
+  }, []);
 
   const handleCityChange = useCallback((city: string) => {
-      if(!userHasInteracted) setUserHasInteracted(true);
+      setUserHasInteracted();
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-  }, [userHasInteracted]);
+  }, []);
 
   const handleBrandChange = useCallback((brand: string) => {
-    if(!userHasInteracted) setUserHasInteracted(true);
+    setUserHasInteracted();
     setSelectedBrands(prev => 
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
     );
-  }, [userHasInteracted]);
+  }, []);
 
   const handleNearbyChange = useCallback((dealerships: Dealership[]) => {
-      if (!userHasInteracted) setUserHasInteracted(true);
+      setUserHasInteracted();
       setNearbyDealerships(dealerships);
-  }, [userHasInteracted]);
+  }, []);
 
   const handleMapZoom = useCallback(() => {
-    if(!userHasInteracted) setUserHasInteracted(true);
-  }, [userHasInteracted]);
+    setUserHasInteracted();
+  }, []);
   
   const dealershipsToDisplay = useMemo(() => {
     if (hasActiveFilters) {
         return filteredDealerships;
     }
-    return nearbyDealerships;
+    return userHasInteractedRef.current ? nearbyDealerships : [];
   }, [nearbyDealerships, filteredDealerships, hasActiveFilters]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
@@ -207,7 +221,6 @@ export default function Home() {
     }
 
     if (isMobile) {
-      // If we are selecting a dealership (not deselecting), close the sheet to see the map
       if (!isDeselecting) {
         setIsListSheetOpen(false);
       }
@@ -340,7 +353,7 @@ export default function Home() {
           </div>
         )}
         {dealershipsToDisplay.length === 0 &&
-          (userHasInteracted ? (
+          (userHasInteractedRef.current ? (
             <div className="text-center text-muted-foreground pt-20">
               <p>Aucun résultat trouvé.</p>
               <p className="text-sm">Essayez d'ajuster vos filtres.</p>
@@ -363,12 +376,10 @@ export default function Home() {
       </Header>
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Colonne de gauche (Desktop) */}
         <aside className="w-[35%] flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
           {listContent}
         </aside>
 
-        {/* Contenu principal (Carte + Sheet Mobile) */}
         <main className="h-full flex-1 relative bg-gray-100">
           <MapComponent 
             dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
@@ -384,7 +395,6 @@ export default function Home() {
             onMapZoom={handleMapZoom}
           />
           
-          {/* Bouton et Sheet pour mobile */}
           <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
             <Sheet open={isListSheetOpen} onOpenChange={setIsListSheetOpen}>
               <SheetTrigger asChild>
