@@ -182,16 +182,11 @@ export default function Home() {
   }, [userHasInteracted]);
   
   const dealershipsToDisplay = useMemo(() => {
-    if (!userHasInteracted) {
-        return [];
-    }
-
     if (hasActiveFilters) {
         return filteredDealerships;
     }
     return nearbyDealerships;
-
-  }, [nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
+  }, [nearbyDealerships, filteredDealerships, hasActiveFilters]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(prevId => prevId === dealership.id ? null : dealership.id);
@@ -202,7 +197,7 @@ export default function Home() {
   }, []);
   
   const handleMarkerClick = useCallback((id: string) => {
-    setSelectedDealershipId(id);
+    setSelectedDealershipId(prevId => prevId === id ? null : id);
     const selectedDealership = allDealerships.find(d => d.id === id);
     if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
       setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
@@ -281,11 +276,11 @@ export default function Home() {
     );
   };
   
-  const adFrequency = dealershipsToDisplay.length < 5 ? 3 : 5;
+  const adFrequency = 3;
 
   const listContent = (
     <ScrollArea className="flex-grow h-0">
-      <div className="p-4 w-full space-y-2">
+      <div className="p-4 px-2 w-full space-y-4">
         {dealershipsToDisplay.flatMap((dealer, index) => {
           const card = (
             <div
@@ -337,29 +332,35 @@ export default function Home() {
   );
 
   return (
-    <div className="flex flex-col h-[100svh] overflow-hidden">
+    <div className="flex flex-col h-[100svh] w-full overflow-hidden bg-background">
       <Header>
         {renderFilters()}
       </Header>
-       <div className="flex-1 overflow-hidden flex flex-row">
-          <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background border-r border-border">
-            {listContent}
-          </aside>
-          <main className="w-[65%] h-full overflow-hidden">
-              <MapComponent 
-                dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
-                center={mapCenter} 
-                zoom={mapZoom} 
-                hoveredDealershipId={hoveredDealershipId}
-                selectedDealershipId={selectedDealershipId}
-                onMarkerClick={handleMarkerClick}
-                onMarkerMouseOver={handleMarkerMouseOver}
-                onMarkerMouseOut={handleMouseOut}
-                isMobile={false}
-                onNearbyChange={handleNearbyChange}
-                onMapZoom={handleMapZoom}
-              />
-          </main>
+
+      <div className="flex-1 flex flex-row overflow-hidden relative">
+        
+        <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
+          {listContent}
+        </aside>
+
+        <main className="w-[65%] h-full relative z-0 bg-gray-100">
+          <div className="absolute inset-0">
+            <MapComponent 
+              dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
+              center={mapCenter} 
+              zoom={mapZoom} 
+              hoveredDealershipId={hoveredDealershipId}
+              selectedDealershipId={selectedDealershipId}
+              onMarkerClick={handleMarkerClick}
+              onMarkerMouseOver={handleMarkerMouseOver}
+              onMarkerMouseOut={handleMouseOut}
+              isMobile={false}
+              onNearbyChange={handleNearbyChange}
+              onMapZoom={handleMapZoom}
+            />
+          </div>
+        </main>
+
       </div>
     </div>
   );
