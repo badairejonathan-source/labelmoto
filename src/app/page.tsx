@@ -20,7 +20,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
-  loading: () => <div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>
+  loading: () => (<div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>)
 });
 
 const brandKeywords = [
@@ -303,7 +303,7 @@ export default function Home() {
   const listContent = (
       <ScrollArea className="flex-grow h-0">
           <div className={cn(
-            "p-4",
+            "p-4 w-full",
             desktopView === 'list' ? "grid md:grid-cols-2 gap-4" : "space-y-2"
           )}>
             {dealershipsToDisplay.flatMap((dealer, index) => {
@@ -449,7 +449,7 @@ export default function Home() {
           <div className="flex flex-1 relative">
             {desktopView === 'split' ? (
               <>
-                <aside className="w-2/5 max-w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
+                <aside className="w-2/5 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
                   {listContent}
                 </aside>
                 <main className="flex-1 overflow-hidden h-full relative">
