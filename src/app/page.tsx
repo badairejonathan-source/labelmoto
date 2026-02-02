@@ -9,7 +9,7 @@ import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { SlidersHorizontal, ListFilter, List, Map as MapIcon } from 'lucide-react';
+import { SlidersHorizontal, ListFilter } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -64,7 +64,6 @@ export default function Home() {
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
   
   const [userHasInteracted, setUserHasInteracted] = useState(false);
-  const [desktopView, setDesktopView] = useState<'split' | 'list'>('split');
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -301,59 +300,56 @@ export default function Home() {
   const adFrequency = dealershipsToDisplay.length < 5 ? 3 : 5;
 
   const listContent = (
-      <ScrollArea className="flex-grow h-0">
-          <div className={cn(
-            "p-4 w-full",
-            desktopView === 'list' ? "grid md:grid-cols-2 gap-4" : "space-y-2"
-          )}>
-            {dealershipsToDisplay.flatMap((dealer, index) => {
-              const card = (
-                <div 
-                  key={dealer.id}
-                  onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                  onMouseLeave={handleMouseOut}
-                >
-                  <DealershipCard 
-                      dealership={dealer} 
-                      onClick={() => handleCardClick(dealer)}
-                      isExpanded={dealer.id === selectedDealershipId}
-                      className={cn(
-                        dealer.id === hoveredDealershipId ? "shadow-lg" : "",
-                        dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
-                      )}
-                  />
-                </div>
-              );
+    <ScrollArea className="flex-grow h-0">
+      <div className="p-4 w-full space-y-2">
+        {dealershipsToDisplay.flatMap((dealer, index) => {
+          const card = (
+            <div
+              key={dealer.id}
+              onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+              onMouseLeave={handleMouseOut}
+            >
+              <DealershipCard
+                dealership={dealer}
+                onClick={() => handleCardClick(dealer)}
+                isExpanded={dealer.id === selectedDealershipId}
+                className={cn(
+                  dealer.id === hoveredDealershipId ? "shadow-lg" : "",
+                  dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
+                )}
+              />
+            </div>
+          );
 
-              const ad = (index + 1) % adFrequency === 0 ? (
-                <div key={`ad-${index}`} className={cn(desktopView === 'list' && 'md:col-span-2')}>
-                  <AdCard />
-                </div>
-              ) : null;
-              
-              return [card, ad];
-            }).filter(Boolean)}
+          const ad = (index + 1) % adFrequency === 0 ? (
+            <div key={`ad-${index}`}>
+              <AdCard />
+            </div>
+          ) : null;
 
-            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
-              <div className={cn(desktopView === 'list' && 'md:col-span-2')}>
+          return [card, ad];
+        }).filter(Boolean)}
+
+        {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
+          <div>
+            <AdCard />
+          </div>
+        )}
+        {dealershipsToDisplay.length === 0 &&
+          (userHasInteracted ? (
+            <div className="text-center text-muted-foreground pt-20">
+              <p>Aucun résultat trouvé.</p>
+              <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+            </div>
+          ) : (
+            <div className="h-[60vh] flex items-center justify-center">
+              <div className="w-full">
                 <AdCard />
               </div>
-            )}
-              {dealershipsToDisplay.length === 0 &&
-              (userHasInteracted ? (
-                <div className={cn("text-center text-muted-foreground pt-20", desktopView === 'list' && 'md:col-span-2')}>
-                  <p>Aucun résultat trouvé.</p>
-                  <p className="text-sm">Essayez d'ajuster vos filtres.</p>
-                </div>
-              ) : (
-                <div className={cn("h-[60vh] flex items-center justify-center", desktopView === 'list' && 'md:col-span-2 w-full')}>
-                  <div className="w-full">
-                      <AdCard />
-                  </div>
-                </div>
-              ))}
-          </div>
-      </ScrollArea>
+            </div>
+          ))}
+      </div>
+    </ScrollArea>
   );
 
   return (
@@ -446,54 +442,26 @@ export default function Home() {
 
            </div>
         ) : (
-          <div className="flex flex-1 relative">
-            {desktopView === 'split' ? (
-              <>
-                <aside className="w-2/5 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
-                  {listContent}
-                </aside>
-                <main className="flex-1 overflow-hidden h-full relative">
-                    <MapComponent 
-                      dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
-                      center={mapCenter} 
-                      zoom={mapZoom} 
-                      hoveredDealershipId={hoveredDealershipId}
-                      selectedDealershipId={selectedDealershipId}
-                      onMarkerClick={handleMarkerClick}
-                      onMarkerMouseOver={handleMarkerMouseOver}
-                      onMarkerMouseOut={handleMouseOut}
-                      isMobile={isMobile}
-                      onNearbyChange={handleNearbyChange}
-                      onMapZoom={handleMapZoom}
-                    />
-                </main>
-              </>
-            ) : (
-              <aside className="w-full h-full flex flex-col bg-background">
-                {listContent}
-              </aside>
-            )}
-             {!isMobile && (
-              <div className="absolute bottom-5 right-5 z-[1000] flex space-x-1 bg-card p-1 rounded-full shadow-lg border">
-                <Button
-                  onClick={() => setDesktopView('list')}
-                  variant={desktopView === 'list' ? 'default' : 'ghost'}
-                  className="rounded-full gap-2"
-                >
-                  <List className="h-4 w-4" />
-                  Liste
-                </Button>
-                <Button
-                  onClick={() => setDesktopView('split')}
-                  variant={desktopView === 'split' ? 'default' : 'ghost'}
-                  className="rounded-full gap-2"
-                >
-                  <MapIcon className="h-4 w-4" />
-                  Carte
-                </Button>
-              </div>
-            )}
-          </div>
+          <>
+            <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background border-r border-border">
+              {listContent}
+            </aside>
+            <main className="w-[65%] h-full overflow-hidden">
+                <MapComponent 
+                  dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
+                  center={mapCenter} 
+                  zoom={mapZoom} 
+                  hoveredDealershipId={hoveredDealershipId}
+                  selectedDealershipId={selectedDealershipId}
+                  onMarkerClick={handleMarkerClick}
+                  onMarkerMouseOver={handleMarkerMouseOver}
+                  onMarkerMouseOut={handleMouseOut}
+                  isMobile={isMobile}
+                  onNearbyChange={handleNearbyChange}
+                  onMapZoom={handleMapZoom}
+                />
+            </main>
+          </>
         )}
       </div>
     </div>
