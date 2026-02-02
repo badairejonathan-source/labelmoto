@@ -4,7 +4,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Star, CheckCircle, Phone } from 'lucide-react';
+import { MapPin, Star, CheckCircle, Phone, Globe, Clock } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -13,16 +13,20 @@ interface DealershipCardProps {
   dealership: Dealership;
   onClick?: () => void;
   className?: string;
+  isExpanded?: boolean;
 }
 
 const DealershipCard: React.FC<DealershipCardProps> = ({
   dealership,
   onClick,
   className,
+  isExpanded = false,
 }) => {
   const title = dealership.title || '';
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
+
+  const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
   return (
     <Card
@@ -33,10 +37,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         onClick?.();
       }}
       className={cn(
-        "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-row h-36 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50",
+        "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50",
         className,
       )}
     >
+      <div className="flex flex-row h-36">
         <div className="relative w-24 flex-shrink-0">
           {dealership.imgUrl ? (
             <Image
@@ -92,6 +97,38 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 </div>
             </div>
         </CardContent>
+      </div>
+
+      {isExpanded && (
+        <div className="p-3 border-t border-border/50 bg-background/50 text-xs">
+          <div className="space-y-2">
+            {dealership.website && (
+              <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline">
+                <Globe className="h-4 w-4 mr-2 shrink-0"/>
+                <span className="truncate">{dealership.website.replace(/^(https?:\/\/)?(www\.)?/, '')}</span>
+              </a>
+            )}
+            <div className="flex items-start">
+              <Clock className="h-4 w-4 mr-2 shrink-0 mt-0.5"/>
+              <div>
+                <span className="font-medium">Horaires :</span>
+                <ul className="mt-1 space-y-0.5">
+                  {weekDays.map(day => {
+                    const hours = dealership[day]
+                    if (!hours || hours.toLowerCase() === 'non renseigné') return null;
+                    return (
+                        <li key={day} className="flex justify-between">
+                        <span className="capitalize w-20">{day}:</span>
+                        <span className="text-right flex-1">{hours}</span>
+                        </li>
+                    )
+                  }).filter(Boolean)}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };

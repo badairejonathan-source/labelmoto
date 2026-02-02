@@ -205,15 +205,12 @@ export default function Home() {
   }, [isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
-    setSelectedDealershipId(dealership.id);
+    setSelectedDealershipId(prevId => prevId === dealership.id ? null : dealership.id);
     if (dealership && dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
     }
-    if (isMobile) {
-      setIsMobileSheetOpen(true);
-    }
-  }, [isMobile]);
+  }, []);
   
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(id);
@@ -319,7 +316,11 @@ export default function Home() {
                   <DealershipCard 
                       dealership={dealer} 
                       onClick={() => handleCardClick(dealer)}
-                      className={dealer.id === selectedDealershipId ? "bg-accent/10 border-accent" : ""}
+                      isExpanded={dealer.id === selectedDealershipId}
+                      className={cn(
+                        dealer.id === hoveredDealershipId ? "shadow-lg" : "",
+                        dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
+                      )}
                   />
                 </div>
               );
@@ -426,6 +427,7 @@ export default function Home() {
                         <DealershipCard 
                           dealership={dealer} 
                           onClick={() => handleCardClick(dealer)}
+                          isExpanded={dealer.id === selectedDealershipId}
                           className={dealer.id === selectedDealershipId ? "bg-accent/10 border-accent" : ""}
                         />
                       </div>
