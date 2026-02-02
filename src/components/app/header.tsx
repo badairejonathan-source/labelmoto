@@ -1,11 +1,18 @@
 'use client';
 
 import React from 'react';
-import { User } from 'lucide-react';
+import { User, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MotoTrustLogo from './logo';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from '@/lib/utils';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 // Cette interface corrige l'erreur rouge "implicitly has an any type"
 interface HeaderProps {
@@ -29,11 +36,28 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
              </div>
         </div>
         
-        {/* Les éléments enfants (Barre de recherche, etc.) */}
-        {children}
+        {/* Les éléments enfants (Barre de recherche, etc.) - Desktop */}
+        {!isMobile && children}
         
-        {/* Bouton Utilisateur */}
+        {/* Boutons Utilisateur & Filtres Mobile */}
         <div className="flex items-center space-x-2">
+          {isMobile && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
+                  <SlidersHorizontal className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[90vw] max-w-sm">
+                <SheetHeader>
+                  <SheetTitle>Filtres</SheetTitle>
+                </SheetHeader>
+                <div className="mt-4">
+                  {children}
+                </div>
+              </SheetContent>
+            </Sheet>
+          )}
           <Button size="icon" variant="outline" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
             <User className="h-5 w-5" />
           </Button>
