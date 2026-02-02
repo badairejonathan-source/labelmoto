@@ -15,6 +15,7 @@ interface MapComponentProps {
   center: [number, number];
   zoom: number;
   hoveredDealershipId: string | null;
+  selectedDealershipId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
@@ -30,23 +31,25 @@ const getBrandForDealership = (dealership: Dealership): string | null => {
     return brand || null;
 }
 
-const createIcon = (dealership: Dealership, isHovered: boolean) => {
+const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
     const brand = getBrandForDealership(dealership);
     const brandSvg = brand ? brandLogos[brand] : null;
 
-    const scale = isHovered ? 1.25 : 1;
-    const shadowOpacity = isHovered ? 0.6 : 0.3;
-    const strokeWidth = isHovered ? 2.5 : 0.5;
+    const scale = isHovered || isSelected ? 1.25 : 1;
+    const shadowOpacity = isHovered || isSelected ? 0.6 : 0.3;
+    const strokeWidth = isHovered || isSelected ? 2.5 : 0.5;
+    const fillColor = isSelected ? 'hsl(var(--accent))' : 'hsl(var(--primary))';
+
 
     const iconHtml = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center; z-index: ${isSelected ? 1000 : 'auto'};">
         <defs>
           <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="${shadowOpacity}"/>
           </filter>
         </defs>
         <g filter="url(#shadow)">
-          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="hsl(var(--primary))" stroke="hsl(var(--primary-foreground))" stroke-width="${strokeWidth}" />
+          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="${fillColor}" stroke="hsl(var(--primary-foreground))" stroke-width="${strokeWidth}" />
         </g>
         ${brandSvg 
           ? `<g transform="translate(18, 18) scale(0.9)">${brandSvg}</g>`
@@ -75,6 +78,7 @@ export default function MapComponent({
   center,
   zoom,
   hoveredDealershipId,
+  selectedDealershipId,
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut,
@@ -105,6 +109,7 @@ export default function MapComponent({
     const map = mapRef.current;
 
     const handleMoveEnd = () => {
+      if (!map) return;
       const currentCenter = map.getCenter();
       const bounds = map.getBounds();
 
@@ -126,14 +131,13 @@ export default function MapComponent({
 
     map.on('moveend', handleMoveEnd);
 
-    // Initial population, relies on setView triggering moveend
     handleMoveEnd();
 
     return () => {
       map.off('moveend', handleMoveEnd);
       map.off('zoomstart', stableOnMapZoom);
     };
-  }, [dealerships, stableOnNearbyChange, stableOnMapZoom, center, zoom]);
+  }, [dealerships, stableOnNearbyChange, stableOnMapZoom]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -151,9 +155,10 @@ export default function MapComponent({
       if (dealership.latitude == null || dealership.longitude == null) return;
 
       const isHovered = dealership.id === hoveredDealershipId;
-      const icon = createIcon(dealership, isHovered);
+      const isSelected = dealership.id === selectedDealershipId;
+      const icon = createIcon(dealership, isHovered, isSelected);
 
-      const marker = L.marker([dealership.latitude, dealership.longitude], { icon });
+      const marker = L.marker([dealership.latitude, dealership.longitude], { icon, zIndexOffset: isSelected ? 1000 : 0 });
         
       marker.on('click', () => onMarkerClick(dealership.id));
       marker.on('mouseover', () => onMarkerMouseOver(dealership.id));
@@ -161,7 +166,7 @@ export default function MapComponent({
 
       clusterGroup.addLayer(marker);
     });
-  }, [dealerships, hoveredDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+  }, [dealerships, hoveredDealershipId, selectedDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -175,5 +180,3 @@ export default function MapComponent({
 
   return <div id="map-container" className="w-full h-full min-h-0" />;
 }
-
-    

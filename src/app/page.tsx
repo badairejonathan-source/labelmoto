@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
-import AdCard from '@/components/app/ad-card';
+import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
@@ -58,6 +58,7 @@ export default function Home() {
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
+  const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
@@ -180,8 +181,9 @@ export default function Home() {
   }, [userHasInteracted]);
 
   const handleNearbyChange = useCallback((dealerships: Dealership[]) => {
+      if (!userHasInteracted) setUserHasInteracted(true);
       setNearbyDealerships(dealerships);
-  }, []);
+  }, [userHasInteracted]);
 
   const handleMapZoom = useCallback(() => {
     if(!userHasInteracted) setUserHasInteracted(true);
@@ -203,6 +205,7 @@ export default function Home() {
   }, [isMobile, isMobileSheetOpen, nearbyDealerships, filteredDealerships, userHasInteracted, hasActiveFilters]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
+    setSelectedDealershipId(dealership.id);
     if (dealership && dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
@@ -213,6 +216,7 @@ export default function Home() {
   }, [isMobile]);
   
   const handleMarkerClick = useCallback((id: string) => {
+    setSelectedDealershipId(id);
     const selectedDealership = allDealerships.find(d => d.id === id);
     if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
       setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
@@ -315,6 +319,7 @@ export default function Home() {
                   <DealershipCard 
                       dealership={dealer} 
                       onClick={() => handleCardClick(dealer)}
+                      className={dealer.id === selectedDealershipId ? "bg-accent/10 border-accent" : ""}
                   />
                 </div>
               );
@@ -340,7 +345,7 @@ export default function Home() {
                   <p className="text-sm">Essayez d'ajuster vos filtres.</p>
                 </div>
               ) : (
-                <div className={cn("h-[60vh] flex items-center justify-center", desktopView === 'list' && 'md:col-span-2')}>
+                <div className={cn("h-[60vh] flex items-center justify-center", desktopView === 'list' && 'md:col-span-2 w-full')}>
                   <div className="w-full">
                       <AdCard />
                   </div>
@@ -351,7 +356,7 @@ export default function Home() {
   );
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-[100svh] overflow-hidden">
       <Header>
         {!isMobile && renderFilters()}
       </Header>
@@ -382,6 +387,7 @@ export default function Home() {
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
+              selectedDealershipId={selectedDealershipId}
               onMarkerClick={handleMarkerClick}
               onMarkerMouseOver={handleMarkerMouseOver}
               onMarkerMouseOut={handleMouseOut}
@@ -420,6 +426,7 @@ export default function Home() {
                         <DealershipCard 
                           dealership={dealer} 
                           onClick={() => handleCardClick(dealer)}
+                          className={dealer.id === selectedDealershipId ? "bg-accent/10 border-accent" : ""}
                         />
                       </div>
                     ))}
@@ -440,7 +447,7 @@ export default function Home() {
           <div className="flex flex-1 relative">
             {desktopView === 'split' ? (
               <>
-                <aside className="w-2/5 flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
+                <aside className="w-2/5 max-w-[400px] flex-shrink-0 h-full flex flex-col bg-background shadow-lg border-r border-border z-10">
                   {listContent}
                 </aside>
                 <main className="flex-1 overflow-hidden h-full relative">
@@ -449,6 +456,7 @@ export default function Home() {
                       center={mapCenter} 
                       zoom={mapZoom} 
                       hoveredDealershipId={hoveredDealershipId}
+                      selectedDealershipId={selectedDealershipId}
                       onMarkerClick={handleMarkerClick}
                       onMarkerMouseOver={handleMarkerMouseOver}
                       onMarkerMouseOut={handleMouseOut}
