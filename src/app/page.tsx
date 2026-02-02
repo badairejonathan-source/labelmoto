@@ -9,9 +9,11 @@ import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { ListFilter } from 'lucide-react';
+import { ListFilter, List } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
@@ -59,6 +61,10 @@ export default function Home() {
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { width } = useWindowSize();
+  const isMobile = width ? width < 768 : false;
+  const [isListSheetOpen, setIsListSheetOpen] = useState(false);
+
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
 
@@ -89,13 +95,16 @@ export default function Home() {
         
         const uniqueDealerships = Array.from(dealershipMap.values());
         setAllDealerships(uniqueDealerships);
+        if (!userHasInteracted) {
+          setNearbyDealerships(uniqueDealerships);
+        }
     }, (error) => {
         console.error("Firebase read failed: " + error.message);
         setAllDealerships([]);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [userHasInteracted]);
 
   const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
   const hasActiveFilters = (selectedDepartment !== '' && selectedDepartment !== 'all') || selectedCity !== '' || selectedBrands.length > 0;
@@ -189,21 +198,37 @@ export default function Home() {
   }, [nearbyDealerships, filteredDealerships, hasActiveFilters]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
-    setSelectedDealershipId(prevId => prevId === dealership.id ? null : dealership.id);
-    if (dealership && dealership.latitude && dealership.longitude) {
+    const isDeselecting = selectedDealershipId === dealership.id;
+    setSelectedDealershipId(isDeselecting ? null : dealership.id);
+    
+    if (!isDeselecting && dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
     }
-  }, []);
+
+    if (isMobile) {
+      // If we are selecting a dealership (not deselecting), close the sheet to see the map
+      if (!isDeselecting) {
+        setIsListSheetOpen(false);
+      }
+    }
+  }, [isMobile, selectedDealershipId]);
   
   const handleMarkerClick = useCallback((id: string) => {
-    setSelectedDealershipId(prevId => prevId === id ? null : id);
-    const selectedDealership = allDealerships.find(d => d.id === id);
-    if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
-      setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
-      setMapZoom(14);
+    const isDeselecting = selectedDealershipId === id;
+    setSelectedDealershipId(isDeselecting ? null : id);
+    
+    if (!isDeselecting) {
+        const selectedDealership = allDealerships.find(d => d.id === id);
+        if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
+            setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
+            setMapZoom(14);
+        }
+        if (isMobile) {
+          setIsListSheetOpen(true);
+        }
     }
-  }, [allDealerships]);
+  }, [allDealerships, selectedDealershipId, isMobile]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
     if (hoverTimeoutRef.current) {
@@ -321,7 +346,7 @@ export default function Home() {
               <p className="text-sm">Essayez d'ajuster vos filtres.</p>
             </div>
           ) : (
-            <div className="h-[60vh] flex items-center justify-center">
+             <div className="h-[60vh] flex items-center justify-center p-4">
               <div className="w-full">
                 <AdCard />
               </div>
@@ -337,30 +362,48 @@ export default function Home() {
         {renderFilters()}
       </Header>
 
-      <div className="flex-1 flex flex-row overflow-hidden relative">
-        
-        <aside className="w-[35%] flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Colonne de gauche (Desktop) */}
+        <aside className="w-[35%] flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
           {listContent}
         </aside>
 
-        <main className="w-[65%] h-full relative z-0 bg-gray-100">
-          <div className="absolute inset-0">
-            <MapComponent 
-              dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
-              center={mapCenter} 
-              zoom={mapZoom} 
-              hoveredDealershipId={hoveredDealershipId}
-              selectedDealershipId={selectedDealershipId}
-              onMarkerClick={handleMarkerClick}
-              onMarkerMouseOver={handleMarkerMouseOver}
-              onMarkerMouseOut={handleMouseOut}
-              isMobile={false}
-              onNearbyChange={handleNearbyChange}
-              onMapZoom={handleMapZoom}
-            />
+        {/* Contenu principal (Carte + Sheet Mobile) */}
+        <main className="h-full flex-1 relative bg-gray-100">
+          <MapComponent 
+            dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
+            center={mapCenter} 
+            zoom={mapZoom} 
+            hoveredDealershipId={hoveredDealershipId}
+            selectedDealershipId={selectedDealershipId}
+            onMarkerClick={handleMarkerClick}
+            onMarkerMouseOver={handleMarkerMouseOver}
+            onMarkerMouseOut={handleMouseOut}
+            isMobile={isMobile}
+            onNearbyChange={handleNearbyChange}
+            onMapZoom={handleMapZoom}
+          />
+          
+          {/* Bouton et Sheet pour mobile */}
+          <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+            <Sheet open={isListSheetOpen} onOpenChange={setIsListSheetOpen}>
+              <SheetTrigger asChild>
+                <Button className="shadow-lg">
+                  <List className="mr-2 h-4 w-4" />
+                  Voir la liste
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[80svh] flex flex-col p-0">
+                <SheetHeader className="p-4 border-b">
+                  <SheetTitle>Concessions à proximité</SheetTitle>
+                </SheetHeader>
+                <div className="flex-1 overflow-hidden">
+                  {listContent}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </main>
-
       </div>
     </div>
   );
