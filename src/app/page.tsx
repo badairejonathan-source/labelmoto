@@ -204,11 +204,25 @@ export default function Home() {
     );
   }, []);
 
-  const handleMapChange = useCallback((center: [number, number], zoom: number) => {
-      setMapCenter(center);
-      setMapZoom(zoom);
-      setUserHasInteracted();
-  }, []);
+  const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
+    setMapCenter(currentCenter => {
+        // Using a small threshold for floating point comparison
+        const isSameCenter = Math.abs(newCenter[0] - currentCenter[0]) < 1e-6 && Math.abs(newCenter[1] - currentCenter[1]) < 1e-6;
+        if (isSameCenter) {
+            return currentCenter;
+        }
+        setUserHasInteracted();
+        return newCenter;
+    });
+    setMapZoom(currentZoom => {
+        const isSameZoom = newZoom === currentZoom;
+        if (isSameZoom) {
+            return currentZoom;
+        }
+        setUserHasInteracted();
+        return newZoom;
+    });
+}, []);
   
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
