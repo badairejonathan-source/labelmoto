@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -31,8 +32,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     // Render the new expanded layout
     return (
       <Card
+        onClick={(e: React.MouseEvent) => {
+          if (e.target instanceof HTMLElement && e.target.closest('a')) {
+            return;
+          }
+          onClick?.();
+        }}
         className={cn(
-          "w-full max-w-64 mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-default",
+          "w-full max-w-64 mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer",
           className,
         )}
       >

@@ -68,6 +68,7 @@ export default function Home() {
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
@@ -219,18 +220,26 @@ export default function Home() {
   
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
-    
-    if (!hasActiveFilters && !userHasInteracted) {
+
+    if (!userHasInteracted && !selectedDealershipId) {
       return [];
     }
+
+    if (selectedDealershipId) {
+      const selected = sourceDealerships.find(d => d.id === selectedDealershipId);
+      if (selected && selected.latitude && selected.longitude) {
+        const others = sourceDealerships.filter(d => d.id !== selectedDealershipId);
+        others.sort((a, b) => getDistanceSq([selected.latitude!, selected.longitude!], a) - getDistanceSq([selected.latitude!, selected.longitude!], b));
+        return [selected, ...others].slice(0, 50);
+      }
+    }
     
-    const sorted = [...sourceDealerships].sort((a, b) => {
-        return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
+    const sortedByMapCenter = [...sourceDealerships].sort((a, b) => {
+      return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     });
 
-    return sorted.slice(0, 50);
-
-  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, userHasInteracted]);
+    return sortedByMapCenter.slice(0, 50);
+  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, userHasInteracted, selectedDealershipId]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -255,11 +264,14 @@ export default function Home() {
     if (!isDeselecting) {
         const selectedDealership = allDealerships.find(d => d.id === id);
         if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
-            setMapCenter([selectedDealership.latitude, selectedDealership.longitude]);
-            setMapZoom(14);
+            // Pas de zoom
         }
         if (isMobile) {
           setIsListSheetOpen(true);
+        }
+         const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+        if (viewport) {
+            viewport.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
   }, [allDealerships, selectedDealershipId, isMobile]);
@@ -338,7 +350,7 @@ export default function Home() {
   const adFrequency = 3;
 
   const listContent = (
-    <ScrollArea className="flex-grow h-0">
+    <ScrollArea ref={scrollAreaRef} className="flex-grow h-0">
       <div className="p-4 px-2 w-full space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground pt-20">
