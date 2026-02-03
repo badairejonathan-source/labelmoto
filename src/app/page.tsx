@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -10,7 +9,7 @@ import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { ListFilter, List } from 'lucide-react';
+import { ListFilter, List, Crosshair, Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -18,6 +17,7 @@ import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
+import { useToast } from '@/hooks/use-toast';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -66,6 +66,8 @@ export default function Home() {
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const { toast } = useToast();
   
   const hoverInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hoverOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -203,7 +205,6 @@ export default function Home() {
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
     if (!userHasInteracted) setUserHasInteracted(true);
     setMapCenter(currentCenter => {
-        // Using a small threshold for floating point comparison
         const isSameCenter = Math.abs(newCenter[0] - currentCenter[0]) < 1e-6 && Math.abs(newCenter[1] - currentCenter[1]) < 1e-6;
         if (isSameCenter) {
             return currentCenter;
@@ -300,6 +301,20 @@ export default function Home() {
     }, 100);
   }, []);
 
+  const handleLocationError = useCallback((error: any) => {
+    let message = 'Impossible de déterminer votre position.';
+    if (error.code === 1) { // PERMISSION_DENIED
+        message = "Vous avez refusé l'accès à la géolocalisation.";
+    } else if (error.code === 2) { // POSITION_UNAVAILABLE
+        message = "Votre position n'est pas disponible pour le moment.";
+    }
+    toast({
+        variant: "destructive",
+        title: "Erreur de géolocalisation",
+        description: message,
+    });
+  }, [toast]);
+
   const renderFilters = () => {
     return (
       <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
@@ -380,6 +395,7 @@ export default function Home() {
                     onClick={() => handleCardClick(dealer)}
                     isExpanded={dealer.id === selectedDealershipId}
                     className={cn(
+                      "w-full max-w-64 mx-auto",
                       dealer.id === hoveredDealershipId ? "shadow-lg" : "",
                       dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
                     )}
@@ -443,7 +459,22 @@ export default function Home() {
             onMarkerMouseOut={handleMouseOut}
             isMobile={isMobile}
             onMapChange={handleMapChange}
+            isLocating={isLocating}
+            onLocateEnd={() => setIsLocating(false)}
+            onLocationError={handleLocationError}
           />
+
+          <div className="absolute top-4 right-4 z-[1000]">
+              <Button
+                  size="icon"
+                  className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
+                  onClick={() => setIsLocating(true)}
+                  disabled={isLocating}
+                  title="Me géolocaliser"
+              >
+                  {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
+              </Button>
+          </div>
           
           <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
             <Sheet open={isListSheetOpen} onOpenChange={setIsListSheetOpen}>

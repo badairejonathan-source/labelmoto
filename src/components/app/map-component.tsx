@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -21,6 +20,9 @@ interface MapComponentProps {
   onMarkerMouseOut: () => void;
   isMobile: boolean;
   onMapChange: (center: [number, number], zoom: number) => void;
+  isLocating?: boolean;
+  onLocateEnd?: () => void;
+  onLocationError?: (error: L.ErrorEvent) => void;
 }
 
 const getBrandForDealership = (dealership: Dealership): string | null => {
@@ -76,11 +78,15 @@ export default function MapComponent({
   onMarkerMouseOver,
   onMarkerMouseOut,
   onMapChange,
+  isLocating = false,
+  onLocateEnd = () => {},
+  onLocationError = () => {},
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const popupRef = useRef<L.Popup | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const userLocationMarkerRef = useRef<L.Marker | null>(null);
 
   const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
 
@@ -190,6 +196,46 @@ export default function MapComponent({
       }
     }
   }, [hoveredDealershipId, dealerships, onMarkerMouseOver, onMarkerMouseOut]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !isLocating) return;
+
+    const onLocationFound = (e: L.LocationEvent) => {
+        if (userLocationMarkerRef.current) {
+            userLocationMarkerRef.current.remove();
+        }
+        
+        const userMarkerIcon = L.divIcon({
+            html: `<div class="relative flex h-5 w-5">
+                    <div class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></div>
+                    <div class="relative inline-flex rounded-full h-5 w-5 bg-sky-500 border-2 border-white shadow-md"></div>
+                   </div>`,
+            className: 'bg-transparent border-none',
+            iconSize: [20, 20],
+        });
+
+        const userMarker = L.marker(e.latlng, { icon: userMarkerIcon }).addTo(map);
+        
+        userLocationMarkerRef.current = userMarker;
+        map.off('locationfound', onLocationFound);
+        map.off('locationerror', onErr);
+        onLocateEnd();
+    };
+
+    const onErr = (e: L.ErrorEvent) => {
+        map.off('locationfound', onLocationFound);
+        map.off('locationerror', onErr);
+        onLocationError(e);
+        onLocateEnd();
+    };
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onErr);
+    
+    map.locate({ setView: true, maxZoom: 14 });
+
+  }, [isLocating, onLocateEnd, onLocationError]);
 
   useEffect(() => {
     const map = mapRef.current;
