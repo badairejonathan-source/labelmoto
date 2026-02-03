@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -52,6 +53,9 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
               <SheetContent side="right" className="w-[90vw] max-w-sm">
                 <SheetHeader>
                   <SheetTitle>Filtres</SheetTitle>
+                  <SheetDescription>
+                    Ajustez les filtres pour affiner votre recherche de motos.
+                  </SheetDescription>
                 </SheetHeader>
                 <div className="mt-4">
                   {children}

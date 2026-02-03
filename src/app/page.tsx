@@ -65,8 +65,8 @@ export default function Home() {
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
   
-  const userHasInteractedRef = useRef(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { width } = useWindowSize();
@@ -169,14 +169,8 @@ export default function Home() {
     return [];
   }, [selectedDepartment]);
 
-  const setUserHasInteracted = () => {
-    if (!userHasInteractedRef.current) {
-        userHasInteractedRef.current = true;
-    }
-  };
-  
   const handleDepartmentChange = useCallback((department: string) => {
-    setUserHasInteracted();
+    if (!userHasInteracted) setUserHasInteracted(true);
     setSelectedDepartment(department);
     setSelectedCity('');
     if (department && department !== 'all') {
@@ -189,29 +183,29 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-  }, []);
+  }, [userHasInteracted]);
 
   const handleCityChange = useCallback((city: string) => {
-      setUserHasInteracted();
+    if (!userHasInteracted) setUserHasInteracted(true);
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-  }, []);
+  }, [userHasInteracted]);
 
   const handleBrandChange = useCallback((brand: string) => {
-    setUserHasInteracted();
+    if (!userHasInteracted) setUserHasInteracted(true);
     setSelectedBrands(prev => 
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
     );
-  }, []);
+  }, [userHasInteracted]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
+    if (!userHasInteracted) setUserHasInteracted(true);
     setMapCenter(currentCenter => {
         // Using a small threshold for floating point comparison
         const isSameCenter = Math.abs(newCenter[0] - currentCenter[0]) < 1e-6 && Math.abs(newCenter[1] - currentCenter[1]) < 1e-6;
         if (isSameCenter) {
             return currentCenter;
         }
-        setUserHasInteracted();
         return newCenter;
     });
     setMapZoom(currentZoom => {
@@ -219,23 +213,24 @@ export default function Home() {
         if (isSameZoom) {
             return currentZoom;
         }
-        setUserHasInteracted();
         return newZoom;
     });
-}, []);
+  }, [userHasInteracted]);
   
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
     
-    if (!hasActiveFilters && !userHasInteractedRef.current) {
+    if (!hasActiveFilters && !userHasInteracted) {
       return [];
     }
     
-    return [...sourceDealerships].sort((a, b) => {
+    const sorted = [...sourceDealerships].sort((a, b) => {
         return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     });
 
-  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, userHasInteractedRef.current]);
+    return sorted.slice(0, 50);
+
+  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, userHasInteracted]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -385,7 +380,7 @@ export default function Home() {
               </div>
             )}
             {dealershipsToDisplay.length === 0 &&
-              (hasActiveFilters || userHasInteractedRef.current ? (
+              (hasActiveFilters || userHasInteracted ? (
                 <div className="text-center text-muted-foreground pt-20">
                   <p>Aucun résultat trouvé.</p>
                   <p className="text-sm">Essayez d'ajuster vos filtres.</p>
