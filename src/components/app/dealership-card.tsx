@@ -28,6 +28,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
+  const directionsUrl = dealership.latitude && dealership.longitude 
+    ? `https://www.google.com/maps/dir/?api=1&destination=${dealership.latitude},${dealership.longitude}`
+    : dealership.placeUrl;
+
   if (isExpanded) {
     // Render the new expanded layout
     return (
@@ -39,7 +43,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           onClick?.();
         }}
         className={cn(
-          "w-full max-w-64 mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer",
+          "w-full mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer",
           className,
         )}
       >
@@ -77,7 +81,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             <div className="p-4 space-y-4 bg-background/50">
                 {/* Action buttons */}
                 <div className="flex justify-around">
-                    <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
                         <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
                             <MapPin className="w-5 h-5"/>
                         </div>
@@ -145,7 +149,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         onClick?.();
       }}
       className={cn(
-        "w-full max-w-64 mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50",
+        "w-full mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50",
         className,
       )}
     >
@@ -181,7 +185,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   </div>
                 </div>
                 {dealership.address && (
-                    <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
+                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
                         <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
                         <span className="line-clamp-2">{dealership.address}</span>
                     </a>
