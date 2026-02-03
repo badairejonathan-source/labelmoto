@@ -185,15 +185,15 @@ export default function MapComponent({
         const brandSvg = brand ? brandLogos[brand] : null;
 
         const logoHtml = brandSvg
-          ? `<div class="w-10 h-10 flex-shrink-0 rounded-md flex items-center justify-center bg-white p-1 shadow-inner">
+          ? `<div class="w-14 h-14 flex-shrink-0 rounded-md flex items-center justify-center bg-white p-1 shadow-inner">
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -15 30 30" class="w-full h-full">${brandSvg}</svg>
              </div>`
-          : `<div class="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-md flex items-center justify-center p-1">
+          : `<div class="w-14 h-14 flex-shrink-0 bg-gray-100 rounded-md flex items-center justify-center p-1">
                <img src="/logo-moto.png" alt="Logo" class="max-w-full max-h-full object-contain" />
              </div>`;
 
         const popupContent = `
-          <div class="p-2 bg-card text-card-foreground rounded-md shadow-lg border border-border w-56 flex items-center gap-3">
+          <div class="p-2 bg-card text-card-foreground rounded-md shadow-lg border border-border w-64 flex items-center gap-3">
             ${logoHtml}
             <div class="flex-grow min-w-0">
                 <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
