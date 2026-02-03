@@ -361,7 +361,7 @@ export default function Home() {
 
   const listContent = (
     <ScrollArea ref={scrollAreaRef} className="flex-grow h-0">
-      <div className="p-4 px-2 w-full space-y-4">
+      <div className="p-5 w-full space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground pt-20">
             <p>Chargement des concessions...</p>
