@@ -172,6 +172,7 @@ export default function MapComponent({
           closeButton: false,
           autoClose: false,
           closeOnClick: false,
+          autoPan: false,
           offset: L.point(0, -44),
           className: 'custom-leaflet-tooltip'
         })
