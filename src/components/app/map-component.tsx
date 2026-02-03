@@ -199,9 +199,15 @@ export default function MapComponent({
         .openOn(map);
 
         popupRef.current = newPopup;
+
+        const popupElement = newPopup.getElement();
+        if (popupElement) {
+          popupElement.addEventListener('mouseenter', () => onMarkerMouseOver(dealership.id));
+          popupElement.addEventListener('mouseleave', onMarkerMouseOut);
+        }
       }
     }
-  }, [hoveredDealershipId, dealerships]);
+  }, [hoveredDealershipId, dealerships, onMarkerMouseOver, onMarkerMouseOut]);
 
   useEffect(() => {
     const map = mapRef.current;
