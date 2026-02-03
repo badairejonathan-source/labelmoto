@@ -68,7 +68,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   )}
                 </div>
                 <div className="pl-4 flex flex-col justify-center min-w-0">
-                    <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight truncate">
+                    <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight">
                       {title}
                     </h3>
                 </div>
