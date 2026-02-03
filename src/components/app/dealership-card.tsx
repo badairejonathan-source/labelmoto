@@ -81,12 +81,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             <div className="p-4 space-y-4 bg-background/50">
                 {/* Action buttons */}
                 <div className="flex justify-around">
-                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
-                        <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
-                            <MapPin className="w-5 h-5"/>
-                        </div>
-                        <span>Itinéraire</span>
-                    </a>
                     {dealership.placeUrl && (
                       <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
                           <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
@@ -116,8 +110,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 {/* Address */}
                  {dealership.address && (
                   <div className="text-center border-t border-b border-border/50 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Adresse</p>
-                    <p className="text-sm">{dealership.address}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adresse</p>
+                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-sm text-center text-foreground hover:text-accent group">
+                        <MapPin className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-accent transition-colors"/>
+                        <span className="underline-offset-4 group-hover:underline">{dealership.address}</span>
+                    </a>
                   </div>
                 )}
 
