@@ -67,7 +67,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const { width } = useWindowSize();
@@ -277,17 +278,26 @@ export default function Home() {
   }, [allDealerships, selectedDealershipId, isMobile]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
-    if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-        hoverTimeoutRef.current = null;
+    if (hoverOutTimeoutRef.current) {
+      clearTimeout(hoverOutTimeoutRef.current);
+      hoverOutTimeoutRef.current = null;
     }
-    setHoveredDealershipId(id);
+    if (hoverInTimeoutRef.current) {
+      clearTimeout(hoverInTimeoutRef.current);
+    }
+    hoverInTimeoutRef.current = setTimeout(() => {
+      setHoveredDealershipId(id);
+    }, 500);
   }, []);
 
   const handleMouseOut = useCallback(() => {
-      hoverTimeoutRef.current = setTimeout(() => {
-          setHoveredDealershipId(null);
-      }, 100);
+    if (hoverInTimeoutRef.current) {
+      clearTimeout(hoverInTimeoutRef.current);
+      hoverInTimeoutRef.current = null;
+    }
+    hoverOutTimeoutRef.current = setTimeout(() => {
+      setHoveredDealershipId(null);
+    }, 100);
   }, []);
 
   const renderFilters = () => {
