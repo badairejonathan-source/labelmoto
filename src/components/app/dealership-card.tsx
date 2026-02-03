@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -8,6 +7,7 @@ import { MapPin, Star, Phone, Globe, Store } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -109,13 +109,22 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
                 {/* Address */}
                  {dealership.address && (
-                  <div className="text-center border-t border-b border-border/50 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adresse</p>
-                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-sm text-center text-foreground hover:text-accent group">
-                        <MapPin className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-accent transition-colors"/>
-                        <span className="underline-offset-4 group-hover:underline">{dealership.address}</span>
-                    </a>
-                  </div>
+                  <TooltipProvider delayDuration={100}>
+                    <div className="text-center border-t border-b border-border/50 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adresse</p>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-sm text-center text-foreground hover:text-accent group">
+                              <MapPin className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-accent transition-colors"/>
+                              <span className="underline-offset-4 group-hover:underline">{dealership.address}</span>
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Y aller</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TooltipProvider>
                 )}
 
                 {/* Opening Hours */}
