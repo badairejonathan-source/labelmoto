@@ -72,6 +72,7 @@ export default function Home() {
   const hoverInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hoverOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const closeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
@@ -301,6 +302,23 @@ export default function Home() {
     }, 100);
   }, []);
 
+  const handleCardMouseEnter = useCallback((id: string) => {
+    if (closeCardTimeoutRef.current) {
+        clearTimeout(closeCardTimeoutRef.current);
+        closeCardTimeoutRef.current = null;
+    }
+    handleMarkerMouseOver(id);
+  }, [handleMarkerMouseOver]);
+
+  const handleCardMouseLeave = useCallback((id: string) => {
+    if (id === selectedDealershipId) {
+        closeCardTimeoutRef.current = setTimeout(() => {
+            setSelectedDealershipId(null);
+        }, 1000);
+    }
+    handleMouseOut();
+  }, [selectedDealershipId, handleMouseOut]);
+
   const handleLocationError = useCallback((error: any) => {
     let message = 'Impossible de déterminer votre position.';
     if (error.code === 1) { // PERMISSION_DENIED
@@ -387,8 +405,8 @@ export default function Home() {
               const card = (
                 <div
                   key={dealer.id}
-                  onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                  onMouseLeave={handleMouseOut}
+                  onMouseEnter={() => handleCardMouseEnter(dealer.id)}
+                  onMouseLeave={() => handleCardMouseLeave(dealer.id)}
                 >
                   <DealershipCard
                     dealership={dealer}
