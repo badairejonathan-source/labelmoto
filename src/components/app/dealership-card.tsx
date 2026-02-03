@@ -37,7 +37,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         onClick?.();
       }}
       className={cn(
-        "w-full max-w-56 mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50",
+        "w-full max-w-64 mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50",
         className,
       )}
     >
