@@ -183,12 +183,12 @@ export default function MapComponent({
       if (dealership && dealership.latitude != null && dealership.longitude != null) {
         
         const popupContent = `
-          <div class="bg-primary h-8 flex items-center justify-center">
-             <img src="/logo-moto.png" alt="MotoTrust Logo" class="h-6 object-contain" />
+          <div class="bg-primary h-7 flex items-center justify-center">
+             <img src="/logo-moto.png" alt="MotoTrust Logo" class="h-5 object-contain" />
           </div>
-          <div class="p-2">
+          <div class="py-1 px-2">
             <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
-            <p class="text-xs text-muted-foreground mt-1 line-clamp-2">${dealership.address || ''}</p>
+            <p class="text-xs text-muted-foreground line-clamp-2">${dealership.address || ''}</p>
           </div>
         `;
 
