@@ -65,7 +65,7 @@ const AdCard: React.FC = () => {
 
   return (
     <a href="#" target="_blank" rel="noopener noreferrer" className={cn(
-        "w-full h-24 flex items-center justify-between overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md",
+        "w-full max-w-56 mx-auto h-24 flex items-center justify-between overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md",
         ad.bgColor,
         ad.textColor,
         ad.bgColor === 'bg-white' && 'border border-border'
