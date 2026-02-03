@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -87,6 +86,7 @@ export default function MapComponent({
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
+  const popupRef = useRef<L.Popup | null>(null);
 
   const stableOnNearbyChange = useCallback(onNearbyChange, [onNearbyChange]);
   const stableOnMapZoom = useCallback(onMapZoom, [onMapZoom]);
@@ -167,6 +167,41 @@ export default function MapComponent({
       clusterGroup.addLayer(marker);
     });
   }, [dealerships, hoveredDealershipId, selectedDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+  
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (popupRef.current) {
+      popupRef.current.remove();
+      popupRef.current = null;
+    }
+
+    if (hoveredDealershipId) {
+      const dealership = dealerships.find(d => d.id === hoveredDealershipId);
+      if (dealership && dealership.latitude != null && dealership.longitude != null) {
+        const popupContent = `
+          <div class="p-2 bg-card text-card-foreground rounded-md shadow-lg border border-border w-48">
+            <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
+            <p class="text-xs text-muted-foreground mt-1 line-clamp-2">${dealership.address || ''}</p>
+          </div>
+        `;
+
+        const newPopup = L.popup({
+          closeButton: false,
+          autoClose: false,
+          closeOnClick: false,
+          offset: L.point(0, -44),
+          className: 'custom-leaflet-tooltip'
+        })
+        .setLatLng([dealership.latitude, dealership.longitude])
+        .setContent(popupContent)
+        .openOn(map);
+
+        popupRef.current = newPopup;
+      }
+    }
+  }, [hoveredDealershipId, dealerships]);
 
   useEffect(() => {
     const map = mapRef.current;
