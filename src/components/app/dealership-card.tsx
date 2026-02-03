@@ -4,7 +4,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Store } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -87,6 +87,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                         </div>
                         <span>Itinéraire</span>
                     </a>
+                    {dealership.placeUrl && (
+                      <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                          <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
+                              <Store className="w-5 h-5"/>
+                          </div>
+                          <span>Fiche Google</span>
+                      </a>
+                    )}
                     {dealership.phoneNumber && (
                       <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
                           <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
