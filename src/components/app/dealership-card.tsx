@@ -1,10 +1,9 @@
-
 'use client';
 
 import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Star, CheckCircle, Phone, Globe, Clock } from 'lucide-react';
+import { MapPin, Star, Phone, Globe } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -28,6 +27,108 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
+  if (isExpanded) {
+    // Render the new expanded layout
+    return (
+      <Card
+        className={cn(
+          "w-full max-w-64 mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-default",
+          className,
+        )}
+      >
+        <div className="flex flex-col">
+            {/* Header with image and name */}
+            <div className="flex flex-row items-center p-4 border-b border-border/50 bg-card">
+                <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
+                    {dealership.imgUrl ? (
+                    <Image
+                      src={dealership.imgUrl}
+                      alt={`Photo de ${title}`}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  ) : (
+                     <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
+                      <MotoTrustLogo className="w-8 h-8 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="pl-4 flex flex-col justify-center min-w-0">
+                    <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight truncate">
+                      {title}
+                    </h3>
+                     {rating > 0 && (
+                        <div className="flex items-center gap-1 text-xs font-bold text-amber-500 mt-1">
+                          <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                          <span>{rating.toFixed(1)}</span>
+                        </div>
+                      )}
+                </div>
+            </div>
+            
+            <div className="p-4 space-y-4 bg-background/50">
+                {/* Action buttons */}
+                <div className="flex justify-around">
+                    <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                        <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
+                            <MapPin className="w-5 h-5"/>
+                        </div>
+                        <span>Itinéraire</span>
+                    </a>
+                    {dealership.phoneNumber && (
+                      <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                          <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
+                              <Phone className="w-5 h-5"/>
+                          </div>
+                          <span>Appeler</span>
+                      </a>
+                    )}
+                    {dealership.website && (
+                      <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                          <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
+                              <Globe className="w-5 h-5"/>
+                          </div>
+                          <span>Site Web</span>
+                      </a>
+                    )}
+                </div>
+
+                {/* Address */}
+                 {dealership.address && (
+                  <div className="text-center border-t border-b border-border/50 py-3">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Adresse</p>
+                    <p className="text-sm">{dealership.address}</p>
+                  </div>
+                )}
+
+                {/* Opening Hours */}
+                <div>
+                  <div className="text-center mb-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Horaires</p>
+                  </div>
+                  <div className="rounded-md border p-2 bg-card text-xs">
+                    <ul className="space-y-1">
+                      {weekDays.map(day => {
+                        const hours = dealership[day as keyof Dealership];
+                        const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
+                        return (
+                            <li key={day} className={cn("flex justify-between", isClosed && "text-muted-foreground")}>
+                              <span className="capitalize w-20">{day}:</span>
+                              <span className={cn("text-right flex-1", !isClosed && "font-mono")}>{isClosed ? 'Fermé' : hours}</span>
+                            </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Render the original collapsed view
   return (
     <Card
       onClick={(e: React.MouseEvent) => {
@@ -91,44 +192,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                         <span>Non disponible</span>
                     )}
                 </div>
-                <div className="flex items-center text-green-600 font-medium shrink-0 ml-2">
-                   <CheckCircle className="h-3 w-3 mr-1" />
-                   <span className="text-xs">Vérifié</span>
-                </div>
             </div>
         </CardContent>
       </div>
-
-      {isExpanded && (
-        <div className="p-3 border-t border-border/50 bg-background/50 text-xs">
-          <div className="space-y-2">
-            {dealership.website && (
-              <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-accent hover:underline">
-                <Globe className="h-4 w-4 mr-2 shrink-0"/>
-                <span className="truncate">{dealership.website.replace(/^(https?:\/\/)?(www\.)?/, '')}</span>
-              </a>
-            )}
-            <div className="flex items-start">
-              <Clock className="h-4 w-4 mr-2 shrink-0 mt-0.5"/>
-              <div>
-                <span className="font-medium">Horaires :</span>
-                <ul className="mt-1 space-y-0.5">
-                  {weekDays.map(day => {
-                    const hours = dealership[day]
-                    if (!hours || hours.toLowerCase() === 'non renseigné') return null;
-                    return (
-                        <li key={day} className="flex justify-between">
-                        <span className="capitalize w-20">{day}:</span>
-                        <span className="text-right flex-1">{hours}</span>
-                        </li>
-                    )
-                  }).filter(Boolean)}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </Card>
   );
 };
