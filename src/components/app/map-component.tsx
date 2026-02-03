@@ -98,7 +98,7 @@ export default function MapComponent({
       
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(mapRef.current);
+      }).addTo(mapRef.current!);
       
       clusterGroupRef.current = L.markerClusterGroup({ maxClusterRadius: 40 });
       mapRef.current.addLayer(clusterGroupRef.current);
@@ -180,10 +180,25 @@ export default function MapComponent({
     if (hoveredDealershipId) {
       const dealership = dealerships.find(d => d.id === hoveredDealershipId);
       if (dealership && dealership.latitude != null && dealership.longitude != null) {
+        
+        const brand = getBrandForDealership(dealership);
+        const brandSvg = brand ? brandLogos[brand] : null;
+
+        const logoHtml = brandSvg
+          ? `<div class="w-10 h-10 flex-shrink-0 rounded-md flex items-center justify-center bg-white p-1 shadow-inner">
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -15 30 30" class="w-full h-full">${brandSvg}</svg>
+             </div>`
+          : `<div class="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-md flex items-center justify-center p-1">
+               <img src="/logo-moto.png" alt="Logo" class="max-w-full max-h-full object-contain" />
+             </div>`;
+
         const popupContent = `
-          <div class="p-2 bg-card text-card-foreground rounded-md shadow-lg border border-border w-48">
-            <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
-            <p class="text-xs text-muted-foreground mt-1 line-clamp-2">${dealership.address || ''}</p>
+          <div class="p-2 bg-card text-card-foreground rounded-md shadow-lg border border-border w-56 flex items-center gap-3">
+            ${logoHtml}
+            <div class="flex-grow min-w-0">
+                <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
+                <p class="text-xs text-muted-foreground mt-1 line-clamp-2">${dealership.address || ''}</p>
+            </div>
           </div>
         `;
 
