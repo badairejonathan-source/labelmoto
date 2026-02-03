@@ -60,17 +60,17 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                       <MotoTrustLogo className="w-8 h-8 text-gray-400" />
                     </div>
                   )}
+                   {rating > 0 && (
+                    <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5">
+                      <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
+                      <span>{rating.toFixed(1)}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="pl-4 flex flex-col justify-center min-w-0">
                     <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight truncate">
                       {title}
                     </h3>
-                     {rating > 0 && (
-                        <div className="flex items-center gap-1 text-xs font-bold text-amber-500 mt-1">
-                          <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
-                          <span>{rating.toFixed(1)}</span>
-                        </div>
-                      )}
                 </div>
             </div>
             
@@ -164,6 +164,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               <MotoTrustLogo className="w-10 h-10 text-gray-400" />
             </div>
           )}
+          {rating > 0 && (
+            <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5">
+              <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
+              <span>{rating.toFixed(1)}</span>
+            </div>
+          )}
         </div>
         <CardContent className="p-3 flex-grow relative flex flex-col min-w-0 justify-center gap-2">
             <div>
@@ -173,12 +179,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                       {title}
                     </h3>
                   </div>
-                  {rating > 0 && (
-                    <div className="flex items-center gap-1 text-xs font-bold text-amber-500 flex-shrink-0">
-                      <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
-                      <span>{rating.toFixed(1)}</span>
-                    </div>
-                  )}
                 </div>
                 {dealership.address && (
                     <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
