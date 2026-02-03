@@ -87,6 +87,7 @@ export default function MapComponent({
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const popupRef = useRef<L.Popup | null>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const stableOnNearbyChange = useCallback(onNearbyChange, [onNearbyChange]);
   const stableOnMapZoom = useCallback(onMapZoom, [onMapZoom]);
@@ -181,24 +182,13 @@ export default function MapComponent({
       const dealership = dealerships.find(d => d.id === hoveredDealershipId);
       if (dealership && dealership.latitude != null && dealership.longitude != null) {
         
-        const brand = getBrandForDealership(dealership);
-        const brandSvg = brand ? brandLogos[brand] : null;
-
-        const logoHtml = brandSvg
-          ? `<div class="w-14 h-14 flex-shrink-0 rounded-md flex items-center justify-center bg-white p-1 shadow-inner">
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -15 30 30" class="w-full h-full">${brandSvg}</svg>
-             </div>`
-          : `<div class="w-14 h-14 flex-shrink-0 bg-gray-100 rounded-md flex items-center justify-center p-1">
-               <img src="/logo-moto.png" alt="Logo" class="max-w-full max-h-full object-contain" />
-             </div>`;
-
         const popupContent = `
-          <div class="p-2 bg-card text-card-foreground rounded-md shadow-lg border border-border w-64 flex items-center gap-3">
-            ${logoHtml}
-            <div class="flex-grow min-w-0">
-                <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
-                <p class="text-xs text-muted-foreground mt-1 line-clamp-2">${dealership.address || ''}</p>
-            </div>
+          <div class="bg-primary h-8 flex items-center justify-center">
+             <img src="/logo-moto.png" alt="MotoTrust Logo" class="h-6 object-contain" />
+          </div>
+          <div class="p-2">
+            <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
+            <p class="text-xs text-muted-foreground mt-1 line-clamp-2">${dealership.address || ''}</p>
           </div>
         `;
 
