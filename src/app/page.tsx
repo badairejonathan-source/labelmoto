@@ -47,6 +47,13 @@ const getBrands = (dealerships: Dealership[]) => {
   return Array.from(brandSet).sort();
 }
 
+const getDistanceSq = (center: [number, number], dealer: Dealership) => {
+    if (dealer.latitude == null || dealer.longitude == null) return Infinity;
+    const dx = center[1] - dealer.longitude;
+    const dy = center[0] - dealer.latitude;
+    return dx * dx + dy * dy;
+};
+
 export default function Home() {
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
@@ -57,7 +64,6 @@ export default function Home() {
   const [mapZoom, setMapZoom] = useState(6);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
-  const [nearbyDealerships, setNearbyDealerships] = useState<Dealership[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   const userHasInteractedRef = useRef(false);
@@ -198,21 +204,24 @@ export default function Home() {
     );
   }, []);
 
-  const handleNearbyChange = useCallback((dealerships: Dealership[]) => {
+  const handleMapChange = useCallback((center: [number, number], zoom: number) => {
+      setMapCenter(center);
+      setMapZoom(zoom);
       setUserHasInteracted();
-      setNearbyDealerships(dealerships);
-  }, []);
-
-  const handleMapZoom = useCallback(() => {
-    setUserHasInteracted();
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
-    if (hasActiveFilters) {
-        return filteredDealerships;
+    const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
+    
+    if (!hasActiveFilters && !userHasInteractedRef.current) {
+      return [];
     }
-    return userHasInteractedRef.current ? nearbyDealerships : [];
-  }, [nearbyDealerships, filteredDealerships, hasActiveFilters]);
+    
+    return [...sourceDealerships].sort((a, b) => {
+        return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
+    });
+
+  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, userHasInteractedRef.current]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -265,7 +274,7 @@ export default function Home() {
       <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
           <SelectTrigger variant="filter">
-            <span className="mr-2">Departements:</span>
+            <span className="mr-2">Départements:</span>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -362,7 +371,7 @@ export default function Home() {
               </div>
             )}
             {dealershipsToDisplay.length === 0 &&
-              (userHasInteractedRef.current ? (
+              (hasActiveFilters || userHasInteractedRef.current ? (
                 <div className="text-center text-muted-foreground pt-20">
                   <p>Aucun résultat trouvé.</p>
                   <p className="text-sm">Essayez d'ajuster vos filtres.</p>
@@ -402,8 +411,7 @@ export default function Home() {
             onMarkerMouseOver={handleMarkerMouseOver}
             onMarkerMouseOut={handleMouseOut}
             isMobile={isMobile}
-            onNearbyChange={handleNearbyChange}
-            onMapZoom={handleMapZoom}
+            onMapChange={handleMapChange}
           />
           
           <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">

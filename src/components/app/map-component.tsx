@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -19,8 +20,7 @@ interface MapComponentProps {
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
   isMobile: boolean;
-  onNearbyChange: (dealerships: Dealership[]) => void;
-  onMapZoom: () => void;
+  onMapChange: (center: [number, number], zoom: number) => void;
 }
 
 const getBrandForDealership = (dealership: Dealership): string | null => {
@@ -66,12 +66,6 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     });
 };
 
-const getDistanceSq = (latlng1: L.LatLng, latlng2: L.LatLng) => {
-    const dx = latlng1.lng - latlng2.lng;
-    const dy = latlng1.lat - latlng2.lat;
-    return dx * dx + dy * dy;
-};
-
 export default function MapComponent({
   dealerships,
   center,
@@ -81,17 +75,14 @@ export default function MapComponent({
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut,
-  onNearbyChange,
-  onMapZoom
+  onMapChange,
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const popupRef = useRef<L.Popup | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const stableOnNearbyChange = useCallback(onNearbyChange, [onNearbyChange]);
-  const stableOnMapZoom = useCallback(onMapZoom, [onMapZoom]);
-
+  const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
 
   useEffect(() => {
     if (mapRef.current === null) {
@@ -103,8 +94,6 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ maxClusterRadius: 40 });
       mapRef.current.addLayer(clusterGroupRef.current);
-
-      mapRef.current.on('zoomstart', stableOnMapZoom);
     }
     
     const map = mapRef.current;
@@ -112,33 +101,20 @@ export default function MapComponent({
     const handleMoveEnd = () => {
       if (!map) return;
       const currentCenter = map.getCenter();
-      const bounds = map.getBounds();
-
-      const dealershipsInView = dealerships.filter(d => {
-          if (d.latitude == null || d.longitude == null) return false;
-          const dealerLatLng = new L.LatLng(d.latitude, d.longitude);
-          return bounds.contains(dealerLatLng);
-      });
-
-      const sortedDealerships = dealershipsInView.sort((a, b) => {
-          if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
-          const latLngA = new L.LatLng(a.latitude, a.longitude);
-          const latLngB = new L.LatLng(b.latitude, b.longitude);
-          return getDistanceSq(currentCenter, latLngA) - getDistanceSq(currentCenter, latLngB);
-      });
-      
-      stableOnNearbyChange(sortedDealerships.slice(0, 50));
+      const currentZoom = map.getZoom();
+      stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom);
     };
 
     map.on('moveend', handleMoveEnd);
+    map.on('zoomend', handleMoveEnd);
 
     handleMoveEnd();
 
     return () => {
       map.off('moveend', handleMoveEnd);
-      map.off('zoomstart', stableOnMapZoom);
+      map.off('zoomend', handleMoveEnd);
     };
-  }, [dealerships, stableOnNearbyChange, stableOnMapZoom]);
+  }, [stableOnMapChange]);
 
   useEffect(() => {
     if (mapRef.current) {
