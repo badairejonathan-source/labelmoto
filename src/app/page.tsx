@@ -248,13 +248,18 @@ export default function Home() {
     const isDeselecting = selectedDealershipId === dealership.id;
     setSelectedDealershipId(isDeselecting ? null : dealership.id);
     
-    if (!isDeselecting && dealership.latitude && dealership.longitude) {
-      setMapCenter([dealership.latitude, dealership.longitude]);
-      setMapZoom(14);
-    }
+    if (!isDeselecting) {
+      if (dealership.latitude && dealership.longitude) {
+        setMapCenter([dealership.latitude, dealership.longitude]);
+        setMapZoom(14);
+      }
+      
+      const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+          viewport.scrollTo({ top: 0, behavior: 'smooth' });
+      }
 
-    if (isMobile) {
-      if (!isDeselecting) {
+      if (isMobile) {
         setIsListSheetOpen(false);
       }
     }
