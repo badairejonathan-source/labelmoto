@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
@@ -185,28 +186,19 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-    if (isMobile) setIsListSheetOpen(true);
-  }, [isMobile]);
+  }, []);
 
   const handleCityChange = useCallback((city: string) => {
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-      if (isMobile) setIsListSheetOpen(true);
-  }, [isMobile]);
+  }, []);
 
   const handleBrandChange = useCallback((brand: string) => {
     setSelectedBrands(prev => 
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
     );
-    if (isMobile) setIsListSheetOpen(true);
-  }, [isMobile]);
+  }, []);
   
-  useEffect(() => {
-    if (isMobile && mapZoom > 8) {
-      setIsListSheetOpen(true);
-    }
-  }, [isMobile, mapZoom]);
-
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
     setMapCenter(currentCenter => {
         const isSameCenter = Math.abs(newCenter[0] - currentCenter[0]) < 1e-6 && Math.abs(newCenter[1] - currentCenter[1]) < 1e-6;
@@ -447,6 +439,62 @@ export default function Home() {
     </ScrollArea>
   );
 
+  const selectedDealershipForMobile = selectedDealershipId ? dealershipsToDisplay.find(d => d.id === selectedDealershipId) : null;
+
+  const mobileListContent = (
+     <ScrollArea className="h-full">
+      <div className="flex flex-col h-full">
+        {isLoading ? (
+          <div className="text-center text-muted-foreground pt-8">
+            <p>Chargement des concessions...</p>
+          </div>
+        ) : (
+          <>
+            {selectedDealershipForMobile && (
+              <div className="p-4 border-b">
+                <DealershipCard
+                  dealership={selectedDealershipForMobile}
+                  onClick={() => handleCardClick(selectedDealershipForMobile)}
+                  isExpanded={true}
+                  className="w-full"
+                />
+              </div>
+            )}
+             <div className="w-full overflow-x-auto">
+                <div className="flex w-max space-x-4 p-4">
+                {dealershipsToDisplay.length > 0 ? (
+                    dealershipsToDisplay.map((dealer) => (
+                    <div
+                        key={dealer.id}
+                        className="w-56 flex-shrink-0"
+                        onMouseEnter={() => handleCardMouseEnter(dealer.id)}
+                        onMouseLeave={() => handleCardMouseLeave(dealer.id)}
+                    >
+                        <DealershipCard
+                            dealership={dealer}
+                            onClick={() => handleCardClick(dealer)}
+                            isExpanded={false}
+                            className={cn(
+                                "h-full",
+                                dealer.id === hoveredDealershipId ? "shadow-lg" : "",
+                                dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
+                            )}
+                        />
+                    </div>
+                    ))
+                ) : (
+                    <div className="text-center text-muted-foreground w-full px-4">
+                        <p>Aucun résultat trouvé à proximité.</p>
+                    </div>
+                )}
+                </div>
+            </div>
+          </>
+        )}
+      </div>
+    </ScrollArea>
+  );
+
   return (
     <div className="flex flex-col h-[100svh] w-full overflow-hidden bg-background">
       <Header>
@@ -504,8 +552,8 @@ export default function Home() {
                             <X className="h-5 w-5 text-muted-foreground"/>
                         </Button>
                     </div>
-                    <div className="flex-1 overflow-hidden">
-                        {listContent}
+                    <div className="flex-1 overflow-y-auto">
+                        {mobileListContent}
                     </div>
                 </div>
             )}
@@ -515,3 +563,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
