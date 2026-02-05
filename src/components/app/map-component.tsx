@@ -85,8 +85,6 @@ export default function MapComponent({
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
-  const popupRef = useRef<L.Popup | null>(null);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const userLocationMarkerRef = useRef<L.Marker | null>(null);
 
   const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
@@ -152,52 +150,6 @@ export default function MapComponent({
     });
   }, [dealerships, hoveredDealershipId, selectedDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
   
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    if (popupRef.current) {
-      popupRef.current.remove();
-      popupRef.current = null;
-    }
-
-    if (hoveredDealershipId) {
-      const dealership = dealerships.find(d => d.id === hoveredDealershipId);
-      if (dealership && dealership.latitude != null && dealership.longitude != null) {
-        
-        const popupContent = `
-          <div class="bg-primary h-7 flex items-center justify-center">
-             <img src="/logo-moto.png" alt="MotoTrust Logo" class="h-5 object-contain" />
-          </div>
-          <div class="py-1 px-2">
-            <h3 class="font-bold text-sm text-primary dark:text-primary-foreground truncate">${dealership.title}</h3>
-            <p class="text-xs text-muted-foreground line-clamp-2">${dealership.address || ''}</p>
-          </div>
-        `;
-
-        const newPopup = L.popup({
-          closeButton: false,
-          autoClose: false,
-          closeOnClick: false,
-          autoPan: false,
-          offset: L.point(0, -44),
-          className: 'custom-leaflet-tooltip'
-        })
-        .setLatLng([dealership.latitude, dealership.longitude])
-        .setContent(popupContent)
-        .openOn(map);
-
-        popupRef.current = newPopup;
-
-        const popupElement = newPopup.getElement();
-        if (popupElement) {
-          popupElement.addEventListener('mouseenter', () => onMarkerMouseOver(dealership.id));
-          popupElement.addEventListener('mouseleave', onMarkerMouseOut);
-        }
-      }
-    }
-  }, [hoveredDealershipId, dealerships, onMarkerMouseOver, onMarkerMouseOut]);
-
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
