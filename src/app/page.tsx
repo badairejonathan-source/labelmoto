@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -74,6 +73,7 @@ export default function Home() {
   const hoverOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const closeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const closeOnScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
@@ -251,6 +251,17 @@ export default function Home() {
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
+
+    // Clear auto-close timeouts when user interacts with a card
+    if (closeCardTimeoutRef.current) {
+        clearTimeout(closeCardTimeoutRef.current);
+        closeCardTimeoutRef.current = null;
+    }
+    if (closeOnScrollTimeoutRef.current) {
+        clearTimeout(closeOnScrollTimeoutRef.current);
+        closeOnScrollTimeoutRef.current = null;
+    }
+    
     setSelectedDealershipId(isDeselecting ? null : dealership.id);
     
     if (!isDeselecting) {
@@ -268,6 +279,13 @@ export default function Home() {
   
   const handleMarkerClick = useCallback((id: string) => {
     const isDeselecting = selectedDealershipId === id;
+
+    // Clear auto-close timeouts when user interacts with a marker
+    if (closeOnScrollTimeoutRef.current) {
+        clearTimeout(closeOnScrollTimeoutRef.current);
+        closeOnScrollTimeoutRef.current = null;
+    }
+
     setSelectedDealershipId(isDeselecting ? null : id);
     
     if (!isDeselecting) {
@@ -284,6 +302,39 @@ export default function Home() {
         }
     }
   }, [allDealerships, selectedDealershipId, isMobile]);
+
+  useEffect(() => {
+    const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+
+    const startCloseTimer = () => {
+      // If a card is selected and no timer is already running...
+      if (selectedDealershipId && !closeOnScrollTimeoutRef.current) {
+        // ...set a timer to close it.
+        closeOnScrollTimeoutRef.current = setTimeout(() => {
+          setSelectedDealershipId(null);
+          closeOnScrollTimeoutRef.current = null; // Reset after firing
+        }, 2000);
+      }
+    };
+
+    // Listen for user-initiated scroll events
+    if (viewport) {
+      viewport.addEventListener('wheel', startCloseTimer, { passive: true });
+      viewport.addEventListener('touchstart', startCloseTimer, { passive: true });
+    }
+
+    // Cleanup function
+    return () => {
+      if (viewport) {
+        viewport.removeEventListener('wheel', startCloseTimer);
+        viewport.removeEventListener('touchstart', startCloseTimer);
+      }
+      if (closeOnScrollTimeoutRef.current) {
+        clearTimeout(closeOnScrollTimeoutRef.current);
+        closeOnScrollTimeoutRef.current = null;
+      }
+    };
+  }, [selectedDealershipId]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
     if (hoverOutTimeoutRef.current) {
@@ -566,4 +617,3 @@ export default function Home() {
     
 
     
-
