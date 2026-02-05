@@ -185,18 +185,27 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-  }, []);
+    if (isMobile) setIsListSheetOpen(true);
+  }, [isMobile]);
 
   const handleCityChange = useCallback((city: string) => {
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-  }, []);
+      if (isMobile) setIsListSheetOpen(true);
+  }, [isMobile]);
 
   const handleBrandChange = useCallback((brand: string) => {
     setSelectedBrands(prev => 
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
     );
-  }, []);
+    if (isMobile) setIsListSheetOpen(true);
+  }, [isMobile]);
+  
+  useEffect(() => {
+    if (isMobile && mapZoom > 8 && !hasActiveFilters) {
+      setIsListSheetOpen(true);
+    }
+  }, [isMobile, mapZoom, hasActiveFilters]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
     setMapCenter(currentCenter => {
@@ -404,7 +413,7 @@ export default function Home() {
                     onClick={() => handleCardClick(dealer)}
                     isExpanded={dealer.id === selectedDealershipId}
                     className={cn(
-                      "w-full max-w-64 mx-auto",
+                      "w-full mx-auto",
                       dealer.id === hoveredDealershipId ? "shadow-lg" : "",
                       dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
                     )}
@@ -479,14 +488,14 @@ export default function Home() {
           </div>
           
           <div className="md:hidden absolute bottom-0 left-0 right-0 z-[1000] pointer-events-none">
-            {!isListSheetOpen ? (
+            {!isListSheetOpen && dealershipsToDisplay.length > 0 ? (
                 <div className="w-full flex justify-center p-4 pointer-events-auto">
                     <Button className="shadow-lg" onClick={() => setIsListSheetOpen(true)}>
                       <List className="mr-2 h-4 w-4" />
-                      Voir la liste
+                      Voir la liste ({dealershipsToDisplay.length})
                     </Button>
                 </div>
-            ) : (
+            ) : isListSheetOpen && (
                 <div className="mx-2 mb-2 bg-background rounded-xl shadow-lg flex flex-col max-h-[60svh] pointer-events-auto">
                     <div className="p-3 py-2 border-b flex justify-between items-center">
                         <div className="w-8"></div> {/* Spacer */}
