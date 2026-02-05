@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -19,7 +20,7 @@ interface MapComponentProps {
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
   isMobile: boolean;
-  onMapChange: (center: [number, number], zoom: number) => void;
+  onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   isLocating?: boolean;
   onLocateEnd?: () => void;
   onLocationError?: (error: L.ErrorEvent) => void;
@@ -108,7 +109,7 @@ export default function MapComponent({
       if (!map) return;
       const currentCenter = map.getCenter();
       const currentZoom = map.getZoom();
-      stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom);
+      stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom, map.getBounds());
     };
 
     map.on('moveend', handleMoveEnd);

@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
+import type { LatLngBounds } from 'leaflet';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -62,6 +63,7 @@ export default function Home() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
+  const [mapBounds, setMapBounds] = useState<LatLngBounds | null>(null);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -199,7 +201,7 @@ export default function Home() {
     );
   }, []);
   
-  const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
+  const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     setMapCenter(currentCenter => {
         const isSameCenter = Math.abs(newCenter[0] - currentCenter[0]) < 1e-6 && Math.abs(newCenter[1] - currentCenter[1]) < 1e-6;
         if (isSameCenter) {
@@ -214,6 +216,7 @@ export default function Home() {
         }
         return newZoom;
     });
+    setMapBounds(bounds);
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
@@ -234,6 +237,17 @@ export default function Home() {
 
     return sortedByMapCenter.slice(0, 50);
   }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, selectedDealershipId]);
+
+  const dealershipsInViewCount = useMemo(() => {
+    const source = hasActiveFilters ? filteredDealerships : allDealerships;
+    if (!mapBounds) {
+      return dealershipsToDisplay.length;
+    }
+    
+    return source.filter(d => 
+        d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude])
+    ).length;
+  }, [mapBounds, hasActiveFilters, filteredDealerships, allDealerships, dealershipsToDisplay]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -540,7 +554,7 @@ export default function Home() {
                 <div className="w-full flex justify-center p-4 pointer-events-auto">
                     <Button className="shadow-lg" onClick={() => setIsListSheetOpen(true)}>
                       <List className="mr-2 h-4 w-4" />
-                      Voir la liste ({dealershipsToDisplay.length})
+                      Voir la liste ({dealershipsInViewCount})
                     </Button>
                 </div>
             ) : isListSheetOpen && (
