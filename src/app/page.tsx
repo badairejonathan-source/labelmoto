@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -218,6 +219,7 @@ export default function Home() {
     setMapBounds(bounds);
   }, []);
   
+  // For desktop list
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
     
@@ -231,13 +233,32 @@ export default function Home() {
   const dealershipsInViewCount = useMemo(() => {
     const source = hasActiveFilters ? filteredDealerships : allDealerships;
     if (!mapBounds) {
-      return dealershipsToDisplay.length;
+      return 0;
     }
     
     return source.filter(d => 
         d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude])
     ).length;
-  }, [mapBounds, hasActiveFilters, filteredDealerships, allDealerships, dealershipsToDisplay]);
+  }, [mapBounds, hasActiveFilters, filteredDealerships, allDealerships]);
+
+  // For mobile list, based on user's new logic
+  const dealershipsForMobileList = useMemo(() => {
+      const source = hasActiveFilters ? filteredDealerships : allDealerships;
+      
+      const visibleDealerships = mapBounds 
+          ? source.filter(d => d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude]))
+          : [];
+
+      const sortedVisible = [...visibleDealerships].sort((a, b) => {
+        return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
+      });
+
+      if (visibleDealerships.length > 20) {
+          return sortedVisible.slice(0, 25);
+      } else {
+          return sortedVisible;
+      }
+  }, [hasActiveFilters, filteredDealerships, allDealerships, mapBounds, mapCenter]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -471,8 +492,8 @@ export default function Home() {
           </div>
         ) : (
           <>
-            {dealershipsToDisplay.length > 0 ? (
-                dealershipsToDisplay.map((dealer) => (
+            {dealershipsForMobileList.length > 0 ? (
+                dealershipsForMobileList.map((dealer) => (
                 <div
                     key={dealer.id}
                     ref={node => {
@@ -548,7 +569,7 @@ export default function Home() {
           </div>
           
           <div className="md:hidden absolute bottom-0 left-0 right-0 z-[1000] pointer-events-none">
-            {!isListSheetOpen && dealershipsToDisplay.length > 0 ? (
+            {!isListSheetOpen && dealershipsInViewCount > 0 ? (
                 <div className="w-full flex justify-center p-4 pointer-events-auto">
                     <Button className="shadow-lg" onClick={() => setIsListSheetOpen(true)}>
                       <List className="mr-2 h-4 w-4" />
@@ -575,3 +596,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
