@@ -220,22 +220,13 @@ export default function Home() {
   
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
-
-    if (selectedDealershipId) {
-      const selected = sourceDealerships.find(d => d.id === selectedDealershipId);
-      if (selected && selected.latitude && selected.longitude) {
-        const others = sourceDealerships.filter(d => d.id !== selectedDealershipId);
-        others.sort((a, b) => getDistanceSq([selected.latitude!, selected.longitude!], a) - getDistanceSq([selected.latitude!, selected.longitude!], b));
-        return [selected, ...others].slice(0, 50);
-      }
-    }
     
     const sortedByMapCenter = [...sourceDealerships].sort((a, b) => {
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     });
 
     return sortedByMapCenter.slice(0, 50);
-  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, selectedDealershipId]);
+  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter]);
 
   const dealershipsInViewCount = useMemo(() => {
     const source = hasActiveFilters ? filteredDealerships : allDealerships;
