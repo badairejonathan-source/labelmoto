@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -33,7 +34,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     : dealership.placeUrl;
 
   if (isExpanded) {
-    // Render the new expanded layout
+    // Render the new expanded layout from the user's image
     return (
       <Card
         onClick={(e: React.MouseEvent) => {
@@ -43,14 +44,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           onClick?.();
         }}
         className={cn(
-          "w-full mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer",
+          "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer",
           className,
         )}
       >
         <div className="flex flex-col">
             {/* Header with image and name */}
             <div className="flex flex-row items-center p-4 border-b border-border/50 bg-card">
-                <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
+                <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border">
                     {dealership.imgUrl ? (
                     <Image
                       src={dealership.imgUrl}
@@ -72,7 +73,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   )}
                 </div>
                 <div className="pl-4 flex flex-col justify-center min-w-0">
-                    <h3 className="font-bold text-base text-primary dark:text-primary-foreground leading-tight">
+                    <h3 className="font-bold text-base text-foreground leading-tight">
                       {title}
                     </h3>
                 </div>
@@ -110,7 +111,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 {/* Address */}
                  {dealership.address && (
                   <TooltipProvider delayDuration={100}>
-                    <div className="text-center border-t border-b border-border/50 py-3">
+                    <div className="text-center border-t border-border/50 pt-3 mt-3">
                       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adresse</p>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -128,7 +129,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 )}
 
                 {/* Opening Hours */}
-                <div>
+                <div className="border-t border-border/50 pt-3 mt-3">
                   <div className="text-center mb-2">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Horaires</p>
                   </div>

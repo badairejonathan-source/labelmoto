@@ -456,7 +456,7 @@ export default function Home() {
                   dealership={selectedDealershipForMobile}
                   onClick={() => handleCardClick(selectedDealershipForMobile)}
                   isExpanded={true}
-                  className="w-[7cm] mx-auto"
+                  className="w-full"
                 />
               </div>
             )}
