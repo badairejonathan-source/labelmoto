@@ -9,10 +9,9 @@ import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import locations from '@/data/locations.json';
-import { ListFilter, List, Crosshair, Loader2 } from 'lucide-react';
+import { ListFilter, List, Crosshair, Loader2, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { db } from '@/lib/firebase';
@@ -258,12 +257,8 @@ export default function Home() {
       if (viewport) {
           viewport.scrollTo({ top: 0, behavior: 'smooth' });
       }
-
-      if (isMobile) {
-        setIsListSheetOpen(false);
-      }
     }
-  }, [isMobile, selectedDealershipId]);
+  }, [selectedDealershipId]);
   
   const handleMarkerClick = useCallback((id: string) => {
     const isDeselecting = selectedDealershipId === id;
@@ -499,23 +494,28 @@ export default function Home() {
               </Button>
           </div>
           
-          <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
-            <Sheet open={isListSheetOpen} onOpenChange={setIsListSheetOpen}>
-              <SheetTrigger asChild>
-                <Button className="shadow-lg">
-                  <List className="mr-2 h-4 w-4" />
-                  Voir la liste
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-[80svh] flex flex-col p-0">
-                <SheetHeader className="p-4 border-b">
-                  <SheetTitle>Concessions à proximité</SheetTitle>
-                </SheetHeader>
-                <div className="flex-1 overflow-hidden">
-                  {listContent}
+          <div className="md:hidden absolute bottom-0 left-0 right-0 z-[1000] pointer-events-none">
+            {!isListSheetOpen ? (
+                <div className="w-full flex justify-center p-4 pointer-events-auto">
+                    <Button className="shadow-lg" onClick={() => setIsListSheetOpen(true)}>
+                      <List className="mr-2 h-4 w-4" />
+                      Voir la liste
+                    </Button>
                 </div>
-              </SheetContent>
-            </Sheet>
+            ) : (
+                <div className="mx-2 mb-2 bg-background rounded-xl shadow-lg flex flex-col max-h-[60svh] pointer-events-auto">
+                    <div className="p-3 py-2 border-b flex justify-between items-center">
+                        <div className="w-8"></div> {/* Spacer */}
+                        <h2 className="font-semibold text-center text-muted-foreground">Concessions à proximité</h2>
+                        <Button variant="ghost" size="icon" onClick={() => setIsListSheetOpen(false)} className="h-8 w-8 shrink-0">
+                            <X className="h-5 w-5 text-muted-foreground"/>
+                        </Button>
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                        {listContent}
+                    </div>
+                </div>
+            )}
           </div>
         </main>
       </div>
