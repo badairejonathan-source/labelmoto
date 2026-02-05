@@ -405,7 +405,7 @@ export default function Home() {
                     onClick={() => handleCardClick(dealer)}
                     isExpanded={dealer.id === selectedDealershipId}
                     className={cn(
-                      "w-full mx-auto",
+                      "w-[7cm] mx-auto",
                       dealer.id === hoveredDealershipId ? "shadow-lg" : "",
                       dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
                     )}
@@ -466,7 +466,7 @@ export default function Home() {
                     dealershipsToDisplay.map((dealer) => (
                     <div
                         key={dealer.id}
-                        className="w-56 flex-shrink-0"
+                        className="w-[7cm] flex-shrink-0"
                         onMouseEnter={() => handleCardMouseEnter(dealer.id)}
                         onMouseLeave={() => handleCardMouseLeave(dealer.id)}
                     >
@@ -502,7 +502,7 @@ export default function Home() {
       </Header>
 
       <div className="flex-1 flex overflow-hidden relative">
-        <aside className="w-[35%] flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
+        <aside className="w-96 flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
           {listContent}
         </aside>
 
@@ -563,5 +563,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
