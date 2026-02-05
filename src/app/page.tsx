@@ -453,56 +453,39 @@ export default function Home() {
     </ScrollArea>
   );
 
-  const selectedDealershipForMobile = selectedDealershipId ? dealershipsToDisplay.find(d => d.id === selectedDealershipId) : null;
-
   const mobileListContent = (
-     <ScrollArea className="h-full">
-      <div className="flex flex-col h-full">
+    <ScrollArea ref={scrollAreaRef} className="h-full">
+      <div className="p-4 space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground pt-8">
             <p>Chargement des concessions...</p>
           </div>
         ) : (
           <>
-            {selectedDealershipForMobile && (
-              <div className="p-4 border-b">
-                <DealershipCard
-                  dealership={selectedDealershipForMobile}
-                  onClick={() => handleCardClick(selectedDealershipForMobile)}
-                  isExpanded={true}
-                  className="w-full"
-                />
-              </div>
-            )}
-             <div className="w-full overflow-x-auto">
-                <div className="flex w-max space-x-4 p-4">
-                {dealershipsToDisplay.length > 0 ? (
-                    dealershipsToDisplay.map((dealer) => (
-                    <div
-                        key={dealer.id}
-                        className="w-[7cm] flex-shrink-0"
-                        onMouseEnter={() => handleCardMouseEnter(dealer.id)}
-                        onMouseLeave={() => handleCardMouseLeave(dealer.id)}
-                    >
-                        <DealershipCard
-                            dealership={dealer}
-                            onClick={() => handleCardClick(dealer)}
-                            isExpanded={false}
-                            className={cn(
-                                "h-full",
-                                dealer.id === hoveredDealershipId ? "shadow-lg" : "",
-                                dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
-                            )}
-                        />
-                    </div>
-                    ))
-                ) : (
-                    <div className="text-center text-muted-foreground w-full px-4">
-                        <p>Aucun résultat trouvé à proximité.</p>
-                    </div>
-                )}
+            {dealershipsToDisplay.length > 0 ? (
+                dealershipsToDisplay.map((dealer) => (
+                <div
+                    key={dealer.id}
+                    onMouseEnter={() => handleCardMouseEnter(dealer.id)}
+                    onMouseLeave={() => handleCardMouseLeave(dealer.id)}
+                >
+                    <DealershipCard
+                        dealership={dealer}
+                        onClick={() => handleCardClick(dealer)}
+                        isExpanded={dealer.id === selectedDealershipId}
+                        className={cn(
+                            "w-[7cm] mx-auto",
+                            dealer.id === hoveredDealershipId ? "shadow-lg" : "",
+                            dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
+                        )}
+                    />
                 </div>
-            </div>
+                ))
+            ) : (
+                <div className="text-center text-muted-foreground pt-20">
+                    <p>Aucun résultat trouvé à proximité.</p>
+                </div>
+            )}
           </>
         )}
       </div>
@@ -583,3 +566,4 @@ export default function Home() {
     
 
     
+
