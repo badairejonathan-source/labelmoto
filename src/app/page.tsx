@@ -64,7 +64,6 @@ export default function Home() {
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
   
@@ -174,7 +173,6 @@ export default function Home() {
   }, [selectedDepartment]);
 
   const handleDepartmentChange = useCallback((department: string) => {
-    if (!userHasInteracted) setUserHasInteracted(true);
     setSelectedDepartment(department);
     setSelectedCity('');
     if (department && department !== 'all') {
@@ -187,23 +185,20 @@ export default function Home() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
     }
-  }, [userHasInteracted]);
+  }, []);
 
   const handleCityChange = useCallback((city: string) => {
-    if (!userHasInteracted) setUserHasInteracted(true);
       const cityValue = city === 'all-cities' ? '' : city;
       setSelectedCity(cityValue);
-  }, [userHasInteracted]);
+  }, []);
 
   const handleBrandChange = useCallback((brand: string) => {
-    if (!userHasInteracted) setUserHasInteracted(true);
     setSelectedBrands(prev => 
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
     );
-  }, [userHasInteracted]);
+  }, []);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
-    if (!userHasInteracted) setUserHasInteracted(true);
     setMapCenter(currentCenter => {
         const isSameCenter = Math.abs(newCenter[0] - currentCenter[0]) < 1e-6 && Math.abs(newCenter[1] - currentCenter[1]) < 1e-6;
         if (isSameCenter) {
@@ -218,14 +213,10 @@ export default function Home() {
         }
         return newZoom;
     });
-  }, [userHasInteracted]);
+  }, []);
   
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
-
-    if (!userHasInteracted && !selectedDealershipId) {
-      return [];
-    }
 
     if (selectedDealershipId) {
       const selected = sourceDealerships.find(d => d.id === selectedDealershipId);
@@ -241,7 +232,7 @@ export default function Home() {
     });
 
     return sortedByMapCenter.slice(0, 50);
-  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, userHasInteracted, selectedDealershipId]);
+  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, selectedDealershipId]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -435,19 +426,12 @@ export default function Home() {
                 <AdCard />
               </div>
             )}
-            {dealershipsToDisplay.length === 0 &&
-              (hasActiveFilters || userHasInteracted ? (
+            {dealershipsToDisplay.length === 0 && (
                 <div className="text-center text-muted-foreground pt-20">
-                  <p>Aucun résultat trouvé.</p>
-                  <p className="text-sm">Essayez d'ajuster vos filtres.</p>
+                  <p>Aucun résultat trouvé à proximité.</p>
+                  <p className="text-sm">Essayez d'ajuster vos filtres ou de vous déplacer sur la carte.</p>
                 </div>
-              ) : (
-                 <div className="h-[60vh] flex items-center justify-center p-4">
-                  <div className="w-full">
-                    <AdCard />
-                  </div>
-                </div>
-              ))}
+            )}
           </>
         )}
       </div>
