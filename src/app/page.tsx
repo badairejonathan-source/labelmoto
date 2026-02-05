@@ -202,10 +202,10 @@ export default function Home() {
   }, [isMobile]);
   
   useEffect(() => {
-    if (isMobile && mapZoom > 8 && !hasActiveFilters) {
+    if (isMobile && mapZoom > 8) {
       setIsListSheetOpen(true);
     }
-  }, [isMobile, mapZoom, hasActiveFilters]);
+  }, [isMobile, mapZoom]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number) => {
     setMapCenter(currentCenter => {
@@ -393,7 +393,7 @@ export default function Home() {
   const adFrequency = 3;
 
   const listContent = (
-    <ScrollArea ref={scrollAreaRef} className="flex-grow h-0">
+    <ScrollArea ref={scrollAreaRef} className="h-full">
       <div className="p-5 w-full space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground pt-20">
