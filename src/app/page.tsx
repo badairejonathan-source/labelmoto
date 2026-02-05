@@ -72,8 +72,7 @@ export default function Home() {
   const hoverInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hoverOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const closeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const closeOnScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
 
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
@@ -251,16 +250,6 @@ export default function Home() {
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
-
-    // Clear auto-close timeouts when user interacts with a card
-    if (closeCardTimeoutRef.current) {
-        clearTimeout(closeCardTimeoutRef.current);
-        closeCardTimeoutRef.current = null;
-    }
-    if (closeOnScrollTimeoutRef.current) {
-        clearTimeout(closeOnScrollTimeoutRef.current);
-        closeOnScrollTimeoutRef.current = null;
-    }
     
     setSelectedDealershipId(isDeselecting ? null : dealership.id);
     
@@ -269,22 +258,11 @@ export default function Home() {
         setMapCenter([dealership.latitude, dealership.longitude]);
         setMapZoom(14);
       }
-      
-      const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
-      if (viewport) {
-          viewport.scrollTo({ top: 0, behavior: 'smooth' });
-      }
     }
   }, [selectedDealershipId]);
   
   const handleMarkerClick = useCallback((id: string) => {
     const isDeselecting = selectedDealershipId === id;
-
-    // Clear auto-close timeouts when user interacts with a marker
-    if (closeOnScrollTimeoutRef.current) {
-        clearTimeout(closeOnScrollTimeoutRef.current);
-        closeOnScrollTimeoutRef.current = null;
-    }
 
     setSelectedDealershipId(isDeselecting ? null : id);
     
@@ -296,43 +274,35 @@ export default function Home() {
         if (isMobile) {
           setIsListSheetOpen(true);
         }
-         const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
-        if (viewport) {
-            viewport.scrollTo({ top: 0, behavior: 'smooth' });
-        }
     }
   }, [allDealerships, selectedDealershipId, isMobile]);
 
   useEffect(() => {
-    const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+    if (!selectedDealershipId) return;
 
-    const startCloseTimer = () => {
-      // If a card is selected and no timer is already running...
-      if (selectedDealershipId && !closeOnScrollTimeoutRef.current) {
-        // ...set a timer to close it.
-        closeOnScrollTimeoutRef.current = setTimeout(() => {
-          setSelectedDealershipId(null);
-          closeOnScrollTimeoutRef.current = null; // Reset after firing
-        }, 2000);
-      }
-    };
+    const scrollViewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+    const targetCard = cardRefs.current.get(selectedDealershipId);
 
-    // Listen for user-initiated scroll events
-    if (viewport) {
-      viewport.addEventListener('wheel', startCloseTimer, { passive: true });
-      viewport.addEventListener('touchstart', startCloseTimer, { passive: true });
-    }
+    if (!targetCard || !scrollViewport) return;
 
-    // Cleanup function
+    const observer = new IntersectionObserver(
+        ([entry]) => {
+            // If the card is not intersecting (not visible)
+            if (!entry.isIntersecting) {
+                setSelectedDealershipId(null);
+                observer.disconnect();
+            }
+        },
+        { 
+            root: scrollViewport,
+            threshold: 0 // Close when it's completely out of view
+        }
+    );
+
+    observer.observe(targetCard);
+    
     return () => {
-      if (viewport) {
-        viewport.removeEventListener('wheel', startCloseTimer);
-        viewport.removeEventListener('touchstart', startCloseTimer);
-      }
-      if (closeOnScrollTimeoutRef.current) {
-        clearTimeout(closeOnScrollTimeoutRef.current);
-        closeOnScrollTimeoutRef.current = null;
-      }
+        observer.disconnect();
     };
   }, [selectedDealershipId]);
 
@@ -360,21 +330,12 @@ export default function Home() {
   }, []);
 
   const handleCardMouseEnter = useCallback((id: string) => {
-    if (closeCardTimeoutRef.current) {
-        clearTimeout(closeCardTimeoutRef.current);
-        closeCardTimeoutRef.current = null;
-    }
     handleMarkerMouseOver(id);
   }, [handleMarkerMouseOver]);
 
-  const handleCardMouseLeave = useCallback((id: string) => {
-    if (id === selectedDealershipId) {
-        closeCardTimeoutRef.current = setTimeout(() => {
-            setSelectedDealershipId(null);
-        }, 1000);
-    }
+  const handleCardMouseLeave = useCallback(() => {
     handleMouseOut();
-  }, [selectedDealershipId, handleMouseOut]);
+  }, [handleMouseOut]);
 
   const handleLocationError = useCallback((error: any) => {
     let message = 'Impossible de déterminer votre position.';
@@ -462,8 +423,14 @@ export default function Home() {
               const card = (
                 <div
                   key={dealer.id}
+                  ref={node => {
+                    if (cardRefs.current) {
+                      if (node) cardRefs.current.set(dealer.id, node);
+                      else cardRefs.current.delete(dealer.id);
+                    }
+                  }}
                   onMouseEnter={() => handleCardMouseEnter(dealer.id)}
-                  onMouseLeave={() => handleCardMouseLeave(dealer.id)}
+                  onMouseLeave={handleCardMouseLeave}
                 >
                   <DealershipCard
                     dealership={dealer}
@@ -517,8 +484,14 @@ export default function Home() {
                 dealershipsToDisplay.map((dealer) => (
                 <div
                     key={dealer.id}
+                    ref={node => {
+                        if (cardRefs.current) {
+                          if (node) cardRefs.current.set(dealer.id, node);
+                          else cardRefs.current.delete(dealer.id);
+                        }
+                    }}
                     onMouseEnter={() => handleCardMouseEnter(dealer.id)}
-                    onMouseLeave={() => handleCardMouseLeave(dealer.id)}
+                    onMouseLeave={handleCardMouseLeave}
                 >
                     <DealershipCard
                         dealership={dealer}
@@ -611,9 +584,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
-
-    
