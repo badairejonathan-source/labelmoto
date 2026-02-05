@@ -153,7 +153,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     );
   }
 
-  // Render the original collapsed view
+  // Render the collapsed view for the horizontal mobile list
   return (
     <Card
       onClick={(e: React.MouseEvent) => {
@@ -167,15 +167,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         className,
       )}
     >
-      <div className="flex flex-row h-36">
-        <div className="relative w-24 flex-shrink-0">
+      <div className="flex flex-col h-full">
+        <div className="relative w-full h-24 flex-shrink-0">
           {dealership.imgUrl ? (
             <Image
               src={dealership.imgUrl}
               alt={`Photo de ${title}`}
               fill
               className="object-cover"
-              sizes="96px"
+              sizes="14rem"
             />
           ) : (
              <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
@@ -189,35 +189,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           )}
         </div>
-        <CardContent className="p-3 flex-grow relative flex flex-col min-w-0 justify-center gap-2">
-            <div>
-                <div className="flex justify-between items-start gap-2">
-                   <div className="flex-grow min-w-0 flex-shrink">
-                    <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight truncate">
-                      {title}
-                    </h3>
-                  </div>
+        <CardContent className="p-2 flex-grow relative flex flex-col min-w-0 justify-start gap-1">
+            <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight truncate">
+              {title}
+            </h3>
+            {dealership.address && (
+                <div className="text-xs text-muted-foreground mt-1 flex items-start">
+                    <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
+                    <span className="line-clamp-2">{dealership.address}</span>
                 </div>
-                {dealership.address && (
-                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground mt-1 flex items-start hover:text-accent hover:underline">
-                        <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
-                        <span className="line-clamp-2">{dealership.address}</span>
-                    </a>
-                )}
-            </div>
-
-            <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center text-muted-foreground min-w-0">
-                    <Phone className="h-3 w-3 mr-1.5 shrink-0" />
-                    {dealership.phoneNumber ? (
-                        <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex items-center min-w-0 hover:text-accent hover:underline">
-                            <span className="truncate">{dealership.phoneNumber}</span>
-                        </a>
-                    ) : (
-                        <span>Non disponible</span>
-                    )}
-                </div>
-            </div>
+            )}
         </CardContent>
       </div>
     </Card>
