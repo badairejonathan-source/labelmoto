@@ -2,69 +2,68 @@
 'use client';
 
 import React from 'react';
-import { User, SlidersHorizontal } from 'lucide-react';
+import { Bike, Wrench, FileText, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import MotoTrustLogo from './logo';
-import useWindowSize from '@/hooks/use-window-size';
 import { cn } from '@/lib/utils';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
-// Cette interface corrige l'erreur rouge "implicitly has an any type"
 interface HeaderProps {
-  children?: React.ReactNode;
+    searchTerm: string;
+    onSearchTermChange: (term: string) => void;
+    onSearch: () => void;
+    className?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ children }) => {
-  const { width } = useWindowSize();
-  const isMobile = width ? width < 768 : false;
-
+const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearch, className }) => {
   return (
-    <header className={cn(
-      "bg-road p-2 md:p-4 text-foreground border-b border-border z-[2000]"
-    )}>
-      <div className="relative z-10 flex items-center justify-between">
-        
-        {/* LOGO : On force sa taille ici (w-32 = mobile, w-48 = pc) */}
-        <div className="flex items-center text-foreground">
-             <div className="w-32 md:w-48">
-                <MotoTrustLogo />
-             </div>
+    <header className={cn("bg-card p-4 text-foreground border-b border-border z-40", className)}>
+      <div className="container mx-auto flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div className="w-32 md:w-40 shrink-0">
+            <MotoTrustLogo />
+          </div>
+          
+          <nav className="hidden md:flex items-center justify-center gap-8 flex-grow">
+            <Button variant="ghost" className="relative p-2 h-auto text-primary">
+              <Bike className="h-7 w-7" />
+              <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-primary rounded-full"></span>
+            </Button>
+            <Button variant="ghost" className="p-2 h-auto text-muted-foreground hover:text-primary">
+              <Wrench className="h-7 w-7" />
+            </Button>
+            <Button variant="ghost" className="p-2 h-auto text-muted-foreground hover:text-primary">
+              <FileText className="h-7 w-7" />
+            </Button>
+          </nav>
+          
+          <div className="flex items-center justify-end w-32 md:w-40">
+            <Button size="icon" variant="ghost">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </div>
         </div>
         
-        {/* Les éléments enfants (Barre de recherche, etc.) - Desktop */}
-        {!isMobile && children}
-        
-        {/* Boutons Utilisateur & Filtres Mobile */}
-        <div className="flex items-center space-x-2">
-          {isMobile && (
-            <Sheet modal={false}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="bg-transparent hover:bg-primary/80 text-foreground border-border">
-                  <SlidersHorizontal className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[90vw] max-w-sm">
-                <SheetHeader>
-                  <SheetTitle>Filtres</SheetTitle>
-                  <SheetDescription>
-                    Ajustez les filtres pour affiner votre recherche de motos.
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="mt-4">
-                  {children}
-                </div>
-              </SheetContent>
-            </Sheet>
-          )}
-          <Button size="icon" variant="outline" className="bg-transparent hover:bg-primary/80 text-foreground border-border">
-            <User className="h-5 w-5" />
+        <div className="relative w-full max-w-lg mx-auto">
+          <Input
+            type="search"
+            placeholder="Rechercher..."
+            className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+            value={searchTerm}
+            onChange={(e) => onSearchTermChange(e.target.value)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                    onSearch();
+                }
+            }}
+          />
+          <Button 
+              type="submit" 
+              size="icon" 
+              className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-red-500 hover:bg-red-600 text-white rounded-full shadow"
+              onClick={onSearch}
+          >
+            <Search className="h-5 w-5" />
           </Button>
         </div>
       </div>

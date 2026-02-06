@@ -9,10 +9,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import locations from '@/data/locations.json';
-import { ListFilter, List, Crosshair, Loader2, X } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { List, Crosshair, Loader2, X } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { db } from '@/lib/firebase';
@@ -25,29 +22,6 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
   loading: () => (<div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>)
 });
 
-const brandKeywords = [
-    'Aprilia', 'Benelli', 'BMW', 'Can-Am', 'CFMOTO', 'Daelim', 'Ducati', 'Fantic', 'GasGas', 'Harley-Davidson', 
-    'Honda', 'Husqvarna', 'Hyosung', 'Indian', 'Kawasaki', 'Keeway', 'KTM', 'Kymco', 'Mash', 'Moto Guzzi', 
-    'MV Agusta', 'Orcal', 'Peugeot', 'Piaggio', 'Royal Enfield', 'Suzuki', 'SWM', 'Sym', 'Triumph', 'Vespa', 
-    'Yamaha', 'Zontes'
-];
-
-const getBrands = (dealerships: Dealership[]) => {
-  const brandSet = new Set<string>();
-  
-  dealerships.forEach(d => {
-    if (d.title && typeof d.title === 'string') {
-        brandKeywords.forEach(brand => {
-            if (d.title.toLowerCase().includes(brand.toLowerCase())) {
-                brandSet.add(brand);
-            }
-        });
-    }
-  });
-
-  return Array.from(brandSet).sort();
-}
-
 const getDistanceSq = (center: [number, number], dealer: Dealership) => {
     if (dealer.latitude == null || dealer.longitude == null) return Infinity;
     const dx = center[1] - dealer.longitude;
@@ -58,9 +32,9 @@ const getDistanceSq = (center: [number, number], dealer: Dealership) => {
 export default function Home() {
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [submittedSearchTerm, setSubmittedSearchTerm] = useState('');
+  
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
   const [mapBounds, setMapBounds] = useState<LatLngBounds | null>(null);
@@ -80,8 +54,6 @@ export default function Home() {
   const isMobile = width ? width < 768 : false;
   const [isListSheetOpen, setIsListSheetOpen] = useState(false);
   
-  const [departments] = useState<string[]>(Object.keys(locations));
-
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
 
@@ -125,6 +97,7 @@ export default function Home() {
         
         const uniqueDealerships = Array.from(dealershipMap.values());
         setAllDealerships(uniqueDealerships);
+        setFilteredDealerships(uniqueDealerships);
         setIsLoading(false);
     }, (error) => {
         console.error("Firebase read failed: " + error.message);
@@ -135,128 +108,33 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  const availableBrands = useMemo(() => getBrands(allDealerships), [allDealerships]);
-  const hasActiveFilters = (selectedDepartment !== '' && selectedDepartment !== 'all') || selectedCity !== '' || selectedBrands.length > 0;
+  const isSearching = submittedSearchTerm.trim() !== '';
 
   useEffect(() => {
-    let dealerships = allDealerships;
-
-    if (hasActiveFilters) {
-        if (selectedDepartment && selectedDepartment !== 'all') {
-            const depCode = selectedDepartment.split(' ')[0];
-            
-            dealerships = dealerships.filter(d => {
-                if (!d.address) return false;
-                const postalCodeMatch = d.address.match(/\b(\d{5})\b/);
-                if (!postalCodeMatch) return false;
-                
-                const postalCode = postalCodeMatch[1];
-
-                if (depCode === '2A') {
-                    return postalCode.startsWith('200') || postalCode.startsWith('201');
-                }
-                if (depCode === '2B') {
-                    return postalCode.startsWith('20') && !postalCode.startsWith('200') && !postalCode.startsWith('201');
-                }
-                return postalCode.startsWith(depCode);
-            });
-        }
-        
-        if (selectedCity) {
-            const lowerCaseCity = selectedCity.toLowerCase();
-            dealerships = dealerships.filter(d =>
-                d.address && typeof d.address === 'string' && d.address.toLowerCase().includes(lowerCaseCity)
-            );
-        }
-        
-        if (selectedBrands.length > 0) {
-            const brandLower = selectedBrands.map(b => b.toLowerCase());
-            dealerships = dealerships.filter(d => 
-                d.title && typeof d.title === 'string' && brandLower.some(brand => d.title.toLowerCase().includes(brand))
-            );
-        }
-    }
-    
-    setFilteredDealerships(dealerships);
-
-  }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, hasActiveFilters]);
-
-  const cities = useMemo(() => {
-    if (!selectedDepartment || selectedDepartment === 'all') {
-      return [];
+    if (submittedSearchTerm.trim() === '') {
+        setFilteredDealerships(allDealerships);
+        return;
     }
 
-    const depCode = selectedDepartment.split(' ')[0];
-
-    const dealershipsForDept = allDealerships.filter(d => {
-        if (!d.address) return false;
-        const postalCodeMatch = d.address.match(/\b(\d{5})\b/);
-        if (!postalCodeMatch) return false;
-        
-        const postalCode = postalCodeMatch[1];
-
-        if (depCode === '2A') {
-            return postalCode.startsWith('200') || postalCode.startsWith('201');
-        }
-        if (depCode === '2B') {
-            // All other Corsica codes
-            return postalCode.startsWith('20') && !postalCode.startsWith('200') && !postalCode.startsWith('201');
-        }
-        return postalCode.startsWith(depCode);
-    });
-
-    const citySet = new Set<string>();
-    dealershipsForDept.forEach(dealer => {
-      // Attempt to extract city name from address, which is assumed to follow the postal code
-      const cityMatch = dealer.address?.match(/\b\d{5}\s+([A-Za-z\s-À-ÿ']+)/);
-      if (cityMatch && cityMatch[1]) {
-          let cityName = cityMatch[1].split(',')[0].trim();
-          // Clean up city name from 'CEDEX' suffixes
-          cityName = cityName.replace(/\sCEDEX.*$/i, '').trim();
-          if (cityName) {
-              // Capitalize first letter, rest lowercase
-              const formattedCityName = cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
-              citySet.add(formattedCityName);
-          }
-      }
-    });
-
-    return Array.from(citySet).sort();
-  }, [selectedDepartment, allDealerships]);
-
-  const handleDepartmentChange = useCallback((department: string) => {
-    setSelectedDepartment(department);
-    setSelectedCity('');
-    if (department && department !== 'all') {
-      const depData = (locations as any)[department];
-      if (depData && depData.center) {
-        setMapCenter(depData.center as [number, number]);
-        setMapZoom(9);
-      }
-    } else if (department === 'all') {
-      setMapCenter([46.603354, 1.888334]);
-      setMapZoom(6);
-    }
-  }, []);
-
-  const handleCityChange = useCallback((city: string) => {
-      const cityValue = city === 'all-cities' ? '' : city;
-      setSelectedCity(cityValue);
-  }, []);
-
-  const handleBrandChange = useCallback((brand: string) => {
-    setSelectedBrands(prev => 
-      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
+    const lowerCaseSearch = submittedSearchTerm.toLowerCase();
+    const results = allDealerships.filter(d => 
+        (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
+        (d.address?.toLowerCase().includes(lowerCaseSearch))
     );
-  }, []);
+    setFilteredDealerships(results);
+    if(results.length > 0) {
+      const firstResult = results[0];
+      if(firstResult.latitude && firstResult.longitude){
+        setMapCenter([firstResult.latitude, firstResult.longitude]);
+        setMapZoom(12);
+      }
+    }
 
-  const clearFilters = useCallback(() => {
-    setSelectedDepartment('');
-    setSelectedCity('');
-    setSelectedBrands([]);
-    setMapCenter([46.603354, 1.888334]);
-    setMapZoom(6);
-  }, []);
+  }, [submittedSearchTerm, allDealerships]);
+
+  const handleSearch = () => {
+    setSubmittedSearchTerm(searchTerm);
+  };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     setMapCenter(currentCenter => {
@@ -277,7 +155,7 @@ export default function Home() {
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
-    const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
+    const sourceDealerships = isSearching ? filteredDealerships : allDealerships;
     
     const sortedByMapCenter = [...sourceDealerships].sort((a, b) => {
       if (a.id === selectedDealershipId) return -1;
@@ -286,11 +164,11 @@ export default function Home() {
     });
 
     return sortedByMapCenter.slice(0, 50);
-  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, selectedDealershipId]);
+  }, [isSearching, filteredDealerships, allDealerships, mapCenter, selectedDealershipId]);
 
 
   const dealershipsInViewCount = useMemo(() => {
-    const source = hasActiveFilters ? filteredDealerships : allDealerships;
+    const source = isSearching ? filteredDealerships : allDealerships;
     if (!mapBounds) {
       return source.length > 0 ? dealershipsToDisplay.length : 0;
     }
@@ -298,11 +176,11 @@ export default function Home() {
     return source.filter(d => 
         d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude])
     ).length;
-  }, [mapBounds, hasActiveFilters, filteredDealerships, allDealerships, dealershipsToDisplay]);
+  }, [mapBounds, isSearching, filteredDealerships, allDealerships, dealershipsToDisplay]);
 
   // For mobile list, based on user's new logic
   const dealershipsForMobileList = useMemo(() => {
-      const source = hasActiveFilters ? filteredDealerships : allDealerships;
+      const source = isSearching ? filteredDealerships : allDealerships;
       
       const visibleDealerships = mapBounds 
           ? source.filter(d => d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude]))
@@ -311,13 +189,13 @@ export default function Home() {
       const sortedVisible = [...visibleDealerships].sort((a, b) => {
         return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
       });
-
-      if (visibleDealerships.length > 20) {
+      
+      if (sortedVisible.length > 20) {
           return sortedVisible.slice(0, 25);
       } else {
           return sortedVisible;
       }
-  }, [hasActiveFilters, filteredDealerships, allDealerships, mapBounds, mapCenter]);
+  }, [isSearching, filteredDealerships, allDealerships, mapBounds, mapCenter]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -425,69 +303,6 @@ export default function Home() {
     setFirstClickId(null);
   }, []);
 
-  const renderFilters = () => {
-    return (
-      <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:items-center md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
-        <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
-          <SelectTrigger variant="filter">
-            <span className="mr-2">Départements:</span>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="z-[1300]">
-            <ScrollArea className="h-72">
-              <SelectItem value="all">France entière</SelectItem>
-              {departments.map(dep => (
-                <SelectItem key={dep} value={dep}>{dep}</SelectItem>
-              ))}
-            </ScrollArea>
-          </SelectContent>
-        </Select>
-        <Select onValueChange={handleCityChange} value={selectedCity || 'all-cities'} disabled={!selectedDepartment || selectedDepartment === 'all'}>
-          <SelectTrigger variant="filter">
-            <SelectValue placeholder="Choisir une ville" />
-          </SelectTrigger>
-          <SelectContent className="z-[1300]">
-            <ScrollArea className="h-72">
-               <SelectItem value="all-cities">Toutes les villes</SelectItem>
-              {cities.map((city:any) => (
-                <SelectItem key={city} value={city}>{city}</SelectItem>
-              ))}
-            </ScrollArea>
-          </SelectContent>
-        </Select>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="filter" className="shrink-0 justify-between">
-              {selectedBrands.length > 0 ? `${selectedBrands.length} marque(s)` : 'Toutes marques'}
-              <ListFilter className="ml-2 h-4 w-4"/>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 z-[1300]">
-            <DropdownMenuLabel>Marques</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <ScrollArea className="h-72">
-              {availableBrands.map(brand => (
-                <DropdownMenuCheckboxItem
-                  key={brand}
-                  checked={selectedBrands.includes(brand)}
-                  onCheckedChange={() => handleBrandChange(brand)}
-                >
-                  {brand}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </ScrollArea>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {hasActiveFilters && (
-            <Button variant="ghost" size="icon" onClick={clearFilters} className="shrink-0" title="Effacer les filtres">
-                <X className="h-5 w-5"/>
-                <span className="sr-only">Effacer les filtres</span>
-            </Button>
-        )}
-      </div>
-    );
-  };
-  
   const adFrequency = 3;
 
   const listContent = (
@@ -598,9 +413,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-[100svh] w-full overflow-hidden bg-background">
-      <Header>
-        {renderFilters()}
-      </Header>
+      <Header
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        onSearch={handleSearch}
+      />
 
       <div className="flex-1 flex overflow-hidden relative">
         <aside className="w-96 flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
@@ -610,7 +427,7 @@ export default function Home() {
         <main className="h-full flex-1 relative bg-background p-0 md:p-4">
           <div className="w-full h-full md:rounded-lg overflow-hidden shadow-md relative">
             <MapComponent 
-              dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
+              dealerships={isSearching ? filteredDealerships : allDealerships}
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
@@ -669,7 +486,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
