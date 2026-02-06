@@ -205,10 +205,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       >
         <div className="flex flex-col h-full">
           <div
-            onClick={handleImageClick}
             className={cn(
-              "relative w-full h-24 flex-shrink-0",
-              dealership.imgUrl && "cursor-zoom-in"
+              "relative w-full h-24 flex-shrink-0"
             )}
           >
             {dealership.imgUrl ? (
