@@ -144,10 +144,22 @@ export default function Home() {
     if (hasActiveFilters) {
         if (selectedDepartment && selectedDepartment !== 'all') {
             const depCode = selectedDepartment.split(' ')[0];
-            const postalCodeRegex = new RegExp(`\\b${depCode}\\d{3}\\b`);
-            dealerships = dealerships.filter(d =>
-                d.address && typeof d.address === 'string' && postalCodeRegex.test(d.address)
-            );
+            
+            dealerships = dealerships.filter(d => {
+                if (!d.address) return false;
+                const postalCodeMatch = d.address.match(/\b(\d{5})\b/);
+                if (!postalCodeMatch) return false;
+                
+                const postalCode = postalCodeMatch[1];
+
+                if (depCode === '2A') {
+                    return postalCode.startsWith('200') || postalCode.startsWith('201');
+                }
+                if (depCode === '2B') {
+                    return postalCode.startsWith('20') && !postalCode.startsWith('200') && !postalCode.startsWith('201');
+                }
+                return postalCode.startsWith(depCode);
+            });
         }
         
         if (selectedCity) {
@@ -170,11 +182,47 @@ export default function Home() {
   }, [selectedDepartment, selectedCity, selectedBrands, allDealerships, hasActiveFilters]);
 
   const cities = useMemo(() => {
-    if (selectedDepartment && selectedDepartment !== 'all' && (locations as any)[selectedDepartment]) {
-      return (locations as any)[selectedDepartment].cities || [];
+    if (!selectedDepartment || selectedDepartment === 'all') {
+      return [];
     }
-    return [];
-  }, [selectedDepartment]);
+
+    const depCode = selectedDepartment.split(' ')[0];
+
+    const dealershipsForDept = allDealerships.filter(d => {
+        if (!d.address) return false;
+        const postalCodeMatch = d.address.match(/\b(\d{5})\b/);
+        if (!postalCodeMatch) return false;
+        
+        const postalCode = postalCodeMatch[1];
+
+        if (depCode === '2A') {
+            return postalCode.startsWith('200') || postalCode.startsWith('201');
+        }
+        if (depCode === '2B') {
+            // All other Corsica codes
+            return postalCode.startsWith('20') && !postalCode.startsWith('200') && !postalCode.startsWith('201');
+        }
+        return postalCode.startsWith(depCode);
+    });
+
+    const citySet = new Set<string>();
+    dealershipsForDept.forEach(dealer => {
+      // Attempt to extract city name from address, which is assumed to follow the postal code
+      const cityMatch = dealer.address?.match(/\b\d{5}\s+([A-Za-z\s-À-ÿ']+)/);
+      if (cityMatch && cityMatch[1]) {
+          let cityName = cityMatch[1].split(',')[0].trim();
+          // Clean up city name from 'CEDEX' suffixes
+          cityName = cityName.replace(/\sCEDEX.*$/i, '').trim();
+          if (cityName) {
+              // Capitalize first letter, rest lowercase
+              const formattedCityName = cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
+              citySet.add(formattedCityName);
+          }
+      }
+    });
+
+    return Array.from(citySet).sort();
+  }, [selectedDepartment, allDealerships]);
 
   const handleDepartmentChange = useCallback((department: string) => {
     setSelectedDepartment(department);
