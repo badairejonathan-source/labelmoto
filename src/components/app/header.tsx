@@ -27,12 +27,12 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
 
   return (
     <header className={cn(
-      "bg-road p-2 md:p-4 text-primary-foreground border-b border-gray-200 dark:border-gray-700 z-[2000]"
+      "bg-road p-2 md:p-4 text-foreground border-b border-border z-[2000]"
     )}>
       <div className="relative z-10 flex items-center justify-between">
         
         {/* LOGO : On force sa taille ici (w-32 = mobile, w-48 = pc) */}
-        <div className="flex items-center text-primary-foreground">
+        <div className="flex items-center text-foreground">
              <div className="w-32 md:w-48">
                 <MotoTrustLogo />
              </div>
@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
           {isMobile && (
             <Sheet modal={false}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
+                <Button variant="outline" size="icon" className="bg-transparent hover:bg-primary/80 text-foreground border-border">
                   <SlidersHorizontal className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ children }) => {
               </SheetContent>
             </Sheet>
           )}
-          <Button size="icon" variant="outline" className="bg-transparent hover:bg-primary/80 text-primary-foreground border-primary-foreground/50">
+          <Button size="icon" variant="outline" className="bg-transparent hover:bg-primary/80 text-foreground border-border">
             <User className="h-5 w-5" />
           </Button>
         </div>
