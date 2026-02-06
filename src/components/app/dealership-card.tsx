@@ -8,7 +8,7 @@ import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -45,6 +45,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const imageDialog = dealership.imgUrl ? (
     <Dialog open={isImageOpen} onOpenChange={setIsImageOpen}>
       <DialogContent className="p-0 border-0 max-w-4xl bg-transparent shadow-none">
+        <DialogTitle className="sr-only">{`Photo de ${title}`}</DialogTitle>
         <Image
           src={dealership.imgUrl}
           alt={`Photo de ${title}`}
