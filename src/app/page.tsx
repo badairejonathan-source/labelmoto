@@ -249,6 +249,14 @@ export default function Home() {
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
     );
   }, []);
+
+  const clearFilters = useCallback(() => {
+    setSelectedDepartment('');
+    setSelectedCity('');
+    setSelectedBrands([]);
+    setMapCenter([46.603354, 1.888334]);
+    setMapZoom(6);
+  }, []);
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     setMapCenter(currentCenter => {
@@ -408,13 +416,13 @@ export default function Home() {
 
   const renderFilters = () => {
     return (
-      <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
+      <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:items-center md:max-w-xl md:mx-4 md:space-y-0 md:space-x-2">
         <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
           <SelectTrigger variant="filter">
             <span className="mr-2">Départements:</span>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[1300]">
             <ScrollArea className="h-72">
               <SelectItem value="all">France entière</SelectItem>
               {departments.map(dep => (
@@ -427,7 +435,7 @@ export default function Home() {
           <SelectTrigger variant="filter">
             <SelectValue placeholder="Choisir une ville" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[1300]">
             <ScrollArea className="h-72">
                <SelectItem value="all-cities">Toutes les villes</SelectItem>
               {cities.map((city:any) => (
@@ -443,7 +451,7 @@ export default function Home() {
               <ListFilter className="ml-2 h-4 w-4"/>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className="w-56 z-[1300]">
             <DropdownMenuLabel>Marques</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <ScrollArea className="h-72">
@@ -459,6 +467,12 @@ export default function Home() {
             </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
+        {hasActiveFilters && (
+            <Button variant="ghost" size="icon" onClick={clearFilters} className="shrink-0" title="Effacer les filtres">
+                <X className="h-5 w-5"/>
+                <span className="sr-only">Effacer les filtres</span>
+            </Button>
+        )}
       </div>
     );
   };
