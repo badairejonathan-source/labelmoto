@@ -66,6 +66,7 @@ export default function Home() {
   const [mapBounds, setMapBounds] = useState<LatLngBounds | null>(null);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
+  const [firstClickId, setFirstClickId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
@@ -219,10 +220,10 @@ export default function Home() {
     setMapBounds(bounds);
   }, []);
   
-  // For desktop list
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
     
+    // Sort by distance from map center, but don't move the selected item
     const sortedByMapCenter = [...sourceDealerships].sort((a, b) => {
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     });
@@ -230,16 +231,17 @@ export default function Home() {
     return sortedByMapCenter.slice(0, 50);
   }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter]);
 
+
   const dealershipsInViewCount = useMemo(() => {
     const source = hasActiveFilters ? filteredDealerships : allDealerships;
     if (!mapBounds) {
-      return 0;
+      return source.length > 0 ? dealershipsToDisplay.length : 0;
     }
     
     return source.filter(d => 
         d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude])
     ).length;
-  }, [mapBounds, hasActiveFilters, filteredDealerships, allDealerships]);
+  }, [mapBounds, hasActiveFilters, filteredDealerships, allDealerships, dealershipsToDisplay]);
 
   // For mobile list, based on user's new logic
   const dealershipsForMobileList = useMemo(() => {
@@ -262,32 +264,33 @@ export default function Home() {
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
-    
     setSelectedDealershipId(isDeselecting ? null : dealership.id);
-    
-    if (!isDeselecting) {
-      if (dealership.latitude && dealership.longitude) {
-        setMapCenter([dealership.latitude, dealership.longitude]);
-        setMapZoom(14);
-      }
-    }
   }, [selectedDealershipId]);
   
   const handleMarkerClick = useCallback((id: string) => {
-    const isDeselecting = selectedDealershipId === id;
-
-    setSelectedDealershipId(isDeselecting ? null : id);
-    
-    if (!isDeselecting) {
-        const selectedDealership = allDealerships.find(d => d.id === id);
-        if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
-            // Pas de zoom
+    if (isMobile) {
+        if (firstClickId === id) {
+            // Second click on the same marker
+            setSelectedDealershipId(id);
+            setIsListSheetOpen(true);
+            setFirstClickId(null);
+        } else {
+            // First click on a marker
+            setFirstClickId(id);
+            setSelectedDealershipId(null); // Ensure no card is expanded in the list yet
         }
-        if (isMobile) {
-          setIsListSheetOpen(true);
+    } else { // Desktop behavior
+        const isDeselecting = selectedDealershipId === id;
+        setSelectedDealershipId(isDeselecting ? null : id);
+        
+        if (!isDeselecting) {
+            const selectedDealership = allDealerships.find(d => d.id === id);
+            if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
+                // Pas de zoom
+            }
         }
     }
-  }, [allDealerships, selectedDealershipId, isMobile]);
+  }, [allDealerships, isMobile, firstClickId, selectedDealershipId]);
 
   useEffect(() => {
     if (!selectedDealershipId) return;
@@ -299,7 +302,6 @@ export default function Home() {
 
     const observer = new IntersectionObserver(
         ([entry]) => {
-            // If the card is not intersecting (not visible)
             if (!entry.isIntersecting) {
                 setSelectedDealershipId(null);
                 observer.disconnect();
@@ -307,7 +309,7 @@ export default function Home() {
         },
         { 
             root: scrollViewport,
-            threshold: 0 // Close when it's completely out of view
+            threshold: 0
         }
     );
 
@@ -323,22 +325,11 @@ export default function Home() {
       clearTimeout(hoverOutTimeoutRef.current);
       hoverOutTimeoutRef.current = null;
     }
-    if (hoverInTimeoutRef.current) {
-      clearTimeout(hoverInTimeoutRef.current);
-    }
-    hoverInTimeoutRef.current = setTimeout(() => {
-      setHoveredDealershipId(id);
-    }, 500);
+    setHoveredDealershipId(id);
   }, []);
 
   const handleMouseOut = useCallback(() => {
-    if (hoverInTimeoutRef.current) {
-      clearTimeout(hoverInTimeoutRef.current);
-      hoverInTimeoutRef.current = null;
-    }
-    hoverOutTimeoutRef.current = setTimeout(() => {
-      setHoveredDealershipId(null);
-    }, 100);
+    setHoveredDealershipId(null);
   }, []);
 
   const handleCardMouseEnter = useCallback((id: string) => {
@@ -362,6 +353,10 @@ export default function Home() {
         description: message,
     });
   }, [toast]);
+
+  const handleMapClick = useCallback(() => {
+    setFirstClickId(null);
+  }, []);
 
   const renderFilters = () => {
     return (
@@ -473,7 +468,7 @@ export default function Home() {
             )}
             {dealershipsToDisplay.length === 0 && (
                 <div className="text-center text-muted-foreground pt-20">
-                  <p>Aucun résultat trouvé à proximité.</p>
+                  <p>Aucun résultat trouvé.</p>
                   <p className="text-sm">Essayez d'ajuster vos filtres ou de vous déplacer sur la carte.</p>
                 </div>
             )}
@@ -519,7 +514,7 @@ export default function Home() {
                 ))
             ) : (
                 <div className="text-center text-muted-foreground pt-20">
-                    <p>Aucun résultat trouvé à proximité.</p>
+                    <p>Aucun résultat trouvé dans cette zone.</p>
                 </div>
             )}
           </>
@@ -546,11 +541,13 @@ export default function Home() {
             zoom={mapZoom} 
             hoveredDealershipId={hoveredDealershipId}
             selectedDealershipId={selectedDealershipId}
+            firstClickId={firstClickId}
             onMarkerClick={handleMarkerClick}
             onMarkerMouseOver={handleMarkerMouseOver}
             onMarkerMouseOut={handleMouseOut}
             isMobile={isMobile}
             onMapChange={handleMapChange}
+            onMapClick={handleMapClick}
             isLocating={isLocating}
             onLocateEnd={() => setIsLocating(false)}
             onLocationError={handleLocationError}
@@ -569,14 +566,15 @@ export default function Home() {
           </div>
           
           <div className="md:hidden absolute bottom-0 left-0 right-0 z-[1000] pointer-events-none">
-            {!isListSheetOpen && dealershipsInViewCount > 0 ? (
+            {!isListSheetOpen && (
                 <div className="w-full flex justify-center p-4 pointer-events-auto">
                     <Button className="shadow-lg" onClick={() => setIsListSheetOpen(true)}>
                       <List className="mr-2 h-4 w-4" />
                       Voir la liste ({dealershipsInViewCount})
                     </Button>
                 </div>
-            ) : isListSheetOpen && (
+            )} 
+            {isListSheetOpen && (
                 <div className="mx-2 mb-2 bg-background rounded-xl shadow-lg flex flex-col max-h-[60svh] pointer-events-auto">
                     <div className="p-3 py-2 border-b flex justify-between items-center">
                         <div className="w-8"></div> {/* Spacer */}

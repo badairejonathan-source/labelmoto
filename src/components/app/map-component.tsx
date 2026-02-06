@@ -16,9 +16,11 @@ interface MapComponentProps {
   zoom: number;
   hoveredDealershipId: string | null;
   selectedDealershipId: string | null;
+  firstClickId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
+  onMapClick: () => void;
   isMobile: boolean;
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   isLocating?: boolean;
@@ -69,15 +71,46 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     });
 };
 
+const createPopupContent = (dealership: Dealership) => {
+    const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
+    const rating = isNaN(ratingValue) ? 0 : ratingValue;
+    const imageUrl = dealership.imgUrl || `https://picsum.photos/seed/${dealership.id}/192/108`;
+
+    return `
+      <div>
+        <div style="position: relative; width: 100%; height: 6rem; background-image: url('${imageUrl}'); background-size: cover; background-position: center;">
+          ${rating > 0 ? `
+            <div style="position: absolute; top: 4px; left: 4px; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: bold; color: white; background-color: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 9999px; backdrop-filter: blur(2px);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <span>${rating.toFixed(1)}</span>
+            </div>
+          ` : ''}
+        </div>
+        <div style="padding: 8px;">
+          <h3 style="font-weight: bold; font-size: 0.875rem; color: hsl(var(--primary)); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${dealership.title}</h3>
+          ${dealership.address ? `
+            <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground)); margin-top: 4px; display: flex; align-items: flex-start;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; margin-top: 2px; flex-shrink: 0;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span>${dealership.address}</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+};
+
+
 export default function MapComponent({
   dealerships,
   center,
   zoom,
   hoveredDealershipId,
   selectedDealershipId,
+  firstClickId,
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut,
+  onMapClick,
   onMapChange,
   isLocating = false,
   onLocateEnd = () => {},
@@ -86,8 +119,10 @@ export default function MapComponent({
   const mapRef = useRef<L.Map | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const userLocationMarkerRef = useRef<L.Marker | null>(null);
+  const markersRef = useRef<Map<string, L.Marker>>(new Map());
 
   const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
+  const stableOnMapClick = useCallback(onMapClick, [onMapClick]);
 
   useEffect(() => {
     if (mapRef.current === null) {
@@ -109,17 +144,19 @@ export default function MapComponent({
       const currentZoom = map.getZoom();
       stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom, map.getBounds());
     };
-
+    
     map.on('moveend', handleMoveEnd);
     map.on('zoomend', handleMoveEnd);
-
+    map.on('click', stableOnMapClick);
+    
     handleMoveEnd();
 
     return () => {
       map.off('moveend', handleMoveEnd);
       map.off('zoomend', handleMoveEnd);
+      map.off('click', stableOnMapClick);
     };
-  }, [stableOnMapChange]);
+  }, [stableOnMapChange, stableOnMapClick]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -132,6 +169,7 @@ export default function MapComponent({
     if (!clusterGroup) return;
 
     clusterGroup.clearLayers();
+    markersRef.current.clear();
 
     dealerships.forEach((dealership) => {
       if (dealership.latitude == null || dealership.longitude == null) return;
@@ -141,15 +179,50 @@ export default function MapComponent({
       const icon = createIcon(dealership, isHovered, isSelected);
 
       const marker = L.marker([dealership.latitude, dealership.longitude], { icon, zIndexOffset: isSelected ? 1000 : 0 });
+      
+      marker.bindPopup(createPopupContent(dealership), { className: 'custom-leaflet-tooltip' });
         
       marker.on('click', () => onMarkerClick(dealership.id));
       marker.on('mouseover', () => onMarkerMouseOver(dealership.id));
       marker.on('mouseout', () => onMarkerMouseOut());
 
       clusterGroup.addLayer(marker);
+      markersRef.current.set(dealership.id, marker);
     });
   }, [dealerships, hoveredDealershipId, selectedDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
   
+  useEffect(() => {
+    // Close all popups that are not the 'first-clicked' one.
+    markersRef.current.forEach((marker, id) => {
+        if (id !== firstClickId) {
+            marker.closePopup();
+        }
+    });
+
+    if (firstClickId) {
+        const markerToOpen = markersRef.current.get(firstClickId);
+        if (markerToOpen && !markerToOpen.isPopupOpen()) {
+            markerToOpen.openPopup();
+        }
+    }
+}, [firstClickId]);
+
+useEffect(() => {
+    if (!hoveredDealershipId || firstClickId) return;
+
+    const marker = markersRef.current.get(hoveredDealershipId);
+    if (marker && !marker.isPopupOpen()) {
+        marker.openPopup();
+    }
+
+    return () => {
+        if (marker && marker.isPopupOpen() && firstClickId !== hoveredDealershipId) {
+            marker.closePopup();
+        }
+    };
+}, [hoveredDealershipId, firstClickId]);
+
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
@@ -202,3 +275,5 @@ export default function MapComponent({
 
   return <div id="map-container" className="w-full h-full min-h-0 z-[5]" />;
 }
+
+    
