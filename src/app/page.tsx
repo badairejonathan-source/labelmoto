@@ -279,13 +279,14 @@ export default function Home() {
   const dealershipsToDisplay = useMemo(() => {
     const sourceDealerships = hasActiveFilters ? filteredDealerships : allDealerships;
     
-    // Sort by distance from map center, but don't move the selected item
     const sortedByMapCenter = [...sourceDealerships].sort((a, b) => {
+      if (a.id === selectedDealershipId) return -1;
+      if (b.id === selectedDealershipId) return 1;
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     });
 
     return sortedByMapCenter.slice(0, 50);
-  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter]);
+  }, [hasActiveFilters, filteredDealerships, allDealerships, mapCenter, selectedDealershipId]);
 
 
   const dealershipsInViewCount = useMemo(() => {
@@ -381,11 +382,21 @@ export default function Home() {
       clearTimeout(hoverOutTimeoutRef.current);
       hoverOutTimeoutRef.current = null;
     }
-    setHoveredDealershipId(id);
-  }, []);
+    hoverInTimeoutRef.current = setTimeout(() => {
+        if (firstClickId !== id) {
+            setHoveredDealershipId(id);
+        }
+    }, 100);
+  }, [firstClickId]);
 
   const handleMouseOut = useCallback(() => {
-    setHoveredDealershipId(null);
+    if (hoverInTimeoutRef.current) {
+        clearTimeout(hoverInTimeoutRef.current);
+        hoverInTimeoutRef.current = null;
+    }
+    hoverOutTimeoutRef.current = setTimeout(() => {
+        setHoveredDealershipId(null);
+    }, 100);
   }, []);
 
   const handleCardMouseEnter = useCallback((id: string) => {
@@ -506,7 +517,7 @@ export default function Home() {
                     onClick={() => handleCardClick(dealer)}
                     isExpanded={dealer.id === selectedDealershipId}
                     className={cn(
-                      "w-[7cm] mx-auto",
+                      "w-[8cm] mx-auto",
                       dealer.id === hoveredDealershipId ? "shadow-lg" : "",
                       dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
                     )}
@@ -567,7 +578,7 @@ export default function Home() {
                         onClick={() => handleCardClick(dealer)}
                         isExpanded={dealer.id === selectedDealershipId}
                         className={cn(
-                            "w-[7cm] mx-auto",
+                            "w-[8cm] mx-auto",
                             dealer.id === hoveredDealershipId ? "shadow-lg" : "",
                             dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
                         )}
@@ -596,35 +607,37 @@ export default function Home() {
           {listContent}
         </aside>
 
-        <main className="h-full flex-1 relative bg-gray-100">
-          <MapComponent 
-            dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
-            center={mapCenter} 
-            zoom={mapZoom} 
-            hoveredDealershipId={hoveredDealershipId}
-            selectedDealershipId={selectedDealershipId}
-            firstClickId={firstClickId}
-            onMarkerClick={handleMarkerClick}
-            onMarkerMouseOver={handleMarkerMouseOver}
-            onMarkerMouseOut={handleMouseOut}
-            isMobile={isMobile}
-            onMapChange={handleMapChange}
-            onMapClick={handleMapClick}
-            isLocating={isLocating}
-            onLocateEnd={() => setIsLocating(false)}
-            onLocationError={handleLocationError}
-          />
+        <main className="h-full flex-1 relative bg-background p-0 md:p-4">
+          <div className="w-full h-full md:rounded-lg overflow-hidden shadow-md relative">
+            <MapComponent 
+              dealerships={hasActiveFilters ? filteredDealerships : allDealerships}
+              center={mapCenter} 
+              zoom={mapZoom} 
+              hoveredDealershipId={hoveredDealershipId}
+              selectedDealershipId={selectedDealershipId}
+              firstClickId={firstClickId}
+              onMarkerClick={handleMarkerClick}
+              onMarkerMouseOver={handleMarkerMouseOver}
+              onMarkerMouseOut={handleMouseOut}
+              isMobile={isMobile}
+              onMapChange={handleMapChange}
+              onMapClick={handleMapClick}
+              isLocating={isLocating}
+              onLocateEnd={() => setIsLocating(false)}
+              onLocationError={handleLocationError}
+            />
 
-          <div className="absolute top-4 right-4 z-[1000]">
-              <Button
-                  size="icon"
-                  className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
-                  onClick={() => setIsLocating(true)}
-                  disabled={isLocating}
-                  title="Me géolocaliser"
-              >
-                  {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
-              </Button>
+            <div className="absolute top-4 right-4 z-[1000]">
+                <Button
+                    size="icon"
+                    className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
+                    onClick={() => setIsLocating(true)}
+                    disabled={isLocating}
+                    title="Me géolocaliser"
+                >
+                    {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
+                </Button>
+            </div>
           </div>
           
           <div className="md:hidden absolute bottom-0 left-0 right-0 z-[1000] pointer-events-none">
@@ -656,5 +669,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     

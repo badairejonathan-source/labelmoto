@@ -194,7 +194,7 @@ export default function MapComponent({
   useEffect(() => {
     // Close all popups that are not the 'first-clicked' one.
     markersRef.current.forEach((marker, id) => {
-        if (id !== firstClickId) {
+        if (id !== firstClickId && id !== hoveredDealershipId) {
             marker.closePopup();
         }
     });
@@ -204,23 +204,13 @@ export default function MapComponent({
         if (markerToOpen && !markerToOpen.isPopupOpen()) {
             markerToOpen.openPopup();
         }
-    }
-}, [firstClickId]);
-
-useEffect(() => {
-    if (!hoveredDealershipId || firstClickId) return;
-
-    const marker = markersRef.current.get(hoveredDealershipId);
-    if (marker && !marker.isPopupOpen()) {
-        marker.openPopup();
-    }
-
-    return () => {
-        if (marker && marker.isPopupOpen() && firstClickId !== hoveredDealershipId) {
-            marker.closePopup();
+    } else if (hoveredDealershipId) {
+        const markerToOpen = markersRef.current.get(hoveredDealershipId);
+        if (markerToOpen && !markerToOpen.isPopupOpen()) {
+            markerToOpen.openPopup();
         }
-    };
-}, [hoveredDealershipId, firstClickId]);
+    }
+}, [firstClickId, hoveredDealershipId]);
 
 
   useEffect(() => {
@@ -273,7 +263,9 @@ useEffect(() => {
     };
   }, []);
 
-  return <div id="map-container" className="w-full h-full min-h-0 z-[5]" />;
+  return <div id="map-container" className="w-full h-full min-h-0 z-[5] bg-gray-100" />;
 }
+
+    
 
     
