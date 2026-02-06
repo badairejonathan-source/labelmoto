@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         <div className="relative w-full max-w-lg mx-auto">
           <Input
             type="search"
-            placeholder="Rechercher..."
+            placeholder="Achat, vente, accessoires par départements"
             className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
             value={searchTerm}
             onChange={(e) => onSearchTermChange(e.target.value)}
