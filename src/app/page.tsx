@@ -54,7 +54,6 @@ export default function Home() {
 
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
-  const [isListSheetOpen, setIsListSheetOpen] = useState(false);
   
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
@@ -192,34 +191,6 @@ export default function Home() {
     return sortedByMapCenter.slice(0, 50);
   }, [filteredDealerships, mapCenter, selectedDealershipId]);
 
-
-  const dealershipsInViewCount = useMemo(() => {
-    if (!mapBounds) {
-      return filteredDealerships.length;
-    }
-    
-    return filteredDealerships.filter(d => 
-        d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude])
-    ).length;
-  }, [mapBounds, filteredDealerships]);
-
-  // For mobile list, based on user's new logic
-  const dealershipsForMobileList = useMemo(() => {
-      const visibleDealerships = mapBounds 
-          ? filteredDealerships.filter(d => d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude]))
-          : [];
-
-      const sortedVisible = [...visibleDealerships].sort((a, b) => {
-        return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
-      });
-      
-      if (sortedVisible.length > 20) {
-          return sortedVisible.slice(0, 25);
-      } else {
-          return sortedVisible;
-      }
-  }, [filteredDealerships, mapBounds, mapCenter]);
-  
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
     setSelectedDealershipId(isDeselecting ? null : dealership.id);
@@ -230,7 +201,6 @@ export default function Home() {
         if (firstClickId === id) {
             // Second click on the same marker
             setSelectedDealershipId(id);
-            setIsListSheetOpen(true);
             setFirstClickId(null);
         } else {
             // First click on a marker
@@ -389,51 +359,6 @@ export default function Home() {
     </ScrollArea>
   );
 
-  const mobileListContent = (
-    <ScrollArea ref={scrollAreaRef} className="h-full">
-      <div className="p-4 space-y-4">
-        {isLoading ? (
-          <div className="text-center text-muted-foreground pt-8">
-            <p>Chargement des concessions...</p>
-          </div>
-        ) : (
-          <>
-            {dealershipsForMobileList.length > 0 ? (
-                dealershipsForMobileList.map((dealer) => (
-                <div
-                    key={dealer.id}
-                    ref={node => {
-                        if (cardRefs.current) {
-                          if (node) cardRefs.current.set(dealer.id, node);
-                          else cardRefs.current.delete(dealer.id);
-                        }
-                    }}
-                    onMouseEnter={() => handleCardMouseEnter(dealer.id)}
-                    onMouseLeave={handleCardMouseLeave}
-                >
-                    <DealershipCard
-                        dealership={dealer}
-                        onClick={() => handleCardClick(dealer)}
-                        isExpanded={dealer.id === selectedDealershipId}
-                        className={cn(
-                            "w-[8cm] mx-auto",
-                            dealer.id === hoveredDealershipId ? "shadow-lg" : "",
-                            dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
-                        )}
-                    />
-                </div>
-                ))
-            ) : (
-                <div className="text-center text-muted-foreground pt-20">
-                    <p>Aucun résultat trouvé dans cette zone.</p>
-                </div>
-            )}
-          </>
-        )}
-      </div>
-    </ScrollArea>
-  );
-
   return (
     <div className="flex flex-col h-[100svh] w-full overflow-hidden bg-background">
       <Header
@@ -450,65 +375,54 @@ export default function Home() {
           {listContent}
         </aside>
 
-        <main className="h-full flex-1 relative bg-background p-0 md:p-4">
-          <div className="w-full h-full md:rounded-lg overflow-hidden shadow-md relative">
-            <MapComponent 
-              dealerships={filteredDealerships}
-              center={mapCenter} 
-              zoom={mapZoom} 
-              hoveredDealershipId={hoveredDealershipId}
-              selectedDealershipId={selectedDealershipId}
-              firstClickId={firstClickId}
-              onMarkerClick={handleMarkerClick}
-              onMarkerMouseOver={handleMarkerMouseOver}
-              onMarkerMouseOut={handleMouseOut}
-              isMobile={isMobile}
-              onMapChange={handleMapChange}
-              onMapClick={handleMapClick}
-              isLocating={isLocating}
-              onLocateEnd={() => setIsLocating(false)}
-              onLocationError={handleLocationError}
-            />
+        <main className="h-full flex-1 flex flex-col overflow-hidden md:block md:relative bg-background md:p-4">
+          <div className="flex-1 p-4 pb-2 md:p-0 md:w-full md:h-full">
+            <div className="w-full h-full rounded-lg overflow-hidden shadow-md relative">
+              <MapComponent 
+                dealerships={filteredDealerships}
+                center={mapCenter} 
+                zoom={mapZoom} 
+                hoveredDealershipId={hoveredDealershipId}
+                selectedDealershipId={selectedDealershipId}
+                firstClickId={firstClickId}
+                onMarkerClick={handleMarkerClick}
+                onMarkerMouseOver={handleMarkerMouseOver}
+                onMarkerMouseOut={handleMouseOut}
+                isMobile={isMobile}
+                onMapChange={handleMapChange}
+                onMapClick={handleMapClick}
+                isLocating={isLocating}
+                onLocateEnd={() => setIsLocating(false)}
+                onLocationError={handleLocationError}
+              />
 
-            <div className="absolute top-4 right-4 z-[1000]">
-                <Button
-                    size="icon"
-                    className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
-                    onClick={() => setIsLocating(true)}
-                    disabled={isLocating}
-                    title="Me géolocaliser"
-                >
-                    {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
-                </Button>
+              <div className="absolute top-4 right-4 z-[1000]">
+                  <Button
+                      size="icon"
+                      className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
+                      onClick={() => setIsLocating(true)}
+                      disabled={isLocating}
+                      title="Me géolocaliser"
+                  >
+                      {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
+                  </Button>
+              </div>
             </div>
           </div>
           
-          <div className="md:hidden absolute bottom-0 left-0 right-0 z-[1000] pointer-events-none">
-            {!isListSheetOpen && (
-                <div className="w-full flex justify-center p-4 pointer-events-auto">
-                    <Button className="shadow-lg" onClick={() => setIsListSheetOpen(true)}>
-                      <List className="mr-2 h-4 w-4" />
-                      Voir la liste ({dealershipsInViewCount})
-                    </Button>
-                </div>
-            )} 
-            {isListSheetOpen && (
-                <div className="mx-2 mb-2 bg-background rounded-xl shadow-lg flex flex-col max-h-[60svh] pointer-events-auto">
-                    <div className="p-3 py-2 border-b flex justify-between items-center">
-                        <div className="w-8"></div> {/* Spacer */}
-                        <h2 className="font-semibold text-center text-muted-foreground">Concessions à proximité</h2>
-                        <Button variant="ghost" size="icon" onClick={() => setIsListSheetOpen(false)} className="h-8 w-8 shrink-0">
-                            <X className="h-5 w-5 text-muted-foreground"/>
-                        </Button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto">
-                        {mobileListContent}
-                    </div>
-                </div>
-            )}
+          <div className="md:hidden shrink-0">
+            <ScrollArea className="w-full">
+              <div className="flex space-x-4 px-4 pb-4">
+                <div className="w-[45vw] shrink-0"><AdCard /></div>
+                <div className="w-[45vw] shrink-0"><AdCard /></div>
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
         </main>
       </div>
     </div>
   );
 }
+
+    
