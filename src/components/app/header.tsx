@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -23,10 +22,44 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
     <header className={cn("bg-card p-4 text-foreground border-b border-border z-40", className)}>
       <div className="container mx-auto flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <div className="w-32 md:w-40 shrink-0">
+          <div className="w-24 md:w-40 shrink-0">
             <MotoTrustLogo />
           </div>
           
+          {/* Mobile Nav */}
+          <nav className="flex md:hidden items-start justify-center gap-2 flex-grow">
+            <Button
+              variant="ghost"
+              onClick={() => onFilterChange('shopping')}
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
+                activeFilter === 'shopping' ? 'text-primary' : 'text-muted-foreground'
+              )}
+            >
+              <Bike className="h-6 w-6" />
+              <span>concession</span>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => onFilterChange('service')}
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
+                activeFilter === 'service' ? 'text-accent' : 'text-muted-foreground'
+              )}
+            >
+              <Wrench className="h-6 w-6" />
+              <span>atelier</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold text-muted-foreground"
+            >
+              <FileText className="h-6 w-6" />
+              <span>info</span>
+            </Button>
+          </nav>
+
+          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center justify-center gap-8 flex-grow">
             <Button
               variant="ghost"
@@ -39,17 +72,17 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <Button
               variant="ghost"
               onClick={() => onFilterChange('service')}
-              className={cn("p-2 h-auto", activeFilter === 'service' ? 'text-primary' : 'text-muted-foreground hover:text-primary')}
+              className={cn("p-2 h-auto", activeFilter === 'service' ? 'text-accent' : 'text-muted-foreground hover:text-accent')}
             >
               <Wrench className="h-7 w-7" />
-               {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-primary rounded-full"></span>}
+               {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-accent rounded-full"></span>}
             </Button>
             <Button variant="ghost" className="p-2 h-auto text-muted-foreground hover:text-primary">
               <FileText className="h-7 w-7" />
             </Button>
           </nav>
           
-          <div className="flex items-center justify-end w-32 md:w-40">
+          <div className="flex items-center justify-end w-24 md:w-40">
             <Button size="icon" variant="ghost">
               <Menu className="h-6 w-6" />
             </Button>
