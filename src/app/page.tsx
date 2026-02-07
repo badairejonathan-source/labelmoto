@@ -375,9 +375,9 @@ export default function Home() {
           {listContent}
         </aside>
 
-        <main className="h-full flex-1 flex flex-col overflow-hidden md:block md:relative bg-background md:p-4">
-          <div className="flex-1 p-4 pb-2 md:p-0 md:w-full md:h-full">
-            <div className="w-full h-full rounded-lg overflow-hidden shadow-md relative">
+        <main className="flex-1 bg-background overflow-y-auto md:h-full md:overflow-hidden md:flex md:flex-col md:p-4 md:relative">
+          <div className="p-4 pb-2 md:p-0 md:flex-1">
+            <div className="w-full h-[40vh] md:h-full rounded-lg overflow-hidden shadow-md relative">
               <MapComponent 
                 dealerships={filteredDealerships}
                 center={mapCenter} 
@@ -410,13 +410,13 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="md:hidden h-56 shrink-0">
-            <ScrollArea className="w-full h-full">
-              <div className="flex flex-col space-y-4 items-center px-4 py-2">
-                <AdCard />
-                <AdCard />
-              </div>
-            </ScrollArea>
+          <div className="md:hidden">
+            <div className="flex flex-col space-y-4 items-center px-4 py-2">
+              <AdCard />
+              <AdCard />
+              <AdCard />
+              <AdCard />
+            </div>
           </div>
         </main>
       </div>
