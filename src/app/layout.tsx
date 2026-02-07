@@ -32,8 +32,8 @@ export default function RootLayout({
           href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" 
         />
       </head>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
-          <main>{children}</main>
+      <body className={cn("bg-background font-sans antialiased", inter.variable)}>
+        {children}
         <Toaster />
       </body>
     </html>
