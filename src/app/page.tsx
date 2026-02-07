@@ -371,25 +371,13 @@ export default function Home() {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        <aside className={cn(
-          "w-96 flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex",
-          activeFilter === 'service' && 'md:hidden'
-        )}>
+        <aside className="w-96 flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
           {listContent}
         </aside>
 
-        <main className={cn(
-          "h-full flex-1 flex flex-col overflow-hidden md:block md:relative bg-background",
-          activeFilter !== 'service' && 'md:p-4'
-        )}>
-          <div className={cn(
-            "flex-1 p-4 pb-2 md:p-0 md:w-full md:h-full",
-            activeFilter === 'service' && 'p-0'
-          )}>
-            <div className={cn(
-              "w-full h-full rounded-lg overflow-hidden shadow-md relative",
-              activeFilter === 'service' && 'rounded-none shadow-none'
-            )}>
+        <main className="h-full flex-1 flex flex-col overflow-hidden md:block md:relative bg-background md:p-4">
+          <div className="flex-1 p-4 pb-2 md:p-0 md:w-full md:h-full">
+            <div className="w-full h-full rounded-lg overflow-hidden shadow-md relative">
               <MapComponent 
                 dealerships={filteredDealerships}
                 center={mapCenter} 
