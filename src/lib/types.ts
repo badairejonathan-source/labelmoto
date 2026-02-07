@@ -18,5 +18,6 @@ export interface Dealership {
   position?: [number, number];
   rating?: string;
   category?: string;
+  appSection?: 'shopping' | 'service' | 'both';
   [key: string]: any; // Index signature
 }

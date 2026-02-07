@@ -45,6 +45,8 @@ export default function Home() {
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
   
+  const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>('shopping');
+
   const hoverInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hoverOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -88,6 +90,8 @@ export default function Home() {
                   latitude: lat,
                   longitude: lng,
                   rating: dealer.rating || undefined,
+                  category: dealer.category || undefined,
+                  appSection: dealer.appSection || 'both',
                 };
                 dealershipMap.set(uniqueKey, dealerWithId);
               }
@@ -97,7 +101,6 @@ export default function Home() {
         
         const uniqueDealerships = Array.from(dealershipMap.values());
         setAllDealerships(uniqueDealerships);
-        setFilteredDealerships(uniqueDealerships);
         setIsLoading(false);
     }, (error) => {
         console.error("Firebase read failed: " + error.message);
@@ -108,32 +111,57 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  const isSearching = submittedSearchTerm.trim() !== '';
+  const placeholderText = useMemo(() => {
+    if (activeFilter === 'service') {
+      return "reparation , entretient, depannage, pièces détachées";
+    }
+    return "Achat, vente, accessoires par départements";
+  }, [activeFilter]);
+
+  const isSearching = submittedSearchTerm.trim() !== '' || activeFilter !== null;
 
   useEffect(() => {
-    if (submittedSearchTerm.trim() === '') {
-        setFilteredDealerships(allDealerships);
-        return;
+    let results = allDealerships;
+
+    // 1. Filter by active category
+    if (activeFilter) {
+      results = results.filter(d => {
+        if (activeFilter === 'shopping') {
+          return d.appSection === 'shopping' || d.appSection === 'both';
+        }
+        if (activeFilter === 'service') {
+          return d.appSection === 'service' || d.appSection === 'both';
+        }
+        return true;
+      });
     }
 
-    const lowerCaseSearch = submittedSearchTerm.toLowerCase();
-    const results = allDealerships.filter(d => 
-        (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
-        (d.address?.toLowerCase().includes(lowerCaseSearch))
-    );
+    // 2. Filter by search term
+    if (submittedSearchTerm.trim() !== '') {
+        const lowerCaseSearch = submittedSearchTerm.toLowerCase();
+        results = results.filter(d => 
+            (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
+            (d.address?.toLowerCase().includes(lowerCaseSearch))
+        );
+    }
+    
     setFilteredDealerships(results);
-    if(results.length > 0) {
-      const firstResult = results[0];
-      if(firstResult.latitude && firstResult.longitude){
-        setMapCenter([firstResult.latitude, firstResult.longitude]);
-        setMapZoom(12);
-      }
-    }
 
-  }, [submittedSearchTerm, allDealerships]);
+    if (results.length > 0 && submittedSearchTerm.trim() !== '') {
+        const firstResult = results[0];
+        if(firstResult.latitude && firstResult.longitude){
+            setMapCenter([firstResult.latitude, firstResult.longitude]);
+            setMapZoom(12);
+        }
+    }
+  }, [submittedSearchTerm, allDealerships, activeFilter]);
 
   const handleSearch = () => {
     setSubmittedSearchTerm(searchTerm);
+  };
+
+  const handleFilterChange = (filter: 'shopping' | 'service') => {
+    setActiveFilter(current => current === filter ? null : filter);
   };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
@@ -155,35 +183,30 @@ export default function Home() {
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
-    const sourceDealerships = isSearching ? filteredDealerships : allDealerships;
-    
-    const sortedByMapCenter = [...sourceDealerships].sort((a, b) => {
+    const sortedByMapCenter = [...filteredDealerships].sort((a, b) => {
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     });
 
     return sortedByMapCenter.slice(0, 50);
-  }, [isSearching, filteredDealerships, allDealerships, mapCenter, selectedDealershipId]);
+  }, [filteredDealerships, mapCenter, selectedDealershipId]);
 
 
   const dealershipsInViewCount = useMemo(() => {
-    const source = isSearching ? filteredDealerships : allDealerships;
     if (!mapBounds) {
-      return source.length > 0 ? dealershipsToDisplay.length : 0;
+      return filteredDealerships.length;
     }
     
-    return source.filter(d => 
+    return filteredDealerships.filter(d => 
         d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude])
     ).length;
-  }, [mapBounds, isSearching, filteredDealerships, allDealerships, dealershipsToDisplay]);
+  }, [mapBounds, filteredDealerships]);
 
   // For mobile list, based on user's new logic
   const dealershipsForMobileList = useMemo(() => {
-      const source = isSearching ? filteredDealerships : allDealerships;
-      
       const visibleDealerships = mapBounds 
-          ? source.filter(d => d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude]))
+          ? filteredDealerships.filter(d => d.latitude && d.longitude && mapBounds.contains([d.latitude, d.longitude]))
           : [];
 
       const sortedVisible = [...visibleDealerships].sort((a, b) => {
@@ -195,7 +218,7 @@ export default function Home() {
       } else {
           return sortedVisible;
       }
-  }, [isSearching, filteredDealerships, allDealerships, mapBounds, mapCenter]);
+  }, [filteredDealerships, mapBounds, mapCenter]);
   
   const handleCardClick = useCallback((dealership: Dealership) => {
     const isDeselecting = selectedDealershipId === dealership.id;
@@ -417,6 +440,9 @@ export default function Home() {
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
         onSearch={handleSearch}
+        activeFilter={activeFilter}
+        onFilterChange={handleFilterChange}
+        placeholderText={placeholderText}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
@@ -427,7 +453,7 @@ export default function Home() {
         <main className="h-full flex-1 relative bg-background p-0 md:p-4">
           <div className="w-full h-full md:rounded-lg overflow-hidden shadow-md relative">
             <MapComponent 
-              dealerships={isSearching ? filteredDealerships : allDealerships}
+              dealerships={filteredDealerships}
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredDealershipId={hoveredDealershipId}
