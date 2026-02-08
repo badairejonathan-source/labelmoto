@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -166,6 +165,13 @@ function MapPageComponent() {
         }
     }
   }, [submittedSearchTerm, allDealerships, activeFilter]);
+
+  const handleSearchTermChange = (newTerm: string) => {
+    setSearchTerm(newTerm);
+    if (newTerm.trim() === '') {
+      setSubmittedSearchTerm('');
+    }
+  };
 
   const handleSearch = () => {
     setSubmittedSearchTerm(searchTerm);
@@ -375,7 +381,7 @@ function MapPageComponent() {
     <div className="flex flex-col h-[100svh] w-full overflow-hidden bg-background">
       <Header
         searchTerm={searchTerm}
-        onSearchTermChange={setSearchTerm}
+        onSearchTermChange={handleSearchTermChange}
         onSearch={handleSearch}
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
