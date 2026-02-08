@@ -374,6 +374,14 @@ function MapPageComponent() {
       </div>
     </ScrollArea>
   );
+  
+  if (width === undefined) {
+    return (
+      <div className="flex h-[100svh] w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[100svh] w-full overflow-hidden bg-background">
@@ -387,16 +395,55 @@ function MapPageComponent() {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        <aside className="w-full md:w-[900px] flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
-          {listContent}
-        </aside>
+        {!isMobile && (
+          <aside className="w-[900px] flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
+            {listContent}
+          </aside>
+        )}
 
         <main className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-y-auto md:h-full md:overflow-hidden md:flex md:flex-col md:relative">
-           <div className="hidden md:block w-full h-full relative">
-              <MapComponent 
+          {isMobile ? (
+            <div className="h-full flex flex-col">
+              <div className="relative h-[35vh] flex-shrink-0">
+                <MapComponent
+                  dealerships={filteredDealerships}
+                  center={mapCenter}
+                  zoom={mapZoom}
+                  hoveredDealershipId={hoveredDealershipId}
+                  selectedDealershipId={selectedDealershipId}
+                  firstClickId={firstClickId}
+                  onMarkerClick={handleMarkerClick}
+                  onMarkerMouseOver={handleMarkerMouseOver}
+                  onMarkerMouseOut={handleMouseOut}
+                  isMobile={isMobile}
+                  onMapChange={handleMapChange}
+                  onMapClick={handleMapClick}
+                  isLocating={isLocating}
+                  onLocateEnd={() => setIsLocating(false)}
+                  onLocationError={handleLocationError}
+                />
+                <div className="absolute top-2 right-2 z-[1000]">
+                  <Button
+                    size="icon"
+                    className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg h-9 w-9"
+                    onClick={() => setIsLocating(true)}
+                    disabled={isLocating}
+                    title="Me géolocaliser"
+                  >
+                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-grow overflow-y-auto">
+                {listContent}
+              </div>
+            </div>
+          ) : (
+            <div className="w-full h-full relative">
+              <MapComponent
                 dealerships={filteredDealerships}
-                center={mapCenter} 
-                zoom={mapZoom} 
+                center={mapCenter}
+                zoom={mapZoom}
                 hoveredDealershipId={hoveredDealershipId}
                 selectedDealershipId={selectedDealershipId}
                 firstClickId={firstClickId}
@@ -410,55 +457,19 @@ function MapPageComponent() {
                 onLocateEnd={() => setIsLocating(false)}
                 onLocationError={handleLocationError}
               />
-
               <div className="absolute top-4 right-4 z-[1000]">
-                  <Button
-                      size="icon"
-                      className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
-                      onClick={() => setIsLocating(true)}
-                      disabled={isLocating}
-                      title="Me géolocaliser"
-                  >
-                      {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
-                  </Button>
+                <Button
+                  size="icon"
+                  className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
+                  onClick={() => setIsLocating(true)}
+                  disabled={isLocating}
+                  title="Me géolocaliser"
+                >
+                  {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
+                </Button>
               </div>
             </div>
-          
-          <div className="md:hidden h-full flex flex-col">
-            <div className="relative h-[35vh] flex-shrink-0">
-               <MapComponent 
-                dealerships={filteredDealerships}
-                center={mapCenter} 
-                zoom={mapZoom} 
-                hoveredDealershipId={hoveredDealershipId}
-                selectedDealershipId={selectedDealershipId}
-                firstClickId={firstClickId}
-                onMarkerClick={handleMarkerClick}
-                onMarkerMouseOver={handleMarkerMouseOver}
-                onMarkerMouseOut={handleMouseOut}
-                isMobile={isMobile}
-                onMapChange={handleMapChange}
-                onMapClick={handleMapClick}
-                isLocating={isLocating}
-                onLocateEnd={() => setIsLocating(false)}
-                onLocationError={handleLocationError}
-              />
-               <div className="absolute top-2 right-2 z-[1000]">
-                  <Button
-                      size="icon"
-                      className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg h-9 w-9"
-                      onClick={() => setIsLocating(true)}
-                      disabled={isLocating}
-                      title="Me géolocaliser"
-                  >
-                      {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
-                  </Button>
-              </div>
-            </div>
-             <div className="flex-grow overflow-y-auto">
-              {listContent}
-            </div>
-          </div>
+          )}
         </main>
       </div>
     </div>
