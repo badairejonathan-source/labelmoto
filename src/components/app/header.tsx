@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Bike, Wrench, FileText, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +24,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
       <div className="container mx-auto flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className="w-24 md:w-40 shrink-0">
-            <MotoTrustLogo />
+            <Link href="/">
+              <MotoTrustLogo />
+            </Link>
           </div>
           
           {/* Mobile Nav */}
