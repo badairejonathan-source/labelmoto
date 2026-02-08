@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -391,7 +392,7 @@ function MapPageComponent() {
         </aside>
 
         <main className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-y-auto md:h-full md:overflow-hidden md:flex md:flex-col md:relative">
-           <div className="w-full h-full">
+           <div className="hidden md:block w-full h-full relative">
               <MapComponent 
                 dealerships={filteredDealerships}
                 center={mapCenter} 
