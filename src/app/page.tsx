@@ -1,35 +1,134 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import MotoTrustLogo from '@/components/app/logo';
+import { Bike, Wrench, FileText, Search, Home } from 'lucide-react';
+import placeholderData from '@/app/lib/placeholder-images.json';
+
+const LandingHeader = () => {
+    return (
+        <header className="bg-card text-foreground py-4 px-4 sm:px-6 lg:px-8 w-full border-b">
+            <div className="mx-auto max-w-7xl">
+                <div className="flex flex-col gap-4">
+                    {/* Top row: Logo and Icons */}
+                    <div className="flex items-center justify-between">
+                        <div className="w-24 md:w-32 shrink-0">
+                            <Link href="/">
+                                <MotoTrustLogo />
+                            </Link>
+                        </div>
+                        <nav className="flex items-center gap-2">
+                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 relative text-primary">
+                                <Link href="/map">
+                                    <Bike className="h-6 w-6" />
+                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full" />
+                                </Link>
+                            </Button>
+                            <Button asChild size="icon" className="h-10 w-10 bg-accent hover:bg-accent/90 text-accent-foreground">
+                                <Link href="/map">
+                                    <Wrench className="h-6 w-6" />
+                                </Link>
+                            </Button>
+                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground">
+                                <Link href="/map">
+                                    <FileText className="h-6 w-6" />
+                                </Link>
+                            </Button>
+                        </nav>
+                    </div>
+
+                    {/* Search Bar */}
+                    <div className="relative w-full max-w-lg mx-auto">
+                        <Input
+                            type="search"
+                            placeholder="Achat, vente, accessoires par départements"
+                            className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+                        />
+                        <Button 
+                            type="submit" 
+                            size="icon" 
+                            className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
+                            asChild
+                        >
+                            <Link href="/map">
+                                <Search className="h-5 w-5" />
+                            </Link>
+                        </Button>
+                    </div>
+
+                    {/* Text Navigation */}
+                    <nav className="flex items-center justify-center gap-6 md:gap-8 text-muted-foreground font-medium text-lg">
+                        <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
+                            <Home className="h-5 w-5 text-brand" />
+                            <span>Tout rechercher</span>
+                        </Link>
+                        <Link href="/map" className="hover:text-foreground">
+                            concession
+                        </Link>
+                        <Link href="/map" className="hover:text-foreground">
+                            Atelier
+                        </Link>
+                        <Link href="/map" className="hover:text-foreground">
+                            info
+                        </Link>
+                    </nav>
+                </div>
+            </div>
+        </header>
+    );
+};
 
 export default function LandingPage() {
-  return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-black text-white overflow-hidden">
-      <Image
-        src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"
-        alt="Motorcycle on a road"
-        fill
-        className="object-cover z-0 opacity-40"
-        priority
-        data-ai-hint="motorcycle road"
-      />
-      <div className="absolute top-8 left-8 z-20">
-        <MotoTrustLogo className="w-40" />
-      </div>
-      <div className="relative z-10 flex flex-col items-center justify-center text-center p-8">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-          Le meilleur de la moto, près de chez vous.
-        </h1>
-        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-          Découvrez les meilleures concessions et ateliers pour l'achat, la vente et l'entretien de votre moto.
-        </p>
-        <Link href="/map">
-          <Button size="lg" className="bg-red-500 hover:bg-red-600 text-white font-bold text-lg px-8 py-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
-            Trouver ma concession
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
+    const { hero, gallery } = placeholderData.landingPage;
+
+    return (
+        <div className="min-h-screen bg-background">
+            <LandingHeader />
+            <main className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                {/* Hero Section */}
+                <div className="relative rounded-3xl overflow-hidden p-1 border-4 border-brand bg-black">
+                     <Image
+                        src={hero.src}
+                        alt="Motorcycle"
+                        fill
+                        className="object-cover z-0 opacity-40 rounded-3xl"
+                        priority
+                        data-ai-hint={hero.hint}
+                    />
+                    <div className="relative z-10 flex flex-col items-center justify-center text-center text-white p-8 md:p-16">
+                        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
+                            Le meilleur de la moto, près de chez vous.
+                        </h1>
+                        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                            Découvrez les meilleures concessions et ateliers pour l'achat, la vente et l'entretien de votre moto.
+                        </p>
+                        <Link href="/map">
+                            <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                                Trouver ma concession
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Gallery Section */}
+                <section className="mt-8 md:mt-12">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {gallery.map((image, index) => (
+                             <div key={index} className="relative aspect-[3/4] rounded-2xl overflow-hidden">
+                                <Image
+                                    src={`https://picsum.photos/seed/${image.seed}/${image.width}/${image.height}`}
+                                    alt={`Motorcycle gallery image ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 50vw, 25vw"
+                                    data-ai-hint={image.hint}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </main>
+        </div>
+    );
 }
