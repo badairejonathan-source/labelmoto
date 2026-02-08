@@ -126,7 +126,16 @@ export default function MapComponent({
 
   useEffect(() => {
     if (mapRef.current === null) {
-      mapRef.current = L.map('map-container').setView(center, zoom);
+      const franceBounds = L.latLngBounds(
+        L.latLng(41, -5.5), // Southwest
+        L.latLng(51.5, 10)  // Northeast
+      );
+
+      mapRef.current = L.map('map-container', {
+        minZoom: 6,
+        maxBounds: franceBounds,
+        maxBoundsViscosity: 1.0,
+      }).setView(center, zoom);
       
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
