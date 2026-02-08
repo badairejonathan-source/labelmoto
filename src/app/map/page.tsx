@@ -1,15 +1,14 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { List, Crosshair, Loader2, X } from 'lucide-react';
+import { Crosshair, Loader2 } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { db } from '@/lib/firebase';
@@ -42,7 +41,6 @@ function MapPageComponent() {
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
-  const [mapBounds, setMapBounds] = useState<LatLngBounds | null>(null);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [firstClickId, setFirstClickId] = useState<string | null>(null);
@@ -129,25 +127,17 @@ function MapPageComponent() {
     return "Rechercher par nom, ville, code postal...";
   }, [activeFilter]);
 
-  const isSearching = submittedSearchTerm.trim() !== '' || activeFilter !== null;
-
   useEffect(() => {
     let results = allDealerships;
 
-    // 1. Filter by active category
     if (activeFilter) {
       results = results.filter(d => {
-        if (activeFilter === 'shopping') {
-          return d.appSection === 'shopping' || d.appSection === 'both';
-        }
-        if (activeFilter === 'service') {
-          return d.appSection === 'service' || d.appSection === 'both';
-        }
+        if (activeFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
+        if (activeFilter === 'service') return d.appSection === 'service' || d.appSection === 'both';
         return true;
       });
     }
 
-    // 2. Filter by search term
     if (submittedSearchTerm.trim() !== '') {
         const lowerCaseSearch = submittedSearchTerm.toLowerCase();
         results = results.filter(d => 
@@ -169,9 +159,7 @@ function MapPageComponent() {
 
   const handleSearchTermChange = (newTerm: string) => {
     setSearchTerm(newTerm);
-    if (newTerm.trim() === '') {
-      setSubmittedSearchTerm('');
-    }
+    if (newTerm.trim() === '') setSubmittedSearchTerm('');
   };
 
   const handleSearch = () => {
@@ -183,31 +171,16 @@ function MapPageComponent() {
   };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
-    setMapCenter(currentCenter => {
-        const isSameCenter = Math.abs(newCenter[0] - currentCenter[0]) < 1e-6 && Math.abs(newCenter[1] - currentCenter[1]) < 1e-6;
-        if (isSameCenter) {
-            return currentCenter;
-        }
-        return newCenter;
-    });
-    setMapZoom(currentZoom => {
-        const isSameZoom = newZoom === currentZoom;
-        if (isSameZoom) {
-            return currentZoom;
-        }
-        return newZoom;
-    });
-    setMapBounds(bounds);
+    setMapCenter(newCenter);
+    setMapZoom(newZoom);
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
-    const sortedByMapCenter = [...filteredDealerships].sort((a, b) => {
+    return [...filteredDealerships].sort((a, b) => {
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
-    });
-
-    return sortedByMapCenter.slice(0, 50);
+    }).slice(0, 50);
   }, [filteredDealerships, mapCenter, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
@@ -216,100 +189,33 @@ function MapPageComponent() {
   }, [selectedDealershipId]);
   
   const handleMarkerClick = useCallback((id: string) => {
-    if (isMobile) {
-        if (firstClickId === id) {
-            // Second click on the same marker
-            setSelectedDealershipId(id);
-            setFirstClickId(null);
-        } else {
-            // First click on a marker
-            setFirstClickId(id);
-            setSelectedDealershipId(null); // Ensure no card is expanded in the list yet
-        }
-    } else { // Desktop behavior
-        const isDeselecting = selectedDealershipId === id;
-        setSelectedDealershipId(isDeselecting ? null : id);
-        
-        if (!isDeselecting) {
-            const selectedDealership = allDealerships.find(d => d.id === id);
-            if (selectedDealership && selectedDealership.latitude && selectedDealership.longitude) {
-                // Pas de zoom
-            }
-        }
-    }
-  }, [allDealerships, isMobile, firstClickId, selectedDealershipId]);
+    setSelectedDealershipId(currentId => currentId === id ? null : id);
+    setFirstClickId(id); // Keep track of marker clicks for popups
+  }, []);
 
   useEffect(() => {
     if (!selectedDealershipId) return;
-
-    const scrollViewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
     const targetCard = cardRefs.current.get(selectedDealershipId);
-
-    if (!targetCard || !scrollViewport) return;
-    
-    targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-    const observer = new IntersectionObserver(
-        ([entry]) => {
-            if (!entry.isIntersecting) {
-                setSelectedDealershipId(null);
-                observer.disconnect();
-            }
-        },
-        { 
-            root: scrollViewport,
-            threshold: 0
-        }
-    );
-
-    observer.observe(targetCard);
-    
-    return () => {
-        observer.disconnect();
-    };
+    if (targetCard) {
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   }, [selectedDealershipId]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
-    if (hoverOutTimeoutRef.current) {
-      clearTimeout(hoverOutTimeoutRef.current);
-      hoverOutTimeoutRef.current = null;
-    }
-    hoverInTimeoutRef.current = setTimeout(() => {
-        if (firstClickId !== id) {
-            setHoveredDealershipId(id);
-        }
-    }, 100);
-  }, [firstClickId]);
-
-  const handleMouseOut = useCallback(() => {
-    if (hoverInTimeoutRef.current) {
-        clearTimeout(hoverInTimeoutRef.current);
-        hoverInTimeoutRef.current = null;
-    }
-    hoverOutTimeoutRef.current = setTimeout(() => {
-        setHoveredDealershipId(null);
-    }, 100);
+    if (hoverOutTimeoutRef.current) clearTimeout(hoverOutTimeoutRef.current);
+    hoverInTimeoutRef.current = setTimeout(() => setHoveredDealershipId(id), 100);
   }, []);
 
-  const handleCardMouseEnter = useCallback((id: string) => {
-    handleMarkerMouseOver(id);
-  }, [handleMarkerMouseOver]);
-
-  const handleCardMouseLeave = useCallback(() => {
-    handleMouseOut();
-  }, [handleMouseOut]);
+  const handleMouseOut = useCallback(() => {
+    if (hoverInTimeoutRef.current) clearTimeout(hoverInTimeoutRef.current);
+    hoverOutTimeoutRef.current = setTimeout(() => setHoveredDealershipId(null), 100);
+  }, []);
 
   const handleLocationError = useCallback((error: any) => {
-    let message = 'Impossible de déterminer votre position.';
-    if (error.code === 1) { // PERMISSION_DENIED
-        message = "Vous avez refusé l'accès à la géolocalisation.";
-    } else if (error.code === 2) { // POSITION_UNAVAILABLE
-        message = "Votre position n'est pas disponible pour le moment.";
-    }
     toast({
         variant: "destructive",
         title: "Erreur de géolocalisation",
-        description: message,
+        description: "Impossible de déterminer votre position.",
     });
   }, [toast]);
 
@@ -324,7 +230,8 @@ function MapPageComponent() {
       <div className="p-4 space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground pt-20">
-            <p>Chargement des concessions...</p>
+            <Loader2 className="mx-auto h-8 w-8 animate-spin" />
+            <p className="mt-2">Chargement des concessions...</p>
           </div>
         ) : (
           <>
@@ -332,32 +239,21 @@ function MapPageComponent() {
               const card = (
                 <div
                   key={dealer.id}
-                  ref={node => {
-                    if (cardRefs.current) {
-                      if (node) cardRefs.current.set(dealer.id, node);
-                      else cardRefs.current.delete(dealer.id);
-                    }
-                  }}
-                  onMouseEnter={() => handleCardMouseEnter(dealer.id)}
-                  onMouseLeave={handleCardMouseLeave}
+                  ref={node => cardRefs.current.set(dealer.id, node)}
+                  onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
+                  onMouseLeave={handleMouseOut}
                 >
                   <DealershipCard
                     dealership={dealer}
                     onClick={() => handleCardClick(dealer)}
                     isExpanded={dealer.id === selectedDealershipId}
-                    className={cn(
-                      "w-full",
-                      dealer.id === hoveredDealershipId && !isMobile ? "shadow-lg" : "",
-                      dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
-                    )}
+                    className={cn(dealer.id === hoveredDealershipId && "shadow-lg" )}
                   />
                 </div>
               );
 
               const ad = (index > 0 && (index + 1) % adFrequency === 0) ? (
-                <div key={`ad-${index}`} className="my-4">
-                  <AdCard />
-                </div>
+                <div key={`ad-${index}`} className="my-4"><AdCard /></div>
               ) : null;
 
               return [card, ad];
@@ -366,7 +262,7 @@ function MapPageComponent() {
             {dealershipsToDisplay.length === 0 && (
                 <div className="text-center text-muted-foreground pt-20">
                   <p>Aucun résultat trouvé.</p>
-                  <p className="text-sm">Essayez d'ajuster vos filtres ou de vous déplacer sur la carte.</p>
+                  <p className="text-sm">Essayez d'ajuster vos filtres.</p>
                 </div>
             )}
           </>
@@ -395,51 +291,10 @@ function MapPageComponent() {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        {!isMobile && (
-          <aside className="w-[900px] flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
-            {listContent}
-          </aside>
-        )}
-
-        <main className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-y-auto md:h-full md:overflow-hidden md:flex md:flex-col md:relative">
-          {isMobile ? (
-            <div className="h-full flex flex-col">
-              <div className="relative h-[35vh] flex-shrink-0">
-                <MapComponent
-                  dealerships={filteredDealerships}
-                  center={mapCenter}
-                  zoom={mapZoom}
-                  hoveredDealershipId={hoveredDealershipId}
-                  selectedDealershipId={selectedDealershipId}
-                  firstClickId={firstClickId}
-                  onMarkerClick={handleMarkerClick}
-                  onMarkerMouseOver={handleMarkerMouseOver}
-                  onMarkerMouseOut={handleMouseOut}
-                  isMobile={isMobile}
-                  onMapChange={handleMapChange}
-                  onMapClick={handleMapClick}
-                  isLocating={isLocating}
-                  onLocateEnd={() => setIsLocating(false)}
-                  onLocationError={handleLocationError}
-                />
-                <div className="absolute top-2 right-2 z-[1000]">
-                  <Button
-                    size="icon"
-                    className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg h-9 w-9"
-                    onClick={() => setIsLocating(true)}
-                    disabled={isLocating}
-                    title="Me géolocaliser"
-                  >
-                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-              <div className="flex-grow overflow-y-auto">
-                {listContent}
-              </div>
-            </div>
-          ) : (
-            <div className="w-full h-full relative">
+        {isMobile ? (
+          // Mobile Layout
+          <div className="h-full flex flex-col">
+            <div className="relative h-[35vh] flex-shrink-0">
               <MapComponent
                 dealerships={filteredDealerships}
                 center={mapCenter}
@@ -450,7 +305,37 @@ function MapPageComponent() {
                 onMarkerClick={handleMarkerClick}
                 onMarkerMouseOver={handleMarkerMouseOver}
                 onMarkerMouseOut={handleMouseOut}
-                isMobile={isMobile}
+                onMapChange={handleMapChange}
+                onMapClick={handleMapClick}
+                isLocating={isLocating}
+                onLocateEnd={() => setIsLocating(false)}
+                onLocationError={handleLocationError}
+              />
+              <div className="absolute top-2 right-2 z-[1000]">
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
+                  {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+            <div className="flex-grow overflow-y-auto">{listContent}</div>
+          </div>
+        ) : (
+          // Desktop Layout
+          <>
+            <aside className="w-7/12 xl:w-3/5 flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
+              {listContent}
+            </aside>
+            <main className="flex-1 bg-gray-100 dark:bg-gray-900 h-full relative">
+              <MapComponent
+                dealerships={filteredDealerships}
+                center={mapCenter}
+                zoom={mapZoom}
+                hoveredDealershipId={hoveredDealershipId}
+                selectedDealershipId={selectedDealershipId}
+                firstClickId={firstClickId}
+                onMarkerClick={handleMarkerClick}
+                onMarkerMouseOver={handleMarkerMouseOver}
+                onMarkerMouseOut={handleMouseOut}
                 onMapChange={handleMapChange}
                 onMapClick={handleMapClick}
                 isLocating={isLocating}
@@ -458,19 +343,13 @@ function MapPageComponent() {
                 onLocationError={handleLocationError}
               />
               <div className="absolute top-4 right-4 z-[1000]">
-                <Button
-                  size="icon"
-                  className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg"
-                  onClick={() => setIsLocating(true)}
-                  disabled={isLocating}
-                  title="Me géolocaliser"
-                >
+                <Button size="icon" className="rounded-full shadow-lg" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
                   {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
                 </Button>
               </div>
-            </div>
-          )}
-        </main>
+            </main>
+          </>
+        )}
       </div>
     </div>
   );
