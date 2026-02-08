@@ -135,19 +135,19 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             <div className="w-full h-px md:w-px md:h-auto bg-border/70 my-4 md:my-0 md:mx-4" />
 
             {/* Hours */}
-            <div className="flex-shrink-0 md:w-48">
-              <ul className="space-y-1 text-sm">
+            <div className="flex-shrink-0 md:w-52">
+              <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
                 {weekDays.map(day => {
                   const hours = dealership[day as keyof Dealership];
                   const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
                   return (
-                      <li key={day} className={cn("flex justify-between items-center", isClosed && "text-muted-foreground/70")}>
-                        <span className="capitalize w-20 text-xs">{day}</span>
-                        <span className={cn("text-right flex-1 font-mono text-xs", isClosed && "font-sans")}>{isClosed ? 'Fermé' : hours}</span>
-                      </li>
+                      <React.Fragment key={day}>
+                        <span className={cn("capitalize text-xs font-medium", isClosed && "text-muted-foreground/70")}>{day}</span>
+                        <span className={cn("font-mono text-xs text-right", isClosed && "font-sans text-muted-foreground/70")}>{isClosed ? 'Fermé' : hours}</span>
+                      </React.Fragment>
                   )
                 })}
-              </ul>
+              </div>
             </div>
           </div>
         </div>
