@@ -39,23 +39,21 @@ const LandingHeader = () => {
                     </div>
 
                     {/* Search Bar */}
-                    <div className="relative w-full max-w-lg mx-auto">
+                    <form action="/map" method="get" className="relative w-full max-w-lg mx-auto">
                         <Input
+                            name="search"
                             type="search"
-                            placeholder="Achat, vente, accessoires par départements"
+                            placeholder="Rechercher par nom, ville, code postal..."
                             className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
                         />
                         <Button 
                             type="submit" 
                             size="icon" 
                             className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
-                            asChild
                         >
-                            <Link href="/map">
-                                <Search className="h-5 w-5" />
-                            </Link>
+                            <Search className="h-5 w-5" />
                         </Button>
-                    </div>
+                    </form>
 
                     {/* Text Navigation */}
                     <nav className="flex items-center justify-center gap-6 md:gap-8 text-muted-foreground font-medium text-lg">

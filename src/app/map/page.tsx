@@ -33,11 +33,12 @@ const getDistanceSq = (center: [number, number], dealer: Dealership) => {
 function MapPageComponent() {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
+  const searchParam = searchParams.get('search');
   
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [submittedSearchTerm, setSubmittedSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParam || '');
+  const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
@@ -51,7 +52,8 @@ function MapPageComponent() {
   
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
     if (filterParam === 'service') return 'service';
-    return 'shopping';
+    if (filterParam === 'shopping') return 'shopping';
+    return null;
   });
 
   const hoverInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -121,7 +123,10 @@ function MapPageComponent() {
     if (activeFilter === 'service') {
       return "reparation , entretient, depannage, pièces détachées";
     }
-    return "Achat, vente, accessoires par départements";
+    if (activeFilter === 'shopping') {
+      return "Achat, vente, accessoires par départements";
+    }
+    return "Rechercher par nom, ville, code postal...";
   }, [activeFilter]);
 
   const isSearching = submittedSearchTerm.trim() !== '' || activeFilter !== null;
