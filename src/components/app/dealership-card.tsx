@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, Store } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
@@ -58,188 +58,166 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   ) : null;
 
   if (isExpanded) {
-    // Render the new expanded layout from the user's image
     return (
       <>
         {imageDialog}
-        <Card
-          onClick={(e: React.MouseEvent) => {
-            if (e.target instanceof HTMLElement && e.target.closest('a')) {
-              return;
-            }
-            onClick?.();
-          }}
-          className={cn(
-            "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer",
-            className,
-          )}
-        >
-          <div className="flex flex-col">
-              {/* Header with image and name */}
-              <div className="flex flex-row items-center p-4 border-b border-border/50 bg-card">
-                  <div
-                    onClick={handleImageClick}
-                    className={cn(
-                      "relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border",
-                      dealership.imgUrl && "cursor-zoom-in"
-                    )}
-                  >
-                    {dealership.imgUrl ? (
-                    <Image
-                      src={dealership.imgUrl}
-                      alt={`Photo de ${title}`}
-                      fill
-                      className="object-cover"
-                      sizes="64px"
-                    />
-                  ) : (
-                     <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
-                      <MotoTrustLogo className="w-8 h-8 text-gray-400" />
-                    </div>
-                  )}
-                   {rating > 0 && (
-                    <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5 pointer-events-none">
-                      <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
-                      <span>{rating.toFixed(1)}</span>
-                    </div>
-                  )}
+        <Card className={cn("w-full overflow-hidden flex", className)}>
+          <div className="flex-1 p-4 border-r">
+            <div className="flex">
+              <div
+                onClick={handleImageClick}
+                className={cn(
+                  "relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden border",
+                  dealership.imgUrl && "cursor-zoom-in"
+                )}
+              >
+                {dealership.imgUrl ? (
+                  <Image
+                    src={dealership.imgUrl}
+                    alt={`Photo de ${title}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 6rem, 8rem"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
+                    <MotoTrustLogo className="w-12 h-12 text-gray-400" />
                   </div>
-                  <div className="pl-4 flex flex-col justify-center min-w-0">
-                      <h3 className="font-bold text-base text-foreground leading-tight">
-                        {title}
-                      </h3>
+                )}
+                {rating > 0 && (
+                  <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5 pointer-events-none">
+                    <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
+                    <span>{rating.toFixed(1)}</span>
                   </div>
+                )}
               </div>
-              
-              <div className="p-4 space-y-4 bg-background/50">
-                  {/* Action buttons */}
-                  <div className="flex justify-around">
+              <div className="pl-4 flex flex-col justify-between flex-grow">
+                <div>
+                  <h3 className="font-bold text-lg md:text-xl text-foreground leading-tight cursor-pointer" onClick={onClick}>
+                    {title}
+                  </h3>
+                </div>
+                <div className="space-y-3 mt-2">
+                  <TooltipProvider>
+                    <div className="flex items-center gap-4">
                       {dealership.placeUrl && (
-                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
-                            <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
-                                <Store className="w-5 h-5"/>
-                            </div>
-                            <span>Fiche Google</span>
-                        </a>
-                      )}
-                      {dealership.phoneNumber && (
-                        <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
-                            <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
-                                <Phone className="w-5 h-5"/>
-                            </div>
-                            <span>Appeler</span>
-                        </a>
-                      )}
-                      {dealership.website && (
-                        <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
-                            <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
-                                <Globe className="w-5 h-5"/>
-                            </div>
-                            <span>Site Web</span>
-                        </a>
-                      )}
-                  </div>
-
-                  {/* Address */}
-                   {dealership.address && (
-                    <TooltipProvider delayDuration={100}>
-                      <div className="text-center border-t border-border/50 pt-3 mt-3">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adresse</p>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-sm text-center text-foreground hover:text-accent group">
-                                <MapPin className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-accent transition-colors"/>
-                                <span className="underline-offset-4 group-hover:underline">{dealership.address}</span>
+                            <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
+                                    <Store className="w-5 h-5"/>
+                                </div>
                             </a>
                           </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Y aller</p>
-                          </TooltipContent>
+                          <TooltipContent><p>Fiche Google</p></TooltipContent>
                         </Tooltip>
-                      </div>
+                      )}
+                      {dealership.phoneNumber && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
+                                    <Phone className="w-5 h-5"/>
+                                </div>
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent><p>Appeler</p></TooltipContent>
+                        </Tooltip>
+                      )}
+                      {dealership.website && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border hover:border-accent">
+                                    <Globe className="w-5 h-5"/>
+                                </div>
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent><p>Site Web</p></TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </TooltipProvider>
+                   {dealership.address && (
+                    <TooltipProvider delayDuration={100}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-left text-foreground hover:text-accent group">
+                              <MapPin className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-accent transition-colors"/>
+                              <span className="underline-offset-4 group-hover:underline">{dealership.address}</span>
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent><p>Y aller</p></TooltipContent>
+                      </Tooltip>
                     </TooltipProvider>
                   )}
-
-                  {/* Opening Hours */}
-                  <div className="border-t border-border/50 pt-3 mt-3">
-                    <div className="text-center mb-2">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Horaires</p>
-                    </div>
-                    <div className="rounded-md border p-2 bg-card text-xs">
-                      <ul className="space-y-1">
-                        {weekDays.map(day => {
-                          const hours = dealership[day as keyof Dealership];
-                          const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
-                          return (
-                              <li key={day} className={cn("flex justify-between", isClosed && "text-muted-foreground")}>
-                                <span className="capitalize w-20">{day}:</span>
-                                <span className={cn("text-right flex-1", !isClosed && "font-mono")}>{isClosed ? 'Fermé' : hours}</span>
-                              </li>
-                          )
-                        })}
-                      </ul>
-                    </div>
-                  </div>
+                </div>
               </div>
+            </div>
+          </div>
+          <div className="p-4 w-64 flex-shrink-0 bg-background/50">
+              <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">Horaires</p>
+              <ul className="space-y-1 text-sm">
+                {weekDays.map(day => {
+                  const hours = dealership[day as keyof Dealership];
+                  const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
+                  return (
+                      <li key={day} className={cn("flex justify-between", isClosed && "text-muted-foreground")}>
+                        <span className="capitalize w-24">{day}</span>
+                        <span className={cn("text-right flex-1 font-mono", isClosed && "font-sans")}>{isClosed ? 'Fermé' : hours}</span>
+                      </li>
+                  )
+                })}
+              </ul>
           </div>
         </Card>
       </>
     );
   }
 
-  // Render the collapsed view for the horizontal mobile list
+  // Collapsed view
   return (
     <>
       {imageDialog}
       <Card
-        onClick={(e: React.MouseEvent) => {
-          if (e.target instanceof HTMLElement && e.target.closest('a')) {
-            return;
-          }
-          onClick?.();
-        }}
+        onClick={onClick}
         className={cn(
-          "w-full mx-auto overflow-hidden transition-all duration-300 ease-in-out flex flex-col cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50",
-          className,
+          "w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-row p-3 items-center cursor-pointer hover:bg-secondary/50",
+          className
         )}
       >
-        <div className="flex flex-col h-full">
-          <div
-            className={cn(
-              "relative w-full h-24 flex-shrink-0"
-            )}
-          >
-            {dealership.imgUrl ? (
-              <Image
-                src={dealership.imgUrl}
-                alt={`Photo de ${title}`}
-                fill
-                className="object-cover"
-                sizes="14rem"
-              />
-            ) : (
-               <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
-                <MotoTrustLogo className="w-10 h-10 text-gray-400" />
-              </div>
-            )}
-            {rating > 0 && (
-              <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5 pointer-events-none">
-                <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
-                <span>{rating.toFixed(1)}</span>
-              </div>
-            )}
-          </div>
-          <CardContent className="p-2 flex-grow relative flex flex-col min-w-0 justify-start gap-1">
-              <h3 className="font-bold text-sm text-primary dark:text-primary-foreground leading-tight truncate">
-                {title}
-              </h3>
-              {dealership.address && (
-                  <div className="text-xs text-muted-foreground mt-1 flex items-start">
-                      <MapPin className="h-3 w-3 mr-1.5 mt-0.5 shrink-0" />
-                      <span className="line-clamp-2">{dealership.address}</span>
-                  </div>
-              )}
-          </CardContent>
+        <div
+          onClick={handleImageClick}
+          className={cn(
+            "relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-lg overflow-hidden border",
+            dealership.imgUrl && "cursor-zoom-in"
+          )}
+        >
+          {dealership.imgUrl ? (
+            <Image
+              src={dealership.imgUrl}
+              alt={`Photo de ${title}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 5rem, 6rem"
+            />
+          ) : (
+             <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
+              <MotoTrustLogo className="w-8 h-8 text-gray-400" />
+            </div>
+          )}
+          {rating > 0 && (
+            <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5 pointer-events-none">
+              <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
+              <span>{rating.toFixed(1)}</span>
+            </div>
+          )}
+        </div>
+        <div className="pl-4 flex-grow min-w-0">
+          <h3 className="font-bold text-base text-foreground leading-tight truncate">
+            {title}
+          </h3>
+          {dealership.address && <p className="text-sm text-muted-foreground truncate mt-1">{dealership.address}</p>}
         </div>
       </Card>
     </>

@@ -245,6 +245,8 @@ function MapPageComponent() {
     const targetCard = cardRefs.current.get(selectedDealershipId);
 
     if (!targetCard || !scrollViewport) return;
+    
+    targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     const observer = new IntersectionObserver(
         ([entry]) => {
@@ -314,11 +316,11 @@ function MapPageComponent() {
     setFirstClickId(null);
   }, []);
 
-  const adFrequency = 3;
+  const adFrequency = 5;
 
   const listContent = (
     <ScrollArea ref={scrollAreaRef} className="h-full">
-      <div className="p-5 w-full space-y-4">
+      <div className="p-4 space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground pt-20">
             <p>Chargement des concessions...</p>
@@ -343,16 +345,16 @@ function MapPageComponent() {
                     onClick={() => handleCardClick(dealer)}
                     isExpanded={dealer.id === selectedDealershipId}
                     className={cn(
-                      "w-[8cm] mx-auto",
-                      dealer.id === hoveredDealershipId ? "shadow-lg" : "",
+                      "w-full",
+                      dealer.id === hoveredDealershipId && !isMobile ? "shadow-lg" : "",
                       dealer.id === selectedDealershipId ? "ring-2 ring-accent" : ""
                     )}
                   />
                 </div>
               );
 
-              const ad = (index + 1) % adFrequency === 0 ? (
-                <div key={`ad-${index}`}>
+              const ad = (index > 0 && (index + 1) % adFrequency === 0) ? (
+                <div key={`ad-${index}`} className="my-4">
                   <AdCard />
                 </div>
               ) : null;
@@ -360,11 +362,6 @@ function MapPageComponent() {
               return [card, ad];
             }).filter(Boolean)}
 
-            {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && (
-              <div>
-                <AdCard />
-              </div>
-            )}
             {dealershipsToDisplay.length === 0 && (
                 <div className="text-center text-muted-foreground pt-20">
                   <p>Aucun résultat trouvé.</p>
@@ -389,13 +386,12 @@ function MapPageComponent() {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        <aside className="w-96 flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
+        <aside className="w-full md:w-[900px] flex-shrink-0 h-full flex-col bg-background border-r border-border z-10 shadow-md hidden md:flex">
           {listContent}
         </aside>
 
-        <main className="flex-1 bg-background overflow-y-auto md:h-full md:overflow-hidden md:flex md:flex-col md:p-4 md:relative">
-          <div className="p-4 pb-2 md:p-0 md:flex-1">
-            <div className="w-full h-[40vh] md:h-full rounded-lg overflow-hidden shadow-md relative">
+        <main className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-y-auto md:h-full md:overflow-hidden md:flex md:flex-col md:relative">
+           <div className="w-full h-full">
               <MapComponent 
                 dealerships={filteredDealerships}
                 center={mapCenter} 
@@ -426,14 +422,40 @@ function MapPageComponent() {
                   </Button>
               </div>
             </div>
-          </div>
           
-          <div className="md:hidden">
-            <div className="flex flex-col space-y-4 items-center px-4 py-2">
-              <AdCard />
-              <AdCard />
-              <AdCard />
-              <AdCard />
+          <div className="md:hidden h-full flex flex-col">
+            <div className="relative h-[35vh] flex-shrink-0">
+               <MapComponent 
+                dealerships={filteredDealerships}
+                center={mapCenter} 
+                zoom={mapZoom} 
+                hoveredDealershipId={hoveredDealershipId}
+                selectedDealershipId={selectedDealershipId}
+                firstClickId={firstClickId}
+                onMarkerClick={handleMarkerClick}
+                onMarkerMouseOver={handleMarkerMouseOver}
+                onMarkerMouseOut={handleMouseOut}
+                isMobile={isMobile}
+                onMapChange={handleMapChange}
+                onMapClick={handleMapClick}
+                isLocating={isLocating}
+                onLocateEnd={() => setIsLocating(false)}
+                onLocationError={handleLocationError}
+              />
+               <div className="absolute top-2 right-2 z-[1000]">
+                  <Button
+                      size="icon"
+                      className="rounded-full bg-background/80 text-foreground/80 hover:bg-background/100 hover:text-foreground border border-border backdrop-blur-sm shadow-lg h-9 w-9"
+                      onClick={() => setIsLocating(true)}
+                      disabled={isLocating}
+                      title="Me géolocaliser"
+                  >
+                      {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+                  </Button>
+              </div>
+            </div>
+             <div className="flex-grow overflow-y-auto">
+              {listContent}
             </div>
           </div>
         </main>
