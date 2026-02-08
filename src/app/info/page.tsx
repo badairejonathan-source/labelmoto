@@ -1,62 +1,14 @@
+'use client';
+
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import MotoTrustLogo from '@/components/app/logo';
-import { Search, FilePenLine, Bell, User } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+
+import Header from '@/components/app/header';
 import articles from '@/app/data/articles.json';
 import placeholderData from '@/app/lib/placeholder-images.json';
-
-const InfoHeader = () => {
-    return (
-        <header className="bg-card text-foreground py-4 px-4 sm:px-6 lg:px-8 w-full border-b sticky top-0 z-30">
-            <div className="container mx-auto flex items-center justify-between gap-4">
-                <div className="w-24 md:w-32 shrink-0">
-                    <Link href="/">
-                        <MotoTrustLogo />
-                    </Link>
-                </div>
-
-                <div className="flex-1 max-w-lg mx-auto">
-                    <form action="/info" method="get" className="relative w-full">
-                        <Input
-                            name="search"
-                            type="search"
-                            placeholder="Rechercher un article..."
-                            className="pr-12 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
-                        />
-                        <Button 
-                            type="submit" 
-                            size="icon" 
-                            variant="ghost"
-                            className="absolute top-1/2 right-1.5 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground rounded-full"
-                        >
-                            <Search className="h-4 w-4" />
-                        </Button>
-                    </form>
-                </div>
-                
-                <nav className="flex items-center gap-2">
-                    <Button asChild variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground">
-                        <Link href="#">
-                            <FilePenLine className="h-5 w-5" />
-                        </Link>
-                    </Button>
-                    <Button asChild size="icon" className="h-10 w-10 bg-accent hover:bg-accent/90 text-accent-foreground">
-                        <Link href="#">
-                            <Bell className="h-5 w-5" />
-                        </Link>
-                    </Button>
-                     <Button asChild variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground">
-                        <Link href="#">
-                            <User className="h-5 w-5" />
-                        </Link>
-                    </Button>
-                </nav>
-            </div>
-        </header>
-    );
-};
+import { Loader2 } from 'lucide-react';
 
 const ArticleCard = ({ article }: { article: (typeof articles)[0] }) => {
     const imageMeta = placeholderData.articles.find(img => img.seed === article.imageSeed);
@@ -72,7 +24,7 @@ const ArticleCard = ({ article }: { article: (typeof articles)[0] }) => {
                             {article.title}
                         </h2>
                     </Link>
-                    <p className="mt-4 text-muted-foreground text-lg">
+                    <p className="mt-4 text-lg text-muted-foreground">
                         {article.description}
                     </p>
                     <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground font-medium">
@@ -98,17 +50,77 @@ const ArticleCard = ({ article }: { article: (typeof articles)[0] }) => {
     );
 };
 
-export default function InfoPage() {
+function InfoPageComponent() {
+    const searchParams = useSearchParams();
+    const searchParam = searchParams.get('search');
+    
+    const [searchTerm, setSearchTerm] = useState(searchParam || '');
+    const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
+    const [filteredArticles, setFilteredArticles] = useState(articles);
+
+    const handleSearchTermChange = (newTerm: string) => {
+        setSearchTerm(newTerm);
+        if (newTerm.trim() === '') {
+            setSubmittedSearchTerm('');
+        }
+    };
+
+    const handleSearch = () => {
+        setSubmittedSearchTerm(searchTerm);
+    };
+    
+    useEffect(() => {
+        setSubmittedSearchTerm(searchParam || '');
+        setSearchTerm(searchParam || '');
+    }, [searchParam]);
+
+    useEffect(() => {
+        let results = articles;
+        if (submittedSearchTerm && submittedSearchTerm.trim() !== '') {
+            const lowerCaseSearch = submittedSearchTerm.toLowerCase();
+            results = articles.filter(article => 
+                article.title.toLowerCase().includes(lowerCaseSearch) ||
+                article.description.toLowerCase().includes(lowerCaseSearch) ||
+                article.author.toLowerCase().includes(lowerCaseSearch)
+            );
+        }
+        setFilteredArticles(results);
+    }, [submittedSearchTerm]);
+
     return (
         <div className="bg-background min-h-screen">
-            <InfoHeader />
+            <Header
+                searchTerm={searchTerm}
+                onSearchTermChange={handleSearchTermChange}
+                onSearch={handleSearch}
+                activeFilter={null}
+                onFilterChange={() => {}}
+                placeholderText="Rechercher un article..."
+            />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto">
-                    {articles.map((article) => (
+                    {filteredArticles.map((article) => (
                         <ArticleCard key={article.id} article={article} />
                     ))}
+                    {filteredArticles.length === 0 && submittedSearchTerm && (
+                        <div className="text-center text-muted-foreground py-20">
+                            <p className="text-lg">Aucun article ne correspond à votre recherche "{submittedSearchTerm}".</p>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
     );
+}
+
+export default function InfoPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-[100svh] w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    }>
+      <InfoPageComponent />
+    </Suspense>
+  );
 }

@@ -113,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           <Button 
               type="submit" 
               size="icon" 
-              className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-red-500 hover:bg-red-600 text-white rounded-full shadow"
+              className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
               onClick={onSearch}
           >
             <Search className="h-5 w-5" />
