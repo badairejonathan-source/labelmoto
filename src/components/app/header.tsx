@@ -54,11 +54,14 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               <span>atelier</span>
             </Button>
             <Button
+              asChild
               variant="ghost"
               className="relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold text-muted-foreground"
             >
-              <FileText className="h-6 w-6" />
-              <span>info</span>
+              <Link href="/info">
+                <FileText className="h-6 w-6" />
+                <span>info</span>
+              </Link>
             </Button>
           </nav>
 
@@ -80,8 +83,10 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               <Wrench className="h-7 w-7" />
                {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-accent rounded-full"></span>}
             </Button>
-            <Button variant="ghost" className="p-2 h-auto text-muted-foreground hover:text-primary">
-              <FileText className="h-7 w-7" />
+            <Button asChild variant="ghost" className="p-2 h-auto text-muted-foreground hover:text-primary">
+              <Link href="/info">
+                <FileText className="h-7 w-7" />
+              </Link>
             </Button>
           </nav>
           

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "title": "10 balades moto uniques et exclusives autour de Paris",
+    "description": "Quittez l'agitation parisienne et découvrez des itinéraires secrets et des paysages insoupçonnés à moins de deux heures de la capitale. Entre châteaux, forêts et routes sinueuses, l'aventure vous attend au coin de la rue.",
+    "author": "Jean-Pierre Moto",
+    "date": "15 juillet 2024",
+    "readingTime": "6 min de lecture",
+    "imageSeed": "article-paris"
+  },
+  {
+    "id": "2",
+    "title": "Des road-trips inoubliables pour chaque saison",
+    "description": "Que ce soit sous le soleil d'été, les couleurs de l'automne ou la fraîcheur du printemps, la France offre des routes magnifiques toute l'année. Découvrez nos sélections des meilleurs road-trips moto, saison par saison.",
+    "author": "Valérie Guidon",
+    "date": "10 juillet 2024",
+    "readingTime": "8 min de lecture",
+    "imageSeed": "article-seasons"
+  },
+  {
+    "id": "3",
+    "title": "5 destinations pour les motards amoureux du grand air",
+    "description": "Si pour vous, moto rime avec nature et grands espaces, cet article est fait pour vous. Des Gorges du Verdon aux volcans d'Auvergne, explorez cinq destinations où la route et le paysage ne font qu'un.",
+    "author": "Chris V-Twin",
+    "date": "5 juillet 2024",
+    "readingTime": "5 min de lecture",
+    "imageSeed": "article-nature"
+  },
+  {
+    "id": "4",
+    "title": "6 cols de montagne pour motards débutants à travers la France",
+    "description": "Rêvez-vous de virages en épingle et de panoramas à couper le souffle mais n'osez pas vous lancer ? Nous avons sélectionné 6 cols mythiques mais accessibles pour faire vos premières armes en montagne en toute sécurité.",
+    "author": "Alice Piston",
+    "date": "1 juillet 2024",
+    "readingTime": "7 min de lecture",
+    "imageSeed": "article-mountains"
+  }
+]

@@ -25,13 +25,14 @@ const LandingHeader = () => {
                                     <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full" />
                                 </Link>
                             </Button>
-                            <Button asChild size="icon" className="h-10 w-10 bg-accent hover:bg-accent/90 text-accent-foreground">
+                            <Button asChild size="icon" className="h-10 w-10 bg-accent hover:bg-accent/90 text-accent-foreground relative">
                                 <Link href="/map?filter=service">
                                     <Wrench className="h-6 w-6" />
+                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-accent rounded-full" />
                                 </Link>
                             </Button>
                             <Button asChild variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground">
-                                <Link href="/map">
+                                <Link href="/info">
                                     <FileText className="h-6 w-6" />
                                 </Link>
                             </Button>
@@ -67,7 +68,7 @@ const LandingHeader = () => {
                         <Link href="/map?filter=service" className="hover:text-foreground">
                             Atelier
                         </Link>
-                        <Link href="/map" className="hover:text-foreground">
+                        <Link href="/info" className="hover:text-foreground">
                             info
                         </Link>
                     </nav>
