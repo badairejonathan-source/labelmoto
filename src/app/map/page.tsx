@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -16,6 +16,7 @@ import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
+import { useSearchParams } from 'next/navigation';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -29,7 +30,10 @@ const getDistanceSq = (center: [number, number], dealer: Dealership) => {
     return dx * dx + dy * dy;
 };
 
-export default function MapPage() {
+function MapPageComponent() {
+  const searchParams = useSearchParams();
+  const filterParam = searchParams.get('filter');
+  
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,7 +49,10 @@ export default function MapPage() {
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
   
-  const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>('shopping');
+  const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
+    if (filterParam === 'service') return 'service';
+    return 'shopping';
+  });
 
   const hoverInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hoverOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -421,5 +428,17 @@ export default function MapPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function MapPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-[100svh] w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    }>
+      <MapPageComponent />
+    </Suspense>
   );
 }

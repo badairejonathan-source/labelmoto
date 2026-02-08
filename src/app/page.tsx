@@ -20,13 +20,13 @@ const LandingHeader = () => {
                         </div>
                         <nav className="flex items-center gap-2">
                             <Button asChild variant="ghost" size="icon" className="h-10 w-10 relative text-primary">
-                                <Link href="/map">
+                                <Link href="/map?filter=shopping">
                                     <Bike className="h-6 w-6" />
                                     <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full" />
                                 </Link>
                             </Button>
                             <Button asChild size="icon" className="h-10 w-10 bg-accent hover:bg-accent/90 text-accent-foreground">
-                                <Link href="/map">
+                                <Link href="/map?filter=service">
                                     <Wrench className="h-6 w-6" />
                                 </Link>
                             </Button>
@@ -63,10 +63,10 @@ const LandingHeader = () => {
                             <Home className="h-5 w-5 text-brand" />
                             <span>Tout rechercher</span>
                         </Link>
-                        <Link href="/map" className="hover:text-foreground">
+                        <Link href="/map?filter=shopping" className="hover:text-foreground">
                             concession
                         </Link>
-                        <Link href="/map" className="hover:text-foreground">
+                        <Link href="/map?filter=service" className="hover:text-foreground">
                             Atelier
                         </Link>
                         <Link href="/map" className="hover:text-foreground">
