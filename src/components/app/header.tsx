@@ -75,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <Button
               variant="ghost"
               onClick={() => onFilterChange('service')}
-              className={cn("p-2 h-auto", activeFilter === 'service' ? 'text-accent' : 'text-muted-foreground hover:text-accent')}
+              className={cn("relative p-2 h-auto", activeFilter === 'service' ? 'text-accent' : 'text-muted-foreground hover:text-accent')}
             >
               <Wrench className="h-7 w-7" />
                {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-accent rounded-full"></span>}
