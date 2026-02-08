@@ -7,21 +7,18 @@ import { MapPin, Star, Phone, Globe, Store } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import MotoTrustLogo from './logo';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 interface DealershipCardProps {
   dealership: Dealership;
   onClick?: () => void;
   className?: string;
-  isExpanded?: boolean;
 }
 
 const DealershipCard: React.FC<DealershipCardProps> = ({
   dealership,
   onClick,
   className,
-  isExpanded = false,
 }) => {
   const [isImageOpen, setIsImageOpen] = useState(false);
 
@@ -57,181 +54,102 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     </Dialog>
   ) : null;
 
-  const actionButtons = (
-    <TooltipProvider>
-      <div className="flex items-center gap-4">
-        {dealership.placeUrl && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
-                  <Store className="w-5 h-5"/>
-              </a>
-            </TooltipTrigger>
-            <TooltipContent><p>Fiche Google</p></TooltipContent>
-          </Tooltip>
-        )}
-        {dealership.phoneNumber && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="text-muted-foreground hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
-                  <Phone className="w-5 h-5"/>
-              </a>
-            </TooltipTrigger>
-            <TooltipContent><p>Appeler</p></TooltipContent>
-          </Tooltip>
-        )}
-        {dealership.website && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
-                  <Globe className="w-5 h-5"/>
-              </a>
-            </TooltipTrigger>
-            <TooltipContent><p>Site Web</p></TooltipContent>
-          </Tooltip>
-        )}
-      </div>
-    </TooltipProvider>
-  );
-
-  if (isExpanded) {
-    return (
-      <>
-        {imageDialog}
-        <Card className={cn("w-full overflow-hidden flex", className)}>
-          <div className="flex-1 p-4 border-r">
-             <div className="flex items-start gap-4">
-               <div
-                onClick={handleImageClick}
-                className={cn(
-                  "relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border",
-                  dealership.imgUrl && "cursor-zoom-in"
-                )}
-              >
-                {dealership.imgUrl ? (
-                  <Image
-                    src={dealership.imgUrl}
-                    alt={`Photo de ${title}`}
-                    fill
-                    className="object-cover"
-                    sizes="6rem"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
-                    <MotoTrustLogo className="w-10 h-10 text-gray-400" />
-                  </div>
-                )}
-                {rating > 0 && (
-                  <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5 pointer-events-none">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
-                    <span>{rating.toFixed(1)}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-grow min-w-0">
-                <h3 className="font-bold text-lg md:text-xl text-foreground leading-tight cursor-pointer" onClick={onClick}>
-                  {title}
-                </h3>
-                <div className="mt-2 space-y-2">
-                    {actionButtons}
-                    {dealership.address && (
-                        <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                            <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-left text-foreground hover:text-accent group" onClick={(e) => e.stopPropagation()}>
-                                <MapPin className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-accent transition-colors"/>
-                                <span className="underline-offset-4 group-hover:underline">{dealership.address}</span>
-                            </a>
-                            </TooltipTrigger>
-                            <TooltipContent><p>Y aller</p></TooltipContent>
-                        </Tooltip>
-                        </TooltipProvider>
-                    )}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="p-4 w-64 flex-shrink-0 bg-secondary/30">
-              <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">Horaires</p>
-              <ul className="space-y-1 text-sm">
-                {weekDays.map(day => {
-                  const hours = dealership[day as keyof Dealership];
-                  const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
-                  return (
-                      <li key={day} className={cn("flex justify-between", isClosed && "text-muted-foreground")}>
-                        <span className="capitalize w-24">{day}</span>
-                        <span className={cn("text-right flex-1 font-mono", isClosed && "font-sans")}>{isClosed ? 'Fermé' : hours}</span>
-                      </li>
-                  )
-                })}
-              </ul>
-          </div>
-        </Card>
-      </>
-    );
-  }
-
-  // Collapsed view
   return (
     <>
       {imageDialog}
       <Card
         onClick={onClick}
         className={cn(
-          "w-full overflow-hidden transition-all duration-300 ease-in-out p-3 cursor-pointer hover:bg-secondary/50",
+          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md",
           className
         )}
       >
-        <div className="flex items-start gap-4">
-            <div
-                onClick={handleImageClick}
-                className={cn(
-                "relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border",
-                dealership.imgUrl && "cursor-zoom-in"
-                )}
-            >
-                {dealership.imgUrl ? (
-                <Image
-                    src={dealership.imgUrl}
-                    alt={`Photo de ${title}`}
-                    fill
-                    className="object-cover"
-                    sizes="6rem"
-                />
-                ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
-                    <MotoTrustLogo className="w-8 h-8 text-gray-400" />
-                </div>
-                )}
-                {rating > 0 && (
-                <div className="absolute top-1 left-1 flex items-center gap-1 text-xs font-bold text-white bg-black/50 backdrop-blur-sm rounded-full px-1.5 py-0.5 pointer-events-none">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
-                    <span>{rating.toFixed(1)}</span>
-                </div>
-                )}
+        <div className="md:flex">
+          {/* Image */}
+          <div
+            onClick={handleImageClick}
+            className={cn(
+              "relative w-full h-48 md:w-32 md:h-auto flex-shrink-0 md:rounded-l-lg md:rounded-r-none rounded-t-lg overflow-hidden md:border-r",
+              dealership.imgUrl && "cursor-zoom-in"
+            )}
+          >
+            {dealership.imgUrl ? (
+              <Image
+                src={dealership.imgUrl}
+                alt={`Photo de ${title}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 8rem"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
+                <MotoTrustLogo className="w-10 h-10 text-gray-400" />
+              </div>
+            )}
+            {rating > 0 && (
+              <div className="absolute top-1.5 left-1.5 flex items-center gap-1 text-xs font-bold text-white bg-black/60 backdrop-blur-sm rounded-full px-2 py-0.5 pointer-events-none">
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
+                <span>{rating.toFixed(1)}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col md:flex-row flex-1 p-4 md:justify-between gap-4">
+            {/* Main Info */}
+            <div className="flex flex-col justify-between flex-grow min-w-0">
+              <h3 className="font-bold text-lg text-foreground leading-tight">
+                {title}
+              </h3>
+              
+              <div className="flex items-start text-center gap-4 text-muted-foreground text-xs mt-3">
+                  {dealership.placeUrl && (
+                      <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
+                          <Store className="w-5 h-5"/>
+                          <span>Fiche Google</span>
+                      </a>
+                  )}
+                  {dealership.phoneNumber && (
+                      <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1 hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
+                          <Phone className="w-5 h-5"/>
+                          <span>Appeler</span>
+                      </a>
+                  )}
+                  {dealership.website && (
+                      <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
+                          <Globe className="w-5 h-5"/>
+                          <span>Site Web</span>
+                      </a>
+                  )}
+              </div>
+
+              {dealership.address && 
+                <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-sm text-left text-muted-foreground hover:text-accent group mt-3" onClick={(e) => e.stopPropagation()}>
+                    <MapPin className="h-4 w-4 shrink-0 mt-0.5"/>
+                    <span className="group-hover:underline">{dealership.address}</span>
+                </a>
+              }
             </div>
-            <div className="flex-grow min-w-0">
-                <h3 className="font-bold text-lg text-foreground leading-tight">
-                    {title}
-                </h3>
-                <div className="mt-2 space-y-2">
-                    {actionButtons}
-                    {dealership.address && 
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-left text-muted-foreground hover:text-accent group" onClick={(e) => e.stopPropagation()}>
-                                        <MapPin className="h-4 w-4 shrink-0"/>
-                                        <span>{dealership.address}</span>
-                                    </a>
-                                </TooltipTrigger>
-                                <TooltipContent><p>Y aller</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    }
-                </div>
+
+            {/* Separator */}
+            <div className="w-full h-px md:w-px md:h-auto bg-border/70 my-4 md:my-0 md:mx-4" />
+
+            {/* Hours */}
+            <div className="flex-shrink-0 md:w-48">
+              <ul className="space-y-1 text-sm">
+                {weekDays.map(day => {
+                  const hours = dealership[day as keyof Dealership];
+                  const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
+                  return (
+                      <li key={day} className={cn("flex justify-between items-center", isClosed && "text-muted-foreground/70")}>
+                        <span className="capitalize w-20 text-xs">{day}</span>
+                        <span className={cn("text-right flex-1 font-mono text-xs", isClosed && "font-sans")}>{isClosed ? 'Fermé' : hours}</span>
+                      </li>
+                  )
+                })}
+              </ul>
             </div>
+          </div>
         </div>
       </Card>
     </>

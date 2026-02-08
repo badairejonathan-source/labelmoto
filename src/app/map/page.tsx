@@ -246,8 +246,10 @@ function MapPageComponent() {
                   <DealershipCard
                     dealership={dealer}
                     onClick={() => handleCardClick(dealer)}
-                    isExpanded={dealer.id === selectedDealershipId}
-                    className={cn(dealer.id === hoveredDealershipId && "shadow-lg" )}
+                    className={cn(
+                      dealer.id === selectedDealershipId && "ring-2 ring-accent",
+                      dealer.id === hoveredDealershipId && "shadow-lg" 
+                    )}
                   />
                 </div>
               );
