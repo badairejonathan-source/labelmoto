@@ -21,7 +21,6 @@ interface MapComponentProps {
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
   onMapClick: () => void;
-  isMobile: boolean;
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   isLocating?: boolean;
   onLocateEnd?: () => void;
@@ -168,8 +167,18 @@ export default function MapComponent({
   }, [stableOnMapChange, stableOnMapClick]);
 
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.setView(center, zoom);
+    const map = mapRef.current;
+    if (map) {
+      const mapCenter = map.getCenter();
+      const mapZoom = map.getZoom();
+      const tolerance = 0.00001;
+
+      const centerChanged = Math.abs(mapCenter.lat - center[0]) > tolerance || Math.abs(mapCenter.lng - center[1]) > tolerance;
+      const zoomChanged = mapZoom !== zoom;
+
+      if (centerChanged || zoomChanged) {
+        map.setView(center, zoom);
+      }
     }
   }, [center, zoom]);
 
@@ -274,7 +283,3 @@ export default function MapComponent({
 
   return <div id="map-container" className="w-full h-full min-h-0 z-[5] bg-gray-100" />;
 }
-
-    
-
-    
