@@ -136,7 +136,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
             {/* Hours */}
             <div className="flex-shrink-0 md:w-52">
-              <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
+              <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1 text-sm">
                 {weekDays.map(day => {
                   const hours = dealership[day as keyof Dealership];
                   const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
