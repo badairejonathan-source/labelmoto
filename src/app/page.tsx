@@ -60,16 +60,16 @@ const LandingHeader = () => {
                     <nav className="flex items-center justify-center gap-6 md:gap-8 text-muted-foreground font-medium text-lg">
                         <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
                             <Home className="h-5 w-5 text-brand" />
-                            <span>Tout rechercher</span>
+                            <span>Tout recherche</span>
                         </Link>
                         <Link href="/map?filter=shopping" className="hover:text-foreground">
-                            concession
+                            Concession
                         </Link>
                         <Link href="/map?filter=service" className="hover:text-foreground">
                             Atelier
                         </Link>
                         <Link href="/info" className="hover:text-foreground">
-                            info
+                            Conseil pratique
                         </Link>
                     </nav>
                 </div>
@@ -177,11 +177,11 @@ export default function LandingPage() {
                 <section className="mt-8 md:mt-12">
                     <div className="relative rounded-2xl overflow-hidden bg-black">
                         <Image
-                            src={ctaSection.src}
+                            src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=2070&auto=format&fit=crop"
                             alt="Rejoignez la communauté"
                             fill
                             className="object-cover z-0 opacity-30"
-                            data-ai-hint={ctaSection.hint}
+                            data-ai-hint="motorcycle dark road"
                         />
                         <div className="relative z-10 p-8 md:p-12">
                             <div className="max-w-4xl mx-auto text-center text-white">

@@ -40,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               )}
             >
               <Bike className="h-6 w-6" />
-              <span>concession</span>
+              <span>Concession</span>
             </Button>
             <Button
               variant="ghost"
@@ -51,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               )}
             >
               <Wrench className="h-6 w-6" />
-              <span>atelier</span>
+              <span>Atelier</span>
             </Button>
             <Button
               asChild
@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             >
               <Link href="/info">
                 <FileText className="h-6 w-6" />
-                <span>info</span>
+                <span>Conseils</span>
               </Link>
             </Button>
           </nav>
