@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -29,11 +29,13 @@ type Article = {
 
 const articles: Article[] = articlesData as Article[];
 
-export default function ArticlePage({ params }: { params: { id: string } }) {
+export default function ArticlePage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
   const [searchTerm, setSearchTerm] = useState('');
 
-  const article = articles.find((a) => a.id === params.id);
+  const article = articles.find((a) => a.id === id);
 
   if (!article) {
     notFound();
