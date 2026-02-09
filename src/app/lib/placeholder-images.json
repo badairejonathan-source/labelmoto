@@ -35,6 +35,7 @@
     { "seed": "article-paris", "width": 400, "height": 400, "hint": "motorcycle paris" },
     { "seed": "article-seasons", "width": 400, "height": 400, "hint": "motorcycle road" },
     { "seed": "article-nature", "width": 400, "height": 400, "hint": "motorcycle nature" },
-    { "seed": "article-mountains", "width": 400, "height": 400, "hint": "motorcycle mountain" }
+    { "seed": "article-mountains", "width": 400, "height": 400, "hint": "motorcycle mountain" },
+    { "seed": "article-occasion", "width": 400, "height": 400, "hint": "motorcycle garage" }
   ]
 }

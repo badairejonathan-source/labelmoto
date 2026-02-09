@@ -6,11 +6,13 @@ import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/app/header';
-import articles from '@/app/data/articles.json';
+import articlesData from '@/app/data/articles.json';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import { Loader2 } from 'lucide-react';
 
-const ArticleCard = ({ article }: { article: (typeof articles)[0] }) => {
+type Article = (typeof articlesData)[0];
+
+const ArticleCard = ({ article }: { article: Article }) => {
     const imageMeta = placeholderData.articles.find(img => img.seed === article.imageSeed);
     const imageUrl = imageMeta ? `https://picsum.photos/seed/${imageMeta.seed}/${imageMeta.width}/${imageMeta.height}` : `https://picsum.photos/400/400`;
     const imageHint = imageMeta ? imageMeta.hint : 'motorcycle article';
@@ -19,7 +21,7 @@ const ArticleCard = ({ article }: { article: (typeof articles)[0] }) => {
         <article className="py-8 border-b last:border-b-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 <div className="md:col-span-2">
-                    <Link href="#" className="group">
+                    <Link href={`/info/${article.id}`} className="group">
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight tracking-tight group-hover:underline underline-offset-4 decoration-accent decoration-2">
                             {article.title}
                         </h2>
@@ -36,14 +38,16 @@ const ArticleCard = ({ article }: { article: (typeof articles)[0] }) => {
                     </div>
                 </div>
                 <div className="relative aspect-square rounded-2xl overflow-hidden order-first md:order-last">
-                    <Image 
-                        src={imageUrl}
-                        alt={article.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        data-ai-hint={imageHint}
-                    />
+                    <Link href={`/info/${article.id}`}>
+                        <Image 
+                            src={imageUrl}
+                            alt={article.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            data-ai-hint={imageHint}
+                        />
+                    </Link>
                 </div>
             </div>
         </article>
@@ -57,7 +61,7 @@ function InfoPageComponent() {
     
     const [searchTerm, setSearchTerm] = useState(searchParam || '');
     const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
-    const [filteredArticles, setFilteredArticles] = useState(articles);
+    const [filteredArticles, setFilteredArticles] = useState(articlesData);
 
     const handleSearchTermChange = (newTerm: string) => {
         setSearchTerm(newTerm);
@@ -80,10 +84,10 @@ function InfoPageComponent() {
     }, [searchParam]);
 
     useEffect(() => {
-        let results = articles;
+        let results = articlesData;
         if (submittedSearchTerm && submittedSearchTerm.trim() !== '') {
             const lowerCaseSearch = submittedSearchTerm.toLowerCase();
-            results = articles.filter(article => 
+            results = articlesData.filter(article => 
                 article.title.toLowerCase().includes(lowerCaseSearch) ||
                 article.description.toLowerCase().includes(lowerCaseSearch) ||
                 article.author.toLowerCase().includes(lowerCaseSearch)
