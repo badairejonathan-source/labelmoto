@@ -29,7 +29,11 @@
         "height": 800,
         "hint": "motorcycle dirt"
       }
-    ]
+    ],
+    "ctaSection": {
+      "src": "https://images.unsplash.com/photo-1593334828-d8419f9a3969?q=80&w=2071&auto=format&fit=crop",
+      "hint": "motorcycle community"
+    }
   },
   "articles": [
     { "seed": "article-paris", "width": 400, "height": 400, "hint": "motorcycle paris" },
