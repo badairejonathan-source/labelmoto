@@ -50,8 +50,8 @@
     "author": "L'équipe MotoTrust",
     "date": "22 juillet 2024",
     "readingTime": "7 min de lecture",
-    "imageUrl": "/images/achat-occasion.jpg",
-    "imageHint": "motorcycle dealership",
+    "imageUrl": "https://picsum.photos/seed/article-occasion/1200/600",
+    "imageHint": "used motorcycle",
     "content": [
       {
         "type": "paragraph",
@@ -179,8 +179,8 @@
     "author": "L'équipe MotoTrust",
     "date": "25 juillet 2024",
     "readingTime": "9 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/article-a2-bikes/1200/600",
-    "imageHint": "beginner motorcycle",
+    "imageUrl": "/images/achat-occasion.jpg",
+    "imageHint": "motorcycle dealership",
     "content": [
       {
         "type": "paragraph",
@@ -417,3 +417,4 @@
     ]
   }
 ]
+    
