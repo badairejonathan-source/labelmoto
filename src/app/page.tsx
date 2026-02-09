@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import MotoTrustLogo from '@/components/app/logo';
-import { Bike, Wrench, FileText, Search, Home } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, Home, CheckCircle } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 
 const LandingHeader = () => {
@@ -125,6 +125,52 @@ export default function LandingPage() {
                                 />
                             </div>
                         ))}
+                    </div>
+                </section>
+                
+                <section className="mt-8 md:mt-12">
+                    <div className="bg-muted/50 rounded-2xl p-6 md:p-8">
+                        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
+                            Pourquoi MotoTrust va changer votre recherche
+                        </h2>
+                        <ul className="space-y-6 max-w-4xl mx-auto">
+                            <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Gain de temps</h3>
+                                    <p className="text-muted-foreground">
+                                        Finies les recherches interminables ! Notre moteur intelligent vous permet de trouver une concession selon votre localisation, votre type de moto, ou le service recherché.
+                                    </p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Informations fiables et à jour</h3>
+                                    <p className="text-muted-foreground">
+                                        Toutes les données des concessions (occasion et neuve) sont vérifiées et régulièrement actualisées pour vous garantir des informations correctes.
+                                    </p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Transparence totale</h3>
+                                    <p className="text-muted-foreground">
+                                        Découvrez de vrais avis partagés par d’autres motards, sans filtres ni publicité déguisée, pour faire le bon choix en toute confiance.
+                                    </p>
+                                </div>
+                            </li>
+                             <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Services pratiques</h3>
+                                    <p className="text-muted-foreground">
+                                        Notre moteur de recherche vous connecte aussi aux services d'entretien, afin que vous trouviez le bon professionnel sans vous perdre.
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </section>
             </main>
