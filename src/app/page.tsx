@@ -173,6 +173,30 @@ export default function LandingPage() {
                         </ul>
                     </div>
                 </section>
+                
+                <section className="mt-8 md:mt-12">
+                    <div className="bg-muted/50 rounded-2xl p-6 md:p-8">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                                🚦 Rejoignez la route digitale des motards
+                            </h2>
+                            <div className="space-y-4 text-muted-foreground">
+                                <p>
+                                    Parce que nous savons que le temps passé à chercher une concession, c’est du temps en moins sur la route, notre mission est simple : rendre la vie des motards plus fluide, plus connectée et plus fiable.
+                                </p>
+                                <p>
+                                    Grâce à notre annuaire des concessions moto, vous pouvez dès maintenant acheter une moto près de chez vous, réserver votre essai, planifier un entretien, ou simplement découvrir la meilleure concession moto selon votre région et vos besoins.
+                                </p>
+                                <p>
+                                    Alors, prêt à prendre la route du futur ? Rejoignez notre communauté dès aujourd’hui, partagez vos expériences, et contribuez à bâtir la plateforme de référence pour tous les passionnés de deux-roues.
+                                </p>
+                                <p className="font-semibold text-foreground">
+                                    Parce qu’ici, chaque motard trouve sa route… et sa concession. 🏍️💨
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </main>
         </div>
     );
