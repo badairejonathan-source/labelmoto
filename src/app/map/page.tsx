@@ -8,7 +8,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/ui/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2 } from 'lucide-react';
+import { Crosshair, Loader2, Star } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { db } from '@/lib/firebase';
@@ -29,6 +29,51 @@ const getDistanceSq = (center: [number, number], dealer: Dealership) => {
     return dx * dx + dy * dy;
 };
 
+const RatingFilter = ({
+    value,
+    onChange,
+}: {
+    value: number;
+    onChange: (value: number) => void;
+}) => {
+    const ratings = [4, 3, 2, 1];
+    const handleRatingClick = (rating: number) => {
+        onChange(value === rating ? 0 : rating);
+    };
+
+    return (
+        <div className="p-2 px-4 border-b bg-background sticky top-0 z-10">
+            <div className="flex items-center justify-center space-x-2">
+                <span className="text-sm font-medium text-muted-foreground mr-2 hidden md:inline">Noté:</span>
+                
+                <Button
+                    size="sm"
+                    variant={value === 0 ? 'secondary' : 'ghost'}
+                    onClick={() => onChange(0)}
+                    className="rounded-full px-4"
+                >
+                    Tous
+                </Button>
+                
+                {ratings.map((rating) => (
+                    <Button
+                        key={rating}
+                        size="sm"
+                        variant={value === rating ? 'secondary' : 'ghost'}
+                        onClick={() => handleRatingClick(rating)}
+                        className="flex gap-1.5 rounded-full px-3"
+                    >
+                        <span>{rating}</span>
+                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                        <span className="hidden sm:inline-block">& plus</span>
+                    </Button>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+
 function MapPageComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -48,6 +93,7 @@ function MapPageComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
+  const [ratingFilter, setRatingFilter] = useState<number>(0);
   
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -146,6 +192,13 @@ function MapPageComponent() {
             (d.address?.toLowerCase().includes(lowerCaseSearch))
         );
     }
+
+    if (ratingFilter > 0) {
+        results = results.filter(d => {
+            const ratingValue = d.rating ? parseFloat(String(d.rating).replace(',', '.')) : 0;
+            return !isNaN(ratingValue) && ratingValue >= ratingFilter;
+        });
+    }
     
     setFilteredDealerships(results);
 
@@ -156,7 +209,7 @@ function MapPageComponent() {
             setMapZoom(12);
         }
     }
-  }, [submittedSearchTerm, allDealerships, activeFilter]);
+  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
 
   const handleSearchTermChange = (newTerm: string) => {
     setSearchTerm(newTerm);
@@ -338,12 +391,16 @@ function MapPageComponent() {
                 </Button>
               </div>
             </div>
-            <div className="flex-grow overflow-y-auto">{listContent}</div>
+            <div className="flex-grow overflow-y-auto flex flex-col">
+              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
+              {listContent}
+            </div>
           </div>
         ) : (
           // Desktop Layout
           <>
             <aside className="w-2/3 flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
+              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
               {listContent}
             </aside>
             <main className="flex-1 bg-gray-100 dark:bg-gray-900 h-full relative">
