@@ -69,7 +69,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           <div
             onClick={handleImageClick}
             className={cn(
-              "relative w-full h-48 md:w-32 md:h-auto flex-shrink-0 md:rounded-l-lg md:rounded-r-none rounded-t-lg overflow-hidden md:border-r",
+              "relative w-full h-48 md:w-48 md:h-auto flex-shrink-0 md:rounded-l-lg md:rounded-r-none rounded-t-lg overflow-hidden md:border-r",
               dealership.imgUrl && "cursor-zoom-in"
             )}
           >
@@ -79,7 +79,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 alt={`Photo de ${title}`}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 8rem"
+                sizes="(max-width: 768px) 100vw, 12rem"
               />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
@@ -143,7 +143,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   return (
                       <React.Fragment key={day}>
                         <span className={cn("capitalize text-xs font-medium", isClosed && "text-muted-foreground/70")}>{day}</span>
-                        <span className={cn("font-mono text-xs text-right", isClosed && "font-sans text-muted-foreground/70")}>{isClosed ? 'Fermé' : hours}</span>
+                        <span className={cn("font-mono text-xs text-right whitespace-nowrap", isClosed && "font-sans text-muted-foreground/70")}>{isClosed ? 'Fermé' : hours}</span>
                       </React.Fragment>
                   )
                 })}
