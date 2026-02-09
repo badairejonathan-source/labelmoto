@@ -139,7 +139,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Avant de conclure, demande au vendeur un rapport Histovec pour vérifier qu’il n’y a pas eu de gros accident ou de sinistre majeur."
+        "html": "Avant de conclure, demande au vendeur un rapport <a href=\"https://histovec.interieur.gouv.fr/histovec/accueil\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline text-accent hover:text-accent/80\">Histovec</a> pour vérifier qu’il n’y a pas eu de gros accident ou de sinistre majeur."
       },
       {
         "type": "paragraph",

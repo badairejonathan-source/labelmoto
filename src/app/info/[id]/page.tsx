@@ -13,6 +13,7 @@ import placeholderData from '@/app/lib/placeholder-images.json';
 type ArticleContent = {
   type: 'paragraph' | 'heading' | 'list';
   text?: string;
+  html?: string;
   items?: string[];
 };
 
@@ -70,6 +71,9 @@ export default function ArticlePage() {
             {block.items.map((item, i) => <li key={i} className="text-lg text-foreground/90 leading-relaxed">{item}</li>)}
           </ul>
         );
+      }
+      if (block.type === 'paragraph' && block.html) {
+          return <p key={index} className="text-lg text-foreground/90 leading-relaxed" dangerouslySetInnerHTML={{ __html: block.html }} />;
       }
       return <p key={index} className="text-lg text-foreground/90 leading-relaxed">{block.text}</p>;
     });
