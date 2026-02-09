@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/app/header';
 import articles from '@/app/data/articles.json';
@@ -52,6 +52,7 @@ const ArticleCard = ({ article }: { article: (typeof articles)[0] }) => {
 
 function InfoPageComponent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const searchParam = searchParams.get('search');
     
     const [searchTerm, setSearchTerm] = useState(searchParam || '');
@@ -67,6 +68,10 @@ function InfoPageComponent() {
 
     const handleSearch = () => {
         setSubmittedSearchTerm(searchTerm);
+    };
+
+    const handleFilterChange = (filter: 'shopping' | 'service') => {
+        router.push(`/map?filter=${filter}`);
     };
     
     useEffect(() => {
@@ -94,7 +99,7 @@ function InfoPageComponent() {
                 onSearchTermChange={handleSearchTermChange}
                 onSearch={handleSearch}
                 activeFilter={null}
-                onFilterChange={() => {}}
+                onFilterChange={handleFilterChange}
                 placeholderText="Rechercher un article..."
             />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8">
