@@ -171,9 +171,14 @@ function MapPageComponent() {
   };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
-    setMapCenter(newCenter);
-    setMapZoom(newZoom);
-  }, []);
+    const centerChanged = Math.abs(mapCenter[0] - newCenter[0]) > 0.00001 || Math.abs(mapCenter[1] - newCenter[1]) > 0.00001;
+    const zoomChanged = mapZoom !== newZoom;
+    
+    if (centerChanged || zoomChanged) {
+        setMapCenter(newCenter);
+        setMapZoom(newZoom);
+    }
+  }, [mapCenter, mapZoom]);
   
   const dealershipsToDisplay = useMemo(() => {
     return [...filteredDealerships].sort((a, b) => {
@@ -184,9 +189,12 @@ function MapPageComponent() {
   }, [filteredDealerships, mapCenter, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
-    const isDeselecting = selectedDealershipId === dealership.id;
-    setSelectedDealershipId(isDeselecting ? null : dealership.id);
-  }, [selectedDealershipId]);
+    setSelectedDealershipId(dealership.id);
+    if (dealership.latitude && dealership.longitude) {
+      setMapCenter([dealership.latitude, dealership.longitude]);
+      setMapZoom(14);
+    }
+  }, []);
   
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(currentId => currentId === id ? null : id);
@@ -295,7 +303,7 @@ function MapPageComponent() {
       <div className="flex-1 flex overflow-hidden relative">
         {isMobile ? (
           // Mobile Layout
-          <div className="h-full flex flex-col">
+          <div className="w-full h-full flex flex-col">
             <div className="relative h-[35vh] flex-shrink-0">
               <MapComponent
                 dealerships={filteredDealerships}
@@ -324,7 +332,7 @@ function MapPageComponent() {
         ) : (
           // Desktop Layout
           <>
-            <aside className="w-7/12 xl:w-3/5 flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
+            <aside className="w-2/3 flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
               {listContent}
             </aside>
             <main className="flex-1 bg-gray-100 dark:bg-gray-900 h-full relative">
