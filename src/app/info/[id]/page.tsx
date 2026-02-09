@@ -8,7 +8,6 @@ import { ArrowLeft } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import articlesData from '@/app/data/articles.json';
-import placeholderData from '@/app/lib/placeholder-images.json';
 import {
   Table,
   TableBody,
@@ -34,11 +33,12 @@ type Article = {
   author: string;
   date: string;
   readingTime: string;
-  imageSeed: string;
+  imageUrl: string;
+  imageHint: string;
   content?: ArticleContent[];
 };
 
-const articles: Article[] = articlesData as Article[];
+const articles: Article[] = articlesData as unknown as Article[];
 
 export default function ArticlePage() {
   const router = useRouter();
@@ -62,9 +62,7 @@ export default function ArticlePage() {
     router.push(`/map?filter=${filter}`);
   };
 
-  const imageMeta = placeholderData.articles.find(img => img.seed === article.imageSeed);
-  const imageUrl = imageMeta ? `https://picsum.photos/seed/${imageMeta.seed}/1200/600` : `https://picsum.photos/1200/600`;
-  const imageHint = imageMeta ? imageMeta.hint : 'motorcycle article';
+  const { imageUrl, imageHint } = article;
 
   const renderContent = () => {
     if (!article.content || article.content.length === 0) {

@@ -7,15 +7,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/app/header';
 import articlesData from '@/app/data/articles.json';
-import placeholderData from '@/app/lib/placeholder-images.json';
 import { Loader2 } from 'lucide-react';
 
 type Article = (typeof articlesData)[0];
 
 const ArticleCard = ({ article }: { article: Article }) => {
-    const imageMeta = placeholderData.articles.find(img => img.seed === article.imageSeed);
-    const imageUrl = imageMeta ? `https://picsum.photos/seed/${imageMeta.seed}/${imageMeta.width}/${imageMeta.height}` : `https://picsum.photos/400/400`;
-    const imageHint = imageMeta ? imageMeta.hint : 'motorcycle article';
+    const { imageUrl, imageHint } = article;
 
     return (
         <article className="py-8 border-b last:border-b-0">
@@ -109,7 +106,7 @@ function InfoPageComponent() {
             <main className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto">
                     {filteredArticles.map((article) => (
-                        <ArticleCard key={article.id} article={article} />
+                        <ArticleCard key={article.id} article={article as Article} />
                     ))}
                     {filteredArticles.length === 0 && submittedSearchTerm && (
                         <div className="text-center text-muted-foreground py-20">

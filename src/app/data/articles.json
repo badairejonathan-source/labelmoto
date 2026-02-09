@@ -6,7 +6,8 @@
     "author": "Jean-Pierre Moto",
     "date": "15 juillet 2024",
     "readingTime": "6 min de lecture",
-    "imageSeed": "article-paris",
+    "imageUrl": "https://picsum.photos/seed/article-paris/1200/600",
+    "imageHint": "motorcycle paris",
     "content": []
   },
   {
@@ -16,7 +17,8 @@
     "author": "Valérie Guidon",
     "date": "10 juillet 2024",
     "readingTime": "8 min de lecture",
-    "imageSeed": "article-seasons",
+    "imageUrl": "https://picsum.photos/seed/article-seasons/1200/600",
+    "imageHint": "motorcycle road",
     "content": []
   },
   {
@@ -26,7 +28,8 @@
     "author": "Chris V-Twin",
     "date": "5 juillet 2024",
     "readingTime": "5 min de lecture",
-    "imageSeed": "article-nature",
+    "imageUrl": "https://picsum.photos/seed/article-nature/1200/600",
+    "imageHint": "motorcycle nature",
     "content": []
   },
   {
@@ -36,7 +39,8 @@
     "author": "Alice Piston",
     "date": "1 juillet 2024",
     "readingTime": "7 min de lecture",
-    "imageSeed": "article-mountains",
+    "imageUrl": "https://picsum.photos/seed/article-mountains/1200/600",
+    "imageHint": "motorcycle mountain",
     "content": []
   },
   {
@@ -46,7 +50,8 @@
     "author": "L'équipe MotoTrust",
     "date": "22 juillet 2024",
     "readingTime": "7 min de lecture",
-    "imageSeed": "article-occasion",
+    "imageUrl": "https://picsum.photos/seed/article-occasion/1200/600",
+    "imageHint": "motorcycle garage",
     "content": [
       {
         "type": "paragraph",
@@ -174,7 +179,8 @@
     "author": "L'équipe MotoTrust",
     "date": "25 juillet 2024",
     "readingTime": "9 min de lecture",
-    "imageSeed": "article-a2-bikes",
+    "imageUrl": "https://picsum.photos/seed/article-a2-bikes/1200/600",
+    "imageHint": "beginner motorcycle",
     "content": [
       {
         "type": "paragraph",
