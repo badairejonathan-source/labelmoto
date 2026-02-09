@@ -50,7 +50,7 @@
     "author": "L'équipe MotoTrust",
     "date": "22 juillet 2024",
     "readingTime": "7 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/achat-occasion/1200/600",
+    "imageUrl": "/images/achat-occasion.jpg",
     "imageHint": "motorcycle dealership",
     "content": [
       {
@@ -164,7 +164,7 @@
       },
       {
         "type": "paragraph",
-        "html": "Et pour t’aider encore plus, pense à télécharger notre <a href=\"http://athive-20251108t070653z-1-001.local/wp-content/uploads/2025/11/ChatGPT-Image-12-nov.-2025-12_23_48-1.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline text-accent hover:text-accent/80\">check-list d’achat</a> moto d’occasion !"
+        "html": "Et pour t’aider encore plus, pense à télécharger notre <a href=\"/images/achat-occasion.jpg\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline text-accent hover:text-accent/80\">check-list d’achat</a> moto d’occasion !"
       },
       {
         "type": "paragraph",
