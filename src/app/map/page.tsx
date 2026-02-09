@@ -15,7 +15,7 @@ import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -31,6 +31,7 @@ const getDistanceSq = (center: [number, number], dealer: Dealership) => {
 
 function MapPageComponent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const filterParam = searchParams.get('filter');
   const searchParam = searchParams.get('search');
   
@@ -119,7 +120,7 @@ function MapPageComponent() {
 
   const placeholderText = useMemo(() => {
     if (activeFilter === 'service') {
-      return "reparation , entretient, depannage, pièces détachées";
+      return "Réparation , entretien, depannage, pièces détachées";
     }
     if (activeFilter === 'shopping') {
       return "Achat, vente, accessoires par départements";
@@ -167,7 +168,17 @@ function MapPageComponent() {
   };
 
   const handleFilterChange = (filter: 'shopping' | 'service') => {
-    setActiveFilter(current => current === filter ? null : filter);
+    const newFilter = activeFilter === filter ? null : filter;
+    setActiveFilter(newFilter);
+
+    // Update URL without reloading page
+    const params = new URLSearchParams(window.location.search);
+    if (newFilter) {
+      params.set('filter', newFilter);
+    } else {
+      params.delete('filter');
+    }
+    router.push(`${window.location.pathname}?${params.toString()}`);
   };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
