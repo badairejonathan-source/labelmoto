@@ -9,12 +9,22 @@ import { ArrowLeft } from 'lucide-react';
 import Header from '@/components/app/header';
 import articlesData from '@/app/data/articles.json';
 import placeholderData from '@/app/lib/placeholder-images.json';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type ArticleContent = {
-  type: 'paragraph' | 'heading' | 'list';
+  type: 'paragraph' | 'heading' | 'list' | 'table';
   text?: string;
   html?: string;
   items?: string[];
+  headers?: string[];
+  rows?: string[][];
 };
 
 type Article = {
@@ -74,6 +84,30 @@ export default function ArticlePage() {
       }
       if (block.type === 'paragraph' && block.html) {
           return <p key={index} className="text-lg text-foreground/90 leading-relaxed" dangerouslySetInnerHTML={{ __html: block.html }} />;
+      }
+      if (block.type === 'table' && block.headers && block.rows) {
+        return (
+          <div key={index} className="my-8 overflow-x-auto">
+            <Table className="min-w-full text-sm">
+              <TableHeader>
+                <TableRow>
+                  {block.headers.map((header: string, hIndex: number) => (
+                    <TableHead key={hIndex} className="font-semibold">{header}</TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {block.rows.map((row: string[], rIndex: number) => (
+                  <TableRow key={rIndex}>
+                    {row.map((cell: string, cIndex: number) => (
+                      <TableCell key={cIndex} className={cIndex === 0 ? 'font-medium' : ''}>{cell}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        );
       }
       return <p key={index} className="text-lg text-foreground/90 leading-relaxed">{block.text}</p>;
     });
