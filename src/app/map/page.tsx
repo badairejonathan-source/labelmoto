@@ -235,14 +235,15 @@ function MapPageComponent() {
   };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
-    const centerChanged = Math.abs(mapCenter[0] - newCenter[0]) > 0.00001 || Math.abs(mapCenter[1] - newCenter[1]) > 0.00001;
-    const zoomChanged = mapZoom !== newZoom;
-    
-    if (centerChanged || zoomChanged) {
-        setMapCenter(newCenter);
-        setMapZoom(newZoom);
-    }
-  }, [mapCenter, mapZoom]);
+    setMapCenter((currentCenter) => {
+      const centerChanged = Math.abs(currentCenter[0] - newCenter[0]) > 0.00001 || Math.abs(currentCenter[1] - newCenter[1]) > 0.00001;
+      return centerChanged ? newCenter : currentCenter;
+    });
+    setMapZoom((currentZoom) => {
+      const zoomChanged = currentZoom !== newZoom;
+      return zoomChanged ? newZoom : currentZoom;
+    });
+  }, []);
   
   const dealershipsToDisplay = useMemo(() => {
     return [...filteredDealerships].sort((a, b) => {
