@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -5,8 +7,19 @@ import { Input } from '@/components/ui/input';
 import MotoTrustLogo from '@/components/app/logo';
 import { Bike, Wrench, FileText, Search, Home, CheckCircle } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
+import { cn } from '@/lib/utils';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 const LandingHeader = () => {
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const filter = searchParams.get('filter');
+    
+    const isInfoActive = pathname ? pathname.startsWith('/info') : false;
+    const isShoppingActive = pathname === '/map' && filter === 'shopping';
+    const isServiceActive = pathname === '/map' && filter === 'service';
+    const isMapActive = pathname === '/map' && !isShoppingActive && !isServiceActive;
+
     return (
         <header className="bg-card text-foreground py-4 px-4 sm:px-6 lg:px-8 w-full border-b">
             <div className="mx-auto max-w-7xl">
@@ -19,19 +32,22 @@ const LandingHeader = () => {
                             </Link>
                         </div>
                         <nav className="flex items-center gap-2">
-                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 relative text-muted-foreground hover:text-foreground">
+                            <Button asChild variant="ghost" size="icon" className={cn("h-10 w-10 relative", isShoppingActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
                                 <Link href="/map?filter=shopping">
                                     <Bike className="h-6 w-6" />
+                                    {isShoppingActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
                                 </Link>
                             </Button>
-                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 relative text-muted-foreground hover:text-foreground">
+                            <Button asChild variant="ghost" size="icon" className={cn("h-10 w-10 relative", isServiceActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
                                 <Link href="/map?filter=service">
                                     <Wrench className="h-6 w-6" />
+                                    {isServiceActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
                                 </Link>
                             </Button>
-                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground">
+                            <Button asChild variant="ghost" size="icon" className={cn("h-10 w-10 relative", isInfoActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
                                 <Link href="/info">
                                     <FileText className="h-6 w-6" />
+                                    {isInfoActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
                                 </Link>
                             </Button>
                         </nav>
@@ -95,7 +111,7 @@ export default function LandingPage() {
                     />
                     <div className="relative z-10 flex flex-col items-center justify-center text-center text-white p-8 md:p-16">
                         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                            Trouver une concession ? Fini la galère.
+                            Trouver une concession, un atelier ou un reparateur ? Fini la galère.
                         </h1>
                         <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                            Accédez à des informations fiables et à jour sur les concessions et ateliers près de chez vous. Gagnez du temps, roulez en confiance.
