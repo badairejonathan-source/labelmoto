@@ -77,22 +77,38 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <Button
               variant="ghost"
               onClick={() => onFilterChange('shopping')}
-              className={cn("relative p-2 h-auto", activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')}
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-1 text-sm font-semibold",
+                activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
+              )}
             >
-              <Bike className="h-7 w-7" />
+              <Bike className="h-6 w-6" />
+              <span>Concession</span>
               {activeFilter === 'shopping' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
             </Button>
             <Button
               variant="ghost"
               onClick={() => onFilterChange('service')}
-              className={cn("relative p-2 h-auto", activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')}
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-1 text-sm font-semibold",
+                activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
+              )}
             >
-              <Wrench className="h-7 w-7" />
+              <Wrench className="h-6 w-6" />
+              <span>Atelier</span>
                {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
             </Button>
-            <Button asChild variant="ghost" className={cn("relative p-2 h-auto", isInfoActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')}>
+            <Button
+              asChild
+              variant="ghost"
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-1 text-sm font-semibold",
+                isInfoActive ? 'text-foreground' : 'text-muted-foreground'
+              )}
+            >
               <Link href="/info">
-                <FileText className="h-7 w-7" />
+                <FileText className="h-6 w-6" />
+                <span>Conseil pratique</span>
                 {isInfoActive && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
               </Link>
             </Button>
