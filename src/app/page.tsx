@@ -19,19 +19,17 @@ const LandingHeader = () => {
                             </Link>
                         </div>
                         <nav className="flex items-center gap-2">
-                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 relative text-primary">
+                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 relative text-muted-foreground hover:text-foreground">
                                 <Link href="/map?filter=shopping">
                                     <Bike className="h-6 w-6" />
-                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full" />
                                 </Link>
                             </Button>
-                            <Button asChild size="icon" className="h-10 w-10 bg-accent hover:bg-accent/90 text-accent-foreground relative">
+                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 relative text-muted-foreground hover:text-foreground">
                                 <Link href="/map?filter=service">
                                     <Wrench className="h-6 w-6" />
-                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-accent rounded-full" />
                                 </Link>
                             </Button>
-                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground">
+                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground">
                                 <Link href="/info">
                                     <FileText className="h-6 w-6" />
                                 </Link>

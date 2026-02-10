@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Bike, Wrench, FileText, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,9 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearch, className, activeFilter, onFilterChange, placeholderText }) => {
+  const pathname = usePathname();
+  const isInfoActive = pathname.startsWith('/info');
+
   return (
     <header className={cn("bg-card p-4 text-foreground border-b border-border z-40", className)}>
       <div className="container mx-auto flex flex-col gap-4">
@@ -36,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               onClick={() => onFilterChange('shopping')}
               className={cn(
                 "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
-                activeFilter === 'shopping' ? 'text-primary' : 'text-muted-foreground'
+                activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
               <Bike className="h-6 w-6" />
@@ -47,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               onClick={() => onFilterChange('service')}
               className={cn(
                 "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
-                activeFilter === 'service' ? 'text-accent' : 'text-muted-foreground'
+                activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
               <Wrench className="h-6 w-6" />
@@ -56,11 +60,14 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <Button
               asChild
               variant="ghost"
-              className="relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold text-muted-foreground"
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
+                isInfoActive ? 'text-foreground' : 'text-muted-foreground'
+              )}
             >
               <Link href="/info">
                 <FileText className="h-6 w-6" />
-                <span>Conseils</span>
+                <span>Conseil pratique</span>
               </Link>
             </Button>
           </nav>
@@ -70,22 +77,23 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <Button
               variant="ghost"
               onClick={() => onFilterChange('shopping')}
-              className={cn("relative p-2 h-auto", activeFilter === 'shopping' ? 'text-primary' : 'text-muted-foreground hover:text-primary')}
+              className={cn("relative p-2 h-auto", activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')}
             >
               <Bike className="h-7 w-7" />
-              {activeFilter === 'shopping' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-primary rounded-full"></span>}
+              {activeFilter === 'shopping' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
             </Button>
             <Button
               variant="ghost"
               onClick={() => onFilterChange('service')}
-              className={cn("relative p-2 h-auto", activeFilter === 'service' ? 'text-accent' : 'text-muted-foreground hover:text-accent')}
+              className={cn("relative p-2 h-auto", activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')}
             >
               <Wrench className="h-7 w-7" />
-               {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-accent rounded-full"></span>}
+               {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
             </Button>
-            <Button asChild variant="ghost" className="p-2 h-auto text-muted-foreground hover:text-primary">
+            <Button asChild variant="ghost" className={cn("relative p-2 h-auto", isInfoActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')}>
               <Link href="/info">
                 <FileText className="h-7 w-7" />
+                {isInfoActive && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
               </Link>
             </Button>
           </nav>
