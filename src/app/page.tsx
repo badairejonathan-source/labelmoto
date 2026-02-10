@@ -83,7 +83,7 @@ const LandingHeader = () => {
                             Atelier
                         </Link>
                         <Link href="/info" className="hover:text-foreground">
-                            Conseil pratique
+                            Conseils pratiques
                         </Link>
                     </nav>
                 </div>

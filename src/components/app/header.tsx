@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             >
               <Link href="/info">
                 <FileText className="h-6 w-6" />
-                <span>Conseil pratique</span>
+                <span>Conseils pratiques</span>
               </Link>
             </Button>
           </nav>
@@ -108,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             >
               <Link href="/info">
                 <FileText className="h-6 w-6" />
-                <span>Conseil pratique</span>
+                <span>Conseils pratiques</span>
                 {isInfoActive && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
               </Link>
             </Button>
