@@ -114,7 +114,7 @@ export default function LandingPage() {
                             Trouver une concession, un atelier ou un reparateur ? Fini la galère.
                         </h1>
                         <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                           Accédez à des informations fiables et à jour sur les concessions et ateliers près de chez vous. Gagnez du temps, roulez en confiance.
+                           Accédez à une liste de concessions et ateliers près de chez vous. Gagnez du temps, roulez en confiance.
                         </p>
                         <Link href="/map">
                             <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
