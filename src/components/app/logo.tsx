@@ -6,7 +6,7 @@ const MotoTrustLogo = ({ className }: { className?: string }) => {
   return (
     <div className={cn('relative w-full', className)}>
       <Image 
-        src="/logo-moto.png" 
+        src="/logo-moto.png?v=2" 
         alt="Moto Trust Logo" 
         width={250} 
         height={80}
