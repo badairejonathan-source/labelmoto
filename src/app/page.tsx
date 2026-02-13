@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import LabelMotoLogo from '@/components/app/logo';
 import { Bike, Wrench, FileText, Search, Home, CheckCircle } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
+import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
 import { usePathname, useSearchParams } from 'next/navigation';
 
@@ -94,6 +95,7 @@ const LandingHeader = () => {
 
 export default function LandingPage() {
     const { hero, gallery, ctaSection } = placeholderData.landingPage;
+    const featuredArticle = articlesData.find(article => article.id === '5');
 
     return (
         <div className="min-h-screen bg-background">
@@ -127,11 +129,46 @@ export default function LandingPage() {
                 {/* Gallery Section */}
                 <section className="mt-8 md:mt-12">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {gallery.map((image, index) => (
+                        
+                        {/* Featured Article */}
+                        {featuredArticle ? (
+                            <Link href={`/info/${featuredArticle.id}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden group col-span-1">
+                                <Image
+                                    src={featuredArticle.imageUrl}
+                                    alt={featuredArticle.title}
+                                    fill
+                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                    sizes="(max-width: 768px) 50vw, 25vw"
+                                    data-ai-hint={featuredArticle.imageHint}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                                <div className="absolute bottom-0 left-0 p-3 sm:p-4 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.7)'}}>
+                                     <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold">
+                                        <FileText className="h-3 w-3" />
+                                        <span>Guide Pratique</span>
+                                    </div>
+                                    <h3 className="font-bold text-sm sm:text-base leading-tight mt-1 group-hover:underline">Le guide pour éviter les pièges</h3>
+                                </div>
+                            </Link>
+                        ) : (
+                           gallery.length > 0 && <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
+                                <Image
+                                    src={`https://picsum.photos/seed/${gallery[0].seed}/${gallery[0].width}/${gallery[0].height}`}
+                                    alt={`Motorcycle gallery image 1`}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 50vw, 25vw"
+                                    data-ai-hint={gallery[0].hint}
+                                />
+                            </div>
+                        )}
+
+                        {/* Other gallery images */}
+                        {gallery.slice(1).map((image, index) => (
                              <div key={index} className="relative aspect-[3/4] rounded-2xl overflow-hidden">
                                 <Image
                                     src={`https://picsum.photos/seed/${image.seed}/${image.width}/${image.height}`}
-                                    alt={`Motorcycle gallery image ${index + 1}`}
+                                    alt={`Motorcycle gallery image ${index + 2}`}
                                     fill
                                     className="object-cover"
                                     sizes="(max-width: 768px) 50vw, 25vw"
