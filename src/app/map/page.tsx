@@ -119,35 +119,33 @@ function MapPageComponent() {
           const dealer = doc.data();
           const uniqueKey = doc.id;
 
-          if (dealer && dealer.title && dealer.latitude && dealer.longitude) {
-            const lat = parseFloat(String(dealer.latitude).replace(',', '.'));
-            const lng = parseFloat(String(dealer.longitude).replace(',', '.'));
+          if (dealer && dealer.title) {
+            const lat = dealer.latitude ? parseFloat(String(dealer.latitude).replace(',', '.')) : NaN;
+            const lng = dealer.longitude ? parseFloat(String(dealer.longitude).replace(',', '.')) : NaN;
 
-            if (!isNaN(lat) && !isNaN(lng)) {
-              if (!dealershipMap.has(uniqueKey)) {
-                const dealerWithId: Dealership = {
-                  id: uniqueKey,
-                  placeUrl: dealer.placeUrl || '',
-                  title: dealer.title,
-                  address: dealer.address || '',
-                  website: dealer.website || '',
-                  phoneNumber: dealer.phoneNumber || '',
-                  imgUrl: dealer.imgUrl || '',
-                  mardi: dealer.mardi || 'Non renseigné',
-                  mercredi: dealer.mercredi || 'Non renseigné',
-                  jeudi: dealer.jeudi || 'Non renseigné',
-                  vendredi: dealer.vendredi || 'Non renseigné',
-                  samedi: dealer.samedi || 'Non renseigné',
-                  dimanche: dealer.dimanche || 'Non renseigné',
-                  lundi: dealer.lundi || 'Non renseigné',
-                  latitude: lat,
-                  longitude: lng,
-                  rating: dealer.rating || undefined,
-                  category: dealer.category || undefined,
-                  appSection: dealer.appSection || 'both',
-                };
-                dealershipMap.set(uniqueKey, dealerWithId);
-              }
+            if (!dealershipMap.has(uniqueKey)) {
+              const dealerWithId: Dealership = {
+                id: uniqueKey,
+                placeUrl: dealer.placeUrl || '',
+                title: dealer.title,
+                address: dealer.address || '',
+                website: dealer.website || '',
+                phoneNumber: dealer.phoneNumber || '',
+                imgUrl: dealer.imgUrl || '',
+                mardi: dealer.mardi || 'Non renseigné',
+                mercredi: dealer.mercredi || 'Non renseigné',
+                jeudi: dealer.jeudi || 'Non renseigné',
+                vendredi: dealer.vendredi || 'Non renseigné',
+                samedi: dealer.samedi || 'Non renseigné',
+                dimanche: dealer.dimanche || 'Non renseigné',
+                lundi: dealer.lundi || 'Non renseigné',
+                latitude: !isNaN(lat) ? lat : undefined,
+                longitude: !isNaN(lng) ? lng : undefined,
+                rating: dealer.rating || undefined,
+                category: dealer.category || undefined,
+                appSection: dealer.appSection || 'both',
+              };
+              dealershipMap.set(uniqueKey, dealerWithId);
             }
           }
         });
@@ -259,6 +257,7 @@ function MapPageComponent() {
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     setMapCenter((currentCenter) => {
+      if (!currentCenter) return newCenter;
       const centerChanged = Math.abs(currentCenter[0] - newCenter[0]) > 0.00001 || Math.abs(currentCenter[1] - newCenter[1]) > 0.00001;
       return centerChanged ? newCenter : currentCenter;
     });

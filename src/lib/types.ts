@@ -13,8 +13,8 @@ export interface Dealership {
   samedi: string;
   dimanche: string;
   lundi: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
   position?: [number, number];
   rating?: string;
   category?: string;
