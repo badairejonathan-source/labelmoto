@@ -8,7 +8,18 @@
     "readingTime": "6 min de lecture",
     "imageUrl": "https://picsum.photos/seed/article-paris/1200/600",
     "imageHint": "motorcycle paris",
-    "content": []
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Contenu de l'article à venir..."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/stamp-LM.png",
+        "alt": "Cachet Label Moto"
+      }
+    ]
   },
   {
     "id": "2",
@@ -19,7 +30,18 @@
     "readingTime": "8 min de lecture",
     "imageUrl": "https://picsum.photos/seed/article-seasons/1200/600",
     "imageHint": "motorcycle road",
-    "content": []
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Contenu de l'article à venir..."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/stamp-LM.png",
+        "alt": "Cachet Label Moto"
+      }
+    ]
   },
   {
     "id": "3",
@@ -30,7 +52,18 @@
     "readingTime": "5 min de lecture",
     "imageUrl": "https://picsum.photos/seed/article-nature/1200/600",
     "imageHint": "motorcycle nature",
-    "content": []
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Contenu de l'article à venir..."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/stamp-LM.png",
+        "alt": "Cachet Label Moto"
+      }
+    ]
   },
   {
     "id": "4",
@@ -41,7 +74,18 @@
     "readingTime": "7 min de lecture",
     "imageUrl": "https://picsum.photos/seed/article-mountains/1200/600",
     "imageHint": "motorcycle mountain",
-    "content": []
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Contenu de l'article à venir..."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/stamp-LM.png",
+        "alt": "Cachet Label Moto"
+      }
+    ]
   },
   {
     "id": "5",
@@ -167,8 +211,10 @@
         "html": "Et pour t’aider encore plus, pense à télécharger notre <a href=\"/images/achat-occasion.jpg\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline text-accent hover:text-accent/80\">check-list d’achat</a> moto d’occasion !"
       },
       {
-        "type": "paragraph",
-        "text": "Bonne route, et gaz sur les routes de France 🏍️🔥"
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/stamp-LM.png",
+        "alt": "Cachet Label Moto"
       }
     ]
   },
@@ -413,6 +459,12 @@
           ["Honda CBR500R", "Sportive", "🟩 Fluide & stable", "🟩 Faible", "🟩 Faible", "🟩 Bon", "🟩 Faible"],
           ["Kawasaki Ninja 650", "Sportive", "🟩 Polyvalent", "🟧 Moyen", "🟥 Élevé", "🟩 Bon", "🟥 Élevé"]
         ]
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/stamp-LM.png",
+        "alt": "Cachet Label Moto"
       }
     ]
   }

@@ -18,12 +18,14 @@ import {
 } from "@/components/ui/table";
 
 type ArticleContent = {
-  type: 'paragraph' | 'heading' | 'list' | 'table';
+  type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
   text?: string;
   html?: string;
   items?: string[];
   headers?: string[];
   rows?: string[][];
+  imageUrl?: string;
+  alt?: string;
 };
 
 type Article = {
@@ -106,6 +108,14 @@ export default function ArticlePage() {
             </Table>
           </div>
         );
+      }
+      if (block.type === 'signature' && block.imageUrl) {
+        return (
+          <div key={index} className="flex flex-col items-start gap-4 mt-12 pt-8 border-t">
+            <Image src={block.imageUrl} alt={block.alt || "Signature"} width={100} height={100} className="object-contain" />
+            <p className="text-lg font-semibold text-foreground/90">{block.text}</p>
+          </div>
+        )
       }
       return <p key={index} className="text-lg text-foreground/90 leading-relaxed">{block.text}</p>;
     });
