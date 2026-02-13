@@ -26,7 +26,7 @@ const LandingHeader = () => {
                 <div className="flex flex-col gap-4">
                     {/* Top row: Logo and Icons */}
                     <div className="flex items-center justify-between">
-                        <div className="w-24 md:w-32 shrink-0">
+                        <div className="w-32 md:w-40 shrink-0">
                             <Link href="/">
                                 <MotoTrustLogo />
                             </Link>
