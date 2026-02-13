@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, Store } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
-import MotoTrustLogo from './logo';
+import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
@@ -83,7 +83,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
-                <MotoTrustLogo className="w-10 h-10 text-gray-400" />
+                <LabelMotoLogo className="w-10 h-10 text-gray-400" />
               </div>
             )}
             {rating > 0 && (

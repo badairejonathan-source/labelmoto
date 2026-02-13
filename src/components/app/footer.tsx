@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
-import MotoTrustLogo from './logo';
+import LabelMotoLogo from './logo';
 
 const Footer = () => {
   return (
@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-sm">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div>
-            <h3 className="font-semibold text-foreground mb-4">À propos de MotoTrust</h3>
+            <h3 className="font-semibold text-foreground mb-4">À propos de Label Moto</h3>
             <ul className="space-y-3">
               <li><Link href="#" className="text-muted-foreground hover:text-accent">À propos</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Presse</Link></li>
@@ -46,10 +46,10 @@ const Footer = () => {
                 <div className="flex items-center gap-4">
                     <div className="w-28 shrink-0">
                         <Link href="/">
-                            <MotoTrustLogo />
+                            <LabelMotoLogo />
                         </Link>
                     </div>
-                    <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} MotoTrust. Tous droits réservés.</p>
+                    <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Label Moto. Tous droits réservés.</p>
                 </div>
                 <div className="flex items-center space-x-4">
                     <Link href="#" aria-label="Facebook" className="text-muted-foreground hover:text-accent"><Facebook className="h-5 w-5" /></Link>

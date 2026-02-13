@@ -8,7 +8,7 @@ import Footer from "@/components/app/footer";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "MotoTrust",
+  title: "Label Moto",
   description: "Trouvez les meilleures concessions et garages moto en France.",
 };
 

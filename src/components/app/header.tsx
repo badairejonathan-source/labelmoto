@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Bike, Wrench, FileText, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import MotoTrustLogo from './logo';
+import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         <div className="flex items-center justify-between">
           <div className="w-32 md:w-52 shrink-0">
             <Link href="/">
-              <MotoTrustLogo />
+              <LabelMotoLogo />
             </Link>
           </div>
           

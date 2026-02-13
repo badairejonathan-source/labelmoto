@@ -2,12 +2,12 @@ import React from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
-const MotoTrustLogo = ({ className }: { className?: string }) => {
+const LabelMotoLogo = ({ className }: { className?: string }) => {
   return (
     <div className={cn('relative w-full', className)}>
       <Image 
         src="/logo-moto.png?v=4" 
-        alt="Moto Trust Logo" 
+        alt="Label Moto Logo" 
         width={250} 
         height={80}
         priority 
@@ -17,4 +17,4 @@ const MotoTrustLogo = ({ className }: { className?: string }) => {
   );
 };
 
-export default MotoTrustLogo;
+export default LabelMotoLogo;

@@ -41,13 +41,13 @@ export default function TermsPage() {
             <p>En vigueur au {new Date().toLocaleDateString('fr-FR')}</p>
             
             <h2 className="text-2xl font-bold text-foreground mt-8">1. Objet</h2>
-            <p>Les présentes conditions générales d'utilisation (dites « CGU ») ont pour objet l'encadrement juridique des modalités de mise à disposition du site et des services par MotoTrust et de définir les conditions d’accès et d’utilisation des services par « l'Utilisateur ».</p>
+            <p>Les présentes conditions générales d'utilisation (dites « CGU ») ont pour objet l'encadrement juridique des modalités de mise à disposition du site et des services par Label Moto et de définir les conditions d’accès et d’utilisation des services par « l'Utilisateur ».</p>
 
             <h2 className="text-2xl font-bold text-foreground mt-8">2. Accès au site</h2>
             <p>Le site est accessible gratuitement en tout lieu à tout Utilisateur ayant un accès à Internet. Tous les frais supportés par l'Utilisateur pour accéder au service (matériel informatique, logiciels, connexion Internet, etc.) sont à sa charge.</p>
 
             <h2 className="text-2xl font-bold text-foreground mt-8">3. Responsabilité</h2>
-            <p>Les sources des informations diffusées sur le site MotoTrust sont réputées fiables mais le site ne garantit pas qu’il soit exempt de défauts, d’erreurs ou d’omissions. L'Utilisateur s'assure de garder son mot de passe secret. Toute divulgation du mot de passe, quelle que soit sa forme, est interdite.</p>
+            <p>Les sources des informations diffusées sur le site Label Moto sont réputées fiables mais le site ne garantit pas qu’il soit exempt de défauts, d’erreurs ou d’omissions. L'Utilisateur s'assure de garder son mot de passe secret. Toute divulgation du mot de passe, quelle que soit sa forme, est interdite.</p>
           </div>
         </div>
       </main>

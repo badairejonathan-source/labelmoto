@@ -40,7 +40,7 @@ export default function LegalPage() {
             <h1 className="text-4xl font-bold text-foreground">Mentions Légales</h1>
             
             <h2 className="text-2xl font-bold text-foreground mt-8">1. Éditeur du site</h2>
-            <p>Le site MotoTrust est édité par la société [Nom de la société], [Forme juridique] au capital de [Montant du capital] €, immatriculée au RCS de [Ville] sous le numéro [Numéro RCS].</p>
+            <p>Le site Label Moto est édité par la société [Nom de la société], [Forme juridique] au capital de [Montant du capital] €, immatriculée au RCS de [Ville] sous le numéro [Numéro RCS].</p>
             <p>Siège social : [Adresse du siège social]</p>
             <p>Numéro de TVA intracommunautaire : [Numéro de TVA]</p>
             <p>Directeur de la publication : [Nom du directeur]</p>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import MotoTrustLogo from '@/components/app/logo';
+import LabelMotoLogo from '@/components/app/logo';
 import { Bike, Wrench, FileText, Search, Home, CheckCircle } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import { cn } from '@/lib/utils';
@@ -28,7 +28,7 @@ const LandingHeader = () => {
                     <div className="flex items-center justify-between">
                         <div className="w-32 md:w-40 shrink-0">
                             <Link href="/">
-                                <MotoTrustLogo />
+                                <LabelMotoLogo />
                             </Link>
                         </div>
                         <nav className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export default function LandingPage() {
                 <section className="mt-8 md:mt-12">
                     <div className="bg-muted/50 rounded-2xl p-6 md:p-8">
                         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
-                            Pourquoi MotoTrust va changer votre recherche
+                            Pourquoi Label Moto va changer votre recherche
                         </h2>
                         <ul className="space-y-6 max-w-4xl mx-auto">
                             <li className="flex items-start gap-4">

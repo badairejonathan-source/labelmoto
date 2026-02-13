@@ -40,7 +40,7 @@ export default function PrivacyPage() {
             <h1 className="text-4xl font-bold text-foreground">Politique de confidentialité</h1>
             <p>Dernière mise à jour : {new Date().toLocaleDateString('fr-FR')}</p>
             
-            <p>La présente Politique de confidentialité décrit la manière dont vos informations personnelles sont collectées, utilisées et partagées lorsque vous visitez ou effectuez un achat sur MotoTrust (le « Site »).</p>
+            <p>La présente Politique de confidentialité décrit la manière dont vos informations personnelles sont collectées, utilisées et partagées lorsque vous visitez ou effectuez un achat sur Label Moto (le « Site »).</p>
 
             <h2 className="text-2xl font-bold text-foreground mt-8">Informations personnelles que nous collectons</h2>
             <p>Lorsque vous visitez le Site, nous collectons automatiquement certaines informations sur votre appareil, notamment des informations sur votre navigateur web, votre adresse IP, votre fuseau horaire et certains des cookies qui sont installés sur votre appareil.</p>
