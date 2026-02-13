@@ -28,9 +28,13 @@ interface MapComponentProps {
 }
 
 const getBrandForDealership = (dealership: Dealership): string | null => {
-    if (!dealership || typeof dealership.title !== 'string') return null;
-    const title = dealership.title.toLowerCase();
-    const brand = Object.keys(brandLogos).find(b => title.includes(b.toLowerCase()));
+    if (!dealership) return null;
+    const title = (dealership.title || '').toLowerCase();
+    const category = (dealership.category || '').toLowerCase();
+    
+    const searchString = `${title} ${category}`;
+
+    const brand = Object.keys(brandLogos).find(b => searchString.includes(b.toLowerCase()));
     return brand || null;
 }
 
