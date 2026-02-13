@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState } from 'react';
@@ -5,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/app/header';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 
 export default function TermsPage() {
   const router = useRouter();
@@ -31,7 +33,16 @@ export default function TermsPage() {
         placeholderText="Rechercher par nom, ville..."
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
+            <Image
+              src="/logo-moto.png?v=4"
+              alt="Label Moto Watermark"
+              width={600}
+              height={192}
+              className="opacity-5 rotate-[-15deg]"
+            />
+          </div>
           <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil
