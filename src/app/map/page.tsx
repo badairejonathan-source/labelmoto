@@ -187,10 +187,33 @@ function MapPageComponent() {
 
     if (submittedSearchTerm.trim() !== '') {
         const lowerCaseSearch = submittedSearchTerm.toLowerCase();
-        results = results.filter(d => 
-            (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
-            (d.address?.toLowerCase().includes(lowerCaseSearch))
-        );
+        
+        // Regex to check if it's a potential department code (2-3 digits, or 2a/2b)
+        const isDeptCode = /^\d{2,3}$/.test(lowerCaseSearch) || /^2[ab]$/i.test(lowerCaseSearch);
+
+        if (isDeptCode) {
+            let deptCode = lowerCaseSearch;
+            if (deptCode === '2a' || deptCode === '2b') {
+                deptCode = '20';
+            }
+
+            results = results.filter(d => {
+                if (!d.address) return false;
+                // Regex to find a 5-digit postal code in the address
+                const postalCodeMatch = d.address.match(/\b(\d{5})\b/);
+                if (!postalCodeMatch) return false;
+                
+                const postalCode = postalCodeMatch[1];
+                
+                return postalCode.startsWith(deptCode);
+            });
+        } else {
+            // Original search logic
+            results = results.filter(d => 
+                (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
+                (d.address?.toLowerCase().includes(lowerCaseSearch))
+            );
+        }
     }
 
     if (ratingFilter > 0) {
