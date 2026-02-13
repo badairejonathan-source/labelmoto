@@ -11,7 +11,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-foreground mb-4">À propos de Label Moto</h3>
             <ul className="space-y-3">
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">À propos</Link></li>
+              <li><Link href="/about" className="text-muted-foreground hover:text-accent">À propos</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Presse</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Contactez-nous</Link></li>
             </ul>
