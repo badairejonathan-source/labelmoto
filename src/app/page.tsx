@@ -11,6 +11,14 @@ import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
 import { usePathname, useSearchParams } from 'next/navigation';
 
+type GalleryImage = {
+    src?: string;
+    seed?: string;
+    width?: number;
+    height?: number;
+    hint: string;
+};
+
 const LandingHeader = () => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -97,6 +105,10 @@ export default function LandingPage() {
     const { hero, gallery, ctaSection } = placeholderData.landingPage;
     const featuredArticle = articlesData.find(article => article.id === '5');
 
+    const getImageUrl = (image: GalleryImage) => {
+        return image.src || `https://picsum.photos/seed/${image.seed}/${image.width}/${image.height}`;
+    }
+
     return (
         <div className="min-h-screen bg-background">
             <LandingHeader />
@@ -153,7 +165,7 @@ export default function LandingPage() {
                         ) : (
                            gallery.length > 0 && <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
                                 <Image
-                                    src={`https://picsum.photos/seed/${gallery[0].seed}/${gallery[0].width}/${gallery[0].height}`}
+                                    src={getImageUrl(gallery[0] as GalleryImage)}
                                     alt={`Motorcycle gallery image 1`}
                                     fill
                                     className="object-cover"
@@ -167,12 +179,12 @@ export default function LandingPage() {
                         {gallery.slice(1).map((image, index) => (
                              <div key={index} className="relative aspect-[3/4] rounded-2xl overflow-hidden">
                                 <Image
-                                    src={`https://picsum.photos/seed/${image.seed}/${image.width}/${image.height}`}
+                                    src={getImageUrl(image as GalleryImage)}
                                     alt={`Motorcycle gallery image ${index + 2}`}
                                     fill
                                     className="object-cover"
                                     sizes="(max-width: 768px) 50vw, 25vw"
-                                    data-ai-hint={image.hint}
+                                    data-ai-hint={(image as GalleryImage).hint}
                                 />
                             </div>
                         ))}
