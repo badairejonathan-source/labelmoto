@@ -94,7 +94,7 @@
     "author": "L'équipe Label Moto",
     "date": "22 juillet 2024",
     "readingTime": "7 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/article-occasion/1200/600",
+    "imageUrl": "https://images.unsplash.com/photo-1719903647426-d14726e9d5e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNnx8bW90byUyMHNhbGVzfGVufDB8fHx8MTc3MDk4MzgxNHww&ixlib=rb-4.1.0&q=80&w=1080",
     "imageHint": "used motorcycle",
     "content": [
       {
@@ -176,7 +176,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Quand vient le moment de parler argent, prépare ta négociation. Informe-toi sur les côtes (La Centrale, Leboncoin, etc.), et n’hésite pas à faire remarquer les petits défauts constatés. Ça peut te faire gagner quelques billets. Surtout si tu as relevé plusieurs points de vigilance présent dans notre liste."
+        "text": "Quand vient le moment de parler argent, prépare ta négociation. Informe-toi sur les côtes (La Centrale, Leboncoin, etc.), et n’hésite pas à faire remarquer les petits défauts constatés. Ça peut te faire gagner quelques billets. Surtout si tu as relevé plusieurs points de vigilance present dans notre liste."
       },
       {
         "type": "paragraph",
@@ -469,4 +469,5 @@
     ]
   }
 ]
+    
     
