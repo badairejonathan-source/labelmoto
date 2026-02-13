@@ -113,7 +113,7 @@ export default function ArticlePage() {
       if (block.type === 'signature' && block.imageUrl) {
         return (
           <div key={index} className="flex justify-end items-center mt-[-3rem] sm:mt-[-4rem] mr-0 sm:mr-4">
-            <p className="text-lg font-semibold text-foreground/90">{block.text}</p>
+            <p className="text-lg font-semibold text-foreground/90 relative z-10">{block.text}</p>
             <Image 
               src={block.imageUrl} 
               alt={block.alt || "Signature"} 
