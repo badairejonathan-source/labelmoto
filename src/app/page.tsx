@@ -17,6 +17,7 @@ type GalleryImage = {
     width?: number;
     height?: number;
     hint: string;
+    text?: string;
 };
 
 const LandingHeader = () => {
@@ -177,7 +178,7 @@ export default function LandingPage() {
 
                         {/* Other gallery images */}
                         {gallery.slice(1).map((image, index) => (
-                             <div key={index} className="relative aspect-[3/4] rounded-2xl overflow-hidden">
+                             <div key={index} className="relative aspect-[3/4] rounded-2xl overflow-hidden group">
                                 <Image
                                     src={getImageUrl(image as GalleryImage)}
                                     alt={`Motorcycle gallery image ${index + 2}`}
@@ -186,6 +187,14 @@ export default function LandingPage() {
                                     sizes="(max-width: 768px) 50vw, 25vw"
                                     data-ai-hint={(image as GalleryImage).hint}
                                 />
+                                {(image as GalleryImage).text && (
+                                    <>
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                                        <div className="absolute bottom-0 left-0 p-3 sm:p-4 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.7)'}}>
+                                            <h3 className="font-bold text-sm sm:text-base leading-tight">{ (image as GalleryImage).text }</h3>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         ))}
                     </div>
