@@ -28,7 +28,7 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">Pour les pros</h3>
             <ul className="space-y-3">
               <li><Link href="/pro/register" className="text-muted-foreground hover:text-accent">Inscrire votre concession</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">Espace Pro</Link></li>
+              <li><Link href="/admin" className="text-muted-foreground hover:text-accent">Espace Admin</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Faire de la publicité</Link></li>
             </ul>
           </div>

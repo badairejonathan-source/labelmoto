@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { db } from '@/lib/firebase';
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,8 +15,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from '@/hooks/use-toast';
-import { ArrowLeft } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 
 const establishmentSchema = z.object({
@@ -41,6 +43,7 @@ const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', '
 
 export default function RegisterProPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<EstablishmentFormValues>({
     resolver: zodResolver(establishmentSchema),
     defaultValues: {
@@ -60,16 +63,25 @@ export default function RegisterProPage() {
     mode: 'onChange',
   });
 
-  const onSubmit = (data: EstablishmentFormValues) => {
-    // In a real application, you would send this data to your backend API
-    // to save it in Firebase Firestore.
-    console.log('Données de l\'établissement:', JSON.stringify(data, null, 2));
-    toast({
-      title: 'Fiche envoyée pour validation !',
-      description: 'Votre établissement sera visible après examen par notre équipe.',
-    });
-    // Optionally, redirect the user after successful submission
-    setTimeout(() => router.push('/'), 3000);
+  const onSubmit = async (data: EstablishmentFormValues) => {
+    try {
+      await addDoc(collection(db, "pending_concessions"), {
+        ...data,
+        submittedAt: serverTimestamp(),
+      });
+      toast({
+        title: 'Fiche envoyée pour validation !',
+        description: 'Votre établissement sera visible après examen par notre équipe.',
+      });
+      setTimeout(() => router.push('/'), 3000);
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du document: ", error);
+      toast({
+        variant: "destructive",
+        title: 'Une erreur est survenue',
+        description: "Votre fiche n'a pas pu être envoyée. Veuillez réessayer.",
+      });
+    }
   };
 
   return (
@@ -224,8 +236,13 @@ export default function RegisterProPage() {
                 </div>
 
                 <div className="flex justify-end pt-4">
-                  <Button type="submit" size="lg">
-                    Soumettre ma fiche
+                  <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Envoi en cours...
+                        </>
+                    ) : 'Soumettre ma fiche'}
                   </Button>
                 </div>
               </form>
