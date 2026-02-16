@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -24,6 +23,7 @@ const establishmentSchema = z.object({
   address: z.string().min(10, "L'adresse est requise."),
   phoneNumber: z.string().optional(),
   website: z.string().url("Veuillez entrer une URL valide.").optional().or(z.literal('')),
+  placeUrl: z.string().url("Veuillez entrer une URL valide.").optional().or(z.literal('')),
   category: z.enum(['concession', 'atelier', 'accessoiriste', 'autre'], {
     required_error: "Veuillez sélectionner une catégorie."
   }),
@@ -51,6 +51,7 @@ export default function RegisterProPage() {
       address: '',
       phoneNumber: '',
       website: '',
+      placeUrl: '',
       description: '',
       lundi: 'Fermé',
       mardi: '09:00-12:00, 14:00-19:00',
@@ -198,6 +199,22 @@ export default function RegisterProPage() {
                             )}
                         />
                     </div>
+                     <FormField
+                        control={form.control}
+                        name="placeUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Lien fiche Google (optionnel)</FormLabel>
+                            <FormControl>
+                                <Input placeholder="https://maps.app.goo.gl/..." {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                Lien vers votre fiche d'établissement sur Google Maps.
+                            </FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                      <FormField
                         control={form.control}
                         name="description"

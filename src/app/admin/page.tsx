@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,6 +20,7 @@ interface Submission {
   address: string;
   phoneNumber?: string;
   website?: string;
+  placeUrl?: string;
   category: 'concession' | 'atelier' | 'accessoiriste' | 'autre';
   description?: string;
   lundi?: string;
@@ -69,7 +69,7 @@ export default function AdminPage() {
     try {
       // NOTE: For now, we add it without coordinates. It won't appear on the map, only on the list.
       // A geocoding step would be needed here to get latitude/longitude from the address.
-      const newConcession: Omit<Dealership, 'id' | 'latitude' | 'longitude' | 'position' | 'placeUrl' | 'rating' | 'imgUrl' > = {
+      const newConcession: Omit<Dealership, 'id' | 'latitude' | 'longitude' | 'position' | 'rating' | 'imgUrl' > = {
         title: submission.title,
         address: submission.address,
         website: submission.website || '',
@@ -85,7 +85,7 @@ export default function AdminPage() {
         appSection: getAppSection(submission.category),
         // Default empty values for fields not in the form
         imgUrl: '',
-        placeUrl: '',
+        placeUrl: submission.placeUrl || '',
         rating: '',
       };
 
@@ -177,6 +177,7 @@ export default function AdminPage() {
                   <p><strong>Catégorie:</strong> {sub.category}</p>
                   {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
                   {sub.website && <p><strong>Web:</strong> <a href={sub.website} target="_blank" rel="noreferrer" className="text-accent underline">{sub.website}</a></p>}
+                  {sub.placeUrl && <p><strong>Google:</strong> <a href={sub.placeUrl} target="_blank" rel="noreferrer" className="text-accent underline">{sub.placeUrl}</a></p>}
                   {sub.description && <p className="text-muted-foreground pt-2">"{sub.description}"</p>}
                 </CardContent>
                 <CardFooter className="flex gap-2 justify-end">
