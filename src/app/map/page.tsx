@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -108,6 +109,12 @@ function MapPageComponent() {
 
   const { width } = useWindowSize();
   const isMobile = width ? width < 768 : false;
+
+  const [panelHeight, setPanelHeight] = useState(400);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragHandleRef = useRef<HTMLDivElement>(null);
+  const startY = useRef(0);
+  const startHeight = useRef(0);
   
   useEffect(() => {
     const concessionsRef = collection(db, 'concessions');
@@ -319,6 +326,61 @@ function MapPageComponent() {
     setFirstClickId(null);
   }, []);
 
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    startY.current = y;
+    startHeight.current = panelHeight;
+  };
+
+  const handleDragMove = useCallback((e: MouseEvent | TouchEvent) => {
+    if (!isDragging) return;
+    const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const deltaY = startY.current - y;
+    const newHeight = startHeight.current + deltaY;
+
+    const minHeight = window.innerHeight * 0.2;
+    const maxHeight = window.innerHeight * 0.85;
+
+    setPanelHeight(Math.max(minHeight, Math.min(newHeight, maxHeight)));
+  }, [isDragging]);
+
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    const moveHandler = (e: MouseEvent | TouchEvent) => handleDragMove(e);
+    const endHandler = () => handleDragEnd();
+
+    if (isDragging) {
+      window.addEventListener('mousemove', moveHandler);
+      window.addEventListener('touchmove', moveHandler);
+      window.addEventListener('mouseup', endHandler);
+      window.addEventListener('touchend', endHandler);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', moveHandler);
+      window.removeEventListener('touchmove', moveHandler);
+      window.removeEventListener('mouseup', endHandler);
+      window.removeEventListener('touchend', endHandler);
+    };
+  }, [isDragging, handleDragMove, handleDragEnd]);
+
+  useEffect(() => {
+    const setInitialHeight = () => {
+      if (isMobile) {
+        setPanelHeight(window.innerHeight * 0.65);
+      }
+    };
+    setInitialHeight();
+    window.addEventListener('resize', setInitialHeight);
+    return () => window.removeEventListener('resize', setInitialHeight);
+  }, [isMobile]);
+
+
   const adFrequency = 5;
 
   const listContent = (
@@ -391,8 +453,8 @@ function MapPageComponent() {
       <div className="flex-1 flex overflow-hidden relative">
         {isMobile ? (
           // Mobile Layout
-          <div className="w-full h-full flex flex-col">
-            <div className="relative h-[35vh] flex-shrink-0">
+          <div className="w-full h-full flex flex-col relative">
+            <div className="w-full h-full">
               <MapComponent
                 dealerships={filteredDealerships}
                 center={mapCenter}
@@ -415,9 +477,23 @@ function MapPageComponent() {
                 </Button>
               </div>
             </div>
-            <div className="flex-grow overflow-y-auto flex flex-col">
-              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
-              {listContent}
+
+            <div 
+              className="absolute bottom-0 left-0 right-0 bg-background rounded-t-xl shadow-[0_-4px_16px_rgba(0,0,0,0.15)] flex flex-col z-[1001] touch-none"
+              style={{ height: `${panelHeight}px` }}
+            >
+              <div 
+                ref={dragHandleRef}
+                onMouseDown={handleDragStart}
+                onTouchStart={handleDragStart}
+                className="w-full h-5 flex items-center justify-center cursor-row-resize flex-shrink-0"
+              >
+                <div className="w-10 h-1 bg-border rounded-full"></div>
+              </div>
+              <div className="flex-grow flex flex-col min-h-0">
+                <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
+                {listContent}
+              </div>
             </div>
           </div>
         ) : (
@@ -468,3 +544,5 @@ export default function MapPage() {
     </Suspense>
   );
 }
+
+    
