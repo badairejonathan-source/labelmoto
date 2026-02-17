@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Store } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Store, Mail } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -113,6 +113,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                       <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1 hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
                           <Phone className="w-5 h-5"/>
                           <span>Appeler</span>
+                      </a>
+                  )}
+                  {dealership.email && (
+                      <a href={`mailto:${dealership.email}`} className="flex flex-col items-center gap-1 hover:text-accent transition-colors" onClick={(e) => e.stopPropagation()}>
+                          <Mail className="w-5 h-5"/>
+                          <span>Email</span>
                       </a>
                   )}
                   {dealership.website && (

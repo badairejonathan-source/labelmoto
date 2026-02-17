@@ -5,6 +5,7 @@ export interface Dealership {
   address: string;
   website: string;
   phoneNumber: string;
+  email: string;
   imgUrl: string;
   mardi: string;
   mercredi: string;

@@ -131,6 +131,7 @@ function MapPageComponent() {
                 address: dealer.address || '',
                 website: dealer.website || '',
                 phoneNumber: dealer.phoneNumber || '',
+                email: dealer.email || '',
                 imgUrl: dealer.imgUrl || '',
                 mardi: dealer.mardi || 'Non renseigné',
                 mercredi: dealer.mercredi || 'Non renseigné',

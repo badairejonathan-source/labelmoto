@@ -19,6 +19,7 @@ interface Submission {
   title: string;
   address: string;
   phoneNumber?: string;
+  email?: string;
   website?: string;
   placeUrl?: string;
   category: 'concession' | 'atelier' | 'accessoiriste' | 'autre';
@@ -74,6 +75,7 @@ export default function AdminPage() {
         address: submission.address,
         website: submission.website || '',
         phoneNumber: submission.phoneNumber || '',
+        email: submission.email || '',
         lundi: submission.lundi || 'Non renseigné',
         mardi: submission.mardi || 'Non renseigné',
         mercredi: submission.mercredi || 'Non renseigné',
@@ -176,6 +178,7 @@ export default function AdminPage() {
                   <p><strong>Adresse:</strong> {sub.address}</p>
                   <p><strong>Catégorie:</strong> {sub.category}</p>
                   {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
+                  {sub.email && <p><strong>Email:</strong> {sub.email}</p>}
                   {sub.website && <p><strong>Web:</strong> <a href={sub.website} target="_blank" rel="noreferrer" className="text-accent underline">{sub.website}</a></p>}
                   {sub.placeUrl && <p><strong>Google:</strong> <a href={sub.placeUrl} target="_blank" rel="noreferrer" className="text-accent underline">{sub.placeUrl}</a></p>}
                   {sub.description && <p className="text-muted-foreground pt-2">"{sub.description}"</p>}

@@ -22,6 +22,7 @@ const establishmentSchema = z.object({
   title: z.string().min(3, "Le nom de l'établissement est requis."),
   address: z.string().min(10, "L'adresse est requise."),
   phoneNumber: z.string().optional(),
+  email: z.string().email("Veuillez entrer une adresse e-mail valide.").optional().or(z.literal('')),
   website: z.string().url("Veuillez entrer une URL valide.").optional().or(z.literal('')),
   placeUrl: z.string().url("Veuillez entrer une URL valide.").optional().or(z.literal('')),
   category: z.enum(['concession', 'atelier', 'accessoiriste', 'autre'], {
@@ -50,6 +51,7 @@ export default function RegisterProPage() {
       title: '',
       address: '',
       phoneNumber: '',
+      email: '',
       website: '',
       placeUrl: '',
       description: '',
@@ -187,6 +189,21 @@ export default function RegisterProPage() {
                         />
                         <FormField
                             control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Email (optionnel)</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="contact@etablissement.com" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                            control={form.control}
                             name="website"
                             render={({ field }) => (
                                 <FormItem>
@@ -198,23 +215,23 @@ export default function RegisterProPage() {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            control={form.control}
+                            name="placeUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Lien fiche Google (optionnel)</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://maps.app.goo.gl/..." {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Lien vers votre fiche d'établissement sur Google Maps.
+                                </FormDescription>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                     </div>
-                     <FormField
-                        control={form.control}
-                        name="placeUrl"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Lien fiche Google (optionnel)</FormLabel>
-                            <FormControl>
-                                <Input placeholder="https://maps.app.goo.gl/..." {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                Lien vers votre fiche d'établissement sur Google Maps.
-                            </FormDescription>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                    />
                      <FormField
                         control={form.control}
                         name="description"
