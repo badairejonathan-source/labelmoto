@@ -113,7 +113,8 @@ export default function LandingPage() {
     return (
         <div className="min-h-screen bg-background">
             <LandingHeader />
-            <main className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <main className="py-8 px-4 sm:px-6 lg:px-8">
+              <div className="max-w-6xl mx-auto">
                 {/* Hero Section */}
                 <div className="relative rounded-3xl overflow-hidden p-1 border-4 border-brand bg-black">
                      <Image
@@ -278,6 +279,7 @@ export default function LandingPage() {
                         </div>
                     </div>
                 </section>
+                </div>
             </main>
         </div>
     );
