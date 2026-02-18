@@ -92,7 +92,7 @@ export default function RegisterProPage() {
     <div className="min-h-screen bg-muted/20">
         <header className="bg-background border-b p-4">
             <div className="container mx-auto flex items-center justify-between">
-                 <div className="w-40">
+                 <div className="w-48">
                     <Link href="/">
                         <LabelMotoLogo />
                     </Link>

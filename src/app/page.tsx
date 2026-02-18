@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -108,7 +107,7 @@ const LandingHeader = () => {
                 <div className="flex flex-col gap-4">
                     {/* Top row: Logo and Icons */}
                     <div className="flex items-center justify-between">
-                        <div className="w-32 md:w-40 shrink-0">
+                        <div className="w-40 md:w-48 shrink-0">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>

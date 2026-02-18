@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -122,7 +121,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
-            <Link href="/" className="w-48">
+            <Link href="/" className="w-56">
                 <LabelMotoLogo />
             </Link>
         </div>
