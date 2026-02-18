@@ -114,24 +114,6 @@ const LandingHeader = () => {
                         </div>
                         <nav className="flex items-center gap-2">
                            <UserMenu />
-                            <Button asChild variant="ghost" size="icon" className={cn("h-10 w-10 relative", isShoppingActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
-                                <Link href="/map?filter=shopping">
-                                    <Bike className="h-6 w-6" />
-                                    {isShoppingActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-                                </Link>
-                            </Button>
-                            <Button asChild variant="ghost" size="icon" className={cn("h-10 w-10 relative", isServiceActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
-                                <Link href="/map?filter=service">
-                                    <Wrench className="h-6 w-6" />
-                                    {isServiceActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-                                </Link>
-                            </Button>
-                            <Button asChild variant="ghost" size="icon" className={cn("h-10 w-10 relative", isInfoActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
-                                <Link href="/info">
-                                    <FileText className="h-6 w-6" />
-                                    {isInfoActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-                                </Link>
-                            </Button>
                         </nav>
                     </div>
 
@@ -158,14 +140,17 @@ const LandingHeader = () => {
                             <Home className="h-5 w-5 text-brand" />
                             <span>Tout recherche</span>
                         </Link>
-                        <Link href="/map?filter=shopping" className="hover:text-foreground">
-                            Concession
+                        <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
+                            <Bike className="h-5 w-5" />
+                            <span>Concession</span>
                         </Link>
-                        <Link href="/map?filter=service" className="hover:text-foreground">
-                            Atelier
+                        <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
+                            <Wrench className="h-5 w-5" />
+                            <span>Atelier</span>
                         </Link>
-                        <Link href="/info" className="hover:text-foreground">
-                            Conseils pratiques
+                        <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
+                            <FileText className="h-5 w-5" />
+                            <span>Conseils pratiques</span>
                         </Link>
                     </nav>
                 </div>
