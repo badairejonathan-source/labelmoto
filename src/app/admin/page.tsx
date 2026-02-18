@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { useFirebase } from '@/firebase';
 import { collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -41,9 +41,12 @@ export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const { firestore } = useFirebase();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const submissionsRef = collection(db, 'pending_concessions');
+    if (!firestore) return;
+    const submissionsRef = collection(firestore, 'pending_concessions');
     const unsubscribe = onSnapshot(submissionsRef, (snapshot) => {
       const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
       setSubmissions(subs);
@@ -51,7 +54,7 @@ export default function AdminPage() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [firestore]);
 
   const getAppSection = (category: Submission['category']): Dealership['appSection'] => {
     switch (category) {
@@ -91,8 +94,8 @@ export default function AdminPage() {
         rating: '',
       };
 
-      await setDoc(doc(db, 'concessions', submission.id), newConcession);
-      await deleteDoc(doc(db, 'pending_concessions', submission.id));
+      await setDoc(doc(firestore, 'concessions', submission.id), newConcession);
+      await deleteDoc(doc(firestore, 'pending_concessions', submission.id));
 
       toast({
         title: 'Approuvé !',
@@ -113,7 +116,7 @@ export default function AdminPage() {
   const handleReject = async (submissionId: string) => {
     setProcessingId(submissionId);
     try {
-      await deleteDoc(doc(db, 'pending_concessions', submissionId));
+      await deleteDoc(doc(firestore, 'pending_concessions', submissionId));
       toast({
         title: 'Rejeté',
         description: 'La soumission a été supprimée.',

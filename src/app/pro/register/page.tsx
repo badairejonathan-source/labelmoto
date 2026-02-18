@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { db } from '@/lib/firebase';
+import { useFirebase } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 import { Button } from '@/components/ui/button';
@@ -45,6 +45,7 @@ const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', '
 export default function RegisterProPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { firestore } = useFirebase();
   const form = useForm<EstablishmentFormValues>({
     resolver: zodResolver(establishmentSchema),
     defaultValues: {
@@ -68,7 +69,7 @@ export default function RegisterProPage() {
 
   const onSubmit = async (data: EstablishmentFormValues) => {
     try {
-      await addDoc(collection(db, "pending_concessions"), {
+      await addDoc(collection(firestore, "pending_concessions"), {
         ...data,
         submittedAt: serverTimestamp(),
       });

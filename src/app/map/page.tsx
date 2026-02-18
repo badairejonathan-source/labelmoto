@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -12,7 +11,7 @@ import Header from '@/components/app/header';
 import { Crosshair, Loader2, Star } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
-import { db } from '@/lib/firebase';
+import { useFirebase } from '@/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
@@ -95,6 +94,7 @@ function MapPageComponent() {
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
   const [ratingFilter, setRatingFilter] = useState<number>(0);
+  const { firestore } = useFirebase();
   
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -117,7 +117,8 @@ function MapPageComponent() {
   const startHeight = useRef(0);
   
   useEffect(() => {
-    const concessionsRef = collection(db, 'concessions');
+    if (!firestore) return;
+    const concessionsRef = collection(firestore, 'concessions');
 
     const unsubscribe = onSnapshot(concessionsRef, (querySnapshot) => {
         const dealershipMap = new Map<string, Dealership>();
@@ -168,7 +169,7 @@ function MapPageComponent() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [firestore]);
 
   const placeholderText = useMemo(() => {
     if (activeFilter === 'service') {
@@ -544,5 +545,3 @@ export default function MapPage() {
     </Suspense>
   );
 }
-
-    
