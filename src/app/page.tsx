@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -60,7 +61,7 @@ const LandingHeader = () => {
               <TooltipTrigger asChild>
                 <Button asChild variant="ghost" size="icon" className="hidden sm:flex rounded-full">
                   <Link href="/login">
-                    <Image src="/images/icon-moncompte.png" alt="Mon compte" width={20} height={20} className="h-5 w-5" />
+                    <Image src="/images/icon-moncompte.png" alt="Mon compte" width={32} height={32} className="h-8 w-8" />
                     <span className="sr-only">Mon compte</span>
                   </Link>
                 </Button>
