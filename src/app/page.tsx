@@ -60,7 +60,7 @@ const LandingHeader = () => {
               <TooltipTrigger asChild>
                 <Button asChild variant="ghost" className="hidden sm:flex rounded-full h-12 w-12 p-0">
                   <Link href="/login">
-                    <Image src="/images/icon-moncompte.png?v=5" alt="Mon compte" width={48} height={48} className="h-12 w-12" />
+                    <Image src="/images/icon-moncompte.png?v=6" alt="Mon compte" width={48} height={48} className="h-12 w-12" />
                     <span className="sr-only">Mon compte</span>
                   </Link>
                 </Button>
