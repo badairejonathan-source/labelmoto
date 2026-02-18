@@ -5,11 +5,23 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from '@/components/app/logo';
-import { Bike, Wrench, FileText, Search, Home, CheckCircle } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, Home, CheckCircle, User as UserIcon, LogOut, Loader2 } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useUser, useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 type GalleryImage = {
     src?: string;
@@ -24,11 +36,53 @@ const LandingHeader = () => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const filter = searchParams.get('filter');
+    const { user, isUserLoading } = useUser();
+    const auth = useAuth();
     
     const isInfoActive = pathname ? pathname.startsWith('/info') : false;
     const isShoppingActive = pathname === '/map' && filter === 'shopping';
     const isServiceActive = pathname === '/map' && filter === 'service';
     const isMapActive = pathname === '/map' && !isShoppingActive && !isServiceActive;
+
+    const handleLogout = async () => {
+      await signOut(auth);
+    }
+  
+    const UserMenu = () => {
+      if (isUserLoading) {
+        return <Button size="icon" variant="ghost"><Loader2 className="h-5 w-5 animate-spin" /></Button>
+      }
+      if (!user) {
+        return <Button asChild variant="ghost" className="hidden sm:flex"><Link href="/login"><UserIcon className="mr-2 h-4 w-4"/> Mon compte</Link></Button>
+      }
+      return (
+         <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
+                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">Mon Compte</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Déconnexion</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    }
 
     return (
         <header className="bg-card text-foreground py-4 px-4 sm:px-6 lg:px-8 w-full border-b">
@@ -42,6 +96,7 @@ const LandingHeader = () => {
                             </Link>
                         </div>
                         <nav className="flex items-center gap-2">
+                           <UserMenu />
                             <Button asChild variant="ghost" size="icon" className={cn("h-10 w-10 relative", isShoppingActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
                                 <Link href="/map?filter=shopping">
                                     <Bike className="h-6 w-6" />

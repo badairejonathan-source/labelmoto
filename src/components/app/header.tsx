@@ -3,11 +3,23 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Menu, Search } from 'lucide-react';
+import { Bike, Wrench, FileText, Menu, Search, User as UserIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
+import { useUser, useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
 
 interface HeaderProps {
     searchTerm: string;
@@ -22,6 +34,49 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearch, className, activeFilter, onFilterChange, placeholderText }) => {
   const pathname = usePathname();
   const isInfoActive = pathname.startsWith('/info');
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  }
+
+  const UserMenu = () => {
+    if (isUserLoading) {
+      return <Button size="icon" variant="ghost" className="rounded-full"><Loader2 className="h-5 w-5 animate-spin" /></Button>
+    }
+    if (!user) {
+      return <Button asChild variant="ghost" className='rounded-full'><Link href="/login"><UserIcon /> Mon compte</Link></Button>
+    }
+    return (
+       <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
+              <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">Mon Compte</p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Déconnexion</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
 
   return (
     <header className={cn("bg-card p-4 text-foreground border-b border-border z-40", className)}>
@@ -114,10 +169,8 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </Button>
           </nav>
           
-          <div className="flex items-center justify-end w-24 md:w-40">
-            <Button size="icon" variant="ghost">
-              <Menu className="h-6 w-6" />
-            </Button>
+          <div className="flex items-center justify-end w-auto md:w-52">
+            <UserMenu />
           </div>
         </div>
         
