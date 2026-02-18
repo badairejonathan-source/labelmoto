@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Menu, Search, User as UserIcon, LogOut } from 'lucide-react';
+import { Bike, Wrench, FileText, Menu, Search, User as UserIcon, LogOut, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
