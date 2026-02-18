@@ -51,16 +51,16 @@ const LandingHeader = () => {
   
     const UserMenu = () => {
       if (isUserLoading) {
-        return <Button size="icon" variant="ghost"><Loader2 className="h-5 w-5 animate-spin" /></Button>
+        return <Button variant="ghost" className="h-12 w-12 rounded-full"><Loader2 className="h-6 w-6 animate-spin" /></Button>
       }
       if (!user) {
         return (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button asChild variant="ghost" size="icon" className="hidden sm:flex rounded-full">
+                <Button asChild variant="ghost" className="hidden sm:flex rounded-full h-12 w-12 p-0">
                   <Link href="/login">
-                    <Image src="/images/icon-moncompte.png" alt="Mon compte" width={32} height={32} className="h-8 w-8" />
+                    <Image src="/images/icon-moncompte.png?v=4" alt="Mon compte" width={48} height={48} className="h-12 w-12" />
                     <span className="sr-only">Mon compte</span>
                   </Link>
                 </Button>
@@ -75,8 +75,8 @@ const LandingHeader = () => {
       return (
          <DropdownMenu>
           <DropdownMenuTrigger asChild>
-             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar className="h-10 w-10">
+             <Button variant="ghost" className="relative h-12 w-12 rounded-full">
+              <Avatar className="h-12 w-12">
                 <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
                 <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
               </Avatar>
@@ -341,3 +341,5 @@ export default function LandingPage() {
         </div>
     );
 }
+
+    
