@@ -68,6 +68,8 @@ export default function ArticlePage() {
 
   const { imageUrl, imageHint } = article;
 
+  const firstParagraphIndex = article.content?.findIndex(b => b.type === 'paragraph') ?? -1;
+
   const renderContent = () => {
     if (!article.content || article.content.length === 0) {
       return <p className="text-lg text-muted-foreground">Contenu de l'article à venir...</p>;
@@ -75,17 +77,19 @@ export default function ArticlePage() {
 
     return article.content.map((block, index) => {
       if (block.type === 'heading') {
-        return <h2 key={index} className="text-3xl font-bold mt-12 mb-4 text-foreground">{block.text}</h2>;
+        return <h2 key={index} className="text-3xl font-bold font-serif mt-12 mb-6 text-foreground text-center border-y border-foreground/20 py-2">{block.text}</h2>;
       }
       if (block.type === 'list' && block.items) {
         return (
           <ul key={index} className="list-disc list-inside space-y-3 pl-2">
-            {block.items.map((item, i) => <li key={i} className="text-lg text-foreground/90 leading-relaxed">{item}</li>)}
+            {block.items.map((item, i) => <li key={i} className="text-lg text-foreground/90 leading-relaxed text-justify">{item}</li>)}
           </ul>
         );
       }
       if (block.type === 'paragraph' && block.html) {
-          return <p key={index} className="text-lg text-foreground/90 leading-relaxed" dangerouslySetInnerHTML={{ __html: block.html }} />;
+          const isFirst = index === firstParagraphIndex;
+          const dropCapClass = isFirst ? "first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:float-left" : "";
+          return <p key={index} className={`text-lg text-foreground/90 leading-relaxed text-justify ${dropCapClass}`} dangerouslySetInnerHTML={{ __html: block.html }} />;
       }
       if (block.type === 'table' && block.headers && block.rows) {
         return (
@@ -125,7 +129,10 @@ export default function ArticlePage() {
           </div>
         )
       }
-      return <p key={index} className="text-lg text-foreground/90 leading-relaxed">{block.text}</p>;
+      
+      const isFirst = index === firstParagraphIndex;
+      const dropCapClass = isFirst && block.type === 'paragraph' ? "first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:float-left" : "";
+      return <p key={index} className={`text-lg text-foreground/90 leading-relaxed text-justify ${dropCapClass}`}>{block.text}</p>;
     });
   };
 
@@ -157,7 +164,7 @@ export default function ArticlePage() {
                 priority
               />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold font-serif text-foreground leading-tight tracking-tight mb-4">
               {article.title}
             </h1>
             <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium mb-8 border-b pb-4">
