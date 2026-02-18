@@ -1,0 +1,330 @@
+{
+  "entities": {
+    "Dealership": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Dealership",
+      "type": "object",
+      "description": "Represents an approved and active motorcycle dealership listed in the Moto Trust application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Dealership entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The official name of the dealership."
+        },
+        "brand": {
+          "type": "string",
+          "description": "The primary motorcycle brand associated with the dealership.",
+          "format": "enum",
+          "items": {
+            "type": "string"
+          }
+        },
+        "types": {
+          "type": "array",
+          "description": "A list of types indicating the dealership's affiliation or business model (e.g., Official, Independent, Partner).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "services": {
+          "type": "array",
+          "description": "A list of services offered by the dealership (e.g., Sales, Repair, Rental).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "address": {
+          "type": "string",
+          "description": "The physical street address of the dealership."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The contact phone number for the dealership."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "The geographical latitude coordinate of the dealership's location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The geographical longitude coordinate of the dealership's location."
+        },
+        "openNow": {
+          "type": "boolean",
+          "description": "Indicates whether the dealership is currently open for business."
+        },
+        "stockCount": {
+          "type": "number",
+          "description": "The current number of motorcycles in stock at the dealership."
+        },
+        "rating": {
+          "type": "number",
+          "description": "The average customer rating of the dealership, typically on a scale (e.g., 1-5)."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "brand",
+        "types",
+        "services",
+        "address",
+        "phone",
+        "latitude",
+        "longitude",
+        "openNow",
+        "stockCount",
+        "rating"
+      ]
+    },
+    "AdvicePost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AdvicePost",
+      "type": "object",
+      "description": "Represents an article or blog post providing advice and information related to motorcycles.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AdvicePost entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the advice post."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category to which the advice post belongs (e.g., Maintenance, Riding Tips, Gear)."
+        },
+        "summary": {
+          "type": "string",
+          "description": "A brief summary or excerpt of the advice post content."
+        },
+        "readTime": {
+          "type": "string",
+          "description": "An estimate of the time required to read the post (e.g., '5 min read')."
+        },
+        "date": {
+          "type": "string",
+          "description": "The publication date and time of the advice post.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "category",
+        "summary",
+        "readTime",
+        "date"
+      ]
+    },
+    "ProfessionalProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ProfessionalProfile",
+      "type": "object",
+      "description": "Represents a professional user account, typically a dealership owner or manager, who can submit new dealerships.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ProfessionalProfile entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "The professional's email address, used for contact and login (assumed external auth system handles actual login).",
+          "format": "email"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the professional user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the professional user."
+        },
+        "companyName": {
+          "type": "string",
+          "description": "The name of the company or organization the professional user represents (optional)."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The contact phone number for the professional user (optional)."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "firstName",
+        "lastName"
+      ]
+    },
+    "DealershipSubmission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DealershipSubmission",
+      "type": "object",
+      "description": "Represents a submitted application for a new motorcycle dealership by a professional user, pending review and approval.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the DealershipSubmission entity."
+        },
+        "professionalId": {
+          "type": "string",
+          "description": "Reference to the ProfessionalProfile entity that submitted this dealership application. (Relationship: ProfessionalProfile 1:N DealershipSubmission)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The proposed name of the dealership."
+        },
+        "brand": {
+          "type": "string",
+          "description": "The primary motorcycle brand proposed for the dealership.",
+          "format": "enum",
+          "items": {
+            "type": "string"
+          }
+        },
+        "types": {
+          "type": "array",
+          "description": "A list of proposed types indicating the dealership's affiliation or business model.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "services": {
+          "type": "array",
+          "description": "A list of proposed services offered by the dealership.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "address": {
+          "type": "string",
+          "description": "The proposed physical street address of the dealership."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The proposed contact phone number for the dealership."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "The geographical latitude coordinate of the proposed dealership's location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The geographical longitude coordinate of the proposed dealership's location."
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time when the dealership application was submitted.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the dealership application (e.g., PENDING, APPROVED, REJECTED).",
+          "format": "enum",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string",
+          "description": "Internal notes or comments regarding the review of the dealership submission (optional)."
+        }
+      },
+      "required": [
+        "id",
+        "professionalId",
+        "name",
+        "brand",
+        "types",
+        "services",
+        "address",
+        "phone",
+        "latitude",
+        "longitude",
+        "submissionDate",
+        "status"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/professionalProfiles/{professionalId}",
+        "definition": {
+          "entityName": "ProfessionalProfile",
+          "schema": {
+            "$ref": "#/backend/entities/ProfessionalProfile"
+          },
+          "description": "Stores the profiles of professional users. Access is strictly limited to the owner matching 'request.auth.uid'. No denormalization for authorization needed beyond path-based ownership."
+        }
+      },
+      {
+        "path": "/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}",
+        "definition": {
+          "entityName": "DealershipSubmission",
+          "schema": {
+            "$ref": "#/backend/entities/DealershipSubmission"
+          },
+          "description": "Stores dealership applications submitted by professional users. Each submission includes a denormalized 'professionalId' field, which MUST match the path's '{professionalId}' and 'request.auth.uid' for authorization independence. Only the submitting professional can read/write their own submissions (when PENDING); administrators may have broader access.",
+          "params": [
+            {
+              "name": "professionalId",
+              "description": "The unique ID of the professional user who submitted the dealership application. This must match 'request.auth.uid'."
+            },
+            {
+              "name": "submissionId",
+              "description": "The unique ID of the dealership submission."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/dealerships/{dealershipId}",
+        "definition": {
+          "entityName": "Dealership",
+          "schema": {
+            "$ref": "#/backend/entities/Dealership"
+          },
+          "description": "Stores approved and active motorcycle dealerships. This collection is publicly readable by all users. Write access is restricted to administrators only. No user-specific authorization denormalization is required."
+        }
+      },
+      {
+        "path": "/advicePosts/{advicePostId}",
+        "definition": {
+          "entityName": "AdvicePost",
+          "schema": {
+            "$ref": "#/backend/entities/AdvicePost"
+          },
+          "description": "Stores public articles and blog posts offering motorcycle advice. This collection is publicly readable by all users. Write access is restricted to administrators only. No user-specific authorization denormalization is required."
+        }
+      },
+      {
+        "path": "/roles_admin/{uid}",
+        "definition": {
+          "entityName": "AdminRole",
+          "schema": {
+            "$ref": "#/backend/entities/AdminRole"
+          },
+          "description": "Identifies users with administrative privileges. The existence of a document at this path signifies that the user (identified by 'uid') is an administrator. This is a DBAC (Database Access Control) mechanism, relying on document existence for role verification.",
+          "params": [
+            {
+              "name": "uid",
+              "description": "The unique ID of the user who possesses administrative privileges. This must match 'request.auth.uid' to check for admin role."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to be secure, scalable, and debuggable, strictly adhering to the core design principles and mandates. \n\n**Authorization Independence via Denormalization:**\nFor user-owned data like `ProfessionalProfile` and `DealershipSubmission`, ownership is primarily established through the hierarchical path, such as `/professionalProfiles/{professionalId}` and `/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}`. Crucially, the `DealershipSubmission` document itself will include a `professionalId` field. This denormalization means that security rules can verify `request.auth.uid == resource.data.professionalId` without needing a `get()` call to a parent document or an external user collection. This eliminates hierarchical authorization dependencies, enabling atomic operations (like creating a professional profile and their first submission in a batch) and simplifying rule debugging by making all necessary authorization context available within the document itself. \n\n**QAPs (Rules are not Filters):**\n1.  **`/dealerships/{dealershipId}` and `/advicePosts/{advicePostId}`:** These collections are designed with a homogeneous security posture, meaning all documents within them are publicly readable. This inherently supports Query-As-Permissions (QAPs) for list operations, as any read query to these collections will only return publicly accessible data. No filtering is required at the security rule level based on user identity for general access. Write operations will be restricted to authorized administrators.\n2.  **`/professionalProfiles/{professionalId}`:** Access to a professional profile is strictly tied to the `professionalId` matching `request.auth.uid`. This means a user can only query for their *own* profile. Listing other profiles is not permitted, thus satisfying QAPs for private user data.\n3.  **`/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}`:** Similarly, `DealershipSubmission` documents are housed under the professional's specific path. A professional can only perform list operations within their own `dealershipSubmissions` subcollection, where `professionalId` (from the path and denormalized field) matches `request.auth.uid`. This ensures that any query made by a professional to list submissions is inherently secure and will only return their own submissions, without the rules needing to filter results.\n\n**Structural Segregation & Access Modeling:**\nPublic data (`Dealerships`, `AdvicePosts`) is segregated from private, user-specific data (`ProfessionalProfiles`, `DealershipSubmissions`). Professional profiles and their associated submissions use a clear hierarchical path-based ownership model (`/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}`). An explicit `roles_admin` collection (`/roles_admin/{uid}`) provides a simple, existence-based DBAC model for administrative privileges without using custom claims."
+  }
+}

@@ -1,0 +1,194 @@
+/**
+ * Moto Trust Firestore Security Rules
+ *
+ * Core Philosophy:
+ * This ruleset implements a dual-access security model. It separates publicly
+ * readable content (like dealerships and advice posts) from private, user-owned
+ * data (professional profiles and their submissions). A role-based access
+ * control (RBAC) system grants administrators privileged write access across the database.
+ *
+ * Data Structure:
+ * - /dealerships/{dealershipId}: Publicly readable, admin-writable dealership listings.
+ * - /advicePosts/{advicePostId}: Publicly readable, admin-writable informational articles.
+ * - /professionalProfiles/{professionalId}: Private user profiles, only accessible by the owner.
+ * - /professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}: Private submissions owned by the professional.
+ * - /roles_admin/{uid}: An administrative collection where document existence grants a user admin rights.
+ *
+ * Key Security Decisions:
+ * - Public Listing Blocked for User Data: The top-level /professionalProfiles collection
+ *   cannot be listed to prevent user enumeration and protect privacy.
+ * - Strict Ownership: All data under /professionalProfiles/{userId} is strictly
+ *   controlled by the user whose UID matches {userId}.
+ * - Admin Override: Administrators have read/write access to most data for moderation
+ *   and management purposes.
+ * - Default Deny: All operations are denied by default and must be explicitly allowed.
+ *
+ * Denormalization for Authorization:
+ * The `dealershipSubmissions` documents contain a `professionalId` field. This allows
+ * security rules to validate ownership on create and update without performing costly
+ * `get` operations on parent documents, ensuring rules are fast and simple.
+ *
+ * Structural Segregation:
+ * The separation between public top-level collections (/dealerships, /advicePosts) and
+ * the private, user-scoped collection (/professionalProfiles) is a deliberate choice.
+ * This segregation ensures that list queries on public data are inherently safe and
+ * performant, as no user-specific filtering is required at the rules layer.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------
+    // Helper Functions
+    // ----------------------------------------
+
+    /**
+     * Checks if the user is signed into the application.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the user has administrative privileges.
+     * Admin status is granted if a document with the user's UID exists in the /roles_admin collection.
+     */
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /**
+     * Checks if the currently authenticated user is the owner of the resource.
+     * Compares the user's UID with the provided userId from the document path.
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if a document exists AND the user is its owner.
+     * Used for safe update and delete operations.
+     */
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    // ----------------------------------------
+    // Validation Helper Functions
+    // ----------------------------------------
+
+    /**
+     * On create, validates that the professional profile's internal `id` field
+     * matches the document ID, ensuring path and data consistency.
+     */
+    function isCreatingOwnProfile(professionalId) {
+      return request.resource.data.id == professionalId;
+    }
+
+    /**
+     * On update, enforces that the professional profile's internal `id` field is immutable.
+     */
+    function profileIdIsImmutable() {
+      return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * On create, validates that a new submission's `professionalId` field
+     * matches the owner's ID from the path, ensuring correct ownership linkage.
+     */
+    function isCreatingOwnSubmission(professionalId) {
+      return request.resource.data.professionalId == professionalId;
+    }
+
+    /**
+     * On update, enforces that the submission's `professionalId` ownership link is immutable.
+     */
+    function submissionOwnerIsImmutable() {
+      return request.resource.data.professionalId == resource.data.professionalId;
+    }
+
+
+    /**
+     * @description Controls access to professional user profiles.
+     * @path /professionalProfiles/{professionalId}
+     * @allow (create) A new user creating their own profile document where their UID matches {professionalId}.
+     * @allow (get) An authenticated user retrieving their own profile document.
+     * @deny (list) Any user attempting to list all profiles to prevent user enumeration.
+     * @deny (update) A user trying to update another user's profile document.
+     * @principle Restricts access to a user's own data tree and prevents user enumeration.
+     */
+    match /professionalProfiles/{professionalId} {
+      allow get: if isOwner(professionalId) || isAdmin();
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(professionalId) && isCreatingOwnProfile(professionalId);
+      allow update: if isExistingOwner(professionalId) && profileIdIsImmutable();
+      allow delete: if isExistingOwner(professionalId) || (isAdmin() && resource != null);
+    }
+
+    /**
+     * @description Manages dealership submissions nested under a professional's profile.
+     * @path /professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}
+     * @allow (create) A professional submitting a new dealership application for their own account.
+     * @allow (list) A professional listing all of their own past and present submissions.
+     * @deny (get) A user attempting to read a submission belonging to another professional.
+     * @deny (update) A user trying to change the `professionalId` field to reassign ownership.
+     * @principle Enforces document ownership for all operations via both path and denormalized data.
+     */
+    match /professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId} {
+      allow get: if isOwner(professionalId) || isAdmin();
+      allow list: if isOwner(professionalId) || isAdmin();
+      allow create: if isOwner(professionalId) && isCreatingOwnSubmission(professionalId);
+      allow update: if (isExistingOwner(professionalId) && submissionOwnerIsImmutable()) || (isAdmin() && resource != null);
+      allow delete: if isExistingOwner(professionalId) || (isAdmin() && resource != null);
+    }
+
+    /**
+     * @description Controls access to the public collection of approved dealerships.
+     * @path /dealerships/{dealershipId}
+     * @allow (get, list) Any user, including unauthenticated visitors, can read dealership information.
+     * @deny (create) A regular authenticated user attempting to add a new dealership.
+     * @deny (delete) Any non-administrator attempting to remove a dealership listing.
+     * @principle Provides public read access for general content while restricting writes to privileged roles.
+     */
+    match /dealerships/{dealershipId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Controls access to the public collection of advice articles.
+     * @path /advicePosts/{advicePostId}
+     * @allow (get, list) Any user, including unauthenticated visitors, can read advice posts.
+     * @deny (create) A regular authenticated user attempting to publish an article.
+     * @deny (update) Any non-administrator attempting to edit an existing article.
+     * @principle Provides public read access for general content while restricting writes to privileged roles.
+     */
+    match /advicePosts/{advicePostId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Manages the collection that assigns administrator roles.
+     * @path /roles_admin/{uid}
+     * @allow (get) An admin checking the role status of another user.
+     * @allow (create) An admin granting another user admin privileges.
+     * @deny (get) A non-admin user trying to see who the administrators are.
+     * @deny (delete) A non-admin user attempting to revoke their own or someone else's admin rights.
+     * @principle Secures administrative role management, allowing only existing admins to modify privileges.
+     */
+    match /roles_admin/{uid} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if false;
+      allow delete: if isAdmin() && resource != null;
+    }
+  }
+}
