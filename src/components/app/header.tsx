@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -55,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <TooltipTrigger asChild>
               <Button asChild variant="ghost" className="rounded-full h-12 w-12 p-0">
                 <Link href="/login">
-                  <Image src="/images/icon-moncompte.png?v=1" alt="Mon compte" width={48} height={48} className="h-12 w-12" />
+                  <Image src="/images/icon-moncompte.png?v=99" alt="Mon compte" width={48} height={48} className="h-12 w-12" />
                   <span className="sr-only">Mon compte</span>
                 </Link>
               </Button>
