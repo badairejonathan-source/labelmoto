@@ -7,7 +7,7 @@ const LabelMotoLogo = ({ className }: { className?: string }) => {
   return (
     <div className={cn('relative w-full', className)}>
       <Image 
-        src="/images/logo-moto.png?v=2" 
+        src="/images/logo-moto.png?v=3" 
         alt="Label Moto Logo" 
         width={250} 
         height={80}
