@@ -8,7 +8,7 @@
  * control (RBAC) system grants administrators privileged write access across the database.
  *
  * Data Structure:
- * - /dealerships/{dealershipId}: Publicly readable, admin-writable dealership listings.
+ * - /concessions/{dealershipId}: Publicly readable, admin-writable dealership listings.
  * - /advicePosts/{advicePostId}: Publicly readable, admin-writable informational articles.
  * - /professionalProfiles/{professionalId}: Private user profiles, only accessible by the owner.
  * - /professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}: Private submissions owned by the professional.
@@ -29,7 +29,7 @@
  * `get` operations on parent documents, ensuring rules are fast and simple.
  *
  * Structural Segregation:
- * The separation between public top-level collections (/dealerships, /advicePosts) and
+ * The separation between public top-level collections (/concessions, /advicePosts) and
  * the private, user-scoped collection (/professionalProfiles) is a deliberate choice.
  * This segregation ensures that list queries on public data are inherently safe and
  * performant, as no user-specific filtering is required at the rules layer.
@@ -144,18 +144,26 @@ service cloud.firestore {
 
     /**
      * @description Controls access to the public collection of approved dealerships.
-     * @path /dealerships/{dealershipId}
+     * @path /concessions/{dealershipId}
      * @allow (get, list) Any user, including unauthenticated visitors, can read dealership information.
      * @deny (create) A regular authenticated user attempting to add a new dealership.
      * @deny (delete) Any non-administrator attempting to remove a dealership listing.
      * @principle Provides public read access for general content while restricting writes to privileged roles.
      */
-    match /dealerships/{dealershipId} {
+    match /concessions/{dealershipId} {
       allow get: if true;
       allow list: if true;
       allow create: if isAdmin();
       allow update: if isAdmin() && resource != null;
       allow delete: if isAdmin() && resource != null;
+    }
+    
+    match /pending_concessions/{submissionId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
     }
 
     /**

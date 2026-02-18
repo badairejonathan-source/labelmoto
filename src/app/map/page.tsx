@@ -119,7 +119,7 @@ function MapPageComponent() {
   
   useEffect(() => {
     if (!firestore) return;
-    const dealershipsRef = collection(firestore, 'dealerships');
+    const dealershipsRef = collection(firestore, 'concessions');
 
     const unsubscribe = onSnapshot(dealershipsRef, (querySnapshot) => {
         const dealershipMap = new Map<string, Dealership>();
@@ -166,7 +166,7 @@ function MapPageComponent() {
     }, (error: FirestoreError) => {
         const contextualError = new FirestorePermissionError({
           operation: 'list',
-          path: 'dealerships'
+          path: 'concessions'
         });
         console.error(contextualError);
         

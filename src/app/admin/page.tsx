@@ -51,10 +51,18 @@ export default function AdminPage() {
       const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
       setSubmissions(subs);
       setIsLoading(false);
+    }, (error) => {
+      console.error("Erreur de lecture des soumissions en attente : ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur de chargement',
+        description: "Impossible de récupérer les fiches à valider. Vérifiez les règles de sécurité.",
+      });
+      setIsLoading(false);
     });
 
     return () => unsubscribe();
-  }, [firestore]);
+  }, [firestore, toast]);
 
   const getAppSection = (category: Submission['category']): Dealership['appSection'] => {
     switch (category) {
@@ -94,7 +102,7 @@ export default function AdminPage() {
         rating: '',
       };
 
-      await setDoc(doc(firestore, 'dealerships', submission.id), newConcession);
+      await setDoc(doc(firestore, 'concessions', submission.id), newConcession);
       await deleteDoc(doc(firestore, 'pending_concessions', submission.id));
 
       toast({
