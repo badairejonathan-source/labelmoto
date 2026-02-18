@@ -1,9 +1,14 @@
+'use client';
 
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import LabelMotoLogo from './logo';
+import { useUser } from '@/firebase';
 
 const Footer = () => {
+  const { user } = useUser();
+  const proRegisterLink = user ? "/pro/register" : "/login";
+
   return (
     <footer className="bg-muted/30 border-t border-border/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-sm">
@@ -27,7 +32,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-foreground mb-4">Pour les pros</h3>
             <ul className="space-y-3">
-              <li><Link href="/pro/register" className="text-muted-foreground hover:text-accent">Inscrire votre concession</Link></li>
+              <li><Link href={proRegisterLink} className="text-muted-foreground hover:text-accent">Inscrire votre concession</Link></li>
               <li><Link href="/admin" className="text-muted-foreground hover:text-accent">Espace Admin</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Faire de la publicité</Link></li>
             </ul>
