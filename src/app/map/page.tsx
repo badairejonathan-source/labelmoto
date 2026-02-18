@@ -12,10 +12,11 @@ import { Crosshair, Loader2, Star } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, FirestoreError } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -118,9 +119,9 @@ function MapPageComponent() {
   
   useEffect(() => {
     if (!firestore) return;
-    const concessionsRef = collection(firestore, 'concessions');
+    const dealershipsRef = collection(firestore, 'dealerships');
 
-    const unsubscribe = onSnapshot(concessionsRef, (querySnapshot) => {
+    const unsubscribe = onSnapshot(dealershipsRef, (querySnapshot) => {
         const dealershipMap = new Map<string, Dealership>();
 
         querySnapshot.docs.forEach((doc) => {
@@ -162,14 +163,25 @@ function MapPageComponent() {
         const uniqueDealerships = Array.from(dealershipMap.values());
         setAllDealerships(uniqueDealerships);
         setIsLoading(false);
-    }, (error) => {
-        console.error("Firebase read failed: " + error.message);
+    }, (error: FirestoreError) => {
+        const contextualError = new FirestorePermissionError({
+          operation: 'list',
+          path: 'dealerships'
+        });
+        console.error(contextualError);
+        
+        toast({
+            variant: "destructive",
+            title: "Erreur de chargement",
+            description: "Impossible de récupérer les fiches. Vérifiez les règles de sécurité de la base de données.",
+        });
+
         setAllDealerships([]);
         setIsLoading(false);
     });
 
     return () => unsubscribe();
-  }, [firestore]);
+  }, [firestore, toast]);
 
   const placeholderText = useMemo(() => {
     if (activeFilter === 'service') {

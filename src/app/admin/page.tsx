@@ -94,7 +94,7 @@ export default function AdminPage() {
         rating: '',
       };
 
-      await setDoc(doc(firestore, 'concessions', submission.id), newConcession);
+      await setDoc(doc(firestore, 'dealerships', submission.id), newConcession);
       await deleteDoc(doc(firestore, 'pending_concessions', submission.id));
 
       toast({
