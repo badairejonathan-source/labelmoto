@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 type GalleryImage = {
@@ -53,7 +54,23 @@ const LandingHeader = () => {
         return <Button size="icon" variant="ghost"><Loader2 className="h-5 w-5 animate-spin" /></Button>
       }
       if (!user) {
-        return <Button asChild variant="ghost" className="hidden sm:flex"><Link href="/login"><UserIcon className="mr-2 h-4 w-4"/> Mon compte</Link></Button>
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button asChild variant="ghost" size="icon" className="hidden sm:flex rounded-full">
+                  <Link href="/login">
+                    <UserIcon className="h-5 w-5" />
+                    <span className="sr-only">Mon compte</span>
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Mon compte</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
       }
       return (
          <DropdownMenu>

@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 interface HeaderProps {
@@ -46,7 +47,23 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
       return <Button size="icon" variant="ghost" className="rounded-full"><Loader2 className="h-5 w-5 animate-spin" /></Button>
     }
     if (!user) {
-      return <Button asChild variant="ghost" className='rounded-full'><Link href="/login"><UserIcon /> Mon compte</Link></Button>
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button asChild variant="ghost" size="icon" className="rounded-full">
+                <Link href="/login">
+                  <UserIcon className="h-5 w-5" />
+                  <span className="sr-only">Mon compte</span>
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Mon compte</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
     }
     return (
        <DropdownMenu>
