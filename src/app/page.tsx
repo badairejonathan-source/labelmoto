@@ -62,7 +62,7 @@ const LandingHeader = () => {
               <TooltipTrigger asChild>
                 <Button asChild variant="ghost" className="hidden sm:flex rounded-full h-12 w-12 p-0">
                   <Link href="/login">
-                    <Image key="force-reload-1" src="/images/icon-moncompte.png" alt="Mon compte" width={48} height={48} className="h-12 w-12" />
+                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={48} height={48} className="h-12 w-12" />
                     <span className="sr-only">Mon compte</span>
                   </Link>
                 </Button>
@@ -331,7 +331,7 @@ export default function LandingPage() {
                                         Alors, prêt à prendre la route du futur ? Rejoignez notre communauté dès aujourd’hui, partagez vos expériences, et contribue à bâtir la plateforme de référence pour tous les passionnés de deux-roues.
                                     </p>
                                     <p className="font-semibold text-white">
-                                        Parce qu’ici, chaque motard trouve sa route… et sa concession. 🏍️💨
+                                        Parce qu’ici, chaque motard trouve sa route… et sa concession. <Image src="/images/Stamp-LM.png" alt="Cachet Label Moto" width={40} height={40} className="inline-block -mt-2 opacity-80" />
                                     </p>
                                 </div>
                             </div>
@@ -343,6 +343,8 @@ export default function LandingPage() {
         </div>
     );
 }
+
+    
 
     
 
