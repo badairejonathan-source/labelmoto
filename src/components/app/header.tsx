@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <TooltipTrigger asChild>
               <Button asChild variant="ghost" className="rounded-full h-12 w-12 p-0">
                 <Link href="/login">
-                  <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center p-1">
+                  <div className="h-12 w-12 rounded-full flex items-center justify-center p-1">
                     <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={40} height={40} className="h-10 w-10 object-contain" />
                   </div>
                   <span className="sr-only">Mon compte</span>
