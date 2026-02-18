@@ -2,8 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Menu, Search, User as UserIcon, LogOut, Loader2 } from 'lucide-react';
+import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -53,7 +54,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <TooltipTrigger asChild>
               <Button asChild variant="ghost" size="icon" className="rounded-full">
                 <Link href="/login">
-                  <UserIcon className="h-5 w-5" />
+                  <Image src="/images/icon-moncompte.png" alt="Mon compte" width={24} height={24} className="h-6 w-6" />
                   <span className="sr-only">Mon compte</span>
                 </Link>
               </Button>

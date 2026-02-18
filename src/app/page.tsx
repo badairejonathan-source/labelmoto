@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from '@/components/app/logo';
-import { Bike, Wrench, FileText, Search, Home, CheckCircle, User as UserIcon, LogOut, Loader2 } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2 } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
@@ -60,7 +60,7 @@ const LandingHeader = () => {
               <TooltipTrigger asChild>
                 <Button asChild variant="ghost" size="icon" className="hidden sm:flex rounded-full">
                   <Link href="/login">
-                    <UserIcon className="h-5 w-5" />
+                    <Image src="/images/icon-moncompte.png" alt="Mon compte" width={20} height={20} className="h-5 w-5" />
                     <span className="sr-only">Mon compte</span>
                   </Link>
                 </Button>
