@@ -68,24 +68,314 @@
   },
   {
     "id": "4",
-    "title": "6 cols de montagne pour motards débutants à travers la France",
-    "description": "Rêvez-vous de virages en épingle et de panoramas à couper le souffle mais n'osez pas vous lancer ? Nous avons sélectionné 6 cols mythiques mais accessibles pour faire vos premières armes en montagne en toute sécurité.",
-    "author": "Alice Piston",
-    "date": "1 juillet 2024",
-    "readingTime": "7 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/article-mountains/1200/600",
-    "imageHint": "motorcycle mountain",
+    "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu. Cet article détaille le coût réel d’une moto pour un débutant.",
+    "author": "L'équipe Label Moto",
+    "date": "28 juillet 2024",
+    "readingTime": "8 min de lecture",
+    "imageUrl": "https://picsum.photos/seed/article-budget/1200/600",
+    "imageHint": "motorcycle budget",
     "content": [
-      {
-        "type": "paragraph",
-        "text": "Contenu de l'article à venir..."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
+        {
+            "type": "paragraph",
+            "text": "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours."
+        },
+        {
+            "type": "paragraph",
+            "text": "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent."
+        },
+        {
+            "type": "paragraph",
+            "text": "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis."
+        },
+        {
+            "type": "paragraph",
+            "html": "Dans cet article, on va détailler <strong>le coût réel d’une moto pour un débutant</strong> :"
+        },
+        {
+            "type": "list",
+            "items": ["prix d’achat", "assurance", "carburant", "entretien", "équipement"]
+        },
+        {
+            "type": "paragraph",
+            "text": "À la fin, tu sauras exactement combien prévoir par mois avant d’acheter ta première moto."
+        },
+        {
+            "type": "heading",
+            "text": "Le prix d’achat : le budget de départ"
+        },
+        {
+            "type": "paragraph",
+            "text": "Avant même de penser à rouler, il faut acheter la moto. Et c’est souvent là que les futurs motards se trompent : ils regardent uniquement le prix affiché… sans anticiper le reste."
+        },
+        {
+            "type": "paragraph",
+            "html": "Pour un permis A2, le budget moyen en France se situe généralement entre <strong>3 000 € et 7 000 €</strong> :"
+        },
+        {
+            "type": "list",
+            "items": [
+                "3 000 à 4 500 € → moto d’occasion raisonnable pour débuter",
+                "4 500 à 6 000 € → modèle récent bien équipé",
+                "6 000 à 7 000 € → moto quasi neuve ou concession"
+            ]
+        },
+        {
+            "type": "paragraph",
+            "text": "Beaucoup de débutants veulent acheter neuf pour être rassurés. Mais en réalité, une première moto subit souvent :"
+        },
+        {
+            "type": "list",
+            "items": [
+                "petites chutes à l’arrêt",
+                "erreurs de manipulation",
+                "revente après la passerelle permis A"
+            ]
+        },
+        {
+            "type": "paragraph",
+            "text": "C’est pourquoi l’occasion reste souvent le choix le plus intelligent financièrement."
+        },
+        {
+            "type": "paragraph",
+            "html": "👉 Si tu hésites encore sur le modèle, consulte d’abord <a href=\"/info/6\" class=\"text-accent underline hover:text-accent/80\">notre guide des meilleures motos A2 pour débuter</a> afin d’éviter d’acheter une moto inadaptée."
+        },
+        {
+            "type": "heading",
+            "text": "L’assurance : la plus grosse surprise pour un débutant"
+        },
+        {
+            "type": "paragraph",
+            "text": "C’est presque toujours le moment où le futur motard tombe de haut. On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double."
+        },
+        {
+            "type": "paragraph",
+            "text": "Pour un permis A2, l’assurance dépend surtout de 3 facteurs :"
+        },
+        {
+            "type": "list",
+            "items": [
+                "ton âge et ton expérience",
+                "la région (Île-de-France = plus cher)",
+                "le modèle de moto"
+            ]
+        },
+        {
+            "type": "paragraph",
+            "text": "Voici des fourchettes réalistes observées :"
+        },
+        {
+            "type": "table",
+            "headers": ["Profil", "Prix mensuel moyen"],
+            "rows": [
+                ["Jeune permis A2", "80 à 200 €"],
+                ["2 ans d’expérience", "50 à 120 €"],
+                ["Motard expérimenté", "30 à 70 €"]
+            ]
+        },
+        {
+            "type": "paragraph",
+            "html": "Certaines motos coûtent bien plus cher à assurer que d’autres. Par exemple, une sportive ou un modèle très volé peut coûter <strong>2 à 3 fois plus cher</strong> qu’une moto plus sage."
+        },
+        {
+            "type": "paragraph",
+            "text": "👉 Avant de choisir ton modèle, consulte notre guide des meilleures motos A2 pour débuter : le bon choix peut te faire économiser plusieurs centaines d’euros par an."
+        },
+        {
+            "type": "paragraph",
+            "text": "Beaucoup de motards regrettent leur achat uniquement à cause de l’assurance… alors que c’est le poste le plus prévisible."
+        },
+        {
+            "type": "heading",
+            "text": "Le carburant : vraiment moins cher qu’une voiture ?"
+        },
+        {
+            "type": "paragraph",
+            "text": "C’est souvent l’argument numéro 1 pour passer à la moto : consommer moins. Et sur ce point, c’est généralement vrai… à condition de rester raisonnable sur la poignée de gaz."
+        },
+        {
+            "type": "paragraph",
+            "html": "Une moto A2 consomme en moyenne entre <strong>3,5 et 5 litres / 100 km</strong> selon le modèle et la conduite. En usage quotidien, on tourne plutôt autour de 4 L/100."
+        },
+        {
+            "type": "paragraph",
+            "html": "Prenons un exemple concret : Un motard qui roule <strong>12 000 km par an</strong> avec un carburant à 1,90 €/L :"
+        },
+        {
+            "type": "paragraph",
+            "text": "12 000 km × 4 L / 100 = 480 litres/an"
+        },
+        {
+            "type": "paragraph",
+            "html": "480 × 1,90 € = <strong>912 € par an</strong>, soit environ <strong>75 € par mois</strong>"
+        },
+        {
+            "type": "paragraph",
+            "text": "Même en roulant beaucoup, la moto reste souvent plus économique qu’une voiture en carburant."
+        },
+        {
+            "type": "heading",
+            "text": "L’entretien : le coût invisible qui compte vraiment"
+        },
+        {
+            "type": "paragraph",
+            "text": "Une moto coûte rarement cher à l’achat… mais elle coûte régulièrement à entretenir. Et contrairement à une voiture, certaines pièces s’usent beaucoup plus vite."
+        },
+        {
+            "type": "paragraph",
+            "text": "Voici les dépenses les plus courantes :"
+        },
+        {
+            "type": "table",
+            "headers": ["Élément", "Fréquence moyenne", "Prix"],
+            "rows": [
+                ["Pneus", "8 000 à 15 000 km", "250 à 350 €"],
+                ["Kit chaîne", "20 000 à 30 000 km", "150 à 300 €"],
+                ["Révision annuelle", "1 fois/an", "150 à 400 €"],
+                ["Plaquettes de frein", "10 000 à 20 000 km", "40 à 120 €"],
+                ["Batterie", "3 à 5 ans", "60 à 120 €"]
+            ]
+        },
+        {
+            "type": "paragraph",
+            "html": "En moyenne, un motard débutant dépense <strong>300 à 600 € par an</strong>, soit environ <strong>25 à 50 € par mois</strong>."
+        },
+        {
+            "type": "paragraph",
+            "html": "👉 Pour éviter d’acheter une moto mal entretenue, consulte <a href=\"/info/5\" class=\"text-accent underline hover:text-accent/80\">notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion</a>."
+        },
+        {
+            "type": "heading",
+            "text": "L’équipement du motard : un vrai investissement"
+        },
+        {
+            "type": "paragraph",
+            "text": "Avant même de tourner la clé, tu dois être équipé correctement."
+        },
+        {
+            "type": "table",
+            "headers": ["Équipement", "Prix moyen"],
+            "rows": [
+                ["Casque homologué", "150 à 400 €"],
+                ["Gants homologués", "40 à 120 €"],
+                ["Blouson renforcé", "150 à 350 €"],
+                ["Chaussures ou bottes", "100 à 250 €"],
+                ["Antivol homologué", "80 à 200 €"]
+            ]
+        },
+        {
+            "type": "paragraph",
+            "html": "👉 Budget total moyen : <strong>500 à 1 200 €</strong>"
+        },
+        {
+            "type": "paragraph",
+            "text": "Mieux vaut parfois prendre une moto un peu moins chère et un bon équipement que l’inverse."
+        },
+        {
+            "type": "heading",
+            "text": "Le budget mensuel réel d’un motard débutant"
+        },
+        {
+            "type": "paragraph",
+            "text": "Prenons un exemple concret : jeune permis A2 en zone urbaine."
+        },
+        {
+            "type": "table",
+            "headers": ["Poste", "Coût mensuel moyen"],
+            "rows": [
+                ["Assurance", "120 €"],
+                ["Carburant", "75 €"],
+                ["Entretien", "40 €"],
+                ["Divers", "20 €"]
+            ]
+        },
+        {
+            "type": "paragraph",
+            "html": "➡️ <strong>Total : environ 255 € par mois</strong>"
+        },
+        {
+            "type": "paragraph",
+            "html": "Dans la majorité des cas, un budget réaliste pour débuter tourne autour de <strong>200 à 300 € par mois</strong>."
+        },
+        {
+            "type": "heading",
+            "text": "Moto vs voiture : le vrai comparatif"
+        },
+        {
+            "type": "paragraph",
+            "text": "La moto permet souvent :"
+        },
+        {
+            "type": "list",
+            "items": [
+                "moins de carburant",
+                "pas de péage",
+                "stationnement plus simple",
+                "gain de temps quotidien"
+            ]
+        },
+        {
+            "type": "paragraph",
+            "text": "Mais elle demande :"
+        },
+        {
+            "type": "list",
+            "items": [
+                "équipement spécifique",
+                "assurance parfois élevée",
+                "entretien plus fréquent"
+            ]
+        },
+        {
+            "type": "paragraph",
+            "text": "👉 La moto est rentable surtout pour les trajets quotidiens."
+        },
+        {
+            "type": "heading",
+            "text": "FAQ – Budget moto"
+        },
+        {
+            "type": "paragraph",
+            "html": "<strong>Quel budget pour débuter la moto ?</strong><br/>Environ 200 à 300 € par mois tout compris."
+        },
+        {
+            "type": "paragraph",
+            "html": "<strong>La moto est-elle rentable ?</strong><br/>Oui surtout en usage urbain quotidien."
+        },
+        {
+            "type": "paragraph",
+            "html": "<strong>Quelle moto coûte le moins cher ?</strong><br/>Les roadsters 300 à 500 cc sont les plus économiques."
+        },
+        {
+            "type": "paragraph",
+            "html": "<strong>L’assurance moto est-elle chère ?</strong><br/>Pour un jeune permis, c’est souvent le poste principal."
+        },
+        {
+            "type": "paragraph",
+            "html": "<strong>Combien prévoir par an ?</strong><br/>Entre 2 400 € et 3 600 € environ."
+        },
+        {
+            "type": "heading",
+            "text": "Conclusion"
+        },
+        {
+            "type": "paragraph",
+            "text": "Une moto coûte surtout cher quand on choisit mal son premier modèle."
+        },
+        {
+            "type": "paragraph",
+            "text": "En anticipant le budget réel, tu évites les mauvaises surprises et tu profites vraiment de ta moto."
+        },
+        {
+            "type": "paragraph",
+            "text": "Choisis une machine adaptée à ton usage… et ton portefeuille te remerciera."
+        },
+        {
+            "type": "signature",
+            "text": "L'équipe Label Moto",
+            "imageUrl": "/images/Stamp-LM.png?v=2",
+            "alt": "Cachet Label Moto"
+        }
     ]
   },
   {
