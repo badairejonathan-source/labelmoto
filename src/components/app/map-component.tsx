@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -285,5 +284,5 @@ export default function MapComponent({
     };
   }, []);
 
-  return <div id="map-container" className="w-full h-full min-h-0 z-[5] bg-gray-100" />;
+  return <div id="map-container" className="w-full h-full min-h-0 z-[5] bg-gray-100 rounded-lg overflow-hidden" />;
 }
