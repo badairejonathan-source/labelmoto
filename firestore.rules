@@ -1,3 +1,4 @@
+
 /**
  * Moto Trust Firestore Security Rules
  *
@@ -11,14 +12,15 @@
  * - /concessions/{dealershipId}: Publicly readable, admin-writable dealership listings.
  * - /advicePosts/{advicePostId}: Publicly readable, admin-writable informational articles.
  * - /professionalProfiles/{professionalId}: Private user profiles, only accessible by the owner.
+ * - /standardProfiles/{userId}: Private profiles for standard users, owner-accessible.
  * - /professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}: Private submissions owned by the professional.
  * - /roles_admin/{uid}: An administrative collection where document existence grants a user admin rights.
  *
  * Key Security Decisions:
- * - Public Listing Blocked for User Data: The top-level /professionalProfiles collection
- *   cannot be listed to prevent user enumeration and protect privacy.
- * - Strict Ownership: All data under /professionalProfiles/{userId} is strictly
- *   controlled by the user whose UID matches {userId}.
+ * - Public Listing Blocked for User Data: The top-level /professionalProfiles and /standardProfiles
+ *   collections cannot be listed to prevent user enumeration and protect privacy.
+ * - Strict Ownership: All data under /professionalProfiles/{userId} and /standardProfiles/{userId}
+ *   is strictly controlled by the user whose UID matches {userId}.
  * - Admin Override: Administrators have read/write access to most data for moderation
  *   and management purposes.
  * - Default Deny: All operations are denied by default and must be explicitly allowed.
@@ -78,17 +80,17 @@ service cloud.firestore {
     // ----------------------------------------
 
     /**
-     * On create, validates that the professional profile's internal `id` field
+     * On create, validates that a user profile's internal `id` field
      * matches the document ID, ensuring path and data consistency.
      */
-    function isCreatingOwnProfile(professionalId) {
-      return request.resource.data.id == professionalId;
+    function isCreatingOwnDoc(userId) {
+      return request.resource.data.id == userId;
     }
 
     /**
-     * On update, enforces that the professional profile's internal `id` field is immutable.
+     * On update, enforces that a user profile's internal `id` field is immutable.
      */
-    function profileIdIsImmutable() {
+    function idIsImmutable() {
       return request.resource.data.id == resource.data.id;
     }
 
@@ -120,9 +122,21 @@ service cloud.firestore {
     match /professionalProfiles/{professionalId} {
       allow get: if isOwner(professionalId) || isAdmin();
       allow list: if false;
-      allow create: if isSignedIn() && isOwner(professionalId) && isCreatingOwnProfile(professionalId);
-      allow update: if isExistingOwner(professionalId) && profileIdIsImmutable();
+      allow create: if isSignedIn() && isOwner(professionalId) && isCreatingOwnDoc(professionalId);
+      allow update: if isExistingOwner(professionalId) && idIsImmutable();
       allow delete: if isExistingOwner(professionalId) || (isAdmin() && resource != null);
+    }
+    
+    /**
+     * @description Controls access to standard user profiles.
+     * @path /standardProfiles/{userId}
+     */
+    match /standardProfiles/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && isCreatingOwnDoc(userId);
+      allow update: if isExistingOwner(userId) && idIsImmutable();
+      allow delete: if isExistingOwner(userId) || (isAdmin() && resource != null);
     }
 
     /**

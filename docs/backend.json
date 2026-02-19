@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Dealership": {
@@ -160,6 +161,31 @@
         "lastName"
       ]
     },
+    "StandardProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StandardProfile",
+      "type": "object",
+      "description": "Represents a standard, non-professional user account.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the StandardProfile entity, matching the user's Auth UID."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    },
     "DealershipSubmission": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "DealershipSubmission",
@@ -266,6 +292,16 @@
             "$ref": "#/backend/entities/ProfessionalProfile"
           },
           "description": "Stores the profiles of professional users. Access is strictly limited to the owner matching 'request.auth.uid'. No denormalization for authorization needed beyond path-based ownership."
+        }
+      },
+      {
+        "path": "/standardProfiles/{userId}",
+        "definition": {
+          "entityName": "StandardProfile",
+          "schema": {
+            "$ref": "#/backend/entities/StandardProfile"
+          },
+          "description": "Stores the profiles of standard (non-professional) users. Access is strictly limited to the owner matching 'request.auth.uid'."
         }
       },
       {
