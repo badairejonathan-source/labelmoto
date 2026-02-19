@@ -6,7 +6,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2 } from 'lucide-react';
+import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -83,13 +83,19 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">Mon Compte</p>
+              <p className="text-sm font-medium leading-none">Connecté en tant que</p>
               <p className="text-xs leading-none text-muted-foreground">
                 {user.email}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/account">
+              <UserIcon className="mr-2 h-4 w-4" />
+              <span>Gérer mon compte</span>
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Déconnexion</span>
@@ -230,3 +236,4 @@ export default Header;
     
 
     
+
