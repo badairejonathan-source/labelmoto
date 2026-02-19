@@ -317,11 +317,11 @@ export default function LandingPage() {
                 <section className="mt-8 md:mt-12">
                     <div className="relative rounded-2xl overflow-hidden bg-black">
                         <Image
-                            src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=2070&auto=format&fit=crop"
+                            src={ctaSection.src}
                             alt="Rejoignez la communauté"
                             fill
                             className="object-cover z-0 opacity-30"
-                            data-ai-hint="motorcycle dark road"
+                            data-ai-hint={ctaSection.hint}
                         />
                         <div className="relative z-10 p-8 md:p-12">
                             <div className="max-w-4xl mx-auto text-center text-white">
