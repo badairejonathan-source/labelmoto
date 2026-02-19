@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -319,7 +320,7 @@ function MapPageComponent() {
 
   const handleMarkerMouseOver = useCallback((id: string) => {
     if (hoverOutTimeoutRef.current) clearTimeout(hoverOutTimeoutRef.current);
-    hoverInTimeoutRef.current = setTimeout(() => setHoveredDealershipId(id), 100);
+    hoverInTimeoutRef.current = setTimeout(() => setHoveredDealershipId(id), 1500);
   }, []);
 
   const handleMouseOut = useCallback(() => {
