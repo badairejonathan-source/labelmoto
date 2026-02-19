@@ -947,6 +947,226 @@
         "alt": "Cachet Label Moto"
       }
     ]
+  },
+  {
+    "id": "7",
+    "title": "Entretien moto : intervalles, prix et conseils par modèle",
+    "description": "Entretenir sa moto, ce n’est pas seulement éviter les pannes. C’est aussi préserver le plaisir de conduite, la sécurité et la valeur de revente.",
+    "author": "L'équipe Label Moto",
+    "date": "29 juillet 2024",
+    "readingTime": "7 min de lecture",
+    "imageUrl": "https://picsum.photos/seed/article-maintenance/1200/600",
+    "imageHint": "motorcycle maintenance",
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Entretenir sa moto, ce n’est pas seulement éviter les pannes. C’est aussi préserver le plaisir de conduite, la sécurité et la valeur de revente. Pourtant, beaucoup de motards — surtout débutants — ne savent pas exactement :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "quand faire une révision",
+          "ce que vérifie réellement un garage",
+          "combien prévoir dans le budget annuel"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Résultat : soit ils dépensent trop… soit ils attendent trop longtemps."
+      },
+      {
+        "type": "paragraph",
+        "text": "Dans cette rubrique, tu trouveras une fiche d’entretien complète pour chaque modèle, avec les intervalles constructeur, les coûts moyens et les points de fiabilité à surveiller."
+      },
+      {
+        "type": "heading",
+        "text": "Comment fonctionne l’entretien d’une moto ?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Contrairement à une voiture, une moto demande un suivi plus fréquent. Le moteur tourne plus vite, les pièces sont plus exposées et les éléments de sécurité (freins, pneus, transmission) travaillent davantage."
+      },
+      {
+        "type": "paragraph",
+        "text": "L’entretien repose sur trois éléments :"
+      },
+      {
+        "type": "paragraph",
+        "text": "1. Les révisions périodiques"
+      },
+      {
+        "type": "paragraph",
+        "text": "Elles sont prévues par le constructeur selon le kilométrage. En général :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "1 000 km → révision de rodage",
+          "10 000 km → entretien courant",
+          "20 000 km → contrôle mécanique important",
+          "40 000 km → grosse révision"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Même si tu roules peu, une vidange annuelle reste recommandée."
+      },
+      {
+        "type": "paragraph",
+        "text": "2. Les consommables"
+      },
+      {
+        "type": "paragraph",
+        "text": "Certaines pièces s’usent naturellement :"
+      },
+      {
+        "type": "table",
+        "headers": ["Pièce", "Durée moyenne"],
+        "rows": [
+          ["Pneus", "8 000 à 15 000 km"],
+          ["Kit chaîne", "20 000 à 30 000 km"],
+          ["Plaquettes", "10 000 à 20 000 km"],
+          ["Batterie", "3 à 5 ans"]
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Un mauvais entretien multiplie souvent la facture par deux."
+      },
+      {
+        "type": "paragraph",
+        "text": "3. Les contrôles de sécurité"
+      },
+      {
+        "type": "paragraph",
+        "text": "Pression pneus, tension chaîne, niveaux… Ce sont de petites vérifications régulières qui évitent les grosses réparations."
+      },
+      {
+        "type": "heading",
+        "text": "Combien coûte l’entretien d’une moto ?"
+      },
+      {
+        "type": "paragraph",
+        "text": "En moyenne, un motard dépense par an :"
+      },
+      {
+        "type": "table",
+        "headers": ["Type d’usage", "Budget annuel"],
+        "rows": [
+          ["Utilisation occasionnelle", "200 à 400 €"],
+          ["Usage quotidien", "400 à 800 €"],
+          ["Gros rouleur", "800 € et +"]
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "La différence vient surtout :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "du modèle",
+          "du style de conduite",
+          "du suivi régulier"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 Pour estimer ton budget global, consulte aussi <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">notre guide sur le coût réel d’une moto par mois</a>."
+      },
+      {
+        "type": "heading",
+        "text": "Trouver la fiche d’entretien de ta moto"
+      },
+      {
+        "type": "paragraph",
+        "text": "Nous avons regroupé les fiches par marque pour faciliter la recherche."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Yamaha</strong>"
+      },
+      {
+        "type": "list",
+        "items": ["MT-07", "Tracer 7", "R7", "XSR700"]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Honda</strong>"
+      },
+      {
+        "type": "list",
+        "items": ["CB500 Hornet / CB500F", "CBR500R", "NX500"]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Kawasaki</strong>"
+      },
+      {
+        "type": "list",
+        "items": ["Z650", "Ninja 650"]
+      },
+      {
+        "type": "paragraph",
+        "text": "(D’autres modèles seront ajoutés régulièrement)"
+      },
+      {
+        "type": "paragraph",
+        "text": "Chaque fiche détaille :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "intervalles d’entretien",
+          "coût des révisions",
+          "fiabilité connue",
+          "conseils de longévité"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Pourquoi suivre l’entretien constructeur ?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Respecter les intervalles permet :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "d’éviter les pannes coûteuses",
+          "d’augmenter la durée de vie moteur",
+          "de faciliter la revente",
+          "de rouler en sécurité"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Une moto bien entretenue dépasse souvent 80 000 km sans problème majeur."
+      },
+      {
+        "type": "heading",
+        "text": "Conclusion"
+      },
+      {
+        "type": "paragraph",
+        "text": "Un bon entretien ne sert pas seulement à protéger ta moto… Il protège surtout ton budget."
+      },
+      {
+        "type": "paragraph",
+        "text": "Prendre 5 minutes pour vérifier sa machine régulièrement peut éviter plusieurs centaines d’euros de réparation."
+      },
+      {
+        "type": "paragraph",
+        "text": "Choisis ta moto ci-dessus pour accéder à sa fiche complète."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
+      }
+    ]
   }
 ]
     
