@@ -9,8 +9,8 @@ import { FileText } from 'lucide-react';
 const AdCard: React.FC = () => {
   const article = {
     id: '5',
-    imageUrl: 'https://images.unsplash.com/photo-1719903647426-d14726e9d5e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNnx8bW90byUyMHNhbGVzfGVufDB8fHx8MTc3MDk4MzgxNHww&ixlib=rb-4.1.0&q=80&w=1080',
-    imageHint: 'used motorcycle',
+    imageUrl: 'https://images.unsplash.com/photo-1568772585407-921850269363?q=80&w=2070&auto=format&fit=crop',
+    imageHint: 'motorcycle garage',
     title: 'Le Guide Indispensable',
     subtitle: "Achat moto d’occasion : évitez les pièges.",
     cta: 'Lire le guide',
@@ -47,3 +47,5 @@ const AdCard: React.FC = () => {
 };
 
 export default AdCard;
+
+    
