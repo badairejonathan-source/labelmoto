@@ -1,3 +1,4 @@
+
 [
   {
     "id": "1",
@@ -89,126 +90,175 @@
   },
   {
     "id": "5",
-    "title": "Achat moto d’occasion : le guide pour éviter les pièges",
-    "description": "Lors de ton premier achat moto d’occasion, tu as souvent la boule au ventre. Ce guide est là pour te donner les bons réflexes et t’éviter les erreurs classiques, que tu sois débutant ou motard confirmé.",
+    "title": "Achat moto d’occasion : le guide complet pour éviter les pièges",
+    "description": "Notre guide complet pour acheter une moto d'occasion en toute sécurité. Apprenez à inspecter une moto, vérifier les documents, et négocier le meilleur prix pour éviter les pièges.",
     "author": "L'équipe Label Moto",
     "date": "22 juillet 2024",
-    "readingTime": "7 min de lecture",
+    "readingTime": "8 min de lecture",
     "imageUrl": "https://images.unsplash.com/photo-1719903647426-d14726e9d5e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNnx8bW90byUyMHNhbGVzfGVufDB8fHx8MTc3MDk4MzgxNHww&ixlib=rb-4.1.0&q=80&w=1080",
     "imageHint": "used motorcycle",
     "content": [
       {
         "type": "paragraph",
-        "text": "Lors de ton premier achat moto d’occasion, t’as souvent la boule au ventre. Tu ne sais pas trop où tu mets les pieds, tu flippes un peu de faire le mauvais choix ou de tomber sur un vendeur un peu filou surtout quand c’est un particulier. Résultat : tu préfères acheter en concession, afin d’être tranquille."
+        "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper."
       },
       {
         "type": "paragraph",
-        "text": "Et franchement, ce n’est pas une mauvaise idée ! Mais acheter ta moto d’occasion en France chez un particulier peut aussi très bien se passer… à condition de savoir quoi vérifier avant de signer."
-      },
-      {
-        "type": "paragraph",
-        "text": "Cet article est là pour ça : te filer les bons réflexes et t’éviter les erreurs classiques quand tu cherches la bonne moto d’occasion, que tu sois débutant, non mécano ou motard confirmé."
+        "text": "Bonne nouvelle : avec une bonne méthode et quelques vérifications simples, tu peux trouver une excellente moto sans mauvaise surprise. Voici la checklist complète pour acheter une moto d’occasion en toute sécurité."
       },
       {
         "type": "heading",
-        "text": "Les points à vérifier avant d’acheter ta moto d’occasion"
+        "text": "1. Inspection visuelle : le premier diagnostic"
       },
       {
         "type": "paragraph",
-        "text": "Quand tu repères la petite annonce de tes rêves, avant de craquer, prends le temps de vérifier la moto en détail."
-      },
-      {
-        "type": "paragraph",
-        "text": "L’état général en dit souvent long sur le sérieux du proprio. Voici quelques points clés :"
+        "text": "Avant même de démarrer la moto, observe-la attentivement. L’état général révèle souvent son histoire. À vérifier absolument :"
       },
       {
         "type": "list",
         "items": [
-          "Selle abîmée ou bosse sur le réservoir → souvent signe d’un passé mouvementé.",
-          "Cale-pieds et embouts de guidon éraflés → possible chute.",
-          "Pneus usés ou trop vieux ? regarde la date sur le flanc : plus de 5 ans ? À changer ! Même s’ils ont peu roulé, ils peuvent être refuser au contrôle technique moto.",
-          "Disques et plaquettes de frein pas trop usés ? C’est un bon indicateur d’entretien.",
-          "Chaîne graissée, pas détendue ni rouillée : un classique à surveiller.",
-          "Fourche avec coulures d’huile ? Les joints spi sont peut-être morts (pièce pas chère, mais beaucoup de main-d’œuvre).",
-          "Trop de pièces non d’origine ? Demande les pièces d’origine ! Sinon, ça peut être signe de chute, perte de garantie constructeur ou souci au contrôle technique moto occasion."
+          "Selle abîmée ou réservoir cabossé → chute probable",
+          "Embouts de guidon et repose-pieds rayés → chute/glissade",
+          "Pneus : regarde la date sur les flancs (DOT). Au-delà de 5 ans → remplacement obligatoire pour le CT",
+          "Disques de frein ou plaquette trop creusés → entretien négligé",
+          "Chaîne rouillée ou détendue → mauvais suivi",
+          "Fuite sur la fourche → joints spi à remplacer (pièce peu onéreuse mais beaucoup de main d’œuvre) ce constate beaucoup pendant la période d’ete",
+          "Trop de pièces modifies → demande les pièces d’origine"
         ]
       },
       {
+        "type": "paragraph",
+        "text": "👉 Une moto propre et cohérente inspire confiance. Une moto trop nettoyée peut cacher une fuite."
+      },
+      {
         "type": "heading",
-        "text": "Les documents à vérifier"
+        "text": "2. Les documents obligatoires pour une moto d’occasion"
       },
       {
         "type": "paragraph",
-        "text": "Avant de sortir le chéquier, vérifie la paperasse ! Voici la checklist des documents à vérifier moto occasion :"
+        "text": "Avant de payer, vérifie toujours les papiers. Voici la checklist administrative :"
       },
       {
         "type": "list",
         "items": [
-          "Carte grise au nom du vendeur.",
-          "Numéro de série (VIN) identique sur la carte grise et la moto.",
-          "Certificat de non-gage récent.",
-          "Carnet d’entretien à jour (ou factures si le proprio fait tout lui-même)."
+          "Carte grise au nom du vendeur",
+          "Numéro VIN identique (cadre / carte grise)",
+          "Certificat de non-gage de moins de 15 jours",
+          "Factures d’entretien ou carnet tamponné",
+          "Rapport Histovec (preuve de confiance du vendeur)"
         ]
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Pas de carnet ni de factures des entretiens? Ce n’est pas forcément mauvais signe si le gars est soigneux, mais sois vigilant. Un mécano amateur sérieux garde toujours les factures des pièces, surtout pour une future revente."
+        "text": "⚠️ Sans documents = gros risque juridique. Une moto peut être gagée, accidentée ou même volée."
       },
       {
         "type": "heading",
-        "text": "Le kilométrage moto occasion et son entretien"
+        "text": "3. Kilométrage et entretien : ne te fie pas seulement au compteur"
       },
       {
         "type": "paragraph",
-        "text": "Le kilométrage moto occasion reste un bon indicateur, mais il doit coller avec l’état général."
+        "text": "Une moto de 50 000 km entretenue vaut souvent mieux qu’une moto de 10 000 km abandonnée au garage. Observe la cohérence :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Usure poignées vs km",
+          "Disques de frein d’origine ?",
+          "Jeu dans la transmission",
+          "Vidanges régulières (tous les 6-10 000 km)"
+        ]
       },
       {
         "type": "paragraph",
-        "text": "Une moto avec peu de kilomètres mais mal entretenue, c’est souvent pire qu’une moto plus kilométrée mais bichonnée ! Regarde aussi les intervalles de révision : un bon entretien, c’est souvent la clé d’une moto fiable et durable."
+        "text": "👉 Le facteur n°1 de fiabilité reste l’entretien, pas le kilométrage."
       },
       {
         "type": "heading",
-        "text": "Budget et négociation prix moto occasion et assurance"
+        "text": "4. Essai routier : indispensable avant achat"
       },
       {
         "type": "paragraph",
-        "text": "Avant d’acheter, fixe ton budget moto d’occasion urbain : une somme réaliste selon ton usage (trajet boulot, balade, duo, etc.). Et surtout, ne te précipite pas."
+        "text": "Ne jamais acheter sans essayer. Pendant l’essai vérifie :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "démarrage à froid",
+          "embrayage progressif , si trop dur ou trop souple c’est mauvais signe.",
+          "boîte de vitesses fluide",
+          "pas de vibration anormale",
+          "moto stable en ligne droite",
+          "freinage franc sans tremblement"
+        ]
       },
       {
         "type": "paragraph",
-        "text": "Quand vient le moment de parler argent, prépare ta négociation. Informe-toi sur les côtes (La Centrale, Leboncoin, etc.), et n’hésite pas à faire remarquer les petits défauts constatés. Ça peut te faire gagner quelques billets. Surtout si tu as relevé plusieurs points de vigilance present dans notre liste."
-      },
-      {
-        "type": "paragraph",
-        "text": "Renseigne toi aussi avec ton assurance. Certains modeles peuvent etre tres couteux en fonction de ta region , ton age, ou ton experience. Ce serait dommage de s'en apercevoir trop tard."
+        "text": "Une moto qui tire à droite peut avoir un cadre faussé après accident."
       },
       {
         "type": "heading",
-        "text": "Dernières vérifs avant achat"
+        "text": "5. Prix, négociation et assurance"
       },
       {
         "type": "paragraph",
-        "html": "Avant de conclure, demande au vendeur un rapport <a href=\"https://histovec.interieur.gouv.fr/histovec/accueil\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline text-accent hover:text-accent/80\">Histovec</a> pour vérifier qu’il n’y a pas eu de gros accident ou de sinistre majeur."
+        "text": "Avant de négocier :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "compare les annonces similaires",
+          "regarde la cote du marché",
+          "liste les défauts constatés"
+        ]
       },
       {
         "type": "paragraph",
-        "text": "Et si la moto est encore sous garantie constructeur, fais gaffe : les entretiens doivent avoir été faits dans le réseau officiel, avec des pièces d’origine, sinon la garantie saute."
+        "text": "Ensuite, pense à l’assurance. Certaines motos coûtent très cher à assurer, surtout pour un jeune permis ou en région parisienne."
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Vérifie AVANT l’achat pour éviter les mauvaises surprises."
       },
       {
         "type": "heading",
-        "text": "🏁 En résumé"
+        "text": "Concession ou particulier : que choisir ?"
+      },
+       {
+        "type": "paragraph",
+        "text": "Le choix dépend de votre budget et de votre niveau de confiance. Voici les avantages et inconvénients de chaque option :"
       },
       {
         "type": "paragraph",
-        "text": "Acheter une moto d’occasion, c’est un vrai plaisir quand on sait où mettre les roues."
+        "html": "<strong>Particulier :</strong> Moins cher, mais aucun recours en cas de problème."
       },
       {
         "type": "paragraph",
-        "text": "Avec ces quelques conseils et une bonne dose de bon sens, tu éviteras les arnaques et tu trouveras la machine qui te fera kiffer sans te ruiner."
+        "html": "<strong>Concessionnaire :</strong> Offre une garantie, un contrôle mécanique et plus de tranquillité, pour un prix légèrement plus élevé."
+      },
+      {
+        "type": "heading",
+        "text": "🧠 FAQ – Achat moto d’occasion"
       },
       {
         "type": "paragraph",
-        "html": "Et pour t’aider encore plus, pense à télécharger notre <a href=\"/images/achat-occasion.jpg\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline text-accent hover:text-accent/80\">check-list d’achat</a> moto d’occasion !"
+        "html": "<strong>Quel kilométrage maximum pour une moto ?</strong><br/>Une moto moderne peut dépasser 80 000 km si elle est bien entretenue."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Une moto sans facture est-elle risquée ?</strong><br/>Oui, car il est impossible de prouver l’entretien réel."
+      },
+       {
+        "type": "paragraph",
+        "html": "<strong>Faut-il privilégier une concession ?</strong><br/>Pour un débutant, c'est souvent plus sécurisant."
+      },
+      {
+        "type": "heading",
+        "text": "🏁 Conclusion"
+      },
+      {
+        "type": "paragraph",
+        "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais. Une bonne moto se choisit avec la tête avant le cœur."
       },
       {
         "type": "signature",
