@@ -107,6 +107,10 @@
         "text": "Bonne nouvelle : avec une bonne méthode et quelques vérifications simples, tu peux trouver une excellente moto sans mauvaise surprise. Voici la checklist complète pour acheter une moto d’occasion en toute sécurité."
       },
       {
+        "type": "paragraph",
+        "html": "Tu n’as pas encore choisi ton modèle ? Consulte d’abord <a href=\"/info/6\" class=\"text-accent underline hover:text-accent/80\">notre guide des meilleures motos A2 pour débuter</a> afin d’éviter d’acheter une moto inadaptée."
+      },
+      {
         "type": "heading",
         "text": "1. Inspection visuelle : le premier diagnostic"
       },
@@ -638,7 +642,7 @@
         "type": "paragraph",
         "html": "<strong>Quelle est la meilleure moto A2 ?</strong><br/>La meilleure est celle adaptée à ton usage quotidien."
       },
-      {
+       {
         "type": "paragraph",
         "html": "Maintenant que tu sais quelle moto te correspond, il reste l’étape la plus importante : l’achat. Pour éviter les mauvaises surprises, consulte <a href=\"/info/5\" class=\"text-accent underline hover:text-accent/80\">notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion</a>."
       },
@@ -659,3 +663,5 @@
     ]
   }
 ]
+
+    
