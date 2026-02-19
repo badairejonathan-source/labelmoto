@@ -270,8 +270,8 @@
   },
   {
     "id": "6",
-    "title": "Achat moto A2 : Le guide des meilleures motos pour débuter",
-    "description": "Trouvez la moto idéale pour bien débuter, entre performance, accessibilité et plaisir.",
+    "title": "Achat moto A2 : le guide complet des meilleures motos pour débuter",
+    "description": "Choisir sa première moto A2 n'est pas simple. Ce guide complet vous aide à trouver la moto idéale selon votre gabarit, votre usage et votre budget, avec une sélection des meilleurs modèles.",
     "author": "L'équipe Label Moto",
     "date": "25 juillet 2024",
     "readingTime": "9 min de lecture",
@@ -280,39 +280,120 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "Obtenir son permis A2, c’est le début de la liberté ! Mais face à une offre toujours plus large, il n’est pas toujours facile de choisir une moto adaptée à ses besoins et à son expérience."
+        "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite."
       },
       {
         "type": "paragraph",
-        "text": "Nous avons sélectionné pour vous les meilleures motos A2 vendues en France entre 2020 et 2025, en trois catégories : Roadsters, Trails et Sportives."
+        "text": "Avec le permis A2, tu peux conduire une moto limitée à 35 kW (47,5 chevaux) avec un rapport puissance/poids maximal de 0,2 kW/kg (Service Public)."
       },
       {
         "type": "paragraph",
-        "text": "Cette sélection prend en compte les ventes, la facilité de prise en main, le coût d’entretien, l’assurance, la revente et surtout… le plaisir de conduite."
+        "text": "Le but ? Apprendre progressivement sans être dépassé par la puissance."
+      },
+      {
+        "type": "paragraph",
+        "text": "Dans ce guide, on va voir :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "comment choisir ta moto A2",
+          "les erreurs à éviter",
+          "les meilleures motos par catégorie"
+        ]
       },
       {
         "type": "heading",
-        "text": "1. Les Roadsters A2 : légèreté et fun au quotidien"
+        "text": "Comment choisir sa moto A2 ?"
       },
       {
         "type": "paragraph",
-        "text": "Idéaux pour débuter, les roadsters sont les motos les plus vendues en France. Agiles, légers et économiques, ils conviennent parfaitement aux jeunes permis et aux motards urbains."
+        "text": "Avant de regarder un modèle précis, pose-toi ces 4 questions."
       },
       {
         "type": "heading",
-        "text": "Yamaha MT-07 // XSR 700 (A2 35 kW)"
+        "text": "1. Ton gabarit"
       },
       {
         "type": "paragraph",
-        "text": "Icône du permis A2, la MT-07 est la référence incontestée. Maniable, nerveuse et fiable, elle séduit autant les jeunes que les motards confirmés. Son moteur CP2 offre un couple incroyable dès les bas régimes."
+        "text": "Une moto trop haute = peur à l’arrêt. Une moto trop lourde = fatigue + chute à basse vitesse."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : plaisir de conduite, moteur nerveux, fiabilité, revente forte (attention beaucoup de concurrence)."
+        "text": "➡️ Privilégie :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "selle basse",
+          "poids < 200 kg",
+          "centre de gravité bas"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "2. Ton usage"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Ville quotidienne → roadster léger",
+          "Autoroute → trail",
+          "Plaisir weekend → sportive"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "3. Ton budget réel"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : très convoitée (vols fréquents), assurance un peu chère."
+        "text": "Ne regarde pas que le prix d’achat. Pense à :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "assurance (souvent plus chère que la moto)",
+          "pneus",
+          "révisions",
+          "antivol"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "4. Ton mental"
+      },
+      {
+        "type": "paragraph",
+        "text": "Débutant = la confiance compte plus que la puissance. La meilleure moto n’est pas la plus rapide. C’est celle qui te donne envie de rouler tous les jours."
+      },
+      {
+        "type": "heading",
+        "text": "Meilleures motos roadster permis A2"
+      },
+      {
+        "type": "paragraph",
+        "text": "Les roadsters sont les motos idéales pour apprendre : légers, maniables et économiques."
+      },
+      {
+        "type": "heading",
+        "text": "Yamaha MT-07 / XSR700 (A2)"
+      },
+      {
+        "type": "paragraph",
+        "text": "La référence absolue du permis A2. Son moteur CP2 très coupleux pardonne les erreurs."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces</strong> : moteur vivant, très facile en ville, forte revente"
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses</strong> : très volée, assurance élevée"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : motard urbain quotidien"
       },
       {
         "type": "heading",
@@ -320,15 +401,19 @@
       },
       {
         "type": "paragraph",
-        "text": "Sûre et économique, la Hornet est parfaite pour apprendre sans stress. Moto A2 native, elle ne demande aucun bridage."
+        "text": "La moto école parfaite. Simple, fiable, rassurante."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : douceur, fiabilité, maniabilite, coûts d’entretien faibles."
+        "html": "<strong>Forces</strong> : ultra accessible, faible coût d’entretien, excellente fiabilité"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : moteur sage, design discret."
+        "html": "<strong>Faiblesses</strong> : manque de sensations"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : débutant stressé"
       },
       {
         "type": "heading",
@@ -336,15 +421,19 @@
       },
       {
         "type": "paragraph",
-        "text": "Un grand classique A2 : puissante, équilibrée et confortable."
+        "text": "Plus mature, plus valorisante, idéale pour garder après la passerelle A."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : performances homogènes, look sportif, bonne revente, je conseil un achat d'occasion pour une moto A2 (forte decote car kawa fait beaucoup d'offre promottionnelle tout au long de l'annee)."
+        "html": "<strong>Forces</strong> : polyvalente, confortable, belle finition"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : assurance plus chère, cible de vol fréquente."
+        "html": "<strong>Faiblesses</strong> : assurance élevée"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : motard qui veut évoluer"
       },
       {
         "type": "heading",
@@ -352,23 +441,27 @@
       },
       {
         "type": "paragraph",
-        "text": "Petite par la cylindrée, grande par le plaisir ! Ultra-légère et nerveuse, elle excelle en ville."
+        "text": "La meilleure école de pilotage. Ultra légère."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : maniabilité, prix accessible, fun, bonne revente."
+        "html": "<strong>Forces</strong> : fun immédiat, assurance faible, hyper maniable"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : fiabilite, confort limité sur longs trajets, vibrations moteur, concession rare en ville."
+        "html": "<strong>Faiblesses</strong> : moins confortable, réseau plus rare"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : ville uniquement"
       },
       {
         "type": "heading",
-        "text": "2. Les Trails A2 : confort, polyvalence et esprit d’aventure"
+        "text": "Meilleurs trails permis A2"
       },
       {
         "type": "paragraph",
-        "text": "Le trail est le choix des motards qui veulent rouler tous les jours, en ville comme en balade. Plus confortables et polyvalents, ces motos sont idéales pour les trajets franciliens et les week-ends sur route."
+        "text": "Confortables et polyvalents, les trails sont parfaits pour rouler toute l’année."
       },
       {
         "type": "heading",
@@ -376,31 +469,39 @@
       },
       {
         "type": "paragraph",
-        "text": "Trail routier léger et puissant, la Tracer 7 reprend le moteur de la MT-07. Son confort et sa position de conduite haute en font une excellente moto du quotidien."
+        "text": "La routière parfaite du permis A2."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : confort, polyvalence, fiabilité, revente."
+        "html": "<strong>Forces</strong> : confort, protection vent, moteur agréable"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : prix plus élevé, assurance tres chère en A2, vehicule recherche ( vols)."
+        "html": "<strong>Faiblesses</strong> : chère à assurer"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : trajets domicile travail"
       },
       {
         "type": "heading",
-        "text": "Honda NX500 (ex CB500X)"
+        "text": "Honda NX500 (CB500X)"
       },
       {
         "type": "paragraph",
-        "text": "Une moto équilibrée, douce et rassurante. Parfaite pour débuter, fiable et économique."
+        "text": "La moto rationnelle par excellence."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : confort, fiabilite du moteur (+100K/km) faible consommation, entretien peu coûteux."
+        "html": "<strong>Forces</strong> : fiabilité, faible consommation, polyvalence"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : moteur calme, revente plutot bonne si tu en prends soins."
+        "html": "<strong>Faiblesses</strong> : peu de caractère"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : utilitaire quotidien"
       },
       {
         "type": "heading",
@@ -408,23 +509,27 @@
       },
       {
         "type": "paragraph",
-        "text": "Simple, robuste et abordable, c’est la moto idéale pour les débutants au budget serré."
+        "text": "Simple, robuste et accessible."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : prix, robustesse, confort."
+        "html": "<strong>Forces</strong> : prix, confort, facilité"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : performances modestes, réseau limité."
+        "html": "<strong>Faiblesses</strong> : performances limitées"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : balade / loisir"
       },
       {
         "type": "heading",
-        "text": "3. Les Sportives A2 : look racé et sensations maîtrisées"
+        "text": "Meilleures sportives permis A2"
       },
       {
         "type": "paragraph",
-        "text": "Pour les jeunes permis qui veulent une moto au look sportif sans se faire peur, plusieurs modèles se distinguent."
+        "text": "Pour ceux qui veulent le look sport sans danger."
       },
       {
         "type": "heading",
@@ -432,15 +537,19 @@
       },
       {
         "type": "paragraph",
-        "text": "Une vraie sportive accessible. Le moteur CP2 reste souple, et la partie-cycle précise."
+        "text": "La sportive plaisir."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : design valorisant, plaisir, revente élevée."
+        "html": "<strong>Forces</strong> : look, sensations, valorisante"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : position fatigante, assurance élevée."
+        "html": "<strong>Faiblesses</strong> : position fatigante, assurance"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : passion"
       },
       {
         "type": "heading",
@@ -448,15 +557,19 @@
       },
       {
         "type": "paragraph",
-        "text": "Une sportive docile et économique. Parfaite pour apprendre à piloter sans excès."
+        "text": "La sportive facile."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : souplesse, fiabilité, legerete, faible assurance."
+        "html": "<strong>Forces</strong> : rassurante, économique, fiable"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : moteur un peu sage, design discret."
+        "html": "<strong>Faiblesses</strong> : manque de caractère"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : débutant sportif"
       },
       {
         "type": "heading",
@@ -464,15 +577,66 @@
       },
       {
         "type": "paragraph",
-        "text": "Le compromis idéal entre sport et confort. Facile à vivre, agréable au quotidien."
+        "text": "Le compromis idéal."
       },
       {
         "type": "paragraph",
-        "text": "👉 Forces : ergonomie, moteur agréable, image forte."
+        "html": "<strong>Forces</strong> : polyvalence, confort, performances"
       },
       {
         "type": "paragraph",
-        "text": "⚠️ Faiblesses : assurance coûteuse, cible de vol."
+        "html": "<strong>Faiblesses</strong> : assurance"
+      },
+      {
+        "type": "paragraph",
+        "text": "👉 Profil : daily + plaisir"
+      },
+      {
+        "type": "heading",
+        "text": "Tableau comparatif motos A2"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Moto",
+          "Type",
+          "Facilité",
+          "Budget",
+          "Assurance",
+          "Revente"
+        ],
+        "rows": [
+          [ "MT-07", "Roadster", "🟩", "🟧", "🟥", "🟩" ],
+          [ "CB500 Hornet", "Roadster", "🟩", "🟩", "🟩", "🟧" ],
+          [ "Z650", "Roadster", "🟧", "🟧", "🟥", "🟩" ],
+          [ "390 Duke", "Roadster", "🟩", "🟩", "🟩", "🟧" ],
+          [ "Tracer 7", "Trail", "🟩", "🟧", "🟥", "🟩" ],
+          [ "NX500", "Trail", "🟩", "🟩", "🟩", "🟧" ],
+          [ "Himalayan", "Trail", "🟧", "🟩", "🟩", "🟧" ],
+          [ "R7", "Sportive", "🟧", "🟧", "🟥", "🟩" ],
+          [ "CBR500R", "Sportive", "🟩", "🟩", "🟩", "🟩" ],
+          [ "Ninja 650", "Sportive", "🟧", "🟧", "🟥", "🟩" ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "FAQ – Permis A2"
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Quelle puissance maximale pour le permis A2 ?</strong><br/>Une moto ne doit pas dépasser 35 kW (47,5 ch) (Service Public)."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Peut-on conduire une 600cc en A2 ?</strong><br/>Oui si elle respecte la puissance et le ratio poids/puissance (rideto.com)."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Combien de temps garder une moto A2 ?</strong><br/>Minimum 2 ans avant la passerelle A (cantal.gouv.fr)."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Quelle est la meilleure moto A2 ?</strong><br/>La meilleure est celle adaptée à ton usage quotidien."
       },
       {
         "type": "heading",
@@ -480,35 +644,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Que vous soyez adepte des roadsters nerveux, des trails confortables ou des sportives stylées, ces dix modèles représentent le meilleur du permis A2 entre 2020 et 2025."
-      },
-      {
-        "type": "paragraph",
-        "text": "En Île-de-France, le choix idéal dépendra de vos trajets, de votre taille et de votre budget d’assurance."
-      },
-      {
-        "type": "paragraph",
-        "text": "Mais une chose est sûre : ces motos vous garantiront plaisir, sécurité et liberté, tout en préservant votre portefeuille."
-      },
-      {
-        "type": "heading",
-        "text": "Tableau comparatif des motos A2 (2020–2025)"
-      },
-      {
-        "type": "table",
-        "headers": ["Moto", "Catégorie", "Agrément de conduite", "Prix/Entretien", "Assurance", "Revente", "Risque de vol"],
-        "rows": [
-          ["Yamaha MT-07", "Roadster", "🟩 Excellent / Nerveux", "🟧 Moyen", "🟥 Élevé", "🟩 Très bon", "🟥 Fort"],
-          ["Honda CB500 Hornet", "Roadster", "🟩 Doux & accessible", "🟩 Faible", "🟩 Faible", "🟧 Correct", "🟩 Faible"],
-          ["Kawasaki Z650", "Roadster", "🟩 Dynamique", "🟧 Moyen", "🟥 Élevé", "🟩 Bon", "🟥 Élevé"],
-          ["KTM 390 Duke", "Roadster", "🟩 Fun & léger", "🟩 Faible", "🟩 Faible", "🟧 Moyen", "🟩 Faible"],
-          ["Yamaha Tracer 7", "Trail", "🟩 Polyvalent & confortable", "🟧 Moyen", "🟥 Élevé", "🟩 Fort", "🟥 Fort"],
-          ["Honda NX500", "Trail", "🟩 Facile & souple", "🟩 Tres Faible", "🟩 Faible", "🟧 Moyen", "🟩 Faible"],
-          ["Royal Enfield Himalayan 450", "Trail", "🟧 Correct", "🟩 Tres Faible", "🟩 Faible", "🟧 Moyen", "🟩 Faible"],
-          ["Yamaha R7", "Sportive", "🟩 Performant & précis", "🟧 Moyen", "🟥 Élevé", "🟩 Fort", "🟥 Élevé"],
-          ["Honda CBR500R", "Sportive", "🟩 Fluide & stable", "🟩 Faible", "🟩 Faible", "🟩 Bon", "🟩 Faible"],
-          ["Kawasaki Ninja 650", "Sportive", "🟩 Polyvalent", "🟧 Moyen", "🟥 Élevé", "🟩 Bon", "🟥 Élevé"]
-        ]
+        "text": "Choisir sa moto A2 n’est pas une question de performance mais de confiance. Une moto rassurante te fera progresser plus vite qu’une moto impressionnante. Prends celle qui te donne envie de rouler — c’est toujours la bonne."
       },
       {
         "type": "signature",
