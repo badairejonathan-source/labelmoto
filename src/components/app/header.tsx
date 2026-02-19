@@ -47,17 +47,17 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 
   const UserMenu = () => {
     if (isUserLoading) {
-      return <Button size="icon" variant="ghost" className="rounded-full h-12 w-12"><Loader2 className="h-6 w-6 animate-spin" /></Button>
+      return <Button size="icon" variant="ghost" className="rounded-full h-10 w-10"><Loader2 className="h-5 w-5 animate-spin" /></Button>
     }
     if (!user) {
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild variant="ghost" className="rounded-full h-12 w-12 p-0">
+              <Button asChild variant="ghost" className="rounded-full h-10 w-10 p-0">
                 <Link href="/login">
-                  <div className="h-12 w-12 rounded-full flex items-center justify-center p-1">
-                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={40} height={40} className="h-10 w-10 object-contain" />
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center p-1">
+                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={32} height={32} className="h-8 w-8 object-contain" />
                   </div>
                   <span className="sr-only">Mon compte</span>
                 </Link>
@@ -73,8 +73,8 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
     return (
        <DropdownMenu>
         <DropdownMenuTrigger asChild>
-           <Button variant="ghost" className="relative h-12 w-12 rounded-full">
-            <Avatar className="h-12 w-12">
+           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-10 w-10">
               <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
               <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -107,106 +107,66 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 
 
   return (
-    <header className={cn("bg-card p-4 text-foreground border-b border-border z-40", className)}>
-      <div className="container mx-auto flex flex-col gap-4">
+    <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
+      <div className="container mx-auto flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <div className="w-40 md:w-52 shrink-0">
+          <div className="w-36 md:w-44 shrink-0">
             <Link href="/">
               <LabelMotoLogo />
             </Link>
           </div>
           
-          {/* Mobile Nav */}
-          <nav className="flex md:hidden items-start justify-center gap-2 flex-grow">
+          <nav className="flex items-center justify-center gap-2 md:gap-4 flex-grow">
             <Button
               variant="ghost"
               onClick={() => onFilterChange('shopping')}
               className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
+                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
                 activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
-              <Bike className="h-6 w-6" />
+              <Bike className="h-5 w-5" />
               <span>Concession</span>
+              {activeFilter === 'shopping' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
             </Button>
             <Button
               variant="ghost"
               onClick={() => onFilterChange('service')}
               className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
+                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
                 activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
-              <Wrench className="h-6 w-6" />
+              <Wrench className="h-5 w-5" />
               <span>Atelier</span>
+               {activeFilter === 'service' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
             </Button>
             <Button
               asChild
               variant="ghost"
               className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-1 text-xs font-semibold",
+                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
                 isInfoActive ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
               <Link href="/info">
-                <FileText className="h-6 w-6" />
-                <span>Conseils pratiques</span>
-              </Link>
-            </Button>
-          </nav>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center justify-center gap-8 flex-grow">
-            <Button
-              variant="ghost"
-              onClick={() => onFilterChange('shopping')}
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-1 text-sm font-semibold",
-                activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Bike className="h-6 w-6" />
-              <span>Concession</span>
-              {activeFilter === 'shopping' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onFilterChange('service')}
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-1 text-sm font-semibold",
-                activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Wrench className="h-6 w-6" />
-              <span>Atelier</span>
-               {activeFilter === 'service' && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-1 text-sm font-semibold",
-                isInfoActive ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Link href="/info">
-                <FileText className="h-6 w-6" />
-                <span>Conseils pratiques</span>
-                {isInfoActive && <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+                <FileText className="h-5 w-5" />
+                <span>Conseils</span>
+                {isInfoActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
               </Link>
             </Button>
           </nav>
           
-          <div className="flex items-center justify-end w-auto md:w-52">
+          <div className="flex items-center justify-end w-36 md:w-44">
             <UserMenu />
           </div>
         </div>
         
-        <div className="relative w-full max-w-lg mx-auto">
+        <div className="relative w-full max-w-md mx-auto">
           <Input
             type="search"
             placeholder={placeholderText}
-            className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+            className="pr-12 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
             value={searchTerm}
             onChange={(e) => onSearchTermChange(e.target.value)}
             onKeyDown={(e) => {
@@ -218,10 +178,10 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           <Button 
               type="submit" 
               size="icon" 
-              className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
+              className="absolute top-1/2 right-1.5 -translate-y-1/2 h-7 w-7 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
               onClick={onSearch}
           >
-            <Search className="h-5 w-5" />
+            <Search className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -236,4 +196,5 @@ export default Header;
     
 
     
+
 
