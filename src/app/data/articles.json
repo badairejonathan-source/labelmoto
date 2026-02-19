@@ -639,6 +639,10 @@
         "html": "<strong>Quelle est la meilleure moto A2 ?</strong><br/>La meilleure est celle adaptée à ton usage quotidien."
       },
       {
+        "type": "paragraph",
+        "html": "Maintenant que tu sais quelle moto te correspond, il reste l’étape la plus importante : l’achat. Pour éviter les mauvaises surprises, consulte <a href=\"/info/5\" class=\"text-accent underline hover:text-accent/80\">notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion</a>."
+      },
+      {
         "type": "heading",
         "text": "Conclusion"
       },
