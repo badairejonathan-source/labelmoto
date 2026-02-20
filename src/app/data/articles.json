@@ -1088,7 +1088,12 @@
       },
       {
         "type": "list",
-        "items": ["MT-07", "Tracer 7", "R7", "XSR700"]
+        "items": [
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-accent underline hover:text-accent/80\">MT-07</a>",
+          "Tracer 7", 
+          "R7", 
+          "XSR700"
+        ]
       },
       {
         "type": "paragraph",

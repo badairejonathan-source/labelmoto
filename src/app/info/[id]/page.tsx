@@ -82,7 +82,7 @@ export default function ArticlePage() {
       if (block.type === 'list' && block.items) {
         return (
           <ul key={index} className="list-disc list-inside space-y-3 pl-2">
-            {block.items.map((item, i) => <li key={i} className="text-lg text-foreground/90 leading-relaxed text-justify">{item}</li>)}
+            {block.items.map((item, i) => <li key={i} className="text-lg text-foreground/90 leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: item }} />)}
           </ul>
         );
       }
