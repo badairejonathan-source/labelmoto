@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Link from 'next/link';
@@ -318,6 +316,22 @@ export default function LandingPage() {
                     </div>
                 </section>
                 
+                <section className="mt-8 md:mt-12">
+                  <div className="bg-muted/50 rounded-2xl p-6 md:p-8 text-center">
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                      🔧 Préparez l’entretien de votre moto
+                    </h2>
+                    <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
+                      Avant de prendre rendez-vous chez un garagiste, vérifiez les intervalles de révision et le coût moyen d’entretien de votre modèle. Anticipez votre budget, évitez les mauvaises surprises et roulez l’esprit tranquille.
+                    </p>
+                    <Button asChild size="lg" className="font-bold rounded-full shadow-lg bg-primary hover:bg-primary/90">
+                      <Link href="/entretien">
+                        ➡️ Consulter les fiches d’entretien
+                      </Link>
+                    </Button>
+                  </div>
+                </section>
+
                 <section className="mt-8 md:mt-12">
                     <div className="relative rounded-2xl overflow-hidden bg-black">
                         <Image
