@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -62,7 +61,7 @@ export default function FicheTechniquePage() {
   const similarFiches = fichesData.filter(f => {
     if (f.modelId === fiche.modelId) return false;
     const displacement = parseDisplacement(f.engine.displacement);
-    return Math.abs(currentDisplacement - displacement) <= 200;
+    return Math.abs(currentDisplacement - displacement) <= 250;
   });
 
   const handleSearch = () => {
@@ -155,7 +154,7 @@ export default function FicheTechniquePage() {
           </Link>
 
           <div className="space-y-8">
-             <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden mb-8 shadow-lg">
+             <div className="relative w-full aspect-[2.5/1] rounded-2xl overflow-hidden mb-8 shadow-lg">
               <Image
                 src={fiche.imageUrl}
                 alt={fiche.modelName}
