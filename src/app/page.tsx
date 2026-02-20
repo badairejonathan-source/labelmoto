@@ -325,7 +325,7 @@ export default function LandingPage() {
                     <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
                       Avant d’aller chez le garagiste, vérifiez le kilométrage de révision et le coût moyen pour votre modèle. En quelques secondes, vous savez quoi prévoir et combien ça va coûter.
                     </p>
-                    <Button asChild size="lg" className="font-bold rounded-full shadow-lg bg-primary hover:bg-primary/90">
+                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                       <Link href="/entretien">
                         ➡️ Vérifier l’entretien de ma moto
                       </Link>
