@@ -104,5 +104,97 @@
         "alt": "Cachet Label Moto"
       }
     ]
+  },
+  {
+    "modelId": "kawasaki-z650",
+    "modelName": "Kawasaki Z650",
+    "brand": "Kawasaki",
+    "year": "2020+",
+    "imageUrl": "https://images.unsplash.com/photo-1629587937318-755f52980079?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Kawasaki Z650",
+    "engine": {
+      "type": "Bicylindre en parallèle, 4 temps, refroidissement liquide, double arbre à cames en tête, 8 soupapes",
+      "displacement": "649 cm³",
+      "power": "50,2 kW (68 ch) à 8 000 tr/min",
+      "torque": "64 N.m à 6 700 tr/min",
+      "alimentation": "Injection électronique : Ø 36 mm x 2 avec doubles papillons"
+    },
+    "chassis": {
+      "frame": "Treillis, acier haute résistance",
+      "frontSuspension": "Fourche télescopique de 41 mm, débattement 125 mm",
+      "rearSuspension": "Horizontale de type Back-link avec réglage de la précharge, débattement 130 mm",
+      "frontBrake": "Double disque en pétales semi-flottant de 300 mm. Étrier à 2 pistons",
+      "rearBrake": "Simple disque en pétales de 220 mm. Étrier à 1 piston",
+      "frontTire": "120/70ZR17M/C (58W)",
+      "rearTire": "160/60ZR17M/C (69W)"
+    },
+    "dimensions": {
+      "length": "2 055 mm",
+      "width": "765 mm",
+      "height": "1 065 mm",
+      "seatHeight": "790 mm",
+      "wheelbase": "1 410 mm",
+      "wetWeight": "188 kg",
+      "fuelCapacity": "15 L"
+    },
+    "introduction": "La Kawasaki Z650 est une moto emblématique du segment des roadsters de moyenne cylindrée, particulièrement appréciée des permis A2. Elle combine un design agressif 'Sugomi' avec une facilité de prise en main qui la rend accessible.",
+    "content": [
+      { "type": "heading", "text": "Intervalles d’entretien" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [["1 000 km", "Vidange de rodage"], ["12 000 km", "Vidange, filtres"], ["24 000 km", "Bougies, jeu aux soupapes"], ["36 000 km", "Révision intermédiaire"], ["48 000 km", "Gros entretien"]] },
+      { "type": "heading", "text": "Problèmes connus" },
+      { "type": "list", "items": ["Quelques cas de calage à bas régime sur les premiers modèles.", "Tendance à la corrosion sur les collecteurs d'échappement si mal entretenue."] },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
+      }
+    ]
+  },
+  {
+    "modelId": "honda-cb500-hornet",
+    "modelName": "Honda CB500 Hornet",
+    "brand": "Honda",
+    "year": "2024+",
+    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Honda Hornet",
+    "engine": {
+      "type": "Bicylindre en ligne, 4 temps, refroidissement liquide, double arbre à cames en tête, 8 soupapes",
+      "displacement": "471 cm³",
+      "power": "35 kW (47,5 ch) à 8 600 tr/min",
+      "torque": "43 N.m à 6 500 tr/min",
+      "alimentation": "Injection électronique PGM-FI"
+    },
+    "chassis": {
+      "frame": "Type Diamant en acier",
+      "frontSuspension": "Fourche inversée Showa SFF-BP de 41 mm, débattement 120mm",
+      "rearSuspension": "Mono-amortisseur Pro-Link réglable en précharge (5 pos), débattement 119mm",
+      "frontBrake": "Double disque de 296 mm, étriers radiaux Nissin 4 pistons",
+      "rearBrake": "Simple disque de 240 mm, étrier 1 piston",
+      "frontTire": "120/70ZR17M/C (58W)",
+      "rearTire": "160/60ZR17M/C (69W)"
+    },
+    "dimensions": {
+      "length": "2 080 mm",
+      "width": "790 mm",
+      "height": "1 060 mm",
+      "seatHeight": "785 mm",
+      "wheelbase": "1 410 mm",
+      "wetWeight": "188 kg",
+      "fuelCapacity": "17,1 L"
+    },
+    "introduction": "La Honda CB500 Hornet est la moto A2 native par excellence. Facile, fiable et économique, elle représente un choix de raison pour débuter en toute sérénité sans sacrifier le style moderne.",
+    "content": [
+      { "type": "heading", "text": "Intervalles d’entretien" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [["1 000 km", "Vidange de rodage"], ["12 000 km", "Vidange, filtre"], ["24 000 km", "Contrôle jeu aux soupapes, bougies"], ["36 000 km", "Vidange, filtre"], ["48 000 km", "Grosse révision"]] },
+      { "type": "heading", "text": "Fiabilité" },
+      { "type": "paragraph", "text": "La réputation de Honda n'est plus à faire. Le bloc moteur est connu pour être extrêmement fiable et peut atteindre des kilométrages très élevés avec un entretien régulier." },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
+      }
+    ]
   }
 ]

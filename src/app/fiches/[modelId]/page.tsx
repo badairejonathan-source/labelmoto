@@ -39,6 +39,12 @@ interface FicheTechnique extends Omit<FicheData, 'maintenance' | 'reliability'> 
   reliability?: string[];
 }
 
+const parseDisplacement = (displacement: string): number => {
+  if (!displacement) return 0;
+  const match = displacement.match(/(\d+)/);
+  return match ? parseInt(match[0], 10) : 0;
+};
+
 
 export default function FicheTechniquePage() {
   const router = useRouter();
@@ -51,6 +57,13 @@ export default function FicheTechniquePage() {
   if (!fiche) {
     notFound();
   }
+
+  const currentDisplacement = parseDisplacement(fiche.engine.displacement);
+  const similarFiches = fichesData.filter(f => {
+    if (f.modelId === fiche.modelId) return false;
+    const displacement = parseDisplacement(f.engine.displacement);
+    return Math.abs(currentDisplacement - displacement) <= 200;
+  });
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -136,9 +149,9 @@ export default function FicheTechniquePage() {
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-4xl mx-auto">
-          <Link href="/info/7" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
+          <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" />
-            Retour à l'article sur l'entretien
+            Retour à l'entretien
           </Link>
 
           <div className="space-y-8">
@@ -279,8 +292,38 @@ export default function FicheTechniquePage() {
               )}
               </>
             )}
-
           </div>
+          
+          {similarFiches.length > 0 && (
+            <div className="pt-16">
+              <h2 className="text-3xl font-bold font-serif text-center mb-8">
+                Découvrez d'autres modèles
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {similarFiches.map(f => (
+                  <Link key={f.modelId} href={`/fiches/${f.modelId}`} className="group">
+                    <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
+                      <div className="relative aspect-video">
+                        <Image 
+                          src={f.imageUrl}
+                          alt={f.modelName}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          data-ai-hint={f.imageHint}
+                        />
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="text-lg group-hover:text-accent group-hover:underline">{f.modelName}</CardTitle>
+                        <CardDescription>{f.engine.displacement}</CardDescription>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
     </div>
