@@ -60,11 +60,11 @@
 
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "paragraph", "text": "Certaines pièces s’usent plus vite sur cette moto :" },
-      { "type": "list", "items": [
-          "Kit chaîne : 20 000 à 30 000 km",
-          "Pneus : 8 000 à 15 000 km",
-          "Plaquettes de frein : 10 000 à 20 000 km",
-          "Batterie : 3 à 5 ans"
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "8 000 à 15 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes de frein", "10 000 à 20 000 km"],
+        ["Batterie", "3 à 5 ans"]
       ]},
       { "type": "paragraph", "text": "Un graissage régulier de la chaîne augmente énormément sa durée de vie." },
 
@@ -183,52 +183,60 @@
       "wetWeight": "188 kg",
       "fuelCapacity": "17,1 L"
     },
-    "introduction": "La Honda CB500 Hornet (et sa devancière la CB500F) est la moto A2 native par excellence. Facile, fiable et ultra-économique, elle représente le choix de raison pour débuter en toute sérénité sans sacrifier le style moderne.",
+    "introduction": "La Honda CB500F (aujourd’hui CB500 Hornet) est réputée pour être l’une des motos A2 les plus fiables du marché. Son moteur bicylindre est peu exigeant, mais un entretien régulier reste indispensable pour préserver sa douceur et sa valeur de revente.",
     "content": [
-      { "type": "paragraph", "text": "Voici tout ce qu’il faut savoir pour entretenir votre Honda CB500 Hornet/F et la garder en parfaite santé." },
-      { "type": "list", "items": ["les intervalles d’entretien Honda", "le coût estimé des révisions", "les pièces d’usure à connaître", "les points forts et faibles de sa fiabilité"] },
+      { "type": "paragraph", "text": "Dans ce guide, tu trouveras les intervalles d’entretien, les coûts moyens et les points de fiabilité à surveiller pour ta CB500." },
       
-      { "type": "heading", "text": "Intervalles d’entretien Honda CB500" },
+      { "type": "heading", "text": "Intervalles d’entretien constructeur" },
       { "type": "paragraph", "text": "Le plan d'entretien Honda est réputé pour sa simplicité et ses espacements, idéal pour un usage quotidien." },
       { "type": "table", "headers": ["Kilométrage", "Opération principale"], "rows": [
-          ["1 000 km", "Vidange de rodage, contrôles"],
-          ["12 000 km", "Vidange, filtre à huile"],
+          ["1 000 km", "Révision de rodage, contrôles"],
+          ["12 000 km", "Vidange, filtres, contrôles"],
           ["24 000 km", "Jeu aux soupapes, bougies, filtre à air"],
-          ["36 000 km", "Vidange, filtre à huile"],
+          ["36 000 km", "Révision intermédiaire"],
           ["48 000 km", "Grosse révision, liquide de refroidissement"]
       ]},
-      { "type": "paragraph", "text": "👉 Une vidange annuelle avec le filtre à huile est cruciale si vous roulez moins de 12 000 km/an." },
+      { "type": "paragraph", "text": "👉 Une vidange annuelle reste recommandée même si la moto roule peu." },
       
-      { "type": "heading", "text": "Quel budget pour l'entretien ?" },
-      { "type": "paragraph", "text": "La CB500 est l'une des motos les plus économiques du marché. Voici une estimation des coûts en concession :" },
+      { "type": "heading", "text": "Prix moyen des révisions" },
+      { "type": "paragraph", "text": "Très économique comparé à la moyenne du marché. Voici une estimation des coûts en concession :" },
       { "type": "table", "headers": ["Révision", "Coût moyen estimé"], "rows": [
-          ["1 000 km", "100 à 150 €"],
-          ["12 000 km", "150 à 250 €"],
-          ["24 000 km", "350 à 550 € (à cause du jeu aux soupapes)"],
-          ["Annuelle simple", "120 à 200 €"]
+          ["1 000 km", "100 à 160 €"],
+          ["12 000 km", "180 à 280 €"],
+          ["24 000 km", "300 à 450 €"],
+          ["48 000 km", "500 à 700 €"]
       ]},
       
-      { "type": "heading", "text": "Consommables : ce qu'il faut savoir" },
+      { "type": "heading", "text": "Consommables à surveiller" },
       { "type": "paragraph", "text": "Grâce à sa puissance contenue et son poids raisonnable, la CB500 use ses consommables très lentement." },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "10 000 à 18 000 km"],
+        ["Kit chaîne", "25 000 à 35 000 km"],
+        ["Plaquettes", "15 000 à 25 000 km"],
+        ["Batterie", "4 à 6 ans"]
+      ]},
+
+      { "type": "heading", "text": "Fiabilité et problèmes connus" },
+      { "type": "paragraph", "text": "Le moteur est connu pour être indestructible et peut atteindre des kilométrages très élevés. Très peu de défauts majeurs sont connus :" },
       { "type": "list", "items": [
-          "Kit chaîne : Dure souvent entre 30 000 et 40 000 km avec un bon entretien.",
-          "Pneus : Attendez-vous à 12 000 à 18 000 km en conduite normale.",
-          "Plaquettes de frein : Très endurantes, souvent plus de 20 000 km."
+          "Batterie d’origine parfois faible.",
+          "Amortisseur arrière qui fatigue avec le duo.",
+          "Tension de la chaîne à surveiller régulièrement.",
+          "Léger manque de mordant du frein avant d'origine sur certains modèles.",
+          "La finition peut montrer des signes d'usure si la moto dort dehors."
       ]},
       
-      { "type": "heading", "text": "Fiabilité et problèmes connus de la CB500" },
-      { "type": "paragraph", "text": "La réputation de Honda n'est plus à faire. Le bloc moteur est connu pour être indestructible et peut atteindre des kilométrages très élevés avec un entretien régulier." },
-      { "type": "list", "items": [
-          "Fiabilité moteur exceptionnelle.",
-          "Aucun problème électronique majeur connu.",
-          "Certains utilisateurs rapportent un léger manque de mordant du frein avant d'origine.",
-          "La finition, bien que correcte, peut montrer des signes d'usure (corrosion superficielle) si la moto dort dehors sans protection."
+      { "type": "heading", "text": "Conseils pour la longévité" },
+       { "type": "list", "items": [
+        "Faire une vidange tous les 8 000 à 10 000 km.",
+        "Vérifier la tension de la chaîne régulièrement.",
+        "Surveiller l'état de l'amortisseur arrière, surtout en cas de duo fréquent."
       ]},
-      
+
       { "type": "heading", "text": "FAQ Entretien Honda CB500" },
-      { "type": "paragraph", "html": "<strong>La CB500 est-elle une moto chère à entretenir ?</strong><br/>Non, c'est l'une des motos les plus économiques à l'usage." },
-      { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il vraiment nécessaire à 24 000 km ?</strong><br/>Oui, c'est indispensable pour la santé à long terme du moteur, même s'il ne bouge que rarement." },
-      { "type": "paragraph", "html": "<strong>Puis-je faire l'entretien moi-même ?</strong><br/>Les opérations de base (vidange, chaîne, plaquettes) sont très accessibles sur ce modèle." },
+      { "type": "paragraph", "html": "<strong>La CB500F est-elle fiable ?</strong><br/>Oui, c’est une référence en matière de fiabilité pour les permis A2." },
+      { "type": "paragraph", "html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, c'est l'une des motos les plus économiques à entretenir." },
+      { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Non, il est rarement nécessaire d'y toucher avant 40 000 km, mais un contrôle à 24 000 km est préconisé." },
 
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "La Honda CB500 Hornet / CB500F est le choix de la tranquillité. Son entretien est simple, peu coûteux et prévisible. C'est la moto parfaite pour apprendre la mécanique ou simplement pour rouler l'esprit libre, sans se soucier des factures." },
