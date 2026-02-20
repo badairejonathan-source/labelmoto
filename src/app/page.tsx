@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from '@/components/app/logo';
-import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon, BookOpenCheck } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
@@ -157,6 +157,10 @@ const LandingHeader = () => {
                         <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
                             <Wrench className="h-5 w-5" />
                             <span>Atelier</span>
+                        </Link>
+                        <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
+                            <BookOpenCheck className="h-5 w-5" />
+                            <span>Entretien & Révisions</span>
                         </Link>
                         <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
                             <FileText className="h-5 w-5" />

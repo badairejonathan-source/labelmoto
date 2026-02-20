@@ -6,7 +6,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2, User as UserIcon } from 'lucide-react';
+import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2, User as UserIcon, BookOpenCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -146,6 +146,20 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               variant="ghost"
               className={cn(
                 "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                pathname.startsWith('/entretien') ? 'text-foreground' : 'text-muted-foreground'
+              )}
+            >
+              <Link href="/entretien">
+                <BookOpenCheck className="h-5 w-5" />
+                <span>Entretien</span>
+                {pathname.startsWith('/entretien') && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
                 isInfoActive ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
@@ -196,5 +210,3 @@ export default Header;
     
 
     
-
-
