@@ -96,7 +96,13 @@
       { "type": "paragraph", "html": "<strong>Peut-on entretenir soi-même ?</strong><br/>Oui pour la chaîne, filtres et petites opérations." },
 
       { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La Yamaha MT-07 est une moto simple et robuste, à condition de respecter un entretien régulier. Un suivi sérieux évite presque toujours les grosses pannes. Bien entretenue, elle reste économique et peut t’accompagner bien après la passerelle A." }
+      { "type": "paragraph", "text": "La Yamaha MT-07 est une moto simple et robuste, à condition de respecter un entretien régulier. Un suivi sérieux évite presque toujours les grosses pannes. Bien entretenue, elle reste économique et peut t’accompagner bien après la passerelle A." },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
+      }
     ]
   }
 ]
