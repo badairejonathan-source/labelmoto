@@ -508,7 +508,7 @@
       },
       {
         "type": "paragraph",
-        "html": "👉 Vérifie AVANT l’achat pour éviter les mauvaises surprises. Pour une estimation complète, <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">consulte notre article sur le budget moto</a>."
+        "html": "👉 Vérifie AVANT l’achat pour éviter les mauvaises surprises. Pour une estimation complète, consulte notre article : <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">Le budget réel d’un motard débutant</a>."
       },
       {
         "type": "heading",
@@ -949,6 +949,8 @@
     ]
   }
 ]
+    
+
     
 
     
