@@ -179,6 +179,12 @@ const article = {
       {
         "type": "paragraph",
         "text": "Un bon entretien protège surtout ton budget. Choisis ta moto ci-dessus pour accéder à sa fiche détaillée."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
       }
     ]
 } as const;
@@ -246,6 +252,23 @@ export default function EntretienPage() {
             </div>
           );
         
+        case 'signature':
+          if (block.imageUrl) {
+            return (
+              <div key={index} className="flex justify-end items-center mt-[-3rem] sm:mt-[-4rem] mr-0 sm:mr-4">
+                <p className="text-lg font-semibold text-foreground/90 relative z-10">{block.text}</p>
+                <Image 
+                  src={block.imageUrl} 
+                  alt={block.alt || "Signature"} 
+                  width={140} 
+                  height={140}
+                  className="object-contain opacity-70 -rotate-[15deg] pointer-events-none -ml-16"
+                />
+              </div>
+            )
+          }
+          return null;
+
         default:
           return null;
       }
