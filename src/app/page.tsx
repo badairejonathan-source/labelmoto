@@ -147,11 +147,11 @@ const LandingHeader = () => {
                     <div className="text-center -mt-2">
                         <p className="text-xs text-muted-foreground">
                             Suggestions : 
-                            <Link href="/info?search=revision" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
-                            <Link href="/info?search=prix revision" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
-                            <Link href="/fiches/yamaha-mt-07" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>•
+                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
+                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
+                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>•
                             <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">intervalle entretien</Link>•
-                            <Link href="/info?search=vidange" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">quand faire vidange</Link>
+                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">quand faire vidange</Link>
                         </p>
                     </div>
 
@@ -382,11 +382,3 @@ export default function LandingPage() {
         </div>
     );
 }
-
-    
-
-    
-
-    
-
-    
