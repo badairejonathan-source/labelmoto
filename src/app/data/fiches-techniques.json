@@ -148,7 +148,7 @@
           ["48 000 km", "Gros entretien"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "paragraph", "text": "Le coût est un peu plus élevé que celui des 500cc." },
+      { "type": "paragraph", "text": "Le coût est un peu plus élevé que celui des 500cc, mais reste raisonnable pour la catégorie :" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
           ["1 000 km", "130 à 200 €"],
           ["12 000 km", "220 à 350 €"],
@@ -165,10 +165,10 @@
       { "type": "paragraph", "text": "La Z650 est globalement très fiable, mais voici quelques points à surveiller :" },
       { "type": "list", "items": ["Embrayage parfois dur.", "Capteur ABS sensible.", "Batterie d'origine un peu faible."] },
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "list", "items": ["Un temps de chauffe moteur est indispensable.", "Faire la vidange tous les 6 000 à 8 000 km.", "Lubrifier régulièrement le câble d'embrayage."] },
+      { "type": "list", "items": ["Laisser chauffer le moteur quelques instants avant de partir est une bonne pratique.", "Faire la vidange tous les 6 000 à 8 000 km.", "Lubrifier régulièrement le câble d'embrayage."] },
       { "type": "heading", "text": "FAQ entretien Z650" },
-      { "type": "paragraph", "html": "<strong>Est-elle plus chère à entretenir qu’une 500cc ?</strong><br/>Oui, légèrement. Les performances supérieures entraînent un coût un peu plus élevé." },
-      { "type": "paragraph", "html": "<strong>La Z650 est-elle fiable ?</strong><br/>Oui, c'est une moto très fiable si l'entretien est suivi avec sérieux." },
+      { "type": "paragraph", "html": "<strong>La Z650 est-elle plus chère à entretenir qu’une 500cc ?</strong><br/>Oui, légèrement. Les performances supérieures entraînent un coût un peu plus élevé, mais cela reste raisonnable." },
+      { "type": "paragraph", "html": "<strong>La Kawasaki Z650 est-elle une moto fiable ?</strong><br/>Oui, c'est une moto très fiable si l'entretien est suivi avec sérieux." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "La Kawasaki Z650 offre un excellent compromis entre performance et accessibilité pour le permis A2. Son entretien, bien que légèrement plus coûteux qu'une 500cc, reste raisonnable et garantit une grande fiabilité si suivi avec rigueur." },
       {
@@ -227,7 +227,7 @@
       { "type": "paragraph", "text": "👉 Une vidange annuelle reste recommandée même si la moto roule peu." },
       
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "paragraph", "text": "Très économique comparé à la moyenne du marché." },
+      { "type": "paragraph", "text": "Très économique comparé à la moyenne du marché, voici les estimations :" },
       { "type": "table", "headers": ["Révision", "Coût moyen estimé"], "rows": [
           ["1 000 km", "100 à 160 €"],
           ["12 000 km", "180 à 280 €"],
@@ -245,7 +245,7 @@
       ]},
 
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "paragraph", "text": "Le moteur est connu pour être indestructible et peut atteindre des kilométrages très élevés. Très peu de défauts majeurs sont connus :" },
+      { "type": "paragraph", "text": "Le moteur est connu pour être indestructible et peut atteindre plus de 100 000 km sans problème majeur. Très peu de défauts sont connus :" },
       { "type": "list", "items": [
           "Batterie d’origine parfois faible.",
           "Amortisseur arrière qui fatigue avec le duo.",
@@ -255,12 +255,12 @@
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
        { "type": "list", "items": [
         "Faire une vidange tous les 8 000 à 10 000 km.",
-        "Vérifier la tension de la chaîne régulièrement.",
-        "Surveiller l'état de l'amortisseur arrière, surtout en cas de duo fréquent."
+        "Vérifier la tension de la chaîne régulièrement, surtout après de longs trajets.",
+        "Surveiller l'état de l'amortisseur arrière, particulièrement en cas de duo fréquent."
       ]},
 
       { "type": "heading", "text": "FAQ Entretien Honda CB500" },
-      { "type": "paragraph", "html": "<strong>La CB500F est-elle fiable ?</strong><br/>Oui, c’est une référence en fiabilité pour le permis A2." },
+      { "type": "paragraph", "html": "<strong>La CB500F est-elle fiable ?</strong><br/>Oui, c’est l'une des références en matière de fiabilité pour le permis A2." },
       { "type": "paragraph", "html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, c'est l'une des motos les moins chères à entretenir de sa catégorie." },
       { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Non, il est rarement nécessaire d'y toucher avant 40 000 km si la moto est bien traitée." },
 
