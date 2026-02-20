@@ -126,6 +126,17 @@ const LandingHeader = () => {
                         </nav>
                     </div>
 
+                    {/* Suggestions */}
+                    <div className="text-center -mb-2">
+                        <p className="text-xs text-muted-foreground">
+                            Suggestions : 
+                            <Link href="/info?search=Révision" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">Révision moto</Link>•
+                            <Link href="/info?search=Prix" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">Prix entretien</Link>•
+                            <Link href="/info?search=Intervalle" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">Intervalle constructeur</Link>•
+                            <Link href="/info?search=Carnet" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">Carnet constructeur</Link>
+                        </p>
+                    </div>
+
                     {/* Search Bar */}
                     <form action="/map" method="get" className="relative w-full max-w-lg mx-auto">
                         <Input
