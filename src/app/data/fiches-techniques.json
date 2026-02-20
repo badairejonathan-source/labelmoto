@@ -190,16 +190,16 @@
       { "type": "heading", "text": "Intervalles d’entretien constructeur" },
       { "type": "paragraph", "text": "Le plan d'entretien Honda est réputé pour sa simplicité et ses espacements, idéal pour un usage quotidien." },
       { "type": "table", "headers": ["Kilométrage", "Opération principale"], "rows": [
-          ["1 000 km", "Révision de rodage, contrôles"],
-          ["12 000 km", "Vidange, filtres, contrôles"],
-          ["24 000 km", "Jeu aux soupapes, bougies, filtre à air"],
+          ["1 000 km", "Révision de rodage"],
+          ["12 000 km", "Vidange + filtres + contrôles"],
+          ["24 000 km", "Bougies + contrôle soupapes"],
           ["36 000 km", "Révision intermédiaire"],
-          ["48 000 km", "Grosse révision, liquide de refroidissement"]
+          ["48 000 km", "Gros entretien"]
       ]},
       { "type": "paragraph", "text": "👉 Une vidange annuelle reste recommandée même si la moto roule peu." },
       
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "paragraph", "text": "Très économique comparé à la moyenne du marché. Voici une estimation des coûts en concession :" },
+      { "type": "paragraph", "text": "Très économique comparé à la moyenne du marché." },
       { "type": "table", "headers": ["Révision", "Coût moyen estimé"], "rows": [
           ["1 000 km", "100 à 160 €"],
           ["12 000 km", "180 à 280 €"],
@@ -221,9 +221,7 @@
       { "type": "list", "items": [
           "Batterie d’origine parfois faible.",
           "Amortisseur arrière qui fatigue avec le duo.",
-          "Tension de la chaîne à surveiller régulièrement.",
-          "Léger manque de mordant du frein avant d'origine sur certains modèles.",
-          "La finition peut montrer des signes d'usure si la moto dort dehors."
+          "Tension de la chaîne à surveiller régulièrement."
       ]},
       
       { "type": "heading", "text": "Conseils pour la longévité" },
@@ -234,9 +232,9 @@
       ]},
 
       { "type": "heading", "text": "FAQ Entretien Honda CB500" },
-      { "type": "paragraph", "html": "<strong>La CB500F est-elle fiable ?</strong><br/>Oui, c’est une référence en matière de fiabilité pour les permis A2." },
-      { "type": "paragraph", "html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, c'est l'une des motos les plus économiques à entretenir." },
-      { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Non, il est rarement nécessaire d'y toucher avant 40 000 km, mais un contrôle à 24 000 km est préconisé." },
+      { "type": "paragraph", "html": "<strong>La CB500F est-elle fiable ?</strong><br/>Oui, c’est une référence en fiabilité A2." },
+      { "type": "paragraph", "html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, une des motos les moins chères." },
+      { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Rarement nécessaire avant 40 000 km." },
 
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "La Honda CB500 Hornet / CB500F est le choix de la tranquillité. Son entretien est simple, peu coûteux et prévisible. C'est la moto parfaite pour apprendre la mécanique ou simplement pour rouler l'esprit libre, sans se soucier des factures." },
