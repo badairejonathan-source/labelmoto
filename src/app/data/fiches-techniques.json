@@ -15,11 +15,11 @@
       "alimentation": "Injection électronique"
     },
     "chassis": {
-      "frame": "Type Diamant",
-      "frontSuspension": "Fourche télescopique",
-      "rearSuspension": "Bras oscillant (suspension à biellettes)",
-      "frontBrake": "Double disque, Ø 298 mm",
-      "rearBrake": "Simple disque, Ø 245 mm",
+      "frame": "Type Diamant en acier",
+      "frontSuspension": "Fourche télescopique, Ø 41 mm, débattement 130 mm",
+      "rearSuspension": "Bras oscillant (suspension à biellettes), débattement 130 mm",
+      "frontBrake": "Double disque, Ø 298 mm, étriers 4 pistons",
+      "rearBrake": "Simple disque, Ø 245 mm, étrier simple piston",
       "frontTire": "120/70 ZR 17 M/C (58W)",
       "rearTire": "180/55 ZR 17 M/C (73W)"
     },
