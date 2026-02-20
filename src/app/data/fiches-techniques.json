@@ -137,15 +137,16 @@
       "wetWeight": "188 kg",
       "fuelCapacity": "15 L"
     },
-    "introduction": "La Z650 est une moto A2 très appréciée pour son caractère moteur. Plus performante que les 500 cc, elle demande un entretien légèrement plus rigoureux.",
+    "introduction": "La Z650 est une moto A2 très appréciée pour son caractère moteur. Plus performante que les 500 cc, elle demande un entretien légèrement plus rigoureux pour rester fiable et performante.",
     "content": [
       { "type": "heading", "text": "Intervalles d’entretien constructeur" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Révision rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + soupapes"],
-          ["36 000 km", "Révision intermédiaire"],
-          ["48 000 km", "Gros entretien"]
+      { "type": "paragraph", "text": "Le plan d'entretien de Kawasaki est essentiel pour garantir la longévité et les performances de la Z650." },
+      { "type": "table", "headers": ["Kilométrage", "Opération principale"], "rows": [
+          ["1 000 km", "Révision de rodage"],
+          ["12 000 km", "Vidange, filtres et contrôles"],
+          ["24 000 km", "Bougies et contrôle du jeu aux soupapes"],
+          ["36 000 km", "Révision intermédiaire et contrôles"],
+          ["48 000 km", "Gros entretien complet"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "paragraph", "text": "Le coût est un peu plus élevé que celui des 500cc, mais reste raisonnable pour la catégorie :" },
@@ -156,20 +157,21 @@
           ["48 000 km", "600 à 900 €"]
       ]},
       { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "paragraph", "text": "Avec son tempérament joueur, la Z650 peut user certains consommables plus rapidement." },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
           ["Pneus", "7 000 à 12 000 km"],
           ["Kit chaîne", "20 000 à 25 000 km"],
           ["Plaquettes de frein", "10 000 à 18 000 km"]
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "paragraph", "text": "La Z650 est globalement très fiable, mais voici quelques points à surveiller :" },
-      { "type": "list", "items": ["Embrayage parfois dur.", "Capteur ABS sensible.", "Batterie d'origine un peu faible."] },
+      { "type": "paragraph", "text": "La Z650 est globalement très fiable, mais voici quelques points à surveiller pour une tranquillité d'esprit maximale :" },
+      { "type": "list", "items": ["L'embrayage peut être jugé un peu dur par certains utilisateurs.", "Le capteur ABS peut être sensible à l'humidité.", "La batterie d'origine est parfois un peu juste pour les démarrages par temps froid."] },
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "paragraph", "text": "Pour maximiser la longévité de votre Z650, quelques habitudes sont à prendre :" },
-      { "type": "list", "items": ["Toujours laisser chauffer le moteur quelques instants avant de partir.", "Effectuer une vidange tous les 6 000 à 8 000 km pour préserver le moteur.", "Lubrifier régulièrement le câble d'embrayage pour garantir sa souplesse."] },
+      { "type": "paragraph", "text": "Pour maximiser la longévité de votre Z650, quelques habitudes simples font une grande différence :" },
+      { "type": "list", "items": ["Respectez scrupuleusement le temps de chauffe du moteur avant de solliciter la mécanique.", "Effectuez une vidange tous les 6 000 à 8 000 km pour préserver la santé du moteur.", "Lubrifiez régulièrement le câble d'embrayage pour garantir sa souplesse et sa longévité."] },
       { "type": "heading", "text": "FAQ entretien Z650" },
-      { "type": "paragraph", "html": "<strong>La Z650 est-elle plus chère à entretenir qu’une 500cc ?</strong><br/>Oui, légèrement. Les performances supérieures entraînent un coût un peu plus élevé, mais qui reste tout à fait raisonnable pour la catégorie." },
-      { "type": "paragraph", "html": "<strong>La Kawasaki Z650 est-elle une moto fiable ?</strong><br/>Oui, c'est une moto reconnue pour sa grande fiabilité, à condition que l'entretien soit suivi avec sérieux et régularité." },
+      { "type": "paragraph", "html": "<strong>La Z650 est-elle plus chère à entretenir qu’une 500cc ?</strong><br/>Oui, légèrement. Les performances supérieures et le caractère moteur plus trempé entraînent un coût un peu plus élevé, mais qui reste tout à fait raisonnable pour la catégorie." },
+      { "type": "paragraph", "html": "<strong>La Kawasaki Z650 est-elle une moto fiable ?</strong><br/>Oui, c'est une moto reconnue pour sa grande fiabilité et sa robustesse, à condition que l'entretien soit suivi avec sérieux et régularité." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "La Kawasaki Z650 offre un excellent compromis entre performance et accessibilité pour le permis A2. Son entretien, bien que légèrement plus coûteux qu'une 500cc, reste raisonnable et garantit une grande fiabilité si suivi avec rigueur. C'est un choix malin pour ceux qui cherchent des sensations sans sacrifier la tranquillité d'esprit." },
       {
@@ -220,10 +222,10 @@
       { "type": "paragraph", "text": "Le plan d'entretien Honda est réputé pour sa simplicité et ses espacements, idéal pour un usage quotidien." },
       { "type": "table", "headers": ["Kilométrage", "Opération principale"], "rows": [
           ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + filtres + contrôles"],
-          ["24 000 km", "Bougies + contrôle soupapes"],
+          ["12 000 km", "Vidange, filtres et contrôles"],
+          ["24 000 km", "Bougies et contrôle du jeu aux soupapes"],
           ["36 000 km", "Révision intermédiaire"],
-          ["48 000 km", "Gros entretien"]
+          ["48 000 km", "Gros entretien complet"]
       ]},
       { "type": "paragraph", "text": "👉 Une vidange annuelle reste recommandée même si la moto roule peu." },
       
@@ -238,9 +240,9 @@
       
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "paragraph", "text": "Grâce à sa puissance contenue et son poids raisonnable, la CB500 use ses consommables très lentement." },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "10 000 à 18 000 km"],
+      { "type": "table", "headers": ["Pièce", "Durée de vie moyenne"], "rows": [
         ["Kit chaîne", "25 000 à 35 000 km"],
+        ["Pneus", "10 000 à 18 000 km"],
         ["Plaquettes", "15 000 à 25 000 km"],
         ["Batterie", "4 à 6 ans"]
       ]},
@@ -248,26 +250,26 @@
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
       { "type": "paragraph", "text": "Le moteur est connu pour être indestructible et peut atteindre plus de 100 000 km sans problème majeur. Très peu de défauts sont connus :" },
       { "type": "list", "items": [
-          "Batterie d’origine parfois faible.",
-          "Amortisseur arrière qui fatigue avec le duo.",
-          "Tension de la chaîne à surveiller régulièrement."
+          "La batterie d’origine est parfois jugée un peu faible, surtout en hiver.",
+          "L'amortisseur arrière peut montrer des signes de fatigue en cas de duo fréquent.",
+          "La tension de la chaîne est un point à surveiller régulièrement pour éviter une usure prématurée."
       ]},
       
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "heading", "text": "Conseils pour une longévité maximale" },
       { "type": "paragraph", "text": "Pour que votre CB500 atteigne un kilométrage record, suivez ces conseils simples :" },
        { "type": "list", "items": [
-        "Faites une vidange tous les 8 000 à 10 000 km pour garantir la longévité du moteur.",
-        "Vérifiez la tension de la chaîne régulièrement, surtout après de longs trajets ou sous la pluie.",
-        "Surveillez l'état de l'amortisseur arrière, particulièrement en cas de duo fréquent, pour maintenir une bonne tenue de route."
+        "Effectuez une vidange avec de l'huile de qualité tous les 8 000 à 10 000 km pour garantir la longévité du moteur.",
+        "Vérifiez la tension de la chaîne toutes les deux semaines ou après de longs trajets sous la pluie.",
+        "Surveillez l'état de l'amortisseur arrière pour maintenir une bonne tenue de route, surtout si vous roulez souvent à deux."
       ]},
 
       { "type": "heading", "text": "FAQ Entretien Honda CB500" },
-      { "type": "paragraph", "html": "<strong>La CB500F est-elle fiable ?</strong><br/>Oui, c’est l'une des références en matière de fiabilité pour le permis A2." },
-      { "type": "paragraph", "html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, c'est l'une des motos les moins chères à entretenir de sa catégorie." },
-      { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Non, il est rarement nécessaire d'y toucher avant 40 000 km si la moto est bien traitée." },
+      { "type": "paragraph", "html": "<strong>La CB500F est-elle une moto fiable ?</strong><br/>Oui, c’est l'une des motos les plus fiables du marché pour le permis A2, réputée pour sa robustesse." },
+      { "type": "paragraph", "html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, c'est l'une des motos les moins chères à entretenir de sa catégorie, grâce à la disponibilité des pièces et à la simplicité de sa mécanique." },
+      { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Non, le contrôle est préconisé à 24 000 km, mais un ajustement est rarement nécessaire avant 40 000 km si la moto a été bien traitée." },
 
       { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La Honda CB500 Hornet / CB500F est le choix de la tranquillité. Son entretien est simple, peu coûteux et prévisible. C'est la moto parfaite pour apprendre la mécanique ou simplement pour rouler l'esprit libre, sans se soucier des factures." },
+      { "type": "paragraph", "text": "La Honda CB500 Hornet (ou CB500F) est le choix de la tranquillité d'esprit. Son entretien est simple, peu coûteux et prévisible. C'est la moto parfaite pour apprendre les bases de la mécanique ou simplement pour rouler au quotidien sans se soucier des factures imprévues." },
       {
         "type": "signature",
         "text": "L'équipe Label Moto",
@@ -292,8 +294,8 @@
     },
     "chassis": {
       "frame": "Cadre type Diamant",
-      "frontSuspension": "Fourche télescopique, débattement 130 mm",
-      "rearSuspension": "Bras oscillant (suspension à biellettes), débattement 130 mm",
+      "frontSuspension": "Fourche télescopique réglable, débattement 130 mm",
+      "rearSuspension": "Bras oscillant (suspension à biellettes), amortisseur réglable en précharge, débattement 130 mm",
       "frontBrake": "Double disque, Ø 282 mm",
       "rearBrake": "Simple disque, Ø 245 mm",
       "frontTire": "120/70 R 17 M/C (58W)",
@@ -308,44 +310,48 @@
       "wetWeight": "197 kg",
       "fuelCapacity": "17 L"
     },
-    "introduction": "La Tracer 7 reprend le moteur CP2 de la MT-07 mais avec un usage plus routier. Elle roule souvent plus, donc l’entretien est particulièrement important.",
+    "introduction": "La Tracer 7 reprend le moteur CP2 de la MT-07 mais avec un usage plus routier. Elle est conçue pour les longs trajets, ce qui rend son entretien d'autant plus important pour garantir fiabilité et sécurité.",
     "content": [
       { "type": "heading", "text": "Intervalles d’entretien constructeur" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Révision rodage"],
-          ["10 000 km", "Vidange + filtres"],
-          ["20 000 km", "Bougies + soupapes"],
-          ["40 000 km", "Gros entretien"]
+      { "type": "paragraph", "text": "Le plan d'entretien de la Tracer 7 est similaire à celui de la MT-07, mais adapté à un usage plus routier." },
+      { "type": "table", "headers": ["Kilométrage", "Opération principale"], "rows": [
+          ["1 000 km", "Révision de rodage"],
+          ["10 000 km", "Vidange, filtres et contrôles"],
+          ["20 000 km", "Bougies et contrôle du jeu aux soupapes"],
+          ["40 000 km", "Gros entretien complet"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
+      { "type": "paragraph", "text": "Les coûts sont légèrement supérieurs à ceux de la MT-07 en raison du carénage qui demande plus de main d'œuvre." },
+      { "type": "table", "headers": ["Révision", "Coût moyen estimé"], "rows": [
           ["1 000 km", "120 à 180 €"],
           ["10 000 km", "200 à 320 €"],
           ["20 000 km", "350 à 550 €"],
           ["40 000 km", "600 à 900 €"]
       ]},
       { "type": "heading", "text": "Les consommables à surveiller" },
-       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+      { "type": "paragraph", "text": "Conçue pour rouler, la Tracer 7 a une usure des consommables typique d'une moto routière." },
+       { "type": "table", "headers": ["Pièce", "Durée de vie moyenne"], "rows": [
           ["Pneus", "10 000 à 18 000 km"],
           ["Kit chaîne", "20 000 à 30 000 km"],
           ["Plaquettes de frein", "12 000 à 25 000 km"]
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "paragraph", "text": "Le moteur est extrêmement fiable, mais quelques points sont à noter:" },
+      { "type": "paragraph", "text": "Le moteur CP2 est extrêmement fiable, mais quelques points spécifiques à la Tracer 7 sont à noter:" },
       { "type": "list", "items": [
-          "Suspensions souples qui peuvent entraîner une usure plus rapide des pneus.",
-          "Bulle d'origine parfois jugée fragile.",
-          "Chaîne d'origine de qualité moyenne."
+          "Les suspensions souples d'origine peuvent entraîner une usure plus rapide des pneus et un confort perfectible sur mauvais revêtements.",
+          "La bulle d'origine est parfois jugée un peu fragile et peu protectrice pour les grands gabarits.",
+          "La chaîne d'origine est de qualité moyenne et peut nécessiter un remplacement prématuré."
       ]},
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "heading", "text": "Conseils pour une longévité maximale" },
+      { "type": "paragraph", "text": "Pour emmener votre Tracer 7 loin et longtemps, suivez ces quelques conseils." },
       { "type": "list", "items": [
-          "Graissage fréquent de la chaîne, surtout en cas d'usage sous la pluie.",
-          "Surveiller l'amortisseur, surtout en duo.",
-          "Effectuer une vidange régulière."
+          "Un graissage fréquent de la chaîne (tous les 500-700 km) est crucial, surtout si vous roulez sous la pluie.",
+          "Surveillez régulièrement l'état de l'amortisseur arrière, particulièrement si vous roulez souvent en duo et chargé.",
+          "N'hésitez pas à faire des vidanges intermédiaires (tous les 7 000 km) si vous avez un usage intensif."
       ]},
       { "type": "heading", "text": "FAQ entretien Tracer 7" },
-      { "type": "paragraph", "html": "<strong>Fiable pour voyager ?</strong><br/>Oui, c'est une excellente routière pour le permis A2." },
-      { "type": "paragraph", "html": "<strong>Entretien cher ?</strong><br/>Le coût se situe dans la moyenne du marché pour sa catégorie." },
+      { "type": "paragraph", "html": "<strong>La Tracer 7 est-elle une bonne moto pour voyager ?</strong><br/>Oui, c'est une excellente petite routière, très polyvalente et économique, parfaite pour les voyages en duo ou en solo." },
+      { "type": "paragraph", "html": "<strong>L'entretien est-il beaucoup plus cher que celui de la MT-07 ?</strong><br/>Le coût des pièces est similaire, mais la main d'œuvre peut être légèrement plus élevée à cause du temps nécessaire pour démonter le carénage." },
       {
         "type": "signature",
         "text": "L'équipe Label Moto",
@@ -355,4 +361,3 @@
     ]
   }
 ]
-
