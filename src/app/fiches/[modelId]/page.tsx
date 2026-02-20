@@ -19,7 +19,24 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-type FicheTechnique = (typeof fichesData)[0];
+type FicheContent = {
+  type: 'paragraph' | 'heading' | 'list' | 'table';
+  text?: string;
+  html?: string;
+  items?: string[];
+  headers?: string[];
+  rows?: string[][];
+};
+
+type FicheData = (typeof fichesData)[0];
+
+interface FicheTechnique extends Omit<FicheData, 'maintenance' | 'reliability'> {
+  introduction?: string;
+  content?: FicheContent[];
+  maintenance?: { interval: string; cost: string; details: string }[];
+  reliability?: string[];
+}
+
 
 export default function FicheTechniquePage() {
   const router = useRouter();
@@ -41,6 +58,54 @@ export default function FicheTechniquePage() {
 
   const handleFilterChange = (filter: 'shopping' | 'service') => {
     router.push(`/map?filter=${filter}`);
+  };
+
+  const renderContent = (content: FicheContent[]) => {
+    if (!content || content.length === 0) {
+      return null;
+    }
+
+    return content.map((block, index) => {
+      if (block.type === 'heading') {
+        return <h3 key={index} className="text-2xl font-bold font-serif mt-8 mb-4">{block.text}</h3>;
+      }
+      if (block.type === 'list' && block.items) {
+        return (
+          <ul key={index} className="list-disc list-inside space-y-2 my-4 pl-4 text-base">
+            {block.items.map((item, i) => <li key={i} className="text-foreground/90" dangerouslySetInnerHTML={{ __html: item }} />)}
+          </ul>
+        );
+      }
+      if (block.type === 'paragraph' && block.html) {
+          return <p key={index} className="text-base text-foreground/90 leading-relaxed my-4" dangerouslySetInnerHTML={{ __html: block.html }} />;
+      }
+      if (block.type === 'table' && block.headers && block.rows) {
+        return (
+          <div key={index} className="my-6 overflow-x-auto">
+             <Table>
+              <TableHeader>
+                <TableRow>
+                  {block.headers.map((header: string, hIndex: number) => (
+                    <TableHead key={hIndex} className="font-semibold">{header}</TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {block.rows.map((row: string[], rIndex: number) => (
+                  <TableRow key={rIndex}>
+                    {row.map((cell: string, cIndex: number) => (
+                      <TableCell key={cIndex} className={cIndex === 0 ? 'font-medium' : ''}>{cell}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        );
+      }
+      
+      return <p key={index} className="text-base text-foreground/90 leading-relaxed my-4">{block.text}</p>;
+    });
   };
 
   return (
@@ -138,47 +203,66 @@ export default function FicheTechniquePage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3"><Wrench className="h-6 w-6 text-accent" /> Plan d'entretien & Coûts</CardTitle>
-                <CardDescription>Les coûts sont des estimations et peuvent varier selon le garage.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Intervalle</TableHead>
-                        <TableHead>Coût estimé</TableHead>
-                        <TableHead>Opérations principales</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {fiche.maintenance.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{item.interval}</TableCell>
-                          <TableCell>{item.cost}</TableCell>
-                          <TableCell>{item.details}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3"><ShieldCheck className="h-6 w-6 text-accent" /> Fiabilité & Points à surveiller</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc list-inside space-y-2 text-sm">
-                    {fiche.reliability.map((point, index) => (
-                        <li key={index}>{point}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+            {fiche.content ? (
+              <div className="pt-8">
+                  <h2 className="text-4xl font-bold font-serif text-center mb-2">
+                    Guide d'entretien
+                  </h2>
+                  {fiche.introduction && (
+                    <p className="text-lg text-center text-muted-foreground leading-relaxed mb-8">{fiche.introduction}</p>
+                  )}
+                  <div className="space-y-4">
+                      {renderContent(fiche.content)}
+                  </div>
+              </div>
+            ) : (
+              <>
+              {fiche.maintenance && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3"><Wrench className="h-6 w-6 text-accent" /> Plan d'entretien & Coûts</CardTitle>
+                    <CardDescription>Les coûts sont des estimations et peuvent varier selon le garage.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Intervalle</TableHead>
+                            <TableHead>Coût estimé</TableHead>
+                            <TableHead>Opérations principales</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {fiche.maintenance.map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-medium">{item.interval}</TableCell>
+                              <TableCell>{item.cost}</TableCell>
+                              <TableCell>{item.details}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {fiche.reliability && (
+                <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-3"><ShieldCheck className="h-6 w-6 text-accent" /> Fiabilité & Points à surveiller</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="list-disc list-inside space-y-2 text-sm">
+                        {fiche.reliability.map((point, index) => (
+                            <li key={index}>{point}</li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+              )}
+              </>
+            )}
 
           </div>
         </div>
