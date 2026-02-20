@@ -181,7 +181,7 @@ const article = {
       },
       {
         "type": "list",
-        "items": ["CB500 Hornet / CB500F", "CBR500R", "NX500"]
+        "items": ["<a href=\"/fiches/honda-cb500-hornet\" class=\"text-accent underline hover:text-accent/80\">CB500 Hornet / CB500F</a>", "CBR500R", "NX500"]
       },
       {
         "type": "paragraph",
@@ -189,7 +189,7 @@ const article = {
       },
       {
         "type": "list",
-        "items": ["Z650", "Ninja 650"]
+        "items": ["<a href=\"/fiches/kawasaki-z650\" class=\"text-accent underline hover:text-accent/80\">Z650</a>", "Ninja 650"]
       },
       {
         "type": "paragraph",
