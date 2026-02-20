@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type FicheContent = {
   type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
@@ -239,6 +240,13 @@ export default function FicheTechniquePage() {
                   {fiche.introduction && (
                     <p className="text-lg text-center text-muted-foreground leading-relaxed mb-8">{fiche.introduction}</p>
                   )}
+                  <div className="text-center mb-8">
+                    <Button asChild size="lg">
+                      <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
+                        Consultez les garages proches de chez vous spécialisés {fiche.brand}.
+                      </Link>
+                    </Button>
+                  </div>
                   <div className="space-y-4">
                       {renderContent(fiche.content)}
                   </div>
