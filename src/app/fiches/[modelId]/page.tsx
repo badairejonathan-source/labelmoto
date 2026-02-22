@@ -80,22 +80,21 @@ export default function FicheTechniquePage() {
       return null;
     }
 
-    return content.map((block, index) => {
+    return content.flatMap((block, index) => {
+      const elements: React.ReactNode[] = [];
+      
       if (block.type === 'heading') {
-        return <h3 key={index} className="text-2xl font-bold font-serif mt-8 mb-4">{block.text}</h3>;
-      }
-      if (block.type === 'list' && block.items) {
-        return (
+        elements.push(<h3 key={index} className="text-2xl font-bold font-serif mt-8 mb-4">{block.text}</h3>);
+      } else if (block.type === 'list' && block.items) {
+        elements.push(
           <ul key={index} className="list-disc list-inside space-y-2 my-4 pl-4 text-base">
             {block.items.map((item, i) => <li key={i} className="text-foreground/90" dangerouslySetInnerHTML={{ __html: item }} />)}
           </ul>
         );
-      }
-      if (block.type === 'paragraph' && block.html) {
-          return <p key={index} className="text-base text-foreground/90 leading-relaxed my-4" dangerouslySetInnerHTML={{ __html: block.html }} />;
-      }
-      if (block.type === 'table' && block.headers && block.rows) {
-        return (
+      } else if (block.type === 'paragraph' && block.html) {
+          elements.push(<p key={index} className="text-base text-foreground/90 leading-relaxed my-4" dangerouslySetInnerHTML={{ __html: block.html }} />);
+      } else if (block.type === 'table' && block.headers && block.rows) {
+        elements.push(
           <div key={index} className="my-6 overflow-x-auto">
              <Table>
               <TableHeader>
@@ -117,9 +116,22 @@ export default function FicheTechniquePage() {
             </Table>
           </div>
         );
-      }
-      if (block.type === 'signature' && block.imageUrl) {
-        return (
+        
+        if (block.headers.includes('Prix moyen') || block.headers.includes('Coût moyen estimé')) {
+           elements.push(
+            <div key={`extra-${index}`} className="my-4 p-4 bg-muted/50 rounded-lg text-center border">
+              <p className="text-sm text-muted-foreground mb-2">Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.</p>
+              <Button asChild>
+                <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
+                  🔘 Comparer les ateliers près de moi
+                </Link>
+              </Button>
+            </div>
+          );
+        }
+
+      } else if (block.type === 'signature' && block.imageUrl) {
+        elements.push(
           <div key={index} className="flex justify-end items-center mt-[-3rem] sm:mt-[-4rem] mr-0 sm:mr-4">
             <p className="text-lg font-semibold text-foreground/90 relative z-10">{block.text}</p>
             <Image 
@@ -130,10 +142,12 @@ export default function FicheTechniquePage() {
               className="object-contain opacity-70 -rotate-[15deg] pointer-events-none -ml-16"
             />
           </div>
-        )
+        );
+      } else {
+        elements.push(<p key={index} className="text-base text-foreground/90 leading-relaxed my-4">{block.text}</p>);
       }
-      
-      return <p key={index} className="text-base text-foreground/90 leading-relaxed my-4">{block.text}</p>;
+
+      return elements;
     });
   };
 
