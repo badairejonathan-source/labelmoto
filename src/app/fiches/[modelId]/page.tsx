@@ -241,6 +241,10 @@ export default function FicheTechniquePage() {
                     <p className="text-lg text-center text-muted-foreground leading-relaxed mb-8">{fiche.introduction}</p>
                   )}
                   <div className="text-center mb-8">
+                    <p className="text-muted-foreground mb-4">
+                        Préparez votre prochaine révision sans surprise. <br/>
+                        Comparez les garages proches de chez vous pour votre {fiche.modelName}.
+                    </p>
                     <Button asChild size="lg">
                       <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
                         🔘 Voir les garages autour de moi
