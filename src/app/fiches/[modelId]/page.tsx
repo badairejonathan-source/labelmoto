@@ -243,7 +243,7 @@ export default function FicheTechniquePage() {
                   <div className="text-center mb-8">
                     <Button asChild size="lg">
                       <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
-                        Consultez les garages proches de chez vous spécialisés {fiche.brand}.
+                        🔘 Voir les garages autour de moi
                       </Link>
                     </Button>
                   </div>
