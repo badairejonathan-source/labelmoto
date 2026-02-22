@@ -119,7 +119,7 @@ export default function FicheTechniquePage() {
         
         if (block.headers.includes('Prix moyen') || block.headers.includes('Coût moyen estimé')) {
            elements.push(
-            <div key={`extra-${index}`} className="my-4 p-4 bg-muted/50 rounded-lg text-center border">
+            <div key={`extra-${index}`} className="my-4 p-4 text-center">
               <p className="text-sm text-muted-foreground mb-2">Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.</p>
               <Button asChild>
                 <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
