@@ -187,6 +187,8 @@ const LandingHeader = () => {
 export default function LandingPage() {
     const { hero, gallery, ctaSection } = placeholderData.landingPage;
     const featuredArticle = articlesData.find(article => article.id === '5');
+    const { user } = useUser();
+    const proRegisterLink = user ? "/pro/register" : "/login";
 
     const getImageUrl = (image: GalleryImage) => {
         return image.src || `https://picsum.photos/seed/${image.seed}/${image.width}/${image.height}`;
@@ -376,6 +378,22 @@ export default function LandingPage() {
                             </div>
                         </div>
                     </div>
+                </section>
+
+                <section className="mt-8 md:mt-12">
+                  <div className="bg-muted/50 rounded-2xl p-6 md:p-8 text-center">
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                      Développez votre visibilité locale
+                    </h2>
+                    <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
+                      Faites apparaître votre concession ou atelier dans notre annuaire spécialisé moto et attirez de nouveaux clients qualifiés.
+                    </p>
+                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                      <Link href={proRegisterLink}>
+                        🔘 Demander la création de ma fiche
+                      </Link>
+                    </Button>
+                  </div>
                 </section>
                 </div>
             </main>
