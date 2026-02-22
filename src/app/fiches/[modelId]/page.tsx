@@ -121,7 +121,7 @@ export default function FicheTechniquePage() {
            elements.push(
             <div key={`extra-${index}`} className="my-4 text-center">
               <p className="text-sm text-muted-foreground mb-2">Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.</p>
-              <Button asChild>
+              <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                 <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
                   🔘 Comparer les ateliers près de moi
                 </Link>
@@ -275,7 +275,7 @@ export default function FicheTechniquePage() {
                         Préparez votre prochaine révision sans surprise. <br/>
                         Comparez les garages proches de chez vous pour votre {fiche.modelName}.
                     </p>
-                    <Button asChild size="lg">
+                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                       <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
                         🔘 Voir les garages autour de moi
                       </Link>
@@ -292,7 +292,7 @@ export default function FicheTechniquePage() {
                         <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
                             Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
                         </p>
-                        <Button asChild>
+                        <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                             <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
                                 🔘 Voir les {fiche.modelName} en concession
                             </Link>
