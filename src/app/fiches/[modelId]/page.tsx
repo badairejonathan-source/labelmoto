@@ -119,7 +119,7 @@ export default function FicheTechniquePage() {
         
         if (block.headers.includes('Prix moyen') || block.headers.includes('Coût moyen estimé')) {
            elements.push(
-            <div key={`extra-${index}`} className="my-4 p-4 text-center">
+            <div key={`extra-${index}`} className="my-4 text-center">
               <p className="text-sm text-muted-foreground mb-2">Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.</p>
               <Button asChild>
                 <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
@@ -150,6 +150,22 @@ export default function FicheTechniquePage() {
       return elements;
     });
   };
+
+  const ctaConseilsIndex = fiche.content
+    ? fiche.content.findIndex(
+        (b) => b.type === 'heading' && b.text === 'Conseils pour prolonger la durée de vie'
+      )
+    : -1;
+
+  const contentBeforeCta =
+    ctaConseilsIndex !== -1 && fiche.content
+      ? fiche.content.slice(0, ctaConseilsIndex)
+      : fiche.content || [];
+
+  const contentAfterCta =
+    ctaConseilsIndex !== -1 && fiche.content
+      ? fiche.content.slice(ctaConseilsIndex)
+      : [];
 
   return (
     <div className="bg-background min-h-screen">
@@ -252,7 +268,7 @@ export default function FicheTechniquePage() {
                     Guide d'entretien
                   </h2>
                   {fiche.introduction && (
-                    <p className="text-lg text-center text-muted-foreground leading-relaxed mb-8">{fiche.introduction}</p>
+                    <p className="text-lg text-center text-muted-foreground leading-relaxed mb-4">{fiche.introduction}</p>
                   )}
                   <div className="text-center mb-8">
                     <p className="text-muted-foreground mb-4">
@@ -265,8 +281,27 @@ export default function FicheTechniquePage() {
                       </Link>
                     </Button>
                   </div>
+                  
                   <div className="space-y-4">
-                      {renderContent(fiche.content)}
+                      {renderContent(contentBeforeCta)}
+                  </div>
+
+                  {ctaConseilsIndex !== -1 && (
+                    <div className="my-8 text-center border-y py-8">
+                        <h3 className="text-2xl font-bold font-serif mb-2">🏍️ La {fiche.modelName} vous correspond ?</h3>
+                        <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
+                            Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
+                        </p>
+                        <Button asChild>
+                            <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
+                                🔘 Voir les {fiche.modelName} en concession
+                            </Link>
+                        </Button>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                      {renderContent(contentAfterCta)}
                   </div>
               </div>
             ) : (
