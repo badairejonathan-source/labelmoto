@@ -45,7 +45,8 @@ const submissionSchema = z.object({
   website: z.string().url({ message: "Veuillez entrer une URL valide (ex: https://...)" }).optional().or(z.literal('')),
   placeUrl: z.string().url({ message: "Veuillez entrer une URL Google Maps valide." }).optional().or(z.literal('')),
   imgUrl: z.any().optional(),
-  brands: z.array(z.string()).optional(),
+  primaryBrand: z.string().optional(),
+  secondaryBrands: z.array(z.string()).optional(),
   description: z.string().max(500, "La description ne doit pas dépasser 500 caractères.").optional(),
   horaires: z.object({
     lundi: detailedDayHoursSchema,
@@ -85,7 +86,8 @@ export default function RegisterProPage() {
       website: '',
       placeUrl: '',
       imgUrl: null,
-      brands: [],
+      primaryBrand: '',
+      secondaryBrands: [],
       description: '',
       horaires: {
         lundi: { morningOpen: 'Fermé', morningClose: 'Fermé', afternoonOpen: 'Fermé', afternoonClose: 'Fermé' },
@@ -152,10 +154,20 @@ export default function RegisterProPage() {
         formattedHoraires[day] = dayString;
       });
 
-      // NOTE: File upload is not implemented. We are only changing the UI.
-      // The `imgUrl` field will contain a File object but we won't upload it.
-      // To prevent errors, we won't pass it to Firestore.
-      const { imgUrl, ...submissionData } = data;
+      const { imgUrl, primaryBrand, secondaryBrands, ...submissionData } = data;
+
+      const combinedBrands = [];
+      if (primaryBrand) {
+          combinedBrands.push(primaryBrand);
+      }
+      if (secondaryBrands && secondaryBrands.length > 0) {
+          secondaryBrands.forEach(brand => {
+              if (!combinedBrands.includes(brand)) {
+                  combinedBrands.push(brand);
+              }
+          });
+      }
+
 
       await addDoc(collection(firestore, "pending_concessions"), {
         title: submissionData.name,
@@ -165,7 +177,7 @@ export default function RegisterProPage() {
         email: submissionData.email || '',
         website: submissionData.website || '',
         placeUrl: submissionData.placeUrl || '',
-        brands: submissionData.brands || [],
+        brands: combinedBrands,
         description: submissionData.description || '',
         ...formattedHoraires,
         submittedAt: serverTimestamp(),
@@ -410,24 +422,50 @@ export default function RegisterProPage() {
                     </div>
 
                     <div className="space-y-4 p-4 border rounded-lg">
+                      <h4 className="font-semibold text-lg">Marques distribuées</h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="primaryBrand"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Marque principale (optionnel)</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionnez une marque" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {brands.map((brand) => (
+                                        <SelectItem key={`primary-${brand}`} value={brand}>{brand}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
                         <FormField
                           control={form.control}
-                          name="brands"
+                          name="secondaryBrands"
                           render={({ field }) => (
                             <FormItem className="flex flex-col">
-                              <FormLabel>Marques principales (optionnel)</FormLabel>
+                              <FormLabel>Marques secondaires (optionnel)</FormLabel>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                     <FormControl>
                                       <Button variant="outline" className="w-full justify-start text-left font-normal">
                                         {field.value && field.value.length > 0
                                           ? field.value.join(', ')
-                                          : "Sélectionnez une ou plusieurs marques"}
+                                          : "Sélectionnez les autres marques"}
                                       </Button>
                                     </FormControl>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]" align="start">
-                                    {brands.map((brand) => (
+                                    {brands
+                                      .filter(brand => brand !== form.watch('primaryBrand'))
+                                      .map((brand) => (
                                       <DropdownMenuCheckboxItem
                                         key={brand}
                                         checked={field.value?.includes(brand)}
@@ -450,6 +488,7 @@ export default function RegisterProPage() {
                             </FormItem>
                           )}
                         />
+                      </div>
                     </div>
 
                      <div className="space-y-4 p-4 border rounded-lg">
