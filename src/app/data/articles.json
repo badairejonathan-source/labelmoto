@@ -1,28 +1,6 @@
 
 [
   {
-    "id": "1",
-    "title": "10 balades moto uniques et exclusives autour de Paris",
-    "description": "Quittez l'agitation parisienne et découvrez des itinéraires secrets et des paysages insoupçonnés à moins de deux heures de la capitale. Entre châteaux, forêts et routes sinueuses, l'aventure vous attend au coin de la rue.",
-    "author": "Jean-Pierre Moto",
-    "date": "15 juillet 2024",
-    "readingTime": "6 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/article-paris/1200/600",
-    "imageHint": "motorcycle paris",
-    "content": [
-      {
-        "type": "paragraph",
-        "text": "Contenu de l'article à venir..."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
-    ]
-  },
-  {
     "id": "2",
     "title": "Des road-trips inoubliables pour chaque saison",
     "description": "Que ce soit sous le soleil d'été, les couleurs de l'automne ou la fraîcheur du printemps, la France offre des routes magnifiques toute l'année. Découvrez nos sélections des meilleurs road-trips moto, saison par saison.",
@@ -950,13 +928,4 @@
   }
 ]
     
-
-    
-
-    
-
-    
-
-    
-
-    
+  
