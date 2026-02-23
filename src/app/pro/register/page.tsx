@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -513,75 +512,52 @@ export default function RegisterProPage() {
                     </div>
                     
                     <div className="space-y-4 p-4 border rounded-lg">
-                        <h4 className="font-semibold text-lg">Horaires d'ouverture</h4>
+                      <h4 className="font-semibold text-lg">Horaires d'ouverture</h4>
                         <p className="text-sm text-muted-foreground">Sélectionnez les horaires pour chaque jour, avec une coupure pour le midi si nécessaire.</p>
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                             {weekDays.map((day) => (
-                            <div key={day} className="grid grid-cols-[1fr] sm:grid-cols-[90px_1fr] items-center gap-x-4 gap-y-2">
+                            <div key={day} className="grid grid-cols-[90px_1fr] items-center gap-x-4">
                                 <FormLabel className="capitalize font-semibold">{day}</FormLabel>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="flex items-center gap-2">
-                                        <FormField
-                                        control={form.control}
-                                        name={`horaires.${day}.morningOpen`}
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                                <SelectContent>{timeOptions.map(option => <SelectItem key={`m-open-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                            </FormItem>
-                                        )}
-                                        />
-                                        <span className="text-muted-foreground">-</span>
-                                        <FormField
-                                        control={form.control}
-                                        name={`horaires.${day}.morningClose`}
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                            <Select onValueChange={field.onChange} value={field.value} disabled={form.watch(`horaires.${day}.morningOpen`) === 'Fermé'}>
-                                                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                                <SelectContent>{timeOptions.map(option => <SelectItem key={`m-close-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                            </FormItem>
-                                        )}
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <FormField
-                                        control={form.control}
-                                        name={`horaires.${day}.afternoonOpen`}
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                                <SelectContent>{timeOptions.map(option => <SelectItem key={`a-open-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                            </FormItem>
-                                        )}
-                                        />
-                                        <span className="text-muted-foreground">-</span>
-                                        <FormField
-                                        control={form.control}
-                                        name={`horaires.${day}.afternoonClose`}
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                            <Select onValueChange={field.onChange} value={field.value} disabled={form.watch(`horaires.${day}.afternoonOpen`) === 'Fermé'}>
-                                                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                                <SelectContent>{timeOptions.map(option => <SelectItem key={`a-close-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                            </FormItem>
-                                        )}
-                                        />
-                                    </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <FormField
+                                    control={form.control}
+                                    name={`horaires.${day}.morningOpen`}
+                                    render={({ field }) => (
+                                        <FormItem><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`m-open-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                    )}
+                                    />
+                                    <FormField
+                                    control={form.control}
+                                    name={`horaires.${day}.morningClose`}
+                                    render={({ field }) => (
+                                        <FormItem><Select onValueChange={field.onChange} value={field.value} disabled={form.watch(`horaires.${day}.morningOpen`) === 'Fermé'}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`m-close-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                    )}
+                                    />
+                                    <FormField
+                                    control={form.control}
+                                    name={`horaires.${day}.afternoonOpen`}
+                                    render={({ field }) => (
+                                        <FormItem><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`a-open-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                    )}
+                                    />
+                                    <FormField
+                                    control={form.control}
+                                    name={`horaires.${day}.afternoonClose`}
+                                    render={({ field }) => (
+                                        <FormItem><Select onValueChange={field.onChange} value={field.value} disabled={form.watch(`horaires.${day}.afternoonOpen`) === 'Fermé'}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`a-close-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                    )}
+                                    />
                                 </div>
                             </div>
                             ))}
                         </div>
+                    </div>
+
+                    <div className="space-y-2 p-4 border rounded-lg bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800">
+                        <h4 className="font-semibold text-lg flex items-center gap-2 text-amber-800 dark:text-amber-300">⭐ Évolution possible de votre fiche</h4>
+                        <p className="text-sm text-amber-700 dark:text-amber-400/90 pl-1">
+                            Une mise en avant locale pourra être proposée ultérieurement aux établissements souhaitant renforcer leur visibilité.
+                        </p>
                     </div>
 
                     <div className="flex justify-end pt-4">
