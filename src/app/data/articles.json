@@ -1,28 +1,6 @@
 
 [
   {
-    "id": "3",
-    "title": "5 destinations pour les motards amoureux du grand air",
-    "description": "Si pour vous, moto rime avec nature et grands espaces, cet article est fait pour vous. Des Gorges du Verdon aux volcans d'Auvergne, explorez cinq destinations où la route et le paysage ne font qu'un.",
-    "author": "Chris V-Twin",
-    "date": "5 juillet 2024",
-    "readingTime": "5 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/article-nature/1200/600",
-    "imageHint": "motorcycle nature",
-    "content": [
-      {
-        "type": "paragraph",
-        "text": "Contenu de l'article à venir..."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
-    ]
-  },
-  {
     "id": "4",
     "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
     "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu. Cet article détaille le coût réel d’une moto pour un débutant.",
@@ -907,5 +885,7 @@
 ]
     
   
+
+    
 
     
