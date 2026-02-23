@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useFirebase } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, CheckCircle, Rocket } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import brandLogos from '@/data/brand-logos';
@@ -220,7 +221,7 @@ export default function RegisterProPage() {
         <div className="max-w-4xl mx-auto space-y-12">
         
           <section className="text-center bg-card p-8 rounded-xl shadow-lg border">
-            <Rocket className="h-12 w-12 mx-auto text-blue-500 mb-4" />
+            <Image src="/images/Stamp-LM.png?v=3" alt="Label Moto" width={64} height={64} className="mx-auto mb-4 opacity-80" />
             <h1 className="text-4xl font-bold text-foreground mb-4">Attirez plus de motards dans votre région</h1>
             <p className="text-xl text-muted-foreground mb-2">Soyez visible au moment où ils cherchent à acheter, entretenir ou réparer leur moto.</p>
             <div className="mt-6">
