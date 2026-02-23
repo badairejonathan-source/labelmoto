@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React from 'react';
@@ -116,9 +114,8 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </Link>
           </div>
           
-          <div className="flex items-center gap-2 md:gap-4">
-            <nav className="flex items-center justify-center gap-2 md:gap-4">
-              <Button
+          <nav className="hidden md:flex items-center justify-center gap-2 md:gap-4">
+             <Button
                 variant="ghost"
                 onClick={() => onFilterChange('shopping')}
                 className={cn(
@@ -135,6 +132,34 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                 onClick={() => onFilterChange('service')}
                 className={cn(
                   "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                  activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                <Wrench className="h-5 w-5" />
+                <span>Atelier</span>
+                {activeFilter === 'service' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+              </Button>
+          </nav>
+
+          <div className="flex items-center gap-2 md:gap-4">
+            <nav className="flex items-center justify-center gap-2 md:gap-4">
+               <Button
+                variant="ghost"
+                onClick={() => onFilterChange('shopping')}
+                className={cn(
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
+                  activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                <Bike className="h-5 w-5" />
+                <span>Concession</span>
+                {activeFilter === 'shopping' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => onFilterChange('service')}
+                className={cn(
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
                   activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
@@ -203,9 +228,3 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 };
 
 export default Header;
-
-    
-
-    
-
-    
