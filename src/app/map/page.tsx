@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { FirestorePermissionError } from '@/firebase/errors';
+import brandLogos from '@/data/brand-logos';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -154,6 +155,7 @@ function MapPageComponent() {
                 rating: dealer.rating || undefined,
                 category: dealer.category || undefined,
                 appSection: dealer.appSection || 'both',
+                brands: dealer.brands || [],
               };
               dealershipMap.set(uniqueKey, dealerWithId);
             }
@@ -230,7 +232,8 @@ function MapPageComponent() {
             // Original search logic
             results = results.filter(d => 
                 (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
-                (d.address?.toLowerCase().includes(lowerCaseSearch))
+                (d.address?.toLowerCase().includes(lowerCaseSearch)) ||
+                (d.brands?.some(brand => brand.toLowerCase().includes(lowerCaseSearch)))
             );
         }
     }
@@ -289,12 +292,27 @@ function MapPageComponent() {
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
+    const lowerCaseSearch = submittedSearchTerm.toLowerCase();
+    const allBrands = Object.keys(brandLogos).map(b => b.toLowerCase());
+    const isBrandSearch = allBrands.includes(lowerCaseSearch);
+
     return [...filteredDealerships].sort((a, b) => {
+      // 1. Selected dealership always on top
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
+
+      // 2. If searching for a brand, prioritize primary brand
+      if (isBrandSearch) {
+        const aIsPrimary = a.brands?.[0]?.toLowerCase() === lowerCaseSearch;
+        const bIsPrimary = b.brands?.[0]?.toLowerCase() === lowerCaseSearch;
+        if (aIsPrimary && !bIsPrimary) return -1;
+        if (!aIsPrimary && bIsPrimary) return 1;
+      }
+      
+      // 3. Sort by distance
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     }).slice(0, 50);
-  }, [filteredDealerships, mapCenter, selectedDealershipId]);
+  }, [filteredDealerships, mapCenter, selectedDealershipId, submittedSearchTerm]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
