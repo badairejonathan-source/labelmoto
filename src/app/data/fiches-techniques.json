@@ -87,7 +87,8 @@
           "vérifier la pression pneus souvent"
       ]},
       { "type": "paragraph", "text": "Une MT-07 bien suivie dépasse facilement 80 000 km." },
-
+      { "type": "paragraph", "html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
+      
       { "type": "heading", "text": "FAQ entretien MT-07" },
       { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 6 000 à 10 000 km selon utilisation." },
       { "type": "paragraph", "html": "<strong>Combien coûte l’entretien annuel ?</strong><br/>Environ 250 à 400 € par an." },
