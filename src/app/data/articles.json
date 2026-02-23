@@ -1,28 +1,6 @@
 
 [
   {
-    "id": "2",
-    "title": "Des road-trips inoubliables pour chaque saison",
-    "description": "Que ce soit sous le soleil d'été, les couleurs de l'automne ou la fraîcheur du printemps, la France offre des routes magnifiques toute l'année. Découvrez nos sélections des meilleurs road-trips moto, saison par saison.",
-    "author": "Valérie Guidon",
-    "date": "10 juillet 2024",
-    "readingTime": "8 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/article-seasons/1200/600",
-    "imageHint": "motorcycle road",
-    "content": [
-      {
-        "type": "paragraph",
-        "text": "Contenu de l'article à venir..."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
-    ]
-  },
-  {
     "id": "3",
     "title": "5 destinations pour les motards amoureux du grand air",
     "description": "Si pour vous, moto rime avec nature et grands espaces, cet article est fait pour vous. Des Gorges du Verdon aux volcans d'Auvergne, explorez cinq destinations où la route et le paysage ne font qu'un.",
@@ -929,3 +907,5 @@
 ]
     
   
+
+    
