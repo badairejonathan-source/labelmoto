@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -10,87 +11,75 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle, Rocket, Bike, Store } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 
-const establishmentSchema = z.object({
-  title: z.string().min(3, "Le nom de l'établissement est requis."),
-  address: z.string().min(10, "L'adresse est requise."),
-  phoneNumber: z.string().optional(),
-  email: z.string().email("Veuillez entrer une adresse e-mail valide.").optional().or(z.literal('')),
-  website: z.string().url("Veuillez entrer une URL valide.").optional().or(z.literal('')),
-  placeUrl: z.string().url("Veuillez entrer une URL valide.").optional().or(z.literal('')),
-  category: z.enum(['concession', 'atelier', 'accessoiriste', 'autre'], {
-    required_error: "Veuillez sélectionner une catégorie."
-  }),
-  description: z.string().max(300, "La description ne peut pas dépasser 300 caractères.").optional(),
-  lundi: z.string().optional(),
-  mardi: z.string().optional(),
-  mercredi: z.string().optional(),
-  jeudi: z.string().optional(),
-  vendredi: z.string().optional(),
-  samedi: z.string().optional(),
-  dimanche: z.string().optional(),
+const submissionSchema = z.object({
+  name: z.string().min(3, { message: "Le nom de l'établissement est requis." }),
+  city: z.string().min(2, { message: "La ville est requise." }),
+  email: z.string().email({ message: "Veuillez entrer une adresse e-mail valide." }),
+  phone: z.string().min(10, { message: "Un numéro de téléphone valide est requis." }),
+  brands: z.string().optional(),
 });
 
-type EstablishmentFormValues = z.infer<typeof establishmentSchema>;
-
-const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+type SubmissionFormValues = z.infer<typeof submissionSchema>;
 
 export default function RegisterProPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { firestore } = useFirebase();
-  const form = useForm<EstablishmentFormValues>({
-    resolver: zodResolver(establishmentSchema),
+  const form = useForm<SubmissionFormValues>({
+    resolver: zodResolver(submissionSchema),
     defaultValues: {
-      title: '',
-      address: '',
-      phoneNumber: '',
+      name: '',
+      city: '',
       email: '',
-      website: '',
-      placeUrl: '',
-      description: '',
-      lundi: 'Fermé',
-      mardi: '09:00-12:00, 14:00-19:00',
-      mercredi: '09:00-12:00, 14:00-19:00',
-      jeudi: '09:00-12:00, 14:00-19:00',
-      vendredi: '09:00-12:00, 14:00-19:00',
-      samedi: '09:00-17:00',
-      dimanche: 'Fermé',
+      phone: '',
+      brands: '',
     },
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: EstablishmentFormValues) => {
+  const onSubmit = async (data: SubmissionFormValues) => {
+    if (!firestore) {
+        toast({
+            variant: "destructive",
+            title: 'Erreur de connexion',
+            description: "Impossible de se connecter à la base de données.",
+        });
+        return;
+    }
     try {
       await addDoc(collection(firestore, "pending_concessions"), {
-        ...data,
+        title: data.name,
+        address: data.city, // Simplified field
+        phoneNumber: data.phone,
+        email: data.email,
+        brands: data.brands,
         submittedAt: serverTimestamp(),
+        category: 'autre', // Default category
       });
       toast({
-        title: 'Fiche envoyée pour validation !',
-        description: 'Votre établissement sera visible après examen par notre équipe.',
+        title: 'Demande envoyée !',
+        description: 'Votre fiche sera examinée par notre équipe. Vous serez contacté par e-mail.',
       });
-      setTimeout(() => router.push('/'), 3000);
+      form.reset();
     } catch (error) {
       console.error("Erreur lors de l'ajout du document: ", error);
       toast({
         variant: "destructive",
         title: 'Une erreur est survenue',
-        description: "Votre fiche n'a pas pu être envoyée. Veuillez réessayer.",
+        description: "Votre demande n'a pas pu être envoyée. Veuillez réessayer.",
       });
     }
   };
 
   return (
     <div className="min-h-screen bg-muted/20">
-        <header className="bg-background border-b p-4">
+        <header className="bg-background border-b p-4 sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
                  <div className="w-48">
                     <Link href="/">
@@ -107,184 +96,190 @@ export default function RegisterProPage() {
         </header>
 
       <main className="container mx-auto p-4 sm:p-8">
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle className="text-3xl">Inscrivez votre établissement</CardTitle>
-            <CardDescription>
-              Rejoignez la communauté Label Moto et gagnez en visibilité. Remplissez le formulaire ci-dessous pour créer votre fiche.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                
-                <div className="space-y-4">
-                    <h3 className="text-lg font-medium border-b pb-2">Informations principales</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Nom de l'établissement</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Ex: Moto Passion 75" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="category"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Catégorie principale</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionnez une catégorie" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="concession">Concession (Vente neuf/occasion)</SelectItem>
-                                        <SelectItem value="atelier">Atelier (Réparation / Entretien)</SelectItem>
-                                        <SelectItem value="accessoiriste">Accessoiriste</SelectItem>
-                                        <SelectItem value="autre">Autre</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                     <FormField
-                        control={form.control}
-                        name="address"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Adresse complète</FormLabel>
-                            <FormControl>
-                                <Input placeholder="123 Rue de la Moto, 75001 Paris" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                Assurez-vous d'inclure le numéro, la rue, le code postal et la ville.
-                            </FormDescription>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField
-                            control={form.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Numéro de téléphone</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="01 23 45 67 89" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Email (optionnel)</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="contact@etablissement.com" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField
-                            control={form.control}
-                            name="website"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Site web (optionnel)</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://www.votresite.com" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="placeUrl"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Lien fiche Google (optionnel)</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://maps.app.goo.gl/..." {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    Lien vers votre fiche d'établissement sur Google Maps.
-                                </FormDescription>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                     <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Description courte</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Décrivez votre activité en quelques mots..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+        <div className="max-w-4xl mx-auto space-y-12">
+        
+          {/* Hero Section */}
+          <section className="text-center bg-card p-8 rounded-xl shadow-lg border">
+            <Rocket className="h-12 w-12 mx-auto text-blue-500 mb-4" />
+            <h1 className="text-4xl font-bold text-foreground mb-4">Développez votre visibilité auprès des motards</h1>
+            <p className="text-xl text-muted-foreground mb-2">Vous êtes concessionnaire ou atelier moto ? Apparaissez sur Label Moto.</p>
+            <Button asChild size="lg" className="mt-6 bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+              <Link href="#formulaire">Créer ma fiche gratuitement</Link>
+            </Button>
+          </section>
 
-                <div className="space-y-4">
-                    <h3 className="text-lg font-medium border-b pb-2">Horaires d'ouverture</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {weekDays.map(day => (
-                            <FormField
-                                key={day}
-                                control={form.control}
-                                name={day as keyof EstablishmentFormValues}
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel className="capitalize">{day}</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Ex: 09:00-18:00 ou Fermé" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        ))}
-                    </div>
-                </div>
+          {/* Pourquoi rejoindre */}
+          <section>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-green-600">🟢 POURQUOI REJOINDRE LABEL MOTO ?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-4 text-lg">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <span><span className="font-semibold">Visibilité locale ciblée :</span> Atteignez les motards passionnés de votre région.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <span><span className="font-semibold">Clients déjà intéressés :</span> Attirez des clients qui recherchent activement vos services ou produits.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <span><span className="font-semibold">Plateforme spécialisée moto :</span> Profitez d'un environnement 100% dédié à l'univers de la moto.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <span><span className="font-semibold">Valorisez votre expertise :</span> Mettez en avant vos savoir-faire et vos marques partenaires.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </section>
 
-                <div className="flex justify-end pt-4">
-                  <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Envoi en cours...
-                        </>
-                    ) : 'Soumettre ma fiche'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+          {/* Comment ça fonctionne */}
+          <section>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-yellow-600">🟡 COMMENT ÇA FONCTIONNE ?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-4 text-lg">
+                  <li className="flex items-center gap-3"><span className="text-2xl">1️⃣</span> Vous remplissez le formulaire de demande ci-dessous.</li>
+                  <li className="flex items-center gap-3"><span className="text-2xl">2️⃣</span> Notre équipe valide les informations pour garantir la qualité.</li>
+                  <li className="flex items-center gap-3"><span className="text-2xl">3️⃣</span> Votre fiche est créée et publiée sur notre plateforme.</li>
+                  <li className="flex items-center gap-3"><span className="text-2xl">4️⃣</span> Les motards peuvent vous trouver et vous contacter !</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </section>
+          
+          {/* Votre fiche comprend */}
+          <section>
+             <Card>
+              <CardHeader>
+                <CardTitle className="text-purple-600">🟣 VOTRE FICHE COMPREND</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-4 text-lg">
+                 <li className="flex items-start gap-3 list-none">
+                    - Coordonnées
+                  </li>
+                   <li className="flex items-start gap-3 list-none">
+                    - Horaires
+                  </li>
+                  <li className="flex items-start gap-3 list-none">
+                    - Marques
+                  </li>
+                  <li className="flex items-start gap-3 list-none">
+                   - Services
+                  </li>
+                  <li className="flex items-start gap-3 list-none">
+                   - Photos
+                  </li>
+                  <li className="flex items-start gap-3 list-none">
+                   - Lien site
+                  </li>
+              </CardContent>
+            </Card>
+          </section>
+
+
+          {/* Formulaire */}
+          <section id="formulaire">
+            <Card className="border-red-500 border-2 shadow-xl">
+              <CardHeader>
+                <CardTitle className="text-red-600 text-3xl">🔴 DEMANDEZ LA CRÉATION DE VOTRE FICHE</CardTitle>
+                <CardDescription>
+                  Remplissez ce formulaire rapide. Nous vous contacterons pour finaliser votre fiche personnalisée.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nom de l'établissement</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ex: Moto Passion 75" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ville</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ex: Paris" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email de contact</FormLabel>
+                          <FormControl>
+                            <Input placeholder="contact@etablissement.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Téléphone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="01 23 45 67 89" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="brands"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Marques principales (optionnel)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ex: Yamaha, Honda, Kawasaki..." {...field} />
+                          </FormControl>
+                           <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex justify-end pt-4">
+                      <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
+                        {form.formState.isSubmitting ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Envoi...
+                            </>
+                        ) : 'Envoyer ma demande'}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </section>
+        </div>
       </main>
     </div>
   );
 }
+
+    
