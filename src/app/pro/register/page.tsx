@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,11 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, CheckCircle, Rocket } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 
+const dayHoursSchema = z.object({
+  open: z.string(),
+  close: z.string(),
+});
+
 const submissionSchema = z.object({
   name: z.string().min(3, { message: "Le nom de l'établissement est requis." }),
   category: z.enum(['concession', 'atelier', 'accessoiriste', 'autre'], { required_error: 'La catégorie est requise.' }),
@@ -34,28 +40,26 @@ const submissionSchema = z.object({
   placeUrl: z.string().url({ message: "Veuillez entrer une URL Google Maps valide." }).optional().or(z.literal('')),
   imgUrl: z.string().url({ message: "Veuillez entrer une URL d'image valide (ex: https://...)" }).optional().or(z.literal('')),
   description: z.string().max(500, "La description ne doit pas dépasser 500 caractères.").optional(),
-  lundi: z.string().optional(),
-  mardi: z.string().optional(),
-  mercredi: z.string().optional(),
-  jeudi: z.string().optional(),
-  vendredi: z.string().optional(),
-  samedi: z.string().optional(),
-  dimanche: z.string().optional(),
+  horaires: z.object({
+    lundi: dayHoursSchema,
+    mardi: dayHoursSchema,
+    mercredi: dayHoursSchema,
+    jeudi: dayHoursSchema,
+    vendredi: dayHoursSchema,
+    samedi: dayHoursSchema,
+    dimanche: dayHoursSchema,
+  }),
 });
 
 type SubmissionFormValues = z.infer<typeof submissionSchema>;
 
-const hourOptions = [
-  "Fermé",
-  "09:00 - 12:00 / 14:00 - 19:00",
-  "09:00 - 12:00 / 14:00 - 18:00",
-  "09:30 - 12:30 / 14:00 - 18:30",
-  "09:00 - 19:00",
-  "10:00 - 19:00",
-  "09:00 - 17:00",
-  "10:00 - 18:00",
-  "Sur rendez-vous",
-];
+const timeOptions: string[] = ['Fermé'];
+for (let i = 7; i <= 21; i++) {
+  timeOptions.push(`${String(i).padStart(2, '0')}:00`);
+  if (i < 21) {
+    timeOptions.push(`${String(i).padStart(2, '0')}:30`);
+  }
+}
 
 export default function RegisterProPage() {
   const router = useRouter();
@@ -72,16 +76,31 @@ export default function RegisterProPage() {
       placeUrl: '',
       imgUrl: '',
       description: '',
-      lundi: 'Fermé',
-      mardi: '09:00 - 12:00 / 14:00 - 19:00',
-      mercredi: '09:00 - 12:00 / 14:00 - 19:00',
-      jeudi: '09:00 - 12:00 / 14:00 - 19:00',
-      vendredi: '09:00 - 12:00 / 14:00 - 19:00',
-      samedi: '09:00 - 17:00',
-      dimanche: 'Fermé',
+      horaires: {
+        lundi: { open: 'Fermé', close: 'Fermé' },
+        mardi: { open: '09:00', close: '19:00' },
+        mercredi: { open: '09:00', close: '19:00' },
+        jeudi: { open: '09:00', close: '19:00' },
+        vendredi: { open: '09:00', close: '19:00' },
+        samedi: { open: '09:00', close: '17:00' },
+        dimanche: { open: 'Fermé', close: 'Fermé' },
+      },
     },
     mode: 'onChange',
   });
+
+  const { watch, setValue } = form;
+  const watchedHoraires = watch('horaires');
+  const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+
+  useEffect(() => {
+    weekDays.forEach(day => {
+      const daySchedule = watchedHoraires[day];
+      if (daySchedule?.open === 'Fermé' && daySchedule?.close !== 'Fermé') {
+        setValue(`horaires.${day}.close`, 'Fermé');
+      }
+    });
+  }, [watchedHoraires, setValue, weekDays]);
 
   const onSubmit = async (data: SubmissionFormValues) => {
     if (!firestore) {
@@ -93,6 +112,16 @@ export default function RegisterProPage() {
         return;
     }
     try {
+      const formattedHoraires: { [key: string]: string } = {};
+      weekDays.forEach(day => {
+        const daySchedule = data.horaires[day];
+        if (daySchedule.open === 'Fermé' || !daySchedule.open || !daySchedule.close) {
+          formattedHoraires[day] = 'Fermé';
+        } else {
+          formattedHoraires[day] = `${daySchedule.open} - ${daySchedule.close}`;
+        }
+      });
+
       await addDoc(collection(firestore, "pending_concessions"), {
         title: data.name,
         category: data.category,
@@ -103,13 +132,7 @@ export default function RegisterProPage() {
         placeUrl: data.placeUrl || '',
         imgUrl: data.imgUrl || '',
         description: data.description || '',
-        lundi: data.lundi || 'Fermé',
-        mardi: data.mardi || 'Fermé',
-        mercredi: data.mercredi || 'Fermé',
-        jeudi: data.jeudi || 'Fermé',
-        vendredi: data.vendredi || 'Fermé',
-        samedi: data.samedi || 'Fermé',
-        dimanche: data.dimanche || 'Fermé',
+        ...formattedHoraires,
         submittedAt: serverTimestamp(),
       });
       toast({
@@ -126,8 +149,6 @@ export default function RegisterProPage() {
       });
     }
   };
-
-  const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 
   return (
     <div className="min-h-screen bg-muted/20">
@@ -359,29 +380,52 @@ export default function RegisterProPage() {
                     <div className="space-y-4 p-4 border rounded-lg">
                       <h4 className="font-semibold text-lg">Horaires d'ouverture</h4>
                        <p className="text-sm text-muted-foreground">Sélectionnez les horaires pour chaque jour.</p>
-                       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8">
                         {weekDays.map((day) => (
-                           <FormField
-                            key={day}
-                            control={form.control}
-                            name={day}
-                            render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="capitalize">{day}</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                      <FormControl>
-                                          <SelectTrigger><SelectValue placeholder="Horaires" /></SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                          {hourOptions.map(option => (
-                                            <SelectItem key={option} value={option}>{option}</SelectItem>
-                                          ))}
-                                      </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                            )}
-                            />
+                           <div key={day} className="space-y-2">
+                             <FormLabel className="capitalize">{day}</FormLabel>
+                             <div className="flex items-center gap-2">
+                               <FormField
+                                 control={form.control}
+                                 name={`horaires.${day}.open`}
+                                 render={({ field }) => (
+                                   <FormItem className="flex-1">
+                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                       <FormControl>
+                                         <SelectTrigger><SelectValue /></SelectTrigger>
+                                       </FormControl>
+                                       <SelectContent>
+                                         {timeOptions.map(option => (
+                                           <SelectItem key={`open-${day}-${option}`} value={option}>{option}</SelectItem>
+                                         ))}
+                                       </SelectContent>
+                                     </Select>
+                                     <FormMessage />
+                                   </FormItem>
+                                 )}
+                               />
+                               <span className="text-muted-foreground">-</span>
+                               <FormField
+                                 control={form.control}
+                                 name={`horaires.${day}.close`}
+                                 render={({ field }) => (
+                                   <FormItem className="flex-1">
+                                     <Select onValueChange={field.onChange} defaultValue={field.value} disabled={form.watch(`horaires.${day}.open`) === 'Fermé'}>
+                                       <FormControl>
+                                         <SelectTrigger><SelectValue /></SelectTrigger>
+                                       </FormControl>
+                                       <SelectContent>
+                                         {timeOptions.map(option => (
+                                           <SelectItem key={`close-${day}-${option}`} value={option}>{option}</SelectItem>
+                                         ))}
+                                       </SelectContent>
+                                     </Select>
+                                     <FormMessage />
+                                   </FormItem>
+                                 )}
+                               />
+                             </div>
+                           </div>
                         ))}
                        </div>
                     </div>
