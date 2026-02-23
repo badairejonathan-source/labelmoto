@@ -221,7 +221,7 @@ export default function RegisterProPage() {
         <div className="max-w-4xl mx-auto space-y-12">
         
           <section className="text-center bg-card p-8 rounded-xl shadow-lg border">
-            <Image src="/images/Stamp-LM.png?v=3" alt="Label Moto" width={64} height={64} className="mx-auto mb-4 opacity-80" />
+            <Image src="/images/Stamp-LM.png?v=3" alt="Label Moto" width={128} height={128} className="mx-auto mb-4 opacity-80" />
             <h1 className="text-4xl font-bold text-foreground mb-4">Attirez plus de motards dans votre région</h1>
             <p className="text-xl text-muted-foreground mb-2">Soyez visible au moment où ils cherchent à acheter, entretenir ou réparer leur moto.</p>
             <div className="mt-6">
