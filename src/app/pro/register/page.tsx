@@ -40,7 +40,7 @@ const submissionSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse e-mail valide." }).optional().or(z.literal('')),
   website: z.string().url({ message: "Veuillez entrer une URL valide (ex: https://...)" }).optional().or(z.literal('')),
   placeUrl: z.string().url({ message: "Veuillez entrer une URL Google Maps valide." }).optional().or(z.literal('')),
-  imgUrl: z.string().url({ message: "Veuillez entrer une URL d'image valide (ex: https://...)" }).optional().or(z.literal('')),
+  imgUrl: z.any().optional(),
   description: z.string().max(500, "La description ne doit pas dépasser 500 caractères.").optional(),
   horaires: z.object({
     lundi: detailedDayHoursSchema,
@@ -79,7 +79,7 @@ export default function RegisterProPage() {
       email: '',
       website: '',
       placeUrl: '',
-      imgUrl: '',
+      imgUrl: null,
       description: '',
       horaires: {
         lundi: { morningOpen: 'Fermé', morningClose: 'Fermé', afternoonOpen: 'Fermé', afternoonClose: 'Fermé' },
@@ -146,16 +146,20 @@ export default function RegisterProPage() {
         formattedHoraires[day] = dayString;
       });
 
+      // NOTE: File upload is not implemented. We are only changing the UI.
+      // The `imgUrl` field will contain a File object but we won't upload it.
+      // To prevent errors, we won't pass it to Firestore.
+      const { imgUrl, ...submissionData } = data;
+
       await addDoc(collection(firestore, "pending_concessions"), {
-        title: data.name,
-        category: data.category,
-        address: data.address,
-        phoneNumber: data.phone,
-        email: data.email || '',
-        website: data.website || '',
-        placeUrl: data.placeUrl || '',
-        imgUrl: data.imgUrl || '',
-        description: data.description || '',
+        title: submissionData.name,
+        category: submissionData.category,
+        address: submissionData.address,
+        phoneNumber: submissionData.phone,
+        email: submissionData.email || '',
+        website: submissionData.website || '',
+        placeUrl: submissionData.placeUrl || '',
+        description: submissionData.description || '',
         ...formattedHoraires,
         submittedAt: serverTimestamp(),
       });
@@ -375,12 +379,21 @@ export default function RegisterProPage() {
                              <FormField
                                 control={form.control}
                                 name="imgUrl"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>telecarger une photo</FormLabel>
-                                    <FormControl><Input placeholder="https://example.com/photo.jpg" {...field} /></FormControl>
+                                render={({ field: { value, onChange, ...fieldProps } }) => (
+                                  <FormItem>
+                                    <FormLabel>Télécharger votre photo de présentation</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        {...fieldProps}
+                                        type="file" 
+                                        accept="image/*"
+                                        onChange={(event) => {
+                                          onChange(event.target.files && event.target.files[0]);
+                                        }}
+                                      />
+                                    </FormControl>
                                     <FormMessage />
-                                </FormItem>
+                                  </FormItem>
                                 )}
                             />
                         </div>
