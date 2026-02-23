@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import {
   Select,
   SelectContent,
@@ -392,6 +392,9 @@ export default function RegisterProPage() {
                                         }}
                                       />
                                     </FormControl>
+                                    <FormDescription>
+                                      Le texte du bouton (ex: "Choisir un fichier") dépend de votre navigateur et de sa langue.
+                                    </FormDescription>
                                     <FormMessage />
                                   </FormItem>
                                 )}
