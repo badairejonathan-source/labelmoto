@@ -4,10 +4,17 @@ import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import LabelMotoLogo from './logo';
 import { useUser } from '@/firebase';
+import { useState, useEffect } from 'react';
 
 const Footer = () => {
   const { user } = useUser();
   const proRegisterLink = user ? "/pro/register" : "/login";
+  const [currentYear, setCurrentYear] = useState<number>();
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
 
   return (
     <footer className="bg-muted/30 border-t border-border/50">
@@ -17,7 +24,7 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">À propos de Label Moto</h3>
             <ul className="space-y-3">
               <li><Link href="/about" className="text-muted-foreground hover:text-accent">À propos</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">Presse</Link></li>
+              <li><Link href="/selection" className="text-muted-foreground hover:text-accent">Sélection Label Moto</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Contactez-nous</Link></li>
             </ul>
           </div>
@@ -55,7 +62,9 @@ const Footer = () => {
                             <LabelMotoLogo />
                         </Link>
                     </div>
-                    <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Label Moto. Tous droits réservés.</p>
+                    {currentYear && (
+                    <p className="text-xs text-muted-foreground">&copy; {currentYear} Label Moto. Tous droits réservés.</p>
+                    )}
                 </div>
                 <div className="flex items-center space-x-4">
                     <Link href="#" aria-label="Facebook" className="text-muted-foreground hover:text-accent"><Facebook className="h-5 w-5" /></Link>
