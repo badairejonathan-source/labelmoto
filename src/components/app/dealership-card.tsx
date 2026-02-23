@@ -15,6 +15,15 @@ interface DealershipCardProps {
   className?: string;
 }
 
+const categoryDisplay: { [key: string]: string } = {
+  'concession': 'Concession (Vente)',
+  'atelier': 'Atelier (Réparation)',
+  'concession-atelier': 'Concession + Atelier',
+  'accessoiriste': 'Accessoiriste',
+  'autre': 'Autre',
+};
+
+
 const DealershipCard: React.FC<DealershipCardProps> = ({
   dealership,
   onClick,
@@ -25,6 +34,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const title = dealership.title || '';
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
+  const categoryLabel = dealership.category ? categoryDisplay[dealership.category] : '';
+
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
@@ -98,9 +109,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           <div className="flex flex-col md:flex-row flex-1 p-4 md:justify-between gap-4">
             {/* Main Info */}
             <div className="flex flex-col justify-between flex-grow min-w-0">
-              <h3 className="font-bold text-lg text-foreground leading-tight">
-                {title}
-              </h3>
+              <div>
+                <h3 className="font-bold text-lg text-foreground leading-tight">
+                  {title}
+                </h3>
+                {categoryLabel && (
+                  <p className="text-sm text-muted-foreground">{categoryLabel}</p>
+                )}
+              </div>
               
               <div className="flex items-start text-center gap-4 text-muted-foreground text-xs mt-3">
                   {dealership.placeUrl && (
