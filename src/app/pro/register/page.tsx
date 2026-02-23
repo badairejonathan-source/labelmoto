@@ -513,7 +513,7 @@ export default function RegisterProPage() {
                     
                     <div className="space-y-4 p-4 border rounded-lg">
                       <h4 className="font-semibold text-lg">Horaires d'ouverture</h4>
-                        <p className="text-sm text-muted-foreground">Sélectionnez les horaires pour chaque jour, avec une coupure pour le midi si nécessaire.</p>
+                        <p className="text-sm text-muted-foreground">Sélectionnez les horaires pour chaque jour.</p>
                         <div className="space-y-2">
                             {weekDays.map((day) => (
                             <div key={day} className="grid grid-cols-[90px_1fr] items-center gap-x-4">
@@ -553,13 +553,6 @@ export default function RegisterProPage() {
                         </div>
                     </div>
 
-                    <div className="space-y-2 p-4 border rounded-lg bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800">
-                        <h4 className="font-semibold text-lg flex items-center gap-2 text-amber-800 dark:text-amber-300">⭐ Évolution possible de votre fiche</h4>
-                        <p className="text-sm text-amber-700 dark:text-amber-400/90 pl-1">
-                            Une mise en avant locale pourra être proposée ultérieurement aux établissements souhaitant renforcer leur visibilité.
-                        </p>
-                    </div>
-
                     <div className="flex justify-end pt-4">
                       <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
                         {form.formState.isSubmitting ? (
@@ -575,6 +568,16 @@ export default function RegisterProPage() {
               </CardContent>
             </Card>
           </section>
+
+          <section>
+            <div className="space-y-2 p-4 border rounded-lg bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800 text-center">
+              <h4 className="font-semibold text-lg flex items-center justify-center gap-2 text-amber-800 dark:text-amber-300">⭐ Évolution possible de votre fiche</h4>
+              <p className="text-sm text-amber-700 dark:text-amber-400/90">
+                Une mise en avant locale pourra être proposée ultérieurement aux établissements souhaitant renforcer leur visibilité.
+              </p>
+            </div>
+          </section>
+
         </div>
       </main>
     </div>
