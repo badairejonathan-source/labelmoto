@@ -377,7 +377,7 @@ export default function RegisterProPage() {
                                 name="imgUrl"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>URL d'une photo (optionnel)</FormLabel>
+                                    <FormLabel>telecarger une photo</FormLabel>
                                     <FormControl><Input placeholder="https://example.com/photo.jpg" {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
