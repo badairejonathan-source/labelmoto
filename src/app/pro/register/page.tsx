@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -33,6 +32,7 @@ const submissionSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse e-mail valide." }).optional().or(z.literal('')),
   website: z.string().url({ message: "Veuillez entrer une URL valide (ex: https://...)" }).optional().or(z.literal('')),
   placeUrl: z.string().url({ message: "Veuillez entrer une URL Google Maps valide." }).optional().or(z.literal('')),
+  imgUrl: z.string().url({ message: "Veuillez entrer une URL d'image valide (ex: https://...)" }).optional().or(z.literal('')),
   description: z.string().max(500, "La description ne doit pas dépasser 500 caractères.").optional(),
   lundi: z.string().optional(),
   mardi: z.string().optional(),
@@ -44,6 +44,18 @@ const submissionSchema = z.object({
 });
 
 type SubmissionFormValues = z.infer<typeof submissionSchema>;
+
+const hourOptions = [
+  "Fermé",
+  "09:00 - 12:00 / 14:00 - 19:00",
+  "09:00 - 12:00 / 14:00 - 18:00",
+  "09:30 - 12:30 / 14:00 - 18:30",
+  "09:00 - 19:00",
+  "10:00 - 19:00",
+  "09:00 - 17:00",
+  "10:00 - 18:00",
+  "Sur rendez-vous",
+];
 
 export default function RegisterProPage() {
   const router = useRouter();
@@ -58,14 +70,15 @@ export default function RegisterProPage() {
       email: '',
       website: '',
       placeUrl: '',
+      imgUrl: '',
       description: '',
-      lundi: '',
-      mardi: '',
-      mercredi: '',
-      jeudi: '',
-      vendredi: '',
-      samedi: '',
-      dimanche: '',
+      lundi: 'Fermé',
+      mardi: '09:00 - 12:00 / 14:00 - 19:00',
+      mercredi: '09:00 - 12:00 / 14:00 - 19:00',
+      jeudi: '09:00 - 12:00 / 14:00 - 19:00',
+      vendredi: '09:00 - 12:00 / 14:00 - 19:00',
+      samedi: '09:00 - 17:00',
+      dimanche: 'Fermé',
     },
     mode: 'onChange',
   });
@@ -88,6 +101,7 @@ export default function RegisterProPage() {
         email: data.email || '',
         website: data.website || '',
         placeUrl: data.placeUrl || '',
+        imgUrl: data.imgUrl || '',
         description: data.description || '',
         lundi: data.lundi || 'Fermé',
         mardi: data.mardi || 'Fermé',
@@ -313,6 +327,17 @@ export default function RegisterProPage() {
                                 </FormItem>
                                 )}
                             />
+                             <FormField
+                                control={form.control}
+                                name="imgUrl"
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>URL d'une photo (optionnel)</FormLabel>
+                                    <FormControl><Input placeholder="https://example.com/photo.jpg" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
                         </div>
                     </div>
 
@@ -333,7 +358,7 @@ export default function RegisterProPage() {
                     
                     <div className="space-y-4 p-4 border rounded-lg">
                       <h4 className="font-semibold text-lg">Horaires d'ouverture</h4>
-                       <p className="text-sm text-muted-foreground">Indiquez les horaires pour chaque jour. Ex: 09:00-12:00, 14:00-19:00. Laissez vide si fermé.</p>
+                       <p className="text-sm text-muted-foreground">Sélectionnez les horaires pour chaque jour.</p>
                        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {weekDays.map((day) => (
                            <FormField
@@ -342,9 +367,18 @@ export default function RegisterProPage() {
                             name={day}
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel className="capitalize">{day}</FormLabel>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
+                                  <FormLabel className="capitalize">{day}</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                          <SelectTrigger><SelectValue placeholder="Horaires" /></SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                          {hourOptions.map(option => (
+                                            <SelectItem key={option} value={option}>{option}</SelectItem>
+                                          ))}
+                                      </SelectContent>
+                                  </Select>
+                                  <FormMessage />
                                 </FormItem>
                             )}
                             />
@@ -372,5 +406,3 @@ export default function RegisterProPage() {
     </div>
   );
 }
-
-    
