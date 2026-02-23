@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -220,7 +221,7 @@ export default function RegisterProPage() {
         
           <section className="text-center bg-card p-8 rounded-xl shadow-lg border">
             <Rocket className="h-12 w-12 mx-auto text-blue-500 mb-4" />
-            <h1 className="text-4xl font-bold text-foreground mb-4">Développez votre visibilité auprès des motards</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-4">Attirez plus de motards dans votre région</h1>
             <p className="text-xl text-muted-foreground mb-2">Vous êtes concessionnaire ou atelier moto ? Apparaissez sur Label Moto.</p>
             <Button asChild size="lg" className="mt-6 bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
               <Link href="#formulaire">Créer ma fiche gratuitement</Link>
