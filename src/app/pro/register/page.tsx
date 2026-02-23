@@ -38,7 +38,7 @@ const detailedDayHoursSchema = z.object({
 
 const submissionSchema = z.object({
   name: z.string().min(3, { message: "Le nom de l'établissement est requis." }),
-  category: z.enum(['concession', 'atelier', 'accessoiriste', 'autre'], { required_error: 'La catégorie est requise.' }),
+  category: z.enum(['concession', 'atelier', 'accessoiriste', 'concession-atelier', 'autre'], { required_error: 'La catégorie est requise.' }),
   address: z.string().min(10, { message: "Une adresse complète est requise (numéro, rue, code postal, ville)." }),
   phone: z.string().min(10, { message: "Un numéro de téléphone valide est requis." }),
   email: z.string().email({ message: "Veuillez entrer une adresse e-mail valide." }).optional().or(z.literal('')),
@@ -326,6 +326,7 @@ export default function RegisterProPage() {
                                   <SelectContent>
                                     <SelectItem value="concession">Concession (Vente)</SelectItem>
                                     <SelectItem value="atelier">Atelier (Réparation)</SelectItem>
+                                    <SelectItem value="concession-atelier">Concession + Atelier</SelectItem>
                                     <SelectItem value="accessoiriste">Accessoiriste</SelectItem>
                                     <SelectItem value="autre">Autre</SelectItem>
                                   </SelectContent>

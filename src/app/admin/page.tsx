@@ -23,7 +23,7 @@ interface Submission {
   email?: string;
   website?: string;
   placeUrl?: string;
-  category: 'concession' | 'atelier' | 'accessoiriste' | 'autre';
+  category: 'concession' | 'atelier' | 'accessoiriste' | 'concession-atelier' | 'autre';
   brands?: string[];
   description?: string;
   lundi?: string;
@@ -73,6 +73,8 @@ export default function AdminPage() {
         return 'shopping';
       case 'atelier':
         return 'service';
+      case 'concession-atelier':
+        return 'both';
       default:
         return 'both';
     }
