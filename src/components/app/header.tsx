@@ -116,62 +116,61 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </Link>
           </div>
           
-          <nav className="flex items-center justify-center gap-2 md:gap-4 flex-grow">
-            <Button
-              variant="ghost"
-              onClick={() => onFilterChange('shopping')}
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
-                activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Bike className="h-5 w-5" />
-              <span>Concession</span>
-              {activeFilter === 'shopping' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onFilterChange('service')}
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
-                activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Wrench className="h-5 w-5" />
-              <span>Atelier</span>
-               {activeFilter === 'service' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
-                pathname.startsWith('/entretien') ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Link href="/entretien">
-                <BookOpenCheck className="h-5 w-5" />
-                <span>Entretien</span>
-                {pathname.startsWith('/entretien') && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
-                isInfoActive ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Link href="/info">
-                <FileText className="h-5 w-5" />
-                <span>Conseils</span>
-                {isInfoActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-              </Link>
-            </Button>
-          </nav>
-          
-          <div className="flex items-center justify-end w-36 md:w-44">
+          <div className="flex items-center gap-2 md:gap-4">
+            <nav className="flex items-center justify-center gap-2 md:gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => onFilterChange('shopping')}
+                className={cn(
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                  activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                <Bike className="h-5 w-5" />
+                <span>Concession</span>
+                {activeFilter === 'shopping' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => onFilterChange('service')}
+                className={cn(
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                  activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                <Wrench className="h-5 w-5" />
+                <span>Atelier</span>
+                {activeFilter === 'service' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className={cn(
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                  pathname.startsWith('/entretien') ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                <Link href="/entretien">
+                  <BookOpenCheck className="h-5 w-5" />
+                  <span>Entretien</span>
+                  {pathname.startsWith('/entretien') && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className={cn(
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                  isInfoActive ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                <Link href="/info">
+                  <FileText className="h-5 w-5" />
+                  <span>Conseils</span>
+                  {isInfoActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+                </Link>
+              </Button>
+            </nav>
             <UserMenu />
           </div>
         </div>
