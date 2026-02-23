@@ -12,6 +12,7 @@ import LabelMotoLogo from '@/components/app/logo';
 import { Dealership } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { Badge } from '@/components/ui/badge';
 
 // This should match the form schema in register page
 interface Submission {
@@ -23,6 +24,7 @@ interface Submission {
   website?: string;
   placeUrl?: string;
   category: 'concession' | 'atelier' | 'accessoiriste' | 'autre';
+  brands?: string[];
   description?: string;
   lundi?: string;
   mardi?: string;
@@ -87,6 +89,7 @@ export default function AdminPage() {
         website: submission.website || '',
         phoneNumber: submission.phoneNumber || '',
         email: submission.email || '',
+        brands: submission.brands || [],
         lundi: submission.lundi || 'Non renseigné',
         mardi: submission.mardi || 'Non renseigné',
         mercredi: submission.mercredi || 'Non renseigné',
@@ -188,6 +191,12 @@ export default function AdminPage() {
                 <CardContent className="flex-grow space-y-2 text-sm">
                   <p><strong>Adresse:</strong> {sub.address}</p>
                   <p><strong>Catégorie:</strong> {sub.category}</p>
+                  {sub.brands && sub.brands.length > 0 && (
+                    <div className="flex flex-wrap gap-1 items-baseline">
+                      <strong className="mr-1">Marques:</strong>
+                      {sub.brands.map(brand => <Badge key={brand} variant="outline" className="font-normal">{brand}</Badge>)}
+                    </div>
+                  )}
                   {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
                   {sub.email && <p><strong>Email:</strong> {sub.email}</p>}
                   {sub.website && <p><strong>Web:</strong> <a href={sub.website} target="_blank" rel="noreferrer" className="text-accent underline">{sub.website}</a></p>}

@@ -24,6 +24,10 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, CheckCircle, Rocket } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import brandLogos from '@/data/brand-logos';
+
+const brands = Object.keys(brandLogos);
 
 const detailedDayHoursSchema = z.object({
   morningOpen: z.string(),
@@ -41,6 +45,7 @@ const submissionSchema = z.object({
   website: z.string().url({ message: "Veuillez entrer une URL valide (ex: https://...)" }).optional().or(z.literal('')),
   placeUrl: z.string().url({ message: "Veuillez entrer une URL Google Maps valide." }).optional().or(z.literal('')),
   imgUrl: z.any().optional(),
+  brands: z.array(z.string()).optional(),
   description: z.string().max(500, "La description ne doit pas dépasser 500 caractères.").optional(),
   horaires: z.object({
     lundi: detailedDayHoursSchema,
@@ -80,6 +85,7 @@ export default function RegisterProPage() {
       website: '',
       placeUrl: '',
       imgUrl: null,
+      brands: [],
       description: '',
       horaires: {
         lundi: { morningOpen: 'Fermé', morningClose: 'Fermé', afternoonOpen: 'Fermé', afternoonClose: 'Fermé' },
@@ -159,6 +165,7 @@ export default function RegisterProPage() {
         email: submissionData.email || '',
         website: submissionData.website || '',
         placeUrl: submissionData.placeUrl || '',
+        brands: submissionData.brands || [],
         description: submissionData.description || '',
         ...formattedHoraires,
         submittedAt: serverTimestamp(),
@@ -400,6 +407,49 @@ export default function RegisterProPage() {
                                 )}
                             />
                         </div>
+                    </div>
+
+                    <div className="space-y-4 p-4 border rounded-lg">
+                        <FormField
+                          control={form.control}
+                          name="brands"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Marques principales (optionnel)</FormLabel>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <FormControl>
+                                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                        {field.value && field.value.length > 0
+                                          ? field.value.join(', ')
+                                          : "Sélectionnez une ou plusieurs marques"}
+                                      </Button>
+                                    </FormControl>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]" align="start">
+                                    {brands.map((brand) => (
+                                      <DropdownMenuCheckboxItem
+                                        key={brand}
+                                        checked={field.value?.includes(brand)}
+                                        onCheckedChange={(checked) => {
+                                          const currentBrands = field.value || [];
+                                          if (checked) {
+                                            field.onChange([...currentBrands, brand]);
+                                          } else {
+                                            field.onChange(currentBrands.filter((value) => value !== brand));
+                                          }
+                                        }}
+                                        onSelect={(e) => e.preventDefault()}
+                                      >
+                                        {brand}
+                                      </DropdownMenuCheckboxItem>
+                                    ))}
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                     </div>
 
                      <div className="space-y-4 p-4 border rounded-lg">
