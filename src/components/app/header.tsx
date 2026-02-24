@@ -88,6 +88,19 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+           <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/entretien">
+              <BookOpenCheck className="mr-2 h-4 w-4" />
+              <span>Entretien & Révisions</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/info">
+              <FileText className="mr-2 h-4 w-4" />
+              <span>Conseils pratiques</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link href="/account">
               <UserIcon className="mr-2 h-4 w-4" />
@@ -106,101 +119,69 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 
   return (
     <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
-      <div className="container mx-auto flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <div className="w-36 md:w-44 shrink-0">
+      <div className="container mx-auto flex flex-col gap-3">
+        <div className="flex items-center justify-between md:grid md:grid-cols-3">
+          <div className="w-36 md:w-44 shrink-0 md:justify-self-start">
             <Link href="/">
               <LabelMotoLogo />
             </Link>
           </div>
           
-          <nav className="hidden md:flex items-center justify-center gap-2 md:gap-4">
+          <nav className="hidden md:flex items-center justify-center gap-4 md:gap-8">
              <Button
                 variant="ghost"
                 onClick={() => onFilterChange('shopping')}
                 className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-lg font-medium",
                   activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
-                <Bike className="h-5 w-5" />
+                <Bike className="h-6 w-6" />
                 <span>Concession</span>
-                {activeFilter === 'shopping' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+                {activeFilter === 'shopping' && <span className="absolute -bottom-2 h-1 w-full bg-brand rounded-full"></span>}
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => onFilterChange('service')}
                 className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
+                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-lg font-medium",
                   activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
-                <Wrench className="h-5 w-5" />
+                <Wrench className="h-6 w-6" />
                 <span>Atelier</span>
-                {activeFilter === 'service' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
+                {activeFilter === 'service' && <span className="absolute -bottom-2 h-1 w-full bg-brand rounded-full"></span>}
               </Button>
           </nav>
 
-          <div className="flex items-center gap-2 md:gap-4">
-            <nav className="flex items-center justify-center gap-2 md:gap-4">
-               <Button
-                variant="ghost"
-                onClick={() => onFilterChange('shopping')}
-                className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
-                  activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
-                )}
-              >
-                <Bike className="h-5 w-5" />
-                <span>Concession</span>
-                {activeFilter === 'shopping' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => onFilterChange('service')}
-                className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
-                  activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
-                )}
-              >
-                <Wrench className="h-5 w-5" />
-                <span>Atelier</span>
-                {activeFilter === 'service' && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-              </Button>
-              <Button
-                asChild
-                variant="ghost"
-                className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
-                  pathname.startsWith('/entretien') ? 'text-foreground' : 'text-muted-foreground'
-                )}
-              >
-                <Link href="/entretien">
-                  <BookOpenCheck className="h-5 w-5" />
-                  <span>Entretien</span>
-                  {pathname.startsWith('/entretien') && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="ghost"
-                className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium",
-                  isInfoActive ? 'text-foreground' : 'text-muted-foreground'
-                )}
-              >
-                <Link href="/info">
-                  <FileText className="h-5 w-5" />
-                  <span>Conseils</span>
-                  {isInfoActive && <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand rounded-full"></span>}
-                </Link>
-              </Button>
-            </nav>
+          <div className="flex items-center gap-2 justify-end md:justify-self-end">
+            <Button
+              variant="ghost"
+              onClick={() => onFilterChange('shopping')}
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
+                activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
+              )}
+            >
+              <Bike className="h-5 w-5" />
+              <span>Concession</span>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => onFilterChange('service')}
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
+                activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
+              )}
+            >
+              <Wrench className="h-5 w-5" />
+              <span>Atelier</span>
+            </Button>
             <UserMenu />
           </div>
         </div>
         
-        <div className="relative w-full max-w-md mx-auto">
+        <div className="relative w-full max-w-lg mx-auto">
           <Input
             type="search"
             placeholder={placeholderText}
