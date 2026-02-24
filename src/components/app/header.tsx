@@ -88,19 +88,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-           <DropdownMenuItem asChild className="cursor-pointer">
-            <Link href="/entretien">
-              <BookOpenCheck className="mr-2 h-4 w-4" />
-              <span>Entretien & Révisions</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="cursor-pointer">
-            <Link href="/info">
-              <FileText className="mr-2 h-4 w-4" />
-              <span>Conseils pratiques</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link href="/account">
               <UserIcon className="mr-2 h-4 w-4" />
@@ -132,7 +119,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                 variant="ghost"
                 onClick={() => onFilterChange('shopping')}
                 className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-lg font-medium",
+                  "relative p-1 h-auto flex items-center gap-2 text-lg font-medium",
                   activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
@@ -144,7 +131,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                 variant="ghost"
                 onClick={() => onFilterChange('service')}
                 className={cn(
-                  "relative p-1 h-auto flex flex-col items-center gap-0.5 text-lg font-medium",
+                  "relative p-1 h-auto flex items-center gap-2 text-lg font-medium",
                   activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
@@ -177,6 +164,38 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               <Wrench className="h-5 w-5" />
               <span>Atelier</span>
             </Button>
+            <div className="hidden md:flex items-center gap-2">
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                <Link href="/entretien">
+                                    <BookOpenCheck className="h-6 w-6" />
+                                    <span className="sr-only">Entretien & Révisions</span>
+                                </Link>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Entretien & Révisions</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                <Link href="/info">
+                                    <FileText className="h-6 w-6" />
+                                    <span className="sr-only">Conseils pratiques</span>
+                                </Link>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Conseils pratiques</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            </div>
             <UserMenu />
           </div>
         </div>
