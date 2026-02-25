@@ -135,7 +135,7 @@ function InfoPageComponent() {
                                 <CardContent>
                                     <Link href="/map" className="block group rounded-lg overflow-hidden border">
                                       <Image 
-                                          src="/images/apercucartezoom.png"
+                                          src="/images/apercucarte.png"
                                           alt="Aperçu de la carte"
                                           width={400}
                                           height={300}

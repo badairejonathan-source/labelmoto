@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -91,10 +92,6 @@ const article = {
       {
         "type": "paragraph",
         "html": "<strong>Les révisions périodiques</strong>"
-      },
-      {
-        "type": "paragraph",
-        "text": "Prévues par le constructeur selon le kilométrage :"
       },
       {
         "type": "list",
@@ -316,7 +313,7 @@ export default function EntretienPage() {
                         <CardContent>
                             <Link href="/map" className="block group rounded-lg overflow-hidden border">
                               <Image 
-                                  src="/images/apercucartezoom.png"
+                                  src="/images/apercucarte.png"
                                   alt="Aperçu de la carte"
                                   width={400}
                                   height={300}
