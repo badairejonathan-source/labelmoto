@@ -114,14 +114,63 @@ const LandingHeader = () => {
         <header className="bg-card text-foreground py-4 px-4 sm:px-6 lg:px-8 w-full border-b">
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col gap-4">
-                    {/* Top row: Logo and Icons */}
+                    {/* Top row: Logo, Nav, Profile */}
                     <div className="flex items-center justify-between">
                         <div className="w-40 md:w-48 shrink-0">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>
                         </div>
-                        <nav className="flex items-center gap-2">
+                        
+                        {/* Centered navigation for desktop */}
+                        <nav className="hidden md:flex items-center justify-center gap-4 md:gap-8 absolute left-1/2 -translate-x-1/2">
+                            <Link href="/map?filter=shopping" className="flex items-center gap-2 text-lg text-muted-foreground font-medium hover:text-foreground">
+                                <Bike className="h-6 w-6" />
+                                <span>Concession</span>
+                            </Link>
+                            <Link href="/map?filter=service" className="flex items-center gap-2 text-lg text-muted-foreground font-medium hover:text-foreground">
+                                <Wrench className="h-6 w-6" />
+                                <span>Atelier</span>
+                            </Link>
+                        </nav>
+
+                        {/* Right-aligned icons for desktop */}
+                        <div className="hidden md:flex items-center gap-2">
+                             <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                            <Link href="/entretien">
+                                                <BookOpenCheck className="h-6 w-6" />
+                                                <span className="sr-only">Entretien & Révisions</span>
+                                            </Link>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Entretien & Révisions</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                            <Link href="/info">
+                                                <FileText className="h-6 w-6" />
+                                                <span className="sr-only">Conseils pratiques</span>
+                                            </Link>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Conseils pratiques</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            <UserMenu />
+                        </div>
+                        
+                        {/* Mobile icons */}
+                        <nav className="flex md:hidden items-center gap-2">
                            <UserMenu />
                         </nav>
                     </div>
@@ -143,41 +192,37 @@ const LandingHeader = () => {
                         </Button>
                     </form>
 
-                    {/* Suggestions */}
-                    <div className="text-center -mt-2">
+                     {/* Suggestions & Mobile Nav */}
+                    <div className="flex flex-col items-center gap-3 -mt-2">
                         <p className="text-xs text-muted-foreground">
                             Suggestions : 
                             <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
                             <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
-                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>•
-                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">intervalle entretien</Link>•
-                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">quand faire vidange</Link>
+                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
                         </p>
+                         <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base">
+                            <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
+                                <Home className="h-5 w-5 text-brand" />
+                                <span>Tout</span>
+                            </Link>
+                            <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
+                                <Bike className="h-5 w-5" />
+                                <span>Concession</span>
+                            </Link>
+                            <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
+                                <Wrench className="h-5 w-5" />
+                                <span>Atelier</span>
+                            </Link>
+                             <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
+                                <BookOpenCheck className="h-5 w-5" />
+                                <span>Entretien</span>
+                            </Link>
+                            <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
+                                <FileText className="h-5 w-5" />
+                                <span>Conseils</span>
+                            </Link>
+                        </nav>
                     </div>
-
-                    {/* Text Navigation */}
-                    <nav className="flex items-center justify-center gap-6 md:gap-8 text-muted-foreground font-medium text-lg">
-                        <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
-                            <Home className="h-5 w-5 text-brand" />
-                            <span>Tout recherche</span>
-                        </Link>
-                        <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
-                            <Bike className="h-5 w-5" />
-                            <span>Concession</span>
-                        </Link>
-                        <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
-                            <Wrench className="h-5 w-5" />
-                            <span>Atelier</span>
-                        </Link>
-                        <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
-                            <BookOpenCheck className="h-5 w-5" />
-                            <span>Entretien & Révisions</span>
-                        </Link>
-                        <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
-                            <FileText className="h-5 w-5" />
-                            <span>Conseils pratiques</span>
-                        </Link>
-                    </nav>
                 </div>
             </div>
         </header>
@@ -224,6 +269,52 @@ export default function LandingPage() {
                     </div>
                 </div>
 
+                <section className="mt-8 md:mt-12">
+                    <div className="bg-muted/50 rounded-2xl p-6 md:p-8">
+                        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
+                            Pourquoi Label Moto va changer votre recherche
+                        </h2>
+                        <ul className="space-y-6 max-w-4xl mx-auto">
+                            <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Gain de temps</h3>
+                                    <p className="text-muted-foreground">
+                                        Finies les recherches interminables ! Notre moteur intelligent vous permet de trouver une concession selon votre localisation, votre type de moto, ou le service recherché.
+                                    </p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Informations fiables et à jour</h3>
+                                    <p className="text-muted-foreground">
+                                        Toutes les données des concessions (occasion et neuve) sont vérifiées et régulièrement actualisées pour vous garantir des informations correctes.
+                                    </p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Transparence totale</h3>
+                                    <p className="text-muted-foreground">
+                                        Découvrez de vrais avis partagés par d’autres motards, sans filtres ni publicité déguisée, pour faire le bon choix en toute confiance.
+                                    </p>
+                                </div>
+                            </li>
+                             <li className="flex items-start gap-4">
+                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <div>
+                                    <h3 className="font-semibold text-lg">Services pratiques</h3>
+                                    <p className="text-muted-foreground">
+                                        Notre moteur de recherche vous connecte aussi aux services d'entretien, afin que vous trouviez le bon professionnel sans vous perdre.
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+                
                 {/* Gallery Section */}
                 <section className="mt-8 md:mt-12">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -282,52 +373,6 @@ export default function LandingPage() {
                                 )}
                             </div>
                         ))}
-                    </div>
-                </section>
-                
-                <section className="mt-8 md:mt-12">
-                    <div className="bg-muted/50 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
-                            Pourquoi Label Moto va changer votre recherche
-                        </h2>
-                        <ul className="space-y-6 max-w-4xl mx-auto">
-                            <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-lg">Gain de temps</h3>
-                                    <p className="text-muted-foreground">
-                                        Finies les recherches interminables ! Notre moteur intelligent vous permet de trouver une concession selon votre localisation, votre type de moto, ou le service recherché.
-                                    </p>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-lg">Informations fiables et à jour</h3>
-                                    <p className="text-muted-foreground">
-                                        Toutes les données des concessions (occasion et neuve) sont vérifiées et régulièrement actualisées pour vous garantir des informations correctes.
-                                    </p>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-lg">Transparence totale</h3>
-                                    <p className="text-muted-foreground">
-                                        Découvrez de vrais avis partagés par d’autres motards, sans filtres ni publicité déguisée, pour faire le bon choix en toute confiance.
-                                    </p>
-                                </div>
-                            </li>
-                             <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-lg">Services pratiques</h3>
-                                    <p className="text-muted-foreground">
-                                        Notre moteur de recherche vous connecte aussi aux services d'entretien, afin que vous trouviez le bon professionnel sans vous perdre.
-                                    </p>
-                                </div>
-                            </li>
-                        </ul>
                     </div>
                 </section>
                 
