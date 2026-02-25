@@ -212,7 +212,7 @@ export default function LandingPage() {
             <main className="py-8 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
                 {/* Hero Section */}
-                <div className="relative rounded-3xl overflow-hidden p-1 border-4 border-brand bg-black">
+                <div className="relative rounded-3xl p-1 border-4 border-brand bg-black md:mb-16">
                      <Image
                         src={hero.src}
                         alt="Motorcycle"
@@ -221,25 +221,30 @@ export default function LandingPage() {
                         priority
                         data-ai-hint={hero.hint}
                     />
-                    <div className="relative z-10 flex flex-col items-center justify-center text-center text-white p-8 md:p-16">
-                        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                            Trouver une concession, un atelier ou un reparateur ? Fini la galère.
-                        </h1>
-                        <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                           Accédez à une liste de concessions et ateliers près de chez vous. Gagnez du temps, roulez en confiance.
-                        </p>
-                        <div className="flex items-center justify-center gap-4">
-                            <Link href="/map">
-                                <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                                    Trouver un pro
-                                </Button>
-                            </Link>
-                            <Link href="/map" className="hidden md:block transform -rotate-6 hover:scale-105 transition-transform duration-300">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-white p-8 md:p-16">
+                        <div className="md:w-3/5 text-center md:text-left">
+                            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
+                                Trouver une concession, un atelier ou un reparateur ? Fini la galère.
+                            </h1>
+                            <p className="text-lg md:text-xl max-w-3xl mx-auto md:mx-0 mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                               Accédez à une liste de concessions et ateliers près de chez vous. Gagnez du temps, roulez en confiance.
+                            </p>
+                            <div className="flex items-center justify-center md:justify-start">
+                                <Link href="/map">
+                                    <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                                        Trouver un pro
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+
+                         <div className="w-full md:w-2/5 flex justify-center mt-8 md:mt-0">
+                             <Link href="/map" className="block md:absolute md:-bottom-20 md:right-10 transform md:-rotate-6 hover:scale-105 transition-transform duration-300">
                                 <Image 
                                     src={hero.mapPreview.src}
                                     alt="Aperçu de la carte"
-                                    width={140}
-                                    height={140}
+                                    width={280}
+                                    height={280}
                                     className="rounded-2xl border-4 border-white shadow-lg"
                                     data-ai-hint={hero.mapPreview.hint}
                                 />
@@ -295,55 +300,6 @@ export default function LandingPage() {
                 </section>
                 
                 {/* Gallery Section */}
-                <section className="mt-8 md:mt-12">
-                  <div className="bg-muted/50 rounded-2xl p-6 md:p-8 text-center">
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                      🔧 Vérifiez l’entretien de votre moto
-                    </h2>
-                    <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
-                      Avant d’aller chez le garagiste, vérifiez le kilométrage de révision et le coût moyen pour votre modèle. En quelques secondes, vous savez quoi prévoir et combien ça va coûter.
-                    </p>
-                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                      <Link href="/entretien">
-                        Vérifier l’entretien de ma moto
-                      </Link>
-                    </Button>
-                  </div>
-                </section>
-
-                <section className="mt-6">
-                  <div className="flex flex-col items-center gap-3">
-                      <p className="text-xs text-muted-foreground">
-                          Suggestions : 
-                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
-                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
-                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
-                      </p>
-                       <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base">
-                          <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
-                              <Home className="h-5 w-5 text-brand" />
-                              <span>Tout</span>
-                          </Link>
-                          <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
-                              <Bike className="h-5 w-5" />
-                              <span>Concession</span>
-                          </Link>
-                          <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
-                              <Wrench className="h-5 w-5" />
-                              <span>Atelier</span>
-                          </Link>
-                           <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
-                              <BookOpenCheck className="h-5 w-5" />
-                              <span>Entretien</span>
-                          </Link>
-                          <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
-                              <FileText className="h-5 w-5" />
-                              <span>Conseils</span>
-                          </Link>
-                      </nav>
-                  </div>
-                </section>
-                
                 <section className="mt-8 md:mt-12">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         
@@ -402,6 +358,52 @@ export default function LandingPage() {
                             </div>
                         ))}
                     </div>
+                </section>
+
+                <section className="mt-8 md:mt-12">
+                  <div className="bg-muted/50 rounded-2xl p-6 md:p-8 text-center">
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                      🔧 Vérifiez l’entretien de votre moto
+                    </h2>
+                    <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
+                      Avant d’aller chez le garagiste, vérifiez le kilométrage de révision et le coût moyen pour votre modèle. En quelques secondes, vous savez quoi prévoir et combien ça va coûter.
+                    </p>
+                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                      <Link href="/entretien">
+                        Vérifier l’entretien de ma moto
+                      </Link>
+                    </Button>
+                    <div className="flex flex-col items-center gap-3 mt-6">
+                      <p className="text-xs text-muted-foreground">
+                          Suggestions : 
+                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
+                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
+                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
+                      </p>
+                       <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base mt-2">
+                          <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
+                              <Home className="h-5 w-5 text-brand" />
+                              <span>Tout</span>
+                          </Link>
+                          <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
+                              <Bike className="h-5 w-5" />
+                              <span>Concession</span>
+                          </Link>
+                          <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
+                              <Wrench className="h-5 w-5" />
+                              <span>Atelier</span>
+                          </Link>
+                           <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
+                              <BookOpenCheck className="h-5 w-5" />
+                              <span>Entretien</span>
+                          </Link>
+                          <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
+                              <FileText className="h-5 w-5" />
+                              <span>Conseils</span>
+                          </Link>
+                      </nav>
+                  </div>
+                  </div>
                 </section>
 
                 <section className="mt-8 md:mt-12">
