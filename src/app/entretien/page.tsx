@@ -296,7 +296,7 @@ export default function EntretienPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
               <article>
-                <div className="relative w-full aspect-[2.5/1] rounded-2xl overflow-hidden mb-4 shadow-lg">
+                <div className="relative w-full aspect-[2.5/1] rounded-2xl overflow-hidden mb-8 shadow-lg">
                   <Image
                     src={imageUrl}
                     alt={article.title}
@@ -311,13 +311,6 @@ export default function EntretienPage() {
                       🔧 {article.title}
                     </h1>
                    </div>
-                </div>
-                 <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium mb-8 border-b pb-4">
-                  <span>Par {article.author}</span>
-                  <span className="text-muted-foreground/50">•</span>
-                  <span>{article.date}</span>
-                  <span className="text-muted-foreground/50">•</span>
-                  <span>{article.readingTime}</span>
                 </div>
                 
                 <div className="space-y-4">
