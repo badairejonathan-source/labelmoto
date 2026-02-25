@@ -112,84 +112,87 @@ const LandingHeader = () => {
     return (
         <header className="bg-card text-foreground py-4 px-4 sm:px-6 lg:px-8 w-full border-b">
             <div className="mx-auto max-w-7xl">
-                <div className="flex flex-col gap-4">
-                    {/* Top row: Logo, Nav, Profile */}
-                    <div className="flex items-center">
+                <div className="flex flex-col gap-2">
+                    {/* Top row: Logo, Profile */}
+                    <div className="flex items-center justify-between">
                         <div className="w-40 md:w-48 shrink-0">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>
                         </div>
                         
-                        {/* Centered navigation for desktop */}
-                        <nav className="hidden md:flex items-center justify-center gap-4 md:gap-8 flex-1">
-                            <Link href="/map?filter=shopping" className="flex items-center gap-2 text-lg text-muted-foreground font-medium hover:text-foreground">
-                                <Bike className="h-6 w-6" />
+                        <div className="flex items-center gap-2">
+                            <div className="hidden md:flex items-center gap-2">
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                                <Link href="/entretien">
+                                                    <BookOpenCheck className="h-6 w-6" />
+                                                    <span className="sr-only">Entretien & Révisions</span>
+                                                </Link>
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Entretien & Révisions</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                                <Link href="/info">
+                                                    <FileText className="h-6 w-6" />
+                                                    <span className="sr-only">Conseils pratiques</span>
+                                                </Link>
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Conseils pratiques</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                            <div className="md:hidden">
+                                <UserMenu />
+                            </div>
+                             <div className="hidden md:block">
+                                <UserMenu />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Centered navigation and Search Bar */}
+                    <div className="flex flex-col items-center gap-6 mt-2">
+                        <nav className="hidden md:flex items-center justify-center gap-12 md:gap-24">
+                            <Link href="/map?filter=shopping" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
+                                <Bike className="h-12 w-12" />
                                 <span>Concession</span>
                             </Link>
-                            <Link href="/map?filter=service" className="flex items-center gap-2 text-lg text-muted-foreground font-medium hover:text-foreground">
-                                <Wrench className="h-6 w-6" />
+                            <Link href="/map?filter=service" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
+                                <Wrench className="h-12 w-12" />
                                 <span>Atelier</span>
                             </Link>
                         </nav>
-
-                        {/* Right-aligned icons for desktop */}
-                        <div className="hidden md:flex items-center gap-2 ml-auto">
-                             <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                                            <Link href="/entretien">
-                                                <BookOpenCheck className="h-6 w-6" />
-                                                <span className="sr-only">Entretien & Révisions</span>
-                                            </Link>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Entretien & Révisions</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                                            <Link href="/info">
-                                                <FileText className="h-6 w-6" />
-                                                <span className="sr-only">Conseils pratiques</span>
-                                            </Link>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Conseils pratiques</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <UserMenu />
-                        </div>
                         
-                        {/* Mobile icons */}
-                        <nav className="flex md:hidden items-center gap-2 ml-auto">
-                           <UserMenu />
-                        </nav>
+                        {/* Search Bar */}
+                        <form action="/map" method="get" className="relative w-full max-w-lg mx-auto">
+                            <Input
+                                name="search"
+                                type="search"
+                                placeholder="Rechercher par nom, ville, code postal..."
+                                className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+                            />
+                            <Button 
+                                type="submit" 
+                                size="icon" 
+                                className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
+                            >
+                                <Search className="h-5 w-5" />
+                            </Button>
+                        </form>
                     </div>
-
-                    {/* Search Bar */}
-                    <form action="/map" method="get" className="relative w-full max-w-lg mx-auto">
-                        <Input
-                            name="search"
-                            type="search"
-                            placeholder="Rechercher par nom, ville, code postal..."
-                            className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
-                        />
-                        <Button 
-                            type="submit" 
-                            size="icon" 
-                            className="absolute top-1/2 right-2 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
-                        >
-                            <Search className="h-5 w-5" />
-                        </Button>
-                    </form>
                 </div>
             </div>
         </header>
@@ -459,3 +462,5 @@ export default function LandingPage() {
         </div>
     );
 }
+
+    
