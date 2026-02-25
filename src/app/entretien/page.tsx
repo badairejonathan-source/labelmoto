@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Map } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -16,6 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type ArticleContent = {
   type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
@@ -286,41 +288,75 @@ export default function EntretienPage() {
         placeholderText="Rechercher une fiche d'entretien..."
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil
           </Link>
-
-          <article>
-            <div className="relative w-full aspect-[2.5/1] rounded-2xl overflow-hidden mb-4 shadow-lg">
-              <Image
-                src={imageUrl}
-                alt={article.title}
-                fill
-                className="object-cover"
-                data-ai-hint={imageHint}
-                priority
-              />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-               <div className="absolute bottom-0 left-0 p-6 text-white" style={{textShadow: '0 2px 4px rgba(0,0,0,0.5)'}}>
-                <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight">
-                  🔧 {article.title}
-                </h1>
-               </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2">
+              <article>
+                <div className="relative w-full aspect-[2.5/1] rounded-2xl overflow-hidden mb-4 shadow-lg">
+                  <Image
+                    src={imageUrl}
+                    alt={article.title}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={imageHint}
+                    priority
+                  />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+                   <div className="absolute bottom-0 left-0 p-6 text-white" style={{textShadow: '0 2px 4px rgba(0,0,0,0.5)'}}>
+                    <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight">
+                      🔧 {article.title}
+                    </h1>
+                   </div>
+                </div>
+                 <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium mb-8 border-b pb-4">
+                  <span>Par {article.author}</span>
+                  <span className="text-muted-foreground/50">•</span>
+                  <span>{article.date}</span>
+                  <span className="text-muted-foreground/50">•</span>
+                  <span>{article.readingTime}</span>
+                </div>
+                
+                <div className="space-y-4">
+                  {renderContent()}
+                </div>
+              </article>
             </div>
-             <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium mb-8 border-b pb-4">
-              <span>Par {article.author}</span>
-              <span className="text-muted-foreground/50">•</span>
-              <span>{article.date}</span>
-              <span className="text-muted-foreground/50">•</span>
-              <span>{article.readingTime}</span>
-            </div>
-            
-            <div className="space-y-4">
-              {renderContent()}
-            </div>
-          </article>
+            <aside className="hidden lg:block relative">
+                <div className="sticky top-28 space-y-6">
+                    <Card className="overflow-hidden shadow-lg border-2 border-primary/20">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-primary">
+                                <Map className="h-5 w-5"/>
+                                Trouver une concession
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Link href="/map" className="block group rounded-lg overflow-hidden border">
+                              <Image 
+                                  src="/images/apercucartezoom.png"
+                                  alt="Aperçu de la carte"
+                                  width={400}
+                                  height={300}
+                                  className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </Link>
+                            <p className="text-muted-foreground text-sm mt-4">
+                                Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
+                            </p>
+                        </CardContent>
+                        <CardFooter>
+                            <Button asChild className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-base py-5 rounded-full shadow-lg">
+                                <Link href="/map">Voir la carte interactive</Link>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </div>
+            </aside>
+          </div>
         </div>
       </main>
     </div>
