@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -115,7 +114,7 @@ const LandingHeader = () => {
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col gap-4">
                     {/* Top row: Logo, Nav, Profile */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center">
                         <div className="w-40 md:w-48 shrink-0">
                             <Link href="/">
                                 <LabelMotoLogo />
@@ -123,7 +122,7 @@ const LandingHeader = () => {
                         </div>
                         
                         {/* Centered navigation for desktop */}
-                        <nav className="hidden md:flex items-center justify-center gap-4 md:gap-8 absolute left-1/2 -translate-x-1/2">
+                        <nav className="hidden md:flex items-center justify-center gap-4 md:gap-8 flex-1">
                             <Link href="/map?filter=shopping" className="flex items-center gap-2 text-lg text-muted-foreground font-medium hover:text-foreground">
                                 <Bike className="h-6 w-6" />
                                 <span>Concession</span>
@@ -135,7 +134,7 @@ const LandingHeader = () => {
                         </nav>
 
                         {/* Right-aligned icons for desktop */}
-                        <div className="hidden md:flex items-center gap-2">
+                        <div className="hidden md:flex items-center gap-2 ml-auto">
                              <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -170,7 +169,7 @@ const LandingHeader = () => {
                         </div>
                         
                         {/* Mobile icons */}
-                        <nav className="flex md:hidden items-center gap-2">
+                        <nav className="flex md:hidden items-center gap-2 ml-auto">
                            <UserMenu />
                         </nav>
                     </div>
@@ -191,38 +190,6 @@ const LandingHeader = () => {
                             <Search className="h-5 w-5" />
                         </Button>
                     </form>
-
-                     {/* Suggestions & Mobile Nav */}
-                    <div className="flex flex-col items-center gap-3 -mt-2">
-                        <p className="text-xs text-muted-foreground">
-                            Suggestions : 
-                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
-                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
-                            <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
-                        </p>
-                         <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base">
-                            <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
-                                <Home className="h-5 w-5 text-brand" />
-                                <span>Tout</span>
-                            </Link>
-                            <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
-                                <Bike className="h-5 w-5" />
-                                <span>Concession</span>
-                            </Link>
-                            <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
-                                <Wrench className="h-5 w-5" />
-                                <span>Atelier</span>
-                            </Link>
-                             <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
-                                <BookOpenCheck className="h-5 w-5" />
-                                <span>Entretien</span>
-                            </Link>
-                            <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
-                                <FileText className="h-5 w-5" />
-                                <span>Conseils</span>
-                            </Link>
-                        </nav>
-                    </div>
                 </div>
             </div>
         </header>
@@ -389,6 +356,39 @@ export default function LandingPage() {
                         Vérifier l’entretien de ma moto
                       </Link>
                     </Button>
+                  </div>
+                </section>
+
+                <section className="mt-6">
+                  <div className="flex flex-col items-center gap-3">
+                      <p className="text-xs text-muted-foreground">
+                          Suggestions : 
+                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
+                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
+                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
+                      </p>
+                       <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base">
+                          <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
+                              <Home className="h-5 w-5 text-brand" />
+                              <span>Tout</span>
+                          </Link>
+                          <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
+                              <Bike className="h-5 w-5" />
+                              <span>Concession</span>
+                          </Link>
+                          <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
+                              <Wrench className="h-5 w-5" />
+                              <span>Atelier</span>
+                          </Link>
+                           <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
+                              <BookOpenCheck className="h-5 w-5" />
+                              <span>Entretien</span>
+                          </Link>
+                          <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
+                              <FileText className="h-5 w-5" />
+                              <span>Conseils</span>
+                          </Link>
+                      </nav>
                   </div>
                 </section>
 
