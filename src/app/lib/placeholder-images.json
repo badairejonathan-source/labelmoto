@@ -2,7 +2,11 @@
   "landingPage": {
     "hero": {
       "src": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
-      "hint": "motorcycle road"
+      "hint": "motorcycle road",
+      "mapPreview": {
+        "src": "https://images.unsplash.com/photo-1569336415962-a42945097388?q=80&w=250&h=250&fit=crop",
+        "hint": "map illustration"
+      }
     },
     "gallery": [
       {
