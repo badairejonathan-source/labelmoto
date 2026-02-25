@@ -313,7 +313,7 @@ export default function EntretienPage() {
                         <CardContent>
                             <Link href="/map" className="block group rounded-lg overflow-hidden border">
                               <Image 
-                                  src="/images/apercucarte.png"
+                                  src="/images/apercucartezoom.png"
                                   alt="Aperçu de la carte"
                                   width={400}
                                   height={300}
