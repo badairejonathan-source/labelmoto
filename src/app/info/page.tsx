@@ -107,6 +107,11 @@ function InfoPageComponent() {
                 placeholderText="Rechercher un article..."
             />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl sm:text-5xl font-bold font-serif text-foreground tracking-tight">
+                        Conseils pratiques
+                    </h1>
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2">
                         {filteredArticles.map((article) => (
