@@ -403,7 +403,7 @@ function MapPageComponent() {
   useEffect(() => {
     const setInitialHeight = () => {
       if (isMobile) {
-        setPanelHeight(window.innerHeight * 0.65);
+        setPanelHeight(window.innerHeight * 0.77);
       }
     };
     setInitialHeight();
