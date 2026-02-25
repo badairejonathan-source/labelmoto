@@ -18,38 +18,36 @@ const ArticleCard = ({ article }: { article: Article }) => {
     const { imageUrl, imageHint } = article;
 
     return (
-        <article className="py-8 border-b last:border-b-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        <article>
+          <Link href={`/info/${article.id}`} className="group block py-8 border-b last:border-b-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
                 <div className="md:col-span-2">
-                    <Link href={`/info/${article.id}`} className="group">
-                        <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight tracking-tight group-hover:underline underline-offset-4 decoration-accent decoration-2">
-                            {article.title}
-                        </h2>
-                    </Link>
-                    <p className="mt-4 text-lg text-muted-foreground">
+                    <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground leading-tight group-hover:text-accent transition-colors">
+                        {article.title}
+                    </h2>
+                    <p className="mt-3 text-base text-muted-foreground line-clamp-3">
                         {article.description}
                     </p>
-                    <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground font-medium">
+                    <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground font-medium">
                         <span>Par {article.author}</span>
                         <span className="text-muted-foreground/50">•</span>
                         <span>{article.date}</span>
-                         <span className="text-muted-foreground/50">•</span>
+                        <span className="text-muted-foreground/50">•</span>
                         <span>{article.readingTime}</span>
                     </div>
                 </div>
-                <div className="relative aspect-square rounded-2xl overflow-hidden order-first md:order-last">
-                    <Link href={`/info/${article.id}`}>
-                        <Image 
-                            src={imageUrl}
-                            alt={article.title}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            data-ai-hint={imageHint}
-                        />
-                    </Link>
+                <div className="relative aspect-video rounded-xl overflow-hidden order-first md:order-last">
+                    <Image 
+                        src={imageUrl}
+                        alt={article.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        data-ai-hint={imageHint}
+                    />
                 </div>
             </div>
+          </Link>
         </article>
     );
 };
@@ -111,6 +109,7 @@ function InfoPageComponent() {
                     <h1 className="text-4xl sm:text-5xl font-bold font-serif text-foreground tracking-tight">
                         Conseils pratiques
                     </h1>
+                    <div className="mt-2 w-20 h-0.5 bg-accent mx-auto" />
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2">
