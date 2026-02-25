@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -296,22 +295,9 @@ export default function EntretienPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
               <article>
-                <div className="relative w-full aspect-[2.5/1] rounded-2xl overflow-hidden mb-8 shadow-lg">
-                  <Image
-                    src={imageUrl}
-                    alt={article.title}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={imageHint}
-                    priority
-                  />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-                   <div className="absolute bottom-0 left-0 p-6 text-white" style={{textShadow: '0 2px 4px rgba(0,0,0,0.5)'}}>
-                    <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight">
-                      🔧 {article.title}
-                    </h1>
-                   </div>
-                </div>
+                <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight text-foreground mb-8">
+                  🔧 {article.title}
+                </h1>
                 
                 <div className="space-y-4">
                   {renderContent()}
