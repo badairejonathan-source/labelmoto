@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -230,7 +229,7 @@ export default function LandingPage() {
                             <p className="text-lg md:text-xl max-w-3xl mx-auto md:mx-0 mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                Accédez à une liste de concessions et ateliers près de chez vous. Gagnez du temps, roulez en confiance.
                             </p>
-                            <div className="flex items-center justify-center md:justify-start">
+                            <div className="flex items-center justify-center md:justify-end">
                                 <Link href="/map">
                                     <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                                         Trouver un pro
