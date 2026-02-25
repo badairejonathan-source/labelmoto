@@ -8,8 +8,8 @@ import { FileText } from 'lucide-react';
 const AdBanner: React.FC = () => {
   const article = {
     id: '5',
-    imageUrl: 'https://images.unsplash.com/photo-1719903647426-d14726e9d5e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNnx8bW90byUyMHNhbGVzfGVufDB8fHx8MTc3MDk4MzgxNHww&ixlib=rb-4.1.0&q=80&w=1080',
-    imageHint: 'used motorcycle',
+    imageUrl: '/images/evitelespieges.jpg',
+    imageHint: 'motorcycle road trip',
     title: 'Achat moto d’occasion : le guide pour éviter les pièges',
   };
 
@@ -38,3 +38,5 @@ const AdBanner: React.FC = () => {
 };
 
 export default AdBanner;
+
+    

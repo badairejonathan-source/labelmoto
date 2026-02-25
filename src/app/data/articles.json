@@ -315,8 +315,8 @@
     "author": "L'équipe Label Moto",
     "date": "22 juillet 2024",
     "readingTime": "8 min de lecture",
-    "imageUrl": "https://images.unsplash.com/photo-1568772585407-921850269363?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "motorcycle garage",
+    "imageUrl": "/images/evitelespieges.jpg",
+    "imageHint": "motorcycle road trip",
     "content": [
       {
         "type": "paragraph",
@@ -885,6 +885,8 @@
 ]
     
   
+
+    
 
     
 

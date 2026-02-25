@@ -9,8 +9,8 @@ import { FileText } from 'lucide-react';
 const AdCard: React.FC = () => {
   const article = {
     id: '5',
-    imageUrl: 'https://images.unsplash.com/photo-1568772585407-921850269363?q=80&w=2070&auto=format&fit=crop',
-    imageHint: 'motorcycle garage',
+    imageUrl: '/images/evitelespieges.jpg',
+    imageHint: 'motorcycle road trip',
     title: 'Le Guide Indispensable',
     subtitle: "Achat moto d’occasion : évitez les pièges.",
     cta: 'Lire le guide',
@@ -47,5 +47,7 @@ const AdCard: React.FC = () => {
 };
 
 export default AdCard;
+
+    
 
     
