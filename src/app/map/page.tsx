@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -265,8 +266,13 @@ function MapPageComponent() {
     setSubmittedSearchTerm(searchTerm);
   };
 
-  const handleFilterChange = (filter: 'shopping' | 'service') => {
-    const newFilter = activeFilter === filter ? null : filter;
+  const handleFilterChange = (filter: 'shopping' | 'service' | null) => {
+    let newFilter: 'shopping' | 'service' | null;
+    if (filter === null) {
+        newFilter = null;
+    } else {
+        newFilter = activeFilter === filter ? null : filter;
+    }
     setActiveFilter(newFilter);
 
     // Update URL without reloading page

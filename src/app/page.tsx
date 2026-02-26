@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -191,6 +192,10 @@ const LandingHeader = () => {
                         </form>
 
                         <nav className="hidden md:flex items-center justify-center gap-12 md:gap-24">
+                            <Link href="/map" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
+                                <Home className="h-12 w-12" />
+                                <span>Tout</span>
+                            </Link>
                             <Link href="/map?filter=shopping" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
                                 <Bike className="h-12 w-12" />
                                 <span>Concession</span>

@@ -1,10 +1,11 @@
+
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2, User as UserIcon, BookOpenCheck } from 'lucide-react';
+import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2, User as UserIcon, BookOpenCheck, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -29,7 +30,7 @@ interface HeaderProps {
     onSearch: () => void;
     className?: string;
     activeFilter: 'shopping' | 'service' | null;
-    onFilterChange: (filter: 'shopping' | 'service') => void;
+    onFilterChange: (filter: 'shopping' | 'service' | null) => void;
     placeholderText: string;
 }
 
@@ -125,6 +126,17 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           <div className="flex items-center gap-2 justify-end lg:justify-self-end">
             <Button
               variant="ghost"
+              onClick={() => onFilterChange(null)}
+              className={cn(
+                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
+                activeFilter === null ? 'text-foreground' : 'text-muted-foreground'
+              )}
+            >
+              <Home className="h-5 w-5" />
+              <span>Tout</span>
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => onFilterChange('shopping')}
               className={cn(
                 "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
@@ -208,6 +220,18 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 
             {/* Navigation below Search Bar */}
             <nav className="hidden md:flex items-center justify-center gap-8">
+                <Button
+                    variant="ghost"
+                    onClick={() => onFilterChange(null)}
+                    className={cn(
+                      "relative p-1 h-auto flex items-center gap-2 text-lg font-medium",
+                      activeFilter === null ? 'text-foreground' : 'text-muted-foreground'
+                    )}
+                  >
+                    <Home className="h-6 w-6" />
+                    <span>Tout</span>
+                    {activeFilter === null && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
+                  </Button>
                 <Button
                     variant="ghost"
                     onClick={() => onFilterChange('shopping')}
