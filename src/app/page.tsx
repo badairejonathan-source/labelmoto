@@ -52,7 +52,7 @@ const LandingHeader = () => {
   
     const UserMenu = () => {
       if (isUserLoading) {
-        return <Button variant="ghost" className="h-12 w-12 rounded-full"><Loader2 className="h-6 w-6 animate-spin" /></Button>
+        return <Button variant="ghost" className="h-12 w-12 rounded-full"><Loader2 className="h-6 i-6 animate-spin" /></Button>
       }
       if (!user) {
         return (
@@ -235,10 +235,10 @@ export default function LandingPage() {
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-white p-8 md:p-16">
                         <div className="md:w-3/5 text-center md:text-left">
                             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                                Trouver une concession, un atelier ou un reparateur ? Fini la galère.
+                                De l’A2 au vieux briscard : trouvez votre pro en un clin d'œil.
                             </h1>
                             <p className="text-lg md:text-xl max-w-3xl mx-auto md:mx-0 mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                               Accédez à une liste de concessions et ateliers près de chez vous. Gagnez du temps, roulez en confiance.
+                               Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit pour vous laisser plus de temps sur la route.
                             </p>
                             <div className="flex items-center justify-center md:justify-end md:translate-x-40">
                                 <Link href="/map">
