@@ -224,7 +224,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     variant="ghost"
                     onClick={() => onFilterChange(null)}
                     className={cn(
-                      "relative p-1 h-auto flex items-center gap-2 text-lg font-medium",
+                      "relative px-4 py-2 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
                       activeFilter === null ? 'text-foreground' : 'text-muted-foreground'
                     )}
                   >
@@ -236,7 +236,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     variant="ghost"
                     onClick={() => onFilterChange('shopping')}
                     className={cn(
-                      "relative p-1 h-auto flex items-center gap-2 text-lg font-medium",
+                      "relative px-4 py-2 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
                       activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
                     )}
                   >
@@ -248,7 +248,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     variant="ghost"
                     onClick={() => onFilterChange('service')}
                     className={cn(
-                      "relative p-1 h-auto flex items-center gap-2 text-lg font-medium",
+                      "relative px-4 py-2 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
                       activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
                     )}
                   >

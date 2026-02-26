@@ -192,15 +192,15 @@ const LandingHeader = () => {
                         </form>
 
                         <nav className="hidden md:flex items-center justify-center gap-12 md:gap-24">
-                            <Link href="/map" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
+                            <Link href="/map" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium px-8 py-4 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
                                 <Home className="h-12 w-12" />
                                 <span>Tout</span>
                             </Link>
-                            <Link href="/map?filter=shopping" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
+                            <Link href="/map?filter=shopping" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium px-8 py-4 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
                                 <Bike className="h-12 w-12" />
                                 <span>Concession</span>
                             </Link>
-                            <Link href="/map?filter=service" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
+                            <Link href="/map?filter=service" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium px-8 py-4 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
                                 <Wrench className="h-12 w-12" />
                                 <span>Atelier</span>
                             </Link>
