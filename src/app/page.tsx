@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -124,7 +123,7 @@ const LandingHeader = () => {
 
                         {/* Integrated Slogan */}
                         <div className="hidden lg:flex flex-1 items-center justify-center px-4">
-                            <p className="text-lg font-semibold text-foreground whitespace-nowrap">
+                            <p className="text-3xl font-semibold text-foreground whitespace-nowrap">
                                 Trouver une concession, un atelier ou un réparateur ? <span className="text-accent font-bold italic ml-1">Fini la galère.</span>
                             </p>
                         </div>

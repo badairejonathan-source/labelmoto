@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -117,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           
           {/* Integrated Slogan in the middle row on Desktop */}
           <div className="hidden lg:flex items-center justify-center px-4">
-            <p className="text-sm xl:text-base font-medium text-foreground text-center">
+            <p className="text-2xl font-medium text-foreground text-center">
               Trouver une concession, un atelier ou un réparateur ? <span className="text-accent font-bold italic ml-1">Fini la galère.</span>
             </p>
           </div>
