@@ -304,9 +304,9 @@ export default function LandingPage() {
                              <li className="flex items-start gap-4">
                                 <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
                                 <div>
-                                    <h3 className="font-semibold text-lg">Services pratiques</h3>
+                                    <h3 className="font-semibold text-lg">Info technique, le bon choix.</h3>
                                     <p className="text-muted-foreground">
-                                        Notre moteur de recherche vous connecte aussi aux services d'entretien, afin que vous trouviez le bon professionnel sans vous perdre.
+                                        Accédez à nos guides et fiches techniques pour maîtriser votre sujet et identifier le professionnel idéal pour votre machine.
                                     </p>
                                 </div>
                             </li>
