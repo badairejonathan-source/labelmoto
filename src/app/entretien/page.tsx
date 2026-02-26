@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -55,8 +54,8 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-accent underline hover:text-accent/80\">MT-07</a>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-accent underline hover:text-accent/80\">Tracer 7</a>",
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07</a>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7</a>",
           "R7",
           "XSR700"
         ]
@@ -67,7 +66,7 @@ const article = {
       },
       {
         "type": "list",
-        "items": ["<a href=\"/fiches/honda-cb500-hornet\" class=\"text-accent underline hover:text-accent/80\">CB500 Hornet / CB500F</a>", "CBR500R", "NX500"]
+        "items": ["<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet / CB500F</a>", "CBR500R", "NX500"]
       },
       {
         "type": "paragraph",
@@ -75,7 +74,7 @@ const article = {
       },
       {
         "type": "list",
-        "items": ["<a href=\"/fiches/kawasaki-z650\" class=\"text-accent underline hover:text-accent/80\">Z650</a>", "Ninja 650"]
+        "items": ["<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650</a>", "Ninja 650"]
       },
       {
         "type": "paragraph",
@@ -151,7 +150,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "A2 👉 Pour estimer ton budget global, consulte aussi <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">notre guide sur le coût réel d’une moto par mois</a>."
+        "html": "A2 👉 Pour estimer ton budget global, consulte aussi <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">notre guide sur le coût réel d’une moto par mois</a>."
       },
       {
         "type": "heading",
@@ -325,7 +324,7 @@ export default function EntretienPage() {
                             </p>
                         </CardContent>
                         <CardFooter>
-                            <Button asChild className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-base py-5 rounded-full shadow-lg">
+                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-base py-5 rounded-full shadow-lg">
                                 <Link href="/map">Voir la carte interactive</Link>
                             </Button>
                         </CardFooter>

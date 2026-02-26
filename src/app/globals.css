@@ -62,6 +62,7 @@
     --ring: 25 95% 53%; /* Orange pour le focus */
     --radius: 0.5rem;
     --brand: 25 95% 53%;
+    --brand-foreground: 0 0% 98%;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 211 62% 16%;
@@ -92,6 +93,7 @@
     --input: 0 0% 14.9%;
     --ring: 25 95% 53%;
     --brand: 25 95% 53%;
+    --brand-foreground: 0 0% 98%;
 
     --sidebar-background: 211 62% 16%;
     --sidebar-foreground: 0 0% 98%;

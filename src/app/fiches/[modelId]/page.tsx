@@ -121,7 +121,7 @@ export default function FicheTechniquePage() {
            elements.push(
             <div key={`extra-${index}`} className="my-4 text-center">
               <p className="text-sm text-muted-foreground mb-2">Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.</p>
-              <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                 <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
                   🔘 Comparer les ateliers près de moi
                 </Link>
@@ -207,7 +207,7 @@ export default function FicheTechniquePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-3"><Gauge className="h-6 w-6 text-accent" /> Moteur</CardTitle>
+                  <CardTitle className="flex items-center gap-3"><Gauge className="h-6 w-6 text-brand" /> Moteur</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm">
@@ -222,7 +222,7 @@ export default function FicheTechniquePage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-3"><Settings2 className="h-6 w-6 text-accent" /> Dimensions</CardTitle>
+                  <CardTitle className="flex items-center gap-3"><Settings2 className="h-6 w-6 text-brand" /> Dimensions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm">
@@ -237,7 +237,7 @@ export default function FicheTechniquePage() {
             
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3"><Droplets className="h-6 w-6 text-accent" /> Partie Cycle</CardTitle>
+                <CardTitle className="flex items-center gap-3"><Droplets className="h-6 w-6 text-brand" /> Partie Cycle</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -275,7 +275,7 @@ export default function FicheTechniquePage() {
                         Préparez votre prochaine révision sans surprise. <br/>
                         Comparez les garages proches de chez vous pour votre {fiche.modelName}.
                     </p>
-                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                    <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                       <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
                         🔘 Voir les garages autour de moi
                       </Link>
@@ -292,7 +292,7 @@ export default function FicheTechniquePage() {
                         <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
                             Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
                         </p>
-                        <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                        <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                             <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
                                 🔘 Voir les {fiche.modelName} en concession
                             </Link>
@@ -309,7 +309,7 @@ export default function FicheTechniquePage() {
               {fiche.maintenance && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-3"><Wrench className="h-6 w-6 text-accent" /> Plan d'entretien & Coûts</CardTitle>
+                    <CardTitle className="flex items-center gap-3"><Wrench className="h-6 w-6 text-brand" /> Plan d'entretien & Coûts</CardTitle>
                     <CardDescription>Les coûts sont des estimations et peuvent varier selon le garage.</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -339,7 +339,7 @@ export default function FicheTechniquePage() {
               {fiche.reliability && (
                 <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-3"><ShieldCheck className="h-6 w-6 text-accent" /> Fiabilité & Points à surveiller</CardTitle>
+                      <CardTitle className="flex items-center gap-3"><ShieldCheck className="h-6 w-6 text-brand" /> Fiabilité & Points à surveiller</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ul className="list-disc list-inside space-y-2 text-sm">
@@ -374,7 +374,7 @@ export default function FicheTechniquePage() {
                         />
                       </div>
                       <CardHeader>
-                        <CardTitle className="text-lg group-hover:text-accent group-hover:underline">{f.modelName}</CardTitle>
+                        <CardTitle className="text-lg group-hover:text-brand group-hover:underline">{f.modelName}</CardTitle>
                         <CardDescription>{f.engine.displacement}</CardDescription>
                       </CardHeader>
                     </Card>

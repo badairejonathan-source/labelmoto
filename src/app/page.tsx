@@ -8,7 +8,7 @@ import LabelMotoLogo from '@/components/app/logo';
 import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon, BookOpenCheck, ArrowRight } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/app/data/articles.json';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/utils';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -125,7 +125,7 @@ const LandingHeader = () => {
                         <div className="hidden lg:flex items-center justify-center px-4">
                             <p className="text-4xl font-bold text-foreground text-center leading-[1.1]">
                                 <span className="block">Trouver une concession, un atelier ou un réparateur ?</span>
-                                <span className="text-accent italic block">Fini la galère.</span>
+                                <span className="text-brand italic block">Fini la galère.</span>
                             </p>
                         </div>
                         
@@ -184,22 +184,22 @@ const LandingHeader = () => {
                             <Button 
                                 type="submit" 
                                 size="icon" 
-                                className="absolute top-1/2 right-1.5 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
+                                className="absolute top-1/2 right-1.5 -translate-y-1/2 h-9 w-9 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
                             >
                                 <Search className="h-5 w-5" />
                             </Button>
                         </form>
 
                         <nav className="hidden md:flex items-center justify-center gap-8 md:gap-12">
-                            <Link href="/map" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                            <Link href="/map" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
                                 <Home className="h-6 w-6" />
                                 <span>Tout</span>
                             </Link>
-                            <Link href="/map?filter=shopping" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                            <Link href="/map?filter=shopping" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
                                 <Bike className="h-6 w-6" />
                                 <span>Concession</span>
                             </Link>
-                            <Link href="/map?filter=service" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                            <Link href="/map?filter=service" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
                                 <Wrench className="h-6 w-6" />
                                 <span>Atelier</span>
                             </Link>
@@ -242,7 +242,7 @@ export default function LandingPage() {
                             </p>
                             <div className="flex items-center justify-center md:justify-end md:translate-x-40">
                                 <Link href="/map">
-                                    <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg relative z-[20]">
+                                    <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg relative z-[20]">
                                         Explorer la carte
                                     </Button>
                                 </Link>
@@ -338,7 +338,7 @@ export default function LandingPage() {
                                             sizes="(max-width: 768px) 100vw, 33vw"
                                             data-ai-hint={article.imageHint}
                                         />
-                                        <div className="absolute top-3 left-3 bg-brand/90 text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
+                                        <div className="absolute top-3 left-3 bg-brand text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
                                             A2 Focus
                                         </div>
                                     </div>
@@ -372,7 +372,7 @@ export default function LandingPage() {
                     <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
                       <span className="font-bold">Anticipe tes dépenses en quelques clics.</span> Accède au budget moyen et aux points de contrôle de ton modèle pour arriver au garage en toute confiance.
                     </p>
-                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                    <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                       <Link href="/entretien">
                         Calculer mon budget entretien
                       </Link>
@@ -380,9 +380,9 @@ export default function LandingPage() {
                     <div className="flex flex-col items-center gap-3 mt-6">
                       <p className="text-xs text-muted-foreground">
                           Suggestions : 
-                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
-                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
-                          <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
+                          <Link href="/entretien" className="hover:text-brand underline-offset-4 hover:underline mx-1.5">révision moto</Link>•
+                          <Link href="/entretien" className="hover:text-brand underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
+                          <Link href="/entretien" className="hover:text-brand underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
                       </p>
                        <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base mt-2">
                           <Link href="/map" className="flex items-center gap-2 text-foreground pb-1">
@@ -462,7 +462,7 @@ export default function LandingPage() {
                             Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
                           <div className="relative inline-block group/cta">
-                            <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-10 py-7 rounded-full shadow-lg transition-all hover:shadow-destructive/25 hover:-translate-y-1">
+                            <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-10 py-7 rounded-full shadow-lg transition-all hover:shadow-brand/25 hover:-translate-y-1">
                               <Link href={proRegisterLink}>
                                 🔘 Créer la fiche de mon établissement
                               </Link>
@@ -471,7 +471,7 @@ export default function LandingPage() {
                             {/* Decorative Arrow pointing to the visual - Hand-drawn style as requested */}
                             {/* Appears only on hover of the button group on XL screens */}
                             <div className="hidden xl:block absolute -right-40 top-1/2 -translate-y-1/2 w-48 h-32 pointer-events-none opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300 z-50">
-                                <svg className="w-full h-full text-accent" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg className="w-full h-full text-brand" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path 
                                         d="M10 80C40 80 100 70 140 20" 
                                         stroke="currentColor" 
