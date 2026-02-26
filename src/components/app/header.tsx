@@ -223,11 +223,11 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     variant="ghost"
                     onClick={() => onFilterChange(null)}
                     className={cn(
-                      "relative px-3 py-0.5 h-auto flex items-center gap-2 text-base font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
+                      "relative px-3 py-0.5 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
                       activeFilter === null ? 'text-foreground' : 'text-muted-foreground'
                     )}
                   >
-                    <Home className="h-4 w-4" />
+                    <Home className="h-5 w-5" />
                     <span>Tout</span>
                     {activeFilter === null && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
                   </Button>
@@ -235,11 +235,11 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     variant="ghost"
                     onClick={() => onFilterChange('shopping')}
                     className={cn(
-                      "relative px-3 py-0.5 h-auto flex items-center gap-2 text-base font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
+                      "relative px-3 py-0.5 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
                       activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
                     )}
                   >
-                    <Bike className="h-4 w-4" />
+                    <Bike className="h-5 w-5" />
                     <span>Concession</span>
                     {activeFilter === 'shopping' && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
                   </Button>
@@ -247,11 +247,11 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     variant="ghost"
                     onClick={() => onFilterChange('service')}
                     className={cn(
-                      "relative px-3 py-0.5 h-auto flex items-center gap-2 text-base font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
+                      "relative px-3 py-0.5 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-accent hover:text-accent-foreground",
                       activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
                     )}
                   >
-                    <Wrench className="h-4 w-4" />
+                    <Wrench className="h-5 w-5" />
                     <span>Atelier</span>
                     {activeFilter === 'service' && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
                   </Button>
