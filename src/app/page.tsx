@@ -368,10 +368,10 @@ export default function LandingPage() {
                 <section className="mt-8 md:mt-12">
                   <div className="bg-muted/50 rounded-2xl p-6 md:p-8 text-center">
                     <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                      🔧 Vérifiez l’entretien de votre moto
+                      Maîtrise ton budget entretien.
                     </h2>
                     <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
-                      Avant d’aller chez le garagiste, vérifiez le kilométrage de révision et le coût moyen pour votre modèle. En quelques secondes, vous savez quoi prévoir et combien ça va coûter.
+                      Évite les mauvaises surprises sur la facture. Consulte les échéances de révision et le budget moyen pour ton modèle avant même de béquiller au garage.
                     </p>
                     <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                       <Link href="/entretien">
