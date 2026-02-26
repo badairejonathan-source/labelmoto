@@ -317,7 +317,7 @@ export default function LandingPage() {
                 
                 {/* Gallery Section */}
                 <section className="mt-8 md:mt-12">
-                    <div className="bg-muted/50 rounded-2xl p-6 md:p-8">
+                    <div className="bg-muted/50 rounded-3xl p-6 md:p-8 border-4 border-brand">
                         <div className="text-center mb-8">
                             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                                 Objectif A2 : Roule bien accompagné.
