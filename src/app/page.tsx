@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -316,6 +317,14 @@ export default function LandingPage() {
                 
                 {/* Gallery Section */}
                 <section className="mt-8 md:mt-12">
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                            Objectif A2 : Roule bien accompagné.
+                        </h2>
+                        <p className="text-muted-foreground max-w-3xl mx-auto">
+                            De l’achat de ta première bécane au choix du bon garage, nos dossiers spéciaux t’aident à éviter les pièges et à tracer ta route sereinement.
+                        </p>
+                    </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         
                         {/* Featured Article */}
