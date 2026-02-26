@@ -114,7 +114,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </Link>
           </div>
           
-          {/* Integrated Slogan in the middle row on Desktop */}
+          {/* Integrated Slogan in the middle row on Desktop - Centered using grid column 2 */}
           <div className="hidden lg:flex items-center justify-center px-4">
             <p className="text-2xl font-medium text-foreground text-center">
               Trouver une concession, un atelier ou un réparateur ? <span className="text-accent font-bold italic ml-1">Fini la galère.</span>

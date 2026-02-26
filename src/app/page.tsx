@@ -114,21 +114,21 @@ const LandingHeader = () => {
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col gap-1.5">
                     {/* Top row: Logo, Slogan, Profile */}
-                    <div className="flex items-center justify-between">
-                        <div className="w-40 md:w-48 shrink-0">
+                    <div className="flex items-center justify-between lg:grid lg:grid-cols-3">
+                        <div className="w-40 md:w-48 shrink-0 lg:justify-self-start">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>
                         </div>
 
-                        {/* Integrated Slogan */}
-                        <div className="hidden lg:flex flex-1 items-center justify-center px-4">
-                            <p className="text-3xl font-semibold text-foreground whitespace-nowrap">
+                        {/* Integrated Slogan - Centered using grid column 2 */}
+                        <div className="hidden lg:flex items-center justify-center px-4">
+                            <p className="text-3xl font-semibold text-foreground text-center">
                                 Trouver une concession, un atelier ou un réparateur ? <span className="text-accent font-bold italic ml-1">Fini la galère.</span>
                             </p>
                         </div>
                         
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 justify-end lg:justify-self-end">
                             <div className="hidden md:flex items-center gap-2">
                                 <TooltipProvider>
                                     <Tooltip>
