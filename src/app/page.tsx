@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from '@/components/app/logo';
-import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon, BookOpenCheck } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon, BookOpenCheck, ArrowRight } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
@@ -213,14 +213,10 @@ const LandingHeader = () => {
 };
 
 export default function LandingPage() {
-    const { hero, gallery, ctaSection } = placeholderData.landingPage;
-    const featuredArticle = articlesData.find(article => article.id === '5');
+    const { hero, ctaSection } = placeholderData.landingPage;
+    const a2Articles = articlesData.filter(article => ['4', '5', '6'].includes(article.id));
     const { user } = useUser();
     const proRegisterLink = user ? "/pro/register" : "/login";
-
-    const getImageUrl = (image: GalleryImage) => {
-        return image.src || `https://picsum.photos/seed/${image.seed}/${image.width}/${image.height}`;
-    }
 
     return (
         <div className="min-h-screen bg-background">
@@ -315,9 +311,9 @@ export default function LandingPage() {
                     </div>
                 </section>
                 
-                {/* Gallery Section */}
+                {/* Objectif A2 Section */}
                 <section className="mt-8 md:mt-12">
-                    <div className="bg-muted/50 rounded-3xl p-6 md:p-8 border-4 border-brand">
+                    <div className="bg-muted/50 rounded-3xl p-6 md:p-8 border-4 border-brand shadow-sm">
                         <div className="text-center mb-8">
                             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                                 Objectif A2 : Roule bien accompagné.
@@ -326,61 +322,44 @@ export default function LandingPage() {
                                 De l’achat de ta première bécane au choix du bon garage, nos dossiers spéciaux t’aident à éviter les pièges et à tracer ta route sereinement.
                             </p>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            
-                            {/* Featured Article */}
-                            {featuredArticle ? (
-                                <Link href={`/info/${featuredArticle.id}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden group col-span-1">
-                                    <Image
-                                        src={featuredArticle.imageUrl}
-                                        alt={featuredArticle.title}
-                                        fill
-                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        sizes="(max-width: 768px) 50vw, 25vw"
-                                        data-ai-hint={featuredArticle.imageHint}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                                    <div className="absolute bottom-0 left-0 p-3 sm:p-4 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.7)'}}>
-                                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold">
-                                            <FileText className="h-3 w-3" />
-                                            <span>Guide Pratique</span>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {a2Articles.map((article) => (
+                                <Link 
+                                    key={article.id} 
+                                    href={`/info/${article.id}`} 
+                                    className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-border/50 h-full"
+                                >
+                                    <div className="relative aspect-video overflow-hidden">
+                                        <Image
+                                            src={article.imageUrl}
+                                            alt={article.title}
+                                            fill
+                                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                            data-ai-hint={article.imageHint}
+                                        />
+                                        <div className="absolute top-3 left-3 bg-brand/90 text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
+                                            A2 Focus
                                         </div>
-                                        <h3 className="font-bold text-sm sm:text-base leading-tight mt-1 group-hover:underline">Le guide pour éviter les pièges</h3>
+                                    </div>
+                                    <div className="p-5 flex flex-col flex-grow">
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3 font-medium">
+                                            <FileText className="h-3.5 w-3.5 text-brand" />
+                                            <span>{article.readingTime}</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-foreground leading-tight group-hover:text-brand transition-colors line-clamp-2 mb-3">
+                                            {article.title}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground line-clamp-3 mb-4 flex-grow">
+                                            {article.description}
+                                        </p>
+                                        <div className="flex items-center gap-2 text-brand text-sm font-bold mt-auto group-hover:gap-3 transition-all">
+                                            <span>Lire le guide</span>
+                                            <ArrowRight className="h-4 w-4" />
+                                        </div>
                                     </div>
                                 </Link>
-                            ) : (
-                               gallery.length > 0 && <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-                                    <Image
-                                        src={getImageUrl(gallery[0] as GalleryImage)}
-                                        alt={`Motorcycle gallery image 1`}
-                                        fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 50vw, 25vw"
-                                        data-ai-hint={gallery[0].hint}
-                                    />
-                                </div>
-                            )}
-
-                            {/* Other gallery images */}
-                            {gallery.slice(1).map((image, index) => (
-                                 <div key={index} className="relative aspect-[3/4] rounded-2xl overflow-hidden group">
-                                    <Image
-                                        src={getImageUrl(image as GalleryImage)}
-                                        alt={`Motorcycle gallery image ${index + 2}`}
-                                        fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 50vw, 25vw"
-                                        data-ai-hint={(image as GalleryImage).hint}
-                                    />
-                                    {(image as GalleryImage).text && (
-                                        <>
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                                            <div className="absolute bottom-0 left-0 p-3 sm:p-4 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.7)'}}>
-                                                <h3 className="font-bold text-sm sm:text-base leading-tight">{ (image as GalleryImage).text }</h3>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
                             ))}
                         </div>
                     </div>
