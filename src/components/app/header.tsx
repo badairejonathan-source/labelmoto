@@ -107,22 +107,22 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
   return (
     <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
       <div className="container mx-auto flex flex-col gap-1.5">
-        <div className="flex items-center justify-between md:grid md:grid-cols-3">
-          <div className="w-36 md:w-44 shrink-0 md:justify-self-start">
+        <div className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_2fr_1fr]">
+          <div className="w-36 md:w-44 shrink-0 lg:justify-self-start">
             <Link href="/">
               <LabelMotoLogo />
             </Link>
           </div>
           
-          {/* Integrated Slogan in the middle row on Desktop - Centered using grid column 2 - Forced 2 lines */}
+          {/* Integrated Slogan in the middle row on Desktop - Centered with more space - Forced 2 lines */}
           <div className="hidden lg:flex items-center justify-center px-4">
             <p className="text-3xl font-bold text-foreground text-center leading-[1.1]">
-              Trouver une concession, un atelier ou un réparateur ? <br />
-              <span className="text-accent italic">Fini la galère.</span>
+              <span className="block">Trouver une concession, un atelier ou un réparateur ?</span>
+              <span className="text-accent italic block">Fini la galère.</span>
             </p>
           </div>
 
-          <div className="flex items-center gap-2 justify-end md:justify-self-end">
+          <div className="flex items-center gap-2 justify-end lg:justify-self-end">
             <Button
               variant="ghost"
               onClick={() => onFilterChange('shopping')}
