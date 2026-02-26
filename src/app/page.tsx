@@ -307,7 +307,7 @@ export default function LandingPage() {
                                 <div>
                                     <h3 className="font-semibold text-lg">Info technique, le bon choix.</h3>
                                     <p className="text-muted-foreground">
-                                        Accédez à nos guides et fiches techniques pour maîtriser votre sujet et identifier le professionnel idéal pour votre machine.
+                                        Accédez à nos guides et fiches techniques pour maîtriser votre sujet et <span className="font-bold">identifier le professionnel idéal</span> pour votre machine.
                                     </p>
                                 </div>
                             </li>
