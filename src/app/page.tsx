@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -289,7 +288,7 @@ export default function LandingPage() {
                                 <div>
                                     <h3 className="font-semibold text-lg">Informations fiables et à jour</h3>
                                     <p className="text-muted-foreground">
-                                        Toutes les données des concessions (occasion et neuve) sont vérifiées et régulièrement actualisées pour vous garantir des informations correctes.
+                                        Toutes les données des concessions (occasion et neuve) sont vérifiées et <span className="font-bold">régulièrement actualisées</span> pour vous garantir des informations correctes.
                                     </p>
                                 </div>
                             </li>
