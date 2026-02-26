@@ -386,7 +386,7 @@ export default function LandingPage() {
                           <Link href="/entretien" className="hover:text-accent underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
                       </p>
                        <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base mt-2">
-                          <Link href="/map" className="flex items-center gap-2 text-foreground border-b-2 border-brand pb-1">
+                          <Link href="/map" className="flex items-center gap-2 text-foreground pb-1">
                               <Home className="h-5 w-5 text-brand" />
                               <span>Tout</span>
                           </Link>

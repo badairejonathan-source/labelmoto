@@ -230,7 +230,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                   >
                     <Home className="h-5 w-5" />
                     <span>Tout</span>
-                    {activeFilter === null && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
                   </Button>
                 <Button
                     variant="ghost"
@@ -242,7 +241,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                   >
                     <Bike className="h-5 w-5" />
                     <span>Concession</span>
-                    {activeFilter === 'shopping' && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
                   </Button>
                   <Button
                     variant="ghost"
@@ -254,7 +252,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                   >
                     <Wrench className="h-5 w-5" />
                     <span>Atelier</span>
-                    {activeFilter === 'service' && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
                   </Button>
             </nav>
         </div>
