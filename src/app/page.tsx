@@ -25,15 +25,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
-type GalleryImage = {
-    src?: string;
-    seed?: string;
-    width?: number;
-    height?: number;
-    hint: string;
-    text?: string;
-};
-
 const LandingHeader = () => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -41,11 +32,6 @@ const LandingHeader = () => {
     const { user, isUserLoading } = useUser();
     const auth = useAuth();
     
-    const isInfoActive = pathname ? pathname.startsWith('/info') : false;
-    const isShoppingActive = pathname === '/map' && filter === 'shopping';
-    const isServiceActive = pathname === '/map' && filter === 'service';
-    const isMapActive = pathname === '/map' && !isShoppingActive && !isServiceActive;
-
     const handleLogout = async () => {
       await signOut(auth);
     }
@@ -59,7 +45,7 @@ const LandingHeader = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button asChild variant="ghost" className="hidden sm:flex rounded-full h-12 w-12 p-0">
+                <Button asChild variant="ghost" className="rounded-full h-12 w-12 p-0">
                   <Link href="/login">
                     <div className="h-12 w-12 rounded-full flex items-center justify-center p-1">
                       <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={40} height={40} className="h-10 w-10 object-contain" />
@@ -122,7 +108,7 @@ const LandingHeader = () => {
                         </div>
 
                         <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-                            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
+                            <p className="text-base sm:text-lg md:text-xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
                                 <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
                                 <span className="text-brand italic block lg:inline">Fini la galère.</span>
                             </p>
@@ -133,7 +119,7 @@ const LandingHeader = () => {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
                                                 <Link href="/entretien">
                                                     <BookOpenCheck className="h-6 w-6" />
                                                     <span className="sr-only">Entretien & Révisions</span>
@@ -148,7 +134,7 @@ const LandingHeader = () => {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
                                                 <Link href="/info">
                                                     <FileText className="h-6 w-6" />
                                                     <span className="sr-only">Conseils pratiques</span>
@@ -161,12 +147,7 @@ const LandingHeader = () => {
                                     </Tooltip>
                                 </TooltipProvider>
                             </div>
-                            <div className="md:hidden">
-                                <UserMenu />
-                            </div>
-                             <div className="hidden md:block">
-                                <UserMenu />
-                            </div>
+                            <UserMenu />
                         </div>
                     </div>
 
@@ -209,7 +190,7 @@ const LandingHeader = () => {
 };
 
 export default function LandingPage() {
-    const { hero, ctaSection } = placeholderData.landingPage;
+    const { hero } = placeholderData.landingPage;
     const a2Articles = articlesData.filter(article => ['4', '5', '6'].includes(article.id));
     const { user } = useUser();
     const proRegisterLink = user ? "/pro/register" : "/login";
@@ -219,7 +200,7 @@ export default function LandingPage() {
             <LandingHeader />
             <main className="py-8 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                <div className="relative rounded-3xl p-1 border-4 border-brand bg-black md:mb-16">
+                <div className="relative rounded-3xl p-1 border-4 border-brand bg-black mb-12 md:mb-16">
                      <Image
                         src={hero.src}
                         alt="Motorcycle"
@@ -417,8 +398,8 @@ export default function LandingPage() {
                 </section>
 
                 <section className="mt-12 md:mt-20">
-                  <div className="bg-white rounded-[2.5rem] overflow-hidden border border-border/50 shadow-sm relative group">
-                    <div className="flex flex-col lg:flex-row min-h-[450px]">
+                  <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-border/50 shadow-sm relative group">
+                    <div className="flex flex-col lg:flex-row min-h-[400px] md:min-h-[450px]">
                       <div className="hidden lg:flex w-20 bg-muted/30 border-r border-border/50 items-center justify-center py-12 shrink-0">
                         <span className="text-3xl font-black text-brand/10 tracking-[0.3em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                           Espace Pro
@@ -427,20 +408,20 @@ export default function LandingPage() {
 
                       <div className="flex-grow flex flex-col lg:flex-row items-center p-6 md:p-12 lg:px-16 lg:py-12 gap-8 lg:gap-12">
                         <div className="flex-1 text-center lg:text-left">
-                          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-6">
+                          <h2 className="text-2xl md:text-4xl font-extrabold text-foreground leading-tight mb-4 md:mb-6">
                             Professionnels, rejoignez le réseau Label Moto.
                           </h2>
-                          <p className="text-muted-foreground text-lg mb-8 lg:mb-10 max-w-2xl mx-auto lg:mx-0">
-                            Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
+                          <p className="text-muted-foreground text-base md:text-lg mb-6 md:mb-10 max-w-2xl mx-auto lg:mx-0">
+                            Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
                           <div className="relative inline-block group/cta">
-                            <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-base md:text-lg px-8 lg:px-10 py-6 lg:py-7 rounded-full shadow-lg transition-all hover:shadow-brand/25 hover:-translate-y-1">
+                            <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-sm md:text-lg px-6 md:px-10 py-5 md:py-7 rounded-full shadow-lg transition-all hover:shadow-brand/25 hover:-translate-y-1">
                               <Link href={proRegisterLink}>
                                 🔘 Créer la fiche de mon établissement
                               </Link>
                             </Button>
                             
-                            <div className="hidden xl:block absolute -right-40 top-1/2 -translate-y-1/2 w-48 h-32 pointer-events-none opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300 z-50">
+                            <div className="absolute -right-32 md:-right-40 top-1/2 -translate-y-1/2 w-32 md:w-48 h-24 md:h-32 pointer-events-none opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300 z-50">
                                 <svg className="w-full h-full text-brand" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path 
                                         d="M10 80C40 80 100 70 140 20" 
@@ -461,8 +442,8 @@ export default function LandingPage() {
                           </div>
                         </div>
 
-                        <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
-                           <div className="relative aspect-[4/3] lg:aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 md:border-8 border-white -rotate-2 group-hover:rotate-0 transition-all duration-700 ease-out transform group-hover:scale-[1.02]">
+                        <div className="flex-1 relative w-full max-w-lg lg:max-w-none mt-4 md:mt-0">
+                           <div className="relative aspect-[4/3] lg:aspect-video rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-2 md:border-8 border-white -rotate-1 md:-rotate-2 group-hover:rotate-0 transition-all duration-700 ease-out transform group-hover:scale-[1.02]">
                               <Image 
                                   src="/images/apercufiche.png" 
                                   alt="Interface Pro Preview" 
@@ -472,8 +453,8 @@ export default function LandingPage() {
                               <div className="absolute inset-0 bg-gradient-to-tr from-brand/10 via-transparent to-transparent" />
                            </div>
                            
-                           <div className="absolute -bottom-4 right-4 md:-right-4 lg:-right-8 bg-brand text-white px-4 md:px-6 py-2 md:py-3 rounded-2xl shadow-xl font-bold text-xs md:text-sm lg:text-base rotate-3 flex items-center gap-2">
-                              <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                           <div className="absolute -bottom-2 md:-bottom-4 right-2 md:-right-4 lg:-right-8 bg-brand text-white px-3 md:px-6 py-1.5 md:py-3 rounded-xl md:rounded-2xl shadow-xl font-bold text-[10px] md:text-sm lg:text-base rotate-3 flex items-center gap-2">
+                              <div className="w-1.5 md:w-2 h-1.5 md:h-2 bg-white rounded-full animate-pulse" />
                               100% Gratuit
                            </div>
                         </div>

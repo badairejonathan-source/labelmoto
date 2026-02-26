@@ -111,7 +111,7 @@ function MapPageComponent() {
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
 
   const { width } = useWindowSize();
-  const isMobile = width ? width < 768 : false;
+  const isMobile = (width || 1024) < 768;
 
   const [panelHeight, setPanelHeight] = useState(400);
   const [isDragging, setIsDragging] = useState(false);
@@ -176,7 +176,7 @@ function MapPageComponent() {
         toast({
             variant: "destructive",
             title: "Erreur de chargement",
-            description: "Impossible de récupérer les fiches. Vérifiez les règles de sécurité de la base de données.",
+            description: "Impossible de récupérer les fiches. Vérifiez les règles de sécurité.",
         });
 
         setAllDealerships([]);
@@ -188,10 +188,10 @@ function MapPageComponent() {
 
   const placeholderText = useMemo(() => {
     if (activeFilter === 'service') {
-      return "Réparation , entretien, depannage, pièces détachées";
+      return "Réparation, entretien, dépannage...";
     }
     if (activeFilter === 'shopping') {
-      return "Achat, vente, accessoires par départements";
+      return "Achat, vente, accessoires...";
     }
     return "Rechercher par nom, ville, code postal...";
   }, [activeFilter]);
@@ -209,24 +209,12 @@ function MapPageComponent() {
 
     if (submittedSearchTerm.trim() !== '') {
         const lowerCaseSearch = submittedSearchTerm.toLowerCase();
-        
         const isDeptCode = /^\d{2,3}$/.test(lowerCaseSearch) || /^2[ab]$/i.test(lowerCaseSearch);
 
         if (isDeptCode) {
             let deptCode = lowerCaseSearch;
-            if (deptCode === '2a' || deptCode === '2b') {
-                deptCode = '20';
-            }
-
-            results = results.filter(d => {
-                if (!d.address) return false;
-                const postalCodeMatch = d.address.match(/\b(\d{5})\b/);
-                if (!postalCodeMatch) return false;
-                
-                const postalCode = postalCodeMatch[1];
-                
-                return postalCode.startsWith(deptCode);
-            });
+            if (deptCode === '2a' || deptCode === '2b') deptCode = '20';
+            results = results.filter(d => d.address?.match(/\b(\d{5})\b/)?.[1].startsWith(deptCode));
         } else {
             results = results.filter(d => 
                 (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
@@ -273,24 +261,17 @@ function MapPageComponent() {
     setActiveFilter(newFilter);
 
     const params = new URLSearchParams(window.location.search);
-    if (newFilter) {
-      params.set('filter', newFilter);
-    } else {
-      params.delete('filter');
-    }
+    if (newFilter) params.set('filter', newFilter);
+    else params.delete('filter');
     router.push(`${window.location.pathname}?${params.toString()}`);
   };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     setMapCenter((currentCenter) => {
-      if (!currentCenter) return newCenter;
       const centerChanged = Math.abs(currentCenter[0] - newCenter[0]) > 0.00001 || Math.abs(currentCenter[1] - newCenter[1]) > 0.00001;
       return centerChanged ? newCenter : currentCenter;
     });
-    setMapZoom((currentZoom) => {
-      const zoomChanged = currentZoom !== newZoom;
-      return zoomChanged ? newZoom : currentZoom;
-    });
+    setMapZoom((currentZoom) => currentZoom !== newZoom ? newZoom : currentZoom);
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
@@ -301,14 +282,12 @@ function MapPageComponent() {
     return [...filteredDealerships].sort((a, b) => {
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
-
       if (isBrandSearch) {
         const aIsPrimary = a.brands?.[0]?.toLowerCase() === lowerCaseSearch;
         const bIsPrimary = b.brands?.[0]?.toLowerCase() === lowerCaseSearch;
         if (aIsPrimary && !bIsPrimary) return -1;
         if (!aIsPrimary && bIsPrimary) return 1;
       }
-      
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     }).slice(0, 50);
   }, [filteredDealerships, mapCenter, selectedDealershipId, submittedSearchTerm]);
@@ -329,14 +308,12 @@ function MapPageComponent() {
   useEffect(() => {
     if (!selectedDealershipId) return;
     const targetCard = cardRefs.current.get(selectedDealershipId);
-    if (targetCard) {
-      targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    if (targetCard) targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [selectedDealershipId]);
 
   const handleMarkerMouseOver = useCallback((id: string) => {
     if (hoverOutTimeoutRef.current) clearTimeout(hoverOutTimeoutRef.current);
-    hoverInTimeoutRef.current = setTimeout(() => setHoveredDealershipId(id), 1000);
+    hoverInTimeoutRef.current = setTimeout(() => setHoveredDealershipId(id), 500);
   }, []);
 
   const handleMouseOut = useCallback(() => {
@@ -344,23 +321,14 @@ function MapPageComponent() {
     hoverOutTimeoutRef.current = setTimeout(() => setHoveredDealershipId(null), 100);
   }, []);
 
-  const handleLocationError = useCallback((error: any) => {
-    toast({
-        variant: "destructive",
-        title: "Erreur de géolocalisation",
-        description: "Impossible de déterminer votre position.",
-    });
+  const handleLocationError = useCallback(() => {
+    toast({ variant: "destructive", title: "Géolocalisation impossible", description: "Vérifiez vos permissions." });
   }, [toast]);
-
-  const handleMapClick = useCallback(() => {
-    setFirstClickId(null);
-  }, []);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     setIsDragging(true);
-    const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    startY.current = y;
+    startY.current = 'touches' in e ? e.touches[0].clientY : e.clientY;
     startHeight.current = panelHeight;
   };
 
@@ -368,191 +336,77 @@ function MapPageComponent() {
     if (!isDragging) return;
     const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
     const deltaY = startY.current - y;
-    const newHeight = startHeight.current + deltaY;
-
-    const minHeight = window.innerHeight * 0.2;
-    const maxHeight = window.innerHeight * 0.85;
-
-    setPanelHeight(Math.max(minHeight, Math.min(newHeight, maxHeight)));
+    setPanelHeight(Math.max(window.innerHeight * 0.2, Math.min(startHeight.current + deltaY, window.innerHeight * 0.85)));
   }, [isDragging]);
 
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
   useEffect(() => {
-    const moveHandler = (e: MouseEvent | TouchEvent) => handleDragMove(e);
-    const endHandler = () => handleDragEnd();
-
     if (isDragging) {
-      window.addEventListener('mousemove', moveHandler);
-      window.addEventListener('touchmove', moveHandler);
-      window.addEventListener('mouseup', endHandler);
-      window.addEventListener('touchend', endHandler);
+      window.addEventListener('mousemove', handleDragMove);
+      window.addEventListener('touchmove', handleDragMove);
+      window.addEventListener('mouseup', () => setIsDragging(false));
+      window.addEventListener('touchend', () => setIsDragging(false));
     }
-
     return () => {
-      window.removeEventListener('mousemove', moveHandler);
-      window.removeEventListener('touchmove', moveHandler);
-      window.removeEventListener('mouseup', endHandler);
-      window.removeEventListener('touchend', endHandler);
+      window.removeEventListener('mousemove', handleDragMove);
+      window.removeEventListener('touchmove', handleDragMove);
     };
-  }, [isDragging, handleDragMove, handleDragEnd]);
+  }, [isDragging, handleDragMove]);
 
   useEffect(() => {
-    const setInitialHeight = () => {
-      if (isMobile) {
-        setPanelHeight(window.innerHeight * 0.77);
-      }
-    };
-    setInitialHeight();
-    window.addEventListener('resize', setInitialHeight);
-    return () => window.removeEventListener('resize', setInitialHeight);
-  }, [isMobile]);
-
-
-  const adFrequency = 5;
+    if (width && width < 768) setPanelHeight(window.innerHeight * 0.77);
+  }, [width]);
 
   const listContent = (
     <ScrollArea ref={scrollAreaRef} className="h-full">
       <div className="p-4 space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground pt-20">
-            <Loader2 className="mx-auto h-8 w-8 animate-spin" />
-            <p className="mt-2">Chargement des concessions...</p>
+            <Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" />
+            <p className="mt-2">Chargement...</p>
           </div>
         ) : (
           <>
             {dealershipsToDisplay.flatMap((dealer, index) => {
               const card = (
-                <div
-                  key={dealer.id}
-                  ref={node => cardRefs.current.set(dealer.id, node)}
-                  onMouseEnter={() => handleMarkerMouseOver(dealer.id)}
-                  onMouseLeave={handleMouseOut}
-                >
-                  <DealershipCard
-                    dealership={dealer}
-                    onClick={() => handleCardClick(dealer)}
-                    className={cn(
-                      dealer.id === selectedDealershipId && "ring-2 ring-brand",
-                      dealer.id === hoveredDealershipId && "shadow-lg" 
-                    )}
-                  />
+                <div key={dealer.id} ref={node => cardRefs.current.set(dealer.id, node)} onMouseEnter={() => handleMarkerMouseOver(dealer.id)} onMouseLeave={handleMouseOut}>
+                  <DealershipCard dealership={dealer} onClick={() => handleCardClick(dealer)} className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand", dealer.id === hoveredDealershipId && "shadow-lg")} />
                 </div>
               );
-
-              const ad = (index > 0 && (index + 1) % adFrequency === 0) ? (
-                <div key={`ad-${index}`} className="my-4"><AdCard /></div>
-              ) : null;
-
+              const ad = (index > 0 && (index + 1) % 5 === 0) ? <div key={`ad-${index}`} className="my-4"><AdCard /></div> : null;
               return [card, ad];
-            }).filter(Boolean)}
-
-            {dealershipsToDisplay.length === 0 && (
-                <div className="text-center text-muted-foreground pt-20">
-                  <p>Aucun résultat trouvé.</p>
-                  <p className="text-sm">Essayez d'ajuster vos filtres.</p>
-                </div>
-            )}
+            })}
+            {dealershipsToDisplay.length === 0 && <div className="text-center text-muted-foreground pt-20"><p>Aucun résultat.</p></div>}
           </>
         )}
       </div>
     </ScrollArea>
   );
-  
-  if (width === undefined) {
-    return (
-      <div className="flex h-[100svh] w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
-      </div>
-    );
-  }
+
+  if (width === undefined) return <div className="flex h-[100svh] w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
   return (
     <div className="flex flex-col h-[100svh] w-full overflow-hidden bg-background">
-      <Header
-        searchTerm={searchTerm}
-        onSearchTermChange={handleSearchTermChange}
-        onSearch={handleSearch}
-        activeFilter={activeFilter}
-        onFilterChange={handleFilterChange}
-        placeholderText={placeholderText}
-      />
-
+      <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={handleSearch} activeFilter={activeFilter} onFilterChange={handleFilterChange} placeholderText={placeholderText} />
       <div className="flex-1 flex overflow-hidden relative">
         {isMobile ? (
-          <div className="flex-1 relative w-full overflow-hidden flex flex-col">
-            <div className="absolute inset-0 z-0">
-              <MapComponent
-                dealerships={filteredDealerships}
-                center={mapCenter}
-                zoom={mapZoom}
-                hoveredDealershipId={hoveredDealershipId}
-                selectedDealershipId={selectedDealershipId}
-                firstClickId={firstClickId}
-                onMarkerClick={handleMarkerClick}
-                onMarkerMouseOver={handleMarkerMouseOver}
-                onMarkerMouseOut={handleMouseOut}
-                onMapChange={handleMapChange}
-                onMapClick={handleMapClick}
-                isLocating={isLocating}
-                onLocateEnd={() => setIsLocating(false)}
-                onLocationError={handleLocationError}
-              />
+          <div className="flex-1 relative w-full h-full overflow-hidden flex flex-col">
+            <div className="absolute inset-0 z-0 h-full w-full">
+              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} firstClickId={firstClickId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={handleMarkerMouseOver} onMarkerMouseOut={handleMouseOut} onMapChange={handleMapChange} onMapClick={() => setFirstClickId(null)} isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationError={handleLocationError} />
               <div className="absolute top-2 right-2 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand hover:bg-brand/90 text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
-                  {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
-                </Button>
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-4 w-4" /></Button>
               </div>
             </div>
-
-            <div 
-              className="absolute bottom-0 left-0 right-0 bg-background rounded-t-xl shadow-[0_-4px_16px_rgba(0,0,0,0.15)] flex flex-col z-[1001]"
-              style={{ height: `${panelHeight}px` }}
-            >
-              <div 
-                ref={dragHandleRef}
-                onMouseDown={handleDragStart}
-                onTouchStart={handleDragStart}
-                className="w-full h-5 flex items-center justify-center cursor-row-resize flex-shrink-0 touch-none"
-              >
-                <div className="w-10 h-1 bg-border rounded-full"></div>
-              </div>
-              <div className="flex-grow flex flex-col min-h-0">
-                <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
-                {listContent}
-              </div>
+            <div className="absolute bottom-0 left-0 right-0 bg-background rounded-t-xl shadow-[0_-4px_16px_rgba(0,0,0,0.15)] flex flex-col z-[1001]" style={{ height: `${panelHeight}px` }}>
+              <div ref={dragHandleRef} onMouseDown={handleDragStart} onTouchStart={handleDragStart} className="w-full h-5 flex items-center justify-center cursor-row-resize flex-shrink-0 touch-none"><div className="w-10 h-1 bg-border rounded-full" /></div>
+              <div className="flex-grow flex flex-col min-h-0"><RatingFilter value={ratingFilter} onChange={setRatingFilter} />{listContent}</div>
             </div>
           </div>
         ) : (
           <>
-            <aside className="w-2/3 flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
-              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
-              {listContent}
-            </aside>
-            <main className="flex-1 bg-gray-100 dark:bg-gray-900 h-full relative">
-              <MapComponent
-                dealerships={filteredDealerships}
-                center={mapCenter}
-                zoom={mapZoom}
-                hoveredDealershipId={hoveredDealershipId}
-                selectedDealershipId={selectedDealershipId}
-                firstClickId={firstClickId}
-                onMarkerClick={handleMarkerClick}
-                onMarkerMouseOver={handleMarkerMouseOver}
-                onMarkerMouseOut={handleMouseOut}
-                onMapChange={handleMapChange}
-                onMapClick={handleMapClick}
-                isLocating={isLocating}
-                onLocateEnd={() => setIsLocating(false)}
-                onLocationError={handleLocationError}
-              />
-              <div className="absolute top-4 right-4 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg bg-brand hover:bg-brand/90 text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
-                  {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
-                </Button>
-              </div>
+            <aside className="w-2/3 flex-shrink-0 h-full flex flex-col bg-background border-r z-10 shadow-md"><RatingFilter value={ratingFilter} onChange={setRatingFilter} />{listContent}</aside>
+            <main className="flex-1 bg-gray-100 h-full relative">
+              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} firstClickId={firstClickId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={handleMarkerMouseOver} onMarkerMouseOut={handleMouseOut} onMapChange={handleMapChange} onMapClick={() => setFirstClickId(null)} isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationError={handleLocationError} />
+              <div className="absolute top-4 right-4 z-[1000]"><Button size="icon" className="rounded-full shadow-lg bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button></div>
             </main>
           </>
         )}
@@ -562,13 +416,5 @@ function MapPageComponent() {
 }
 
 export default function MapPage() {
-  return (
-    <Suspense fallback={
-      <div className="flex h-[100svh] w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
-      </div>
-    }>
-      <MapPageComponent />
-    </Suspense>
-  );
+  return <Suspense fallback={<div className="flex h-[100svh] w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
 }

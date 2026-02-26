@@ -36,7 +36,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearch, className, activeFilter, onFilterChange, placeholderText }) => {
   const pathname = usePathname();
-  const isInfoActive = pathname.startsWith('/info');
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
 
@@ -46,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 
   const UserMenu = () => {
     if (isUserLoading) {
-      return <Button size="icon" variant="ghost" className="rounded-full h-10 w-10"><Loader2 className="h-5 w-5 animate-spin" /></Button>
+      return <Button size="icon" variant="ghost" className="rounded-full h-10 w-10"><Loader2 className="h-5 w-5 animate-spin text-brand" /></Button>
     }
     if (!user) {
       return (
@@ -89,13 +88,13 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild className="cursor-pointer">
+          <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand">
             <Link href="/account">
               <UserIcon className="mr-2 h-4 w-4" />
               <span>Gérer mon compte</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:text-brand">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Déconnexion</span>
           </DropdownMenuItem>
@@ -116,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           </div>
           
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
+            <p className="text-base sm:text-lg md:text-xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
               <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
               <span className="text-brand italic block lg:inline">Fini la galère.</span>
             </p>
@@ -127,7 +126,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
                                 <Link href="/entretien">
                                     <BookOpenCheck className="h-6 w-6" />
                                     <span className="sr-only">Entretien & Révisions</span>
@@ -142,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                  <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
                                 <Link href="/info">
                                     <FileText className="h-6 w-6" />
                                     <span className="sr-only">Conseils pratiques</span>
@@ -189,7 +188,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     onClick={() => onFilterChange(null)}
                     className={cn(
                       "relative px-3 py-0.5 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
-                      activeFilter === null ? 'text-foreground' : 'text-muted-foreground'
+                      activeFilter === null ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
                     <Home className="h-5 w-5" />
@@ -200,7 +199,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     onClick={() => onFilterChange('shopping')}
                     className={cn(
                       "relative px-3 py-0.5 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
-                      activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
+                      activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
                     <Bike className="h-5 w-5" />
@@ -211,7 +210,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     onClick={() => onFilterChange('service')}
                     className={cn(
                       "relative px-3 py-0.5 h-auto flex items-center gap-2 text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
-                      activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
+                      activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
                     <Wrench className="h-5 w-5" />
