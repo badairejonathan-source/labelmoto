@@ -185,7 +185,7 @@ const LandingHeader = () => {
                         </nav>
                         
                         {/* Search Bar */}
-                        <form action="/map" method="get" className="relative w-full max-w-lg mx-auto">
+                        <form action="/map" method="get" className="relative w-full max-lg mx-auto">
                             <Input
                                 name="search"
                                 type="search"
@@ -242,8 +242,8 @@ export default function LandingPage() {
                             </p>
                             <div className="flex items-center justify-center md:justify-end md:translate-x-40">
                                 <Link href="/map">
-                                    <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                                        Trouver un pro
+                                    <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg relative z-[20]">
+                                        Explorer la carte
                                     </Button>
                                 </Link>
                             </div>
