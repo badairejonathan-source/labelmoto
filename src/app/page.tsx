@@ -298,7 +298,7 @@ export default function LandingPage() {
                                 <div>
                                     <h3 className="font-semibold text-lg">Transparence totale</h3>
                                     <p className="text-muted-foreground">
-                                        Découvrez de vrais avis partagés par d’autres motards, sans filtres ni publicité déguisée, pour faire le bon choix en toute confiance.
+                                        Découvrez de <span className="font-bold">vrais avis</span> partagés par d’autres motards, sans filtres ni publicité déguisée, pour faire le bon choix en toute confiance.
                                     </p>
                                 </div>
                             </li>
