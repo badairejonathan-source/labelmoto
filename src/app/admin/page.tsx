@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import { Dealership } from '@/lib/types';
@@ -165,7 +166,14 @@ export default function AdminPage() {
           <h1 className="text-xl md:text-2xl font-bold text-foreground">
             Validation des Fiches
           </h1>
-          <div className="w-40" />
+          <div className="w-40 flex justify-end">
+             <Button asChild variant="outline" size="sm">
+                <Link href="/">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Accueil
+                </Link>
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -194,7 +202,7 @@ export default function AdminPage() {
                   <p><strong>Adresse:</strong> {sub.address}</p>
                   <p><strong>Catégorie:</strong> {sub.category}</p>
                   {sub.brands && sub.brands.length > 0 && (
-                    <div className="flex flex-wrap gap-1 items-baseline">
+                    <div className="flex wrap gap-1 items-baseline">
                       <strong className="mr-1">Marques:</strong>
                       {sub.brands.map(brand => <Badge key={brand} variant="outline" className="font-normal">{brand}</Badge>)}
                     </div>
