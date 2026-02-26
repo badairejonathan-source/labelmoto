@@ -151,7 +151,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "👉 Pour estimer ton budget global, consulte aussi <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">notre guide sur le coût réel d’une moto par mois</a>."
+        "html": "A2 👉 Pour estimer ton budget global, consulte aussi <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">notre guide sur le coût réel d’une moto par mois</a>."
       },
       {
         "type": "heading",
