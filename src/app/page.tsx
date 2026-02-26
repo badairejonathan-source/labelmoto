@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -443,15 +444,20 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                <section className="mt-8 md:mt-12">
-                  <div className="bg-muted/50 rounded-2xl p-6 md:p-8 text-center">
+                <section className="mt-8 md:mt-12 relative">
+                  <div className="bg-muted/50 rounded-2xl p-6 md:p-10 text-center relative overflow-hidden border-l-4 border-primary">
+                    <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none hidden lg:block opacity-10">
+                        <span className="text-5xl font-black text-primary uppercase tracking-tighter rotate-[-90deg] block origin-center whitespace-nowrap">
+                            Espace Pro
+                        </span>
+                    </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                      Vous êtes concessionnaire ou atelier moto ?
+                      Professionnels, rejoignez le réseau Label Moto.
                     </h2>
-                    <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
-                      Rejoignez Label Moto et gagnez en visibilité auprès des motards de votre région. Ajoutez gratuitement votre établissement et apparaissez dans notre moteur de recherche.
+                    <p className="text-muted-foreground max-w-3xl mx-auto mb-8 text-lg">
+                      Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                     </p>
-                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-10 py-7 rounded-full shadow-lg">
                       <Link href={proRegisterLink}>
                         🔘 Créer la fiche de mon établissement
                       </Link>
