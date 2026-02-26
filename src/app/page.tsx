@@ -172,7 +172,7 @@ const LandingHeader = () => {
                     </div>
 
                     {/* Search Bar and Navigation below */}
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-1">
                         {/* Search Bar */}
                         <form action="/map" method="get" className="relative w-full max-w-2xl mx-auto">
                             <Input
@@ -191,16 +191,16 @@ const LandingHeader = () => {
                         </form>
 
                         <nav className="hidden md:flex items-center justify-center gap-8 md:gap-12">
-                            <Link href="/map" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-3 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
-                                <Home className="h-8 w-8" />
+                            <Link href="/map" className="flex items-center gap-3 text-base text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                                <Home className="h-5 w-5" />
                                 <span>Tout</span>
                             </Link>
-                            <Link href="/map?filter=shopping" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-3 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
-                                <Bike className="h-8 w-8" />
+                            <Link href="/map?filter=shopping" className="flex items-center gap-3 text-base text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                                <Bike className="h-5 w-5" />
                                 <span>Concession</span>
                             </Link>
-                            <Link href="/map?filter=service" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-3 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
-                                <Wrench className="h-8 w-8" />
+                            <Link href="/map?filter=service" className="flex items-center gap-3 text-base text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                                <Wrench className="h-5 w-5" />
                                 <span>Atelier</span>
                             </Link>
                         </nav>
