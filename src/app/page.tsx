@@ -444,24 +444,60 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                <section className="mt-8 md:mt-12 relative">
-                  <div className="bg-muted/50 rounded-2xl p-6 md:p-10 text-center relative overflow-hidden border-l-4 border-primary">
-                    <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none hidden lg:block opacity-10">
-                        <span className="text-5xl font-black text-primary uppercase tracking-tighter rotate-[-90deg] block origin-center whitespace-nowrap">
-                            Espace Pro
+                <section className="mt-12 md:mt-20">
+                  <div className="bg-white rounded-[2.5rem] overflow-hidden border border-border/50 shadow-sm relative group">
+                    <div className="flex flex-col lg:flex-row min-h-[450px]">
+                      {/* Vertical Sidebar */}
+                      <div className="hidden lg:flex w-20 bg-muted/30 border-r border-border/50 items-center justify-center py-12 shrink-0">
+                        <span className="text-3xl font-black text-primary/10 tracking-[0.3em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                          Espace Pro
                         </span>
+                      </div>
+
+                      <div className="flex-grow flex flex-col lg:flex-row items-center p-8 md:p-12 lg:px-16 lg:py-12 gap-12">
+                        <div className="flex-1 text-center lg:text-left">
+                          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-6">
+                            Professionnels, rejoignez le réseau Label Moto.
+                          </h2>
+                          <p className="text-muted-foreground text-lg mb-10 max-w-2xl mx-auto lg:mx-0">
+                            Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
+                          </p>
+                          <div className="relative inline-block">
+                            <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-10 py-7 rounded-full shadow-lg transition-all hover:shadow-destructive/25 hover:-translate-y-1">
+                              <Link href={proRegisterLink}>
+                                🔘 Créer la fiche de mon établissement
+                              </Link>
+                            </Button>
+                            
+                            {/* Decorative Arrow pointing to the visual as requested */}
+                            <div className="hidden xl:block absolute -right-36 top-0 w-36 h-24 pointer-events-none translate-y-[-20%]">
+                                <svg className="w-full h-full text-accent/60" viewBox="0 0 120 80" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="8 8">
+                                    <path d="M10 60C40 60 60 40 100 10" />
+                                    <path d="M90 15L100 10L105 20" strokeDasharray="0" />
+                                </svg>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
+                           <div className="relative aspect-[4/3] lg:aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white -rotate-2 group-hover:rotate-0 transition-all duration-700 ease-out transform group-hover:scale-[1.02]">
+                              <Image 
+                                  src="/images/apercucarte.png" 
+                                  alt="Interface Pro Preview" 
+                                  fill
+                                  className="object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent" />
+                           </div>
+                           
+                           {/* Floating badge for dynamic effect */}
+                           <div className="absolute -bottom-4 -right-4 lg:-right-8 bg-brand text-white px-6 py-3 rounded-2xl shadow-xl font-bold text-sm lg:text-base rotate-3 flex items-center gap-2">
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                              100% Gratuit
+                           </div>
+                        </div>
+                      </div>
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                      Professionnels, rejoignez le réseau Label Moto.
-                    </h2>
-                    <p className="text-muted-foreground max-w-3xl mx-auto mb-8 text-lg">
-                      Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
-                    </p>
-                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-10 py-7 rounded-full shadow-lg">
-                      <Link href={proRegisterLink}>
-                        🔘 Créer la fiche de mon établissement
-                      </Link>
-                    </Button>
                   </div>
                 </section>
                 </div>
