@@ -279,7 +279,7 @@ export default function LandingPage() {
                                 <div>
                                     <h3 className="font-semibold text-lg">Gain de temps</h3>
                                     <p className="text-muted-foreground">
-                                        Recherche simplifiée, centralisez vos besoins. Localisation, type de moto, expertise spécifique : Label Moto fait le tri pour vous.
+                                        Recherche simplifiée, centralisez vos besoins. Localisation, type de moto, expertise spécifique : <span className="font-bold">Label Moto fait le tri pour vous.</span>
                                     </p>
                                 </div>
                             </li>
@@ -435,7 +435,7 @@ export default function LandingPage() {
                                 <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                     🚦 Rejoignez la route digitale des motards
                                 </h2>
-                                <div className="space-y-4 text-gray-200" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+                                <div className="space-y-4 text-gray-200" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
                                     <p>
                                         Parce que nous savons que le temps passé à chercher une concession, c’est du temps en moins sur la route, notre mission est simple : rendre la vie des motards plus fluide, plus connectée et plus fiable.
                                     </p>
