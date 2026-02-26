@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -279,7 +280,7 @@ export default function LandingPage() {
                                 <div>
                                     <h3 className="font-semibold text-lg">Gain de temps</h3>
                                     <p className="text-muted-foreground">
-                                        Finies les recherches interminables ! Notre moteur intelligent vous permet de trouver une concession selon votre localisation, votre type de moto, ou le service recherché.
+                                        Recherche simplifiée, centralisez vos besoins. Localisation, type de moto, expertise spécifique : Label Moto fait le tri pour vous.
                                     </p>
                                 </div>
                             </li>
