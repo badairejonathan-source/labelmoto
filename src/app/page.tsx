@@ -122,7 +122,7 @@ const LandingHeader = () => {
                         </div>
 
                         <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-                            <p className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground text-center leading-[1.1]">
+                            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
                                 <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
                                 <span className="text-brand italic block lg:inline">Fini la galère.</span>
                             </p>
@@ -386,7 +386,7 @@ export default function LandingPage() {
                 <section className="mt-8 md:mt-12">
                     <div className="relative rounded-2xl overflow-hidden bg-black">
                         <Image
-                            src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"
+                            src="https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlfGVufDB8fHx8MTc3MTUxMDk3Mnww&ixlib=rb-4.1.0&q=80&w=1080"
                             alt="Rejoignez la communauté"
                             fill
                             className="object-cover z-0 opacity-30"

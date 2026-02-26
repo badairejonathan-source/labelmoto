@@ -483,7 +483,7 @@ function MapPageComponent() {
       <div className="flex-1 flex overflow-hidden relative">
         {isMobile ? (
           <div className="flex-1 relative w-full overflow-hidden flex flex-col">
-            <div className="flex-1 relative">
+            <div className="absolute inset-0 z-0">
               <MapComponent
                 dealerships={filteredDealerships}
                 center={mapCenter}
@@ -501,21 +501,21 @@ function MapPageComponent() {
                 onLocationError={handleLocationError}
               />
               <div className="absolute top-2 right-2 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand hover:bg-brand/90" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand hover:bg-brand/90 text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
                   {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
                 </Button>
               </div>
             </div>
 
             <div 
-              className="absolute bottom-0 left-0 right-0 bg-background rounded-t-xl shadow-[0_-4px_16px_rgba(0,0,0,0.15)] flex flex-col z-[1001] touch-none"
+              className="absolute bottom-0 left-0 right-0 bg-background rounded-t-xl shadow-[0_-4px_16px_rgba(0,0,0,0.15)] flex flex-col z-[1001]"
               style={{ height: `${panelHeight}px` }}
             >
               <div 
                 ref={dragHandleRef}
                 onMouseDown={handleDragStart}
                 onTouchStart={handleDragStart}
-                className="w-full h-5 flex items-center justify-center cursor-row-resize flex-shrink-0"
+                className="w-full h-5 flex items-center justify-center cursor-row-resize flex-shrink-0 touch-none"
               >
                 <div className="w-10 h-1 bg-border rounded-full"></div>
               </div>
@@ -549,7 +549,7 @@ function MapPageComponent() {
                 onLocationError={handleLocationError}
               />
               <div className="absolute top-4 right-4 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg bg-brand hover:bg-brand/90" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
+                <Button size="icon" className="rounded-full shadow-lg bg-brand hover:bg-brand/90 text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
                   {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
                 </Button>
               </div>
