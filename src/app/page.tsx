@@ -482,7 +482,7 @@ export default function LandingPage() {
                         <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
                            <div className="relative aspect-[4/3] lg:aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white -rotate-2 group-hover:rotate-0 transition-all duration-700 ease-out transform group-hover:scale-[1.02]">
                               <Image 
-                                  src="/images/apercucarte.png" 
+                                  src="/images/apercufiche.png" 
                                   alt="Interface Pro Preview" 
                                   fill
                                   className="object-cover"
