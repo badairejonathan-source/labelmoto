@@ -370,7 +370,7 @@ export default function LandingPage() {
                       Maîtrise ton budget entretien.
                     </h2>
                     <p className="text-muted-foreground max-w-3xl mx-auto mb-6">
-                      Anticipe tes dépenses en quelques clics. Accède au budget moyen et aux points de contrôle de ton modèle pour arriver au garage en toute confiance.
+                      <span className="font-bold">Anticipe tes dépenses en quelques clics.</span> Accède au budget moyen et aux points de contrôle de ton modèle pour arriver au garage en toute confiance.
                     </p>
                     <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                       <Link href="/entretien">
