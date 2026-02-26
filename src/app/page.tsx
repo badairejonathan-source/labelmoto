@@ -184,20 +184,20 @@ const LandingHeader = () => {
                             </Link>
                         </nav>
                         
-                        {/* Search Bar */}
-                        <form action="/map" method="get" className="relative w-full max-lg mx-auto">
+                        {/* Search Bar - Standard size restored */}
+                        <form action="/map" method="get" className="relative w-full max-w-2xl mx-auto">
                             <Input
                                 name="search"
                                 type="search"
                                 placeholder="Rechercher par nom, ville, code postal..."
-                                className="pr-16 h-14 text-lg rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+                                className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
                             />
                             <Button 
                                 type="submit" 
                                 size="icon" 
-                                className="absolute top-1/2 right-2 -translate-y-1/2 h-11 w-11 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
+                                className="absolute top-1/2 right-1.5 -translate-y-1/2 h-9 w-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
                             >
-                                <Search className="h-6 w-6" />
+                                <Search className="h-5 w-5" />
                             </Button>
                         </form>
                     </div>

@@ -209,7 +209,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                   </Button>
             </nav>
 
-            <div className="relative w-full max-lg mx-auto">
+            <div className="relative w-full max-w-2xl mx-auto">
               <Input
                 type="search"
                 placeholder={placeholderText}
