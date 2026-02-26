@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -191,17 +190,17 @@ const LandingHeader = () => {
                             </Button>
                         </form>
 
-                        <nav className="hidden md:flex items-center justify-center gap-12 md:gap-24">
-                            <Link href="/map" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium px-8 py-4 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
-                                <Home className="h-12 w-12" />
+                        <nav className="hidden md:flex items-center justify-center gap-8 md:gap-12">
+                            <Link href="/map" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-3 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                                <Home className="h-8 w-8" />
                                 <span>Tout</span>
                             </Link>
-                            <Link href="/map?filter=shopping" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium px-8 py-4 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
-                                <Bike className="h-12 w-12" />
+                            <Link href="/map?filter=shopping" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-3 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                                <Bike className="h-8 w-8" />
                                 <span>Concession</span>
                             </Link>
-                            <Link href="/map?filter=service" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium px-8 py-4 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
-                                <Wrench className="h-12 w-12" />
+                            <Link href="/map?filter=service" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-3 rounded-2xl transition-all duration-200 hover:bg-accent hover:text-accent-foreground">
+                                <Wrench className="h-8 w-8" />
                                 <span>Atelier</span>
                             </Link>
                         </nav>
