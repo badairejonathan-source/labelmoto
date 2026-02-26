@@ -123,9 +123,9 @@ const LandingHeader = () => {
 
                         {/* Integrated Slogan - Centered using grid column 2 - Forced 2 lines */}
                         <div className="hidden lg:flex items-center justify-center px-4">
-                            <p className="text-3xl font-semibold text-foreground text-center leading-tight">
+                            <p className="text-4xl font-bold text-foreground text-center leading-[1.1]">
                                 Trouver une concession, un atelier ou un réparateur ? <br />
-                                <span className="text-accent font-bold italic">Fini la galère.</span>
+                                <span className="text-accent italic">Fini la galère.</span>
                             </p>
                         </div>
                         
