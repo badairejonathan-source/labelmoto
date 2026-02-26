@@ -182,6 +182,31 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         </div>
         
         <div className="flex flex-col items-center gap-2">
+            {/* Search Bar first */}
+            <div className="relative w-full max-w-2xl mx-auto">
+              <Input
+                type="search"
+                placeholder={placeholderText}
+                className="pr-12 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+                value={searchTerm}
+                onChange={(e) => onSearchTermChange(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        onSearch();
+                    }
+                }}
+              />
+              <Button 
+                  type="submit" 
+                  size="icon" 
+                  className="absolute top-1/2 right-1.5 -translate-y-1/2 h-7 w-7 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
+                  onClick={onSearch}
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Navigation below Search Bar */}
             <nav className="hidden md:flex items-center justify-center gap-8">
                 <Button
                     variant="ghost"
@@ -208,29 +233,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                     {activeFilter === 'service' && <span className="absolute -bottom-1 h-1 w-full bg-brand rounded-full"></span>}
                   </Button>
             </nav>
-
-            <div className="relative w-full max-w-2xl mx-auto">
-              <Input
-                type="search"
-                placeholder={placeholderText}
-                className="pr-12 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
-                value={searchTerm}
-                onChange={(e) => onSearchTermChange(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                        onSearch();
-                    }
-                }}
-              />
-              <Button 
-                  type="submit" 
-                  size="icon" 
-                  className="absolute top-1/2 right-1.5 -translate-y-1/2 h-7 w-7 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full shadow"
-                  onClick={onSearch}
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
         </div>
       </div>
     </header>
