@@ -271,7 +271,7 @@ export default function LandingPage() {
                         </h2>
                         <ul className="space-y-6 max-w-4xl mx-auto">
                             <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <CheckCircle className="h-6 w-6 text-brand shrink-0 mt-1" />
                                 <div>
                                     <h3 className="font-semibold text-lg">Gain de temps</h3>
                                     <p className="text-muted-foreground">
@@ -280,7 +280,7 @@ export default function LandingPage() {
                                 </div>
                             </li>
                             <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <CheckCircle className="h-6 w-6 text-brand shrink-0 mt-1" />
                                 <div>
                                     <h3 className="font-semibold text-lg">Informations fiables et à jour</h3>
                                     <p className="text-muted-foreground">
@@ -289,7 +289,7 @@ export default function LandingPage() {
                                 </div>
                             </li>
                             <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <CheckCircle className="h-6 w-6 text-brand shrink-0 mt-1" />
                                 <div>
                                     <h3 className="font-semibold text-lg">Transparence totale</h3>
                                     <p className="text-muted-foreground">
@@ -298,7 +298,7 @@ export default function LandingPage() {
                                 </div>
                             </li>
                              <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
+                                <CheckCircle className="h-6 w-6 text-brand shrink-0 mt-1" />
                                 <div>
                                     <h3 className="font-semibold text-lg">Info technique, le bon choix.</h3>
                                     <p className="text-muted-foreground">
@@ -384,28 +384,6 @@ export default function LandingPage() {
                           <Link href="/entretien" className="hover:text-brand underline-offset-4 hover:underline mx-1.5">prix révision</Link>•
                           <Link href="/entretien" className="hover:text-brand underline-offset-4 hover:underline mx-1.5">entretien MT-07</Link>
                       </p>
-                       <nav className="flex md:hidden items-center justify-center gap-4 text-muted-foreground font-medium text-base mt-2">
-                          <Link href="/map" className="flex items-center gap-2 text-foreground pb-1">
-                              <Home className="h-5 w-5 text-brand" />
-                              <span>Tout</span>
-                          </Link>
-                          <Link href="/map?filter=shopping" className="flex items-center gap-2 hover:text-foreground">
-                              <Bike className="h-5 w-5" />
-                              <span>Concession</span>
-                          </Link>
-                          <Link href="/map?filter=service" className="flex items-center gap-2 hover:text-foreground">
-                              <Wrench className="h-5 w-5" />
-                              <span>Atelier</span>
-                          </Link>
-                           <Link href="/entretien" className="flex items-center gap-2 hover:text-foreground">
-                              <BookOpenCheck className="h-5 w-5" />
-                              <span>Entretien</span>
-                          </Link>
-                          <Link href="/info" className="flex items-center gap-2 hover:text-foreground">
-                              <FileText className="h-5 w-5" />
-                              <span>Conseils</span>
-                          </Link>
-                      </nav>
                   </div>
                   </div>
                 </section>
@@ -448,7 +426,7 @@ export default function LandingPage() {
                     <div className="flex flex-col lg:flex-row min-h-[450px]">
                       {/* Vertical Sidebar */}
                       <div className="hidden lg:flex w-20 bg-muted/30 border-r border-border/50 items-center justify-center py-12 shrink-0">
-                        <span className="text-3xl font-black text-primary/10 tracking-[0.3em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                        <span className="text-3xl font-black text-brand/10 tracking-[0.3em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                           Espace Pro
                         </span>
                       </div>
@@ -499,7 +477,7 @@ export default function LandingPage() {
                                   fill
                                   className="object-cover"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent" />
+                              <div className="absolute inset-0 bg-gradient-to-tr from-brand/10 via-transparent to-transparent" />
                            </div>
                            
                            {/* Floating badge for dynamic effect */}
