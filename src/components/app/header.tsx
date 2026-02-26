@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -114,9 +115,8 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             </Link>
           </div>
           
-          {/* Integrated Slogan - Centered and visible on all screens */}
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
+            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
               <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
               <span className="text-brand italic block lg:inline">Fini la galère.</span>
             </p>
@@ -160,7 +160,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         </div>
         
         <div className="flex flex-col items-center gap-1 mt-2">
-            {/* Search Bar first */}
             <div className="relative w-full max-w-2xl mx-auto">
               <Input
                 type="search"
@@ -184,7 +183,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               </Button>
             </div>
 
-            {/* Navigation below Search Bar */}
             <nav className="hidden md:flex items-center justify-center gap-4 md:gap-6">
                 <Button
                     variant="ghost"

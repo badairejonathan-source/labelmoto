@@ -210,7 +210,6 @@ function MapPageComponent() {
     if (submittedSearchTerm.trim() !== '') {
         const lowerCaseSearch = submittedSearchTerm.toLowerCase();
         
-        // Regex to check if it's a potential department code (2-3 digits, or 2a/2b)
         const isDeptCode = /^\d{2,3}$/.test(lowerCaseSearch) || /^2[ab]$/i.test(lowerCaseSearch);
 
         if (isDeptCode) {
@@ -221,7 +220,6 @@ function MapPageComponent() {
 
             results = results.filter(d => {
                 if (!d.address) return false;
-                // Regex to find a 5-digit postal code in the address
                 const postalCodeMatch = d.address.match(/\b(\d{5})\b/);
                 if (!postalCodeMatch) return false;
                 
@@ -230,7 +228,6 @@ function MapPageComponent() {
                 return postalCode.startsWith(deptCode);
             });
         } else {
-            // Original search logic
             results = results.filter(d => 
                 (d.title?.toLowerCase().includes(lowerCaseSearch)) ||
                 (d.address?.toLowerCase().includes(lowerCaseSearch)) ||
@@ -275,7 +272,6 @@ function MapPageComponent() {
     }
     setActiveFilter(newFilter);
 
-    // Update URL without reloading page
     const params = new URLSearchParams(window.location.search);
     if (newFilter) {
       params.set('filter', newFilter);
@@ -303,11 +299,9 @@ function MapPageComponent() {
     const isBrandSearch = allBrands.includes(lowerCaseSearch);
 
     return [...filteredDealerships].sort((a, b) => {
-      // 1. Selected dealership always on top
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
-      // 2. If searching for a brand, prioritize primary brand
       if (isBrandSearch) {
         const aIsPrimary = a.brands?.[0]?.toLowerCase() === lowerCaseSearch;
         const bIsPrimary = b.brands?.[0]?.toLowerCase() === lowerCaseSearch;
@@ -315,7 +309,6 @@ function MapPageComponent() {
         if (!aIsPrimary && bIsPrimary) return 1;
       }
       
-      // 3. Sort by distance
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
     }).slice(0, 50);
   }, [filteredDealerships, mapCenter, selectedDealershipId, submittedSearchTerm]);
@@ -330,7 +323,7 @@ function MapPageComponent() {
   
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(currentId => currentId === id ? null : id);
-    setFirstClickId(id); // Keep track of marker clicks for popups
+    setFirstClickId(id);
   }, []);
 
   useEffect(() => {
@@ -442,7 +435,7 @@ function MapPageComponent() {
                     dealership={dealer}
                     onClick={() => handleCardClick(dealer)}
                     className={cn(
-                      dealer.id === selectedDealershipId && "ring-2 ring-accent",
+                      dealer.id === selectedDealershipId && "ring-2 ring-brand",
                       dealer.id === hoveredDealershipId && "shadow-lg" 
                     )}
                   />
@@ -471,7 +464,7 @@ function MapPageComponent() {
   if (width === undefined) {
     return (
       <div className="flex h-[100svh] w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
       </div>
     );
   }
@@ -489,9 +482,8 @@ function MapPageComponent() {
 
       <div className="flex-1 flex overflow-hidden relative">
         {isMobile ? (
-          // Mobile Layout
-          <div className="w-full h-full flex flex-col relative">
-            <div className="w-full h-full">
+          <div className="flex-1 relative w-full overflow-hidden flex flex-col">
+            <div className="flex-1 relative">
               <MapComponent
                 dealerships={filteredDealerships}
                 center={mapCenter}
@@ -509,7 +501,7 @@ function MapPageComponent() {
                 onLocationError={handleLocationError}
               />
               <div className="absolute top-2 right-2 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand hover:bg-brand/90" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
                   {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
                 </Button>
               </div>
@@ -534,7 +526,6 @@ function MapPageComponent() {
             </div>
           </div>
         ) : (
-          // Desktop Layout
           <>
             <aside className="w-2/3 flex-shrink-0 h-full flex flex-col bg-background border-r border-border z-10 shadow-md">
               <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
@@ -558,7 +549,7 @@ function MapPageComponent() {
                 onLocationError={handleLocationError}
               />
               <div className="absolute top-4 right-4 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
+                <Button size="icon" className="rounded-full shadow-lg bg-brand hover:bg-brand/90" onClick={() => setIsLocating(true)} disabled={isLocating} title="Me géolocaliser">
                   {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Crosshair className="h-5 w-5" />}
                 </Button>
               </div>
@@ -574,7 +565,7 @@ export default function MapPage() {
   return (
     <Suspense fallback={
       <div className="flex h-[100svh] w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
       </div>
     }>
       <MapPageComponent />

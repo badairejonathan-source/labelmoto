@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -44,7 +45,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     const scale = isHovered || isSelected ? 1.25 : 1;
     const shadowOpacity = isHovered || isSelected ? 0.6 : 0.3;
     const strokeWidth = isHovered || isSelected ? 2.5 : 0.5;
-    const fillColor = isSelected ? 'hsl(var(--accent))' : 'hsl(var(--primary))';
+    const fillColor = isSelected ? 'hsl(var(--brand))' : 'hsl(var(--primary))';
 
 
     const iconHtml = `
@@ -55,11 +56,11 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
           </filter>
         </defs>
         <g filter="url(#shadow)">
-          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="${fillColor}" stroke="hsl(var(--primary-foreground))" stroke-width="${strokeWidth}" />
+          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="${fillColor}" stroke="white" stroke-width="${strokeWidth}" />
         </g>
         ${brandSvg 
           ? `<g transform="translate(18, 18) scale(0.9)">${brandSvg}</g>`
-          : `<circle cx="18" cy="18" r="8" fill="hsl(var(--accent))" />`
+          : `<circle cx="18" cy="18" r="8" fill="white" opacity="0.8" />`
         }
       </svg>
     `;
@@ -119,6 +120,7 @@ export default function MapComponent({
   onLocationError = () => {},
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const userLocationMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
@@ -127,13 +129,13 @@ export default function MapComponent({
   const stableOnMapClick = useCallback(onMapClick, [onMapClick]);
 
   useEffect(() => {
-    if (mapRef.current === null) {
+    if (mapRef.current === null && containerRef.current) {
       const franceBounds = L.latLngBounds(
         L.latLng(41, -5.5), // Southwest
         L.latLng(51.5, 10)  // Northeast
       );
 
-      mapRef.current = L.map('map-container', {
+      mapRef.current = L.map(containerRef.current, {
         minZoom: 6,
         maxBounds: franceBounds,
         maxBoundsViscosity: 1.0,
@@ -148,9 +150,9 @@ export default function MapComponent({
     }
     
     const map = mapRef.current;
+    if (!map) return;
 
     const handleMoveEnd = () => {
-      if (!map) return;
       const currentCenter = map.getCenter();
       const currentZoom = map.getZoom();
       stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom, map.getBounds());
@@ -213,7 +215,6 @@ export default function MapComponent({
   }, [dealerships, hoveredDealershipId, selectedDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
   
   useEffect(() => {
-    // Close all popups that are not the 'first-clicked' one.
     markersRef.current.forEach((marker, id) => {
         if (id !== firstClickId && id !== hoveredDealershipId) {
             marker.closePopup();
@@ -284,5 +285,5 @@ export default function MapComponent({
     };
   }, []);
 
-  return <div id="map-container" className="w-full h-full min-h-0 z-[5] bg-gray-100 rounded-lg overflow-hidden" />;
+  return <div ref={containerRef} className="w-full h-full min-h-0 z-[5] bg-gray-100 rounded-lg overflow-hidden" />;
 }
