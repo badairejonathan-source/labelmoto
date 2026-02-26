@@ -110,9 +110,9 @@ const LandingHeader = () => {
     }
 
     return (
-        <header className="bg-card text-foreground py-4 px-4 sm:px-6 lg:px-8 w-full border-b">
+        <header className="bg-card text-foreground py-2 px-4 sm:px-6 lg:px-8 w-full border-b">
             <div className="mx-auto max-w-7xl">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                     {/* Top row: Logo, Profile */}
                     <div className="flex items-center justify-between">
                         <div className="w-40 md:w-48 shrink-0">
@@ -164,7 +164,7 @@ const LandingHeader = () => {
                     </div>
 
                     {/* Centered navigation and Search Bar */}
-                    <div className="flex flex-col items-center gap-6 mt-2">
+                    <div className="flex flex-col items-center gap-3">
                         <nav className="hidden md:flex items-center justify-center gap-12 md:gap-24">
                             <Link href="/map?filter=shopping" className="flex items-center gap-4 text-4xl text-muted-foreground font-medium hover:text-foreground">
                                 <Bike className="h-12 w-12" />
