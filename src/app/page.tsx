@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -469,11 +468,23 @@ export default function LandingPage() {
                               </Link>
                             </Button>
                             
-                            {/* Decorative Arrow pointing to the visual as requested */}
-                            <div className="hidden xl:block absolute -right-36 top-0 w-36 h-24 pointer-events-none translate-y-[-20%]">
-                                <svg className="w-full h-full text-accent/60" viewBox="0 0 120 80" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="8 8">
-                                    <path d="M10 60C40 60 60 40 100 10" />
-                                    <path d="M90 15L100 10L105 20" strokeDasharray="0" />
+                            {/* Decorative Arrow pointing to the visual - Hand-drawn style as requested */}
+                            <div className="hidden xl:block absolute -right-40 top-1/2 -translate-y-1/2 w-48 h-32 pointer-events-none">
+                                <svg className="w-full h-full text-accent" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path 
+                                        d="M10 80C40 80 100 70 140 20" 
+                                        stroke="currentColor" 
+                                        strokeWidth="6" 
+                                        strokeLinecap="round" 
+                                        className="drop-shadow-sm"
+                                    />
+                                    <path 
+                                        d="M125 25L145 15L148 38" 
+                                        stroke="currentColor" 
+                                        strokeWidth="6" 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round" 
+                                    />
                                 </svg>
                             </div>
                           </div>
