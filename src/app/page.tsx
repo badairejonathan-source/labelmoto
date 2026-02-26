@@ -459,7 +459,7 @@ export default function LandingPage() {
                             Professionnels, rejoignez le réseau Label Moto.
                           </h2>
                           <p className="text-muted-foreground text-lg mb-10 max-w-2xl mx-auto lg:mx-0">
-                            Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
+                            Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
                           <div className="relative inline-block group/cta">
                             <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-10 py-7 rounded-full shadow-lg transition-all hover:shadow-destructive/25 hover:-translate-y-1">
@@ -470,7 +470,7 @@ export default function LandingPage() {
                             
                             {/* Decorative Arrow pointing to the visual - Hand-drawn style as requested */}
                             {/* Appears only on hover of the button group on XL screens */}
-                            <div className="hidden xl:block absolute -right-40 top-1/2 -translate-y-1/2 w-48 h-32 pointer-events-none opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300">
+                            <div className="hidden xl:block absolute -right-40 top-1/2 -translate-y-1/2 w-48 h-32 pointer-events-none opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300 z-50">
                                 <svg className="w-full h-full text-accent" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path 
                                         d="M10 80C40 80 100 70 140 20" 
