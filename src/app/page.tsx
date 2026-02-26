@@ -113,23 +113,23 @@ const LandingHeader = () => {
         <header className="bg-card text-foreground py-2 px-4 sm:px-6 lg:px-8 w-full border-b">
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col gap-1.5">
-                    {/* Top row: Logo, Slogan, Profile */}
-                    <div className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_2fr_1fr]">
-                        <div className="w-40 md:w-48 shrink-0 lg:justify-self-start">
+                    {/* Main row: Logo, Slogan (responsive), Profile */}
+                    <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-4">
+                        <div className="w-36 md:w-48 shrink-0 lg:justify-self-start">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>
                         </div>
 
-                        {/* Integrated Slogan - Centered with more space - Forced 2 lines */}
-                        <div className="hidden lg:flex items-center justify-center px-4">
-                            <p className="text-4xl font-bold text-foreground text-center leading-[1.1]">
-                                <span className="block">Trouver une concession, un atelier ou un réparateur ?</span>
-                                <span className="text-brand italic block">Fini la galère.</span>
+                        {/* Integrated Slogan - Centered and visible on all screens */}
+                        <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
+                            <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground text-center leading-[1.1]">
+                                <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
+                                <span className="text-brand italic block lg:inline">Fini la galère.</span>
                             </p>
                         </div>
                         
-                        <div className="flex items-center gap-2 justify-end lg:justify-self-end">
+                        <div className="flex items-center gap-2 justify-end lg:justify-self-end lg:order-none">
                             <div className="hidden md:flex items-center gap-2">
                                 <TooltipProvider>
                                     <Tooltip>
@@ -172,7 +172,7 @@ const LandingHeader = () => {
                     </div>
 
                     {/* Search Bar and Navigation below */}
-                    <div className="flex flex-col items-center gap-1">
+                    <div className="flex flex-col items-center gap-1 mt-2">
                         {/* Search Bar */}
                         <form action="/map" method="get" className="relative w-full max-w-2xl mx-auto">
                             <Input

@@ -224,7 +224,7 @@ export default function RegisterProPage() {
             <h1 className="text-4xl font-bold text-foreground mb-4">Attirez plus de motards dans votre région</h1>
             <p className="text-xl text-muted-foreground mb-2">Soyez visible au moment où ils cherchent à acheter, entretenir ou réparer leur moto.</p>
             <div className="mt-6">
-              <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
                 <Link href="#formulaire">Créer ma fiche gratuitement</Link>
               </Button>
               <p className="text-xs text-muted-foreground mt-2">✔ Gratuit • ✔ Sans engagement • ✔ Validation sous 48h</p>
@@ -234,24 +234,24 @@ export default function RegisterProPage() {
           <section>
             <Card>
               <CardHeader>
-                <CardTitle className="text-green-600">🟢 POURQUOI REJOINDRE LABEL MOTO ?</CardTitle>
+                <CardTitle className="text-brand">🟢 POURQUOI REJOINDRE LABEL MOTO ?</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4 text-lg">
                   <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
                     <span><span className="font-semibold">Visibilité locale ciblée :</span> Atteignez les motards passionnés de votre région.</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
                     <span><span className="font-semibold">Clients déjà intéressés :</span> Attirez des clients qui recherchent activement vos services ou produits.</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
                     <span><span className="font-semibold">Plateforme spécialisée moto :</span> Profitez d'un environnement 100% dédié à l'univers de la moto.</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-green-600 mt-1 flex-shrink-0" />
+                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
                     <span><span className="font-semibold">Valorisez votre expertise :</span> Mettez en avant vos savoir-faire et vos marques partenaires.</span>
                   </li>
                 </ul>
@@ -292,9 +292,9 @@ export default function RegisterProPage() {
           </section>
 
           <section id="formulaire">
-            <Card className="border-red-500 border-2 shadow-xl">
+            <Card className="border-brand border-2 shadow-xl">
               <CardHeader>
-                <CardTitle className="text-red-600 text-3xl">🔴 DEMANDEZ LA CRÉATION DE VOTRE FICHE</CardTitle>
+                <CardTitle className="text-brand text-3xl">🔘 DEMANDEZ LA CRÉATION DE VOTRE FICHE</CardTitle>
                 <CardDescription>
                   Remplissez ce formulaire pour soumettre votre établissement. Nous l'examinerons avant de le publier.
                 </CardDescription>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -22,7 +21,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
           <Link href={`/info/${article.id}`} className="group block py-8 border-b last:border-b-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
                 <div className="md:col-span-2">
-                    <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground leading-tight group-hover:text-accent transition-colors">
+                    <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground leading-tight group-hover:text-brand transition-colors">
                         {article.title}
                     </h2>
                     <p className="mt-3 text-base text-muted-foreground line-clamp-3">
@@ -114,7 +113,7 @@ function InfoPageComponent() {
                         <h1 className="text-4xl sm:text-5xl font-bold font-serif text-foreground tracking-tight">
                             Conseils pratiques
                         </h1>
-                        <div className="mt-2 w-20 h-0.5 bg-accent mx-auto" />
+                        <div className="mt-2 w-20 h-0.5 bg-brand mx-auto" />
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                         <div className="lg:col-span-2">
@@ -152,7 +151,7 @@ function InfoPageComponent() {
                                         </p>
                                     </CardContent>
                                     <CardFooter>
-                                        <Button asChild className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-base py-5 rounded-full shadow-lg">
+                                        <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-base py-5 rounded-full shadow-lg">
                                             <Link href="/map">Voir la carte interactive</Link>
                                         </Button>
                                     </CardFooter>

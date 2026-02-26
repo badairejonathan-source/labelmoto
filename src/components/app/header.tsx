@@ -107,55 +107,22 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
   return (
     <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
       <div className="container mx-auto flex flex-col gap-1.5">
-        <div className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_2fr_1fr]">
-          <div className="w-36 md:w-44 shrink-0 lg:justify-self-start">
+        <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-3">
+          <div className="w-32 md:w-44 shrink-0 lg:justify-self-start">
             <Link href="/">
               <LabelMotoLogo />
             </Link>
           </div>
           
-          {/* Integrated Slogan in the middle row on Desktop - Centered with more space - Forced 2 lines */}
-          <div className="hidden lg:flex items-center justify-center px-4">
-            <p className="text-3xl font-bold text-foreground text-center leading-[1.1]">
-              <span className="block">Trouver une concession, un atelier ou un réparateur ?</span>
-              <span className="text-brand italic block">Fini la galère.</span>
+          {/* Integrated Slogan - Centered and visible on all screens */}
+          <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
+              <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
+              <span className="text-brand italic block lg:inline">Fini la galère.</span>
             </p>
           </div>
 
-          <div className="flex items-center gap-2 justify-end lg:justify-self-end">
-            <Button
-              variant="ghost"
-              onClick={() => onFilterChange(null)}
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
-                activeFilter === null ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Home className="h-5 w-5" />
-              <span>Tout</span>
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onFilterChange('shopping')}
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
-                activeFilter === 'shopping' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Bike className="h-5 w-5" />
-              <span>Concession</span>
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onFilterChange('service')}
-              className={cn(
-                "relative p-1 h-auto flex flex-col items-center gap-0.5 text-xs font-medium md:hidden",
-                activeFilter === 'service' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              <Wrench className="h-5 w-5" />
-              <span>Atelier</span>
-            </Button>
+          <div className="flex items-center gap-2 justify-end lg:justify-self-end lg:order-none">
             <div className="hidden md:flex items-center gap-2">
                 <TooltipProvider>
                     <Tooltip>
@@ -192,7 +159,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           </div>
         </div>
         
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1 mt-2">
             {/* Search Bar first */}
             <div className="relative w-full max-w-2xl mx-auto">
               <Input
