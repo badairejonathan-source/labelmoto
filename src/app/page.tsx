@@ -113,12 +113,19 @@ const LandingHeader = () => {
         <header className="bg-card text-foreground py-2 px-4 sm:px-6 lg:px-8 w-full border-b">
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col gap-1.5">
-                    {/* Top row: Logo, Profile */}
+                    {/* Top row: Logo, Slogan, Profile */}
                     <div className="flex items-center justify-between">
                         <div className="w-40 md:w-48 shrink-0">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>
+                        </div>
+
+                        {/* Integrated Slogan */}
+                        <div className="hidden lg:flex flex-1 items-center justify-center px-4">
+                            <p className="text-sm font-medium text-muted-foreground/80 whitespace-nowrap">
+                                Trouver une concession, un atelier ou un réparateur ? <span className="text-accent font-bold italic ml-1">Fini la galère.</span>
+                            </p>
                         </div>
                         
                         <div className="flex items-center gap-2">
