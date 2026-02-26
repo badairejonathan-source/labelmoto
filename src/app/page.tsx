@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -367,7 +366,7 @@ export default function LandingPage() {
                 <section className="mt-8 md:mt-12">
                     <div className="relative rounded-2xl overflow-hidden bg-black">
                         <Image
-                            src="https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlfGVufDB8fHx8MTc3MTUxMDk3Mnww&ixlib=rb-4.1.0&q=80&w=1080"
+                            src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"
                             alt="Rejoignez la communauté"
                             fill
                             className="object-cover z-0 opacity-30"

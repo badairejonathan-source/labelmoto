@@ -200,8 +200,6 @@ export default function EntretienPage() {
     router.push(`/map?filter=${filter}`);
   };
 
-  const { imageUrl, imageHint } = article;
-
   const renderContent = () => {
     if (!article.content || article.content.length === 0) {
       return <p className="text-lg text-muted-foreground">Contenu de l'article à venir...</p>;
@@ -292,7 +290,7 @@ export default function EntretienPage() {
             <div className="lg:col-span-2">
               <article>
                 <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight text-foreground mb-8">
-                  🔧 {article.title}
+                  {article.title}
                 </h1>
                 
                 <div className="space-y-4">
