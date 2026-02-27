@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Store, Mail, Bike, Wrench } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Store, Mail } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -34,7 +35,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   
-  // Robust category handling: uses map or falls back to raw value (e.g. "Magasin")
   const rawCategory = dealership.category || '';
   const categoryLabel = categoryDisplay[rawCategory.toLowerCase()] || rawCategory;
 
@@ -111,16 +111,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* Main Info */}
             <div className="flex flex-col justify-between flex-grow min-w-0">
               <div>
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                  {categoryLabel && (
-                    <div className="bg-brand/10 text-brand text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
-                      {categoryLabel}
-                    </div>
-                  )}
-                </div>
                 <h3 className="font-bold text-lg text-foreground leading-tight uppercase truncate">
                   {title}
                 </h3>
+                {categoryLabel && (
+                  <div className="text-brand text-[10px] font-black mt-1 uppercase tracking-wider">
+                    {categoryLabel}
+                  </div>
+                )}
               </div>
               
               <div className="flex items-start gap-4 text-muted-foreground text-[10px] uppercase font-bold mt-3">

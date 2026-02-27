@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -133,9 +134,8 @@ export default function MapComponent({
       const handleMoveEnd = () => {
         if (!mapRef.current || isUpdatingFromProps.current) return;
         try {
-          // Safety check to ensure map instance is valid
           const currentMap = mapRef.current;
-          if (currentMap && currentMap.getCenter && currentMap.getBounds) {
+          if (currentMap && typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
             stableOnMapChange(
               [currentMap.getCenter().lat, currentMap.getCenter().lng], 
               currentMap.getZoom(), 
