@@ -14,7 +14,6 @@ interface MapComponentProps {
   zoom: number;
   hoveredDealershipId: string | null;
   selectedDealershipId: string | null;
-  firstClickId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
@@ -25,12 +24,28 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
+// SVG paths for clear icons inside markers
 const categoryIcons: Record<string, string> = {
-    'concession': `<path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`,
-    'atelier': `<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`,
-    'concession-atelier': `<g transform="scale(0.8) translate(3, 3)"><path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(10, -10) scale(0.8)"/></g>`,
-    'accessoiriste': `<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`,
-    'default': `<circle cx="12" cy="12" r="8" stroke="white" stroke-width="2.5" fill="none" />`
+    'concession': `
+      <g stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18.5" cy="17.5" r="3.5" />
+        <circle cx="5.5" cy="17.5" r="3.5" />
+        <path d="M12 13h-3l-2-5h-3l-1 2" />
+        <path d="M12 13l2-5h4l2 5" />
+      </g>
+    `,
+    'atelier': `
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    `,
+    'concession-atelier': `
+      <g transform="scale(0.85) translate(2, 2)">
+        <path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2" fill="none" />
+      </g>
+    `,
+    'accessoiriste': `
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    `,
+    'default': `<circle cx="12" cy="12" r="8" stroke="white" stroke-width="2" fill="none" />`
 };
 
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
@@ -41,7 +56,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     const fillColor = isSelected ? 'hsl(var(--brand))' : 'hsl(var(--primary))';
 
     const iconHtml = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center; z-index: ${isSelected ? 1000 : 'auto'};">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center;">
         <defs>
           <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="${shadowOpacity}"/>
@@ -50,7 +65,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
         <g filter="url(#shadow)">
           <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="${fillColor}" stroke="white" stroke-width="${strokeWidth}" />
         </g>
-        <g transform="translate(6, 6)">
+        <g transform="translate(6, 6) scale(1.0)">
             ${categoryIcons[category] || categoryIcons['default']}
         </g>
       </svg>
@@ -105,7 +120,9 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: 40,
-        chunkedLoading: true
+        chunkedLoading: true,
+        showCoverageOnHover: false,
+        spiderfyOnMaxZoom: true
       });
       map.addLayer(clusterGroupRef.current);
       mapRef.current = map;

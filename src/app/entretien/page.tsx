@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -181,7 +180,7 @@ const article = {
       {
         "type": "signature",
         "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "imageUrl": "/images/Stamp-LM.png?v=3",
         "alt": "Cachet Label Moto"
       }
     ]

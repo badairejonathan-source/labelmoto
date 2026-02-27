@@ -1,11 +1,10 @@
-
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Menu, Search, LogOut, Loader2, User as UserIcon, BookOpenCheck, Home } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, LogOut, Loader2, User as UserIcon, BookOpenCheck, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -35,7 +34,6 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearch, className, activeFilter, onFilterChange, placeholderText }) => {
-  const pathname = usePathname();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
 
@@ -115,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           </div>
           
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-            <p className="text-base sm:text-lg md:text-xl lg:text-3xl font-bold text-foreground text-center leading-[1.1]">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-foreground text-center leading-[1.1]">
               <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
               <span className="text-brand italic block lg:inline">Fini la galère.</span>
             </p>
