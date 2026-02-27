@@ -22,7 +22,7 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
 
   return (
     <Link href={`/info/${article.id}`} className="group block">
-      <Card className="w-full overflow-hidden transition-all duration-300 ease-in-out border hover:shadow-lg bg-card">
+      <Card className="w-full overflow-hidden transition-all duration-300 ease-in-out border-2 border-brand hover:shadow-lg bg-muted/50 shadow-sm">
         <div className="md:flex">
           {/* Section Image - Identique à DealershipCard */}
           <div className="relative w-full h-48 md:w-48 md:h-auto flex-shrink-0 md:rounded-l-lg md:rounded-r-none rounded-t-lg overflow-hidden md:border-r bg-muted">
