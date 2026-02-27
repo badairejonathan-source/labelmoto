@@ -90,6 +90,8 @@ function MapPageComponent() {
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
+  const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
+  
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
   const [firstClickId, setFirstClickId] = useState<string | null>(null);
@@ -105,7 +107,6 @@ function MapPageComponent() {
     return null;
   });
 
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
 
   const { width } = useWindowSize();
@@ -259,6 +260,9 @@ function MapPageComponent() {
   };
   
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
+    const boundsStr = bounds.toBBoxString();
+    setMapBoundsStr(current => current !== boundsStr ? boundsStr : current);
+    
     setMapCenter((currentCenter) => {
       const centerChanged = Math.abs(currentCenter[0] - newCenter[0]) > 0.00001 || Math.abs(currentCenter[1] - newCenter[1]) > 0.00001;
       return centerChanged ? newCenter : currentCenter;
@@ -267,11 +271,25 @@ function MapPageComponent() {
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
+    let visibleResults = filteredDealerships;
+
+    // Filtrer par visibilité sur la carte
+    if (mapBoundsStr) {
+        const parts = mapBoundsStr.split(',').map(Number);
+        // bbox format: minLng, minLat, maxLng, maxLat
+        const minLng = parts[0], minLat = parts[1], maxLng = parts[2], maxLat = parts[3];
+        
+        visibleResults = visibleResults.filter(d => {
+            if (d.latitude == null || d.longitude == null) return false;
+            return d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng;
+        });
+    }
+
     const lowerCaseSearch = submittedSearchTerm.toLowerCase();
     const allBrands = Object.keys(brandLogos).map(b => b.toLowerCase());
     const isBrandSearch = allBrands.includes(lowerCaseSearch);
 
-    return [...filteredDealerships].sort((a, b) => {
+    return [...visibleResults].sort((a, b) => {
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
       if (isBrandSearch) {
@@ -281,8 +299,8 @@ function MapPageComponent() {
         if (!aIsPrimary && bIsPrimary) return 1;
       }
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
-    }).slice(0, 50);
-  }, [filteredDealerships, mapCenter, selectedDealershipId, submittedSearchTerm]);
+    }).slice(0, 25); // Limité à 25 fiches
+  }, [filteredDealerships, mapBoundsStr, mapCenter, selectedDealershipId, submittedSearchTerm]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
@@ -333,7 +351,7 @@ function MapPageComponent() {
             const ad = (index > 0 && (index + 1) % 5 === 0) ? <div key={`ad-${index}`} className="my-4"><AdCard /></div> : null;
             return [card, ad];
           })}
-          {dealershipsToDisplay.length === 0 && <div className="text-center text-muted-foreground py-20"><p>Aucun résultat.</p></div>}
+          {dealershipsToDisplay.length === 0 && <div className="text-center text-muted-foreground py-20"><p>Aucun établissement visible dans cette zone.</p></div>}
         </>
       )}
     </div>

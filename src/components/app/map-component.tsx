@@ -124,6 +124,7 @@ export default function MapComponent({
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const userLocationMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
+  const isUpdatingFromProps = useRef(false);
 
   const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
   const stableOnMapClick = useCallback(onMapClick, [onMapClick]);
@@ -145,7 +146,10 @@ export default function MapComponent({
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(mapRef.current!);
       
-      clusterGroupRef.current = L.markerClusterGroup({ maxClusterRadius: 40 });
+      clusterGroupRef.current = L.markerClusterGroup({ 
+        maxClusterRadius: 40,
+        chunkedLoading: true
+      });
       mapRef.current.addLayer(clusterGroupRef.current);
     }
     
@@ -153,6 +157,7 @@ export default function MapComponent({
     if (!map) return;
 
     const handleMoveEnd = () => {
+      if (isUpdatingFromProps.current) return;
       const currentCenter = map.getCenter();
       const currentZoom = map.getZoom();
       stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom, map.getBounds());
@@ -162,7 +167,10 @@ export default function MapComponent({
     map.on('zoomend', handleMoveEnd);
     map.on('click', stableOnMapClick);
     
-    handleMoveEnd();
+    // Initial bounds emission
+    setTimeout(() => {
+        stableOnMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
+    }, 100);
 
     return () => {
       map.off('moveend', handleMoveEnd);
@@ -182,11 +190,16 @@ export default function MapComponent({
       const zoomChanged = mapZoom !== zoom;
 
       if (centerChanged || zoomChanged) {
+        isUpdatingFromProps.current = true;
         map.setView(center, zoom);
+        setTimeout(() => {
+            isUpdatingFromProps.current = false;
+        }, 100);
       }
     }
   }, [center, zoom]);
 
+  // Re-créer les marqueurs uniquement si la liste change
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup) return;
@@ -201,21 +214,36 @@ export default function MapComponent({
       const isSelected = dealership.id === selectedDealershipId;
       const icon = createIcon(dealership, isHovered, isSelected);
 
-      const marker = L.marker([dealership.latitude, dealership.longitude], { icon, zIndexOffset: isSelected ? 1000 : 0 });
+      const marker = L.marker([dealership.latitude, dealership.longitude], { 
+        icon, 
+        zIndexOffset: isSelected ? 1000 : 0 
+      });
       
       marker.bindPopup(createPopupContent(dealership), { className: 'custom-leaflet-tooltip' });
         
-      marker.on('click', () => onMarkerClick(dealership.id));
+      marker.on('click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          onMarkerClick(dealership.id);
+      });
       marker.on('mouseover', () => onMarkerMouseOver(dealership.id));
       marker.on('mouseout', () => onMarkerMouseOut());
 
       clusterGroup.addLayer(marker);
       markersRef.current.set(dealership.id, marker);
     });
-  }, [dealerships, hoveredDealershipId, selectedDealershipId, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
+  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
   
+  // Mettre à jour l'apparence des marqueurs sans tout recréer
   useEffect(() => {
     markersRef.current.forEach((marker, id) => {
+        const dealership = dealerships.find(d => d.id === id);
+        if (dealership) {
+            const isHovered = id === hoveredDealershipId;
+            const isSelected = id === selectedDealershipId;
+            marker.setIcon(createIcon(dealership, isHovered, isSelected));
+            marker.setZIndexOffset(isSelected ? 1000 : 0);
+        }
+
         if (id !== firstClickId && id !== hoveredDealershipId) {
             marker.closePopup();
         }
@@ -232,7 +260,7 @@ export default function MapComponent({
             markerToOpen.openPopup();
         }
     }
-}, [firstClickId, hoveredDealershipId]);
+  }, [hoveredDealershipId, selectedDealershipId, firstClickId, dealerships]);
 
 
   useEffect(() => {
