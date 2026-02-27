@@ -82,11 +82,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           className
         )}
       >
-        {/* Container with horizontal scroll on mobile, flex row on desktop */}
+        {/* Mobile: Horizontal Scroll (Swipe) | Desktop: Static Layout */}
         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar md:overflow-visible md:snap-none md:flex-row h-32 md:h-auto">
           
-          {/* Main Info Section (100% width on mobile) */}
-          <div className="flex-none w-full min-w-full snap-start md:min-w-0 md:flex md:w-auto md:flex-1 h-full flex">
+          {/* Main Content Area: Takes full width on mobile */}
+          <div className="flex-none w-full min-w-full snap-start md:min-w-0 md:flex md:w-auto md:flex-1 h-full flex bg-card">
             {/* Image section */}
             <div
               onClick={handleImageClick}
@@ -116,8 +116,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               )}
             </div>
 
-            {/* Details section */}
-            <div className="flex flex-col justify-center flex-1 p-3 md:p-4 min-w-0 h-full bg-card">
+            {/* Business Info Section */}
+            <div className="flex flex-col justify-center flex-1 p-3 md:p-4 min-w-0 h-full relative">
               <h3 className="font-bold text-sm md:text-xl text-foreground leading-tight uppercase truncate">
                 {title}
               </h3>
@@ -172,11 +172,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* Desktop Separator */}
-          <div className="hidden md:block w-px bg-border/70 mx-4 h-auto self-stretch" />
-
-          {/* Hours Section (Swipe left to see on mobile) */}
-          <div className="flex-none w-[200px] snap-end p-3 bg-muted/10 flex flex-col justify-center md:snap-none md:w-52 md:bg-transparent md:p-4 h-full border-l border-border/30 md:border-none">
+          {/* Hours Section: Hidden by default on mobile, revealed via swipe left */}
+          <div className="flex-none w-[220px] snap-end p-3 bg-muted/20 flex flex-col justify-center md:snap-none md:w-52 md:bg-transparent md:p-4 h-full border-l-2 border-brand/20 md:border-l md:border-border/70">
             <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-0.5 md:gap-y-1 text-sm">
               {weekDays.map(day => {
                 const hours = dealership[day as keyof Dealership];
@@ -184,7 +181,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 return (
                     <React.Fragment key={day}>
                       <span className={cn("capitalize text-[9px] md:text-[10px] font-bold text-muted-foreground/80", isClosed && "text-muted-foreground/40")}>{day}</span>
-                      <span className={cn("font-mono text-[9px] md:text-[10px] text-right whitespace-nowrap font-bold", isClosed && "font-sans text-muted-foreground/40")}>{isClosed ? 'FERMÉ' : hours}</span>
+                      <span className={cn("font-mono text-[9px] md:text-[10px] text-right whitespace-nowrap font-black", isClosed && "font-sans text-muted-foreground/40")}>{isClosed ? 'FERMÉ' : hours}</span>
                     </React.Fragment>
                 )
               })}

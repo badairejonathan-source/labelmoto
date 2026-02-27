@@ -215,6 +215,7 @@ function MapPageComponent() {
             );
           })}
           
+          {/* Ensure at least one ad is shown if results exist */}
           {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && articlesData[0] && (
             <div className="py-2">
               <AdCard article={articlesData[0]} />
@@ -269,7 +270,7 @@ function MapPageComponent() {
           </>
         )}
 
-        {/* MOBILE LAYOUT (Google Maps Style) */}
+        {/* MOBILE LAYOUT (Google Maps Style with bottom sheet) */}
         {isMobile && (
           <>
             <main className="absolute inset-0 z-0 h-full w-full">
@@ -303,7 +304,7 @@ function MapPageComponent() {
                   {drawerHeight === 'expanded' ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
                 </div>
               </div>
-              <div className="px-4 h-full flex flex-col">
+              <div className="px-4 h-full flex flex-col overflow-hidden">
                 <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0" />
                 <ScrollArea className="flex-1">{listContent}</ScrollArea>
               </div>

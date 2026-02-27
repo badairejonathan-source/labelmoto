@@ -133,18 +133,19 @@ export default function MapComponent({
 
       const handleMoveEnd = () => {
         const currentMap = mapRef.current;
+        // CRITICAL SECURITY CHECK: Prevent access to undefined _leaflet_pos
         if (!currentMap || isUpdatingFromProps.current) return;
         
         try {
           if (typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
-            stableOnMapChange(
-              [currentMap.getCenter().lat, currentMap.getCenter().lng], 
-              currentMap.getZoom(), 
-              currentMap.getBounds()
-            );
+            const centerObj = currentMap.getCenter();
+            const boundsObj = currentMap.getBounds();
+            if (centerObj && boundsObj) {
+              stableOnMapChange([centerObj.lat, centerObj.lng], currentMap.getZoom(), boundsObj);
+            }
           }
         } catch (e) {
-          console.warn("Leaflet internal safety check", e);
+          console.warn("Leaflet state transition guard", e);
         }
       };
       
@@ -169,7 +170,7 @@ export default function MapComponent({
           setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
         }
       } catch (e) {
-        // map might be unmounting
+        // Safe fail
       }
     }
   }, [center, zoom]);
