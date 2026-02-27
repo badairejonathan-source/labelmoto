@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -17,6 +16,7 @@ import { collection, onSnapshot, FirestoreError } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
+import articlesData from '@/app/data/articles.json';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -149,7 +149,6 @@ function MapPageComponent() {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
-    // Limit to 25 results nearest to center as requested
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 25);
   }, [filteredDealerships, mapBoundsStr, mapCenter]);
 
@@ -189,27 +188,32 @@ function MapPageComponent() {
         <div className="text-center text-muted-foreground pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /><p className="mt-2">Chargement...</p></div>
       ) : (
         <>
-          {dealershipsToDisplay.map((dealer, index) => (
-            <React.Fragment key={dealer.id}>
-              <div 
-                ref={node => cardRefs.current.set(dealer.id, node)} 
-                onMouseEnter={() => setHoveredDealershipId(dealer.id)} 
-                onMouseLeave={() => setHoveredDealershipId(null)}
-              >
-                <DealershipCard 
-                  dealership={dealer} 
-                  onClick={() => handleCardClick(dealer)} 
-                  className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand", dealer.id === hoveredDealershipId && "shadow-lg")} 
-                />
-              </div>
-              {/* Insert Ad space every 3 fiches */}
-              {(index + 1) % 3 === 0 && (
-                <div className="py-2">
-                  <AdCard />
+          {dealershipsToDisplay.map((dealer, index) => {
+            const adIndex = Math.floor((index + 1) / 3) - 1;
+            const article = articlesData[adIndex % articlesData.length];
+
+            return (
+              <React.Fragment key={dealer.id}>
+                <div 
+                  ref={node => cardRefs.current.set(dealer.id, node)} 
+                  onMouseEnter={() => setHoveredDealershipId(dealer.id)} 
+                  onMouseLeave={() => setHoveredDealershipId(null)}
+                >
+                  <DealershipCard 
+                    dealership={dealer} 
+                    onClick={() => handleCardClick(dealer)} 
+                    className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand", dealer.id === hoveredDealershipId && "shadow-lg")} 
+                  />
                 </div>
-              )}
-            </React.Fragment>
-          ))}
+                {/* Insert dynamic Ad space every 3 fiches */}
+                {(index + 1) % 3 === 0 && article && (
+                  <div className="py-2">
+                    <AdCard article={article} />
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
           {dealershipsToDisplay.length === 0 && <div className="text-center text-muted-foreground py-10 px-4"><p>Aucun établissement visible dans cette zone. Explorez la carte pour trouver des résultats.</p></div>}
         </>
       )}
