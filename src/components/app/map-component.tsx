@@ -24,7 +24,7 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-// SVG paths for clear icons inside markers
+// SVG paths for icons representing category inside markers
 const categoryIcons: Record<string, string> = {
     'concession': `
       <g stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -39,7 +39,7 @@ const categoryIcons: Record<string, string> = {
     `,
     'concession-atelier': `
       <g transform="scale(0.85) translate(2, 2)">
-        <path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2" fill="none" />
+        <path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
       </g>
     `,
     'accessoiriste': `
@@ -236,5 +236,5 @@ export default function MapComponent({
     };
   }, []);
 
-  return <div ref={containerRef} className="w-full h-full min-h-0 z-[5] bg-gray-100 rounded-lg overflow-hidden" />;
+  return <div ref={containerRef} className="w-full h-full min-h-0 z-[5] bg-muted/20 rounded-lg overflow-hidden" />;
 }

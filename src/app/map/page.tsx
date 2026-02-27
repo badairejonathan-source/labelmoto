@@ -18,7 +18,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
-  loading: () => (<div className="w-full h-full flex items-center justify-center bg-gray-200"><p>Chargement de la carte...</p></div>)
+  loading: () => (<div className="w-full h-full flex items-center justify-center bg-muted/20"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>)
 });
 
 const getDistanceSq = (center: [number, number], dealer: Dealership) => {
@@ -147,6 +147,7 @@ function MapPageComponent() {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
+    // Limit to 25 results nearest to center
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 25);
   }, [filteredDealerships, mapBoundsStr, mapCenter]);
 
@@ -200,35 +201,85 @@ function MapPageComponent() {
   if (width === undefined) return <div className="flex h-[100svh] w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
   return (
-    <div className="flex flex-col w-full bg-background h-[100svh] overflow-hidden">
+    <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Rechercher par nom, ville..." />
-      <div className="flex-1 relative overflow-hidden">
-        <main className={cn("absolute inset-0 z-0", !isMobile && "relative left-1/3 w-2/3 h-full")}>
-          <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={() => { if (isMobile) setDrawerHeight('collapsed'); }} isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} />
-          <div className={cn("absolute z-[1000]", isMobile ? "top-2 right-2" : "top-4 right-4")}>
-            <Button size="icon" className="rounded-full shadow-lg h-10 w-10 bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button>
-          </div>
-        </main>
-        {isMobile ? (
-          <div className={cn("fixed left-0 right-0 bg-background rounded-t-3xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-50 transition-all duration-300 ease-in-out border-t", drawerHeight === 'collapsed' ? 'bottom-0 h-[80px]' : drawerHeight === 'half' ? 'bottom-0 h-[45vh]' : 'bottom-0 h-[85vh]')}>
-            <div className="w-full flex flex-col items-center pt-2 pb-4 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onClick={() => setDrawerHeight(drawerHeight === 'expanded' ? 'half' : drawerHeight === 'half' ? 'expanded' : 'half')}>
-              <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
-              <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
-                {dealershipsToDisplay.length} RÉSULTATS VISIBLES
-                {drawerHeight === 'expanded' ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+      
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* DESKTOP LAYOUT */}
+        {!isMobile && (
+          <>
+            <aside className="w-1/3 flex flex-col bg-background border-r z-10 shadow-md h-full">
+              <div className="p-4 border-b bg-muted/30">
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{dealershipsToDisplay.length} RÉSULTATS DANS CETTE ZONE</span>
+              </div>
+              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
+              <ScrollArea className="flex-1">
+                <div className="p-4">{listContent}</div>
+              </ScrollArea>
+            </aside>
+            <main className="flex-1 relative">
+              <MapComponent 
+                dealerships={filteredDealerships} 
+                center={mapCenter} 
+                zoom={mapZoom} 
+                hoveredDealershipId={hoveredDealershipId} 
+                selectedDealershipId={selectedDealershipId} 
+                onMarkerClick={handleMarkerClick} 
+                onMarkerMouseOver={setHoveredDealershipId} 
+                onMarkerMouseOut={() => setHoveredDealershipId(null)} 
+                onMapChange={handleMapChange} 
+                onMapClick={() => {}} 
+                isLocating={isLocating} 
+                onLocateEnd={() => setIsLocating(false)} 
+                onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
+              />
+              <div className="absolute top-4 right-4 z-[1000]">
+                <Button size="icon" className="rounded-full shadow-lg h-10 w-10 bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button>
+              </div>
+            </main>
+          </>
+        )}
+
+        {/* MOBILE LAYOUT (Google Maps Style) */}
+        {isMobile && (
+          <>
+            <main className="absolute inset-0 z-0 h-full w-full">
+              <MapComponent 
+                dealerships={filteredDealerships} 
+                center={mapCenter} 
+                zoom={mapZoom} 
+                hoveredDealershipId={hoveredDealershipId} 
+                selectedDealershipId={selectedDealershipId} 
+                onMarkerClick={handleMarkerClick} 
+                onMarkerMouseOver={setHoveredDealershipId} 
+                onMarkerMouseOut={() => setHoveredDealershipId(null)} 
+                onMapChange={handleMapChange} 
+                onMapClick={() => setDrawerHeight('collapsed')} 
+                isLocating={isLocating} 
+                onLocateEnd={() => setIsLocating(false)} 
+                onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
+              />
+              <div className="absolute top-2 right-2 z-[1000]">
+                <Button size="icon" className="rounded-full shadow-lg h-10 w-10 bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button>
+              </div>
+            </main>
+            <div className={cn(
+              "fixed left-0 right-0 bg-background rounded-t-3xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-50 transition-all duration-300 ease-in-out border-t",
+              drawerHeight === 'collapsed' ? 'bottom-0 h-[80px]' : drawerHeight === 'half' ? 'bottom-0 h-[45vh]' : 'bottom-0 h-[85vh]'
+            )}>
+              <div className="w-full flex flex-col items-center pt-2 pb-4 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onClick={() => setDrawerHeight(drawerHeight === 'expanded' ? 'half' : drawerHeight === 'half' ? 'expanded' : 'half')}>
+                <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
+                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
+                  {dealershipsToDisplay.length} RÉSULTATS VISIBLES
+                  {drawerHeight === 'expanded' ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+                </div>
+              </div>
+              <div className="px-4 h-full flex flex-col">
+                <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0" />
+                <ScrollArea className="flex-1">{listContent}</ScrollArea>
               </div>
             </div>
-            <div className="px-4 h-full flex flex-col">
-              <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0" />
-              <ScrollArea className="flex-1">{listContent}</ScrollArea>
-            </div>
-          </div>
-        ) : (
-          <aside className="absolute left-0 top-0 w-1/3 h-full flex flex-col bg-background border-r z-10 shadow-md">
-            <div className="p-4 border-b bg-muted/30"><span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{dealershipsToDisplay.length} RÉSULTATS DANS CETTE ZONE</span></div>
-            <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
-            <ScrollArea className="h-full"><div className="p-4">{listContent}</div></ScrollArea>
-          </aside>
+          </>
         )}
       </div>
     </div>
@@ -236,5 +287,5 @@ function MapPageComponent() {
 }
 
 export default function MapPage() {
-  return <Suspense fallback={<div className="flex h-[100svh] w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
+  return <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
 }
