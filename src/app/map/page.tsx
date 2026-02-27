@@ -203,7 +203,7 @@ function MapPageComponent() {
 
   return (
     <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Rechercher par nom, ville..." />
+      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Recherche par nom, ville, departement" />
       
       <div className="flex-1 flex overflow-hidden relative">
         {/* DESKTOP LAYOUT (3/4 List, 1/4 Map) */}

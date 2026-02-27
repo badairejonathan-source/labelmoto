@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState } from 'react';
@@ -29,7 +30,7 @@ export default function SelectionPage() {
         onSearch={handleSearch}
         activeFilter={null}
         onFilterChange={handleFilterChange}
-        placeholderText="Rechercher par nom, ville..."
+        placeholderText="Recherche par nom, ville, departement"
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-4xl mx-auto relative overflow-hidden">
@@ -48,12 +49,12 @@ export default function SelectionPage() {
           </Link>
           <div className="space-y-6 text-foreground/90 leading-relaxed">
             <div className="text-center mb-8">
-                <Award className="mx-auto h-16 w-16 text-amber-500 mb-4" />
+                <Award className="mx-auto h-16 w-16 text-brand mb-4" />
                 <h1 className="text-4xl font-bold text-foreground">Comment fonctionne la Sélection Label Moto ?</h1>
             </div>
             
             <p className="text-lg text-center max-w-3xl mx-auto">La Sélection Label Moto distingue les professionnels qui respectent des critères de qualité, de fiabilité et de transparence.</p>
-            <p className="text-lg text-center font-semibold text-foreground bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-lg p-4 max-w-md mx-auto">Ce badge ne peut pas être acheté.</p>
+            <p className="text-lg text-center font-semibold text-foreground bg-brand/10 dark:bg-brand/20 border border-brand/30 dark:border-brand/50 rounded-lg p-4 max-w-md mx-auto">Ce badge ne peut pas être acheté.</p>
 
             <h2 className="text-2xl font-bold text-foreground mt-12 pt-8 border-t">Nos critères d’attribution</h2>
             <p>Un établissement peut obtenir la Sélection Label Moto s’il :</p>

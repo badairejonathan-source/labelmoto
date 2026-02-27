@@ -279,7 +279,7 @@ export default function EntretienPage() {
         onSearch={handleSearch}
         activeFilter={null}
         onFilterChange={handleFilterChange}
-        placeholderText="Rechercher une fiche d'entretien..."
+        placeholderText="Recherche par nom, ville, departement"
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-6xl mx-auto">

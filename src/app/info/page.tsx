@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -101,7 +102,7 @@ function InfoPageComponent() {
                 onSearch={handleSearch}
                 activeFilter={null}
                 onFilterChange={handleFilterChange}
-                placeholderText="Rechercher un article..."
+                placeholderText="Recherche par nom, ville, departement"
             />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="max-w-6xl mx-auto">

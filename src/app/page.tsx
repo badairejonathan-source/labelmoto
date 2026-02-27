@@ -156,7 +156,7 @@ const LandingHeader = () => {
                             <Input
                                 name="search"
                                 type="search"
-                                placeholder="Rechercher par nom, ville, code postal..."
+                                placeholder="Recherche par nom, ville, departement"
                                 className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
                             />
                             <Button 
@@ -412,7 +412,7 @@ export default function LandingPage() {
                             Professionnels, rejoignez le réseau Label Moto.
                           </h2>
                           <p className="text-muted-foreground text-base md:text-lg mb-6 md:mb-10 max-w-2xl mx-auto lg:mx-0">
-                            Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
+                            Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
                           <div className="relative inline-block group/cta">
                             <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-sm md:text-lg px-6 md:px-10 py-5 md:py-7 rounded-full shadow-lg transition-all hover:shadow-brand/25 hover:-translate-y-1">
