@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -81,102 +82,101 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           className
         )}
       >
-        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar md:overflow-visible md:snap-none md:flex-row">
+        {/* Container with horizontal scroll on mobile, flex row on desktop */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar md:overflow-visible md:snap-none md:flex-row h-32 md:h-auto">
           
-          {/* Main Content Side (100% on mobile, flex-1 on desktop) */}
-          <div className="flex-none w-full min-w-full snap-start md:min-w-0 md:flex md:w-auto md:flex-1">
-            <div className="flex h-32 md:h-auto md:w-full">
-              {/* Image Side */}
-              <div
-                onClick={handleImageClick}
-                className={cn(
-                  "relative w-32 h-32 md:w-48 md:h-auto flex-shrink-0 md:rounded-l-lg md:rounded-r-none overflow-hidden md:border-r bg-muted/30",
-                  dealership.imgUrl && "cursor-zoom-in"
-                )}
-              >
-                {dealership.imgUrl ? (
-                  <Image
-                    src={dealership.imgUrl}
-                    alt={`Photo de ${title}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 8rem, 12rem"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center p-2 md:p-4">
-                    <LabelMotoLogo className="w-full opacity-20 grayscale" />
-                  </div>
-                )}
-                {rating > 0 && (
-                  <div className="absolute top-1 left-1 md:top-2 md:left-2 flex items-center gap-1 text-[8px] md:text-[10px] font-black text-white bg-black/70 backdrop-blur-md rounded-full px-1.5 py-0.5 pointer-events-none shadow-sm">
-                    <Star className="h-2 w-2 md:h-3 md:w-3 fill-brand text-brand" />
-                    <span>{rating.toFixed(1)}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Info Side */}
-              <div className="flex flex-col justify-center flex-1 p-3 md:p-4 min-w-0">
-                <h3 className="font-bold text-base md:text-xl text-foreground leading-tight uppercase truncate">
-                  {title}
-                </h3>
-                {categoryLabel && (
-                  <div className="text-brand text-[10px] md:text-xs font-black mt-0.5 uppercase tracking-wider">
-                    {categoryLabel}
-                  </div>
-                )}
-                
-                <div className="flex items-center gap-3 text-muted-foreground text-[8px] md:text-[10px] uppercase font-bold mt-2 md:mt-3">
-                    {dealership.placeUrl && (
-                        <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
-                            <Store className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
-                            <span className="hidden sm:inline">Maps</span>
-                        </a>
-                    )}
-                    {dealership.phoneNumber && (
-                        <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
-                            <Phone className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
-                            <span>Appel</span>
-                        </a>
-                    )}
-                    {dealership.email && (
-                        <a href={`mailto:${dealership.email}`} className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
-                            <Mail className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
-                            <span>Email</span>
-                        </a>
-                    )}
-                    {dealership.website && (
-                        <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
-                            <Globe className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
-                            <span className="hidden sm:inline">Web</span>
-                        </a>
-                    )}
+          {/* Main Info Section (100% width on mobile) */}
+          <div className="flex-none w-full min-w-full snap-start md:min-w-0 md:flex md:w-auto md:flex-1 h-full flex">
+            {/* Image section */}
+            <div
+              onClick={handleImageClick}
+              className={cn(
+                "relative w-32 md:w-48 flex-shrink-0 md:rounded-l-lg md:rounded-r-none overflow-hidden md:border-r bg-muted/30 h-full",
+                dealership.imgUrl && "cursor-zoom-in"
+              )}
+            >
+              {dealership.imgUrl ? (
+                <Image
+                  src={dealership.imgUrl}
+                  alt={`Photo de ${title}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 8rem, 12rem"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center p-2 md:p-4">
+                  <LabelMotoLogo className="w-full opacity-20 grayscale" />
                 </div>
+              )}
+              {rating > 0 && (
+                <div className="absolute top-1 left-1 md:top-2 md:left-2 flex items-center gap-1 text-[8px] md:text-[10px] font-black text-white bg-black/70 backdrop-blur-md rounded-full px-1.5 py-0.5 pointer-events-none shadow-sm">
+                  <Star className="h-2 w-2 md:h-3 md:w-3 fill-brand text-brand" />
+                  <span>{rating.toFixed(1)}</span>
+                </div>
+              )}
+            </div>
 
-                {dealership.address && 
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1 md:gap-2 text-[10px] md:text-xs text-left text-muted-foreground hover:text-brand group mt-2 md:mt-3 font-medium" onClick={(e) => e.stopPropagation()}>
-                            <MapPin className="h-3 w-3 md:h-3.5 md:w-3.5 shrink-0 mt-0.5 text-brand"/>
-                            <span className="group-hover:underline line-clamp-1">{dealership.address}</span>
-                        </a>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Y aller</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                }
+            {/* Details section */}
+            <div className="flex flex-col justify-center flex-1 p-3 md:p-4 min-w-0 h-full bg-card">
+              <h3 className="font-bold text-sm md:text-xl text-foreground leading-tight uppercase truncate">
+                {title}
+              </h3>
+              {categoryLabel && (
+                <div className="text-brand text-[9px] md:text-xs font-black mt-0.5 uppercase tracking-wider">
+                  {categoryLabel}
+                </div>
+              )}
+              
+              <div className="flex items-center gap-3 text-muted-foreground text-[8px] md:text-[10px] uppercase font-bold mt-2 md:mt-3">
+                  {dealership.placeUrl && (
+                      <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
+                          <Store className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
+                          <span className="hidden sm:inline">Maps</span>
+                      </a>
+                  )}
+                  {dealership.phoneNumber && (
+                      <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
+                          <Phone className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
+                          <span>Appel</span>
+                      </a>
+                  )}
+                  {dealership.email && (
+                      <a href={`mailto:${dealership.email}`} className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
+                          <Mail className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
+                          <span>Email</span>
+                      </a>
+                  )}
+                  {dealership.website && (
+                      <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-0.5 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
+                          <Globe className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
+                          <span className="hidden sm:inline">Web</span>
+                      </a>
+                  )}
               </div>
+
+              {dealership.address && 
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1 md:gap-2 text-[9px] md:text-xs text-left text-muted-foreground hover:text-brand group mt-2 md:mt-3 font-medium" onClick={(e) => e.stopPropagation()}>
+                          <MapPin className="h-3 w-3 md:h-3.5 md:w-3.5 shrink-0 mt-0.5 text-brand"/>
+                          <span className="group-hover:underline line-clamp-1">{dealership.address}</span>
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Y aller</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              }
             </div>
           </div>
 
           {/* Desktop Separator */}
           <div className="hidden md:block w-px bg-border/70 mx-4 h-auto self-stretch" />
 
-          {/* Hours Section (Swipeable on mobile, always visible on desktop) */}
-          <div className="flex-none w-[200px] snap-end p-3 bg-muted/5 flex flex-col justify-center md:snap-none md:w-52 md:bg-transparent md:p-4">
+          {/* Hours Section (Swipe left to see on mobile) */}
+          <div className="flex-none w-[200px] snap-end p-3 bg-muted/10 flex flex-col justify-center md:snap-none md:w-52 md:bg-transparent md:p-4 h-full border-l border-border/30 md:border-none">
             <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-0.5 md:gap-y-1 text-sm">
               {weekDays.map(day => {
                 const hours = dealership[day as keyof Dealership];
