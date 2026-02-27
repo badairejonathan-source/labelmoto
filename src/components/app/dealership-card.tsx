@@ -9,6 +9,12 @@ import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -111,11 +117,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* Main Info */}
             <div className="flex flex-col justify-between flex-grow min-w-0">
               <div>
-                <h3 className="font-bold text-lg text-foreground leading-tight uppercase truncate">
+                <h3 className="font-bold text-xl text-foreground leading-tight uppercase truncate">
                   {title}
                 </h3>
                 {categoryLabel && (
-                  <div className="text-brand text-[10px] font-black mt-1 uppercase tracking-wider">
+                  <div className="text-brand text-xs font-black mt-0.5 uppercase tracking-wider">
                     {categoryLabel}
                   </div>
                 )}
@@ -149,10 +155,19 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               </div>
 
               {dealership.address && 
-                <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-xs text-left text-muted-foreground hover:text-brand group mt-3 font-medium" onClick={(e) => e.stopPropagation()}>
-                    <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5 text-brand"/>
-                    <span className="group-hover:underline line-clamp-1">{dealership.address}</span>
-                </a>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-xs text-left text-muted-foreground hover:text-brand group mt-3 font-medium" onClick={(e) => e.stopPropagation()}>
+                          <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5 text-brand"/>
+                          <span className="group-hover:underline line-clamp-1">{dealership.address}</span>
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Y aller</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               }
             </div>
 
