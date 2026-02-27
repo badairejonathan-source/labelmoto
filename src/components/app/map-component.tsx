@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -155,9 +154,16 @@ export default function MapComponent({
 
     const handleMoveEnd = () => {
       if (isUpdatingFromProps.current) return;
-      const currentCenter = map.getCenter();
-      const currentZoom = map.getZoom();
-      stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom, map.getBounds());
+      try {
+        const currentCenter = map.getCenter();
+        const currentZoom = map.getZoom();
+        const bounds = map.getBounds();
+        if (currentCenter && bounds) {
+          stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom, bounds);
+        }
+      } catch (e) {
+        // Prevent crashes if map dimensions are temporarily invalid
+      }
     };
     
     map.on('moveend', handleMoveEnd);
@@ -170,7 +176,10 @@ export default function MapComponent({
             if (mapRef.current === map && map.getContainer()) {
                 try {
                     const currentCenter = map.getCenter();
-                    stableOnMapChange([currentCenter.lat, currentCenter.lng], map.getZoom(), map.getBounds());
+                    const bounds = map.getBounds();
+                    if (currentCenter && bounds) {
+                      stableOnMapChange([currentCenter.lat, currentCenter.lng], map.getZoom(), bounds);
+                    }
                 } catch (e) {
                     console.warn("Silent ignore: map dimension error during init");
                 }
