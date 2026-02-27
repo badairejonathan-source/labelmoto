@@ -215,6 +215,14 @@ function MapPageComponent() {
               </React.Fragment>
             );
           })}
+          
+          {/* Force at least one ad if there are fiches but less than 3 */}
+          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && articlesData[0] && (
+            <div className="py-2">
+              <AdCard article={articlesData[0]} />
+            </div>
+          )}
+
           {dealershipsToDisplay.length === 0 && <div className="text-center text-muted-foreground py-10 px-4"><p>Aucun établissement visible dans cette zone. Explorez la carte pour trouver des résultats.</p></div>}
         </>
       )}
