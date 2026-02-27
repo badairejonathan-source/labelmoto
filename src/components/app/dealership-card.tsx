@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Store, Mail } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Store, Mail, Bike, Wrench } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -16,13 +16,12 @@ interface DealershipCardProps {
 }
 
 const categoryDisplay: { [key: string]: string } = {
-  'concession': 'Concession (Vente)',
-  'atelier': 'Atelier (Réparation)',
-  'concession-atelier': 'Concession + Atelier',
+  'concession': 'Concession',
+  'atelier': 'Atelier',
+  'concession-atelier': 'Concession & Atelier',
   'accessoiriste': 'Accessoiriste',
   'autre': 'Autre',
 };
-
 
 const DealershipCard: React.FC<DealershipCardProps> = ({
   dealership,
@@ -34,8 +33,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const title = dealership.title || '';
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
-  const categoryLabel = dealership.category ? categoryDisplay[dealership.category] : '';
-
+  
+  // Robust category handling: uses map or falls back to raw value (e.g. "Magasin")
+  const rawCategory = dealership.category || '';
+  const categoryLabel = categoryDisplay[rawCategory.toLowerCase()] || rawCategory;
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
@@ -71,7 +72,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       <Card
         onClick={onClick}
         className={cn(
-          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md",
+          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md border-border/50 shadow-sm",
           className
         )}
       >
@@ -80,7 +81,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           <div
             onClick={handleImageClick}
             className={cn(
-              "relative w-full h-48 md:w-48 md:h-auto flex-shrink-0 md:rounded-l-lg md:rounded-r-none rounded-t-lg overflow-hidden md:border-r",
+              "relative w-full h-48 md:w-48 md:h-auto flex-shrink-0 md:rounded-l-lg md:rounded-r-none rounded-t-lg overflow-hidden md:border-r bg-muted/30",
               dealership.imgUrl && "cursor-zoom-in"
             )}
           >
@@ -93,13 +94,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 sizes="(max-width: 768px) 100vw, 12rem"
               />
             ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center p-1">
-                <LabelMotoLogo className="w-10 h-10 text-gray-400" />
+              <div className="w-full h-full flex items-center justify-center p-4">
+                <LabelMotoLogo className="w-full opacity-20 grayscale" />
               </div>
             )}
             {rating > 0 && (
-              <div className="absolute top-1.5 left-1.5 flex items-center gap-1 text-xs font-bold text-white bg-black/60 backdrop-blur-sm rounded-full px-2 py-0.5 pointer-events-none">
-                <Star className="h-3.5 w-3.5 fill-brand text-brand" />
+              <div className="absolute top-2 left-2 flex items-center gap-1 text-[10px] font-black text-white bg-black/70 backdrop-blur-md rounded-full px-2 py-0.5 pointer-events-none shadow-sm">
+                <Star className="h-3 w-3 fill-brand text-brand" />
                 <span>{rating.toFixed(1)}</span>
               </div>
             )}
@@ -110,35 +111,39 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* Main Info */}
             <div className="flex flex-col justify-between flex-grow min-w-0">
               <div>
-                <h3 className="font-bold text-lg text-foreground leading-tight uppercase">
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  {categoryLabel && (
+                    <div className="bg-brand/10 text-brand text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
+                      {categoryLabel}
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-bold text-lg text-foreground leading-tight uppercase truncate">
                   {title}
                 </h3>
-                {categoryLabel && (
-                  <p className="text-sm text-muted-foreground">{categoryLabel}</p>
-                )}
               </div>
               
-              <div className="flex items-start text-center gap-4 text-muted-foreground text-xs mt-3">
+              <div className="flex items-start gap-4 text-muted-foreground text-[10px] uppercase font-bold mt-3">
                   {dealership.placeUrl && (
-                      <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
+                      <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
                           <Store className="w-5 h-5 text-brand"/>
-                          <span>Fiche Google</span>
+                          <span className="max-w-[60px] leading-[1.1]">Google Maps</span>
                       </a>
                   )}
                   {dealership.phoneNumber && (
-                      <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
+                      <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
                           <Phone className="w-5 h-5 text-brand"/>
                           <span>Appeler</span>
                       </a>
                   )}
                   {dealership.email && (
-                      <a href={`mailto:${dealership.email}`} className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
+                      <a href={`mailto:${dealership.email}`} className="flex flex-col items-center gap-1 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
                           <Mail className="w-5 h-5 text-brand"/>
                           <span>Email</span>
                       </a>
                   )}
                   {dealership.website && (
-                      <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
+                      <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-brand transition-colors text-center" onClick={(e) => e.stopPropagation()}>
                           <Globe className="w-5 h-5 text-brand"/>
                           <span>Site Web</span>
                       </a>
@@ -146,15 +151,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               </div>
 
               {dealership.address && 
-                <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-sm text-left text-muted-foreground hover:text-brand group mt-3" onClick={(e) => e.stopPropagation()}>
-                    <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-brand"/>
-                    <span className="group-hover:underline">{dealership.address}</span>
+                <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-xs text-left text-muted-foreground hover:text-brand group mt-3 font-medium" onClick={(e) => e.stopPropagation()}>
+                    <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5 text-brand"/>
+                    <span className="group-hover:underline line-clamp-1">{dealership.address}</span>
                 </a>
               }
             </div>
 
             {/* Separator */}
-            <div className="w-full h-px md:w-px md:h-auto bg-border/70 my-4 md:my-0 md:mx-4" />
+            <div className="hidden md:block w-px bg-border/70 mx-4 h-auto self-stretch" />
 
             {/* Hours */}
             <div className="flex-shrink-0 md:w-52">
@@ -164,8 +169,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
                   return (
                       <React.Fragment key={day}>
-                        <span className={cn("capitalize text-xs font-medium", isClosed && "text-muted-foreground/70")}>{day}</span>
-                        <span className={cn("font-mono text-xs text-right whitespace-nowrap", isClosed && "font-sans text-muted-foreground/70")}>{isClosed ? 'Fermé' : hours}</span>
+                        <span className={cn("capitalize text-[10px] font-bold text-muted-foreground/80", isClosed && "text-muted-foreground/40")}>{day}</span>
+                        <span className={cn("font-mono text-[10px] text-right whitespace-nowrap font-bold", isClosed && "font-sans text-muted-foreground/40")}>{isClosed ? 'FERMÉ' : hours}</span>
                       </React.Fragment>
                   )
                 })}

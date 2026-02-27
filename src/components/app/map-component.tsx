@@ -52,7 +52,7 @@ const categoryIcons: Record<string, string> = {
 };
 
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
-    const category = dealership.category || 'default';
+    const category = dealership.category ? dealership.category.toLowerCase() : 'default';
     const scale = isHovered || isSelected ? 1.25 : 1;
     const shadowOpacity = isHovered || isSelected ? 0.6 : 0.3;
     const strokeWidth = isHovered || isSelected ? 2.5 : 0.5;
@@ -133,13 +133,17 @@ export default function MapComponent({
       const handleMoveEnd = () => {
         if (!mapRef.current || isUpdatingFromProps.current) return;
         try {
-          stableOnMapChange(
-            [map.getCenter().lat, map.getCenter().lng], 
-            map.getZoom(), 
-            map.getBounds()
-          );
+          // Safety check to ensure map instance is valid
+          const currentMap = mapRef.current;
+          if (currentMap && currentMap.getCenter && currentMap.getBounds) {
+            stableOnMapChange(
+              [currentMap.getCenter().lat, currentMap.getCenter().lng], 
+              currentMap.getZoom(), 
+              currentMap.getBounds()
+            );
+          }
         } catch (e) {
-          console.warn("Map not ready for bounds calculation", e);
+          console.warn("Map interaction safety check triggered", e);
         }
       };
       
@@ -148,11 +152,10 @@ export default function MapComponent({
       map.on('click', stableOnMapClick);
 
       map.whenReady(() => {
-        // Delay slightly to ensure layout is calculated
         setTimeout(handleMoveEnd, 100);
       });
     }
-  }, [stableOnMapChange, stableOnMapClick]); // Only run once on mount
+  }, [stableOnMapChange, stableOnMapClick]);
 
   useEffect(() => {
     const map = mapRef.current;
