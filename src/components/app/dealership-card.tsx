@@ -84,7 +84,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar md:overflow-visible md:snap-none md:flex-row">
           
           {/* Main Content Side (100% on mobile, flex-1 on desktop) */}
-          <div className="flex-none w-full snap-start md:flex md:w-auto md:flex-1">
+          <div className="flex-none w-full min-w-full snap-start md:min-w-0 md:flex md:w-auto md:flex-1">
             <div className="flex h-32 md:h-auto md:w-full">
               {/* Image Side */}
               <div
@@ -180,7 +180,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           <div className="hidden md:block w-px bg-border/70 mx-4 h-auto self-stretch" />
 
           {/* Hours Section (Swipeable on mobile, always visible on desktop) */}
-          <div className="flex-none w-48 snap-end p-3 bg-muted/5 flex flex-col justify-center md:snap-none md:w-52 md:bg-transparent md:p-4">
+          <div className="flex-none w-[200px] snap-end p-3 bg-muted/5 flex flex-col justify-center md:snap-none md:w-52 md:bg-transparent md:p-4">
             <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-0.5 md:gap-y-1 text-sm">
               {weekDays.map(day => {
                 const hours = dealership[day as keyof Dealership];
