@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -27,23 +28,27 @@ interface MapComponentProps {
 // SVG paths for icons representing category inside markers
 const categoryIcons: Record<string, string> = {
     'concession': `
-      <g stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="18.5" cy="17.5" r="3.5" />
-        <circle cx="5.5" cy="17.5" r="3.5" />
-        <path d="M12 13h-3l-2-5h-3l-1 2" />
-        <path d="M12 13l2-5h4l2 5" />
+      <g transform="translate(4, 4) scale(1.2)">
+        <circle cx="18.5" cy="17.5" r="3.5" stroke="white" stroke-width="2" fill="none" />
+        <circle cx="5.5" cy="17.5" r="3.5" stroke="white" stroke-width="2" fill="none" />
+        <path d="M12 13h-3l-2-5h-3l-1 2" stroke="white" stroke-width="2" fill="none" />
+        <path d="M12 13l2-5h4l2 5" stroke="white" stroke-width="2" fill="none" />
       </g>
     `,
     'atelier': `
-      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      <g transform="translate(6, 6) scale(1.1)">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      </g>
     `,
     'concession-atelier': `
-      <g transform="scale(0.85) translate(2, 2)">
+      <g transform="translate(4, 4) scale(1.1)">
         <path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
       </g>
     `,
     'accessoiriste': `
-      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      <g transform="translate(6, 6) scale(1.1)">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      </g>
     `,
     'default': `<circle cx="12" cy="12" r="8" stroke="white" stroke-width="2" fill="none" />`
 };

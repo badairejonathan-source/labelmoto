@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -205,19 +206,19 @@ function MapPageComponent() {
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Rechercher par nom, ville..." />
       
       <div className="flex-1 flex overflow-hidden relative">
-        {/* DESKTOP LAYOUT */}
+        {/* DESKTOP LAYOUT (3/4 List, 1/4 Map) */}
         {!isMobile && (
           <>
-            <aside className="w-1/3 flex flex-col bg-background border-r z-10 shadow-md h-full">
-              <div className="p-4 border-b bg-muted/30">
-                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{dealershipsToDisplay.length} RÉSULTATS DANS CETTE ZONE</span>
+            <aside className="w-3/4 flex flex-col bg-background border-r z-10 shadow-md h-full">
+              <div className="p-4 border-b bg-muted/30 flex justify-between items-center">
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{dealershipsToDisplay.length} RÉSULTATS VISIBLES</span>
+                <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none p-0 sticky-none" />
               </div>
-              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
               <ScrollArea className="flex-1">
                 <div className="p-4">{listContent}</div>
               </ScrollArea>
             </aside>
-            <main className="flex-1 relative">
+            <main className="w-1/4 relative bg-muted/10">
               <MapComponent 
                 dealerships={filteredDealerships} 
                 center={mapCenter} 
