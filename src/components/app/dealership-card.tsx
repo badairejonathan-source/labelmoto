@@ -100,7 +100,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             )}
             {rating > 0 && (
               <div className="absolute top-1.5 left-1.5 flex items-center gap-1 text-xs font-bold text-white bg-black/60 backdrop-blur-sm rounded-full px-2 py-0.5 pointer-events-none">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
+                <Star className="h-3.5 w-3.5 fill-brand text-brand" />
                 <span>{rating.toFixed(1)}</span>
               </div>
             )}
@@ -111,7 +111,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* Main Info */}
             <div className="flex flex-col justify-between flex-grow min-w-0">
               <div>
-                <h3 className="font-bold text-lg text-foreground leading-tight">
+                <h3 className="font-bold text-lg text-foreground leading-tight uppercase">
                   {title}
                 </h3>
                 {categoryLabel && (
@@ -148,7 +148,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
               {dealership.address && 
                 <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-sm text-left text-muted-foreground hover:text-brand group mt-3" onClick={(e) => e.stopPropagation()}>
-                    <MapPin className="h-4 w-4 shrink-0 mt-0.5"/>
+                    <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-brand"/>
                     <span className="group-hover:underline">{dealership.address}</span>
                 </a>
               }
