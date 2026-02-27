@@ -273,10 +273,8 @@ function MapPageComponent() {
   const dealershipsToDisplay = useMemo(() => {
     let visibleResults = filteredDealerships;
 
-    // Filtrer par visibilité sur la carte
     if (mapBoundsStr) {
         const parts = mapBoundsStr.split(',').map(Number);
-        // bbox format: minLng, minLat, maxLng, maxLat
         const minLng = parts[0], minLat = parts[1], maxLng = parts[2], maxLat = parts[3];
         
         visibleResults = visibleResults.filter(d => {
@@ -299,7 +297,7 @@ function MapPageComponent() {
         if (!aIsPrimary && bIsPrimary) return 1;
       }
       return getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b);
-    }).slice(0, 25); // Limité à 25 fiches
+    }).slice(0, 25);
   }, [filteredDealerships, mapBoundsStr, mapCenter, selectedDealershipId, submittedSearchTerm]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
@@ -327,6 +325,10 @@ function MapPageComponent() {
 
   const handleMouseOut = useCallback(() => {
     setHoveredDealershipId(null);
+  }, []);
+
+  const handleMapClick = useCallback(() => {
+    setFirstClickId(null);
   }, []);
 
   const handleLocationError = useCallback(() => {
@@ -365,14 +367,12 @@ function MapPageComponent() {
       <div className={cn("flex-1 flex relative", !isMobile ? "overflow-hidden" : "flex-col")}>
         {isMobile ? (
           <div className="flex-1 flex flex-col">
-            {/* Mobile Map - Fixed Height */}
             <div className="w-full h-[50vh] relative shrink-0 z-0 border-b shadow-sm">
-              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} firstClickId={firstClickId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={handleMarkerMouseOver} onMarkerMouseOut={handleMouseOut} onMapChange={handleMapChange} onMapClick={() => setFirstClickId(null)} isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationError={handleLocationError} />
+              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} firstClickId={firstClickId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={handleMarkerMouseOver} onMarkerMouseOut={handleMouseOut} onMapChange={handleMapChange} onMapClick={handleMapClick} isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationError={handleLocationError} />
               <div className="absolute top-2 right-2 z-[1000]">
                 <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-4 w-4" /></Button>
               </div>
             </div>
-            {/* Mobile List - Normal Flow */}
             <div className="flex-grow bg-background">
               <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
               {listContent}
@@ -387,7 +387,7 @@ function MapPageComponent() {
               </ScrollArea>
             </aside>
             <main className="flex-1 bg-gray-100 h-full relative">
-              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} firstClickId={firstClickId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={handleMarkerMouseOver} onMarkerMouseOut={handleMouseOut} onMapChange={handleMapChange} onMapClick={() => setFirstClickId(null)} isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationError={handleLocationError} />
+              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} firstClickId={firstClickId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={handleMarkerMouseOver} onMarkerMouseOut={handleMouseOut} onMapChange={handleMapChange} onMapClick={handleMapClick} isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationError={handleLocationError} />
               <div className="absolute top-4 right-4 z-[1000]"><Button size="icon" className="rounded-full shadow-lg bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button></div>
             </main>
           </>

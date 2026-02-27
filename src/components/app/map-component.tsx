@@ -31,9 +31,7 @@ const getBrandForDealership = (dealership: Dealership): string | null => {
     if (!dealership) return null;
     const title = (dealership.title || '').toLowerCase();
     const category = (dealership.category || '').toLowerCase();
-    
     const searchString = `${title} ${category}`;
-
     const brand = Object.keys(brandLogos).find(b => searchString.includes(b.toLowerCase()));
     return brand || null;
 }
@@ -41,12 +39,10 @@ const getBrandForDealership = (dealership: Dealership): string | null => {
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
     const brand = getBrandForDealership(dealership);
     const brandSvg = brand ? brandLogos[brand] : null;
-
     const scale = isHovered || isSelected ? 1.25 : 1;
     const shadowOpacity = isHovered || isSelected ? 0.6 : 0.3;
     const strokeWidth = isHovered || isSelected ? 2.5 : 0.5;
     const fillColor = isSelected ? 'hsl(var(--brand))' : 'hsl(var(--primary))';
-
 
     const iconHtml = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center; z-index: ${isSelected ? 1000 : 'auto'};">
@@ -125,6 +121,7 @@ export default function MapComponent({
   const userLocationMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
+  const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
   const stableOnMapClick = useCallback(onMapClick, [onMapClick]);
@@ -132,8 +129,8 @@ export default function MapComponent({
   useEffect(() => {
     if (mapRef.current === null && containerRef.current) {
       const franceBounds = L.latLngBounds(
-        L.latLng(41, -5.5), // Southwest
-        L.latLng(51.5, 10)  // Northeast
+        L.latLng(41, -5.5),
+        L.latLng(51.5, 10)
       );
 
       mapRef.current = L.map(containerRef.current, {
@@ -167,21 +164,31 @@ export default function MapComponent({
     map.on('zoomend', handleMoveEnd);
     map.on('click', stableOnMapClick);
     
-    // Initial bounds emission
-    setTimeout(() => {
-        stableOnMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
-    }, 100);
+    map.whenReady(() => {
+        if (initTimeoutRef.current) clearTimeout(initTimeoutRef.current);
+        initTimeoutRef.current = setTimeout(() => {
+            if (mapRef.current === map && map.getContainer()) {
+                try {
+                    const currentCenter = map.getCenter();
+                    stableOnMapChange([currentCenter.lat, currentCenter.lng], map.getZoom(), map.getBounds());
+                } catch (e) {
+                    console.warn("Silent ignore: map dimension error during init");
+                }
+            }
+        }, 200);
+    });
 
     return () => {
       map.off('moveend', handleMoveEnd);
       map.off('zoomend', handleMoveEnd);
       map.off('click', stableOnMapClick);
+      if (initTimeoutRef.current) clearTimeout(initTimeoutRef.current);
     };
   }, [stableOnMapChange, stableOnMapClick]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (map) {
+    if (map && map.getContainer()) {
       const mapCenter = map.getCenter();
       const mapZoom = map.getZoom();
       const tolerance = 0.00001;
@@ -199,7 +206,6 @@ export default function MapComponent({
     }
   }, [center, zoom]);
 
-  // Re-créer les marqueurs uniquement si la liste change
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup) return;
@@ -233,7 +239,6 @@ export default function MapComponent({
     });
   }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut]);
   
-  // Mettre à jour l'apparence des marqueurs sans tout recréer
   useEffect(() => {
     markersRef.current.forEach((marker, id) => {
         const dealership = dealerships.find(d => d.id === id);
