@@ -7,7 +7,6 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { Dealership } from '@/lib/types';
-import brandLogos from '@/data/brand-logos';
 
 interface MapComponentProps {
   dealerships: Dealership[];
@@ -26,18 +25,16 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-const getBrandForDealership = (dealership: Dealership): string | null => {
-    if (!dealership) return null;
-    const title = (dealership.title || '').toLowerCase();
-    const category = (dealership.category || '').toLowerCase();
-    const searchString = `${title} ${category}`;
-    const brand = Object.keys(brandLogos).find(b => searchString.includes(b.toLowerCase()));
-    return brand || null;
-}
+const categoryIcons: Record<string, string> = {
+    'concession': `<path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`,
+    'atelier': `<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`,
+    'concession-atelier': `<g transform="scale(0.8) translate(3, 3)"><path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(10, -10) scale(0.8)"/></g>`,
+    'accessoiriste': `<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`,
+    'default': `<circle cx="12" cy="12" r="8" stroke="white" stroke-width="2.5" fill="none" />`
+};
 
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
-    const brand = getBrandForDealership(dealership);
-    const brandSvg = brand ? brandLogos[brand] : null;
+    const category = dealership.category || 'default';
     const scale = isHovered || isSelected ? 1.25 : 1;
     const shadowOpacity = isHovered || isSelected ? 0.6 : 0.3;
     const strokeWidth = isHovered || isSelected ? 2.5 : 0.5;
@@ -53,10 +50,9 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
         <g filter="url(#shadow)">
           <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="${fillColor}" stroke="white" stroke-width="${strokeWidth}" />
         </g>
-        ${brandSvg 
-          ? `<g transform="translate(18, 18) scale(0.9)">${brandSvg}</g>`
-          : `<circle cx="18" cy="18" r="8" fill="white" opacity="0.8" />`
-        }
+        <g transform="translate(6, 6)">
+            ${categoryIcons[category] || categoryIcons['default']}
+        </g>
       </svg>
     `;
 
@@ -74,7 +70,6 @@ export default function MapComponent({
   zoom,
   hoveredDealershipId,
   selectedDealershipId,
-  firstClickId,
   onMarkerClick,
   onMarkerMouseOver,
   onMarkerMouseOut,
@@ -90,19 +85,15 @@ export default function MapComponent({
   const userLocationMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
-  const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
   const stableOnMapClick = useCallback(onMapClick, [onMapClick]);
 
   useEffect(() => {
     if (mapRef.current === null && containerRef.current) {
-      const franceBounds = L.latLngBounds(
-        L.latLng(41, -5.5),
-        L.latLng(51.5, 10)
-      );
+      const franceBounds = L.latLngBounds(L.latLng(41, -5.5), L.latLng(51.5, 10));
 
-      mapRef.current = L.map(containerRef.current, {
+      const map = L.map(containerRef.current, {
         minZoom: 6,
         maxBounds: franceBounds,
         maxBoundsViscosity: 1.0,
@@ -110,77 +101,38 @@ export default function MapComponent({
       
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(mapRef.current!);
+      }).addTo(map);
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: 40,
         chunkedLoading: true
       });
-      mapRef.current.addLayer(clusterGroupRef.current);
+      map.addLayer(clusterGroupRef.current);
+      mapRef.current = map;
+
+      const handleMoveEnd = () => {
+        if (isUpdatingFromProps.current) return;
+        stableOnMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
+      };
+      
+      map.on('moveend', handleMoveEnd);
+      map.on('zoomend', handleMoveEnd);
+      map.on('click', stableOnMapClick);
+
+      map.whenReady(() => {
+        handleMoveEnd();
+      });
     }
-    
-    const map = mapRef.current;
-    if (!map) return;
-
-    const handleMoveEnd = () => {
-      if (isUpdatingFromProps.current) return;
-      try {
-        const currentCenter = map.getCenter();
-        const currentZoom = map.getZoom();
-        const bounds = map.getBounds();
-        if (currentCenter && bounds) {
-          stableOnMapChange([currentCenter.lat, currentCenter.lng], currentZoom, bounds);
-        }
-      } catch (e) {
-        // Prevent crashes if map dimensions are temporarily invalid
-      }
-    };
-    
-    map.on('moveend', handleMoveEnd);
-    map.on('zoomend', handleMoveEnd);
-    map.on('click', stableOnMapClick);
-    
-    map.whenReady(() => {
-        if (initTimeoutRef.current) clearTimeout(initTimeoutRef.current);
-        initTimeoutRef.current = setTimeout(() => {
-            if (mapRef.current === map && map.getContainer()) {
-                try {
-                    const currentCenter = map.getCenter();
-                    const bounds = map.getBounds();
-                    if (currentCenter && bounds) {
-                      stableOnMapChange([currentCenter.lat, currentCenter.lng], map.getZoom(), bounds);
-                    }
-                } catch (e) {
-                    // Silent ignore
-                }
-            }
-        }, 200);
-    });
-
-    return () => {
-      map.off('moveend', handleMoveEnd);
-      map.off('zoomend', handleMoveEnd);
-      map.off('click', stableOnMapClick);
-      if (initTimeoutRef.current) clearTimeout(initTimeoutRef.current);
-    };
-  }, [stableOnMapChange, stableOnMapClick]);
+  }, [stableOnMapChange, stableOnMapClick, center, zoom]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (map && map.getContainer()) {
-      const mapCenter = map.getCenter();
-      const mapZoom = map.getZoom();
-      const tolerance = 0.00001;
-
-      const centerChanged = Math.abs(mapCenter.lat - center[0]) > tolerance || Math.abs(mapCenter.lng - center[1]) > tolerance;
-      const zoomChanged = mapZoom !== zoom;
-
-      if (centerChanged || zoomChanged) {
+    if (map) {
+      const currentCenter = map.getCenter();
+      if (Math.abs(currentCenter.lat - center[0]) > 0.0001 || Math.abs(currentCenter.lng - center[1]) > 0.0001 || map.getZoom() !== zoom) {
         isUpdatingFromProps.current = true;
         map.setView(center, zoom);
-        setTimeout(() => {
-            isUpdatingFromProps.current = false;
-        }, 100);
+        setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
       }
     }
   }, [center, zoom]);
@@ -228,15 +180,12 @@ export default function MapComponent({
     });
   }, [hoveredDealershipId, selectedDealershipId, dealerships]);
 
-
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
 
     const onLocationFound = (e: L.LocationEvent) => {
-        if (userLocationMarkerRef.current) {
-            userLocationMarkerRef.current.remove();
-        }
+        if (userLocationMarkerRef.current) userLocationMarkerRef.current.remove();
         
         const userMarkerIcon = L.divIcon({
             html: `<div class="relative flex h-5 w-5">
@@ -247,33 +196,24 @@ export default function MapComponent({
             iconSize: [20, 20],
         });
 
-        const userMarker = L.marker(e.latlng, { icon: userMarkerIcon }).addTo(map);
-        
-        userLocationMarkerRef.current = userMarker;
-        map.off('locationfound', onLocationFound);
-        map.off('locationerror', onErr);
+        userLocationMarkerRef.current = L.marker(e.latlng, { icon: userMarkerIcon }).addTo(map);
         onLocateEnd();
     };
 
     const onErr = (e: L.ErrorEvent) => {
-        map.off('locationfound', onLocationFound);
-        map.off('locationerror', onErr);
         onLocationError(e);
         onLocateEnd();
     };
 
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onErr);
-    
+    map.once('locationfound', onLocationFound);
+    map.once('locationerror', onErr);
     map.locate({ setView: true, maxZoom: 14 });
-
   }, [isLocating, onLocateEnd, onLocationError]);
 
   useEffect(() => {
-    const map = mapRef.current;
     return () => {
-        if (map) {
-            map.remove();
+        if (mapRef.current) {
+            mapRef.current.remove();
             mapRef.current = null;
         }
     };
