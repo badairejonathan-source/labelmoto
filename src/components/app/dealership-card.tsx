@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -122,25 +121,25 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               <div className="flex items-start text-center gap-4 text-muted-foreground text-xs mt-3">
                   {dealership.placeUrl && (
                       <a href={dealership.placeUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
-                          <Store className="w-5 h-5"/>
+                          <Store className="w-5 h-5 text-brand"/>
                           <span>Fiche Google</span>
                       </a>
                   )}
                   {dealership.phoneNumber && (
                       <a href={`tel:${dealership.phoneNumber.replace(/\s/g, '')}`} className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
-                          <Phone className="w-5 h-5"/>
+                          <Phone className="w-5 h-5 text-brand"/>
                           <span>Appeler</span>
                       </a>
                   )}
                   {dealership.email && (
                       <a href={`mailto:${dealership.email}`} className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
-                          <Mail className="w-5 h-5"/>
+                          <Mail className="w-5 h-5 text-brand"/>
                           <span>Email</span>
                       </a>
                   )}
                   {dealership.website && (
                       <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 hover:text-brand transition-colors" onClick={(e) => e.stopPropagation()}>
-                          <Globe className="w-5 h-5"/>
+                          <Globe className="w-5 h-5 text-brand"/>
                           <span>Site Web</span>
                       </a>
                   )}

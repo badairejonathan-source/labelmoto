@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -25,7 +24,6 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-// SVG paths for icons representing category inside markers
 const categoryIcons: Record<string, string> = {
     'concession': `
       <g transform="translate(4, 4) scale(1.2)">
@@ -133,8 +131,16 @@ export default function MapComponent({
       mapRef.current = map;
 
       const handleMoveEnd = () => {
-        if (isUpdatingFromProps.current) return;
-        stableOnMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
+        if (!mapRef.current || isUpdatingFromProps.current) return;
+        try {
+          stableOnMapChange(
+            [map.getCenter().lat, map.getCenter().lng], 
+            map.getZoom(), 
+            map.getBounds()
+          );
+        } catch (e) {
+          console.warn("Map not ready for bounds calculation", e);
+        }
       };
       
       map.on('moveend', handleMoveEnd);
@@ -142,10 +148,11 @@ export default function MapComponent({
       map.on('click', stableOnMapClick);
 
       map.whenReady(() => {
-        handleMoveEnd();
+        // Delay slightly to ensure layout is calculated
+        setTimeout(handleMoveEnd, 100);
       });
     }
-  }, [stableOnMapChange, stableOnMapClick, center, zoom]);
+  }, [stableOnMapChange, stableOnMapClick]); // Only run once on mount
 
   useEffect(() => {
     const map = mapRef.current;
@@ -211,8 +218,8 @@ export default function MapComponent({
         
         const userMarkerIcon = L.divIcon({
             html: `<div class="relative flex h-5 w-5">
-                    <div class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></div>
-                    <div class="relative inline-flex rounded-full h-5 w-5 bg-sky-500 border-2 border-white shadow-md"></div>
+                    <div class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></div>
+                    <div class="relative inline-flex rounded-full h-5 w-5 bg-brand border-2 border-white shadow-md"></div>
                    </div>`,
             className: 'bg-transparent border-none',
             iconSize: [20, 20],
@@ -235,6 +242,7 @@ export default function MapComponent({
   useEffect(() => {
     return () => {
         if (mapRef.current) {
+            mapRef.current.off();
             mapRef.current.remove();
             mapRef.current = null;
         }

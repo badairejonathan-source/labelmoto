@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -290,7 +289,7 @@ export default function EntretienPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
               <article>
-                <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight text-foreground mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight text-foreground mb-8 text-center">
                   {article.title}
                 </h1>
                 
