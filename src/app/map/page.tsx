@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -206,7 +205,6 @@ function MapPageComponent() {
                     className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand", dealer.id === hoveredDealershipId && "shadow-lg")} 
                   />
                 </div>
-                {/* Insert dynamic Ad space every 3 fiches */}
                 {(index + 1) % 3 === 0 && article && (
                   <div className="py-2">
                     <AdCard article={article} />
@@ -216,7 +214,6 @@ function MapPageComponent() {
             );
           })}
           
-          {/* Force at least one ad if there are fiches but less than 3 */}
           {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && articlesData[0] && (
             <div className="py-2">
               <AdCard article={articlesData[0]} />

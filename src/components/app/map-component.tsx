@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -132,10 +131,11 @@ export default function MapComponent({
       mapRef.current = map;
 
       const handleMoveEnd = () => {
-        if (!mapRef.current || isUpdatingFromProps.current) return;
+        const currentMap = mapRef.current;
+        if (!currentMap || isUpdatingFromProps.current) return;
+        
         try {
-          const currentMap = mapRef.current;
-          if (currentMap && typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
+          if (typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
             stableOnMapChange(
               [currentMap.getCenter().lat, currentMap.getCenter().lng], 
               currentMap.getZoom(), 
@@ -143,7 +143,7 @@ export default function MapComponent({
             );
           }
         } catch (e) {
-          console.warn("Map interaction safety check triggered", e);
+          console.warn("Leaflet internal safety check", e);
         }
       };
       
@@ -160,11 +160,15 @@ export default function MapComponent({
   useEffect(() => {
     const map = mapRef.current;
     if (map) {
-      const currentCenter = map.getCenter();
-      if (Math.abs(currentCenter.lat - center[0]) > 0.0001 || Math.abs(currentCenter.lng - center[1]) > 0.0001 || map.getZoom() !== zoom) {
-        isUpdatingFromProps.current = true;
-        map.setView(center, zoom);
-        setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
+      try {
+        const currentCenter = map.getCenter();
+        if (Math.abs(currentCenter.lat - center[0]) > 0.0001 || Math.abs(currentCenter.lng - center[1]) > 0.0001 || map.getZoom() !== zoom) {
+          isUpdatingFromProps.current = true;
+          map.setView(center, zoom);
+          setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
+        }
+      } catch (e) {
+        // map might be unmounting
       }
     }
   }, [center, zoom]);
