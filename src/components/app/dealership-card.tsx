@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Store, Mail, Clock } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Store, Mail } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -151,10 +151,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                             <span className="hidden sm:inline">Web</span>
                         </a>
                     )}
-                    <div className="flex md:hidden flex-col items-center gap-0.5 animate-pulse text-brand">
-                        <Clock className="w-4 h-4"/>
-                        <span>Horaires ›</span>
-                    </div>
                 </div>
 
                 {dealership.address && 
