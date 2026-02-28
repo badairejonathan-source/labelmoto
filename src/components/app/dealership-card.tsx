@@ -78,20 +78,20 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       <Card
         onClick={onClick}
         className={cn(
-          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md border-border/50 shadow-sm bg-card h-full",
+          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md border-border/50 shadow-sm bg-card",
           className
         )}
       >
-        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar md:overflow-visible md:snap-none md:flex-row items-stretch h-full">
+        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar items-stretch min-h-[140px] md:min-h-[180px]">
           
-          {/* ZONE PRINCIPALE (Image + Infos) - Toujours en ligne */}
-          <div className="flex-none w-full min-w-full snap-start flex flex-row bg-card items-stretch">
+          {/* SECTION 1: PHOTO + INFOS (Visible par défaut) */}
+          <div className="flex-none w-[calc(100%-2rem)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card">
             
-            {/* Photo à gauche - Pleine hauteur */}
+            {/* Photo - Pleine hauteur garantie */}
             <div
               onClick={handleImageClick}
               className={cn(
-                "relative w-28 sm:w-40 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted/30 self-stretch",
+                "relative w-24 sm:w-32 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted/30 self-stretch",
                 dealership.imgUrl && "cursor-zoom-in"
               )}
             >
@@ -101,7 +101,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 112px, 256px"
+                  sizes="(max-width: 768px) 96px, 256px"
                   priority={false}
                 />
               ) : (
@@ -110,15 +110,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 </div>
               )}
               {rating > 0 && (
-                <div className="absolute top-1 left-1 md:top-2 md:left-2 flex items-center gap-1 text-[9px] md:text-[10px] font-black text-white bg-black/70 backdrop-blur-md rounded-full px-1.5 md:px-2 py-0.5 pointer-events-none shadow-sm">
-                  <Star className="h-2.5 w-2.5 md:h-3 md:w-3 fill-brand text-brand" />
+                <div className="absolute top-1 left-1 md:top-2 md:left-2 flex items-center gap-1 text-[8px] md:text-[10px] font-black text-white bg-black/70 backdrop-blur-md rounded-full px-1.5 md:px-2 py-0.5 pointer-events-none shadow-sm">
+                  <Star className="h-2 w-2 md:h-3 md:w-3 fill-brand text-brand" />
                   <span>{rating.toFixed(1)}</span>
                 </div>
               )}
             </div>
 
-            {/* Information au milieu - Optimisée mobile */}
-            <div className="flex flex-col justify-center flex-1 p-2.5 md:p-6 min-w-0">
+            {/* Informations au milieu */}
+            <div className="flex flex-col justify-center flex-1 p-3 md:p-6 min-w-0">
               <h3 className="font-bold text-sm sm:text-lg md:text-2xl text-foreground leading-tight uppercase truncate">
                 {title}
               </h3>
@@ -173,8 +173,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* ZONE HORAIRE (Sur la droite, swipe mobile) */}
-          <div className="flex-none w-[200px] snap-end p-4 bg-muted/30 flex flex-col justify-center md:snap-none md:w-64 md:bg-transparent md:p-6 self-stretch border-l-2 border-brand md:border-l md:border-border/70">
+          {/* SÉPARATEUR ORANGE AVEC TEXTE VERTICAL */}
+          <div className="flex-none w-8 flex items-center justify-center border-l-2 border-brand bg-brand/5">
+            <span className="text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+              HORAIRES
+            </span>
+          </div>
+
+          {/* SECTION 2: HORAIRES (Accessible au swipe sur mobile) */}
+          <div className="flex-none w-[200px] md:w-64 snap-end p-4 bg-muted/30 flex flex-col justify-center self-stretch">
             <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 md:gap-y-1.5 text-[10px] md:text-xs">
               {weekDays.map(day => {
                 const hours = dealership[day as keyof Dealership];
