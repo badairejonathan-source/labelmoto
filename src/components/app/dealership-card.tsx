@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -80,16 +81,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     <>
       {imageDialog}
       <Card
-        onClick={onClick}
         className={cn(
-          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md border-border/50 shadow-sm bg-card",
+          "w-full overflow-hidden transition-shadow duration-300 ease-in-out border-border/50 shadow-sm bg-card",
           className
         )}
       >
         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar items-stretch min-h-[140px] md:min-h-[180px]">
           
-          {/* SECTION 1: PHOTO + INFOS */}
-          <div className="flex-none w-[calc(100%-40px)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card">
+          {/* SECTION 1: PHOTO + INFOS - Largeur calculée sur mobile pour laisser voir la barre orange */}
+          <div 
+            onClick={onClick}
+            className="flex-none w-[calc(100%-40px)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card cursor-pointer"
+          >
             
             {/* Photo - Pleine hauteur garantie */}
             <div
@@ -168,7 +171,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                           <MapPin className="h-3 w-3 md:h-4 md:w-4 shrink-0 mt-0.5 text-brand"/>
                           <div className="flex flex-col leading-tight">
                               <span className="group-hover:underline line-clamp-1">{street}</span>
-                              <span className="group-hover:underline line-clamp-1">{cityZip}</span>
+                              <span className="group-hover:underline line-clamp-1 font-bold">{cityZip}</span>
                           </div>
                       </a>
                     </TooltipTrigger>
@@ -181,7 +184,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* BARRE ORANGE VERTICALE (HORAIRES) */}
+          {/* BARRE ORANGE VERTICALE (HORAIRES) - Toujours visible sur le bord droit sur mobile */}
           <div className="flex-none w-10 flex flex-col items-center justify-center border-l-2 border-brand bg-brand/5 transition-colors group-hover:bg-brand/10">
             <ChevronRight className="h-4 w-4 text-brand mb-2 animate-pulse" />
             <span className="text-[9px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
@@ -189,7 +192,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </span>
           </div>
 
-          {/* SECTION 2: LES HORAIRES (Affichés au swipe) */}
+          {/* SECTION 2: LES HORAIRES (Affichés au swipe) - Largeur permettant d'atteindre ~15cm au total sur mobile */}
           <div className="flex-none w-[240px] md:w-72 snap-end p-4 bg-muted/30 flex flex-col justify-center self-stretch border-l">
             <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 md:gap-y-1.5 text-[10px] md:text-xs">
               {weekDays.map(day => {
