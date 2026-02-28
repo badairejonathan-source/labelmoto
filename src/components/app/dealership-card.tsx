@@ -84,8 +84,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       >
         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar items-stretch min-h-[140px] md:min-h-[180px]">
           
-          {/* SECTION 1: PHOTO + INFOS (Visible par défaut) */}
-          <div className="flex-none w-[calc(100%-2rem)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card">
+          {/* SECTION 1: PHOTO + INFOS */}
+          {/* On mobile, we take slightly less than full width so the separator is visible (the 1cm gap) */}
+          <div className="flex-none w-[calc(100%-40px)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card">
             
             {/* Photo - Pleine hauteur garantie */}
             <div
@@ -173,15 +174,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* SÉPARATEUR ORANGE AVEC TEXTE VERTICAL */}
-          <div className="flex-none w-8 flex items-center justify-center border-l-2 border-brand bg-brand/5">
+          {/* SÉPARATEUR ORANGE AVEC TEXTE VERTICAL (Gap de 1cm environ) */}
+          <div className="flex-none w-10 flex items-center justify-center border-l-2 border-brand bg-brand/5">
             <span className="text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
               HORAIRES
             </span>
           </div>
 
-          {/* SECTION 2: HORAIRES (Accessible au swipe sur mobile) */}
-          <div className="flex-none w-[200px] md:w-64 snap-end p-4 bg-muted/30 flex flex-col justify-center self-stretch">
+          {/* SECTION 2: HORAIRES */}
+          <div className="flex-none w-[240px] md:w-72 snap-end p-4 bg-muted/30 flex flex-col justify-center self-stretch">
             <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 md:gap-y-1.5 text-[10px] md:text-xs">
               {weekDays.map(day => {
                 const hours = dealership[day as keyof Dealership];
