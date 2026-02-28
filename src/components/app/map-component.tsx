@@ -135,20 +135,15 @@ export default function MapComponent({
         const currentMap = mapRef.current;
         if (!currentMap) return;
         
-        // Leaflet internal state check
-        if (!(currentMap as any)._loaded || isUpdatingFromProps.current) return;
-        
         try {
-          if (typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
+          if ((currentMap as any)._loaded && !isUpdatingFromProps.current) {
             const centerObj = currentMap.getCenter();
             const boundsObj = currentMap.getBounds();
             if (centerObj && boundsObj) {
               stableOnMapChange([centerObj.lat, centerObj.lng], currentMap.getZoom(), boundsObj);
             }
           }
-        } catch (e) {
-          // Leaflet state guard
-        }
+        } catch (e) {}
       };
       
       map.on('moveend', handleMoveEnd);

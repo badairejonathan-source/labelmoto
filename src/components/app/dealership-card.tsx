@@ -78,20 +78,20 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       <Card
         onClick={onClick}
         className={cn(
-          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md border-border/50 shadow-sm bg-card flex flex-col h-full",
+          "w-full overflow-hidden transition-shadow duration-300 ease-in-out cursor-pointer hover:shadow-md border-border/50 shadow-sm bg-card h-full",
           className
         )}
       >
-        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar md:overflow-visible md:snap-none md:flex-row items-stretch flex-1">
+        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar md:overflow-visible md:snap-none md:flex-row items-stretch h-full">
           
-          {/* Section Principale (Photo + Info) */}
+          {/* ZONE PRINCIPALE (Visible par défaut) */}
           <div className="flex-none w-full min-w-full snap-start md:min-w-0 md:flex md:w-auto md:flex-1 bg-card items-stretch">
             
-            {/* Photo Container - Forced to fill height */}
+            {/* Photo à gauche - Pleine hauteur */}
             <div
               onClick={handleImageClick}
               className={cn(
-                "relative w-40 md:w-64 flex-shrink-0 md:rounded-l-lg md:rounded-r-none overflow-hidden md:border-r bg-muted/30 self-stretch min-h-[180px]",
+                "relative w-32 sm:w-40 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted/30 self-stretch min-h-[180px]",
                 dealership.imgUrl && "cursor-zoom-in"
               )}
             >
@@ -101,7 +101,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   alt={`Photo de ${title}`}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 160px, 256px"
+                  sizes="(max-width: 768px) 128px, 256px"
                   priority={false}
                 />
               ) : (
@@ -117,7 +117,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               )}
             </div>
 
-            {/* Informations Container */}
+            {/* Information au milieu */}
             <div className="flex flex-col justify-center flex-1 p-4 md:p-6 min-w-0">
               <h3 className="font-bold text-lg md:text-2xl text-foreground leading-tight uppercase truncate">
                 {title}
@@ -173,8 +173,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* Section Horaires (Slide-in sur mobile, Colonne sur desktop) */}
-          <div className="flex-none w-[220px] snap-end p-4 bg-muted/30 flex flex-col justify-center md:snap-none md:w-64 md:bg-transparent md:p-6 self-stretch border-l-2 border-brand/20 md:border-l md:border-border/70">
+          {/* ZONE HORAIRE (Sur la droite, swipe mobile) */}
+          <div className="flex-none w-[220px] snap-end p-4 bg-muted/30 flex flex-col justify-center md:snap-none md:w-64 md:bg-transparent md:p-6 self-stretch border-l-2 border-brand md:border-l md:border-border/70">
             <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 md:gap-y-1.5 text-xs">
               {weekDays.map(day => {
                 const hours = dealership[day as keyof Dealership];
