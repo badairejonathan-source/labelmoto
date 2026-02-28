@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -86,18 +85,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           className
         )}
       >
-        {/* Conteneur de scroll horizontal pour le swipe mobile */}
+        {/* Conteneur de scroll horizontal pour le swipe mobile (largeur ≈15cm sur smartphone) */}
         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar items-stretch min-h-[140px] md:min-h-[180px]">
           
-          {/* SECTION 1: PHOTO + INFOS - Toujours à gauche */}
+          {/* SECTION 1: PHOTO + INFOS - Largeur viewport - 40px pour laisser voir la barre orange */}
           <div 
-            className="flex-none w-[calc(100%-40px)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card"
+            className="flex-none w-[calc(100vw-40px)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card"
           >
-            {/* Photo - Pleine hauteur */}
+            {/* Photo - Pleine hauteur garantie */}
             <div
               onClick={handleImageClick}
               className={cn(
-                "relative w-24 sm:w-32 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted/30 self-stretch",
+                "relative w-24 sm:w-32 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted/30 self-stretch h-full",
                 dealership.imgUrl && "cursor-zoom-in"
               )}
             >
@@ -120,7 +119,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* Informations - Centre */}
             <div 
               onClick={onClick}
-              className="flex flex-col justify-center flex-1 p-2 md:p-6 min-w-0 cursor-pointer"
+              className="flex flex-col justify-center flex-1 p-2 md:p-6 min-w-0 cursor-pointer h-full"
             >
               <h3 className="font-bold text-sm sm:text-base md:text-2xl text-foreground leading-tight uppercase truncate">
                 {title}
@@ -186,7 +185,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* BARRE ORANGE VERTICALE (HORAIRES) - Visible sur le bord droit de l'écran mobile */}
+          {/* BARRE ORANGE VERTICALE (HORAIRES) - Toujours visible sur le bord droit de l'écran mobile */}
           <div className="flex-none w-10 flex flex-col items-center justify-center border-l-2 border-brand bg-brand/5 transition-colors">
             <ChevronRight className="h-4 w-4 text-brand mb-2 animate-pulse" />
             <span className="text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
@@ -194,7 +193,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </span>
           </div>
 
-          {/* SECTION 3: LES HORAIRES (Détails visibles au swipe) */}
+          {/* SECTION 3: LES HORAIRES - Visibles au swipe (≈260px) */}
           <div className="flex-none w-[260px] md:w-72 snap-end p-4 bg-muted/30 flex flex-col justify-center self-stretch border-l">
             <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-[10px] md:text-xs">
               {weekDays.map(day => {
