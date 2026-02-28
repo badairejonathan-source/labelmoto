@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -132,10 +133,13 @@ export default function MapComponent({
 
       const handleMoveEnd = () => {
         const currentMap = mapRef.current;
-        if (!currentMap || isUpdatingFromProps.current) return;
+        if (!currentMap) return;
+        
+        // Leaflet internal state check
+        if (!(currentMap as any)._loaded || isUpdatingFromProps.current) return;
         
         try {
-          if (currentMap && typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
+          if (typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
             const centerObj = currentMap.getCenter();
             const boundsObj = currentMap.getBounds();
             if (centerObj && boundsObj) {
@@ -159,7 +163,7 @@ export default function MapComponent({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (map) {
+    if (map && (map as any)._loaded) {
       try {
         const currentCenter = map.getCenter();
         if (Math.abs(currentCenter.lat - center[0]) > 0.0001 || Math.abs(currentCenter.lng - center[1]) > 0.0001 || map.getZoom() !== zoom) {
