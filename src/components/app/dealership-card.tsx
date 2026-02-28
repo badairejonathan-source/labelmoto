@@ -85,14 +85,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar items-stretch min-h-[140px] md:min-h-[180px]">
           
           {/* SECTION 1: PHOTO + INFOS */}
-          {/* On mobile, we take slightly less than full width so the separator is visible (the 1cm gap) */}
           <div className="flex-none w-[calc(100%-40px)] md:w-auto md:flex-1 snap-start flex flex-row items-stretch bg-card">
             
             {/* Photo - Pleine hauteur garantie */}
             <div
               onClick={handleImageClick}
               className={cn(
-                "relative w-24 sm:w-32 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted/30 self-stretch",
+                "relative w-24 sm:w-32 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted/30 self-stretch h-full",
                 dealership.imgUrl && "cursor-zoom-in"
               )}
             >
