@@ -135,7 +135,6 @@ export default function MapComponent({
         if (!currentMap || isUpdatingFromProps.current) return;
         
         try {
-          // Robust check for map state to prevent _leaflet_pos error
           if (currentMap && typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
             const centerObj = currentMap.getCenter();
             const boundsObj = currentMap.getBounds();
@@ -144,7 +143,7 @@ export default function MapComponent({
             }
           }
         } catch (e) {
-          // Leaflet internal state transition guard
+          // Leaflet state guard
         }
       };
       
@@ -168,9 +167,7 @@ export default function MapComponent({
           map.setView(center, zoom);
           setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
         }
-      } catch (e) {
-        // Safe fail for map sync
-      }
+      } catch (e) {}
     }
   }, [center, zoom]);
 
