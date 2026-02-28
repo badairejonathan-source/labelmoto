@@ -133,7 +133,6 @@ export default function MapComponent({
 
       const handleMoveEnd = () => {
         const currentMap = mapRef.current;
-        // CRITICAL SECURITY CHECK: Prevent access to undefined _leaflet_pos
         if (!currentMap || isUpdatingFromProps.current) return;
         
         try {
@@ -145,7 +144,7 @@ export default function MapComponent({
             }
           }
         } catch (e) {
-          console.warn("Leaflet state transition guard", e);
+          // Leaflet state transition guard
         }
       };
       
