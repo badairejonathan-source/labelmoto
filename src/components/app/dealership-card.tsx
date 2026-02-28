@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -56,6 +55,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       setIsImageOpen(true);
     }
   };
+
+  const addressParts = dealership.address ? dealership.address.split(', ') : [];
+  const street = addressParts[0] || '';
+  const cityZip = addressParts.slice(1).join(', ') || '';
 
   const imageDialog = dealership.imgUrl ? (
     <Dialog open={isImageOpen} onOpenChange={setIsImageOpen}>
@@ -161,7 +164,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                     <TooltipTrigger asChild>
                       <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1.5 text-[10px] md:text-sm text-left text-muted-foreground hover:text-brand group mt-2 md:mt-5 font-medium" onClick={(e) => e.stopPropagation()}>
                           <MapPin className="h-3 w-3 md:h-4 md:w-4 shrink-0 mt-0.5 text-brand"/>
-                          <span className="group-hover:underline line-clamp-1">{dealership.address}</span>
+                          <div className="flex flex-col leading-tight">
+                              <span className="group-hover:underline line-clamp-1">{street}</span>
+                              <span className="group-hover:underline line-clamp-1">{cityZip}</span>
+                          </div>
                       </a>
                     </TooltipTrigger>
                     <TooltipContent>
