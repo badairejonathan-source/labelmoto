@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -190,6 +189,7 @@ function MapPageComponent() {
       ) : (
         <>
           {dealershipsToDisplay.map((dealer, index) => {
+            // dynamic ad cycle
             const adIndex = Math.floor((index + 1) / 3) - 1;
             const article = articlesData[adIndex % articlesData.length];
 
@@ -215,7 +215,7 @@ function MapPageComponent() {
             );
           })}
           
-          {/* Ensure at least one ad is shown if results exist */}
+          {/* Always show at least one ad if we have results but less than 3 */}
           {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && articlesData[0] && (
             <div className="py-2">
               <AdCard article={articlesData[0]} />
@@ -235,7 +235,7 @@ function MapPageComponent() {
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Recherche par nom, ville, departement" />
       
       <div className="flex-1 flex overflow-hidden relative">
-        {/* DESKTOP LAYOUT (3/4 List, 1/4 Map) */}
+        {/* DESKTOP: 3/4 List, 1/4 Map */}
         {!isMobile && (
           <>
             <aside className="w-3/4 flex flex-col bg-background border-r z-10 shadow-md h-full">
@@ -270,7 +270,7 @@ function MapPageComponent() {
           </>
         )}
 
-        {/* MOBILE LAYOUT (Google Maps Style with bottom sheet) */}
+        {/* MOBILE: Bottom sheet style */}
         {isMobile && (
           <>
             <main className="absolute inset-0 z-0 h-full w-full">

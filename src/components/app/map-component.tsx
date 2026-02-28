@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -136,7 +135,8 @@ export default function MapComponent({
         if (!currentMap || isUpdatingFromProps.current) return;
         
         try {
-          if (typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
+          // Robust check for map state to prevent _leaflet_pos error
+          if (currentMap && typeof currentMap.getCenter === 'function' && typeof currentMap.getBounds === 'function') {
             const centerObj = currentMap.getCenter();
             const boundsObj = currentMap.getBounds();
             if (centerObj && boundsObj) {
@@ -144,7 +144,7 @@ export default function MapComponent({
             }
           }
         } catch (e) {
-          // Leaflet state transition guard
+          // Leaflet internal state transition guard
         }
       };
       
@@ -169,7 +169,7 @@ export default function MapComponent({
           setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
         }
       } catch (e) {
-        // Safe fail
+        // Safe fail for map sync
       }
     }
   }, [center, zoom]);
