@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -168,17 +167,17 @@ const LandingHeader = () => {
                             </Button>
                         </form>
 
-                        <nav className="hidden md:flex items-center justify-center gap-8 md:gap-12">
-                            <Link href="/map" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
-                                <Home className="h-6 w-6" />
+                        <nav className="flex items-center justify-center gap-4 sm:gap-8 md:gap-12 py-2">
+                            <Link href="/map" className="flex items-center gap-2 sm:gap-3 text-sm sm:text-xl text-muted-foreground font-medium px-3 sm:px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
+                                <Home className="h-5 w-5 sm:h-6 w-6" />
                                 <span>Tout</span>
                             </Link>
-                            <Link href="/map?filter=shopping" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
-                                <Bike className="h-6 w-6" />
+                            <Link href="/map?filter=shopping" className="flex items-center gap-2 sm:gap-3 text-sm sm:text-xl text-muted-foreground font-medium px-3 sm:px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
+                                <Bike className="h-5 w-5 sm:h-6 w-6" />
                                 <span>Concession</span>
                             </Link>
-                            <Link href="/map?filter=service" className="flex items-center gap-3 text-xl text-muted-foreground font-medium px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
-                                <Wrench className="h-6 w-6" />
+                            <Link href="/map?filter=service" className="flex items-center gap-2 sm:gap-3 text-sm sm:text-xl text-muted-foreground font-medium px-3 sm:px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">
+                                <Wrench className="h-5 w-5 sm:h-6 w-6" />
                                 <span>Atelier</span>
                             </Link>
                         </nav>
