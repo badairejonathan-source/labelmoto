@@ -46,7 +46,7 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
             <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-black text-brand mb-2">
               <span>Conseil de la communauté</span>
             </div>
-            <h3 className="font-bold text-xl md:text-2xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors line-clamp-2">
+            <h3 className="font-bold text-xl md:text-2xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors">
               {article.title}
             </h3>
             <p className="text-sm text-muted-foreground mt-3 line-clamp-2 leading-relaxed max-w-[90%]">
@@ -58,17 +58,14 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
           <div className="hidden md:block w-px bg-border/40 my-8 self-stretch" />
 
           {/* Zone Action - Environ 4cm */}
-          <div className="hidden md:flex flex-shrink-0 w-[4cm] flex-col justify-center items-center p-6 gap-4">
-             <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand mb-2 group-hover:scale-110 transition-transform">
-                <FileText className="w-6 h-6" />
-             </div>
+          <div className="hidden md:flex flex-shrink-0 w-[4cm] flex-col justify-center items-center p-6">
              <div className="inline-flex items-center justify-center rounded-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-[10px] uppercase tracking-widest px-4 h-10 shadow-sm transition-all group-hover:shadow-brand/20 group-hover:-translate-y-0.5 whitespace-nowrap">
                Lire la suite
                <ArrowRight className="ml-2 h-3.5 w-3.5" />
              </div>
           </div>
           
-          {/* Version mobile de la zone action (si besoin de forcer un aspect condensé) */}
+          {/* Version mobile de la zone action */}
           <div className="md:hidden flex items-center pr-4">
              <ArrowRight className="w-6 h-6 text-brand" />
           </div>
