@@ -22,11 +22,11 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
   if (!article) return null;
 
   return (
-    <Link href={`/info/${article.id}`} className="group block h-full">
-      <Card className="w-full overflow-hidden transition-all duration-300 ease-in-out border-2 border-brand hover:shadow-lg bg-muted/50 shadow-sm min-h-[180px] flex">
-        <div className="md:flex w-full h-full items-stretch">
+    <Link href={`/info/${article.id}`} className="group block">
+      <Card className="w-[18cm] ml-auto overflow-hidden transition-all duration-300 ease-in-out border-2 border-brand hover:shadow-lg bg-muted/50 shadow-sm min-h-[180px] flex">
+        <div className="flex w-full h-full items-stretch">
           {/* Section Image */}
-          <div className="relative w-40 md:w-64 flex-shrink-0 md:rounded-l-lg md:rounded-r-none rounded-t-lg overflow-hidden md:border-r bg-muted self-stretch">
+          <div className="relative w-40 md:w-64 flex-shrink-0 overflow-hidden border-r bg-muted self-stretch">
             <Image
               src={article.imageUrl}
               alt={article.title}
