@@ -81,7 +81,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       {imageDialog}
       <Card
         className={cn(
-          "w-[18cm] overflow-hidden transition-shadow duration-300 ease-in-out border-border/50 shadow-sm bg-card mx-auto",
+          "w-[18cm] overflow-hidden transition-shadow duration-300 ease-in-out border-border/50 shadow-sm bg-card ml-auto",
           className
         )}
       >
@@ -161,7 +161,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1.5 text-sm md:text-base text-left text-muted-foreground hover:text-brand group mt-3 font-medium" onClick={(e) => e.stopPropagation()}>
+                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1.5 text-base md:text-lg text-left text-muted-foreground hover:text-brand group mt-3 font-medium" onClick={(e) => e.stopPropagation()}>
                           <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-brand"/>
                           <div className="flex flex-col leading-tight">
                               <span className="group-hover:underline line-clamp-1">{street}</span>
@@ -187,7 +187,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           </div>
 
           {/* SECTION 3: LES HORAIRES */}
-          <div className="flex-none w-[calc(18cm-10cm-40px)] md:w-[7cm] snap-end p-4 bg-muted/30 flex flex-col justify-center self-stretch border-l">
+          <div className="flex-none w-[calc(18cm-10cm-40px)] md:w-[calc(18cm-10cm-40px)] snap-end p-4 bg-muted/30 flex flex-col justify-center self-stretch border-l">
             <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-[10px] md:text-xs">
               {weekDays.map(day => {
                 const hours = dealership[day as keyof Dealership];

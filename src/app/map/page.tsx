@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -242,7 +241,7 @@ function MapPageComponent() {
                 <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none p-0 sticky-none" />
               </div>
               <ScrollArea className="flex-1">
-                <div className="p-4">{listContent}</div>
+                <div className="py-4 pl-4 pr-3 flex flex-col items-end">{listContent}</div>
               </ScrollArea>
             </aside>
             <main className="w-1/4 relative bg-muted/10">
