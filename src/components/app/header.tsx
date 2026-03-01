@@ -181,38 +181,38 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
               </Button>
             </div>
 
-            <nav className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 mt-1 sm:mt-0">
+            <nav className="flex items-center justify-center gap-4 sm:gap-6 mt-2">
                 <Button
                     variant="ghost"
                     onClick={() => onFilterChange(null)}
                     className={cn(
-                      "relative px-2 sm:px-3 py-0.5 h-auto flex items-center gap-1.5 sm:gap-2 text-sm sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
+                      "relative px-3 py-1 h-auto flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
                       activeFilter === null ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
-                    <Home className="h-4 w-4 sm:h-5 w-5" />
+                    <Home className="h-5 w-5 sm:h-6 w-6" />
                     <span>Tout</span>
                   </Button>
                 <Button
                     variant="ghost"
                     onClick={() => onFilterChange('shopping')}
                     className={cn(
-                      "relative px-2 sm:px-3 py-0.5 h-auto flex items-center gap-1.5 sm:gap-2 text-sm sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
+                      "relative px-3 py-1 h-auto flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
                       activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
-                    <Bike className="h-4 w-4 sm:h-5 w-5" />
+                    <Bike className="h-5 w-5 sm:h-6 w-6" />
                     <span>Concession</span>
                   </Button>
                   <Button
                     variant="ghost"
                     onClick={() => onFilterChange('service')}
                     className={cn(
-                      "relative px-2 sm:px-3 py-0.5 h-auto flex items-center gap-1.5 sm:gap-2 text-sm sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
+                      "relative px-3 py-1 h-auto flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
                       activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
-                    <Wrench className="h-4 w-4 sm:h-5 w-5" />
+                    <Wrench className="h-5 w-5 sm:h-6 w-6" />
                     <span>Atelier</span>
                   </Button>
             </nav>
