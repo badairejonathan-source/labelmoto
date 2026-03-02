@@ -23,7 +23,7 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
 
   return (
     <Link href={`/info/${article.id}`} className="group block w-full">
-      <Card className="w-full ml-auto overflow-hidden transition-all duration-300 ease-in-out border-2 border-brand hover:shadow-lg bg-muted/50 shadow-sm min-h-[160px] md:min-h-[200px] flex">
+      <Card className="w-full ml-auto overflow-hidden transition-all duration-300 ease-in-out border-2 border-brand hover:shadow-lg bg-muted/50 shadow-sm min-h-[140px] md:min-h-[180px] flex">
         <div className="flex w-full h-full items-stretch">
           {/* Section Image */}
           <div className="relative w-28 sm:w-36 md:w-48 flex-shrink-0 overflow-hidden border-r bg-muted self-stretch">
@@ -46,7 +46,7 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
             <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-black text-brand mb-1 md:mb-2">
               <span>Conseil de la communauté</span>
             </div>
-            <h3 className="font-black text-base md:text-2xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors">
+            <h3 className="font-black text-sm md:text-xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors">
               {article.title}
             </h3>
             <p className="text-xs md:text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed max-w-[95%]">

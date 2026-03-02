@@ -88,7 +88,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       {imageDialog}
       <Card
         className={cn(
-          "relative w-full overflow-hidden transition-all duration-300 ease-in-out border-border/50 shadow-sm bg-card ml-auto",
+          "relative w-full overflow-hidden transition-all duration-300 ease-in-out border-border/50 bg-card ml-auto shadow-lg",
           className
         )}
       >
@@ -166,11 +166,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1.5 text-base md:text-xl text-left text-muted-foreground hover:text-brand group mt-2 md:mt-4 font-medium" onClick={(e) => e.stopPropagation()}>
+                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1.5 text-left text-muted-foreground hover:text-brand group mt-2 md:mt-4 font-medium" onClick={(e) => e.stopPropagation()}>
                           <MapPin className="h-4 w-4 md:h-5 w-5 shrink-0 mt-0.5 md:mt-1 text-brand"/>
                           <div className="flex flex-col leading-tight">
-                              <span className="group-hover:underline line-clamp-1 text-sm md:text-lg">{street}</span>
-                              <span className="group-hover:underline line-clamp-1 font-black text-foreground text-base md:text-xl">{cityZip}</span>
+                              <span className="group-hover:underline line-clamp-1 text-xs md:text-base">{street}</span>
+                              <span className="group-hover:underline line-clamp-1 font-black text-foreground text-sm md:text-lg">{cityZip}</span>
                           </div>
                       </a>
                     </TooltipTrigger>
@@ -183,39 +183,44 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* BARRE ORANGE VERTICALE */}
-          <div 
-            onClick={handleToggleHours}
-            className="flex-none w-10 md:w-12 flex flex-col items-center justify-center border-l-2 border-brand bg-brand/5 cursor-pointer hover:bg-brand/10 transition-colors z-20"
-          >
-            <ChevronRight className={cn("h-4 w-4 md:h-5 w-5 text-brand mb-1 md:mb-2 transition-transform duration-300", showHours && "rotate-180")} />
-            <span className="text-[9px] md:text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-              HORAIRES
-            </span>
-          </div>
-
-          {/* SECTION 2: LES HORAIRES (Superposés) */}
+          {/* VOLET COULISSANT DES HORAIRES */}
           <div className={cn(
-            "absolute inset-0 bg-background/95 backdrop-blur-sm z-10 p-4 md:p-6 flex flex-col justify-center transition-transform duration-500 ease-in-out border-l shadow-2xl",
-            showHours ? "translate-x-0" : "translate-x-full"
+            "absolute inset-y-0 right-0 z-30 flex transition-transform duration-500 ease-in-out w-full",
+            showHours ? "translate-x-0" : "translate-x-[calc(100%-40px)] md:translate-x-[calc(100%-48px)]"
           )}>
-            <div className="flex items-center gap-3 mb-4 md:mb-6">
-                <Button variant="ghost" size="sm" onClick={() => setShowHours(false)} className="h-8 px-2 text-brand hover:text-brand hover:bg-brand/10 text-xs md:text-sm">
-                    <ArrowLeft className="h-3.5 w-3.5 mr-1.5" /> Retour
-                </Button>
-                <h4 className="font-black uppercase tracking-widest text-[10px] md:text-sm">Heures d'ouverture</h4>
+            {/* BARRE ORANGE VERTICALE (à gauche des horaires quand visibles) */}
+            <div 
+              onClick={handleToggleHours}
+              className="flex-none w-10 md:w-12 flex flex-col items-center justify-center border-l-2 border-brand bg-brand/5 cursor-pointer hover:bg-brand/10 transition-colors"
+            >
+              <ChevronRight className={cn("h-4 w-4 md:h-5 w-5 text-brand mb-1 md:mb-2 transition-transform duration-300", showHours && "rotate-180")} />
+              <span className="text-[9px] md:text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                HORAIRES
+              </span>
             </div>
-            <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-1 md:gap-y-2 text-[11px] md:text-base max-w-md mx-auto w-full">
-              {weekDays.map(day => {
-                const hours = dealership[day as keyof Dealership];
-                const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
-                return (
-                    <React.Fragment key={day}>
-                      <span className={cn("capitalize font-bold text-muted-foreground", isClosed && "text-muted-foreground/40")}>{day}</span>
-                      <span className={cn("font-mono text-right whitespace-nowrap font-black text-brand", isClosed && "font-sans text-muted-foreground/40")}>{isClosed ? 'FERMÉ' : hours}</span>
-                    </React.Fragment>
-                )
-              })}
+
+            {/* SECTION DES HORAIRES */}
+            <div className={cn(
+              "flex-1 bg-background/95 backdrop-blur-sm p-4 md:p-6 flex flex-col justify-center border-l shadow-2xl overflow-hidden"
+            )}>
+              <div className="flex items-center gap-3 mb-4 md:mb-6">
+                  <Button variant="ghost" size="sm" onClick={() => setShowHours(false)} className="h-8 px-2 text-brand hover:text-brand hover:bg-brand/10 text-xs md:text-sm">
+                      <ArrowLeft className="h-3.5 w-3.5 mr-1.5" /> Retour
+                  </Button>
+                  <h4 className="font-black uppercase tracking-widest text-[10px] md:text-sm">Heures d'ouverture</h4>
+              </div>
+              <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-1 md:gap-y-2 text-[11px] md:text-sm max-w-md mx-auto w-full">
+                {weekDays.map(day => {
+                  const hours = dealership[day as keyof Dealership];
+                  const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
+                  return (
+                      <React.Fragment key={day}>
+                        <span className={cn("capitalize font-bold text-muted-foreground", isClosed && "text-muted-foreground/40")}>{day}</span>
+                        <span className={cn("font-mono text-right whitespace-nowrap font-black text-brand", isClosed && "font-sans text-muted-foreground/40")}>{isClosed ? 'FERMÉ' : hours}</span>
+                      </React.Fragment>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
