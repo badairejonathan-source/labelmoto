@@ -48,9 +48,32 @@ const RatingFilter = ({
         <div className={cn("p-2 bg-background sticky top-0 z-10", className)}>
             <div className="flex items-center justify-center space-x-2">
                 <span className="text-xs font-bold text-muted-foreground mr-2 hidden md:inline uppercase tracking-wider">Note :</span>
-                <Button size="sm" variant={value === 0 ? 'secondary' : 'ghost'} onClick={() => onChange(0)} className="rounded-full px-4 text-xs font-bold h-8">TOUS</Button>
+                <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => onChange(0)} 
+                    className={cn(
+                        "rounded-full px-4 text-xs font-bold h-8 transition-all duration-200",
+                        value === 0 
+                            ? "bg-brand text-brand-foreground shadow-[0_0_12px_rgba(250,126,20,0.4)] ring-1 ring-brand" 
+                            : "hover:bg-muted"
+                    )}
+                >
+                    TOUS
+                </Button>
                 {ratings.map((rating) => (
-                    <Button key={rating} size="sm" variant={value === rating ? 'secondary' : 'ghost'} onClick={() => handleRatingClick(rating)} className="flex gap-1 rounded-full px-3 text-xs font-bold h-8">
+                    <Button 
+                        key={rating} 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => handleRatingClick(rating)} 
+                        className={cn(
+                            "flex gap-1 rounded-full px-3 text-xs font-bold h-8 transition-all duration-200",
+                            value === rating 
+                                ? "bg-brand text-brand-foreground shadow-[0_0_12px_rgba(250,126,20,0.5)] ring-1 ring-brand ring-offset-1" 
+                                : "hover:bg-muted"
+                        )}
+                    >
                         <span>{rating}</span>
                         <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
                         <span className="hidden sm:inline-block">+</span>
