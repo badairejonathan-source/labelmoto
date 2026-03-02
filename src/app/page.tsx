@@ -218,7 +218,7 @@ export default function LandingPage() {
                             </p>
                             <div className="flex items-center justify-center md:justify-end md:translate-x-40">
                                 <Link href="/map">
-                                    <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg relative z-[20]">
+                                    <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg relative z-[50]">
                                         Explorer la carte
                                     </Button>
                                 </Link>
