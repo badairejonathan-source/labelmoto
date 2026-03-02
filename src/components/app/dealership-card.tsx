@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Mail, ChevronRight, ArrowLeft } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Mail, ChevronLeft } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -193,7 +193,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               onClick={handleToggleHours}
               className="flex-none w-10 md:w-12 flex flex-col items-center justify-center border-l-2 border-brand bg-brand/5 cursor-pointer hover:bg-brand/10 transition-colors"
             >
-              <ChevronRight className={cn("h-4 w-4 md:h-5 w-5 text-brand mb-1 md:mb-2 transition-transform duration-300", showHours && "rotate-180")} />
+              <ChevronLeft className={cn("h-4 w-4 md:h-5 w-5 text-brand mb-1 md:mb-2 transition-transform duration-300", showHours && "rotate-180")} />
               <span className="text-[9px] md:text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 HORAIRES
               </span>
@@ -203,13 +203,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             <div className={cn(
               "flex-1 bg-background/95 backdrop-blur-sm p-4 md:p-6 flex flex-col justify-center border-l shadow-2xl overflow-hidden"
             )}>
-              <div className="flex items-center gap-3 mb-4 md:mb-6">
-                  <Button variant="ghost" size="sm" onClick={() => setShowHours(false)} className="h-8 px-2 text-brand hover:text-brand hover:bg-brand/10 text-xs md:text-sm">
-                      <ArrowLeft className="h-3.5 w-3.5 mr-1.5" /> Retour
-                  </Button>
-                  <h4 className="font-black uppercase tracking-widest text-[10px] md:text-sm">Heures d'ouverture</h4>
-              </div>
-              <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-1 md:gap-y-2 text-[11px] md:text-sm max-w-md mx-auto w-full">
+              <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-1 md:gap-y-2 text-[10px] sm:text-[11px] md:text-sm max-w-md mx-auto w-full">
                 {weekDays.map(day => {
                   const hours = dealership[day as keyof Dealership];
                   const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
