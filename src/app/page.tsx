@@ -211,7 +211,7 @@ export default function LandingPage() {
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-white p-8 md:p-16">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
                             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                                De l’A2 au vieux briscard : trouvez votre pro en un clin d'œil.
+                                Du A2 au motard expérimenté : trouver les professionnels de votre région en quelques clics
                             </h1>
                             <p className="text-lg md:text-xl max-w-3xl mx-auto md:mx-0 mb-8 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit pour vous laisser plus de temps sur la route.
@@ -226,7 +226,7 @@ export default function LandingPage() {
                         </div>
 
                          <div className="w-full md:w-2/5 flex justify-center -mt-24 md:mt-0 relative z-10">
-                             <Link href="/map" className="block md:absolute md:-bottom-20 md:right-10 transform md:-rotate-6 hover:scale-105 transition-transform duration-300">
+                             <Link href="/map" className="block md:absolute md:-bottom-80 md:right-10 transform md:-rotate-6 hover:scale-105 transition-transform duration-300">
                                 <Image 
                                     src={hero.mapPreview.src}
                                     alt="Aperçu de la carte"
