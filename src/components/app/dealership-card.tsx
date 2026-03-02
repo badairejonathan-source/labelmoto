@@ -191,12 +191,25 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* BARRE ORANGE VERTICALE (à gauche des horaires quand visibles) */}
             <div 
               onClick={handleToggleHours}
-              className="flex-none w-10 md:w-12 flex flex-col items-center justify-center border-l-2 border-brand bg-brand/5 cursor-pointer hover:bg-brand/10 transition-colors"
+              className={cn(
+                "flex-none w-10 md:w-12 flex flex-col items-center justify-center border-l-2 border-brand cursor-pointer transition-all duration-300",
+                showHours ? "bg-white/30 backdrop-blur-md" : "bg-brand/5 hover:bg-brand/10"
+              )}
             >
-              <ChevronLeft className={cn("h-4 w-4 md:h-5 w-5 text-brand mb-1 md:mb-2 transition-transform duration-300", showHours && "rotate-180")} />
-              <span className="text-[9px] md:text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-                HORAIRES
-              </span>
+              <div className={cn(
+                "flex flex-col items-center justify-center p-1 rounded-full transition-all duration-300",
+                showHours && "bg-white/90 shadow-lg ring-1 ring-white/20"
+              )}>
+                <ChevronLeft className={cn("h-4 w-4 md:h-5 w-5 text-brand transition-transform duration-300", showHours && "rotate-180")} />
+              </div>
+              <div className={cn(
+                "mt-4 py-3 px-1.5 rounded-xl flex items-center justify-center transition-all duration-300",
+                showHours && "bg-white/90 shadow-lg ring-1 ring-white/20"
+              )}>
+                <span className="text-[9px] md:text-[10px] font-black text-brand tracking-[0.2em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                  HORAIRES
+                </span>
+              </div>
             </div>
 
             {/* SECTION DES HORAIRES */}
