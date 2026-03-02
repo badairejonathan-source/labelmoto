@@ -9,7 +9,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown } from 'lucide-react';
+import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, X } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -295,12 +295,22 @@ function MapPageComponent() {
               "fixed left-0 right-0 bg-background rounded-t-3xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-50 transition-all duration-300 ease-in-out border-t",
               drawerHeight === 'collapsed' ? 'bottom-0 h-[80px]' : drawerHeight === 'half' ? 'bottom-0 h-[45vh]' : 'bottom-0 h-[85vh]'
             )}>
-              <div className="w-full flex flex-col items-center pt-2 pb-4 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onClick={() => setDrawerHeight(drawerHeight === 'expanded' ? 'half' : drawerHeight === 'half' ? 'expanded' : 'half')}>
-                <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
-                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
-                  {dealershipsToDisplay.length} RÉSULTATS VISIBLES
-                  {drawerHeight === 'expanded' ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
-                </div>
+              <div className="relative w-full flex flex-col items-center pt-2 pb-2 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+                <div 
+                  className="w-12 h-1.5 bg-muted rounded-full mb-1" 
+                  onClick={() => setDrawerHeight(drawerHeight === 'expanded' ? 'half' : 'expanded')}
+                />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-4 top-1 h-8 w-8 rounded-full" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDrawerHeight('collapsed');
+                  }}
+                >
+                  <X className="h-5 w-5 text-muted-foreground" />
+                </Button>
               </div>
               <div className="px-4 h-full flex flex-col overflow-hidden">
                 <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0" />
