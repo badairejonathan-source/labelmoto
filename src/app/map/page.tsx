@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -198,6 +199,7 @@ function MapPageComponent() {
                   ref={node => cardRefs.current.set(dealer.id, node)} 
                   onMouseEnter={() => setHoveredDealershipId(dealer.id)} 
                   onMouseLeave={() => setHoveredDealershipId(null)}
+                  className="w-full"
                 >
                   <DealershipCard 
                     dealership={dealer} 
@@ -206,7 +208,7 @@ function MapPageComponent() {
                   />
                 </div>
                 {(index + 1) % 3 === 0 && article && (
-                  <div className="py-2">
+                  <div className="py-2 w-full">
                     <AdCard article={article} />
                   </div>
                 )}
@@ -215,7 +217,7 @@ function MapPageComponent() {
           })}
           
           {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && articlesData[0] && (
-            <div className="py-2">
+            <div className="py-2 w-full">
               <AdCard article={articlesData[0]} />
             </div>
           )}
@@ -240,9 +242,9 @@ function MapPageComponent() {
                 <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{dealershipsToDisplay.length} RÉSULTATS VISIBLES</span>
                 <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none p-0 sticky-none" />
               </div>
-              <ScrollArea className="flex-1">
-                <div className="py-4 pl-4 pr-3 flex flex-col items-end">{listContent}</div>
-              </ScrollArea>
+              <div className="flex-1 overflow-y-auto pr-3">
+                <div className="py-4 pl-4 space-y-4">{listContent}</div>
+              </div>
             </aside>
             <main className="w-1/4 relative bg-muted/10">
               <MapComponent 
@@ -302,7 +304,7 @@ function MapPageComponent() {
               </div>
               <div className="px-4 h-full flex flex-col overflow-hidden">
                 <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0" />
-                <ScrollArea className="flex-1">{listContent}</ScrollArea>
+                <div className="flex-1 overflow-y-auto">{listContent}</div>
               </div>
             </div>
           </>
