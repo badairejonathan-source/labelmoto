@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -298,31 +299,31 @@ export default function EntretienPage() {
                 </div>
               </article>
             </div>
-            <aside className="hidden lg:block relative">
-                <div className="sticky top-28 space-y-6">
-                    <Card className="overflow-hidden shadow-lg border-2 border-primary/20">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-primary">
+            <aside className="relative mt-12 lg:mt-0">
+                <div className="lg:sticky lg:top-28 space-y-6">
+                    <Card className="overflow-hidden shadow-lg border-2 border-primary/20 max-w-md mx-auto lg:max-w-none">
+                        <CardHeader className="p-4 lg:p-6">
+                            <CardTitle className="flex items-center gap-2 text-primary text-lg lg:text-xl">
                                 <Map className="h-5 w-5"/>
                                 Trouver une concession
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
                             <Link href="/map" className="block group rounded-lg overflow-hidden border">
                               <Image 
                                   src="/images/apercucartezoom.png"
                                   alt="Aperçu de la carte"
                                   width={400}
                                   height={300}
-                                  className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                                  className="object-cover w-full h-48 lg:h-auto transition-transform duration-300 group-hover:scale-105"
                               />
                             </Link>
-                            <p className="text-muted-foreground text-sm mt-4">
+                            <p className="text-muted-foreground text-sm mt-4 hidden lg:block">
                                 Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
                             </p>
                         </CardContent>
-                        <CardFooter>
-                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-base py-5 rounded-full shadow-lg">
+                        <CardFooter className="p-4 pt-0 lg:p-6 lg:pt-0">
+                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-sm lg:text-base py-4 lg:py-5 rounded-full shadow-lg">
                                 <Link href="/map">Voir la carte interactive</Link>
                             </Button>
                         </CardFooter>
