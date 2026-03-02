@@ -306,10 +306,14 @@ function MapPageComponent() {
                   className="absolute right-4 top-1 h-8 w-8 rounded-full" 
                   onClick={(e) => {
                     e.stopPropagation();
-                    setDrawerHeight('collapsed');
+                    setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed');
                   }}
                 >
-                  <X className="h-5 w-5 text-muted-foreground" />
+                  {drawerHeight === 'collapsed' ? (
+                    <ChevronUp className="h-6 w-6 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-6 w-6 text-muted-foreground" />
+                  )}
                 </Button>
               </div>
               <div className="px-4 h-full flex flex-col overflow-hidden">
