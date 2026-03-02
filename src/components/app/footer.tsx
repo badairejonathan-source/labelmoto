@@ -33,7 +33,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li><Link href="/info" className="text-muted-foreground hover:text-accent">Conseils & Articles</Link></li>
               <li><Link href="/map" className="text-muted-foreground hover:text-accent">Trouver un pro</Link></li>
-              <li><Link href="/entretien" className="text-muted-foreground hover:text-accent">Les marques</Link></li>
+              <li><Link href="/entretien" className="text-muted-foreground hover:text-accent">Entretien & Révisions</Link></li>
             </ul>
           </div>
           <div>
