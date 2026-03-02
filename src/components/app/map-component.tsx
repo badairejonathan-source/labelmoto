@@ -221,9 +221,9 @@ export default function MapComponent({
         if (userLocationMarkerRef.current) userLocationMarkerRef.current.remove();
         
         const userMarkerIcon = L.divIcon({
-            html: `<div class="relative flex h-6 w-6">
+            html: `<div class="relative flex h-10 w-10 items-center justify-center">
                     <div class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></div>
-                    <div class="relative inline-flex rounded-full h-6 w-6 bg-brand border-2 border-white shadow-md"></div>
+                    <div class="relative inline-flex rounded-full h-6 w-6 bg-brand border-2 border-white shadow-lg"></div>
                    </div>`,
             className: 'bg-transparent border-none',
             iconSize: [40, 40],

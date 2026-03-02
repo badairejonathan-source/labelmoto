@@ -156,8 +156,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               </div>
 
               {rating > 0 && (
-                <div className="flex items-center gap-1 mt-1.5 md:mt-2.5 text-[10px] md:text-xs font-bold text-brand">
-                  <Star className="h-3 w-3 md:h-4 w-4 fill-brand text-brand" />
+                <div className="flex items-center gap-1 mt-1.5 md:mt-2.5 text-[10px] md:text-xs font-bold text-yellow-400">
+                  <Star className="h-3 w-3 md:h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span>{rating.toFixed(1)}</span>
                 </div>
               )}

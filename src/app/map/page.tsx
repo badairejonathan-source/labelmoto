@@ -4,12 +4,11 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { Crosshair, Loader2, Star, ChevronUp, ChevronDown } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -46,14 +45,14 @@ const RatingFilter = ({
     };
 
     return (
-        <div className={cn("p-2 px-4 border-b bg-background sticky top-0 z-10", className)}>
+        <div className={cn("p-2 bg-background sticky top-0 z-10", className)}>
             <div className="flex items-center justify-center space-x-2">
                 <span className="text-xs font-bold text-muted-foreground mr-2 hidden md:inline uppercase tracking-wider">Note :</span>
-                <Button size="sm" variant={value === 0 ? 'secondary' : 'ghost'} onClick={() => onChange(0)} className="rounded-full px-4 text-xs font-bold">TOUS</Button>
+                <Button size="sm" variant={value === 0 ? 'secondary' : 'ghost'} onClick={() => onChange(0)} className="rounded-full px-4 text-xs font-bold h-8">TOUS</Button>
                 {ratings.map((rating) => (
-                    <Button key={rating} size="sm" variant={value === rating ? 'secondary' : 'ghost'} onClick={() => handleRatingClick(rating)} className="flex gap-1 rounded-full px-3 text-xs font-bold">
+                    <Button key={rating} size="sm" variant={value === rating ? 'secondary' : 'ghost'} onClick={() => handleRatingClick(rating)} className="flex gap-1 rounded-full px-3 text-xs font-bold h-8">
                         <span>{rating}</span>
-                        <Star className="w-3 h-3 text-brand fill-brand" />
+                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
                         <span className="hidden sm:inline-block">+</span>
                     </Button>
                 ))}
@@ -198,7 +197,6 @@ function MapPageComponent() {
       setDrawerHeight('half');
       setIsExpanding(false);
     } else {
-      // In half state, use the expansion direction
       if (isExpanding) {
         setDrawerHeight('expanded');
       } else {
@@ -263,8 +261,7 @@ function MapPageComponent() {
           <>
             <aside className="w-3/4 flex flex-col bg-background border-r z-10 shadow-md h-full">
               <div className="p-4 border-b bg-muted/30 flex justify-between items-center">
-                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{dealershipsToDisplay.length} RÉSULTATS VISIBLES</span>
-                <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none p-0 sticky-none" />
+                <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none p-0 flex-1" />
               </div>
               <div className="flex-1 overflow-y-auto pr-3">
                 <div className="py-4 pl-4 space-y-4">{listContent}</div>
@@ -322,9 +319,9 @@ function MapPageComponent() {
               "fixed left-0 right-0 bg-background rounded-t-3xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-50 transition-all duration-300 ease-in-out border-t",
               drawerHeight === 'collapsed' ? 'bottom-0 h-[80px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[95vh]'
             )}>
-              <div className="relative w-full flex flex-col items-center pt-2 pb-2 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+              <div className="relative w-full flex flex-col items-center pt-2 pb-1 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
                 <div 
-                  className="w-12 h-1.5 bg-muted rounded-full mb-1" 
+                  className="w-12 h-1.5 bg-muted rounded-full" 
                   onClick={() => {
                     const next = drawerHeight === 'collapsed' ? 'half' : drawerHeight === 'half' ? 'expanded' : 'half';
                     setDrawerHeight(next);
@@ -332,22 +329,24 @@ function MapPageComponent() {
                     if (next === 'collapsed') setIsExpanding(true);
                   }}
                 />
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="absolute right-4 top-1 h-10 w-10 rounded-full" 
-                  onClick={handleChevronClick}
-                >
-                  {(drawerHeight === 'collapsed' || (drawerHeight === 'half' && isExpanding)) ? (
-                    <ChevronUp className="h-7 w-7 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-7 w-7 text-muted-foreground" />
-                  )}
-                </Button>
               </div>
               <div className="px-4 h-full flex flex-col overflow-hidden">
-                <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0" />
-                <div className="flex-1 overflow-y-auto">{listContent}</div>
+                <div className="flex items-center justify-between border-b pb-1">
+                  <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0 flex-1" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-10 w-10 rounded-full shrink-0" 
+                    onClick={handleChevronClick}
+                  >
+                    {(drawerHeight === 'collapsed' || (drawerHeight === 'half' && isExpanding)) ? (
+                      <ChevronUp className="h-7 w-7 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="h-7 w-7 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+                <div className="flex-1 overflow-y-auto mt-2">{listContent}</div>
               </div>
             </div>
           </>
