@@ -221,12 +221,13 @@ export default function MapComponent({
         if (userLocationMarkerRef.current) userLocationMarkerRef.current.remove();
         
         const userMarkerIcon = L.divIcon({
-            html: `<div class="relative flex h-5 w-5">
+            html: `<div class="relative flex h-6 w-6">
                     <div class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></div>
-                    <div class="relative inline-flex rounded-full h-5 w-5 bg-brand border-2 border-white shadow-md"></div>
+                    <div class="relative inline-flex rounded-full h-6 w-6 bg-brand border-2 border-white shadow-md"></div>
                    </div>`,
             className: 'bg-transparent border-none',
-            iconSize: [20, 20],
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
         });
 
         userLocationMarkerRef.current = L.marker(e.latlng, { icon: userMarkerIcon }).addTo(map);

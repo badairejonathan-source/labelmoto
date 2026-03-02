@@ -86,6 +86,7 @@ function MapPageComponent() {
   const { firestore } = useFirebase();
   
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'expanded'>('half');
+  const [isExpanding, setIsExpanding] = useState(true);
   const touchStartY = useRef<number>(0);
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
@@ -178,8 +179,31 @@ function MapPageComponent() {
   const onTouchEnd = (e: React.TouchEvent) => {
     const diff = touchStartY.current - e.changedTouches[0].clientY;
     if (Math.abs(diff) > 50) {
-      if (diff > 0) setDrawerHeight(c => c === 'collapsed' ? 'half' : 'expanded');
-      else setDrawerHeight(c => c === 'expanded' ? 'half' : 'collapsed');
+      if (diff > 0) {
+        setDrawerHeight(c => c === 'collapsed' ? 'half' : 'expanded');
+        setIsExpanding(true);
+      } else {
+        setDrawerHeight(c => c === 'expanded' ? 'half' : 'collapsed');
+        setIsExpanding(false);
+      }
+    }
+  };
+
+  const handleChevronClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (drawerHeight === 'collapsed') {
+      setDrawerHeight('half');
+      setIsExpanding(true);
+    } else if (drawerHeight === 'expanded') {
+      setDrawerHeight('half');
+      setIsExpanding(false);
+    } else {
+      // In half state, use the expansion direction
+      if (isExpanding) {
+        setDrawerHeight('expanded');
+      } else {
+        setDrawerHeight('collapsed');
+      }
     }
   };
 
@@ -262,8 +286,8 @@ function MapPageComponent() {
                 onLocateEnd={() => setIsLocating(false)} 
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
-              <div className="absolute top-4 right-4 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg h-10 w-10 bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button>
+              <div className="absolute top-4 right-4 z-[1000] p-1 overflow-visible">
+                <Button size="icon" className="rounded-full shadow-lg h-10 w-10 bg-brand text-brand-foreground p-0" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button>
               </div>
             </main>
           </>
@@ -282,37 +306,42 @@ function MapPageComponent() {
                 onMarkerMouseOver={setHoveredDealershipId} 
                 onMarkerMouseOut={() => setHoveredDealershipId(null)} 
                 onMapChange={handleMapChange} 
-                onMapClick={() => setDrawerHeight('collapsed')} 
+                onMapClick={() => {
+                  setDrawerHeight('collapsed');
+                  setIsExpanding(true);
+                }} 
                 isLocating={isLocating} 
                 onLocateEnd={() => setIsLocating(false)} 
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
-              <div className="absolute top-2 right-2 z-[1000]">
-                <Button size="icon" className="rounded-full shadow-lg h-10 w-10 bg-brand text-brand-foreground" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button>
+              <div className="absolute top-2 right-2 z-[1000] p-1 overflow-visible">
+                <Button size="icon" className="rounded-full shadow-lg h-10 w-10 bg-brand text-brand-foreground p-0" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-5 w-5" /></Button>
               </div>
             </main>
             <div className={cn(
               "fixed left-0 right-0 bg-background rounded-t-3xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)] z-50 transition-all duration-300 ease-in-out border-t",
-              drawerHeight === 'collapsed' ? 'bottom-0 h-[80px]' : drawerHeight === 'half' ? 'bottom-0 h-[45vh]' : 'bottom-0 h-[85vh]'
+              drawerHeight === 'collapsed' ? 'bottom-0 h-[80px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[95vh]'
             )}>
               <div className="relative w-full flex flex-col items-center pt-2 pb-2 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
                 <div 
                   className="w-12 h-1.5 bg-muted rounded-full mb-1" 
-                  onClick={() => setDrawerHeight(drawerHeight === 'expanded' ? 'half' : 'expanded')}
+                  onClick={() => {
+                    const next = drawerHeight === 'collapsed' ? 'half' : drawerHeight === 'half' ? 'expanded' : 'half';
+                    setDrawerHeight(next);
+                    if (next === 'expanded') setIsExpanding(true);
+                    if (next === 'collapsed') setIsExpanding(true);
+                  }}
                 />
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="absolute right-4 top-1 h-8 w-8 rounded-full" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed');
-                  }}
+                  className="absolute right-4 top-1 h-10 w-10 rounded-full" 
+                  onClick={handleChevronClick}
                 >
-                  {drawerHeight === 'collapsed' ? (
-                    <ChevronUp className="h-6 w-6 text-muted-foreground" />
+                  {(drawerHeight === 'collapsed' || (drawerHeight === 'half' && isExpanding)) ? (
+                    <ChevronUp className="h-7 w-7 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="h-6 w-6 text-muted-foreground" />
+                    <ChevronDown className="h-7 w-7 text-muted-foreground" />
                   )}
                 </Button>
               </div>
