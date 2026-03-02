@@ -228,6 +228,14 @@ function MapPageComponent() {
     }
   };
 
+  const handleSearchTermChange = useCallback((term: string) => {
+    setSearchTerm(term);
+    // Reset submitted search if field is cleared
+    if (term.trim() === '') {
+      setSubmittedSearchTerm('');
+    }
+  }, []);
+
   const listContent = (
     <div className="space-y-4 pb-20">
       {isLoading ? (
@@ -277,7 +285,7 @@ function MapPageComponent() {
 
   return (
     <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Recherche par nom, ville, departement" />
+      <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Recherche par nom, ville, departement" />
       
       <div className="flex-1 flex overflow-hidden relative">
         {!isMobile && (
