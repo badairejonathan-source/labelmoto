@@ -8,13 +8,17 @@ import { useState, useEffect } from 'react';
 
 const Footer = () => {
   const { user } = useUser();
-  const proRegisterLink = user ? "/pro/register" : "/login";
-  const [currentYear, setCurrentYear] = useState<number>();
+  const [mounted, setMounted] = useState(false);
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     setCurrentYear(new Date().getFullYear());
   }, []);
 
+  // Handle hydration mismatch for auth-dependent links
+  // Ensure the server and first client render match by using the guest link until mounted
+  const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
 
   return (
     <footer className="bg-muted/30 border-t border-border/50">
