@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -50,10 +51,10 @@ const LandingHeader = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button asChild variant="ghost" className="rounded-full h-28 w-24 p-0">
+                <Button asChild variant="ghost" className="rounded-full h-20 w-20 p-0">
                   <Link href="/login">
-                    <div className="h-24 w-24 rounded-full flex items-center justify-center p-1">
-                      <Image src="/images/icon-moncompte.png" alt="Mon compte" width={80} height={80} className="h-20 w-20 object-contain" />
+                    <div className="h-16 w-16 rounded-full flex items-center justify-center p-1">
+                      <Image src="/images/icon-moncompte.png" alt="Mon compte" width={60} height={60} className="h-14 w-14 object-contain" />
                     </div>
                     <span className="sr-only">Mon compte</span>
                   </Link>
@@ -70,8 +71,8 @@ const LandingHeader = () => {
       return (
          <DropdownMenu>
           <DropdownMenuTrigger asChild>
-             <Button variant="ghost" className="relative h-24 w-24 rounded-full p-0">
-              <Avatar className="h-20 w-20 border-2 border-brand">
+             <Button variant="ghost" className="relative h-20 w-20 rounded-full p-0">
+              <Avatar className="h-16 w-16 border-2 border-brand">
                 <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
                 <AvatarFallback className="bg-brand text-brand-foreground text-xl">{user.email?.[0].toUpperCase()}</AvatarFallback>
               </Avatar>
@@ -121,13 +122,13 @@ const LandingHeader = () => {
                         </div>
                         
                         <div className="flex items-center gap-4 justify-end lg:justify-self-end lg:order-none">
-                            <div className="hidden md:flex items-center gap-4">
+                            <div className="hidden md:flex items-center gap-2">
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-24 w-24">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
                                                 <Link href="/entretien">
-                                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={72} height={72} className="h-[72px] w-[72px] object-contain" />
+                                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={44} height={44} className="h-[44px] w-[44px] object-contain" />
                                                     <span className="sr-only">Entretien & Révisions</span>
                                                 </Link>
                                             </Button>
@@ -140,9 +141,9 @@ const LandingHeader = () => {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-24 w-24">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
                                                 <Link href="/info">
-                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={72} height={72} className="h-[72px] w-[72px] object-contain" />
+                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={44} height={44} className="h-[44px] w-[44px] object-contain" />
                                                     <span className="sr-only">Conseils pratiques</span>
                                                 </Link>
                                             </Button>
