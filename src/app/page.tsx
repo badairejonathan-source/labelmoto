@@ -101,7 +101,7 @@ const LandingHeader = () => {
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col gap-1.5">
                     <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-4">
-                        <div className="w-36 md:w-48 shrink-0 lg:justify-self-start">
+                        <div className="w-44 md:w-60 shrink-0 lg:justify-self-start">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>

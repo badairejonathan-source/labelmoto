@@ -158,7 +158,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-muted/40">
       <header className="bg-background border-b shadow-sm sticky top-0 z-50">
         <div className="container mx-auto p-4 flex items-center justify-between">
-          <div className="w-48">
+          <div className="w-60">
             <Link href="/">
               <LabelMotoLogo />
             </Link>

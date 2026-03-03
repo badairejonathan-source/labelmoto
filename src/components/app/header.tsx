@@ -108,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
     <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
       <div className="container mx-auto flex flex-col gap-1.5">
         <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-3">
-          <div className="w-32 md:w-44 shrink-0 lg:justify-self-start">
+          <div className="w-40 md:w-52 shrink-0 lg:justify-self-start">
             <Link href="/">
               <LabelMotoLogo />
             </Link>

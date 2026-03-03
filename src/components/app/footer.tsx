@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -61,7 +62,7 @@ const Footer = () => {
         <div className="border-t border-border/50 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-36 shrink-0">
+                    <div className="w-44 shrink-0">
                         <Link href="/">
                             <LabelMotoLogo />
                         </Link>

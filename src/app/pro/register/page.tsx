@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -202,7 +203,7 @@ export default function RegisterProPage() {
     <div className="min-h-screen bg-muted/20">
         <header className="bg-background border-b p-4 sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
-                 <div className="w-48">
+                 <div className="w-60">
                     <Link href="/">
                         <LabelMotoLogo />
                     </Link>

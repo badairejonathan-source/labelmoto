@@ -9,8 +9,8 @@ const LabelMotoLogo = ({ className }: { className?: string }) => {
       <Image 
         src="/images/logo-moto.png?v=6" 
         alt="Label Moto Logo" 
-        width={250} 
-        height={80}
+        width={300} 
+        height={96}
         priority 
         className="h-auto w-full object-contain"
       />
