@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from '@/components/app/logo';
 import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon, ArrowRight } from 'lucide-react';
-import { MaintenanceIcon } from '@/components/app/maintenance-icon';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
@@ -122,7 +121,7 @@ const LandingHeader = () => {
                                         <TooltipTrigger asChild>
                                             <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
                                                 <Link href="/entretien">
-                                                    <MaintenanceIcon className="h-6 w-6" />
+                                                    <Image src="/images/icon-entetienrevision.png" alt="Entretien" width={24} height={24} className="h-6 w-6 object-contain" />
                                                     <span className="sr-only">Entretien & Révisions</span>
                                                 </Link>
                                             </Button>
