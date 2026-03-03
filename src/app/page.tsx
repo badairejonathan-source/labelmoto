@@ -72,7 +72,7 @@ const LandingHeader = () => {
                                         <TooltipTrigger asChild>
                                             <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
                                                 <Link href="/info">
-                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={44} height={44} className="h-[44px] w-[44px] object-contain" />
+                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={58} height={58} className="h-[58px] w-[58px] object-contain" />
                                                     <span className="sr-only">Conseils pratiques</span>
                                                 </Link>
                                             </Button>
@@ -266,7 +266,7 @@ export default function LandingPage() {
                                 </div>
                             </li>
                              <li className="flex items-start gap-4">
-                                <CheckCircle className="h-6 w-6 text-brand shrink-0 mt-1" />
+                                <CheckCircle className="h-6 w-6 text-brand mt-1 shrink-0" />
                                 <div>
                                     <h3 className="font-semibold text-lg">Info technique, le bon choix.</h3>
                                     <p className="text-muted-foreground">

@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                         <TooltipTrigger asChild>
                             <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
                                 <Link href="/info">
-                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={44} height={44} className="h-[44px] w-[44px] object-contain" />
+                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={58} height={58} className="h-[58px] w-[58px] object-contain" />
                                     <span className="sr-only">Conseils pratiques</span>
                                 </Link>
                             </Button>
