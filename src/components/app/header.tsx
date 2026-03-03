@@ -50,10 +50,10 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild variant="ghost" className="rounded-full h-12 w-12 p-0">
+              <Button asChild variant="ghost" className="rounded-full h-20 w-20 p-0">
                 <Link href="/login">
-                  <div className="h-12 w-12 rounded-full flex items-center justify-center p-1">
-                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={40} height={40} className="h-10 w-10 object-contain" />
+                  <div className="h-20 w-20 rounded-full flex items-center justify-center p-1">
+                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={64} height={64} className="h-16 w-16 object-contain" />
                   </div>
                   <span className="sr-only">Mon compte</span>
                 </Link>
@@ -69,8 +69,8 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
     return (
        <DropdownMenu>
         <DropdownMenuTrigger asChild>
-           <Button variant="ghost" className="relative h-12 w-12 rounded-full">
-            <Avatar className="h-12 w-12">
+           <Button variant="ghost" className="relative h-20 w-20 rounded-full">
+            <Avatar className="h-16 w-16">
               <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
               <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -97,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <LogOut className="mr-2 h-4 w-4" />
             <span>Déconnexion</span>
           </DropdownMenuItem>
-        </DropdownMenuContent>
+        </DropdownMenu>
       </DropdownMenu>
     )
   }
@@ -125,9 +125,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-12 w-12">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
                                 <Link href="/entretien">
-                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={36} height={36} className="h-9 w-9 object-contain" />
+                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={72} height={72} className="h-[72px] w-[72px] object-contain" />
                                     <span className="sr-only">Entretien & Révisions</span>
                                 </Link>
                             </Button>
@@ -140,9 +140,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                  <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-12 w-12">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
                                 <Link href="/info">
-                                    <FileText className="h-9 w-9" />
+                                    <FileText className="h-[72px] w-[72px]" />
                                     <span className="sr-only">Conseils pratiques</span>
                                 </Link>
                             </Button>
