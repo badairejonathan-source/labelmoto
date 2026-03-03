@@ -38,22 +38,29 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
   const auth = useAuth();
 
   const handleLogout = async () => {
-    await signOut(auth);
-  }
+    if (auth) {
+      await signOut(auth);
+    }
+  };
 
   const UserMenu = () => {
     if (isUserLoading) {
-      return <Button size="icon" variant="ghost" className="rounded-full h-12 w-12"><Loader2 className="h-6 w-6 animate-spin text-brand" /></Button>
+      return (
+        <Button size="icon" variant="ghost" className="rounded-full h-20 w-20">
+          <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        </Button>
+      );
     }
+
     if (!user) {
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild variant="ghost" className="rounded-full h-20 w-20 p-0">
+              <Button asChild variant="ghost" className="rounded-full h-24 w-24 p-0">
                 <Link href="/login">
-                  <div className="h-20 w-20 rounded-full flex items-center justify-center p-1">
-                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={64} height={64} className="h-16 w-16 object-contain" />
+                  <div className="h-24 w-24 rounded-full flex items-center justify-center p-1">
+                    <Image src="/images/icon-moncompte.png" alt="Mon compte" width={80} height={80} className="h-20 w-20 object-contain" />
                   </div>
                   <span className="sr-only">Mon compte</span>
                 </Link>
@@ -66,13 +73,14 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         </TooltipProvider>
       );
     }
+
     return (
-       <DropdownMenu>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
-           <Button variant="ghost" className="relative h-20 w-20 rounded-full">
-            <Avatar className="h-16 w-16">
+          <Button variant="ghost" className="relative h-24 w-24 rounded-full p-0">
+            <Avatar className="h-20 w-20 border-2 border-brand">
               <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
-              <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="bg-brand text-brand-foreground text-xl">{user.email?.[0].toUpperCase()}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -97,10 +105,10 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
             <LogOut className="mr-2 h-4 w-4" />
             <span>Déconnexion</span>
           </DropdownMenuItem>
-        </DropdownMenu>
+        </DropdownMenuContent>
       </DropdownMenu>
-    )
-  }
+    );
+  };
 
 
   return (
@@ -121,11 +129,11 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           </div>
 
           <div className="flex items-center gap-2 justify-end lg:justify-self-end lg:order-none">
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-4">
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-24 w-24">
                                 <Link href="/entretien">
                                     <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={72} height={72} className="h-[72px] w-[72px] object-contain" />
                                     <span className="sr-only">Entretien & Révisions</span>
@@ -140,9 +148,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                  <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-24 w-24">
                                 <Link href="/info">
-                                    <FileText className="h-[72px] w-[72px]" />
+                                    <FileText className="h-[72px] w-[72px] text-brand" />
                                     <span className="sr-only">Conseils pratiques</span>
                                 </Link>
                             </Button>
