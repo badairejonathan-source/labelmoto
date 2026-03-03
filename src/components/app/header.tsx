@@ -4,8 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Search, LogOut, Loader2, User as UserIcon, Home } from 'lucide-react';
+import { Search, LogOut, Loader2, User as UserIcon, Home, Bike, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -19,10 +18,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
 
 interface HeaderProps {
     searchTerm: string;
@@ -44,74 +42,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
     }
   };
 
-  const UserMenu = () => {
-    if (isUserLoading) {
-      return (
-        <Button size="icon" variant="ghost" className="rounded-full h-16 w-16">
-          <Loader2 className="h-6 w-6 animate-spin text-brand" />
-        </Button>
-      );
-    }
-
-    if (!user) {
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button asChild variant="ghost" className="rounded-full h-16 w-16 p-0">
-                <Link href="/login">
-                  <div className="h-14 w-14 rounded-full flex items-center justify-center p-1">
-                    <Image src="/images/icon-moncompte.png" alt="Mon compte" width={48} height={48} className="h-12 w-12 object-contain" />
-                  </div>
-                  <span className="sr-only">Mon compte</span>
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Mon compte</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    }
-
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-16 w-16 rounded-full p-0">
-            <Avatar className="h-14 w-14 border-2 border-brand">
-              <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
-              <AvatarFallback className="bg-brand text-brand-foreground text-xl">{user.email?.[0].toUpperCase()}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">Connecté en tant que</p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {user.email}
-              </p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand">
-            <Link href="/account">
-              <UserIcon className="mr-2 h-4 w-4" />
-              <span>Gérer mon compte</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:text-brand">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Déconnexion</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  };
-
-
   return (
     <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
       <div className="container mx-auto flex flex-col gap-1.5">
@@ -131,22 +61,22 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 
           <div className="flex items-center gap-2 justify-end lg:justify-self-end lg:order-none">
             <div className="hidden md:flex items-center gap-2">
-                <TooltipProvider>
+                <TooltipProvider delayDuration={0}>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
                                 <Link href="/entretien">
-                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={44} height={44} className="h-[44px] w-[44px] object-contain" />
+                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={62} height={62} className="h-[62px] w-[62px] object-contain" />
                                     <span className="sr-only">Entretien & Révisions</span>
                                 </Link>
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent side="bottom">
                             <p>Entretien & Révisions</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-                 <TooltipProvider>
+                 <TooltipProvider delayDuration={0}>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
@@ -156,13 +86,69 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                                 </Link>
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent side="bottom">
                             <p>Conseils pratiques</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
             </div>
-            <UserMenu />
+            
+            {isUserLoading ? (
+              <Button size="icon" variant="ghost" className="rounded-full h-16 w-16">
+                <Loader2 className="h-6 w-6 animate-spin text-brand" />
+              </Button>
+            ) : !user ? (
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button asChild variant="ghost" className="rounded-full h-16 w-16 p-0">
+                      <Link href="/login">
+                        <div className="h-14 w-14 rounded-full flex items-center justify-center p-1">
+                          <Image src="/images/icon-moncompte.png" alt="Mon compte" width={48} height={48} className="h-12 w-12 object-contain" />
+                        </div>
+                        <span className="sr-only">Mon compte</span>
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>Mon compte</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-16 w-16 rounded-full p-0">
+                    <Avatar className="h-14 w-14 border-2 border-brand">
+                      <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
+                      <AvatarFallback className="bg-brand text-brand-foreground text-xl">{user.email?.[0].toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">Connecté en tant que</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand">
+                    <Link href="/account">
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Gérer mon compte</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:text-brand">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Déconnexion</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
         
