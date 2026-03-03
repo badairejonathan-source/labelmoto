@@ -44,17 +44,17 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
 
   const UserMenu = () => {
     if (isUserLoading) {
-      return <Button size="icon" variant="ghost" className="rounded-full h-10 w-10"><Loader2 className="h-5 w-5 animate-spin text-brand" /></Button>
+      return <Button size="icon" variant="ghost" className="rounded-full h-12 w-12"><Loader2 className="h-6 w-6 animate-spin text-brand" /></Button>
     }
     if (!user) {
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild variant="ghost" className="rounded-full h-10 w-10 p-0">
+              <Button asChild variant="ghost" className="rounded-full h-12 w-12 p-0">
                 <Link href="/login">
-                  <div className="h-10 w-10 rounded-full flex items-center justify-center p-1">
-                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={32} height={32} className="h-8 w-8 object-contain" />
+                  <div className="h-12 w-12 rounded-full flex items-center justify-center p-1">
+                    <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={40} height={40} className="h-10 w-10 object-contain" />
                   </div>
                   <span className="sr-only">Mon compte</span>
                 </Link>
@@ -70,8 +70,8 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
     return (
        <DropdownMenu>
         <DropdownMenuTrigger asChild>
-           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10">
+           <Button variant="ghost" className="relative h-12 w-12 rounded-full">
+            <Avatar className="h-12 w-12">
               <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
               <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -108,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
     <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
       <div className="container mx-auto flex flex-col gap-1.5">
         <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-3">
-          <div className="w-40 md:w-52 shrink-0 lg:justify-self-start">
+          <div className="w-48 md:w-64 shrink-0 lg:justify-self-start">
             <Link href="/">
               <LabelMotoLogo />
             </Link>
@@ -126,9 +126,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
                                 <Link href="/entretien">
-                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={24} height={24} className="h-6 w-6 object-contain" />
+                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={29} height={29} className="h-7 w-7 object-contain" />
                                     <span className="sr-only">Entretien & Révisions</span>
                                 </Link>
                             </Button>
@@ -141,9 +141,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                  <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
                                 <Link href="/info">
-                                    <FileText className="h-6 w-6" />
+                                    <FileText className="h-7 w-7" />
                                     <span className="sr-only">Conseils pratiques</span>
                                 </Link>
                             </Button>

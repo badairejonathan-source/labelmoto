@@ -45,10 +45,10 @@ const LandingHeader = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button asChild variant="ghost" className="rounded-full h-12 w-12 p-0">
+                <Button asChild variant="ghost" className="rounded-full h-14 w-14 p-0">
                   <Link href="/login">
-                    <div className="h-12 w-12 rounded-full flex items-center justify-center p-1">
-                      <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={40} height={40} className="h-10 w-10 object-contain" />
+                    <div className="h-14 w-14 rounded-full flex items-center justify-center p-1">
+                      <Image key="force-reload-2" src="/images/icon-moncompte.png" alt="Mon compte" width={48} height={48} className="h-12 w-12 object-contain" />
                     </div>
                     <span className="sr-only">Mon compte</span>
                   </Link>
@@ -64,8 +64,8 @@ const LandingHeader = () => {
       return (
          <DropdownMenu>
           <DropdownMenuTrigger asChild>
-             <Button variant="ghost" className="relative h-12 w-12 rounded-full">
-              <Avatar className="h-12 w-12">
+             <Button variant="ghost" className="relative h-14 w-14 rounded-full">
+              <Avatar className="h-14 w-14">
                 <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
                 <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
               </Avatar>
@@ -101,7 +101,7 @@ const LandingHeader = () => {
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col gap-1.5">
                     <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-4">
-                        <div className="w-44 md:w-60 shrink-0 lg:justify-self-start">
+                        <div className="w-52 md:w-72 shrink-0 lg:justify-self-start">
                             <Link href="/">
                                 <LabelMotoLogo />
                             </Link>
@@ -119,9 +119,9 @@ const LandingHeader = () => {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-12 w-12">
                                                 <Link href="/entretien">
-                                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={24} height={24} className="h-6 w-6 object-contain" />
+                                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={29} height={29} className="h-7 w-7 object-contain" />
                                                     <span className="sr-only">Entretien & Révisions</span>
                                                 </Link>
                                             </Button>
@@ -134,9 +134,9 @@ const LandingHeader = () => {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-12 w-12">
                                                 <Link href="/info">
-                                                    <FileText className="h-6 w-6" />
+                                                    <FileText className="h-7 w-7" />
                                                     <span className="sr-only">Conseils pratiques</span>
                                                 </Link>
                                             </Button>
