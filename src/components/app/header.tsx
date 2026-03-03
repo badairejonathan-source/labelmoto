@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -126,9 +125,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-12 w-12">
                                 <Link href="/entretien">
-                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={29} height={29} className="h-7 w-7 object-contain" />
+                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={36} height={36} className="h-9 w-9 object-contain" />
                                     <span className="sr-only">Entretien & Révisions</span>
                                 </Link>
                             </Button>
@@ -141,9 +140,9 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                  <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
+                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-12 w-12">
                                 <Link href="/info">
-                                    <FileText className="h-7 w-7" />
+                                    <FileText className="h-9 w-9" />
                                     <span className="sr-only">Conseils pratiques</span>
                                 </Link>
                             </Button>
