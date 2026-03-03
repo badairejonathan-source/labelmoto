@@ -72,7 +72,7 @@ const LandingHeader = () => {
                                         <TooltipTrigger asChild>
                                             <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
                                                 <Link href="/info">
-                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={53} height={53} className="h-[53px] w-[53px] object-contain" />
+                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={50} height={50} className="h-[50px] w-[50px] object-contain" />
                                                     <span className="sr-only">Conseils pratiques</span>
                                                 </Link>
                                             </Button>
