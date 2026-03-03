@@ -51,39 +51,6 @@ const LandingHeader = () => {
                         </div>
                         
                         <div className="flex items-center gap-4 justify-end lg:justify-self-end lg:order-none">
-                            <div className="hidden md:flex items-center gap-2">
-                                <TooltipProvider delayDuration={0}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
-                                                <Link href="/entretien">
-                                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={62} height={62} className="h-[62px] w-[62px] object-contain" />
-                                                    <span className="sr-only">Entretien & Révisions</span>
-                                                </Link>
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom">
-                                            <p>Entretien & Révisions</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                                <TooltipProvider delayDuration={0}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
-                                                <Link href="/info">
-                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={50} height={50} className="h-[50px] w-[50px] object-contain" />
-                                                    <span className="sr-only">Conseils pratiques</span>
-                                                </Link>
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom">
-                                            <p>Conseils pratiques</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </div>
-                            
                             {isUserLoading ? (
                               <Button variant="ghost" className="h-20 w-20 rounded-full">
                                 <Loader2 className="h-8 w-8 animate-spin text-brand" />
@@ -142,22 +109,57 @@ const LandingHeader = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-center gap-1 mt-2">
-                        <form action="/map" method="get" className="relative w-full max-w-2xl mx-auto">
-                            <Input
-                                name="search"
-                                type="search"
-                                placeholder="Recherche par nom, ville, departement"
-                                className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
-                            />
-                            <Button 
-                                type="submit" 
-                                size="icon" 
-                                className="absolute top-1/2 right-1.5 -translate-y-1/2 h-9 w-9 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
-                            >
-                                <Search className="h-5 w-5" />
-                            </Button>
-                        </form>
+                    <div className="flex flex-col items-center gap-1 mt-2 w-full">
+                        <div className="flex items-center gap-2 sm:gap-4 w-full max-w-3xl mx-auto px-4">
+                            <form action="/map" method="get" className="relative flex-1">
+                                <Input
+                                    name="search"
+                                    type="search"
+                                    placeholder="Recherche par nom, ville, departement"
+                                    className="pr-14 h-12 text-base rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+                                />
+                                <Button 
+                                    type="submit" 
+                                    size="icon" 
+                                    className="absolute top-1/2 right-1.5 -translate-y-1/2 h-9 w-9 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
+                                >
+                                    <Search className="h-5 w-5" />
+                                </Button>
+                            </form>
+                            
+                            <div className="hidden md:flex items-center gap-2 shrink-0">
+                                <TooltipProvider delayDuration={0}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
+                                                <Link href="/entretien">
+                                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={62} height={62} className="h-[62px] w-[62px] object-contain" />
+                                                    <span className="sr-only">Entretien & Révisions</span>
+                                                </Link>
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom">
+                                            <p>Entretien & Révisions</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                                <TooltipProvider delayDuration={0}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
+                                                <Link href="/info">
+                                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={50} height={50} className="h-[50px] w-[50px] object-contain" />
+                                                    <span className="sr-only">Conseils pratiques</span>
+                                                </Link>
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom">
+                                            <p>Conseils pratiques</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                        </div>
 
                         <nav className="flex items-center justify-center gap-4 sm:gap-8 md:gap-12 py-2">
                             <Link href="/map" className="flex items-center gap-2 sm:gap-3 text-sm sm:text-xl text-muted-foreground font-medium px-3 sm:px-6 py-1 rounded-2xl transition-all duration-200 hover:bg-brand hover:text-brand-foreground">

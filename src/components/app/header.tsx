@@ -59,39 +59,6 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           </div>
 
           <div className="flex items-center gap-2 justify-end lg:justify-self-end lg:order-none">
-            <div className="hidden md:flex items-center gap-2">
-                <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
-                                <Link href="/entretien">
-                                    <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={62} height={62} className="h-[62px] w-[62px] object-contain" />
-                                    <span className="sr-only">Entretien & Révisions</span>
-                                </Link>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                            <p>Entretien & Révisions</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-                 <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
-                                <Link href="/info">
-                                    <Image src="/images/icon-conseils.png" alt="Conseils" width={50} height={50} className="h-[50px] w-[50px] object-contain" />
-                                    <span className="sr-only">Conseils pratiques</span>
-                                </Link>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                            <p>Conseils pratiques</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            </div>
-            
             {isUserLoading ? (
               <Button size="icon" variant="ghost" className="rounded-full h-16 w-16">
                 <Loader2 className="h-6 w-6 animate-spin text-brand" />
@@ -151,28 +118,63 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           </div>
         </div>
         
-        <div className="flex flex-col items-center gap-1 mt-2">
-            <div className="relative w-full max-w-2xl mx-auto">
-              <Input
-                type="search"
-                placeholder={placeholderText}
-                className="pr-12 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
-                value={searchTerm}
-                onChange={(e) => onSearchTermChange(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                        onSearch();
-                    }
-                }}
-              />
-              <Button 
-                  type="submit" 
-                  size="icon" 
-                  className="absolute top-1/2 right-1.5 -translate-y-1/2 h-7 w-7 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
-                  onClick={onSearch}
-              >
-                <Search className="h-4 w-4" />
-              </Button>
+        <div className="flex flex-col items-center gap-1 mt-2 w-full">
+            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-3xl mx-auto px-4">
+                <div className="relative flex-1">
+                  <Input
+                    type="search"
+                    placeholder={placeholderText}
+                    className="pr-12 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+                    value={searchTerm}
+                    onChange={(e) => onSearchTermChange(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            onSearch();
+                        }
+                    }}
+                  />
+                  <Button 
+                      type="submit" 
+                      size="icon" 
+                      className="absolute top-1/2 right-1.5 -translate-y-1/2 h-7 w-7 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
+                      onClick={onSearch}
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="hidden md:flex items-center gap-2 shrink-0">
+                    <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
+                                    <Link href="/entretien">
+                                        <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={62} height={62} className="h-[62px] w-[62px] object-contain" />
+                                        <span className="sr-only">Entretien & Révisions</span>
+                                    </Link>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                                <p>Entretien & Révisions</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                     <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
+                                    <Link href="/info">
+                                        <Image src="/images/icon-conseils.png" alt="Conseils" width={50} height={50} className="h-[50px] w-[50px] object-contain" />
+                                        <span className="sr-only">Conseils pratiques</span>
+                                    </Link>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                                <p>Conseils pratiques</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
             </div>
 
             <nav className="flex items-center justify-center gap-4 sm:gap-6 mt-2">
