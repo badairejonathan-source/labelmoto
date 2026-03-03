@@ -1,10 +1,12 @@
+
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Bike, Wrench, FileText, Search, LogOut, Loader2, User as UserIcon, BookOpenCheck, Home } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, LogOut, Loader2, User as UserIcon, Home } from 'lucide-react';
+import { MaintenanceIcon } from '@/components/app/maintenance-icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -127,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                         <TooltipTrigger asChild>
                             <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand">
                                 <Link href="/entretien">
-                                    <BookOpenCheck className="h-6 w-6" />
+                                    <MaintenanceIcon className="h-6 w-6" />
                                     <span className="sr-only">Entretien & Révisions</span>
                                 </Link>
                             </Button>
