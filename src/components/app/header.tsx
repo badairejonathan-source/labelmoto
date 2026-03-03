@@ -119,8 +119,8 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         </div>
         
         <div className="flex flex-col items-center gap-1 mt-2 w-full">
-            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-3xl mx-auto px-4">
-                <div className="relative flex-1">
+            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-7xl mx-auto px-4">
+                <div className="relative flex-1 max-w-3xl">
                   <Input
                     type="search"
                     placeholder={placeholderText}
@@ -143,7 +143,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                   </Button>
                 </div>
 
-                <div className="hidden md:flex items-center gap-2 shrink-0">
+                <div className="hidden md:flex items-center gap-2 shrink-0 ml-auto">
                     <TooltipProvider delayDuration={0}>
                         <Tooltip>
                             <TooltipTrigger asChild>

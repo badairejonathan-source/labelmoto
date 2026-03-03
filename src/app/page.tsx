@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 const LandingHeader = () => {
     const { user, isUserLoading } = useUser();
@@ -110,8 +110,8 @@ const LandingHeader = () => {
                     </div>
 
                     <div className="flex flex-col items-center gap-1 mt-2 w-full">
-                        <div className="flex items-center gap-2 sm:gap-4 w-full max-w-3xl mx-auto px-4">
-                            <form action="/map" method="get" className="relative flex-1">
+                        <div className="flex items-center gap-2 sm:gap-4 w-full max-w-7xl mx-auto px-4">
+                            <form action="/map" method="get" className="relative flex-1 max-w-3xl">
                                 <Input
                                     name="search"
                                     type="search"
@@ -127,11 +127,11 @@ const LandingHeader = () => {
                                 </Button>
                             </form>
                             
-                            <div className="hidden md:flex items-center gap-2 shrink-0">
+                            <div className="hidden md:flex items-center gap-2 shrink-0 ml-auto">
                                 <TooltipProvider delayDuration={0}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
                                                 <Link href="/entretien">
                                                     <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={62} height={62} className="h-[62px] w-[62px] object-contain" />
                                                     <span className="sr-only">Entretien & Révisions</span>
@@ -146,7 +146,7 @@ const LandingHeader = () => {
                                 <TooltipProvider delayDuration={0}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-16 w-16">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
                                                 <Link href="/info">
                                                     <Image src="/images/icon-conseils.png" alt="Conseils" width={50} height={50} className="h-[50px] w-[50px] object-contain" />
                                                     <span className="sr-only">Conseils pratiques</span>
