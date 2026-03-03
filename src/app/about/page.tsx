@@ -36,7 +36,7 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto relative overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
             <Image
-              src="/images/logo-moto.png?v=4"
+              src="/images/logo-moto.png?v=5"
               alt="Label Moto Watermark"
               width={600}
               height={192}
