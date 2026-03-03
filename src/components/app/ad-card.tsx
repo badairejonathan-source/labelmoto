@@ -23,48 +23,60 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
 
   return (
     <Link href={`/info/${article.id}`} className="group block w-full">
-      <Card className="w-full ml-auto overflow-hidden transition-all duration-300 ease-in-out border-2 border-brand hover:shadow-lg bg-muted/50 shadow-sm min-h-[140px] md:min-h-[180px] flex">
-        <div className="flex w-full h-full items-stretch">
+      <Card className="w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border border-brand/20 border-l-4 border-l-brand hover:shadow-2xl hover:shadow-brand/10 bg-gradient-to-r from-brand/[0.03] to-background shadow-md min-h-[140px] md:min-h-[180px] flex relative">
+        {/* Background Decorative Element */}
+        <div className="absolute -top-4 -right-4 opacity-[0.03] pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
+            <FileText className="w-32 h-32 text-brand" />
+        </div>
+
+        <div className="flex w-full h-full items-stretch z-10">
           {/* Section Image */}
-          <div className="relative w-28 sm:w-36 md:w-48 flex-shrink-0 overflow-hidden border-r bg-muted self-stretch">
+          <div className="relative w-32 sm:w-40 md:w-56 flex-shrink-0 overflow-hidden self-stretch shadow-inner">
             <Image
               src={article.imageUrl}
               alt={article.title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover transition-transform duration-1000 group-hover:scale-110"
               data-ai-hint={article.imageHint}
-              sizes="(max-width: 768px) 112px, 192px"
+              sizes="(max-width: 768px) 128px, 224px"
             />
-            <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] md:text-[10px] font-black text-white bg-brand rounded-full px-2 py-0.5 uppercase tracking-wider shadow-md">
-              <FileText className="h-3 w-3 md:h-3.5 md:w-3.5" />
-              <span className="hidden sm:inline">Guide Pratique</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent" />
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 text-[9px] md:text-[11px] font-black text-white bg-brand rounded-full px-3 py-1 uppercase tracking-widest shadow-xl ring-1 ring-white/20">
+              <FileText className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Guide</span>
             </div>
           </div>
 
           {/* Section Contenu Principal */}
-          <div className="flex flex-col justify-center flex-grow p-4 md:p-6 min-w-0">
-            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-black text-brand mb-1 md:mb-2">
-              <span>Conseil de la communauté</span>
+          <div className="flex flex-col justify-center flex-grow p-5 md:p-8 min-w-0">
+            <div className="flex items-center gap-2 mb-2">
+                <div className="h-[2px] w-6 bg-brand/40" />
+                <span className="text-[10px] uppercase tracking-[0.3em] font-black text-brand/70">Conseil Moto</span>
             </div>
-            <h3 className="font-black text-sm md:text-xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors">
+            <h3 className="font-black text-base md:text-2xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors line-clamp-2">
               {article.title}
             </h3>
-            <p className="text-xs md:text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed max-w-[95%]">
+            <p className="text-xs md:text-sm text-muted-foreground mt-3 line-clamp-2 leading-relaxed font-medium">
               {article.description}
             </p>
           </div>
 
           {/* Zone Action (Desktop) */}
-          <div className="hidden md:flex flex-shrink-0 w-32 flex-col justify-center items-center p-6 border-l bg-brand/5">
-             <div className="inline-flex items-center justify-center rounded-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-[10px] uppercase tracking-widest px-4 h-10 shadow-sm transition-all group-hover:shadow-brand/20 group-hover:-translate-y-0.5 whitespace-nowrap">
-               Lire
-               <ArrowRight className="ml-2 h-3.5 w-3.5" />
+          <div className="hidden md:flex flex-shrink-0 w-44 flex-col justify-center items-center p-8 bg-brand/[0.02] border-l border-brand/5">
+             <div className="flex flex-col items-center gap-3">
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-brand transition-colors">Découvrir</span>
+                <div className="inline-flex items-center justify-center rounded-full bg-brand text-brand-foreground font-black text-sm uppercase tracking-widest px-8 h-12 shadow-lg shadow-brand/20 transition-all group-hover:scale-105 group-hover:shadow-brand/40 group-hover:-translate-y-1">
+                   Lire
+                   <ArrowRight className="ml-2 h-4 w-4" />
+                </div>
              </div>
           </div>
           
           {/* Version mobile de la zone action */}
-          <div className="md:hidden flex items-center pr-4 border-l bg-brand/5">
-             <ArrowRight className="w-6 h-6 text-brand" />
+          <div className="md:hidden flex items-center pr-6 bg-brand/[0.02]">
+             <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-all shadow-sm">
+                <ArrowRight className="w-6 h-6" />
+             </div>
           </div>
         </div>
       </Card>
