@@ -34,8 +34,8 @@ const UserMenu = () => {
 
   if (isUserLoading) {
     return (
-      <div className="h-20 w-20 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      <div className="h-14 w-14 flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-brand" />
       </div>
     );
   }
@@ -45,10 +45,10 @@ const UserMenu = () => {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button asChild variant="ghost" className="rounded-full h-20 w-20 p-0 flex items-center justify-center">
+            <Button asChild variant="ghost" className="rounded-full h-14 w-14 p-0 flex items-center justify-center">
               <Link href="/login">
-                <div className="h-16 w-16 rounded-full flex items-center justify-center p-1">
-                  <Image src="/images/icon-moncompte.png" alt="Mon compte" width={64} height={64} className="h-16 w-16 object-contain" />
+                <div className="h-11 w-11 rounded-full flex items-center justify-center p-1">
+                  <Image src="/images/icon-moncompte.png" alt="Mon compte" width={44} height={44} className="h-11 w-11 object-contain" />
                 </div>
                 <span className="sr-only">Mon compte</span>
               </Link>
@@ -65,10 +65,10 @@ const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-20 w-20 rounded-full p-0 flex items-center justify-center">
-          <Avatar className="h-16 w-16 border-2 border-brand">
+        <Button variant="ghost" className="relative h-14 w-14 rounded-full p-0 flex items-center justify-center">
+          <Avatar className="h-11 w-11 border-2 border-brand">
             <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-xl">{user.email?.[0].toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="bg-brand text-brand-foreground text-sm">{user.email?.[0].toUpperCase()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -123,7 +123,7 @@ const LandingHeader = () => {
                     <div className="flex flex-col items-center gap-1 mt-2 w-full">
                         <div className="flex items-center gap-2 sm:gap-4 w-full max-w-7xl mx-auto px-4">
                             {/* Balancier gauche pour centrer la barre de recherche par rapport au conteneur max-w-7xl */}
-                            <div className="hidden md:block w-[168px] shrink-0" aria-hidden="true" />
+                            <div className="hidden md:block w-[120px] shrink-0" aria-hidden="true" />
                             
                             <form action="/map" method="get" className="relative flex-1 max-w-3xl mx-auto">
                                 <Input
@@ -141,11 +141,11 @@ const LandingHeader = () => {
                                 </Button>
                             </form>
                             
-                            <div className="hidden md:flex items-center gap-2 shrink-0 w-[168px] justify-end">
+                            <div className="hidden md:flex items-center gap-2 shrink-0 w-[120px] justify-end">
                                 <TooltipProvider delayDuration={0}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-14 w-14">
                                                 <Link href="/entretien">
                                                     <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={43} height={43} className="h-[43px] w-[43px] object-contain" />
                                                     <span className="sr-only">Entretien & Révisions</span>
@@ -160,7 +160,7 @@ const LandingHeader = () => {
                                 <TooltipProvider delayDuration={0}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
+                                            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-14 w-14">
                                                 <Link href="/info">
                                                     <Image src="/images/icon-conseils.png" alt="Conseils" width={38} height={38} className="h-[38px] w-[38px] object-contain" />
                                                     <span className="sr-only">Conseils pratiques</span>
