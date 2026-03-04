@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, LogOut, Loader2, User as UserIcon, Home, Bike, Wrench } from 'lucide-react';
+import { Search, LogOut, Loader2, User as UserIcon, Home, Bike, Wrench, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -49,57 +49,77 @@ const UserMenu = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button asChild variant="ghost" className="rounded-full h-14 w-14 p-0 flex items-center justify-center">
-              <Link href="/login">
-                <div className="h-11 w-11 rounded-full flex items-center justify-center p-1">
-                  <Image src="/images/icon-moncompte.png" alt="Mon compte" width={44} height={44} className="h-11 w-11 object-contain" />
-                </div>
-                <span className="sr-only">Mon compte</span>
-              </Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>Mon compte</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
+  const trigger = user ? (
+    <Button variant="ghost" className="relative h-14 w-14 rounded-full p-0 flex items-center justify-center focus-visible:ring-0">
+      <Avatar className="h-11 w-11 border-2 border-brand">
+        <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
+        <AvatarFallback className="bg-brand text-brand-foreground text-sm">{user.email?.[0].toUpperCase()}</AvatarFallback>
+      </Avatar>
+    </Button>
+  ) : (
+    <Button variant="ghost" className="rounded-full h-14 w-14 p-0 flex items-center justify-center focus-visible:ring-0">
+      <div className="h-11 w-11 rounded-full flex items-center justify-center p-1">
+        <Image src="/images/icon-moncompte.png" alt="Mon compte" width={44} height={44} className="h-11 w-11 object-contain" />
+      </div>
+      <span className="sr-only">Menu utilisateur</span>
+    </Button>
+  );
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-14 w-14 rounded-full p-0 flex items-center justify-center">
-          <Avatar className="h-11 w-11 border-2 border-brand">
-            <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-sm">{user.email?.[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </Button>
+        {trigger}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Connecté en tant que</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand">
-          <Link href="/account">
-            <UserIcon className="mr-2 h-4 w-4" />
-            <span>Gérer mon compte</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:text-brand">
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Déconnexion</span>
-        </DropdownMenuItem>
+      <DropdownMenuContent className="w-64" align="end" forceMount>
+        {/* Éléments visibles uniquement sur mobile */}
+        <div className="md:hidden">
+            <DropdownMenuLabel className="text-xs uppercase tracking-widest text-muted-foreground font-black">Navigation</DropdownMenuLabel>
+            <DropdownMenuItem asChild>
+                <Link href="/entretien" className="flex items-center gap-3 py-3 cursor-pointer">
+                    <div className="w-8 flex justify-center">
+                        <Image src="/images/icon-entretienrevision.png" alt="" width={32} height={32} className="object-contain" />
+                    </div>
+                    <span className="font-bold">Entretien & Révisions</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <Link href="/info" className="flex items-center gap-3 py-3 cursor-pointer">
+                    <div className="w-8 flex justify-center">
+                        <Image src="/images/icon-conseils.png" alt="" width={28} height={28} className="object-contain" />
+                    </div>
+                    <span className="font-bold">Conseils pratiques</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+        </div>
+
+        <DropdownMenuLabel className="text-xs uppercase tracking-widest text-muted-foreground font-black">Utilisateur</DropdownMenuLabel>
+        {user ? (
+          <>
+            <div className="px-2 py-1.5">
+                <p className="text-sm font-medium leading-none truncate">{user.email}</p>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand font-bold py-3">
+              <Link href="/account">
+                <UserIcon className="mr-2 h-4 w-4" />
+                <span>Gérer mon compte</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:text-destructive py-3">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Déconnexion</span>
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <DropdownMenuItem asChild className="cursor-pointer font-bold text-brand py-3">
+            <Link href="/login">
+              <UserIcon className="mr-2 h-4 w-4" />
+              <span>Connexion / Inscription</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
