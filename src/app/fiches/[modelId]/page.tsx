@@ -47,8 +47,7 @@ const parseDisplacement = (displacement: string): number => {
 
 
 export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
-  const resolvedParams = use(params);
-  const modelId = resolvedParams.modelId;
+  const { modelId } = use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -185,7 +184,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               alt="Label Moto Watermark"
               width={600}
               height={192}
-              className="opacity-[0.07] rotate-[-15deg]"
+              className="opacity-[0.1] rotate-[-15deg]"
             />
           </div>
           <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">

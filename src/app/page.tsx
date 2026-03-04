@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from '@/components/app/logo';
-import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon, ArrowRight } from 'lucide-react';
+import { Bike, Wrench, FileText, Search, Home, CheckCircle, LogOut, Loader2, User as UserIcon, ArrowRight, Menu } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/app/data/articles.json';
 import { cn } from '@/lib/utils';
@@ -40,17 +40,23 @@ const UserMenu = () => {
     );
   }
 
-  const trigger = user ? (
+  const trigger = (
     <Button variant="ghost" className="relative h-14 w-14 rounded-full p-0 flex items-center justify-center focus-visible:ring-0">
-      <Avatar className="h-11 w-11 border-2 border-brand">
-        <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
-        <AvatarFallback className="bg-brand text-brand-foreground text-sm">{user.email?.[0].toUpperCase()}</AvatarFallback>
-      </Avatar>
-    </Button>
-  ) : (
-    <Button variant="ghost" className="rounded-full h-14 w-14 p-0 flex items-center justify-center focus-visible:ring-0">
-      <div className="h-11 w-11 rounded-full flex items-center justify-center p-1">
-        <Image src="/images/icon-moncompte.png" alt="Mon compte" width={44} height={44} className="h-11 w-11 object-contain" />
+      <div className="relative">
+        {user ? (
+          <Avatar className="h-11 w-11 border-2 border-brand">
+            <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
+            <AvatarFallback className="bg-brand text-brand-foreground text-sm">{user.email?.[0].toUpperCase()}</AvatarFallback>
+          </Avatar>
+        ) : (
+          <div className="h-11 w-11 rounded-full flex items-center justify-center p-1">
+            <Image src="/images/icon-moncompte.png" alt="Mon compte" width={44} height={44} className="h-11 w-11 object-contain" />
+          </div>
+        )}
+        {/* Indicateur de menu mobile */}
+        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-1 border-2 border-white shadow-sm flex items-center justify-center">
+          <Menu className="h-2.5 w-2.5" strokeWidth={3} />
+        </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
     </Button>
@@ -62,7 +68,6 @@ const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end" forceMount>
-        {/* Éléments visibles uniquement sur mobile */}
         <div className="md:hidden">
             <DropdownMenuLabel className="text-xs uppercase tracking-widest text-muted-foreground font-black">Navigation</DropdownMenuLabel>
             <DropdownMenuItem asChild>
@@ -142,7 +147,6 @@ const LandingHeader = () => {
 
                     <div className="flex flex-col items-center gap-1 mt-2 w-full">
                         <div className="flex items-center gap-2 sm:gap-4 w-full max-w-7xl mx-auto px-4">
-                            {/* Balancier gauche pour centrer la barre de recherche par rapport au conteneur max-w-7xl */}
                             <div className="hidden md:block w-[120px] shrink-0" aria-hidden="true" />
                             
                             <form action="/map" method="get" className="relative flex-1 max-w-3xl mx-auto">

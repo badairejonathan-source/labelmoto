@@ -43,8 +43,7 @@ type Article = {
 const articles: Article[] = articlesData as unknown as Article[];
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const id = resolvedParams.id;
+  const { id } = use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -152,7 +151,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               alt="Label Moto Watermark"
               width={600}
               height={192}
-              className="opacity-[0.07] rotate-[-15deg]"
+              className="opacity-[0.1] rotate-[-15deg]"
             />
           </div>
           <Link href="/info" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
