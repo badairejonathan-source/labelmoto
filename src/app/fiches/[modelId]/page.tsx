@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, use } from 'react';
+import React, { useState, use } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -176,17 +177,17 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         onFilterChange={handleFilterChange}
         placeholderText="Rechercher un pro, un article..."
       />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto relative overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
-            <Image
-              src="/images/logo-moto.png?v=6"
-              alt="Label Moto Watermark"
-              width={600}
-              height={192}
-              className="opacity-[0.1] rotate-[-15deg]"
-            />
-          </div>
+      <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
+        <Image
+          src="/images/logo-moto.png?v=6"
+          alt="Label Moto Watermark"
+          width={800}
+          height={256}
+          className="opacity-[0.10] rotate-[-15deg] scale-150"
+        />
+      </div>
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div className="max-w-4xl mx-auto">
           <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'entretien
