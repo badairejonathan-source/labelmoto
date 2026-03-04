@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -112,7 +111,7 @@ function InfoPageComponent() {
                             alt="Label Moto Watermark"
                             width={600}
                             height={192}
-                            className="opacity-5 rotate-[-15deg]"
+                            className="opacity-[0.07] rotate-[-15deg]"
                         />
                     </div>
                     <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, use } from 'react';
@@ -186,7 +185,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               alt="Label Moto Watermark"
               width={600}
               height={192}
-              className="opacity-5 rotate-[-15deg]"
+              className="opacity-[0.07] rotate-[-15deg]"
             />
           </div>
           <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
