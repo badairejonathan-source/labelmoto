@@ -162,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                             <TooltipTrigger asChild>
                                 <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
                                     <Link href="/entretien">
-                                        <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={62} height={62} className="h-[62px] w-[62px] object-contain" />
+                                        <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={43} height={43} className="h-[43px] w-[43px] object-contain" />
                                         <span className="sr-only">Entretien & Révisions</span>
                                     </Link>
                                 </Button>
@@ -177,7 +177,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                             <TooltipTrigger asChild>
                                 <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-20 w-20">
                                     <Link href="/info">
-                                        <Image src="/images/icon-conseils.png" alt="Conseils" width={55} height={55} className="h-[55px] w-[55px] object-contain" />
+                                        <Image src="/images/icon-conseils.png" alt="Conseils" width={38} height={38} className="h-[38px] w-[38px] object-contain" />
                                         <span className="sr-only">Conseils pratiques</span>
                                     </Link>
                                 </Button>
