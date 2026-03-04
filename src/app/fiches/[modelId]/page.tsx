@@ -1,7 +1,8 @@
+
 'use client';
 
-import { useState } from 'react';
-import { notFound, useRouter, useParams } from 'next/navigation';
+import { useState, use } from 'react';
+import { notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Gauge, Droplets, Wrench, ShieldCheck, Settings2 } from 'lucide-react';
@@ -46,10 +47,10 @@ const parseDisplacement = (displacement: string): number => {
 };
 
 
-export default function FicheTechniquePage() {
+export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
+  const resolvedParams = use(params);
+  const modelId = resolvedParams.modelId;
   const router = useRouter();
-  const params = useParams();
-  const modelId = params.modelId as string;
   const [searchTerm, setSearchTerm] = useState('');
 
   const fiche = fichesData.find((f) => f.modelId === modelId) as FicheTechnique | undefined;
@@ -178,7 +179,16 @@ export default function FicheTechniquePage() {
         placeholderText="Rechercher un pro, un article..."
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
+            <Image
+              src="/images/logo-moto.png?v=6"
+              alt="Label Moto Watermark"
+              width={600}
+              height={192}
+              className="opacity-5 rotate-[-15deg]"
+            />
+          </div>
           <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'entretien

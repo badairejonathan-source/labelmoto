@@ -1,9 +1,8 @@
 
-
 'use client';
 
-import { useState } from 'react';
-import { notFound, useRouter, useParams } from 'next/navigation';
+import { useState, use } from 'react';
+import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -44,10 +43,10 @@ type Article = {
 
 const articles: Article[] = articlesData as unknown as Article[];
 
-export default function ArticlePage() {
+export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const id = resolvedParams.id;
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
   const [searchTerm, setSearchTerm] = useState('');
 
   const article = articles.find((a) => a.id === id);
@@ -147,7 +146,16 @@ export default function ArticlePage() {
         placeholderText="Rechercher un article..."
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
+            <Image
+              src="/images/logo-moto.png?v=6"
+              alt="Label Moto Watermark"
+              width={600}
+              height={192}
+              className="opacity-5 rotate-[-15deg]"
+            />
+          </div>
           <Link href="/info" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" />
             Retour aux articles
