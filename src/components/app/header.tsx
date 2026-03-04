@@ -43,9 +43,9 @@ const UserMenu = () => {
 
   if (isUserLoading) {
     return (
-      <Button size="icon" variant="ghost" className="rounded-full h-20 w-20">
+      <div className="h-20 w-20 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-brand" />
-      </Button>
+      </div>
     );
   }
 
@@ -54,7 +54,7 @@ const UserMenu = () => {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button asChild variant="ghost" className="rounded-full h-20 w-20 p-0">
+            <Button asChild variant="ghost" className="rounded-full h-20 w-20 p-0 flex items-center justify-center">
               <Link href="/login">
                 <div className="h-16 w-16 rounded-full flex items-center justify-center p-1">
                   <Image src="/images/icon-moncompte.png" alt="Mon compte" width={64} height={64} className="h-16 w-16 object-contain" />
@@ -74,7 +74,7 @@ const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-20 w-20 rounded-full p-0">
+        <Button variant="ghost" className="relative h-20 w-20 rounded-full p-0 flex items-center justify-center">
           <Avatar className="h-16 w-16 border-2 border-brand">
             <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xl">{user.email?.[0].toUpperCase()}</AvatarFallback>
@@ -130,7 +130,10 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
         
         <div className="flex flex-col items-center gap-1 mt-2 w-full">
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-7xl mx-auto px-4">
-                <div className="relative flex-1 max-w-3xl">
+                {/* Balancier gauche pour centrer la barre de recherche par rapport au conteneur max-w-7xl */}
+                <div className="hidden md:block w-[168px] shrink-0" aria-hidden="true" />
+
+                <div className="relative flex-1 max-w-3xl mx-auto">
                   <Input
                     type="search"
                     placeholder={placeholderText}
@@ -153,7 +156,7 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                   </Button>
                 </div>
 
-                <div className="hidden md:flex items-center gap-2 shrink-0 ml-auto">
+                <div className="hidden md:flex items-center gap-2 shrink-0 w-[168px] justify-end">
                     <TooltipProvider delayDuration={0}>
                         <Tooltip>
                             <TooltipTrigger asChild>
