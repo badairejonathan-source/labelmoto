@@ -25,53 +25,32 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-const categoryIcons: Record<string, string> = {
-    'concession': `
-      <g transform="translate(4, 4) scale(1.2)">
-        <circle cx="18.5" cy="17.5" r="3.5" stroke="white" stroke-width="2" fill="none" />
-        <circle cx="5.5" cy="17.5" r="3.5" stroke="white" stroke-width="2" fill="none" />
-        <path d="M12 13h-3l-2-5h-3l-1 2" stroke="white" stroke-width="2" fill="none" />
-        <path d="M12 13l2-5h4l2 5" stroke="white" stroke-width="2" fill="none" />
-      </g>
-    `,
-    'atelier': `
-      <g transform="translate(6, 6) scale(1.1)">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-      </g>
-    `,
-    'concession-atelier': `
-      <g transform="translate(4, 4) scale(1.1)">
-        <path d="M5.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM18.5 17.5c2.485 0 4.5-2.015 4.5-4.5s-2.015-4.5-4.5-4.5-4.5 2.015-4.5 4.5 2.015 4.5 4.5 4.5zM12 13h-3l-2-5h-3l-1 2M12 13l2-5h4l2 5" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-      </g>
-    `,
-    'accessoiriste': `
-      <g transform="translate(6, 6) scale(1.1)">
-        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-      </g>
-    `,
-    'default': `<circle cx="12" cy="12" r="8" stroke="white" stroke-width="2" fill="none" />`
-};
+// Icône de casque unique pour tous les pointeurs
+const helmetIconPath = `
+  <g transform="translate(6, 6) scale(1.0)">
+    <path d="M12 2C7.03 2 3 6.03 3 11c0 3.48 1.94 6.5 4.8 8.05l-.8 2.95h10l-.8-2.95C19.06 17.5 21 14.48 21 11c0-4.97-4.03-9-9-9z" fill="white"/>
+    <path d="M12 4c-3.87 0-7 3.13-7 7 0 2.17.99 4.11 2.54 5.39l.46-1.69c-1.2-.9-2-2.32-2-3.7 0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.38-.8 2.8-2 3.7l.46 1.69C18.01 15.11 19 13.17 19 11c0-3.87-3.13-7-7-7z" fill="currentColor"/>
+    <path d="M7 11h10v1H7z" fill="white" opacity="0.5"/>
+  </g>
+`;
 
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
-    const category = dealership.category ? dealership.category.toLowerCase() : 'default';
     const scale = isHovered || isSelected ? 1.25 : 1;
     const shadowOpacity = isHovered || isSelected ? 0.6 : 0.3;
     const strokeWidth = isHovered || isSelected ? 2.5 : 0.5;
     const fillColor = isSelected ? 'hsl(var(--brand))' : 'hsl(var(--primary))';
 
     const iconHtml = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center; color: ${fillColor}">
         <defs>
           <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="${shadowOpacity}"/>
           </filter>
         </defs>
         <g filter="url(#shadow)">
-          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="${fillColor}" stroke="white" stroke-width="${strokeWidth}" />
+          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="currentColor" stroke="white" stroke-width="${strokeWidth}" />
         </g>
-        <g transform="translate(6, 6) scale(1.0)">
-            ${categoryIcons[category] || categoryIcons['default']}
-        </g>
+        ${helmetIconPath}
       </svg>
     `;
 
@@ -118,7 +97,6 @@ export default function MapComponent({
         maxBoundsViscosity: 1.0,
       }).setView(center, zoom);
       
-      // Nouveau style de carte : CartoDB Voyager
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
