@@ -127,11 +127,20 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               <h3 className="font-black text-sm md:text-xl text-foreground leading-tight uppercase truncate">
                 {title}
               </h3>
-              {categoryLabel && (
-                <div className="text-brand text-[9px] md:text-xs font-black mt-0.5 uppercase tracking-wider">
-                  {categoryLabel}
-                </div>
-              )}
+              
+              <div className="flex items-center justify-between mt-0.5">
+                {categoryLabel && (
+                  <div className="text-brand text-[9px] md:text-xs font-black uppercase tracking-wider">
+                    {categoryLabel}
+                  </div>
+                )}
+                {rating > 0 && (
+                  <div className="flex items-center gap-1 text-[10px] md:text-xs font-bold text-yellow-400">
+                    <Star className="h-3 w-3 md:h-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                    <span>{rating.toFixed(1)}</span>
+                  </div>
+                )}
+              </div>
               
               <div className="flex items-center gap-3 md:gap-6 text-muted-foreground text-[9px] md:text-xs uppercase font-bold mt-2 md:mt-3">
                   {dealership.phoneNumber && (
@@ -154,15 +163,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   )}
               </div>
 
-              <div className="flex items-center justify-between mt-2 md:mt-3">
-                {rating > 0 && (
-                  <div className="flex items-center gap-1 text-[10px] md:text-xs font-bold text-yellow-400">
-                    <Star className="h-3 w-3 md:h-4 md:h-4 fill-yellow-400 text-yellow-400" />
-                    <span>{rating.toFixed(1)}</span>
-                  </div>
-                )}
-
-                {dealership.address && 
+              {dealership.address && 
+                <div className="mt-2 md:mt-3">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -178,8 +180,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                }
-              </div>
+                </div>
+              }
             </div>
           </div>
 
