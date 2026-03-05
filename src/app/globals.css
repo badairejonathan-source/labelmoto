@@ -48,6 +48,10 @@
 }
 
 @layer base {
+  html {
+    font-size: 13px; /* Réduction de l'échelle globale de ~20% */
+  }
+
   :root {
     --background: 220 20% 98%;
     --foreground: 0 0% 3.9%;
@@ -55,19 +59,19 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 211 62% 16%; /* Bleu pétrole */
+    --primary: 211 62% 16%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-    --accent: 25 95% 53%; /* Orange */
+    --accent: 25 95% 53%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 25 95% 53%; /* Orange pour le focus */
+    --ring: 25 95% 53%;
     --radius: 0.5rem;
     --brand: 25 95% 53%;
     --brand-foreground: 0 0% 98%;
@@ -87,7 +91,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 211 62% 16%; /* Bleu pétrole */
+    --primary: 211 62% 16%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -122,7 +126,7 @@
   .custom-leaflet-tooltip .leaflet-popup-content-wrapper {
     background: hsl(var(--card));
     color: hsl(var(--card-foreground));
-    border-radius: 0.5rem; /* rounded-lg */
+    border-radius: 0.5rem;
     padding: 0;
     border: none;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -130,8 +134,8 @@
 
   .custom-leaflet-tooltip .leaflet-popup-content {
     margin: 0;
-    width: 12rem; /* w-48 */
-    border-radius: 0.5rem; /* rounded-lg */
+    width: 12rem;
+    border-radius: 0.5rem;
     overflow: hidden;
   }
   

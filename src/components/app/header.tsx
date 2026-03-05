@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, LogOut, Loader2, User as UserIcon, Home, Bike, Wrench, Menu } from 'lucide-react';
+import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -26,9 +26,9 @@ interface HeaderProps {
     onSearchTermChange: (term: string) => void;
     onSearch: () => void;
     className?: string;
-    activeFilter: 'shopping' | 'service' | null;
-    onFilterChange: (filter: 'shopping' | 'service' | null) => void;
-    placeholderText: string;
+    activeFilter?: 'shopping' | 'service' | null;
+    onFilterChange?: (filter: 'shopping' | 'service' | null) => void;
+    placeholderText?: string;
 }
 
 const UserMenu = () => {
@@ -43,28 +43,27 @@ const UserMenu = () => {
 
   if (isUserLoading) {
     return (
-      <div className="h-14 w-14 flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-brand" />
+      <div className="h-10 w-10 flex items-center justify-center">
+        <Loader2 className="h-5 w-5 animate-spin text-brand" />
       </div>
     );
   }
 
   const trigger = (
-    <Button variant="ghost" className="relative h-14 w-14 rounded-full p-0 flex items-center justify-center focus-visible:ring-0">
+    <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 flex items-center justify-center focus-visible:ring-0">
       <div className="relative">
         {user ? (
-          <Avatar className="h-11 w-11 border-2 border-brand">
+          <Avatar className="h-9 w-9 border-2 border-brand">
             <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-sm">{user.email?.[0].toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="bg-brand text-brand-foreground text-xs">{user.email?.[0].toUpperCase()}</AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-11 w-11 rounded-full flex items-center justify-center p-1">
-            <Image src="/images/icon-moncompte.png" alt="Mon compte" width={44} height={44} className="h-11 w-11 object-contain" />
+          <div className="h-9 w-9 rounded-full flex items-center justify-center p-1">
+            <Image src="/images/icon-moncompte.png" alt="Mon compte" width={36} height={36} className="h-9 w-9 object-contain" />
           </div>
         )}
-        {/* Indicateur de menu mobile */}
-        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-1 border-2 border-white shadow-sm flex items-center justify-center">
-          <Menu className="h-2.5 w-2.5" strokeWidth={3} />
+        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border-2 border-white shadow-sm flex items-center justify-center">
+          <Menu className="h-2 w-2" strokeWidth={3} />
         </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
@@ -78,50 +77,49 @@ const UserMenu = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end" forceMount>
         <div className="md:hidden">
-            <DropdownMenuLabel className="text-xs uppercase tracking-widest text-muted-foreground font-black">Navigation</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Navigation</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-                <Link href="/entretien" className="flex items-center gap-3 py-3 cursor-pointer">
-                    <div className="w-8 flex justify-center">
-                        <Image src="/images/icon-entretienrevision.png" alt="" width={32} height={32} className="object-contain" />
+                <Link href="/entretien" className="flex items-center gap-3 py-2 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                        <Image src="/images/icon-entretienrevision.png" alt="" width={24} height={24} className="object-contain" />
                     </div>
-                    <span className="font-bold">Entretien & Révisions</span>
+                    <span className="font-bold text-sm">Entretien & Révisions</span>
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-                <Link href="/info" className="flex items-center gap-3 py-3 cursor-pointer">
-                    <div className="w-8 flex justify-center">
-                        <Image src="/images/icon-conseils.png" alt="" width={28} height={28} className="object-contain" />
+                <Link href="/info" className="flex items-center gap-3 py-2 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                        <Image src="/images/icon-conseils.png" alt="" width={22} height={22} className="object-contain" />
                     </div>
-                    <span className="font-bold">Conseils pratiques</span>
+                    <span className="font-bold text-sm">Conseils pratiques</span>
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
         </div>
 
-        <DropdownMenuLabel className="text-xs uppercase tracking-widest text-muted-foreground font-black">Utilisateur</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Utilisateur</DropdownMenuLabel>
         {user ? (
           <>
             <div className="px-2 py-1.5">
-                <p className="text-sm font-medium leading-none truncate">{user.email}</p>
+                <p className="text-xs font-medium leading-none truncate">{user.email}</p>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand font-bold py-3">
+            <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand font-bold py-2">
               <Link href="/account">
-                <UserIcon className="mr-2 h-4 w-4" />
-                <span>Gérer mon compte</span>
+                <UserIcon className="mr-2 h-3.5 w-3.5" />
+                <span className="text-sm">Gérer mon compte</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:text-destructive py-3">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Déconnexion</span>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:text-destructive py-2">
+              <span className="text-sm">Déconnexion</span>
             </DropdownMenuItem>
           </>
         ) : (
-          <DropdownMenuItem asChild className="cursor-pointer font-bold text-brand py-3">
+          <DropdownMenuItem asChild className="cursor-pointer font-bold text-brand py-2">
             <Link href="/login">
-              <UserIcon className="mr-2 h-4 w-4" />
-              <span>Connexion / Inscription</span>
+              <UserIcon className="mr-2 h-3.5 w-3.5" />
+              <span className="text-sm">Connexion / Inscription</span>
             </Link>
           </DropdownMenuItem>
         )}
@@ -130,19 +128,27 @@ const UserMenu = () => {
   );
 };
 
-const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearch, className, activeFilter, onFilterChange, placeholderText }) => {
+const Header: React.FC<HeaderProps> = ({ 
+    searchTerm, 
+    onSearchTermChange, 
+    onSearch, 
+    className, 
+    activeFilter = null, 
+    onFilterChange, 
+    placeholderText = "Recherche par nom, ville, departement" 
+}) => {
   return (
-    <header className={cn("bg-card p-2 text-foreground border-b border-border z-40", className)}>
-      <div className="container mx-auto flex flex-col gap-1.5">
-        <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-3">
-          <div className="w-48 md:w-64 shrink-0 lg:justify-self-start">
+    <header className={cn("bg-card py-2 px-4 border-b border-border z-40 relative", className)}>
+      <div className="container mx-auto max-w-7xl flex flex-col gap-2">
+        <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-2">
+          <div className="w-40 md:w-56 shrink-0 lg:justify-self-start">
             <Link href="/">
               <LabelMotoLogo />
             </Link>
           </div>
           
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-foreground text-center leading-[1.1]">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-foreground text-center leading-tight">
               <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
               <span className="text-brand italic block lg:inline">Fini la galère.</span>
             </p>
@@ -153,15 +159,15 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
           </div>
         </div>
         
-        <div className="flex flex-col items-center gap-1 mt-2 w-full">
-            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-7xl mx-auto px-4">
-                <div className="hidden md:block w-[120px] shrink-0" aria-hidden="true" />
+        <div className="flex flex-col items-center gap-1 w-full">
+            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
+                <div className="hidden md:block w-24 shrink-0" aria-hidden="true" />
 
-                <div className="relative flex-1 max-w-3xl mx-auto">
+                <div className="relative flex-1 max-w-2xl mx-auto">
                   <Input
                     type="search"
                     placeholder={placeholderText}
-                    className="pr-12 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900"
+                    className="pr-10 h-9 text-xs rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-none"
                     value={searchTerm}
                     onChange={(e) => onSearchTermChange(e.target.value)}
                     onKeyDown={(e) => {
@@ -173,82 +179,80 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, onSearchTermChange, onSearc
                   <Button 
                       type="submit" 
                       size="icon" 
-                      className="absolute top-1/2 right-1.5 -translate-y-1/2 h-7 w-7 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
+                      className="absolute top-1/2 right-1 -translate-y-1/2 h-7 w-7 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
                       onClick={onSearch}
                   >
-                    <Search className="h-4 w-4" />
+                    <Search className="h-3.5 w-3.5" />
                   </Button>
                 </div>
 
-                <div className="hidden md:flex items-center gap-2 shrink-0 w-[120px] justify-end">
+                <div className="hidden md:flex items-center gap-1 shrink-0 w-24 justify-end">
                     <TooltipProvider delayDuration={0}>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-14 w-14">
+                                <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
                                     <Link href="/entretien">
-                                        <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={43} height={43} className="h-[43px] w-[43px] object-contain" />
+                                        <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={32} height={32} className="h-8 w-8 object-contain" />
                                         <span className="sr-only">Entretien & Révisions</span>
                                     </Link>
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom">
-                                <p>Entretien & Révisions</p>
-                            </TooltipContent>
+                            <TooltipContent side="bottom"><p>Entretien & Révisions</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                      <TooltipProvider delayDuration={0}>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-14 w-14">
+                                <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
                                     <Link href="/info">
-                                        <Image src="/images/icon-conseils.png" alt="Conseils" width={38} height={38} className="h-[38px] w-[38px] object-contain" />
+                                        <Image src="/images/icon-conseils.png" alt="Conseils" width={28} height={28} className="h-7 w-7 object-contain" />
                                         <span className="sr-only">Conseils pratiques</span>
                                     </Link>
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom">
-                                <p>Conseils pratiques</p>
-                            </TooltipContent>
+                            <TooltipContent side="bottom"><p>Conseils pratiques</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                 </div>
             </div>
 
-            <nav className="flex items-center justify-center gap-4 sm:gap-6 mt-2">
-                <Button
-                    variant="ghost"
-                    onClick={() => onFilterChange(null)}
-                    className={cn(
-                      "relative px-3 py-1 h-auto flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
-                      activeFilter === null ? 'text-brand' : 'text-muted-foreground'
-                    )}
-                  >
-                    <Home className="h-5 w-5 sm:h-6 w-6" />
-                    <span>Tout</span>
-                  </Button>
-                <Button
-                    variant="ghost"
-                    onClick={() => onFilterChange('shopping')}
-                    className={cn(
-                      "relative px-3 py-1 h-auto flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
-                      activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
-                    )}
-                  >
-                    <Bike className="h-5 w-5 sm:h-6 w-6" />
-                    <span>Concession</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => onFilterChange('service')}
-                    className={cn(
-                      "relative px-3 py-1 h-auto flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-lg font-medium transition-all rounded-xl hover:bg-brand hover:text-brand-foreground",
-                      activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
-                    )}
-                  >
-                    <Wrench className="h-5 w-5 sm:h-6 w-6" />
-                    <span>Atelier</span>
-                  </Button>
-            </nav>
+            {onFilterChange && (
+                <nav className="flex items-center justify-center gap-4 sm:gap-8 mt-1">
+                    <Button
+                        variant="ghost"
+                        onClick={() => onFilterChange(null)}
+                        className={cn(
+                          "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                          activeFilter === null ? 'text-brand' : 'text-muted-foreground'
+                        )}
+                      >
+                        <Home className="h-4 w-4" />
+                        <span>Tout</span>
+                      </Button>
+                    <Button
+                        variant="ghost"
+                        onClick={() => onFilterChange('shopping')}
+                        className={cn(
+                          "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                          activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
+                        )}
+                      >
+                        <Bike className="h-4 w-4" />
+                        <span>Concession</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => onFilterChange('service')}
+                        className={cn(
+                          "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                          activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
+                        )}
+                      >
+                        <Wrench className="h-4 w-4" />
+                        <span>Atelier</span>
+                      </Button>
+                </nav>
+            )}
         </div>
       </div>
     </header>
