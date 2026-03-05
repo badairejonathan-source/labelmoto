@@ -102,12 +102,12 @@ const UserMenu = () => {
         {user ? (
           <>
             <div className="px-2 py-1.5">
-                <p className="text-xs font-medium leading-none truncate">{user.email}</p>
+                <p className="text-sm font-medium leading-none truncate">{user.email}</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand font-bold py-2">
               <Link href="/account">
-                <UserIcon className="mr-2 h-3.5 w-3.5" />
+                <UserIcon className="mr-2 h-4 w-4" />
                 <span className="text-sm">Gérer mon compte</span>
               </Link>
             </DropdownMenuItem>
@@ -119,7 +119,7 @@ const UserMenu = () => {
         ) : (
           <DropdownMenuItem asChild className="cursor-pointer font-bold text-brand py-2">
             <Link href="/login">
-              <UserIcon className="mr-2 h-3.5 w-3.5" />
+              <UserIcon className="mr-2 h-4 w-4" />
               <span className="text-sm">Connexion / Inscription</span>
             </Link>
           </DropdownMenuItem>
@@ -150,8 +150,8 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className={cn("bg-card py-2 px-4 border-b border-border z-40 relative", className)}>
-      <div className="container mx-auto max-w-7xl flex flex-col gap-2">
+    <header className={cn("bg-card py-3 px-4 border-b border-border z-40 relative", className)}>
+      <div className="container mx-auto max-w-7xl flex flex-col gap-3">
         <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-2">
           <div className="w-40 md:w-56 shrink-0 lg:justify-self-start">
             <Link href="/">
@@ -160,7 +160,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-foreground text-center leading-tight">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight">
               <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
               <span className="text-brand italic block lg:inline">Fini la galère.</span>
             </p>
@@ -171,7 +171,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
         
-        <div className="flex flex-col items-center gap-1 w-full">
+        <div className="flex flex-col items-center gap-2 w-full">
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
                 <div className="hidden md:block w-24 shrink-0" aria-hidden="true" />
 
@@ -179,7 +179,7 @@ const Header: React.FC<HeaderProps> = ({
                   <Input
                     type="search"
                     placeholder={placeholderText}
-                    className="pr-10 h-9 text-xs rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-none"
+                    className="pr-10 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-none"
                     value={searchTerm}
                     onChange={(e) => onSearchTermChange(e.target.value)}
                     onKeyDown={(e) => {
@@ -191,14 +191,14 @@ const Header: React.FC<HeaderProps> = ({
                   <Button 
                       type="submit" 
                       size="icon" 
-                      className="absolute top-1/2 right-1 -translate-y-1/2 h-7 w-7 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
+                      className="absolute top-1/2 right-1 -translate-y-1/2 h-8 w-8 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
                       onClick={onSearch}
                   >
-                    <Search className="h-3.5 w-3.5" />
+                    <Search className="h-4 w-4" />
                   </Button>
                 </div>
 
-                <div className="hidden md:flex items-center gap-1 shrink-0 w-24 justify-end">
+                <div className="hidden md:flex items-center gap-2 shrink-0 w-24 justify-end">
                     <TooltipProvider delayDuration={0}>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -228,38 +228,38 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
             </div>
 
-            <nav className="flex items-center justify-center gap-4 sm:gap-8 mt-1">
+            <nav className="flex items-center justify-center gap-6 sm:gap-10 mt-1">
                 <Button
                     variant="ghost"
                     onClick={() => handleTabClick(null)}
                     className={cn(
-                      "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                      "relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10",
                       activeFilter === null ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
-                    <Home className="h-4 w-4" />
+                    <Home className="h-5 w-5" />
                     <span>Tout</span>
                   </Button>
                 <Button
                     variant="ghost"
                     onClick={() => handleTabClick('shopping')}
                     className={cn(
-                      "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                      "relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10",
                       activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
-                    <Bike className="h-4 w-4" />
+                    <Bike className="h-5 w-5" />
                     <span>Concession</span>
                   </Button>
                   <Button
                     variant="ghost"
                     onClick={() => handleTabClick('service')}
                     className={cn(
-                      "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                      "relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10",
                       activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
                     )}
                   >
-                    <Wrench className="h-4 w-4" />
+                    <Wrench className="h-5 w-5" />
                     <span>Atelier</span>
                   </Button>
             </nav>

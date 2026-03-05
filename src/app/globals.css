@@ -49,7 +49,7 @@
 
 @layer base {
   html {
-    font-size: 13px; /* Réduction de l'échelle globale de ~20% */
+    font-size: 14px; /* Ajustement pour meilleure lisibilité tout en restant compact */
   }
 
   :root {
