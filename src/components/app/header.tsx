@@ -10,6 +10,7 @@ import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -137,6 +138,17 @@ const Header: React.FC<HeaderProps> = ({
     onFilterChange, 
     placeholderText = "Recherche par nom, ville, departement" 
 }) => {
+  const router = useRouter();
+
+  const handleTabClick = (filter: 'shopping' | 'service' | null) => {
+    if (onFilterChange) {
+      onFilterChange(filter);
+    } else {
+      const query = filter ? `?filter=${filter}` : '';
+      router.push(`/map${query}`);
+    }
+  };
+
   return (
     <header className={cn("bg-card py-2 px-4 border-b border-border z-40 relative", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-2">
@@ -216,43 +228,41 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
             </div>
 
-            {onFilterChange && (
-                <nav className="flex items-center justify-center gap-4 sm:gap-8 mt-1">
-                    <Button
-                        variant="ghost"
-                        onClick={() => onFilterChange(null)}
-                        className={cn(
-                          "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
-                          activeFilter === null ? 'text-brand' : 'text-muted-foreground'
-                        )}
-                      >
-                        <Home className="h-4 w-4" />
-                        <span>Tout</span>
-                      </Button>
-                    <Button
-                        variant="ghost"
-                        onClick={() => onFilterChange('shopping')}
-                        className={cn(
-                          "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
-                          activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
-                        )}
-                      >
-                        <Bike className="h-4 w-4" />
-                        <span>Concession</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => onFilterChange('service')}
-                        className={cn(
-                          "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
-                          activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
-                        )}
-                      >
-                        <Wrench className="h-4 w-4" />
-                        <span>Atelier</span>
-                      </Button>
-                </nav>
-            )}
+            <nav className="flex items-center justify-center gap-4 sm:gap-8 mt-1">
+                <Button
+                    variant="ghost"
+                    onClick={() => handleTabClick(null)}
+                    className={cn(
+                      "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                      activeFilter === null ? 'text-brand' : 'text-muted-foreground'
+                    )}
+                  >
+                    <Home className="h-4 w-4" />
+                    <span>Tout</span>
+                  </Button>
+                <Button
+                    variant="ghost"
+                    onClick={() => handleTabClick('shopping')}
+                    className={cn(
+                      "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                      activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
+                    )}
+                  >
+                    <Bike className="h-4 w-4" />
+                    <span>Concession</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleTabClick('service')}
+                    className={cn(
+                      "relative px-2 py-1 h-auto flex items-center gap-1.5 text-xs font-bold transition-all rounded-lg hover:bg-brand/10",
+                      activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
+                    )}
+                  >
+                    <Wrench className="h-4 w-4" />
+                    <span>Atelier</span>
+                  </Button>
+            </nav>
         </div>
       </div>
     </header>
