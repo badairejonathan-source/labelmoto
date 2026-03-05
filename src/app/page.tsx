@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -33,9 +34,10 @@ export default function LandingPage() {
                 onSearch={handleSearch}
                 placeholderText="Recherche par nom, ville, departement"
             />
-            <main className="py-6 px-4 sm:px-6 lg:px-8">
+            <main className="py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                <div className="relative rounded-2xl p-1 border-2 border-brand bg-black mb-8 md:mb-12">
+                {/* Hero Section restructurée : Carte qui dépasse et CTA à cheval */}
+                <div className="relative rounded-2xl border-2 border-brand bg-black mb-24 md:mb-32">
                      <Image
                         src={hero.src}
                         alt="Motorcycle"
@@ -44,7 +46,7 @@ export default function LandingPage() {
                         priority
                         data-ai-hint={hero.hint}
                     />
-                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 text-white p-6 md:p-12">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 text-white p-6 md:p-12 md:pb-20">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
                             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
                                 Du A2 au motard expérimenté : trouver les professionnels de votre région en quelques clics
@@ -52,31 +54,35 @@ export default function LandingPage() {
                             <p className="text-base md:text-lg max-w-3xl mx-auto md:mx-0 mb-6 text-gray-200" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit pour vous laisser plus de temps sur la route.
                             </p>
-                            <div className="flex items-center justify-center md:justify-start relative z-50">
-                                <Link href="/map">
-                                    <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-base px-6 py-4 rounded-full shadow-lg relative z-50">
-                                        Explorer la carte
-                                    </Button>
-                                </Link>
-                            </div>
                         </div>
 
-                         <div className="w-full md:w-2/5 flex justify-center mt-4 md:mt-0 relative z-10">
-                             <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
-                                <Image 
-                                    src={hero.mapPreview.src}
-                                    alt="Aperçu de la carte"
-                                    width={220}
-                                    height={220}
-                                    className="rounded-xl border-4 border-white shadow-lg"
-                                    data-ai-hint={hero.mapPreview.hint}
-                                />
-                            </Link>
+                         <div className="w-full md:w-2/5 flex justify-center md:justify-end relative z-10">
+                             <div className="relative transform translate-y-16 md:translate-y-24 lg:translate-y-28 group">
+                                <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
+                                    <Image 
+                                        src={hero.mapPreview.src}
+                                        alt="Aperçu de la carte"
+                                        width={280}
+                                        height={280}
+                                        className="rounded-xl border-4 border-white shadow-2xl"
+                                        data-ai-hint={hero.mapPreview.hint}
+                                    />
+                                </Link>
+                                
+                                {/* Bouton CTA "à cheval" sur la carte */}
+                                <div className="absolute -left-12 md:-left-20 top-1/2 -translate-y-1/2 z-50">
+                                    <Link href="/map">
+                                        <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-xs md:text-base px-6 md:px-8 py-4 md:py-6 rounded-full shadow-2xl border-4 border-white whitespace-nowrap transition-transform hover:scale-105">
+                                            Explorer la carte
+                                        </Button>
+                                    </Link>
+                                </div>
+                             </div>
                         </div>
                     </div>
                 </div>
 
-                <section className="mt-6 md:mt-8">
+                <section className="mt-20 md:mt-32">
                     <div className="bg-muted/50 rounded-xl p-6">
                         <h2 className="text-xl md:text-2xl font-bold text-foreground mb-6 text-center">
                             Pourquoi Label Moto va changer votre recherche
@@ -122,7 +128,7 @@ export default function LandingPage() {
                     </div>
                 </section>
                 
-                <section className="mt-6 md:mt-8">
+                <section className="mt-16 md:mt-24">
                     <div className="bg-muted/50 rounded-2xl p-6 border-2 border-brand shadow-sm">
                         <div className="text-center mb-6">
                             <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">
@@ -175,7 +181,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                <section className="mt-6 md:mt-8">
+                <section className="mt-16 md:mt-24">
                   <div className="bg-muted/50 rounded-xl p-6 text-center">
                     <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">
                       Maîtrise ton budget entretien.
@@ -191,7 +197,7 @@ export default function LandingPage() {
                   </div>
                 </section>
 
-                <section className="mt-6 md:mt-8">
+                <section className="mt-16 md:mt-24">
                     <div className="relative rounded-xl overflow-hidden bg-black">
                         <Image
                             src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"
@@ -224,7 +230,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                <section className="mt-8 md:mt-12">
+                <section className="mt-20 md:mt-32">
                   <div className="bg-white rounded-3xl overflow-hidden border border-border/50 shadow-sm relative group">
                     <div className="flex flex-col lg:flex-row min-h-[300px]">
                       <div className="hidden lg:flex w-16 bg-muted/30 border-r border-border/50 items-center justify-center py-8 shrink-0">
