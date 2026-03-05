@@ -128,7 +128,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 {title}
               </h3>
               
-              <div className="flex items-center justify-between mt-0.5">
+              <div className="flex items-center justify-start gap-3 mt-0.5">
                 {categoryLabel && (
                   <div className="text-brand text-[9px] md:text-xs font-black uppercase tracking-wider">
                     {categoryLabel}
