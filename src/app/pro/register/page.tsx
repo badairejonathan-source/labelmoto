@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -7,7 +6,7 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { collection, serverTimestamp } from "firebase/firestore";
 import { useEffect } from 'react';
 import Image from 'next/image';
 
@@ -28,6 +27,7 @@ import { ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import brandLogos from '@/data/brand-logos';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const brands = Object.keys(brandLogos);
 
@@ -122,94 +122,79 @@ export default function RegisterProPage() {
 
   const checkQuarantine = (data: SubmissionFormValues) => {
     const textToScan = `${data.name} ${data.description || ''} ${data.address}`.toLowerCase();
-    const hasAuto = textToScan.includes('automobile');
-    const hasMoto = textToScan.includes('moto');
+    const hasAuto = textToScan.includes('automobile') || textToScan.includes('automobiles');
+    const hasMoto = textToScan.includes('moto') || textToScan.includes('motos');
     return hasAuto && !hasMoto;
   };
 
   const onSubmit = async (data: SubmissionFormValues) => {
-    if (!firestore) {
-        toast({
-            variant: "destructive",
-            title: 'Erreur de connexion',
-            description: "Impossible de se connecter à la base de données.",
-        });
-        return;
-    }
-    try {
-      const formattedHoraires: { [key: string]: string } = {};
-      weekDays.forEach(day => {
-        const schedule = data.horaires[day];
-        const morningOpen = schedule.morningOpen !== 'Fermé';
-        const afternoonOpen = schedule.afternoonOpen !== 'Fermé';
+    if (!firestore) return;
+    
+    const formattedHoraires: { [key: string]: string } = {};
+    weekDays.forEach(day => {
+      const schedule = data.horaires[day];
+      const morningOpen = schedule.morningOpen !== 'Fermé';
+      const afternoonOpen = schedule.afternoonOpen !== 'Fermé';
 
-        let dayString = '';
+      let dayString = '';
+      if (morningOpen) {
+        dayString += `${schedule.morningOpen} - ${schedule.morningClose}`;
+      }
+
+      if (afternoonOpen) {
         if (morningOpen) {
-          dayString += `${schedule.morningOpen} - ${schedule.morningClose}`;
+          dayString += `, ${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
+        } else {
+          dayString += `${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
         }
-
-        if (afternoonOpen) {
-          if (morningOpen) {
-            dayString += `, ${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
-          } else {
-            dayString += `${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
-          }
-        }
-        
-        if (!morningOpen && !afternoonOpen) {
-            dayString = 'Fermé';
-        }
-        
-        formattedHoraires[day] = dayString;
-      });
-
-      const { imgUrl, primaryBrand, secondaryBrands, ...submissionData } = data;
-
-      const combinedBrands = [];
-      if (primaryBrand) {
-          combinedBrands.push(primaryBrand);
       }
-      if (secondaryBrands && secondaryBrands.length > 0) {
-          secondaryBrands.forEach(brand => {
-              if (!combinedBrands.includes(brand)) {
-                  combinedBrands.push(brand);
-              }
-          });
+      
+      if (!morningOpen && !afternoonOpen) {
+          dayString = 'Fermé';
       }
+      
+      formattedHoraires[day] = dayString;
+    });
 
-      const isQuarantined = checkQuarantine(data);
-      const targetCollection = isQuarantined ? "a_verifier" : "pending_concessions";
+    const { imgUrl, primaryBrand, secondaryBrands, ...submissionData } = data;
 
-      await addDoc(collection(firestore, targetCollection), {
-        title: submissionData.name,
-        category: submissionData.category,
-        address: submissionData.address,
-        phoneNumber: submissionData.phone,
-        email: submissionData.email || '',
-        website: submissionData.website || '',
-        placeUrl: submissionData.placeUrl || '',
-        brands: combinedBrands,
-        description: submissionData.description || '',
-        ...formattedHoraires,
-        submittedAt: serverTimestamp(),
-        isQuarantined: isQuarantined
-      });
-
-      toast({
-        title: isQuarantined ? 'Demande reçue (À vérifier)' : 'Demande envoyée !',
-        description: isQuarantined 
-            ? 'Votre fiche contient des termes nécessitant une vérification manuelle par notre équipe.'
-            : 'Votre fiche sera examinée par notre équipe. Vous serez contacté par e-mail.',
-      });
-      form.reset();
-    } catch (error) {
-      console.error("Erreur lors de l'ajout du document: ", error);
-      toast({
-        variant: "destructive",
-        title: 'Une erreur est survenue',
-        description: "Votre demande n'a pas pu être envoyée. Veuillez réessayer.",
-      });
+    const combinedBrands = [];
+    if (primaryBrand) {
+        combinedBrands.push(primaryBrand);
     }
+    if (secondaryBrands && secondaryBrands.length > 0) {
+        secondaryBrands.forEach(brand => {
+            if (!combinedBrands.includes(brand)) {
+                combinedBrands.push(brand);
+            }
+        });
+    }
+
+    const isQuarantined = checkQuarantine(data);
+    const targetCollection = isQuarantined ? "a_verifier" : "pending_concessions";
+
+    addDocumentNonBlocking(collection(firestore, targetCollection), {
+      title: submissionData.name,
+      category: submissionData.category,
+      address: submissionData.address,
+      phoneNumber: submissionData.phone,
+      email: submissionData.email || '',
+      website: submissionData.website || '',
+      placeUrl: submissionData.placeUrl || '',
+      brands: combinedBrands,
+      description: submissionData.description || '',
+      ...formattedHoraires,
+      submittedAt: serverTimestamp(),
+      isQuarantined: isQuarantined
+    });
+
+    toast({
+      title: isQuarantined ? 'Demande reçue (À vérifier)' : 'Demande envoyée !',
+      description: isQuarantined 
+          ? 'Votre fiche contient des termes nécessitant une vérification manuelle par notre équipe.'
+          : 'Votre fiche sera examinée par notre équipe. Vous serez contacté par e-mail.',
+    });
+    form.reset();
   };
 
   return (

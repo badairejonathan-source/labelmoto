@@ -133,7 +133,6 @@ function MapPageComponent() {
         setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
         setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
     } else if (!searchParam) {
-        // Reset to default France view if no location and no search
         setMapCenter([46.603354, 1.888334]);
         setMapZoom(6);
     }
@@ -179,7 +178,7 @@ function MapPageComponent() {
     );
 
     return () => unsubscribe();
-  }, [firestore, toast]);
+  }, [firestore]);
 
   useEffect(() => {
     let results = allDealerships;

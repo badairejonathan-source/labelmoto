@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useFirebase } from '@/firebase';
-import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs, query, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, doc, getDocs, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -17,8 +17,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useRouter } from 'next/navigation';
+import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
-// This should match the form schema in register page
 interface Submission {
   id: string;
   title: string;
@@ -63,7 +63,6 @@ export default function AdminPage() {
   useEffect(() => {
     if (!firestore || !user) return;
 
-    // Listen to standard submissions
     const submissionsRef = collection(firestore, 'pending_concessions');
     const unsubSubmissions = onSnapshot(submissionsRef, 
       (snapshot) => {
@@ -80,7 +79,6 @@ export default function AdminPage() {
       }
     );
 
-    // Listen to quarantined submissions
     const quarantineRef = collection(firestore, 'a_verifier');
     const unsubQuarantine = onSnapshot(quarantineRef, 
       (snapshot) => {
@@ -122,10 +120,8 @@ export default function AdminPage() {
     setIsCleaningUp(true);
     let count = 0;
 
-    try {
-      const concessionsRef = collection(firestore, 'concessions');
-      const snapshot = await getDocs(concessionsRef);
-      
+    const concessionsRef = collection(firestore, 'concessions');
+    getDocs(concessionsRef).then(async (snapshot) => {
       for (const dDoc of snapshot.docs) {
         const data = dDoc.data();
         const textToScan = `${data.title || ''} ${data.description || ''} ${data.address || ''}`.toLowerCase();
@@ -134,7 +130,6 @@ export default function AdminPage() {
         const hasMoto = textToScan.includes('moto') || textToScan.includes('motos');
 
         if (hasAuto && !hasMoto) {
-          // Move to quarantine
           const submissionData = {
             ...data,
             id: dDoc.id,
@@ -143,90 +138,72 @@ export default function AdminPage() {
             quarantineReason: 'Détection rétroactive automobile sans mention moto'
           };
           
-          await setDoc(doc(firestore, 'a_verifier', dDoc.id), submissionData);
-          await deleteDoc(doc(firestore, 'concessions', dDoc.id));
+          setDocumentNonBlocking(doc(firestore, 'a_verifier', dDoc.id), submissionData, {});
+          deleteDocumentNonBlocking(doc(firestore, 'concessions', dDoc.id));
           count++;
         }
       }
 
       toast({
-        title: 'Nettoyage terminé',
-        description: `${count} fiches ont été déplacées en quarantaine.`,
+        title: 'Nettoyage lancé',
+        description: `Le processus de vérification a commencé pour ${count} fiches potentiellement automobiles.`,
       });
-    } catch (error) {
-      console.error("Erreur lors du nettoyage rétroactif:", error);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur de nettoyage',
-        description: 'Une erreur est survenue lors du scan des fiches.',
-      });
-    } finally {
       setIsCleaningUp(false);
-    }
+    }).catch(async (error) => {
+      const permissionError = new FirestorePermissionError({
+        path: concessionsRef.path,
+        operation: 'list',
+      });
+      errorEmitter.emit('permission-error', permissionError);
+      setIsCleaningUp(false);
+    });
   };
 
-  const handleApprove = async (submission: Submission, fromCollection: 'pending_concessions' | 'a_verifier') => {
+  const handleApprove = (submission: Submission, fromCollection: 'pending_concessions' | 'a_verifier') => {
+    if (!firestore) return;
     setProcessingId(submission.id);
-    try {
-      const newConcession: Omit<Dealership, 'id' | 'latitude' | 'longitude' | 'position' | 'rating' | 'imgUrl' > = {
-        title: submission.title,
-        address: submission.address,
-        website: submission.website || '',
-        phoneNumber: submission.phoneNumber || '',
-        email: submission.email || '',
-        brands: submission.brands || [],
-        lundi: submission.lundi || 'Non renseigné',
-        mardi: submission.mardi || 'Non renseigné',
-        mercredi: submission.mercredi || 'Non renseigné',
-        jeudi: submission.jeudi || 'Non renseigné',
-        vendredi: submission.vendredi || 'Non renseigné',
-        samedi: submission.samedi || 'Non renseigné',
-        dimanche: submission.dimanche || 'Non renseigné',
-        category: submission.category,
-        appSection: getAppSection(submission.category),
-        imgUrl: '',
-        placeUrl: submission.placeUrl || '',
-        rating: '',
-      };
+    
+    const newConcession: Omit<Dealership, 'id' | 'latitude' | 'longitude' | 'position' | 'rating' | 'imgUrl' > = {
+      title: submission.title,
+      address: submission.address,
+      website: submission.website || '',
+      phoneNumber: submission.phoneNumber || '',
+      email: submission.email || '',
+      brands: submission.brands || [],
+      lundi: submission.lundi || 'Non renseigné',
+      mardi: submission.mardi || 'Non renseigné',
+      mercredi: submission.mercredi || 'Non renseigné',
+      jeudi: submission.jeudi || 'Non renseigné',
+      vendredi: submission.vendredi || 'Non renseigné',
+      samedi: submission.samedi || 'Non renseigné',
+      dimanche: submission.dimanche || 'Non renseigné',
+      category: submission.category,
+      appSection: getAppSection(submission.category),
+      imgUrl: '',
+      placeUrl: submission.placeUrl || '',
+      rating: '',
+    };
 
-      await setDoc(doc(firestore, 'concessions', submission.id), newConcession);
-      await deleteDoc(doc(firestore, fromCollection, submission.id));
+    setDocumentNonBlocking(doc(firestore, 'concessions', submission.id), newConcession, {});
+    deleteDocumentNonBlocking(doc(firestore, fromCollection, submission.id));
 
-      toast({
-        title: 'Approuvé !',
-        description: `${submission.title} a été ajouté à la liste publique.`,
-      });
-    } catch (error) {
-      console.error("Erreur lors de l'approbation : ", error);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur',
-        description: "Impossible d'approuver la fiche.",
-      });
-    } finally {
-      setProcessingId(null);
-    }
+    toast({
+      title: 'Approuvé !',
+      description: `${submission.title} a été traité pour ajout à la liste publique.`,
+    });
+    setProcessingId(null);
   };
 
-  const handleReject = async (submissionId: string, fromCollection: 'pending_concessions' | 'a_verifier') => {
+  const handleReject = (submissionId: string, fromCollection: 'pending_concessions' | 'a_verifier') => {
+    if (!firestore) return;
     setProcessingId(submissionId);
-    try {
-      await deleteDoc(doc(firestore, fromCollection, submissionId));
-      toast({
-        title: 'Rejeté',
-        description: 'La soumission a été supprimée.',
-        variant: 'destructive'
-      });
-    } catch (error) {
-      console.error('Erreur lors du rejet : ', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur',
-        description: 'Impossible de rejeter la fiche.',
-      });
-    } finally {
-      setProcessingId(null);
-    }
+    deleteDocumentNonBlocking(doc(firestore, fromCollection, submissionId));
+    toast({
+      title: 'Rejeté',
+      description: 'La soumission est en cours de suppression.',
+      variant: 'destructive'
+    });
+    setProcessingId(null);
   };
 
   const formatDate = (timestamp: any) => {
