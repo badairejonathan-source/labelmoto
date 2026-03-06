@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,6 +19,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+
+const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
 interface Submission {
   id: string;
@@ -55,13 +58,15 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
+    if (!isUserLoading) {
+      if (!user || user.uid !== ADMIN_UID) {
+        router.push('/login');
+      }
     }
   }, [user, isUserLoading, router]);
 
   useEffect(() => {
-    if (!firestore || !user) return;
+    if (!firestore || !user || user.uid !== ADMIN_UID) return;
 
     const submissionsRef = collection(firestore, 'pending_concessions');
     const unsubSubmissions = onSnapshot(submissionsRef, 
@@ -99,6 +104,14 @@ export default function AdminPage() {
       unsubQuarantine();
     };
   }, [firestore, user]);
+
+  if (isUserLoading || !user || user.uid !== ADMIN_UID) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
+  }
 
   const getAppSection = (category: Submission['category']): Dealership['appSection'] => {
     switch (category) {
@@ -283,7 +296,7 @@ export default function AdminPage() {
             </Link>
           </div>
           <h1 className="hidden md:block text-xl lg:text-2xl font-bold text-foreground">
-            Validation des Fiches
+            Administration
           </h1>
           <div className="flex gap-2">
              <Button 
@@ -310,8 +323,8 @@ export default function AdminPage() {
         <div className="flex flex-col gap-6">
           <div className="bg-brand/10 border border-brand/20 p-4 rounded-xl flex items-center gap-4 sm:hidden">
              <div className="flex-1">
-                <p className="text-sm font-bold text-brand">Outil de Maintenance</p>
-                <p className="text-xs text-muted-foreground">Scannez les fiches existantes pour la quarantaine.</p>
+                <p className="text-sm font-bold text-brand">Maintenance</p>
+                <p className="text-xs text-muted-foreground">Scannez les fiches existantes.</p>
              </div>
              <Button size="sm" variant="outline" onClick={handleRetroactiveCleanup} disabled={isCleaningUp} className="border-brand text-brand">
                 {isCleaningUp ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
@@ -341,7 +354,7 @@ export default function AdminPage() {
                     <CheckCircle className="h-10 w-10 text-green-500" />
                   </div>
                   <h2 className="text-xl font-bold">Tout est à jour !</h2>
-                  <p className="mt-2 text-muted-foreground">Il n'y a aucune nouvelle fiche standard à valider.</p>
+                  <p className="mt-2 text-muted-foreground">Il n'y a aucune nouvelle fiche à valider.</p>
                 </div>
               ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -357,7 +370,7 @@ export default function AdminPage() {
                     <ShieldAlert className="h-10 w-10 text-blue-500" />
                   </div>
                   <h2 className="text-xl font-bold">Quarantaine vide</h2>
-                  <p className="mt-2 text-muted-foreground">Aucune fiche suspecte n'a été détectée ou signalée.</p>
+                  <p className="mt-2 text-muted-foreground">Aucune fiche suspecte n'a été détectée.</p>
                 </div>
               ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

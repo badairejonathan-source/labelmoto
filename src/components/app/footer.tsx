@@ -7,6 +7,8 @@ import LabelMotoLogo from './logo';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
 
+const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
+
 const Footer = () => {
   const { user } = useUser();
   const [mounted, setMounted] = useState(false);
@@ -18,8 +20,8 @@ const Footer = () => {
   }, []);
 
   // Handle hydration mismatch for auth-dependent links
-  // Ensure the server and first client render match by using the guest link until mounted
   const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
+  const isAdmin = mounted && user && user.uid === ADMIN_UID;
 
   return (
     <footer className="bg-muted/30 border-t border-border/50">
@@ -45,7 +47,9 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">Pour les pros</h3>
             <ul className="space-y-3">
               <li><Link href={proRegisterLink} className="text-muted-foreground hover:text-accent">Inscrire votre concession</Link></li>
-              <li><Link href="/admin" className="text-muted-foreground hover:text-accent">Espace Admin</Link></li>
+              {isAdmin && (
+                <li><Link href="/admin" className="text-muted-foreground hover:text-accent font-bold text-brand">Espace Admin</Link></li>
+              )}
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Faire de la publicité</Link></li>
             </ul>
           </div>
