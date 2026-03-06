@@ -14,6 +14,9 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { useRouter } from 'next/navigation';
 
 // This should match the form schema in register page
 interface Submission {
@@ -47,32 +50,57 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [isCleaningUp, setIsCleaningUp] = useState(false);
-  const { firestore } = useFirebase();
+  const { firestore, user, isUserLoading } = useFirebase();
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
-    if (!firestore) return;
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  useEffect(() => {
+    if (!firestore || !user) return;
 
     // Listen to standard submissions
     const submissionsRef = collection(firestore, 'pending_concessions');
-    const unsubSubmissions = onSnapshot(submissionsRef, (snapshot) => {
-      const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
-      setSubmissions(subs);
-      setIsLoading(false);
-    });
+    const unsubSubmissions = onSnapshot(submissionsRef, 
+      (snapshot) => {
+        const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
+        setSubmissions(subs);
+        setIsLoading(false);
+      },
+      async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: submissionsRef.path,
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      }
+    );
 
     // Listen to quarantined submissions
     const quarantineRef = collection(firestore, 'a_verifier');
-    const unsubQuarantine = onSnapshot(quarantineRef, (snapshot) => {
-      const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
-      setQuarantineSubmissions(subs);
-    });
+    const unsubQuarantine = onSnapshot(quarantineRef, 
+      (snapshot) => {
+        const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
+        setQuarantineSubmissions(subs);
+      },
+      async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: quarantineRef.path,
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      }
+    );
 
     return () => {
       unsubSubmissions();
       unsubQuarantine();
     };
-  }, [firestore]);
+  }, [firestore, user]);
 
   const getAppSection = (category: Submission['category']): Dealership['appSection'] => {
     switch (category) {

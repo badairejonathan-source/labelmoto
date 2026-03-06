@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -12,13 +11,15 @@ import { Crosshair, Loader2, Star, ChevronUp, ChevronDown } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
-import { collection, onSnapshot, FirestoreError } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
 import articlesData from '@/app/data/articles.json';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -156,7 +157,8 @@ function MapPageComponent() {
     if (!firestore) return;
     const dealershipsRef = collection(firestore, 'concessions');
 
-    const unsubscribe = onSnapshot(dealershipsRef, (querySnapshot) => {
+    const unsubscribe = onSnapshot(dealershipsRef, 
+      (querySnapshot) => {
         const results = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
@@ -165,10 +167,16 @@ function MapPageComponent() {
         } as Dealership));
         setAllDealerships(results);
         setIsLoading(false);
-    }, (error: FirestoreError) => {
-        toast({ variant: "destructive", title: "Erreur", description: "Impossible de charger les données." });
+      }, 
+      async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: dealershipsRef.path,
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
         setIsLoading(false);
-    });
+      }
+    );
 
     return () => unsubscribe();
   }, [firestore, toast]);
