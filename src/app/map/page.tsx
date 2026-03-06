@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -133,7 +134,6 @@ function MapPageComponent() {
   const { width } = useWindowSize();
   const isMobile = (width || 1024) < 768;
   
-  // Écoute des paramètres d'URL pour le centrage (depuis suggestions Header)
   useEffect(() => {
     if (latParam && lngParam) {
         setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
@@ -178,7 +178,6 @@ function MapPageComponent() {
     if (submittedSearchTerm.trim() !== '') {
         const lower = submittedSearchTerm.toLowerCase().trim();
         
-        // 1. Logique de détection intelligente Marque + Lieu pour recherche directe (Entrée)
         let detectedBrand = '';
         let detectedLoc = null;
         const brandsList = Object.keys(brandLogos);
@@ -202,14 +201,13 @@ function MapPageComponent() {
         }
 
         if (detectedBrand && detectedLoc) {
-            // Si on a les deux, on centre et on filtre par marque
             setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
             setMapZoom(9);
             results = results.filter(d => 
-                d.brands?.some(b => b.toLowerCase().includes(detectedBrand.toLowerCase()))
+                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
+                d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
             );
         } else {
-            // 2. Logique classique (soit l'un, soit l'autre, soit recherche textuelle libre)
             let foundLocation = false;
             Object.entries(locationsData).forEach(([dept, info]) => {
                 if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
@@ -224,7 +222,7 @@ function MapPageComponent() {
             results = results.filter(d => 
                 d.title?.toLowerCase().includes(lower) || 
                 d.address?.toLowerCase().includes(lower) || 
-                d.brands?.some(b => b.toLowerCase().includes(lower))
+                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
             );
         }
     }
@@ -246,12 +244,10 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = filteredDealerships;
-    // Si on a un bounds, on filtre les résultats visibles
     if (mapBoundsStr) {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
-    // Tri par proximité du centre de la carte
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
   }, [filteredDealerships, mapBoundsStr, mapCenter]);
 

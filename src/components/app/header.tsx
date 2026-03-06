@@ -208,7 +208,6 @@ const Header: React.FC<HeaderProps> = ({
     let detectedLoc: any = null;
     let locLabel: string = "";
 
-    // On cherche si l'une des marques est présente dans la recherche
     for (const brand of brandsList) {
         if (lowerTerm.includes(brand.toLowerCase())) {
             detectedBrand = brand;
@@ -217,18 +216,14 @@ const Header: React.FC<HeaderProps> = ({
     }
 
     if (detectedBrand) {
-        // Si on a une marque, on cherche si un reste de la phrase correspond à un lieu
         const searchWithoutBrand = lowerTerm.replace(detectedBrand.toLowerCase(), "").trim();
-        
         if (searchWithoutBrand.length > 0) {
-            // Check départements
             for (const [dept, info] of Object.entries(locationsData)) {
                 if (dept.toLowerCase().includes(searchWithoutBrand)) {
                     detectedLoc = info;
                     locLabel = dept;
                     break;
                 }
-                // Check villes
                 const cityMatch = info.cities.find(c => c.toLowerCase().includes(searchWithoutBrand));
                 if (cityMatch) {
                     detectedLoc = info;
@@ -246,12 +241,12 @@ const Header: React.FC<HeaderProps> = ({
             subLabel: `Voir les pros ${detectedBrand} dans cette zone`,
             lat: detectedLoc.center[0],
             lng: detectedLoc.center[1],
-            zoom: 9, // Zoom pour voir le département en entier
+            zoom: 9,
             brand: detectedBrand
         });
     }
 
-    // 2. Départements (Seuls)
+    // 2. Départements
     Object.entries(locationsData).forEach(([dept, info]) => {
         if (dept.toLowerCase().includes(lowerTerm)) {
             results.push({
@@ -259,10 +254,10 @@ const Header: React.FC<HeaderProps> = ({
                 label: dept,
                 lat: info.center[0],
                 lng: info.center[1],
-                zoom: 9 // Zoom pour voir le département en entier
+                zoom: 9
             });
         }
-        // 3. Villes (Seules)
+        // 3. Villes
         info.cities.forEach(city => {
             if (city.toLowerCase().includes(lowerTerm)) {
                 results.push({
@@ -271,20 +266,19 @@ const Header: React.FC<HeaderProps> = ({
                     subLabel: dept.split(' - ')[0],
                     lat: info.center[0],
                     lng: info.center[1],
-                    zoom: 10 // Zoom un peu plus large pour les villes
+                    zoom: 10
                 });
             }
         });
     });
 
-    // 4. Établissements (Seuls)
+    // 4. Établissements
     const filteredDealers = allDealers.filter(d => 
         d.label.toLowerCase().includes(lowerTerm) || 
         d.subLabel?.toLowerCase().includes(lowerTerm)
     );
     results.push(...filteredDealers);
 
-    // Dédoublonnage et limitation
     const uniqueResults = results.filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     setSuggestions(uniqueResults.slice(0, 8));
   }, [searchTerm, allDealers]);
@@ -309,6 +303,15 @@ const Header: React.FC<HeaderProps> = ({
     if (activeFilter) queryParams.set('filter', activeFilter);
 
     router.push(`/map?${queryParams.toString()}`);
+  };
+
+  const executeSearch = () => {
+    if (suggestions.length > 0) {
+        handleSuggestionClick(suggestions[0]);
+    } else {
+        onSearch();
+    }
+    setShowSuggestions(false);
   };
 
   const handleTabClick = (filter: 'shopping' | 'service' | null) => {
@@ -359,8 +362,7 @@ const Header: React.FC<HeaderProps> = ({
                     onFocus={() => setShowSuggestions(true)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            onSearch();
-                            setShowSuggestions(false);
+                            executeSearch();
                         }
                     }}
                   />
@@ -368,15 +370,11 @@ const Header: React.FC<HeaderProps> = ({
                       type="submit" 
                       size="icon" 
                       className="absolute top-1/2 right-1 -translate-y-1/2 h-8 w-8 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
-                      onClick={() => {
-                        onSearch();
-                        setShowSuggestions(false);
-                      }}
+                      onClick={executeSearch}
                   >
                     <Search className="h-4 w-4" />
                   </Button>
 
-                  {/* Dropdown de suggestions */}
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                         {suggestions.map((s, idx) => (
