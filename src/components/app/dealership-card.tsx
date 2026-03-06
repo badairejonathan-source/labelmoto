@@ -20,7 +20,6 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
   Tooltip,
-  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
@@ -339,8 +338,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
             {/* CONTENU - AVIS */}
             {showReviews && (
-                <div className="flex-1 bg-background/95 backdrop-blur-sm p-4 md:p-6 flex flex-col border-l shadow-xl overflow-hidden">
-                    <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar">
+                <div className="flex-1 bg-background/95 backdrop-blur-sm pt-1 px-4 pb-4 md:pt-2 md:px-6 md:pb-6 flex flex-col border-l shadow-xl overflow-hidden">
+                    <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar mt-2">
                         {isCommentsLoading ? (
                             <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>
                         ) : approvedComments && approvedComments.length > 0 ? (
