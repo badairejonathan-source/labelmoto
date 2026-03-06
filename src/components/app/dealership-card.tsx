@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -23,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Badge } from '@/components/ui/badge';
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -126,7 +126,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const street = addressParts[0] || '';
   const cityZip = addressParts.slice(1).join(', ') || '';
 
-  const isSelectedLabel = rating >= 4.5;
+  // Pour l'instant, aucun badge n'est attribué automatiquement
+  const isSelectedLabel = false;
 
   return (
     <>
