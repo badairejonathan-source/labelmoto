@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -410,7 +409,7 @@ const Header: React.FC<HeaderProps> = ({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
-                                    <Link href="/entretien" interrupted={false}>
+                                    <Link href="/entretien">
                                         <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={32} height={32} className="h-8 w-8 object-contain" />
                                         <span className="sr-only">Entretien & Révisions</span>
                                     </Link>
@@ -423,7 +422,7 @@ const Header: React.FC<HeaderProps> = ({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
-                                    <Link href="/info" interrupted={false}>
+                                    <Link href="/info">
                                         <Image src="/images/icon-conseils.png" alt="Conseils" width={28} height={28} className="h-7 w-7 object-contain" />
                                         <span className="sr-only">Conseils pratiques</span>
                                     </Link>
