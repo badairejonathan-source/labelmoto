@@ -1,14 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu } from 'lucide-react';
+import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useFirestore } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import {
@@ -20,7 +20,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import locationsData from '@/data/locations.json';
+import { collection, query, getDocs, limit } from 'firebase/firestore';
 
 interface HeaderProps {
     searchTerm: string;
@@ -30,6 +32,15 @@ interface HeaderProps {
     activeFilter?: 'shopping' | 'service' | null;
     onFilterChange?: (filter: 'shopping' | 'service' | null) => void;
     placeholderText?: string;
+}
+
+interface Suggestion {
+    type: 'city' | 'dept' | 'dealer';
+    label: string;
+    subLabel?: string;
+    lat?: number;
+    lng?: number;
+    id?: string;
 }
 
 const UserMenu = () => {
@@ -139,6 +150,104 @@ const Header: React.FC<HeaderProps> = ({
     placeholderText = "Recherche par nom, ville, departement" 
 }) => {
   const router = useRouter();
+  const firestore = useFirestore();
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [allDealers, setAllDealers] = useState<Suggestion[]>([]);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchDealers = async () => {
+        if (!firestore) return;
+        try {
+            const q = query(collection(firestore, 'concessions'), limit(200));
+            const snapshot = await getDocs(q);
+            const dealers: Suggestion[] = snapshot.docs.map(doc => ({
+                type: 'dealer',
+                label: doc.data().title || '',
+                subLabel: doc.data().address || '',
+                lat: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
+                lng: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+                id: doc.id
+            }));
+            setAllDealers(dealers);
+        } catch (e) {
+            console.error("Erreur chargement suggestions dealers:", e);
+        }
+    };
+    fetchDealers();
+  }, [firestore]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm.length < 2) {
+        setSuggestions([]);
+        return;
+    }
+
+    const lowerTerm = searchTerm.toLowerCase();
+    const results: Suggestion[] = [];
+
+    // 1. Départements
+    Object.entries(locationsData).forEach(([dept, info]) => {
+        if (dept.toLowerCase().includes(lowerTerm)) {
+            results.push({
+                type: 'dept',
+                label: dept,
+                lat: info.center[0],
+                lng: info.center[1]
+            });
+        }
+        // 2. Villes
+        info.cities.forEach(city => {
+            if (city.toLowerCase().includes(lowerTerm)) {
+                results.push({
+                    type: 'city',
+                    label: city,
+                    subLabel: dept.split(' - ')[0],
+                    lat: info.center[0],
+                    lng: info.center[1]
+                });
+            }
+        });
+    });
+
+    // 3. Établissements
+    const filteredDealers = allDealers.filter(d => 
+        d.label.toLowerCase().includes(lowerTerm) || 
+        d.subLabel?.toLowerCase().includes(lowerTerm)
+    );
+    results.push(...filteredDealers);
+
+    setSuggestions(results.slice(0, 8));
+  }, [searchTerm, allDealers]);
+
+  const handleSuggestionClick = (suggestion: Suggestion) => {
+    onSearchTermChange(suggestion.label);
+    setShowSuggestions(false);
+    
+    const queryParams = new URLSearchParams();
+    if (suggestion.lat && suggestion.lng) {
+        queryParams.set('lat', suggestion.lat.toString());
+        queryParams.set('lng', suggestion.lng.toString());
+    }
+    if (suggestion.id) {
+        queryParams.set('selectedId', suggestion.id);
+    }
+    queryParams.set('search', suggestion.label);
+    if (activeFilter) queryParams.set('filter', activeFilter);
+
+    router.push(`/map?${queryParams.toString()}`);
+  };
 
   const handleTabClick = (filter: 'shopping' | 'service' | null) => {
     if (onFilterChange) {
@@ -151,7 +260,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-40 relative", className)}>
-      <div className="container mx-auto max-w-7xl flex flex-col gap-3">
+      <div className="container mx-auto max-width-7xl flex flex-col gap-3">
         <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-2">
           <div className="w-40 md:w-56 shrink-0 lg:justify-self-start">
             <Link href="/">
@@ -175,16 +284,21 @@ const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
                 <div className="hidden md:block w-24 shrink-0" aria-hidden="true" />
 
-                <div className="relative flex-1 max-w-2xl mx-auto">
+                <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
                   <Input
                     type="search"
                     placeholder={placeholderText}
                     className="pr-10 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-none"
                     value={searchTerm}
-                    onChange={(e) => onSearchTermChange(e.target.value)}
+                    onChange={(e) => {
+                        onSearchTermChange(e.target.value);
+                        setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             onSearch();
+                            setShowSuggestions(false);
                         }
                     }}
                   />
@@ -192,10 +306,37 @@ const Header: React.FC<HeaderProps> = ({
                       type="submit" 
                       size="icon" 
                       className="absolute top-1/2 right-1 -translate-y-1/2 h-8 w-8 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
-                      onClick={onSearch}
+                      onClick={() => {
+                        onSearch();
+                        setShowSuggestions(false);
+                      }}
                   >
                     <Search className="h-4 w-4" />
                   </Button>
+
+                  {/* Dropdown de suggestions */}
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                        {suggestions.map((s, idx) => (
+                            <button
+                                key={`${s.type}-${idx}`}
+                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors group"
+                                onClick={() => handleSuggestionClick(s)}
+                            >
+                                <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
+                                    {s.type === 'dealer' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-sm font-bold text-foreground truncate">{s.label}</span>
+                                    {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-bold tracking-tight">{s.subLabel}</span>}
+                                </div>
+                                <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Search className="w-3 h-3 text-muted-foreground" />
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="hidden md:flex items-center gap-2 shrink-0 w-24 justify-end">

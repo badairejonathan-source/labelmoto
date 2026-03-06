@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
 import articlesData from '@/app/data/articles.json';
+import locationsData from '@/data/locations.json';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -88,18 +89,24 @@ function MapPageComponent() {
   const router = useRouter();
   const filterParam = searchParams.get('filter');
   const searchParam = searchParams.get('search');
+  const latParam = searchParams.get('lat');
+  const lngParam = searchParams.get('lng');
+  const selectedIdParam = searchParams.get('selectedId');
   
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
-  const [mapZoom, setMapZoom] = useState(6);
+  const [mapCenter, setMapCenter] = useState<[number, number]>(() => {
+    if (latParam && lngParam) return [parseFloat(latParam), parseFloat(lngParam)];
+    return [46.603354, 1.888334];
+  });
+  const [mapZoom, setMapZoom] = useState(() => (latParam && lngParam) ? 12 : 6);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
-  const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(null);
+  const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
@@ -120,6 +127,21 @@ function MapPageComponent() {
   const { width } = useWindowSize();
   const isMobile = (width || 1024) < 768;
   
+  // Écoute des paramètres d'URL pour le centrage (depuis suggestions Header)
+  useEffect(() => {
+    if (latParam && lngParam) {
+        setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
+        setMapZoom(12);
+    }
+    if (selectedIdParam) {
+        setSelectedDealershipId(selectedIdParam);
+    }
+    if (searchParam) {
+        setSearchTerm(searchParam);
+        setSubmittedSearchTerm(searchParam);
+    }
+  }, [latParam, lngParam, selectedIdParam, searchParam]);
+
   useEffect(() => {
     if (!firestore) return;
     const dealershipsRef = collection(firestore, 'concessions');
@@ -148,7 +170,24 @@ function MapPageComponent() {
     }
     if (submittedSearchTerm.trim() !== '') {
         const lower = submittedSearchTerm.toLowerCase();
-        results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower) || d.brands?.some(b => b.toLowerCase().includes(lower)));
+        
+        // Vérifier si le terme correspond à une ville ou département connu
+        let foundLocation = false;
+        Object.entries(locationsData).forEach(([dept, info]) => {
+            if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
+                if (!foundLocation) {
+                    setMapCenter([info.center[0], info.center[1]]);
+                    setMapZoom(11);
+                    foundLocation = true;
+                }
+            }
+        });
+
+        results = results.filter(d => 
+            d.title?.toLowerCase().includes(lower) || 
+            d.address?.toLowerCase().includes(lower) || 
+            d.brands?.some(b => b.toLowerCase().includes(lower))
+        );
     }
     if (ratingFilter > 0) {
         results = results.filter(d => {
@@ -168,11 +207,13 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = filteredDealerships;
+    // Si on a un bounds, on filtre les résultats visibles
     if (mapBoundsStr) {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
-    return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 25);
+    // Tri par proximité du centre de la carte
+    return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
   }, [filteredDealerships, mapBoundsStr, mapCenter]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
@@ -241,7 +282,7 @@ function MapPageComponent() {
       ) : (
         <>
           {dealershipsToDisplay.map((dealer, index) => {
-            const adIndex = Math.floor((index + 1) / 3) - 1;
+            const adIndex = Math.floor((index + 1) / 4) - 1;
             const article = articlesData[adIndex % articlesData.length];
 
             return (
@@ -258,7 +299,7 @@ function MapPageComponent() {
                     className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand", dealer.id === hoveredDealershipId && "shadow-md")} 
                   />
                 </div>
-                {(index + 1) % 3 === 0 && article && (
+                {(index + 1) % 4 === 0 && article && (
                   <div className="py-1 w-full">
                     <AdCard article={article} />
                   </div>
@@ -267,7 +308,7 @@ function MapPageComponent() {
             );
           })}
           
-          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 3 && articlesData[0] && (
+          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && articlesData[0] && (
             <div className="py-1 w-full">
               <AdCard article={articlesData[0]} />
             </div>
