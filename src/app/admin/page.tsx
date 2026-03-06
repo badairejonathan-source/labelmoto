@@ -7,13 +7,14 @@ import { collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, ArrowLeft, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import { Dealership } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // This should match the form schema in register page
 interface Submission {
@@ -38,10 +39,12 @@ interface Submission {
     seconds: number;
     nanoseconds: number;
   };
+  isQuarantined?: boolean;
 }
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [quarantineSubmissions, setQuarantineSubmissions] = useState<Submission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const { firestore } = useFirebase();
@@ -49,23 +52,27 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!firestore) return;
+
+    // Listen to standard submissions
     const submissionsRef = collection(firestore, 'pending_concessions');
-    const unsubscribe = onSnapshot(submissionsRef, (snapshot) => {
+    const unsubSubmissions = onSnapshot(submissionsRef, (snapshot) => {
       const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
       setSubmissions(subs);
       setIsLoading(false);
-    }, (error) => {
-      console.error("Erreur de lecture des soumissions en attente : ", error);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur de chargement',
-        description: "Impossible de récupérer les fiches à valider. Vérifiez les règles de sécurité.",
-      });
-      setIsLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [firestore, toast]);
+    // Listen to quarantined submissions
+    const quarantineRef = collection(firestore, 'a_verifier');
+    const unsubQuarantine = onSnapshot(quarantineRef, (snapshot) => {
+      const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
+      setQuarantineSubmissions(subs);
+    });
+
+    return () => {
+      unsubSubmissions();
+      unsubQuarantine();
+    };
+  }, [firestore]);
 
   const getAppSection = (category: Submission['category']): Dealership['appSection'] => {
     switch (category) {
@@ -81,11 +88,9 @@ export default function AdminPage() {
     }
   };
 
-  const handleApprove = async (submission: Submission) => {
+  const handleApprove = async (submission: Submission, fromCollection: 'pending_concessions' | 'a_verifier') => {
     setProcessingId(submission.id);
     try {
-      // NOTE: For now, we add it without coordinates. It won't appear on the map, only on the list.
-      // A geocoding step would be needed here to get latitude/longitude from the address.
       const newConcession: Omit<Dealership, 'id' | 'latitude' | 'longitude' | 'position' | 'rating' | 'imgUrl' > = {
         title: submission.title,
         address: submission.address,
@@ -102,14 +107,13 @@ export default function AdminPage() {
         dimanche: submission.dimanche || 'Non renseigné',
         category: submission.category,
         appSection: getAppSection(submission.category),
-        // Default empty values for fields not in the form
         imgUrl: '',
         placeUrl: submission.placeUrl || '',
         rating: '',
       };
 
       await setDoc(doc(firestore, 'concessions', submission.id), newConcession);
-      await deleteDoc(doc(firestore, 'pending_concessions', submission.id));
+      await deleteDoc(doc(firestore, fromCollection, submission.id));
 
       toast({
         title: 'Approuvé !',
@@ -127,10 +131,10 @@ export default function AdminPage() {
     }
   };
 
-  const handleReject = async (submissionId: string) => {
+  const handleReject = async (submissionId: string, fromCollection: 'pending_concessions' | 'a_verifier') => {
     setProcessingId(submissionId);
     try {
-      await deleteDoc(doc(firestore, 'pending_concessions', submissionId));
+      await deleteDoc(doc(firestore, fromCollection, submissionId));
       toast({
         title: 'Rejeté',
         description: 'La soumission a été supprimée.',
@@ -153,6 +157,63 @@ export default function AdminPage() {
     const date = new Date(timestamp.seconds * 1000);
     return formatDistanceToNow(date, { addSuffix: true, locale: fr });
   }
+
+  const renderSubmissionCard = (sub: Submission, collectionName: 'pending_concessions' | 'a_verifier') => (
+    <Card key={sub.id} className="flex flex-col">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+            <CardTitle>{sub.title}</CardTitle>
+            {collectionName === 'a_verifier' && (
+                <Badge variant="destructive" className="flex gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    Quarantaine
+                </Badge>
+            )}
+        </div>
+        <CardDescription>
+          Soumis {formatDate(sub.submittedAt)}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow space-y-2 text-sm">
+        <p><strong>Adresse:</strong> {sub.address}</p>
+        <p><strong>Catégorie:</strong> {sub.category}</p>
+        {sub.brands && sub.brands.length > 0 && (
+          <div className="flex wrap gap-1 items-baseline">
+            <strong className="mr-1">Marques:</strong>
+            {sub.brands.map(brand => <Badge key={brand} variant="outline" className="font-normal">{brand}</Badge>)}
+          </div>
+        )}
+        {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
+        {sub.email && <p><strong>Email:</strong> {sub.email}</p>}
+        {sub.website && <p><strong>Web:</strong> <a href={sub.website} target="_blank" rel="noreferrer" className="text-accent underline">{sub.website}</a></p>}
+        {sub.placeUrl && <p><strong>Google:</strong> <a href={sub.placeUrl} target="_blank" rel="noreferrer" className="text-accent underline">{sub.placeUrl}</a></p>}
+        {sub.description && (
+            <div className="mt-2 p-2 bg-muted/50 rounded-md italic text-muted-foreground border-l-2 border-brand">
+                "{sub.description}"
+            </div>
+        )}
+      </CardContent>
+      <CardFooter className="flex gap-2 justify-end">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => handleReject(sub.id, collectionName)}
+          disabled={processingId === sub.id}
+        >
+          {processingId === sub.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <XCircle className="mr-2 h-4 w-4" />}
+          Refuser
+        </Button>
+        <Button 
+          size="sm" 
+          onClick={() => handleApprove(sub, collectionName)}
+          disabled={processingId === sub.id}
+        >
+           {processingId === sub.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+          Approuver
+        </Button>
+      </CardFooter>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -178,64 +239,50 @@ export default function AdminPage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-8">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : submissions.length === 0 ? (
-          <div className="text-center py-16">
-            <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-            <h2 className="mt-4 text-xl font-semibold">Tout est à jour !</h2>
-            <p className="mt-2 text-muted-foreground">Il n'y a aucune nouvelle fiche à valider pour le moment.</p>
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {submissions.map((sub) => (
-              <Card key={sub.id} className="flex flex-col">
-                <CardHeader>
-                  <CardTitle>{sub.title}</CardTitle>
-                  <CardDescription>
-                    Soumis {formatDate(sub.submittedAt)}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow space-y-2 text-sm">
-                  <p><strong>Adresse:</strong> {sub.address}</p>
-                  <p><strong>Catégorie:</strong> {sub.category}</p>
-                  {sub.brands && sub.brands.length > 0 && (
-                    <div className="flex wrap gap-1 items-baseline">
-                      <strong className="mr-1">Marques:</strong>
-                      {sub.brands.map(brand => <Badge key={brand} variant="outline" className="font-normal">{brand}</Badge>)}
-                    </div>
-                  )}
-                  {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
-                  {sub.email && <p><strong>Email:</strong> {sub.email}</p>}
-                  {sub.website && <p><strong>Web:</strong> <a href={sub.website} target="_blank" rel="noreferrer" className="text-accent underline">{sub.website}</a></p>}
-                  {sub.placeUrl && <p><strong>Google:</strong> <a href={sub.placeUrl} target="_blank" rel="noreferrer" className="text-accent underline">{sub.placeUrl}</a></p>}
-                  {sub.description && <p className="text-muted-foreground pt-2">"{sub.description}"</p>}
-                </CardContent>
-                <CardFooter className="flex gap-2 justify-end">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleReject(sub.id)}
-                    disabled={processingId === sub.id}
-                  >
-                    {processingId === sub.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <XCircle className="mr-2 h-4 w-4" />}
-                    Refuser
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    onClick={() => handleApprove(sub)}
-                    disabled={processingId === sub.id}
-                  >
-                     {processingId === sub.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
-                    Approuver
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        )}
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8 max-w-md mx-auto">
+            <TabsTrigger value="pending" className="flex gap-2">
+                Nouvelles
+                {submissions.length > 0 && <Badge variant="secondary" className="px-1.5 h-5">{submissions.length}</Badge>}
+            </TabsTrigger>
+            <TabsTrigger value="quarantine" className="flex gap-2">
+                À vérifier
+                {quarantineSubmissions.length > 0 && <Badge variant="destructive" className="px-1.5 h-5">{quarantineSubmissions.length}</Badge>}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : submissions.length === 0 ? (
+              <div className="text-center py-16">
+                <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+                <h2 className="mt-4 text-xl font-semibold">Tout est à jour !</h2>
+                <p className="mt-2 text-muted-foreground">Il n'y a aucune nouvelle fiche standard à valider.</p>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {submissions.map((sub) => renderSubmissionCard(sub, 'pending_concessions'))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="quarantine">
+            {quarantineSubmissions.length === 0 ? (
+              <div className="text-center py-16">
+                <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+                <h2 className="mt-4 text-xl font-semibold">Quarantaine vide</h2>
+                <p className="mt-2 text-muted-foreground">Aucune fiche suspecte n'a été détectée.</p>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {quarantineSubmissions.map((sub) => renderSubmissionCard(sub, 'a_verifier'))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

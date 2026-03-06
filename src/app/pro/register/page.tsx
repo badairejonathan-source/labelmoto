@@ -120,6 +120,13 @@ export default function RegisterProPage() {
     });
   }, [watchedHoraires, setValue, weekDays]);
 
+  const checkQuarantine = (data: SubmissionFormValues) => {
+    const textToScan = `${data.name} ${data.description || ''} ${data.address}`.toLowerCase();
+    const hasAuto = textToScan.includes('automobile');
+    const hasMoto = textToScan.includes('moto');
+    return hasAuto && !hasMoto;
+  };
+
   const onSubmit = async (data: SubmissionFormValues) => {
     if (!firestore) {
         toast({
@@ -170,8 +177,10 @@ export default function RegisterProPage() {
           });
       }
 
+      const isQuarantined = checkQuarantine(data);
+      const targetCollection = isQuarantined ? "a_verifier" : "pending_concessions";
 
-      await addDoc(collection(firestore, "pending_concessions"), {
+      await addDoc(collection(firestore, targetCollection), {
         title: submissionData.name,
         category: submissionData.category,
         address: submissionData.address,
@@ -183,10 +192,14 @@ export default function RegisterProPage() {
         description: submissionData.description || '',
         ...formattedHoraires,
         submittedAt: serverTimestamp(),
+        isQuarantined: isQuarantined
       });
+
       toast({
-        title: 'Demande envoyée !',
-        description: 'Votre fiche sera examinée par notre équipe. Vous serez contacté par e-mail.',
+        title: isQuarantined ? 'Demande reçue (À vérifier)' : 'Demande envoyée !',
+        description: isQuarantined 
+            ? 'Votre fiche contient des termes nécessitant une vérification manuelle par notre équipe.'
+            : 'Votre fiche sera examinée par notre équipe. Vous serez contacté par e-mail.',
       });
       form.reset();
     } catch (error) {
@@ -256,38 +269,6 @@ export default function RegisterProPage() {
                     <span><span className="font-semibold">Valorisez votre expertise :</span> Mettez en avant vos savoir-faire et vos marques partenaires.</span>
                   </li>
                 </ul>
-              </CardContent>
-            </Card>
-          </section>
-
-          <section>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-yellow-600">🟡 COMMENT ÇA FONCTIONNE ?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4 text-lg">
-                  <li className="flex items-center gap-3"><span className="text-2xl">1️⃣</span> Vous remplissez le formulaire de demande ci-dessous.</li>
-                  <li className="flex items-center gap-3"><span className="text-2xl">2️⃣</span> Notre équipe valide les informations pour garantir la qualité.</li>
-                  <li className="flex items-center gap-3"><span className="text-2xl">3️⃣</span> Votre fiche est créée et publiée sur notre plateforme.</li>
-                  <li className="flex items-center gap-3"><span className="text-2xl">4️⃣</span> Les motards peuvent vous trouver et vous contacter !</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </section>
-          
-          <section>
-             <Card>
-              <CardHeader>
-                <CardTitle className="text-purple-600">🟣 VOTRE FICHE COMPREND</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-4 text-lg">
-                 <li className="flex items-start gap-3 list-none">- Coordonnées</li>
-                 <li className="flex items-start gap-3 list-none">- Horaires</li>
-                 <li className="flex items-start gap-3 list-none">- Marques</li>
-                 <li className="flex items-start gap-3 list-none">- Services</li>
-                 <li className="flex items-start gap-3 list-none">- Photos</li>
-                 <li className="flex items-start gap-3 list-none">- Lien site</li>
               </CardContent>
             </Card>
           </section>
@@ -568,15 +549,6 @@ export default function RegisterProPage() {
                 </Form>
               </CardContent>
             </Card>
-          </section>
-
-          <section>
-            <div className="space-y-2 p-4 border rounded-lg bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800 text-center">
-              <h4 className="font-semibold text-lg flex items-center justify-center gap-2 text-amber-800 dark:text-amber-300">⭐ Évolution possible de votre fiche</h4>
-              <p className="text-sm text-amber-700 dark:text-amber-400/90">
-                Une mise en avant locale pourra être proposée ultérieurement aux établissements souhaitant renforcer leur visibilité.
-              </p>
-            </div>
           </section>
 
         </div>
