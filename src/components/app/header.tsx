@@ -43,6 +43,7 @@ interface Suggestion {
     subLabel?: string;
     lat?: number;
     lng?: number;
+    zoom?: number;
     id?: string;
     brand?: string;
 }
@@ -172,6 +173,7 @@ const Header: React.FC<HeaderProps> = ({
                 subLabel: doc.data().address || '',
                 lat: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
                 lng: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+                zoom: 14,
                 id: doc.id
             }));
             setAllDealers(dealers);
@@ -199,7 +201,6 @@ const Header: React.FC<HeaderProps> = ({
     }
 
     const lowerTerm = searchTerm.toLowerCase().trim();
-    const words = lowerTerm.split(/\s+/).filter(w => w.length > 0);
     const results: Suggestion[] = [];
 
     // 1. Détection Prioritaire "Marque + Localisation" (ex: "BMW 06" ou "Yamaha Nice")
@@ -245,6 +246,7 @@ const Header: React.FC<HeaderProps> = ({
             subLabel: `Voir les pros ${detectedBrand} dans cette zone`,
             lat: detectedLoc.center[0],
             lng: detectedLoc.center[1],
+            zoom: 9, // Zoom pour voir le département en entier
             brand: detectedBrand
         });
     }
@@ -256,7 +258,8 @@ const Header: React.FC<HeaderProps> = ({
                 type: 'dept',
                 label: dept,
                 lat: info.center[0],
-                lng: info.center[1]
+                lng: info.center[1],
+                zoom: 9 // Zoom pour voir le département en entier
             });
         }
         // 3. Villes (Seules)
@@ -267,7 +270,8 @@ const Header: React.FC<HeaderProps> = ({
                     label: city,
                     subLabel: dept.split(' - ')[0],
                     lat: info.center[0],
-                    lng: info.center[1]
+                    lng: info.center[1],
+                    zoom: 10 // Zoom un peu plus large pour les villes
                 });
             }
         });
@@ -294,6 +298,9 @@ const Header: React.FC<HeaderProps> = ({
     if (suggestion.lat && suggestion.lng) {
         queryParams.set('lat', suggestion.lat.toString());
         queryParams.set('lng', suggestion.lng.toString());
+        if (suggestion.zoom) {
+            queryParams.set('zoom', suggestion.zoom.toString());
+        }
     }
     if (suggestion.id) {
         queryParams.set('selectedId', suggestion.id);

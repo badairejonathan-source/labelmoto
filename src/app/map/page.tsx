@@ -91,6 +91,7 @@ function MapPageComponent() {
   const searchParam = searchParams.get('search');
   const latParam = searchParams.get('lat');
   const lngParam = searchParams.get('lng');
+  const zoomParam = searchParams.get('zoom');
   const selectedIdParam = searchParams.get('selectedId');
   
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
@@ -102,7 +103,11 @@ function MapPageComponent() {
     if (latParam && lngParam) return [parseFloat(latParam), parseFloat(lngParam)];
     return [46.603354, 1.888334];
   });
-  const [mapZoom, setMapZoom] = useState(() => (latParam && lngParam) ? 12 : 6);
+  const [mapZoom, setMapZoom] = useState(() => {
+    if (zoomParam) return parseInt(zoomParam);
+    if (latParam && lngParam) return 12;
+    return 6;
+  });
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
@@ -131,7 +136,8 @@ function MapPageComponent() {
   useEffect(() => {
     if (latParam && lngParam) {
         setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
-        setMapZoom(12);
+        const z = zoomParam ? parseInt(zoomParam) : 12;
+        setMapZoom(z);
     }
     if (selectedIdParam) {
         setSelectedDealershipId(selectedIdParam);
@@ -140,7 +146,7 @@ function MapPageComponent() {
         setSearchTerm(searchParam);
         setSubmittedSearchTerm(searchParam);
     }
-  }, [latParam, lngParam, selectedIdParam, searchParam]);
+  }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
   useEffect(() => {
     if (!firestore) return;
@@ -177,7 +183,7 @@ function MapPageComponent() {
             if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
                 if (!foundLocation) {
                     setMapCenter([info.center[0], info.center[1]]);
-                    setMapZoom(11);
+                    setMapZoom(9); // Zoom départemental par défaut pour les recherches directes
                     foundLocation = true;
                 }
             }
