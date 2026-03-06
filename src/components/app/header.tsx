@@ -204,12 +204,11 @@ const Header: React.FC<HeaderProps> = ({
     const lowerTerm = searchTerm.toLowerCase().trim();
     const results: Suggestion[] = [];
 
-    // 1. Détection Globale "Marque + Localisation" (ex: "BMW 06" ou "Yamaha Nice")
+    // 1. Détection Globale "Marque + Localisation"
     let detectedBrand: string | null = null;
     let detectedLoc: any = null;
     let locLabel: string = "";
 
-    // On trie par longueur pour matcher "Royal Enfield" avant "Royal" par exemple
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
 
     for (const brand of sortedBrands) {

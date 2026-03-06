@@ -186,7 +186,7 @@ function MapPageComponent() {
             if (exactDealerMatch.latitude && exactDealerMatch.longitude) {
                 setMapCenter([exactDealerMatch.latitude, exactDealerMatch.longitude]);
                 setMapZoom(14);
-                setSelectedDealershipId(exactDealerMatch.id);
+                setSelectedIdParam(exactDealerMatch.id);
             }
             results = results;
         } else {
@@ -195,7 +195,6 @@ function MapPageComponent() {
             let detectedLoc = null;
             const brandsList = Object.keys(brandLogos);
             
-            // On trie par longueur pour matcher "Royal Enfield" avant "Royal"
             const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
 
             for (const brand of sortedBrands) {
@@ -236,14 +235,12 @@ function MapPageComponent() {
                 });
 
                 if (!foundLocation) {
-                    // Si on a détecté une marque mais pas de lieu, on filtre par marque
                     if (detectedBrand) {
                         results = results.filter(d => 
                             (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
                             d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
                         );
                     } else {
-                        // Recherche textuelle classique
                         results = results.filter(d => 
                             d.title?.toLowerCase().includes(lower) || 
                             d.address?.toLowerCase().includes(lower) || 
