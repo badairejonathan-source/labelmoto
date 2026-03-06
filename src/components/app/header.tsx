@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -208,15 +209,16 @@ const Header: React.FC<HeaderProps> = ({
     let detectedLoc: any = null;
     let locLabel: string = "";
 
-    // On cherche si une marque est mentionnée n'importe où
-    for (const brand of brandsList) {
+    // On trie par longueur pour matcher "Royal Enfield" avant "Royal" par exemple
+    const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
+
+    for (const brand of sortedBrands) {
         if (lowerTerm.includes(brand.toLowerCase())) {
             detectedBrand = brand;
             break;
         }
     }
 
-    // Si une marque est détectée, on cherche un lieu dans le reste de la chaîne
     if (detectedBrand) {
         const searchWithoutBrand = lowerTerm.replace(detectedBrand.toLowerCase(), "").trim();
         if (searchWithoutBrand.length > 0) {
@@ -286,8 +288,6 @@ const Header: React.FC<HeaderProps> = ({
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
-    // Si c'est une suggestion marque+lieu, on ne garde que la marque en texte de recherche
-    // mais on utilise les coordonnées du lieu pour centrer la map
     const searchTermToUse = suggestion.brand || suggestion.label;
     onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
@@ -311,7 +311,6 @@ const Header: React.FC<HeaderProps> = ({
 
   const executeSearch = () => {
     if (suggestions.length > 0) {
-        // On valide la première suggestion automatiquement
         handleSuggestionClick(suggestions[0]);
     } else {
         onSearch();

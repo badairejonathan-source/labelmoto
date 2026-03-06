@@ -54,6 +54,34 @@ const brandLogos: Record<string, string> = {
         <path d='M -10,6 L -6,-8 L 0,-2 L 6,-8 L 10,6 L 0,2 Z' fill='#A52A2A'/>
         <text x='0' y='-1' font-family='serif' font-size='7' fill='#fff' text-anchor='middle'>I</text>
     </g>`,
+    'Royal Enfield': `<g transform='scale(1.2)'>
+        <circle cx='0' cy='0' r='10' fill='#701c1c'/>
+        <text x='0' y='3' font-family='serif' font-size='6' fill='#fff' text-anchor='middle' font-weight='bold'>RE</text>
+    </g>`,
+    'Moto Guzzi': `<g transform='scale(1.2)'>
+        <circle cx='0' cy='0' r='10' fill='#212121'/>
+        <text x='0' y='3' font-family='serif' font-size='5' fill='#fff' text-anchor='middle' font-weight='bold'>MG</text>
+    </g>`,
+    'Aprilia': `<g transform='scale(1.2)'>
+        <rect x='-10' y='-6' width='20' height='12' fill='#e30613'/>
+        <text x='0' y='3' font-family='sans-serif' font-size='7' fill='#fff' text-anchor='middle' font-weight='bold'>a</text>
+    </g>`,
+    'Benelli': `<g transform='scale(1.2)'>
+        <circle cx='0' cy='0' r='10' fill='#005826'/>
+        <text x='0' y='3' font-family='sans-serif' font-size='6' fill='#fff' text-anchor='middle' font-weight='bold'>B</text>
+    </g>`,
+    'Vespa': `<g transform='scale(1.2)'>
+        <circle cx='0' cy='0' r='10' fill='#00adef'/>
+        <text x='0' y='3' font-family='cursive' font-size='7' fill='#fff' text-anchor='middle' font-weight='bold'>V</text>
+    </g>`,
+    'Piaggio': `<g transform='scale(1.2)'>
+        <rect x='-8' y='-8' width='16' height='16' rx='2' fill='#004a99'/>
+        <path d='M -4,0 L 0,4 L 4,0' fill='none' stroke='#fff' stroke-width='2'/>
+    </g>`,
+    'CF Moto': `<g transform='scale(1.2)'>
+        <circle cx='0' cy='0' r='10' fill='#009fe3'/>
+        <text x='0' y='3' font-family='sans-serif' font-size='5' fill='#fff' text-anchor='middle' font-weight='bold'>CF</text>
+    </g>`,
 };
 
 export default brandLogos;

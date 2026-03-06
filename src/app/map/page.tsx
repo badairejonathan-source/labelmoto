@@ -180,7 +180,6 @@ function MapPageComponent() {
         const lower = submittedSearchTerm.toLowerCase().trim();
         
         // Priorité 1 : Recherche par nom exact d'enseigne
-        // Si le terme de recherche correspond à un pro connu, on se centre dessus mais on n'exclut pas les voisins
         const exactDealerMatch = allDealerships.find(d => d.title?.toLowerCase().trim() === lower);
         
         if (exactDealerMatch) {
@@ -189,7 +188,6 @@ function MapPageComponent() {
                 setMapZoom(14);
                 setSelectedDealershipId(exactDealerMatch.id);
             }
-            // On garde tous les résultats pour que "les voisins soient proposés"
             results = results;
         } else {
             // Recherche Standard (Marque + Lieu ou Filtre textuel)
@@ -197,7 +195,10 @@ function MapPageComponent() {
             let detectedLoc = null;
             const brandsList = Object.keys(brandLogos);
             
-            for (const brand of brandsList) {
+            // On trie par longueur pour matcher "Royal Enfield" avant "Royal"
+            const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
+
+            for (const brand of sortedBrands) {
                 if (lower.includes(brand.toLowerCase())) {
                     detectedBrand = brand;
                     break;
@@ -218,7 +219,6 @@ function MapPageComponent() {
             if (detectedBrand && detectedLoc) {
                 setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
                 setMapZoom(9);
-                // Filtrage multi-marques : on cherche dans le tableau 'brands' s'il existe, sinon dans le titre
                 results = results.filter(d => 
                     (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
                     d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
@@ -235,13 +235,21 @@ function MapPageComponent() {
                     }
                 });
 
-                // Si ce n'est pas un lieu pur, on applique un filtre textuel large
                 if (!foundLocation) {
-                    results = results.filter(d => 
-                        d.title?.toLowerCase().includes(lower) || 
-                        d.address?.toLowerCase().includes(lower) || 
-                        (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
-                    );
+                    // Si on a détecté une marque mais pas de lieu, on filtre par marque
+                    if (detectedBrand) {
+                        results = results.filter(d => 
+                            (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
+                            d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
+                        );
+                    } else {
+                        // Recherche textuelle classique
+                        results = results.filter(d => 
+                            d.title?.toLowerCase().includes(lower) || 
+                            d.address?.toLowerCase().includes(lower) || 
+                            (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
+                        );
+                    }
                 }
             }
         }
