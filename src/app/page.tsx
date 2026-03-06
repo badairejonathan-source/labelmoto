@@ -23,6 +23,8 @@ export default function LandingPage() {
     const handleSearch = () => {
         if (searchTerm.trim() !== '') {
             router.push(`/map?search=${encodeURIComponent(searchTerm)}`);
+        } else {
+            router.push('/map');
         }
     };
 
@@ -213,6 +215,9 @@ export default function LandingPage() {
                                     🚦 Rejoignez la route digitale des motards
                                 </h2>
                                 <div className="space-y-3 text-sm text-gray-200" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
+                                    <p>
+                                        Parce que nous savons que le temps passé à chercher une concession, c’est du temps en moins sur la route, notre mission est simple : rendre la vie des motards plus fluide, plus connectée et plus fiable.
+                                    </p>
                                     <p>
                                         Parce que nous savons que le temps passé à chercher une concession, c’est du temps en moins sur la route, notre mission est simple : rendre la vie des motards plus fluide, plus connectée et plus fiable.
                                     </p>
