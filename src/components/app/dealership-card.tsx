@@ -340,11 +340,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* CONTENU - AVIS */}
             {showReviews && (
                 <div className="flex-1 bg-background/95 backdrop-blur-sm p-4 md:p-6 flex flex-col border-l shadow-xl overflow-hidden">
-                    <h4 className="font-black text-sm md:text-base uppercase tracking-widest text-blue-600 mb-4 flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4" />
-                        Avis Communauté
-                    </h4>
-                    
                     <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar">
                         {isCommentsLoading ? (
                             <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>
