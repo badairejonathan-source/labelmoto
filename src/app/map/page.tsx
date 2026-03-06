@@ -186,7 +186,7 @@ function MapPageComponent() {
             if (exactDealerMatch.latitude && exactDealerMatch.longitude) {
                 setMapCenter([exactDealerMatch.latitude, exactDealerMatch.longitude]);
                 setMapZoom(14);
-                setSelectedIdParam(exactDealerMatch.id);
+                setSelectedDealershipId(exactDealerMatch.id);
             }
             results = results;
         } else {
@@ -216,12 +216,43 @@ function MapPageComponent() {
             }
 
             if (detectedBrand && detectedLoc) {
-                setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-                setMapZoom(9);
-                results = results.filter(d => 
+                // Filtrer par marque
+                const brandMatches = allDealerships.filter(d => 
                     (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
                     d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
                 );
+
+                if (brandMatches.length > 0) {
+                    // Trouver la plus proche du centre de la zone demandée
+                    let nearest = brandMatches[0];
+                    let minDistanceSq = getDistanceSq(detectedLoc.center, nearest);
+
+                    brandMatches.forEach(d => {
+                        const dist = getDistanceSq(detectedLoc.center, d);
+                        if (dist < minDistanceSq) {
+                            minDistanceSq = dist;
+                            nearest = d;
+                        }
+                    });
+
+                    // Seuil de distance pour considérer qu'elle est "dans" ou "proche" du département (environ 0.5 deg²)
+                    // Si elle est plus loin, on ajuste la vue pour englober les deux
+                    if (minDistanceSq < 0.25) {
+                        setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
+                        setMapZoom(9);
+                    } else {
+                        // Plus loin : calcul du point médian et dézoom
+                        const midLat = (detectedLoc.center[0] + (nearest.latitude || detectedLoc.center[0])) / 2;
+                        const midLng = (detectedLoc.center[1] + (nearest.longitude || detectedLoc.center[1])) / 2;
+                        setMapCenter([midLat, midLng]);
+                        setMapZoom(8); // Dézoom pour voir le département ET la concession la plus proche
+                    }
+                    results = brandMatches;
+                } else {
+                    // Aucune concession de cette marque du tout : on montre juste le lieu
+                    setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
+                    setMapZoom(9);
+                }
             } else {
                 let foundLocation = false;
                 Object.entries(locationsData).forEach(([dept, info]) => {
