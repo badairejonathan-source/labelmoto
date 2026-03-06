@@ -211,7 +211,7 @@ function MapPageComponent() {
             const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
 
             for (const brand of sortedBrands) {
-                if (lower.includes(brand.toLowerCase())) {
+                if (lower.includes(brand.toLowerCase()) || lower.replace(/\s/g, '').includes(brand.toLowerCase().replace(/\s/g, ''))) {
                     detectedBrand = brand;
                     break;
                 }
@@ -236,8 +236,8 @@ function MapPageComponent() {
                 );
 
                 if (brandMatches.length > 0) {
-                    // Find brand matches near location
-                    const nearbyBrandMatches = brandMatches.filter(d => getDistanceSq(detectedLoc.center, d) < 0.5); // Approx radius for "same area"
+                    // Find brand matches near location (radius expanded to 0.8 for better detection)
+                    const nearbyBrandMatches = brandMatches.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
 
                     if (nearbyBrandMatches.length > 0) {
                         setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
@@ -257,11 +257,16 @@ function MapPageComponent() {
                             }
                         });
 
-                        // Focus view on both
-                        const midLat = (detectedLoc.center[0] + (nearest.latitude || detectedLoc.center[0])) / 2;
-                        const midLng = (detectedLoc.center[1] + (nearest.longitude || detectedLoc.center[1])) / 2;
-                        setMapCenter([midLat, midLng]);
-                        setMapZoom(8);
+                        // Focus view on both (point médian)
+                        if (nearest.latitude && nearest.longitude) {
+                            const midLat = (detectedLoc.center[0] + nearest.latitude) / 2;
+                            const midLng = (detectedLoc.center[1] + nearest.longitude) / 2;
+                            setMapCenter([midLat, midLng]);
+                            setMapZoom(8);
+                        } else {
+                            setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
+                            setMapZoom(8);
+                        }
                         results = brandMatches;
                     }
                 } else {
@@ -332,12 +337,13 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = filteredDealerships;
-    if (mapBoundsStr) {
+    // Si une recherche est en cours, on ne restreint pas aux limites de la carte pour permettre de voir les suggestions de proximité
+    if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
-  }, [filteredDealerships, mapBoundsStr, mapCenter]);
+  }, [filteredDealerships, mapBoundsStr, mapCenter, submittedSearchTerm]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
@@ -415,7 +421,7 @@ function MapPageComponent() {
                     <AlertCircle className="h-4 w-4" />
                     Aucun résultat direct
                 </div>
-                <p className="text-xs text-orange-700">La marque n'est pas présente dans cette zone. Voici les concessions les plus proches.</p>
+                <p className="text-xs text-orange-700">La marque n'est pas présente dans cette zone. Voici les professionnels les plus proches.</p>
             </div>
           )}
           

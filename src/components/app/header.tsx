@@ -175,7 +175,8 @@ const Header: React.FC<HeaderProps> = ({
                 lat: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
                 lng: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
                 zoom: 14,
-                id: doc.id
+                id: doc.id,
+                brand: Array.isArray(doc.data().brands) ? doc.data().brands[0] : undefined
             }));
             setAllDealers(dealers);
         } catch (e) {
@@ -212,7 +213,7 @@ const Header: React.FC<HeaderProps> = ({
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
 
     for (const brand of sortedBrands) {
-        if (lowerTerm.includes(brand.toLowerCase())) {
+        if (lowerTerm.includes(brand.toLowerCase().replace(/\s/g, '')) || lowerTerm.includes(brand.toLowerCase())) {
             detectedBrand = brand;
             break;
         }
@@ -249,7 +250,16 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
-    // 2. Départements
+    // 2. Établissements de la marque (même hors zone)
+    if (detectedBrand) {
+        const brandDealers = allDealers.filter(d => 
+            d.label.toLowerCase().includes(detectedBrand!.toLowerCase()) || 
+            (d.brand && d.brand.toLowerCase() === detectedBrand!.toLowerCase())
+        );
+        results.push(...brandDealers.slice(0, 3));
+    }
+
+    // 3. Départements
     Object.entries(locationsData).forEach(([dept, info]) => {
         if (dept.toLowerCase().includes(lowerTerm)) {
             results.push({
@@ -260,7 +270,7 @@ const Header: React.FC<HeaderProps> = ({
                 zoom: 9
             });
         }
-        // 3. Villes
+        // 4. Villes
         info.cities.forEach(city => {
             if (city.toLowerCase().includes(lowerTerm)) {
                 results.push({
@@ -275,7 +285,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 4. Établissements
+    // 5. Établissements génériques
     const filteredDealers = allDealers.filter(d => 
         d.label.toLowerCase().includes(lowerTerm) || 
         d.subLabel?.toLowerCase().includes(lowerTerm)
@@ -287,7 +297,9 @@ const Header: React.FC<HeaderProps> = ({
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
-    const searchTermToUse = suggestion.brand || suggestion.label;
+    // On garde le texte de recherche original pour que map/page.tsx puisse ré-analyser l'intention
+    const searchTermToUse = suggestion.type === 'brand-location' ? `${suggestion.brand} ${searchTerm.split(' ').pop()}` : suggestion.label;
+    
     onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
     
