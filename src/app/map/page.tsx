@@ -17,6 +17,7 @@ import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
 import articlesData from '@/app/data/articles.json';
 import locationsData from '@/data/locations.json';
+import brandLogos from '@/data/brand-logos';
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -175,25 +176,57 @@ function MapPageComponent() {
       results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both'));
     }
     if (submittedSearchTerm.trim() !== '') {
-        const lower = submittedSearchTerm.toLowerCase();
+        const lower = submittedSearchTerm.toLowerCase().trim();
         
-        // Vérifier si le terme correspond à une ville ou département connu
-        let foundLocation = false;
-        Object.entries(locationsData).forEach(([dept, info]) => {
-            if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
-                if (!foundLocation) {
-                    setMapCenter([info.center[0], info.center[1]]);
-                    setMapZoom(9); // Zoom départemental par défaut pour les recherches directes
-                    foundLocation = true;
+        // 1. Logique de détection intelligente Marque + Lieu pour recherche directe (Entrée)
+        let detectedBrand = '';
+        let detectedLoc = null;
+        const brandsList = Object.keys(brandLogos);
+        
+        for (const brand of brandsList) {
+            if (lower.includes(brand.toLowerCase())) {
+                detectedBrand = brand;
+                break;
+            }
+        }
+
+        const searchRemainder = detectedBrand ? lower.replace(detectedBrand.toLowerCase(), "").trim() : lower;
+
+        if (searchRemainder.length > 0) {
+            for (const [dept, info] of Object.entries(locationsData)) {
+                if (dept.toLowerCase().includes(searchRemainder) || info.cities.some(c => c.toLowerCase().includes(searchRemainder))) {
+                    detectedLoc = info;
+                    break;
                 }
             }
-        });
+        }
 
-        results = results.filter(d => 
-            d.title?.toLowerCase().includes(lower) || 
-            d.address?.toLowerCase().includes(lower) || 
-            d.brands?.some(b => b.toLowerCase().includes(lower))
-        );
+        if (detectedBrand && detectedLoc) {
+            // Si on a les deux, on centre et on filtre par marque
+            setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
+            setMapZoom(9);
+            results = results.filter(d => 
+                d.brands?.some(b => b.toLowerCase().includes(detectedBrand.toLowerCase()))
+            );
+        } else {
+            // 2. Logique classique (soit l'un, soit l'autre, soit recherche textuelle libre)
+            let foundLocation = false;
+            Object.entries(locationsData).forEach(([dept, info]) => {
+                if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
+                    if (!foundLocation) {
+                        setMapCenter([info.center[0], info.center[1]]);
+                        setMapZoom(9);
+                        foundLocation = true;
+                    }
+                }
+            });
+
+            results = results.filter(d => 
+                d.title?.toLowerCase().includes(lower) || 
+                d.address?.toLowerCase().includes(lower) || 
+                d.brands?.some(b => b.toLowerCase().includes(lower))
+            );
+        }
     }
     if (ratingFilter > 0) {
         results = results.filter(d => {
