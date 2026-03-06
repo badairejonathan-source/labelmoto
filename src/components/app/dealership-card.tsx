@@ -428,10 +428,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                         )}
                     </div>
 
-                    <div className="border-t pt-2 bg-muted/20 -mx-4 -mb-4 p-3 md:p-4">
+                    <div className="border-t pt-2 bg-muted/20 -mx-4 -mb-4 p-3 md:p-4 flex justify-end">
                         <Button 
                           size="sm" 
-                          className="w-full bg-blue-600 hover:bg-blue-700 font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-lg h-8 md:h-9" 
+                          className="w-[150px] bg-blue-600 hover:bg-blue-700 font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-lg h-8 md:h-9" 
                           onClick={handleOpenReviewDialog}
                         >
                             <PlusCircle className="h-3 w-3 md:h-4 md:h-4 mr-2" />
