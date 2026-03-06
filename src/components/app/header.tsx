@@ -22,7 +22,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import locationsData from '@/data/locations.json';
+import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit } from 'firebase/firestore';
+
+const brandsList = Object.keys(brandLogos);
 
 interface HeaderProps {
     searchTerm: string;
@@ -35,12 +38,13 @@ interface HeaderProps {
 }
 
 interface Suggestion {
-    type: 'city' | 'dept' | 'dealer';
+    type: 'city' | 'dept' | 'dealer' | 'brand-location';
     label: string;
     subLabel?: string;
     lat?: number;
     lng?: number;
     id?: string;
+    brand?: string;
 }
 
 const UserMenu = () => {
@@ -196,8 +200,51 @@ const Header: React.FC<HeaderProps> = ({
 
     const lowerTerm = searchTerm.toLowerCase();
     const results: Suggestion[] = [];
+    const words = lowerTerm.split(/\s+/).filter(w => w.length > 0);
 
-    // 1. Départements
+    // 1. Détection "Marque + Localisation" (ex: "Yamaha 75")
+    if (words.length >= 2) {
+        let foundBrand: string | null = null;
+        let foundLoc: any = null;
+        let locLabel: string = "";
+
+        for (const word of words) {
+            if (!foundBrand) {
+                const brandMatch = brandsList.find(b => b.toLowerCase() === word || b.toLowerCase().includes(word));
+                if (brandMatch) foundBrand = brandMatch;
+            }
+            
+            if (!foundLoc) {
+                const deptEntry = Object.entries(locationsData).find(([dept]) => dept.toLowerCase().includes(word));
+                if (deptEntry) {
+                    foundLoc = deptEntry[1];
+                    locLabel = deptEntry[0];
+                } else {
+                    for (const [dept, info] of Object.entries(locationsData)) {
+                        const cityMatch = info.cities.find(c => c.toLowerCase().includes(word));
+                        if (cityMatch) {
+                            foundLoc = info;
+                            locLabel = `${cityMatch} (${dept.split(' - ')[0]})`;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (foundBrand && foundLoc) {
+            results.push({
+                type: 'brand-location',
+                label: `${foundBrand} à ${locLabel}`,
+                subLabel: `Voir les établissements ${foundBrand} dans cette zone`,
+                lat: foundLoc.center[0],
+                lng: foundLoc.center[1],
+                brand: foundBrand
+            });
+        }
+    }
+
+    // 2. Départements
     Object.entries(locationsData).forEach(([dept, info]) => {
         if (dept.toLowerCase().includes(lowerTerm)) {
             results.push({
@@ -207,7 +254,7 @@ const Header: React.FC<HeaderProps> = ({
                 lng: info.center[1]
             });
         }
-        // 2. Villes
+        // 3. Villes
         info.cities.forEach(city => {
             if (city.toLowerCase().includes(lowerTerm)) {
                 results.push({
@@ -221,7 +268,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 3. Établissements
+    // 4. Établissements
     const filteredDealers = allDealers.filter(d => 
         d.label.toLowerCase().includes(lowerTerm) || 
         d.subLabel?.toLowerCase().includes(lowerTerm)
@@ -232,7 +279,8 @@ const Header: React.FC<HeaderProps> = ({
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
-    onSearchTermChange(suggestion.label);
+    const searchTermToUse = suggestion.brand || suggestion.label;
+    onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
     
     const queryParams = new URLSearchParams();
@@ -243,7 +291,7 @@ const Header: React.FC<HeaderProps> = ({
     if (suggestion.id) {
         queryParams.set('selectedId', suggestion.id);
     }
-    queryParams.set('search', suggestion.label);
+    queryParams.set('search', searchTermToUse);
     if (activeFilter) queryParams.set('filter', activeFilter);
 
     router.push(`/map?${queryParams.toString()}`);
@@ -324,7 +372,7 @@ const Header: React.FC<HeaderProps> = ({
                                 onClick={() => handleSuggestionClick(s)}
                             >
                                 <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
-                                    {s.type === 'dealer' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                                    {s.type === 'dealer' || s.type === 'brand-location' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
                                 </div>
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-sm font-bold text-foreground truncate">{s.label}</span>
