@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
@@ -44,6 +45,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   onClick,
   className,
 }) => {
+  const searchParams = useSearchParams();
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
@@ -63,6 +65,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const categoryLabel = categoryDisplay[rawCategory.toLowerCase()] || rawCategory;
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+
+  // Handle automatic opening of reviews tab if coming from login redirect
+  useEffect(() => {
+    const view = searchParams.get('view');
+    const selectedId = searchParams.get('selectedId');
+    if (selectedId === dealership.id && view === 'reviews') {
+      setShowReviews(true);
+    }
+  }, [searchParams, dealership.id]);
 
   // Approved comments for this dealership
   const commentsQuery = useMemoFirebase(() => {
@@ -129,6 +140,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   // Pour l'instant, aucun badge n'est attribué automatiquement
   const isSelectedLabel = false;
+
+  // Build the callback URL for login redirection
+  const loginCallbackUrl = `/map?selectedId=${dealership.id}&view=reviews`;
 
   return (
     <>
@@ -384,7 +398,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                             <div className="text-center space-y-2">
                                 <p className="text-[10px] text-muted-foreground">Connectez-vous pour laisser un avis.</p>
                                 <Button size="sm" variant="outline" className="w-full text-[10px] font-bold uppercase" asChild>
-                                    <Link href="/login">Se connecter</Link>
+                                    <Link href={`/login?callbackUrl=${encodeURIComponent(loginCallbackUrl)}`}>Se connecter</Link>
                                 </Button>
                             </div>
                         )}

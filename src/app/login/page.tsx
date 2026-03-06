@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -57,8 +57,11 @@ export default function LoginPage() {
   const [activeTab, setActiveTab] = useState('login');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { auth } = useFirebase();
   const { toast } = useToast();
+
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -75,7 +78,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({ title: 'Connexion réussie !' });
-      router.push('/');
+      router.push(callbackUrl);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -100,9 +103,10 @@ export default function LoginPage() {
       );
       toast({
         title: 'Inscription réussie !',
-        description: 'Vous pouvez maintenant vous connecter.',
+        description: 'Bienvenue sur Label Moto.',
       });
-      setActiveTab('login');
+      // On success registration, Firebase automatically signs in. Redirect.
+      router.push(callbackUrl);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -135,7 +139,7 @@ export default function LoginPage() {
               <CardHeader>
                 <CardTitle>Connexion</CardTitle>
                 <CardDescription>
-                  Accédez à votre espace professionnel pour gérer vos fiches.
+                  Accédez à votre espace pour gérer vos avis et vos fiches.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -153,7 +157,7 @@ export default function LoginPage() {
                           <FormControl>
                             <Input
                               type="email"
-                              placeholder="pro@email.com"
+                              placeholder="votre@email.com"
                               {...field}
                             />
                           </FormControl>
@@ -188,7 +192,7 @@ export default function LoginPage() {
               <CardHeader>
                 <CardTitle>Inscription</CardTitle>
                 <CardDescription>
-                  Créez un compte pour inscrire votre établissement.
+                  Créez un compte pour rejoindre la communauté Label Moto.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -206,7 +210,7 @@ export default function LoginPage() {
                           <FormControl>
                             <Input
                               type="email"
-                              placeholder="pro@email.com"
+                              placeholder="votre@email.com"
                               {...field}
                             />
                           </FormControl>
