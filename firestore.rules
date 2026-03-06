@@ -54,6 +54,11 @@ service cloud.firestore {
     match /concessions/{dealershipId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
+      
+      match /comments/{commentId} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
     }
     
     match /pending_concessions/{submissionId} {
