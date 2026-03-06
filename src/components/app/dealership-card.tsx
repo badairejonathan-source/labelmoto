@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -5,11 +6,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send, PlusCircle } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useUser, useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -47,6 +48,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 }) => {
   const searchParams = useSearchParams();
   const [isImageOpen, setIsImageOpen] = useState(false);
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -105,6 +107,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     if (showHours) setShowHours(false);
   };
 
+  const handleOpenReviewDialog = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsReviewDialogOpen(true);
+  };
+
   const handleRatingSubmit = () => {
     if (!user || !firestore) {
         toast({ title: "Connexion requise", description: "Veuillez vous connecter pour laisser un avis.", variant: "destructive" });
@@ -132,13 +139,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     toast({ title: "Merci !", description: "Votre avis a été envoyé et sera publié après validation." });
     setNewComment('');
     setIsSubmitting(false);
+    setIsReviewDialogOpen(false);
   };
 
   const addressParts = dealership.address ? dealership.address.split(', ') : [];
   const street = addressParts[0] || '';
   const cityZip = addressParts.slice(1).join(', ') || '';
 
-  // Pour l'instant, aucun badge n'est attribué automatiquement
+  // Pour l'instand, aucun badge n'est attribué automatiquement
   const isSelectedLabel = false;
 
   // Build the callback URL for login redirection
@@ -146,6 +154,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   return (
     <>
+      {/* Fenêtre Photo */}
       <Dialog open={isImageOpen} onOpenChange={setIsImageOpen}>
         <DialogContent className="p-0 border-0 max-w-4xl bg-transparent shadow-none">
           <DialogTitle className="sr-only">{`Photo de ${title}`}</DialogTitle>
@@ -157,6 +166,58 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               height={800}
               className="object-contain w-full h-auto max-h-[90vh] rounded-lg"
             />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Fenêtre Formulaire Avis */}
+      <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Laisser un avis sur {title}</DialogTitle>
+            <DialogDescription>
+              Partagez votre expérience avec la communauté. Votre avis sera modéré avant publication.
+            </DialogDescription>
+          </DialogHeader>
+          {user ? (
+            <div className="space-y-6 py-4">
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-xs font-black uppercase text-muted-foreground tracking-widest">Votre note</span>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button key={star} onClick={() => setNewRating(star)} className="focus:outline-none transition-transform hover:scale-110">
+                      <Star className={cn("h-8 w-8", star <= newRating ? "fill-yellow-400 text-yellow-400" : "text-muted")} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <span className="text-xs font-black uppercase text-muted-foreground tracking-widest">Votre commentaire</span>
+                <Textarea 
+                  placeholder="Points forts, points faibles, accueil, prix..." 
+                  className="min-h-[120px] bg-muted/20" 
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+              </div>
+              <Button size="lg" className="w-full bg-brand hover:bg-brand/90 font-black uppercase text-xs tracking-widest" onClick={handleRatingSubmit} disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                Envoyer mon avis
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-8 space-y-4">
+              <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto">
+                <Mail className="h-8 w-8 text-brand" />
+              </div>
+              <div className="space-y-2">
+                <p className="font-bold">Connexion requise</p>
+                <p className="text-sm text-muted-foreground px-4">Vous devez être connecté pour partager votre avis avec les autres motards.</p>
+              </div>
+              <Button size="lg" className="w-full bg-brand hover:bg-brand/90 font-black uppercase text-xs tracking-widest" asChild>
+                <Link href={`/login?callbackUrl=${encodeURIComponent(loginCallbackUrl)}`}>Se connecter / S'inscrire</Link>
+              </Button>
+            </div>
           )}
         </DialogContent>
       </Dialog>
@@ -361,42 +422,22 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                                 </div>
                             ))
                         ) : (
-                            <p className="text-center text-muted-foreground text-xs py-10 italic">Aucun avis pour le moment. Soyez le premier !</p>
+                            <div className="text-center py-12">
+                                <MessageSquare className="h-10 w-10 text-muted/20 mx-auto mb-3" />
+                                <p className="text-muted-foreground text-xs italic">Aucun avis pour le moment. Soyez le premier !</p>
+                            </div>
                         )}
                     </div>
 
                     <div className="border-t pt-4 bg-muted/20 -mx-4 -mb-4 p-4">
-                        {user ? (
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-bold uppercase text-muted-foreground">Votre note :</span>
-                                    <div className="flex gap-1">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <button key={star} onClick={() => setNewRating(star)} className="focus:outline-none">
-                                                <Star className={cn("h-4 w-4", star <= newRating ? "fill-yellow-400 text-yellow-400" : "text-muted")} />
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <Textarea 
-                                    placeholder="Partagez votre avis..." 
-                                    className="text-xs min-h-[60px] bg-white dark:bg-gray-950" 
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
-                                />
-                                <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 font-bold uppercase text-[10px] tracking-widest" onClick={handleRatingSubmit} disabled={isSubmitting}>
-                                    {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <Send className="h-3 w-3 mr-2" />}
-                                    Publier mon avis
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="text-center space-y-2">
-                                <p className="text-[10px] text-muted-foreground">Connectez-vous pour laisser un avis.</p>
-                                <Button size="sm" variant="outline" className="w-full text-[10px] font-bold uppercase" asChild>
-                                    <Link href={`/login?callbackUrl=${encodeURIComponent(loginCallbackUrl)}`}>Se connecter</Link>
-                                </Button>
-                            </div>
-                        )}
+                        <Button 
+                          size="sm" 
+                          className="w-full bg-blue-600 hover:bg-blue-700 font-black uppercase text-[10px] tracking-widest shadow-lg h-10" 
+                          onClick={handleOpenReviewDialog}
+                        >
+                            <PlusCircle className="h-4 w-4 mr-2" />
+                            Donner mon avis
+                        </Button>
                     </div>
                 </div>
             )}
