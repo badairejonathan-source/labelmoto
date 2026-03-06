@@ -193,58 +193,63 @@ const Header: React.FC<HeaderProps> = ({
   }, []);
 
   useEffect(() => {
-    if (searchTerm.length < 2) {
+    if (searchTerm.trim().length < 2) {
         setSuggestions([]);
         return;
     }
 
-    const lowerTerm = searchTerm.toLowerCase();
-    const results: Suggestion[] = [];
+    const lowerTerm = searchTerm.toLowerCase().trim();
     const words = lowerTerm.split(/\s+/).filter(w => w.length > 0);
+    const results: Suggestion[] = [];
 
-    // 1. Détection "Marque + Localisation" (ex: "Yamaha 75")
-    if (words.length >= 2) {
-        let foundBrand: string | null = null;
-        let foundLoc: any = null;
-        let locLabel: string = "";
+    // 1. Détection Prioritaire "Marque + Localisation" (ex: "BMW 06" ou "Yamaha Nice")
+    let detectedBrand: string | null = null;
+    let detectedLoc: any = null;
+    let locLabel: string = "";
 
-        for (const word of words) {
-            if (!foundBrand) {
-                const brandMatch = brandsList.find(b => b.toLowerCase() === word || b.toLowerCase().includes(word));
-                if (brandMatch) foundBrand = brandMatch;
-            }
-            
-            if (!foundLoc) {
-                const deptEntry = Object.entries(locationsData).find(([dept]) => dept.toLowerCase().includes(word));
-                if (deptEntry) {
-                    foundLoc = deptEntry[1];
-                    locLabel = deptEntry[0];
-                } else {
-                    for (const [dept, info] of Object.entries(locationsData)) {
-                        const cityMatch = info.cities.find(c => c.toLowerCase().includes(word));
-                        if (cityMatch) {
-                            foundLoc = info;
-                            locLabel = `${cityMatch} (${dept.split(' - ')[0]})`;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (foundBrand && foundLoc) {
-            results.push({
-                type: 'brand-location',
-                label: `${foundBrand} à ${locLabel}`,
-                subLabel: `Voir les établissements ${foundBrand} dans cette zone`,
-                lat: foundLoc.center[0],
-                lng: foundLoc.center[1],
-                brand: foundBrand
-            });
+    // On cherche si l'une des marques est présente dans la recherche
+    for (const brand of brandsList) {
+        if (lowerTerm.includes(brand.toLowerCase())) {
+            detectedBrand = brand;
+            break;
         }
     }
 
-    // 2. Départements
+    if (detectedBrand) {
+        // Si on a une marque, on cherche si un reste de la phrase correspond à un lieu
+        const searchWithoutBrand = lowerTerm.replace(detectedBrand.toLowerCase(), "").trim();
+        
+        if (searchWithoutBrand.length > 0) {
+            // Check départements
+            for (const [dept, info] of Object.entries(locationsData)) {
+                if (dept.toLowerCase().includes(searchWithoutBrand)) {
+                    detectedLoc = info;
+                    locLabel = dept;
+                    break;
+                }
+                // Check villes
+                const cityMatch = info.cities.find(c => c.toLowerCase().includes(searchWithoutBrand));
+                if (cityMatch) {
+                    detectedLoc = info;
+                    locLabel = `${cityMatch} (${dept.split(' - ')[0]})`;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (detectedBrand && detectedLoc) {
+        results.push({
+            type: 'brand-location',
+            label: `${detectedBrand} à ${locLabel}`,
+            subLabel: `Voir les pros ${detectedBrand} dans cette zone`,
+            lat: detectedLoc.center[0],
+            lng: detectedLoc.center[1],
+            brand: detectedBrand
+        });
+    }
+
+    // 2. Départements (Seuls)
     Object.entries(locationsData).forEach(([dept, info]) => {
         if (dept.toLowerCase().includes(lowerTerm)) {
             results.push({
@@ -254,7 +259,7 @@ const Header: React.FC<HeaderProps> = ({
                 lng: info.center[1]
             });
         }
-        // 3. Villes
+        // 3. Villes (Seules)
         info.cities.forEach(city => {
             if (city.toLowerCase().includes(lowerTerm)) {
                 results.push({
@@ -268,14 +273,16 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 4. Établissements
+    // 4. Établissements (Seuls)
     const filteredDealers = allDealers.filter(d => 
         d.label.toLowerCase().includes(lowerTerm) || 
         d.subLabel?.toLowerCase().includes(lowerTerm)
     );
     results.push(...filteredDealers);
 
-    setSuggestions(results.slice(0, 8));
+    // Dédoublonnage et limitation
+    const uniqueResults = results.filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
+    setSuggestions(uniqueResults.slice(0, 8));
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
