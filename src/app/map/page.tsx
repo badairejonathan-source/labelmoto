@@ -175,57 +175,78 @@ function MapPageComponent() {
     if (activeFilter) {
       results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both'));
     }
+
     if (submittedSearchTerm.trim() !== '') {
         const lower = submittedSearchTerm.toLowerCase().trim();
         
-        let detectedBrand = '';
-        let detectedLoc = null;
-        const brandsList = Object.keys(brandLogos);
+        // Priorité 1 : Recherche par nom exact d'enseigne
+        // Si le terme de recherche correspond à un pro connu, on se centre dessus mais on n'exclut pas les voisins
+        const exactDealerMatch = allDealerships.find(d => d.title?.toLowerCase().trim() === lower);
         
-        for (const brand of brandsList) {
-            if (lower.includes(brand.toLowerCase())) {
-                detectedBrand = brand;
-                break;
+        if (exactDealerMatch) {
+            if (exactDealerMatch.latitude && exactDealerMatch.longitude) {
+                setMapCenter([exactDealerMatch.latitude, exactDealerMatch.longitude]);
+                setMapZoom(14);
+                setSelectedDealershipId(exactDealerMatch.id);
             }
-        }
-
-        const searchRemainder = detectedBrand ? lower.replace(detectedBrand.toLowerCase(), "").trim() : lower;
-
-        if (searchRemainder.length > 0) {
-            for (const [dept, info] of Object.entries(locationsData)) {
-                if (dept.toLowerCase().includes(searchRemainder) || info.cities.some(c => c.toLowerCase().includes(searchRemainder))) {
-                    detectedLoc = info;
+            // On garde tous les résultats pour que "les voisins soient proposés"
+            results = results;
+        } else {
+            // Recherche Standard (Marque + Lieu ou Filtre textuel)
+            let detectedBrand = '';
+            let detectedLoc = null;
+            const brandsList = Object.keys(brandLogos);
+            
+            for (const brand of brandsList) {
+                if (lower.includes(brand.toLowerCase())) {
+                    detectedBrand = brand;
                     break;
                 }
             }
-        }
 
-        if (detectedBrand && detectedLoc) {
-            setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-            setMapZoom(9);
-            results = results.filter(d => 
-                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
-                d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
-            );
-        } else {
-            let foundLocation = false;
-            Object.entries(locationsData).forEach(([dept, info]) => {
-                if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
-                    if (!foundLocation) {
-                        setMapCenter([info.center[0], info.center[1]]);
-                        setMapZoom(9);
-                        foundLocation = true;
+            const searchRemainder = detectedBrand ? lower.replace(detectedBrand.toLowerCase(), "").trim() : lower;
+
+            if (searchRemainder.length > 0) {
+                for (const [dept, info] of Object.entries(locationsData)) {
+                    if (dept.toLowerCase().includes(searchRemainder) || info.cities.some(c => c.toLowerCase().includes(searchRemainder))) {
+                        detectedLoc = info;
+                        break;
                     }
                 }
-            });
+            }
 
-            results = results.filter(d => 
-                d.title?.toLowerCase().includes(lower) || 
-                d.address?.toLowerCase().includes(lower) || 
-                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
-            );
+            if (detectedBrand && detectedLoc) {
+                setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
+                setMapZoom(9);
+                // Filtrage multi-marques : on cherche dans le tableau 'brands' s'il existe, sinon dans le titre
+                results = results.filter(d => 
+                    (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
+                    d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
+                );
+            } else {
+                let foundLocation = false;
+                Object.entries(locationsData).forEach(([dept, info]) => {
+                    if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
+                        if (!foundLocation) {
+                            setMapCenter([info.center[0], info.center[1]]);
+                            setMapZoom(9);
+                            foundLocation = true;
+                        }
+                    }
+                });
+
+                // Si ce n'est pas un lieu pur, on applique un filtre textuel large
+                if (!foundLocation) {
+                    results = results.filter(d => 
+                        d.title?.toLowerCase().includes(lower) || 
+                        d.address?.toLowerCase().includes(lower) || 
+                        (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
+                    );
+                }
+            }
         }
     }
+
     if (ratingFilter > 0) {
         results = results.filter(d => {
             const r = d.rating ? parseFloat(String(d.rating).replace(',', '.')) : 0;

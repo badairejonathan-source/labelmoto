@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -203,11 +204,12 @@ const Header: React.FC<HeaderProps> = ({
     const lowerTerm = searchTerm.toLowerCase().trim();
     const results: Suggestion[] = [];
 
-    // 1. Détection Prioritaire "Marque + Localisation" (ex: "BMW 06" ou "Yamaha Nice")
+    // 1. Détection Globale "Marque + Localisation" (ex: "BMW 06" ou "Yamaha Nice")
     let detectedBrand: string | null = null;
     let detectedLoc: any = null;
     let locLabel: string = "";
 
+    // On cherche si une marque est mentionnée n'importe où
     for (const brand of brandsList) {
         if (lowerTerm.includes(brand.toLowerCase())) {
             detectedBrand = brand;
@@ -215,6 +217,7 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
+    // Si une marque est détectée, on cherche un lieu dans le reste de la chaîne
     if (detectedBrand) {
         const searchWithoutBrand = lowerTerm.replace(detectedBrand.toLowerCase(), "").trim();
         if (searchWithoutBrand.length > 0) {
@@ -284,6 +287,8 @@ const Header: React.FC<HeaderProps> = ({
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
+    // Si c'est une suggestion marque+lieu, on ne garde que la marque en texte de recherche
+    // mais on utilise les coordonnées du lieu pour centrer la map
     const searchTermToUse = suggestion.brand || suggestion.label;
     onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
@@ -307,6 +312,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const executeSearch = () => {
     if (suggestions.length > 0) {
+        // On valide la première suggestion automatiquement
         handleSuggestionClick(suggestions[0]);
     } else {
         onSearch();
@@ -404,7 +410,7 @@ const Header: React.FC<HeaderProps> = ({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
-                                    <Link href="/entretien">
+                                    <Link href="/entretien" interrupted={false}>
                                         <Image src="/images/icon-entretienrevision.png" alt="Entretien" width={32} height={32} className="h-8 w-8 object-contain" />
                                         <span className="sr-only">Entretien & Révisions</span>
                                     </Link>
@@ -417,7 +423,7 @@ const Header: React.FC<HeaderProps> = ({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-brand h-10 w-10">
-                                    <Link href="/info">
+                                    <Link href="/info" interrupted={false}>
                                         <Image src="/images/icon-conseils.png" alt="Conseils" width={28} height={28} className="h-7 w-7 object-contain" />
                                         <span className="sr-only">Conseils pratiques</span>
                                     </Link>
