@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
@@ -307,7 +308,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             {/* CONTENU - HORAIRES */}
             {showHours && (
                 <div className="flex-1 bg-background/95 backdrop-blur-sm p-3 md:p-4 flex flex-col justify-center border-l shadow-xl overflow-hidden">
-                    <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-0.5 md:gap-y-1 text-[10px] sm:text-xs md:text-sm max-w-md mx-auto w-full">
+                    <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-0.5 text-[10px] sm:text-xs md:text-sm max-w-md mx-auto w-full">
                         {weekDays.map(day => {
                             const hours = dealership[day as keyof Dealership];
                             const isClosed = !hours || typeof hours !== 'string' || hours.toLowerCase() === 'non renseigné' || hours.toLowerCase() === 'fermé';
