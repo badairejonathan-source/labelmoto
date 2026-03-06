@@ -124,7 +124,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               onClick={onClick}
               className="flex flex-col justify-center flex-1 p-3 md:p-5 min-w-0 cursor-pointer"
             >
-              <h3 className="font-black text-sm md:text-xl text-foreground leading-tight uppercase truncate">
+              <h3 className="font-black text-sm md:text-xl text-foreground leading-[1.1] uppercase break-words mb-1">
                 {title}
               </h3>
               
