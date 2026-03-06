@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -429,13 +428,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                         )}
                     </div>
 
-                    <div className="border-t pt-4 bg-muted/20 -mx-4 -mb-4 p-4">
+                    <div className="border-t pt-2 bg-muted/20 -mx-4 -mb-4 p-3 md:p-4">
                         <Button 
                           size="sm" 
-                          className="w-full bg-blue-600 hover:bg-blue-700 font-black uppercase text-[10px] tracking-widest shadow-lg h-10" 
+                          className="w-full bg-blue-600 hover:bg-blue-700 font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-lg h-8 md:h-9" 
                           onClick={handleOpenReviewDialog}
                         >
-                            <PlusCircle className="h-4 w-4 mr-2" />
+                            <PlusCircle className="h-3 w-3 md:h-4 md:h-4 mr-2" />
                             Donner mon avis
                         </Button>
                     </div>
