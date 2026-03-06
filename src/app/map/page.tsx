@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -7,7 +8,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown } from 'lucide-react';
+import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, MapPin, AlertCircle } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -99,6 +100,7 @@ function MapPageComponent() {
   
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
+  const [searchStatus, setSearchStatus] = useState<'exact' | 'fallback_brand' | 'fallback_nearby' | 'none'>('none');
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
@@ -182,6 +184,8 @@ function MapPageComponent() {
 
   useEffect(() => {
     let results = allDealerships;
+    let status: 'exact' | 'fallback_brand' | 'fallback_nearby' | 'none' = 'exact';
+
     if (activeFilter) {
       results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both'));
     }
@@ -189,6 +193,7 @@ function MapPageComponent() {
     if (submittedSearchTerm.trim() !== '') {
         const lower = submittedSearchTerm.toLowerCase().trim();
         
+        // Exact dealer match by name
         const exactDealerMatch = allDealerships.find(d => d.title?.toLowerCase().trim() === lower);
         
         if (exactDealerMatch) {
@@ -197,7 +202,9 @@ function MapPageComponent() {
                 setMapZoom(14);
                 setSelectedDealershipId(exactDealerMatch.id);
             }
+            results = [exactDealerMatch];
         } else {
+            // Brand & Location Detection
             let detectedBrand = '';
             let detectedLoc = null;
             const brandsList = Object.keys(brandLogos);
@@ -221,6 +228,7 @@ function MapPageComponent() {
                 }
             }
 
+            // FILTERING LOGIC
             if (detectedBrand && detectedLoc) {
                 const brandMatches = allDealerships.filter(d => 
                     (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
@@ -228,38 +236,49 @@ function MapPageComponent() {
                 );
 
                 if (brandMatches.length > 0) {
-                    let nearest = brandMatches[0];
-                    let minDistanceSq = getDistanceSq(detectedLoc.center, nearest);
+                    // Find brand matches near location
+                    const nearbyBrandMatches = brandMatches.filter(d => getDistanceSq(detectedLoc.center, d) < 0.5); // Approx radius for "same area"
 
-                    brandMatches.forEach(d => {
-                        const dist = getDistanceSq(detectedLoc.center, d);
-                        if (dist < minDistanceSq) {
-                            minDistanceSq = dist;
-                            nearest = d;
-                        }
-                    });
-
-                    if (minDistanceSq < 0.25) {
+                    if (nearbyBrandMatches.length > 0) {
                         setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
                         setMapZoom(9);
+                        results = brandMatches;
                     } else {
+                        // NO BRAND IN THIS LOCATION -> FALLBACK TO NEAREST BRAND
+                        status = 'fallback_brand';
+                        let nearest = brandMatches[0];
+                        let minDistanceSq = getDistanceSq(detectedLoc.center, nearest);
+
+                        brandMatches.forEach(d => {
+                            const dist = getDistanceSq(detectedLoc.center, d);
+                            if (dist < minDistanceSq) {
+                                minDistanceSq = dist;
+                                nearest = d;
+                            }
+                        });
+
+                        // Focus view on both
                         const midLat = (detectedLoc.center[0] + (nearest.latitude || detectedLoc.center[0])) / 2;
                         const midLng = (detectedLoc.center[1] + (nearest.longitude || detectedLoc.center[1])) / 2;
                         setMapCenter([midLat, midLng]);
                         setMapZoom(8);
+                        results = brandMatches;
                     }
-                    results = brandMatches;
                 } else {
+                    // BRAND DOES NOT EXIST AT ALL -> Show nearby anything
+                    status = 'fallback_nearby';
                     setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-                    setMapZoom(9);
+                    setMapZoom(10);
+                    results = allDealerships; 
                 }
             } else {
+                // Location only or Brand only
                 let foundLocation = false;
                 Object.entries(locationsData).forEach(([dept, info]) => {
                     if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
                         if (!foundLocation) {
                             setMapCenter([info.center[0], info.center[1]]);
-                            setMapZoom(9);
+                            setMapZoom(10);
                             foundLocation = true;
                         }
                     }
@@ -271,16 +290,26 @@ function MapPageComponent() {
                             (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
                             d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
                         );
+                        if (results.length === 0) {
+                            status = 'fallback_nearby';
+                            results = allDealerships;
+                        }
                     } else {
                         results = results.filter(d => 
                             d.title?.toLowerCase().includes(lower) || 
                             d.address?.toLowerCase().includes(lower) || 
                             (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
                         );
+                        if (results.length === 0) {
+                            status = 'fallback_nearby';
+                            results = allDealerships;
+                        }
                     }
                 }
             }
         }
+    } else {
+        status = 'none';
     }
 
     if (ratingFilter > 0) {
@@ -289,6 +318,8 @@ function MapPageComponent() {
             return !isNaN(r) && r >= ratingFilter;
         });
     }
+    
+    setSearchStatus(status);
     setFilteredDealerships(results);
   }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
 
@@ -367,6 +398,7 @@ function MapPageComponent() {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
       setSelectedDealershipId(null);
+      setSearchStatus('none');
       router.push('/map', { scroll: false });
     }
   }, [router]);
@@ -377,6 +409,26 @@ function MapPageComponent() {
         <div className="text-center text-muted-foreground pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /><p className="mt-2">Chargement...</p></div>
       ) : (
         <>
+          {searchStatus === 'fallback_brand' && (
+            <div className="bg-orange-50 border-l-4 border-orange-400 p-4 mb-4 rounded-r-lg">
+                <div className="flex items-center gap-2 text-orange-800 font-bold text-sm mb-1 uppercase tracking-tight">
+                    <AlertCircle className="h-4 w-4" />
+                    Aucun résultat direct
+                </div>
+                <p className="text-xs text-orange-700">La marque n'est pas présente dans cette zone. Voici les concessions les plus proches.</p>
+            </div>
+          )}
+          
+          {searchStatus === 'fallback_nearby' && (
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg">
+                <div className="flex items-center gap-2 text-blue-800 font-bold text-sm mb-1 uppercase tracking-tight">
+                    <MapPin className="h-4 w-4" />
+                    Pas de correspondance exacte
+                </div>
+                <p className="text-xs text-blue-700">Aucun garage ne correspond à votre recherche. Voici les professionnels à proximité.</p>
+            </div>
+          )}
+
           {dealershipsToDisplay.map((dealer, index) => {
             const adIndex = Math.floor((index + 1) / 4) - 1;
             const article = articlesData[adIndex % articlesData.length];
@@ -410,7 +462,15 @@ function MapPageComponent() {
             </div>
           )}
 
-          {dealershipsToDisplay.length === 0 && <div className="text-center text-muted-foreground py-10 px-4"><p>Aucun établissement visible dans cette zone. Explorez la carte pour trouver des résultats.</p></div>}
+          {dealershipsToDisplay.length === 0 && (
+            <div className="text-center text-muted-foreground py-10 px-4">
+                <p className="font-bold text-foreground">Aucun établissement trouvé.</p>
+                <p className="text-sm mt-2">Explorez la carte ou modifiez vos filtres pour voir plus de résultats.</p>
+                <Button variant="outline" className="mt-4 rounded-full" onClick={() => handleSearchTermChange('')}>
+                    Réinitialiser la recherche
+                </Button>
+            </div>
+          )}
         </>
       )}
     </div>
