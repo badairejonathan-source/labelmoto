@@ -81,6 +81,24 @@
         "rating"
       ]
     },
+    "Comment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Comment",
+      "type": "object",
+      "description": "Represents a user review or comment on a dealership.",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "dealershipId": { "type": "string" },
+        "dealershipName": { "type": "string" },
+        "content": { "type": "string" },
+        "rating": { "type": "number" },
+        "date": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] }
+      },
+      "required": ["id", "userId", "dealershipId", "content", "rating", "status"]
+    },
     "AdvicePost": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "AdvicePost",
@@ -291,7 +309,7 @@
           "schema": {
             "$ref": "#/backend/entities/ProfessionalProfile"
           },
-          "description": "Stores the profiles of professional users. Access is strictly limited to the owner matching 'request.auth.uid'. No denormalization for authorization needed beyond path-based ownership."
+          "description": "Stores the profiles of professional users."
         }
       },
       {
@@ -301,27 +319,7 @@
           "schema": {
             "$ref": "#/backend/entities/StandardProfile"
           },
-          "description": "Stores the profiles of standard (non-professional) users. Access is strictly limited to the owner matching 'request.auth.uid'."
-        }
-      },
-      {
-        "path": "/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}",
-        "definition": {
-          "entityName": "DealershipSubmission",
-          "schema": {
-            "$ref": "#/backend/entities/DealershipSubmission"
-          },
-          "description": "Stores dealership applications submitted by professional users. Each submission includes a denormalized 'professionalId' field, which MUST match the path's '{professionalId}' and 'request.auth.uid' for authorization independence. Only the submitting professional can read/write their own submissions (when PENDING); administrators may have broader access.",
-          "params": [
-            {
-              "name": "professionalId",
-              "description": "The unique ID of the professional user who submitted the dealership application. This must match 'request.auth.uid'."
-            },
-            {
-              "name": "submissionId",
-              "description": "The unique ID of the dealership submission."
-            }
-          ]
+          "description": "Stores the profiles of standard users."
         }
       },
       {
@@ -331,36 +329,29 @@
           "schema": {
             "$ref": "#/backend/entities/Dealership"
           },
-          "description": "Stores approved and active motorcycle dealerships. This collection is publicly readable by all users. Write access is restricted to administrators only. No user-specific authorization denormalization is required."
+          "description": "Stores approved and active motorcycle dealerships."
         }
       },
       {
-        "path": "/advicePosts/{advicePostId}",
+        "path": "/pending_concessions/{submissionId}",
         "definition": {
-          "entityName": "AdvicePost",
+          "entityName": "DealershipSubmission",
           "schema": {
-            "$ref": "#/backend/entities/AdvicePost"
+            "$ref": "#/backend/entities/DealershipSubmission"
           },
-          "description": "Stores public articles and blog posts offering motorcycle advice. This collection is publicly readable by all users. Write access is restricted to administrators only. No user-specific authorization denormalization is required."
+          "description": "Stores dealership applications pending review."
         }
       },
       {
-        "path": "/roles_admin/{uid}",
+        "path": "/pending_comments/{commentId}",
         "definition": {
-          "entityName": "AdminRole",
+          "entityName": "Comment",
           "schema": {
-            "$ref": "#/backend/entities/AdminRole"
+            "$ref": "#/backend/entities/Comment"
           },
-          "description": "Identifies users with administrative privileges. The existence of a document at this path signifies that the user (identified by 'uid') is an administrator. This is a DBAC (Database Access Control) mechanism, relying on document existence for role verification.",
-          "params": [
-            {
-              "name": "uid",
-              "description": "The unique ID of the user who possesses administrative privileges. This must match 'request.auth.uid' to check for admin role."
-            }
-          ]
+          "description": "Stores user comments pending moderation."
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to be secure, scalable, and debuggable, strictly adhering to the core design principles and mandates. \n\n**Authorization Independence via Denormalization:**\nFor user-owned data like `ProfessionalProfile` and `DealershipSubmission`, ownership is primarily established through the hierarchical path, such as `/professionalProfiles/{professionalId}` and `/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}`. Crucially, the `DealershipSubmission` document itself will include a `professionalId` field. This denormalization means that security rules can verify `request.auth.uid == resource.data.professionalId` without needing a `get()` call to a parent document or an external user collection. This eliminates hierarchical authorization dependencies, enabling atomic operations (like creating a professional profile and their first submission in a batch) and simplifying rule debugging by making all necessary authorization context available within the document itself. \n\n**QAPs (Rules are not Filters):**\n1.  **`/concessions/{dealershipId}` and `/advicePosts/{advicePostId}`:** These collections are designed with a homogeneous security posture, meaning all documents within them are publicly readable. This inherently supports Query-As-Permissions (QAPs) for list operations, as any read query to these collections will only return publicly accessible data. No filtering is required at the security rule level based on user identity for general access. Write operations will be restricted to authorized administrators.\n2.  **`/professionalProfiles/{professionalId}`:** Access to a professional profile is strictly tied to the `professionalId` matching `request.auth.uid`. This means a user can only query for their *own* profile. Listing other profiles is not permitted, thus satisfying QAPs for private user data.\n3.  **`/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}`:** Similarly, `DealershipSubmission` documents are housed under the professional's specific path. A professional can only perform list operations within their own `dealershipSubmissions` subcollection, where `professionalId` (from the path and denormalized field) matches `request.auth.uid`. This ensures that any query made by a professional to list submissions is inherently secure and will only return their own submissions, without the rules needing to filter results.\n\n**Structural Segregation & Access Modeling:**\nPublic data (`Dealerships`, `AdvicePosts`) is segregated from private, user-specific data (`ProfessionalProfiles`, `DealershipSubmissions`). Professional profiles and their associated submissions use a clear hierarchical path-based ownership model (`/professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId}`). An explicit `roles_admin` collection (`/roles_admin/{uid}`) provides a simple, existence-based DBAC model for administrative privileges without using custom claims."
+    ]
   }
 }

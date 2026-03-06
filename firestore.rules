@@ -15,7 +15,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // Accès restreint au propriétaire du projet (UID spécifique)
+      // Accès strictement réservé à votre UID
       return isSignedIn() && request.auth.uid == "A36FqeWBHjQBLKQMaMSiFVBzGV22";
     }
 
@@ -35,14 +35,6 @@ service cloud.firestore {
       return request.resource.data.id == resource.data.id;
     }
 
-    function isCreatingOwnSubmission(professionalId) {
-      return request.resource.data.professionalId == professionalId;
-    }
-
-    function submissionOwnerIsImmutable() {
-      return request.resource.data.professionalId == resource.data.professionalId;
-    }
-
     match /professionalProfiles/{professionalId} {
       allow get: if isOwner(professionalId) || isAdmin();
       allow list: if isAdmin();
@@ -59,44 +51,32 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    match /professionalProfiles/{professionalId}/dealershipSubmissions/{submissionId} {
-      allow get: if isOwner(professionalId) || isAdmin();
-      allow list: if isOwner(professionalId) || isAdmin();
-      allow create: if isOwner(professionalId) && isCreatingOwnSubmission(professionalId);
-      allow update: if (isExistingOwner(professionalId) && submissionOwnerIsImmutable()) || isAdmin();
-      allow delete: if isExistingOwner(professionalId) || isAdmin();
-    }
-
     match /concessions/{dealershipId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
     
     match /pending_concessions/{submissionId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isSignedIn(); // Permettre la soumission par les pros
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     match /a_verifier/{submissionId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isSignedIn(); // Permettre la soumission auto-quarantaine
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    match /pending_comments/{commentId} {
+      allow get, list: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     match /advicePosts/{advicePostId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     match /roles_admin/{uid} {
