@@ -158,6 +158,7 @@ const Header: React.FC<HeaderProps> = ({
   const router = useRouter();
   const firestore = useFirestore();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [prediction, setPrediction] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<Suggestion[]>([]);
   const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -199,21 +200,21 @@ const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
     if (searchTerm.trim().length < 2) {
         setSuggestions([]);
+        setPrediction('');
         return;
     }
 
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
     
-    // Vérifier si le terme est une marque exacte (en ignorant les tirets/espaces)
     const isStrictBrand = brandsList.some(b => {
         const normalizedBrand = b.toLowerCase().replace(/[\s-]/g, '');
         return normalizedBrand === normalizedTerm;
     });
 
-    // Si c'est une marque exacte, on ne propose pas de suggestions redondantes
     if (isStrictBrand) {
         setSuggestions([]);
+        setPrediction('');
         return;
     }
 
@@ -234,7 +235,6 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
-    // Proposer la marque si match partiel (ex: "harley" pour "Harley-Davidson")
     if (!detectedBrand) {
         brandsList.forEach(brand => {
             const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
@@ -283,7 +283,6 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
-    // 2. Établissements de la marque (même hors zone)
     if (detectedBrand) {
         const brandDealers = allDealers.filter(d => {
             const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
@@ -293,7 +292,6 @@ const Header: React.FC<HeaderProps> = ({
         results.push(...brandDealers.slice(0, 3));
     }
 
-    // 3. Départements
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (normalizedDept.includes(normalizedTerm)) {
@@ -305,7 +303,6 @@ const Header: React.FC<HeaderProps> = ({
                 zoom: 9
             });
         }
-        // 4. Villes
         info.cities.forEach(city => {
             const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
             if (normalizedCity.includes(normalizedTerm)) {
@@ -321,7 +318,6 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 5. Établissements génériques
     const filteredDealers = allDealers.filter(d => {
         const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
         const normalizedSubLabel = d.subLabel?.toLowerCase().replace(/[\s-]/g, '') || '';
@@ -331,6 +327,19 @@ const Header: React.FC<HeaderProps> = ({
 
     const uniqueResults = results.filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     setSuggestions(uniqueResults.slice(0, 8));
+
+    // Définition de la prédiction ( ghost text )
+    if (uniqueResults.length > 0) {
+        const first = uniqueResults[0];
+        const matchLabel = first.type === 'brand-only' ? (first.brand || first.label) : first.label;
+        if (matchLabel.toLowerCase().startsWith(searchTerm.toLowerCase())) {
+            setPrediction(searchTerm + matchLabel.substring(searchTerm.length));
+        } else {
+            setPrediction('');
+        }
+    } else {
+        setPrediction('');
+    }
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
@@ -343,6 +352,7 @@ const Header: React.FC<HeaderProps> = ({
     
     onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
+    setPrediction('');
     
     const queryParams = new URLSearchParams();
     if (suggestion.lat && suggestion.lng) {
@@ -373,6 +383,16 @@ const Header: React.FC<HeaderProps> = ({
         onSearch();
     }
     setShowSuggestions(false);
+    setPrediction('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.key === 'Tab' || e.key === 'ArrowRight') && prediction && prediction !== searchTerm) {
+        e.preventDefault();
+        onSearchTermChange(prediction);
+    } else if (e.key === 'Enter') {
+        executeSearch();
+    }
   };
 
   const handleTabClick = (filter: 'shopping' | 'service' | null) => {
@@ -411,26 +431,31 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="hidden md:block w-24 shrink-0" aria-hidden="true" />
 
                 <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
+                  {/* Prédiction ( Ghost Text ) */}
+                  {prediction && searchTerm && showSuggestions && (
+                    <div className="absolute inset-0 px-4 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
+                        <span className="text-sm text-transparent select-none">{searchTerm}</span>
+                        <span className="text-sm text-muted-foreground/40 select-none">
+                            {prediction.substring(searchTerm.length)}
+                        </span>
+                    </div>
+                  )}
                   <Input
                     type="search"
                     placeholder={placeholderText}
-                    className="pr-10 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-none"
+                    className="pr-10 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-none relative z-10"
                     value={searchTerm}
                     onChange={(e) => {
                         onSearchTermChange(e.target.value);
                         setShowSuggestions(true);
                     }}
                     onFocus={() => setShowSuggestions(true)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            executeSearch();
-                        }
-                    }}
+                    onKeyDown={handleKeyDown}
                   />
                   <Button 
                       type="submit" 
                       size="icon" 
-                      className="absolute top-1/2 right-1 -translate-y-1/2 h-8 w-8 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow"
+                      className="absolute top-1/2 right-1 -translate-y-1/2 h-8 w-8 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow z-20"
                       onClick={executeSearch}
                   >
                     <Search className="h-4 w-4" />
