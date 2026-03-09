@@ -207,91 +207,56 @@ const Header: React.FC<HeaderProps> = ({
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
     
+    // Détection de si la saisie est une marque exacte (insensible au tiret/espace)
     const isStrictBrand = brandsList.some(b => {
         const normalizedBrand = b.toLowerCase().replace(/[\s-]/g, '');
         return normalizedBrand === normalizedTerm;
     });
 
-    if (isStrictBrand) {
-        setSuggestions([]);
-        setPrediction('');
-        return;
-    }
-
     const results: Suggestion[] = [];
 
-    // 1. Détection Globale "Marque + Localisation"
-    let detectedBrand: string | null = null;
-    let detectedLoc: any = null;
-    let locLabel: string = "";
-
+    // 1. Détection des marques pour prédiction et suggestions
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
+    let bestBrandMatch: string | null = null;
 
-    for (const brand of sortedBrands) {
+    sortedBrands.forEach(brand => {
         const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-        if (normalizedTerm.includes(normalizedBrand)) {
-            detectedBrand = brand;
-            break;
+        if (normalizedBrand.startsWith(normalizedTerm)) {
+            if (!bestBrandMatch) bestBrandMatch = brand;
+            results.push({
+                type: 'brand-only',
+                label: brand,
+                subLabel: "Filtrer par cette marque",
+                brand: brand
+            });
         }
-    }
+    });
 
-    if (!detectedBrand) {
-        brandsList.forEach(brand => {
-            const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-            if (normalizedBrand.startsWith(normalizedTerm) || normalizedBrand.includes(normalizedTerm)) {
-                results.push({
-                    type: 'brand-only',
-                    label: brand,
-                    subLabel: "Filtrer par cette marque",
-                    brand: brand
-                });
-            }
-        });
-    }
-
-    if (detectedBrand) {
-        const normalizedBrand = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
-        const searchWithoutBrand = normalizedTerm.replace(normalizedBrand, "").trim();
+    // 2. Détection "Marque + Localisation"
+    if (bestBrandMatch) {
+        const normalizedBrandMatch = bestBrandMatch.toLowerCase().replace(/[\s-]/g, '');
+        const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
         
         if (searchWithoutBrand.length > 0) {
             for (const [dept, info] of Object.entries(locationsData)) {
                 const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
                 if (normalizedDept.includes(searchWithoutBrand)) {
-                    detectedLoc = info;
-                    locLabel = dept;
-                    break;
-                }
-                const cityMatch = info.cities.find(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchWithoutBrand));
-                if (cityMatch) {
-                    detectedLoc = info;
-                    locLabel = `${cityMatch} (${dept.split(' - ')[0]})`;
+                    results.unshift({
+                        type: 'brand-location',
+                        label: `${bestBrandMatch} à ${dept}`,
+                        subLabel: `Voir les pros ${bestBrandMatch} dans cette zone`,
+                        lat: info.center[0],
+                        lng: info.center[1],
+                        zoom: 9,
+                        brand: bestBrandMatch
+                    });
                     break;
                 }
             }
         }
     }
 
-    if (detectedBrand && detectedLoc) {
-        results.push({
-            type: 'brand-location',
-            label: `${detectedBrand} à ${locLabel}`,
-            subLabel: `Voir les pros ${detectedBrand} dans cette zone`,
-            lat: detectedLoc.center[0],
-            lng: detectedLoc.center[1],
-            zoom: 9,
-            brand: detectedBrand
-        });
-    }
-
-    if (detectedBrand) {
-        const brandDealers = allDealers.filter(d => {
-            const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
-            const normalizedBrandMatch = detectedBrand!.toLowerCase().replace(/[\s-]/g, '');
-            return normalizedLabel.includes(normalizedBrandMatch) || (d.brand && d.brand.toLowerCase().replace(/[\s-]/g, '') === normalizedBrandMatch);
-        });
-        results.push(...brandDealers.slice(0, 3));
-    }
-
+    // 3. Localisations seules
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (normalizedDept.includes(normalizedTerm)) {
@@ -318,6 +283,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
+    // 4. Concessions
     const filteredDealers = allDealers.filter(d => {
         const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
         const normalizedSubLabel = d.subLabel?.toLowerCase().replace(/[\s-]/g, '') || '';
@@ -328,11 +294,16 @@ const Header: React.FC<HeaderProps> = ({
     const uniqueResults = results.filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     setSuggestions(uniqueResults.slice(0, 8));
 
-    // Définition de la prédiction ( ghost text )
-    if (uniqueResults.length > 0) {
-        const first = uniqueResults[0];
-        const matchLabel = first.type === 'brand-only' ? (first.brand || first.label) : first.label;
-        if (matchLabel.toLowerCase().startsWith(searchTerm.toLowerCase())) {
+    // Définition de la prédiction ( Ghost Text )
+    if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
+        // On construit la prédiction en gardant la casse de la marque originale
+        // Mais en s'assurant qu'elle commence par ce que l'utilisateur a tapé
+        const brandMatch = bestBrandMatch;
+        // On cherche l'index de fin de la correspondance pour proposer la suite
+        // Pour gérer les tirets/espaces, on compare les versions normalisées
+        const matchLabel = brandMatch;
+        if (matchLabel.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
+            // On propose le label complet si le début correspond
             setPrediction(searchTerm + matchLabel.substring(searchTerm.length));
         } else {
             setPrediction('');
@@ -340,6 +311,12 @@ const Header: React.FC<HeaderProps> = ({
     } else {
         setPrediction('');
     }
+
+    // Masquer les suggestions si c'est une marque exacte
+    if (isStrictBrand) {
+        setSuggestions([]);
+    }
+
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
@@ -372,7 +349,12 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const executeSearch = () => {
-    if (suggestions.length > 0) {
+    if (prediction && prediction !== searchTerm) {
+        onSearchTermChange(prediction);
+        setPrediction('');
+        // Attendre le prochain cycle pour déclencher la recherche réelle
+        setTimeout(() => onSearch(), 10);
+    } else if (suggestions.length > 0) {
         const firstBrandOnly = suggestions.find(s => s.type === 'brand-only');
         if (firstBrandOnly) {
             handleSuggestionClick(firstBrandOnly);
@@ -383,13 +365,13 @@ const Header: React.FC<HeaderProps> = ({
         onSearch();
     }
     setShowSuggestions(false);
-    setPrediction('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if ((e.key === 'Tab' || e.key === 'ArrowRight') && prediction && prediction !== searchTerm) {
         e.preventDefault();
         onSearchTermChange(prediction);
+        setPrediction('');
     } else if (e.key === 'Enter') {
         executeSearch();
     }
@@ -431,8 +413,8 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="hidden md:block w-24 shrink-0" aria-hidden="true" />
 
                 <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
-                  {/* Prédiction ( Ghost Text ) */}
-                  {prediction && searchTerm && showSuggestions && (
+                  {/* Prédiction ( Ghost Text ) - Placé derrière l'input transparent */}
+                  {prediction && searchTerm && (
                     <div className="absolute inset-0 px-4 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
                         <span className="text-sm text-transparent select-none">{searchTerm}</span>
                         <span className="text-sm text-muted-foreground/40 select-none">
@@ -451,6 +433,7 @@ const Header: React.FC<HeaderProps> = ({
                     }}
                     onFocus={() => setShowSuggestions(true)}
                     onKeyDown={handleKeyDown}
+                    autoComplete="off"
                   />
                   <Button 
                       type="submit" 
