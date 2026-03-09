@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -5,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send, PlusCircle } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send, PlusCircle, AlertCircle } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -67,6 +68,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
+  // Déterminer si les coordonnées GPS sont valides
+  const hasValidGPS = dealership.latitude !== undefined && 
+                     dealership.longitude !== undefined && 
+                     !isNaN(dealership.latitude) && 
+                     !isNaN(dealership.longitude);
+
   // Handle automatic opening of reviews tab if coming from login redirect
   useEffect(() => {
     const view = searchParams.get('view');
@@ -83,7 +90,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   }, [firestore, dealership.id]);
   const { data: approvedComments, isLoading: isCommentsLoading } = useCollection(commentsQuery);
 
-  const directionsUrl = dealership.latitude && dealership.longitude 
+  const directionsUrl = hasValidGPS
     ? `https://www.google.com/maps/dir/?api=1&destination=${dealership.latitude},${dealership.longitude}`
     : dealership.placeUrl;
   
@@ -145,15 +152,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const street = addressParts[0] || '';
   const cityZip = addressParts.slice(1).join(', ') || '';
 
-  // Pour l'instand, aucun badge n'est attribué automatiquement
   const isSelectedLabel = false;
-
-  // Build the callback URL for login redirection
   const loginCallbackUrl = `/map?selectedId=${dealership.id}&view=reviews`;
 
   return (
     <>
-      {/* Fenêtre Photo */}
       <Dialog open={isImageOpen} onOpenChange={setIsImageOpen}>
         <DialogContent className="p-0 border-0 max-w-4xl bg-transparent shadow-none">
           <DialogTitle className="sr-only">{`Photo de ${title}`}</DialogTitle>
@@ -169,7 +172,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Fenêtre Formulaire Avis */}
       <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -230,7 +232,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
           
           <div className="flex flex-1 flex-row items-stretch bg-card min-w-0">
-            {/* Photo */}
             <div
               onClick={handleImageClick}
               className={cn(
@@ -268,7 +269,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
               )}
             </div>
 
-            {/* Informations */}
             <div 
               onClick={onClick}
               className="flex flex-col justify-center flex-1 p-3 md:p-5 min-w-0 cursor-pointer"
@@ -280,6 +280,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 {isSelectedLabel && (
                     <Badge variant="outline" className="hidden md:flex border-brand text-brand font-black text-[8px] uppercase tracking-tighter shrink-0 bg-brand/5">
                         Sélection Label Moto
+                    </Badge>
+                )}
+                {!hasValidGPS && (
+                    <Badge variant="secondary" className="flex gap-1 items-center bg-gray-100 text-gray-500 font-bold text-[8px] uppercase tracking-tight border-none h-5">
+                        <AlertCircle className="h-2.5 w-2.5" />
+                        Position non renseignée
                     </Badge>
                 )}
               </div>
@@ -344,14 +350,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* VOLET COULISSANT - HORAIRES OU AVIS */}
           <div className={cn(
             "absolute inset-y-0 right-0 z-30 flex transition-transform duration-500 ease-in-out w-full",
             (showHours || showReviews) ? "translate-x-0" : "translate-x-[calc(100%-32px)] md:translate-x-[calc(100%-40px)]"
           )}>
-            {/* BARRES LATÉRALES */}
             <div className="flex flex-col h-full flex-none">
-                {/* Bouton Horaires */}
                 <div 
                     onClick={handleToggleHours}
                     className={cn(
@@ -364,7 +367,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                         HORAIRES
                     </span>
                 </div>
-                {/* Bouton Avis */}
                 <div 
                     onClick={handleToggleReviews}
                     className={cn(
@@ -379,7 +381,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 </div>
             </div>
 
-            {/* CONTENU - HORAIRES */}
             {showHours && (
                 <div className="flex-1 bg-background/95 backdrop-blur-sm p-3 md:p-4 flex flex-col justify-center border-l shadow-xl overflow-hidden">
                     <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-0.5 text-[10px] sm:text-xs md:text-sm max-w-md mx-auto w-full">
@@ -397,7 +398,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 </div>
             )}
 
-            {/* CONTENU - AVIS */}
             {showReviews && (
                 <div className="flex-1 bg-background/95 backdrop-blur-sm pt-1 px-4 pb-4 md:pt-2 md:px-6 md:pb-6 flex flex-col border-l shadow-xl overflow-hidden">
                     <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar mt-2">
@@ -440,9 +440,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                     </div>
                 </div>
             )}
-
           </div>
-
         </div>
       </Card>
     </>

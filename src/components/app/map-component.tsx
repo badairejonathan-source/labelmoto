@@ -26,7 +26,6 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-// Icône de casque unique pour tous les pointeurs
 const helmetIconPath = `
   <g transform="translate(6, 6) scale(1.0)">
     <path d="M12 2C7.03 2 3 6.03 3 11c0 3.48 1.94 6.5 4.8 8.05l-.8 2.95h10l-.8-2.95C19.06 17.5 21 14.48 21 11c0-4.97-4.03-9-9-9z" fill="white"/>
@@ -161,7 +160,10 @@ export default function MapComponent({
     markersRef.current.clear();
 
     dealerships.forEach((dealership) => {
-      if (dealership.latitude == null || dealership.longitude == null) return;
+      // Ignorer proprement les établissements sans coordonnées valides
+      if (dealership.latitude == null || dealership.longitude == null || isNaN(dealership.latitude) || isNaN(dealership.longitude)) {
+          return;
+      }
 
       const isHovered = dealership.id === hoveredDealershipId;
       const isSelected = dealership.id === selectedDealershipId;
@@ -215,7 +217,6 @@ export default function MapComponent({
 
         userLocationMarkerRef.current = L.marker(e.latlng, { icon: userMarkerIcon }).addTo(map);
         
-        // On communique les coordonnées au parent pour la logique de recherche
         if (onLocationFound) {
             onLocationFound([e.latlng.lat, e.latlng.lng]);
         }

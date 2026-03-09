@@ -28,7 +28,7 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
 });
 
 const getDistanceSq = (center: [number, number], dealer: Dealership) => {
-    if (dealer.latitude == null || dealer.longitude == null) return Infinity;
+    if (dealer.latitude == null || dealer.longitude == null || isNaN(dealer.latitude) || isNaN(dealer.longitude)) return Infinity;
     const dx = center[1] - dealer.longitude;
     const dy = center[0] - dealer.latitude;
     return dx * dx + dy * dy;
@@ -161,12 +161,23 @@ function MapPageComponent() {
 
     const unsubscribe = onSnapshot(dealershipsRef, 
       (querySnapshot) => {
-        const results = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
-            longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
-        } as Dealership));
+        const results = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            // Utilisation d'un parsing plus robuste pour les coordonnées GPS
+            const lat = data.latitude !== undefined && data.latitude !== null 
+                ? parseFloat(String(data.latitude).replace(',', '.')) 
+                : undefined;
+            const lng = data.longitude !== undefined && data.longitude !== null 
+                ? parseFloat(String(data.longitude).replace(',', '.')) 
+                : undefined;
+
+            return {
+                id: doc.id,
+                ...data,
+                latitude: lat,
+                longitude: lng,
+            } as Dealership;
+        });
         setAllDealerships(results);
         setIsLoading(false);
       }, 
@@ -232,7 +243,7 @@ function MapPageComponent() {
             );
 
             if (detectedLoc) {
-                // Marque + Localisation explicite (Priorité au lieu de recherche sur le GPS)
+                // Marque + Localisation explicite
                 const brandMatchesInLoc = results.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
                 if (brandMatchesInLoc.length > 0) {
                     setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
@@ -246,11 +257,9 @@ function MapPageComponent() {
                 // Marque seule
                 if (!latParam && results.length > 0) {
                     if (userCoords) {
-                        // Si l'utilisateur est localisé, on se centre sur lui pour proposer le plus proche
                         setMapCenter(userCoords);
                         setMapZoom(10);
                     } else {
-                        // Sinon on dézoome sur toute la France pour voir tous les Honda
                         setMapCenter([46.603354, 1.888334]);
                         setMapZoom(6);
                     }
@@ -300,18 +309,19 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = filteredDealerships;
-    // Si pas de recherche, on filtre par ce qui est visible à l'écran
     if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
-        results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
+        results = results.filter(d => {
+            if (d.latitude == null || d.longitude == null || isNaN(d.latitude) || isNaN(d.longitude)) return true; // On garde ceux sans GPS si on cherche explicitement ou s'ils sont dans la liste par défaut
+            return d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng;
+        });
     }
-    // Toujours trier par distance au centre de la carte (donc soit userCoords soit lieu recherché)
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
   }, [filteredDealerships, mapBoundsStr, mapCenter, submittedSearchTerm]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
-    if (dealership.latitude && dealership.longitude) {
+    if (dealership.latitude && dealership.longitude && !isNaN(dealership.latitude) && !isNaN(dealership.longitude)) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
       if (isMobile) setDrawerHeight('half');
