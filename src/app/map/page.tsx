@@ -163,7 +163,6 @@ function MapPageComponent() {
       (querySnapshot) => {
         const results = querySnapshot.docs.map(doc => {
             const data = doc.data();
-            // Utilisation d'un parsing plus robuste pour les coordonnées GPS
             const lat = data.latitude !== undefined && data.latitude !== null 
                 ? parseFloat(String(data.latitude).replace(',', '.')) 
                 : undefined;
@@ -178,7 +177,17 @@ function MapPageComponent() {
                 longitude: lng,
             } as Dealership;
         });
-        setAllDealerships(results);
+
+        // Suppression des doublons basés sur le nom et l'adresse
+        const seen = new Set();
+        const uniqueResults = results.filter(item => {
+            const identifier = `${item.title?.toLowerCase()}|${item.address?.toLowerCase()}`;
+            if (seen.has(identifier)) return false;
+            seen.add(identifier);
+            return true;
+        });
+
+        setAllDealerships(uniqueResults);
         setIsLoading(false);
       }, 
       async (error) => {
@@ -206,7 +215,6 @@ function MapPageComponent() {
         const lower = submittedSearchTerm.toLowerCase().trim();
         const normalizedSearch = lower.replace(/[\s-]/g, '');
         
-        // Brand Detection
         let detectedBrand = '';
         const brandsList = Object.keys(brandLogos);
         const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
@@ -222,7 +230,6 @@ function MapPageComponent() {
         const normalizedBrandName = detectedBrand ? detectedBrand.toLowerCase().replace(/[\s-]/g, '') : '';
         const searchRemainder = detectedBrand ? normalizedSearch.replace(normalizedBrandName, "").trim() : normalizedSearch;
 
-        // Location Detection
         let detectedLoc = null;
         if (searchRemainder.length > 0) {
             for (const [dept, info] of Object.entries(locationsData)) {
@@ -234,7 +241,6 @@ function MapPageComponent() {
             }
         }
 
-        // Filtering Logic
         if (detectedBrand) {
             const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
             results = results.filter(d => 
@@ -243,7 +249,6 @@ function MapPageComponent() {
             );
 
             if (detectedLoc) {
-                // Marque + Localisation explicite
                 const brandMatchesInLoc = results.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
                 if (brandMatchesInLoc.length > 0) {
                     setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
@@ -254,7 +259,6 @@ function MapPageComponent() {
                     setMapZoom(8);
                 }
             } else {
-                // Marque seule
                 if (!latParam && results.length > 0) {
                     if (userCoords) {
                         setMapCenter(userCoords);
@@ -266,7 +270,6 @@ function MapPageComponent() {
                 }
             }
         } else if (detectedLoc) {
-            // Localisation seule
             setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
             setMapZoom(10);
             results = results.filter(d => 
@@ -274,7 +277,6 @@ function MapPageComponent() {
                 d.title?.toLowerCase().includes(searchRemainder)
             );
         } else {
-            // Recherche textuelle classique
             results = results.filter(d => 
                 d.title?.toLowerCase().includes(lower) || 
                 d.address?.toLowerCase().includes(lower) || 
@@ -312,7 +314,7 @@ function MapPageComponent() {
     if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => {
-            if (d.latitude == null || d.longitude == null || isNaN(d.latitude) || isNaN(d.longitude)) return true; // On garde ceux sans GPS si on cherche explicitement ou s'ils sont dans la liste par défaut
+            if (d.latitude == null || d.longitude == null || isNaN(d.latitude) || isNaN(d.longitude)) return true;
             return d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng;
         });
     }
