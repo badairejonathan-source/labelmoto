@@ -107,6 +107,106 @@
     ]
   },
   {
+    "modelId": "yamaha-r7",
+    "modelName": "Yamaha R7",
+    "brand": "Yamaha",
+    "year": "2022+",
+    "imageUrl": "https://images.unsplash.com/photo-1632759145351-1d592919f522?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Yamaha R7",
+    "engine": {
+      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide, double arbre à cames en tête, 4 soupapes",
+      "displacement": "689 cm³",
+      "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
+      "torque": "67,0 N.m (6,8 m.kgf) à 6 500 tr/min",
+      "alimentation": "Injection électronique"
+    },
+    "chassis": {
+      "frame": "Acier tubulaire type Diamant",
+      "frontSuspension": "Fourche inversée KYB, Ø 41 mm, débattement 130 mm",
+      "rearSuspension": "Mono-amortisseur (suspension à biellettes), débattement 130 mm",
+      "frontBrake": "Double disque, Ø 298 mm, étriers radiaux 4 pistons",
+      "rearBrake": "Simple disque, Ø 245 mm, étrier simple piston",
+      "frontTire": "120/70 ZR 17 M/C (58W)",
+      "rearTire": "180/55 ZR 17 M/C (73W)"
+    },
+    "dimensions": {
+      "length": "2 070 mm",
+      "width": "705 mm",
+      "height": "1 160 mm",
+      "seatHeight": "835 mm",
+      "wheelbase": "1 395 mm",
+      "wetWeight": "188 kg",
+      "fuelCapacity": "13 L"
+    },
+    "introduction": "La Yamaha R7 est une sportive accessible, très appréciée des motards permis A2. Lancée pour remplacer la R6 sur le segment route, elle reprend le célèbre moteur CP2 de la MT-07. Ce bicylindre offre un excellent compromis entre performance, fiabilité et coût d’entretien.",
+    "content": [
+      { "type": "paragraph", "text": "Dans ce guide, tu vas trouver :" },
+      { "type": "list", "items": ["les intervalles d’entretien constructeur", "le prix moyen des révisions", "les pièces d’usure à surveiller", "les faiblesses connues", "les conseils pour garder ta R7 longtemps"] },
+      
+      { "type": "heading", "text": "Intervalles d’entretien constructeur R7" },
+      { "type": "paragraph", "text": "Yamaha prévoit un entretien régulier basé sur le kilométrage, similaire à la MT-07 mais adapté à une utilisation plus sportive." },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
+          ["1 000 km", "Révision de rodage (vidange + contrôles)"],
+          ["10 000 km", "Vidange + filtres + contrôles"],
+          ["20 000 km", "Bougies + contrôles"],
+          ["30 000 km", "Révision intermédiaire"],
+          ["40 000 km", "Réglage soupapes + entretien complet"]
+      ]},
+      { "type": "paragraph", "html": "👉 Même si la moto roule peu, une <strong>vidange annuelle reste fortement recommandée</strong>." },
+      
+      { "type": "heading", "text": "Prix moyen des révisions" },
+      { "type": "paragraph", "text": "Le coût dépend du garage, mais voici les moyennes observées pour la R7 :" },
+      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
+          ["1 000 km", "120 à 180 €"],
+          ["10 000 km", "200 à 300 €"],
+          ["20 000 km", "300 à 450 €"],
+          ["40 000 km", "500 à 700 €"]
+      ]},
+
+      { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "paragraph", "text": "En raison de sa position de conduite et de son usage sportif, certains consommables peuvent s'user plus vite." },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "6 000 à 10 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes de frein", "10 000 à 20 000 km"],
+        ["Batterie", "3 à 5 ans"]
+      ]},
+
+      { "type": "heading", "text": "Fiabilité et problèmes connus" },
+      { "type": "paragraph", "text": "La Yamaha R7 est globalement très fiable. Quelques points sont toutefois connus :" },
+      { "type": "list", "items": [
+          "suspensions d’origine fermes (typées sport)",
+          "batterie parfois faible sur les premiers modèles",
+          "usure rapide des pneus si conduite sportive"
+      ]},
+      { "type": "paragraph", "text": "Le moteur CP2 reste l'un des moteurs Yamaha les plus robustes du marché actuel." },
+
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "paragraph", "text": "Pour conserver votre Yamaha R7 en bon état :" },
+      { "type": "list", "items": [
+          "laisser chauffer le moteur 1 minute avant de rouler",
+          "graisser la chaîne régulièrement (tous les 500 km)",
+          "contrôler la pression des pneus souvent",
+          "respecter les intervalles d'entretien"
+      ]},
+      { "type": "paragraph", "text": "Une R7 bien entretenue peut dépasser 80 000 km sans problème majeur." },
+      
+      { "type": "heading", "text": "FAQ Yamaha R7" },
+      { "type": "paragraph", "html": "<strong>La Yamaha R7 est-elle compatible permis A2 ?</strong><br/>Oui, elle peut être bridée à 35 kW pour les titulaires du permis A2." },
+      { "type": "paragraph", "html": "<strong>Quelle est la consommation moyenne ?</strong><br/>Environ 4,5 L / 100 km." },
+      { "type": "paragraph", "html": "<strong>Le moteur CP2 est-il fiable ?</strong><br/>Oui, c’est un moteur réputé pour sa robustesse." },
+
+      { "type": "heading", "text": "Conclusion" },
+      { "type": "paragraph", "text": "La Yamaha R7 est une sportive moderne, accessible et relativement économique à entretenir. Son moteur CP2 offre un excellent compromis entre performance et fiabilité, ce qui en fait une moto très appréciée des motards A2." },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=3",
+        "alt": "Cachet Label Moto"
+      }
+    ]
+  },
+  {
     "modelId": "kawasaki-z650",
     "modelName": "Kawasaki Z650",
     "brand": "Kawasaki",
@@ -174,10 +274,10 @@
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "paragraph", "text": "Pour maximiser la longévité de votre Z650, quelques habitudes simples font une grande différence :" },
       { "type": "list", "items": ["Respectez scrupuleusement le temps de chauffe du moteur avant de solliciter la mécanique.", "Effectuez une vidange tous les 6 000 à 8 000 km pour préserver la santé du moteur.", "Lubrifiez régulièrement le câble d'embrayage pour garantir sa souplesse et sa longévité."] },
-      { "type": "paragraph", "html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
+      { "type": "paragraph", html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
       { "type": "heading", "text": "FAQ entretien Z650" },
-      { "type": "paragraph", "html": "<strong>La Z650 est-elle plus chère à entretenir qu’une 500cc ?</strong><br/>Oui, légèrement. Les performances supérieures et le caractère moteur plus trempé entraînent un coût un peu plus élevé, mais qui reste tout à fait raisonnable pour la catégorie." },
-      { "type": "paragraph", "html": "<strong>La Kawasaki Z650 est-elle une moto fiable ?</strong><br/>Oui, c'est une moto reconnue pour sa grande fiabilité et sa robustesse, à condition que l'entretien soit suivi avec sérieux et régularité." },
+      { "type": "paragraph", html": "<strong>La Z650 est-elle plus chère à entretenir qu’une 500cc ?</strong><br/>Oui, légèrement. Les performances supérieures et le caractère moteur plus trempé entraînent un coût un peu plus élevé, mais qui reste tout à fait raisonnable pour la catégorie." },
+      { "type": "paragraph", html": "<strong>La Kawasaki Z650 est-elle une moto fiable ?</strong><br/>Oui, c'est une moto reconnue pour sa grande fiabilité et sa robustesse, à condition que l'entretien soit suivi avec sérieux et régularité." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "La Kawasaki Z650 offre un excellent compromis entre performance et accessibilité pour le permis A2. Son entretien, bien que légèrement plus coûteux qu'une 500cc, reste raisonnable et garantit une grande fiabilité si suivi avec rigueur. C'est un choix malin pour ceux qui cherchent des sensations sans sacrifier la tranquillité d'esprit." },
       {
@@ -265,11 +365,11 @@
         "Vérifiez la tension de la chaîne toutes les deux semaines ou après de longs trajets sous la pluie.",
         "Surveillez l'état de l'amortisseur arrière pour maintenir une bonne tenue de route, surtout si vous roulez souvent à deux."
       ]},
-      { "type": "paragraph", "html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
+      { "type": "paragraph", html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
       { "type": "heading", "text": "FAQ Entretien Honda CB500" },
-      { "type": "paragraph", "html": "<strong>La CB500F est-elle une moto fiable ?</strong><br/>Oui, c’est l'une des motos les plus fiables du marché pour le permis A2, réputée pour sa robustesse." },
-      { "type": "paragraph", "html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, c'est l'une des motos les moins chères à entretenir de sa catégorie, grâce à la disponibilité des pièces et à la simplicité de sa mécanique." },
-      { "type": "paragraph", "html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Non, le contrôle est préconisé à 24 000 km, mais un ajustement est rarement nécessaire avant 40 000 km si la moto a été bien traitée." },
+      { "type": "paragraph", html": "<strong>La CB500F est-elle une moto fiable ?</strong><br/>Oui, c’est l'une des motos les plus fiables du marché pour le permis A2, réputée pour sa robustesse." },
+      { "type": "paragraph", html": "<strong>Son entretien est-il coûteux ?</strong><br/>Non, c'est l'une des motos les moins chères à entretenir de sa catégorie, grâce à la disponibilité des pièces et à la simplicité de sa mécanique." },
+      { "type": "paragraph", html": "<strong>Le jeu aux soupapes est-il fréquent ?</strong><br/>Non, le contrôle est préconisé à 24 000 km, mais un ajustement est rarement nécessaire avant 40 000 km si la moto a été bien traitée." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "La Honda CB500 Hornet (ou CB500F) est le choix de la tranquillité d'esprit. Son entretien est simple, peu coûteux et prévisible. C'est la moto parfaite pour apprendre les bases de la mécanique ou simplement pour rouler au quotidien sans se soucier des factures imprévues." },
       {
@@ -355,10 +455,10 @@
           "Surveillez régulièrement l'état de l'amortisseur arrière, particulièrement si vous roulez souvent en duo et chargé.",
           "N'hésitez pas à faire des vidanges intermédiaires (tous les 7 000 km) si vous avez un usage intensif."
       ]},
-      { "type": "paragraph", "html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
+      { "type": "paragraph", html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
       { "type": "heading", "text": "FAQ entretien Tracer 7" },
-      { "type": "paragraph", "html": "<strong>La Tracer 7 est-elle une bonne moto pour voyager ?</strong><br/>Oui, c'est une excellente petite routière, très polyvalente et économique, parfaite pour les voyages en duo ou en solo." },
-      { "type": "paragraph", "html": "<strong>L'entretien est-il beaucoup plus cher que celui de la MT-07 ?</strong><br/>Le coût des pièces est similaire, mais la main d'œuvre peut être légèrement plus élevée à cause du temps nécessaire pour démonter le carénage." },
+      { "type": "paragraph", html": "<strong>La Tracer 7 est-elle une bonne moto pour voyager ?</strong><br/>Oui, c'est une excellente petite routière, très polyvalente et économique, parfaite pour les voyages en duo ou en solo." },
+      { "type": "paragraph", html": "<strong>L'entretien est-il beaucoup plus cher que celui de la MT-07 ?</strong><br/>Le coût des pièces est similaire, mais la main d'œuvre peut être légèrement plus élevée à cause du temps nécessaire pour démonter le carénage." },
       {
         "type": "signature",
         "text": "L'équipe Label Moto",

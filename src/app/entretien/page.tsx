@@ -57,7 +57,7 @@ const article = {
         "items": [
           "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07</a>",
           "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7</a>",
-          "R7",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7</a>",
           "XSR700"
         ]
       },
