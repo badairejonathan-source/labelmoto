@@ -203,6 +203,14 @@ const Header: React.FC<HeaderProps> = ({
     }
 
     const lowerTerm = searchTerm.toLowerCase().trim();
+    
+    // Ne pas proposer de choix s'il n'y a que la marque en recherche
+    const isStrictBrand = brandsList.some(b => b.toLowerCase() === lowerTerm);
+    if (isStrictBrand) {
+        setSuggestions([]);
+        return;
+    }
+
     const results: Suggestion[] = [];
 
     // 1. Détection Globale "Marque + Localisation"
@@ -297,7 +305,6 @@ const Header: React.FC<HeaderProps> = ({
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
-    // On garde le texte de recherche original pour que map/page.tsx puisse ré-analyser l'intention
     const searchTermToUse = suggestion.type === 'brand-location' ? `${suggestion.brand} ${searchTerm.split(' ').pop()}` : suggestion.label;
     
     onSearchTermChange(searchTermToUse);
