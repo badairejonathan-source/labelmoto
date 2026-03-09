@@ -213,7 +213,8 @@ function MapPageComponent() {
 
             for (const brand of sortedBrands) {
                 const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-                if (normalizedSearch.includes(normalizedBrand)) {
+                // Correspondance exacte ou partielle (ex: "harley" pour "harley-davidson")
+                if (normalizedSearch.includes(normalizedBrand) || (normalizedBrand.includes(normalizedSearch) && normalizedSearch.length >= 3)) {
                     detectedBrand = brand;
                     break;
                 }
@@ -241,7 +242,6 @@ function MapPageComponent() {
                 });
 
                 if (brandMatches.length > 0) {
-                    // Find brand matches near location
                     const nearbyBrandMatches = brandMatches.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
 
                     if (nearbyBrandMatches.length > 0) {
@@ -249,7 +249,6 @@ function MapPageComponent() {
                         setMapZoom(9);
                         results = brandMatches;
                     } else {
-                        // NO BRAND IN THIS LOCATION -> FALLBACK TO NEAREST BRAND
                         status = 'fallback_brand';
                         let nearest = brandMatches[0];
                         let minDistanceSq = getDistanceSq(detectedLoc.center, nearest);
@@ -262,7 +261,6 @@ function MapPageComponent() {
                             }
                         });
 
-                        // Focus view on both (point médian)
                         if (nearest.latitude && nearest.longitude) {
                             const midLat = (detectedLoc.center[0] + nearest.latitude) / 2;
                             const midLng = (detectedLoc.center[1] + nearest.longitude) / 2;
@@ -275,11 +273,11 @@ function MapPageComponent() {
                         results = brandMatches;
                     }
                 } else {
-                    // BRAND DOES NOT EXIST AT ALL -> Show nearby anything
                     status = 'fallback_nearby';
                     setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
                     setMapZoom(10);
-                    results = allDealerships; 
+                    // On garde le filtre de catégorie s'il existe
+                    results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : allDealerships; 
                 }
             } else {
                 // Location only or Brand only
@@ -302,9 +300,17 @@ function MapPageComponent() {
                             (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
                             d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
                         );
-                        if (results.length === 0) {
+                        
+                        if (results.length > 0) {
+                            // Centrer la carte sur le premier résultat de la marque si aucune localisation n'est fournie
+                            const first = results[0];
+                            if (first.latitude && first.longitude && !latParam) {
+                                setMapCenter([first.latitude, first.longitude]);
+                                setMapZoom(8);
+                            }
+                        } else {
                             status = 'fallback_nearby';
-                            results = allDealerships;
+                            results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : allDealerships;
                         }
                     } else {
                         results = results.filter(d => 
@@ -314,7 +320,7 @@ function MapPageComponent() {
                         );
                         if (results.length === 0) {
                             status = 'fallback_nearby';
-                            results = allDealerships;
+                            results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : allDealerships;
                         }
                     }
                 }
@@ -333,7 +339,7 @@ function MapPageComponent() {
     
     setSearchStatus(status);
     setFilteredDealerships(results);
-  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
+  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter, latParam]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     const bStr = bounds.toBBoxString();
@@ -344,7 +350,6 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = filteredDealerships;
-    // Si une recherche est en cours, on ne restreint pas aux limites de la carte pour permettre de voir les suggestions de proximité
     if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
@@ -438,7 +443,7 @@ function MapPageComponent() {
                     <MapPin className="h-4 w-4" />
                     Pas de correspondance exacte
                 </div>
-                <p className="text-xs text-blue-700">Aucun garage ne correspond à votre recherche. Voici les professionnels à proximité.</p>
+                <p className="text-xs text-blue-700">Aucun établissement ne correspond exactement. Voici les professionnels à proximité.</p>
             </div>
           )}
 

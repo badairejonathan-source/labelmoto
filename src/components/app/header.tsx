@@ -205,12 +205,13 @@ const Header: React.FC<HeaderProps> = ({
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
     
-    // Check if it's strictly a brand (normalized)
+    // Vérifier si le terme est une marque exacte (en ignorant les tirets/espaces)
     const isStrictBrand = brandsList.some(b => {
         const normalizedBrand = b.toLowerCase().replace(/[\s-]/g, '');
         return normalizedBrand === normalizedTerm;
     });
 
+    // Si c'est une marque exacte, on ne propose pas de suggestions redondantes
     if (isStrictBrand) {
         setSuggestions([]);
         return;
@@ -233,11 +234,11 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
-    // Proposer la marque si match partiel (ex: "harley")
+    // Proposer la marque si match partiel (ex: "harley" pour "Harley-Davidson")
     if (!detectedBrand) {
         brandsList.forEach(brand => {
             const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-            if (normalizedBrand.startsWith(normalizedTerm)) {
+            if (normalizedBrand.startsWith(normalizedTerm) || normalizedBrand.includes(normalizedTerm)) {
                 results.push({
                     type: 'brand-only',
                     label: brand,
