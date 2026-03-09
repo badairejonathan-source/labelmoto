@@ -178,10 +178,12 @@ function MapPageComponent() {
             } as Dealership;
         });
 
-        // Suppression des doublons basés sur le nom et l'adresse
+        // Suppression des doublons basés sur le nom et l'adresse (nettoyage strict)
         const seen = new Set();
         const uniqueResults = results.filter(item => {
-            const identifier = `${item.title?.toLowerCase()}|${item.address?.toLowerCase()}`;
+            const cleanTitle = item.title?.toLowerCase().trim() || '';
+            const cleanAddress = item.address?.toLowerCase().trim().replace(/\s\s+/g, ' ') || '';
+            const identifier = `${cleanTitle}|${cleanAddress}`;
             if (seen.has(identifier)) return false;
             seen.add(identifier);
             return true;
