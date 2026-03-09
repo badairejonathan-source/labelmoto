@@ -192,6 +192,7 @@ function MapPageComponent() {
 
     if (submittedSearchTerm.trim() !== '') {
         const lower = submittedSearchTerm.toLowerCase().trim();
+        const normalizedSearch = lower.replace(/[\s-]/g, '');
         
         // Exact dealer match by name
         const exactDealerMatch = allDealerships.find(d => d.title?.toLowerCase().trim() === lower);
@@ -211,17 +212,20 @@ function MapPageComponent() {
             const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
 
             for (const brand of sortedBrands) {
-                if (lower.includes(brand.toLowerCase()) || lower.replace(/\s/g, '').includes(brand.toLowerCase().replace(/\s/g, ''))) {
+                const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
+                if (normalizedSearch.includes(normalizedBrand)) {
                     detectedBrand = brand;
                     break;
                 }
             }
 
-            const searchRemainder = detectedBrand ? lower.replace(detectedBrand.toLowerCase(), "").trim() : lower;
+            const normalizedBrandName = detectedBrand ? detectedBrand.toLowerCase().replace(/[\s-]/g, '') : '';
+            const searchRemainder = detectedBrand ? normalizedSearch.replace(normalizedBrandName, "").trim() : normalizedSearch;
 
             if (searchRemainder.length > 0) {
                 for (const [dept, info] of Object.entries(locationsData)) {
-                    if (dept.toLowerCase().includes(searchRemainder) || info.cities.some(c => c.toLowerCase().includes(searchRemainder))) {
+                    const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
+                    if (normalizedDept.includes(searchRemainder) || info.cities.some(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchRemainder))) {
                         detectedLoc = info;
                         break;
                     }
@@ -230,13 +234,14 @@ function MapPageComponent() {
 
             // FILTERING LOGIC
             if (detectedBrand && detectedLoc) {
-                const brandMatches = allDealerships.filter(d => 
-                    (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
-                    d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
-                );
+                const brandMatches = allDealerships.filter(d => {
+                    const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
+                    return (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
+                    d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef);
+                });
 
                 if (brandMatches.length > 0) {
-                    // Find brand matches near location (radius expanded to 0.8 for better detection)
+                    // Find brand matches near location
                     const nearbyBrandMatches = brandMatches.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
 
                     if (nearbyBrandMatches.length > 0) {
@@ -280,7 +285,8 @@ function MapPageComponent() {
                 // Location only or Brand only
                 let foundLocation = false;
                 Object.entries(locationsData).forEach(([dept, info]) => {
-                    if (dept.toLowerCase() === lower || info.cities.some(c => c.toLowerCase() === lower)) {
+                    const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
+                    if (normalizedDept === normalizedSearch || info.cities.some(c => c.toLowerCase().replace(/[\s-]/g, '') === normalizedSearch)) {
                         if (!foundLocation) {
                             setMapCenter([info.center[0], info.center[1]]);
                             setMapZoom(10);
@@ -291,9 +297,10 @@ function MapPageComponent() {
 
                 if (!foundLocation) {
                     if (detectedBrand) {
+                        const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
                         results = results.filter(d => 
-                            (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase()))) ||
-                            d.title?.toLowerCase().includes(detectedBrand.toLowerCase())
+                            (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
+                            d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
                         );
                         if (results.length === 0) {
                             status = 'fallback_nearby';
