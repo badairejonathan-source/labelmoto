@@ -22,6 +22,7 @@ interface MapComponentProps {
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   isLocating?: boolean;
   onLocateEnd?: () => void;
+  onLocationFound?: (coords: [number, number]) => void;
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
@@ -75,6 +76,7 @@ export default function MapComponent({
   onMapChange,
   isLocating = false,
   onLocateEnd = () => {},
+  onLocationFound = () => {},
   onLocationError = () => {},
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
@@ -212,6 +214,12 @@ export default function MapComponent({
         });
 
         userLocationMarkerRef.current = L.marker(e.latlng, { icon: userMarkerIcon }).addTo(map);
+        
+        // On communique les coordonnées au parent pour la logique de recherche
+        if (onLocationFound) {
+            onLocationFound([e.latlng.lat, e.latlng.lng]);
+        }
+        
         onLocateEnd();
     };
 
@@ -223,7 +231,7 @@ export default function MapComponent({
     map.once('locationfound', onLocationFound);
     map.once('locationerror', onErr);
     map.locate({ setView: true, maxZoom: 14 });
-  }, [isLocating, onLocateEnd, onLocationError]);
+  }, [isLocating, onLocateEnd, onLocationFound, onLocationError]);
 
   useEffect(() => {
     return () => {

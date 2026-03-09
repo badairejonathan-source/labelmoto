@@ -107,6 +107,7 @@ function MapPageComponent() {
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
+  const [userCoords, setUserCoords] = useState<[number, number] | null>(null);
   
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
@@ -231,7 +232,7 @@ function MapPageComponent() {
             );
 
             if (detectedLoc) {
-                // Marque + Localisation
+                // Marque + Localisation explicite (Priorité au lieu de recherche sur le GPS)
                 const brandMatchesInLoc = results.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
                 if (brandMatchesInLoc.length > 0) {
                     setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
@@ -242,10 +243,17 @@ function MapPageComponent() {
                     setMapZoom(8);
                 }
             } else {
-                // Marque seule : Voir toute la France
+                // Marque seule
                 if (!latParam && results.length > 0) {
-                    setMapCenter([46.603354, 1.888334]);
-                    setMapZoom(6);
+                    if (userCoords) {
+                        // Si l'utilisateur est localisé, on se centre sur lui pour proposer le plus proche
+                        setMapCenter(userCoords);
+                        setMapZoom(10);
+                    } else {
+                        // Sinon on dézoome sur toute la France pour voir tous les Honda
+                        setMapCenter([46.603354, 1.888334]);
+                        setMapZoom(6);
+                    }
                 }
             }
         } else if (detectedLoc) {
@@ -281,7 +289,7 @@ function MapPageComponent() {
     
     setSearchStatus(status);
     setFilteredDealerships(results);
-  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter, latParam]);
+  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter, latParam, userCoords]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     const bStr = bounds.toBBoxString();
@@ -297,6 +305,7 @@ function MapPageComponent() {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
+    // Toujours trier par distance au centre de la carte (donc soit userCoords soit lieu recherché)
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
   }, [filteredDealerships, mapBoundsStr, mapCenter, submittedSearchTerm]);
 
@@ -468,6 +477,7 @@ function MapPageComponent() {
                 onMapClick={() => {}} 
                 isLocating={isLocating} 
                 onLocateEnd={() => setIsLocating(false)} 
+                onLocationFound={setUserCoords}
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
               <div className="absolute top-3 right-3 z-[1000] p-1 overflow-visible">
@@ -496,6 +506,7 @@ function MapPageComponent() {
                 }} 
                 isLocating={isLocating} 
                 onLocateEnd={() => setIsLocating(false)} 
+                onLocationFound={setUserCoords}
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
               <div className="absolute top-2 right-2 z-[1000] p-1 overflow-visible">
