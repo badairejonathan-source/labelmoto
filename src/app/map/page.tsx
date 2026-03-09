@@ -183,7 +183,7 @@ function MapPageComponent() {
   }, [firestore]);
 
   useEffect(() => {
-    let results = allDealerships;
+    let results = [...allDealerships];
     let status: 'exact' | 'fallback_brand' | 'fallback_nearby' | 'none' = 'exact';
 
     if (activeFilter) {
@@ -194,136 +194,78 @@ function MapPageComponent() {
         const lower = submittedSearchTerm.toLowerCase().trim();
         const normalizedSearch = lower.replace(/[\s-]/g, '');
         
-        // Exact dealer match by name
-        const exactDealerMatch = allDealerships.find(d => d.title?.toLowerCase().trim() === lower);
-        
-        if (exactDealerMatch) {
-            if (exactDealerMatch.latitude && exactDealerMatch.longitude) {
-                setMapCenter([exactDealerMatch.latitude, exactDealerMatch.longitude]);
-                setMapZoom(14);
-                setSelectedDealershipId(exactDealerMatch.id);
-            }
-            results = [exactDealerMatch];
-        } else {
-            // Brand & Location Detection
-            let detectedBrand = '';
-            let detectedLoc = null;
-            const brandsList = Object.keys(brandLogos);
-            const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
+        // Brand Detection
+        let detectedBrand = '';
+        const brandsList = Object.keys(brandLogos);
+        const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
 
-            for (const brand of sortedBrands) {
-                const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-                // Correspondance exacte ou partielle (ex: "harley" pour "harley-davidson")
-                if (normalizedSearch.includes(normalizedBrand) || (normalizedBrand.includes(normalizedSearch) && normalizedSearch.length >= 3)) {
-                    detectedBrand = brand;
+        for (const brand of sortedBrands) {
+            const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
+            if (normalizedSearch.includes(normalizedBrand) || (normalizedBrand.includes(normalizedSearch) && normalizedSearch.length >= 3)) {
+                detectedBrand = brand;
+                break;
+            }
+        }
+
+        const normalizedBrandName = detectedBrand ? detectedBrand.toLowerCase().replace(/[\s-]/g, '') : '';
+        const searchRemainder = detectedBrand ? normalizedSearch.replace(normalizedBrandName, "").trim() : normalizedSearch;
+
+        // Location Detection
+        let detectedLoc = null;
+        if (searchRemainder.length > 0) {
+            for (const [dept, info] of Object.entries(locationsData)) {
+                const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
+                if (normalizedDept.includes(searchRemainder) || info.cities.some(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchRemainder))) {
+                    detectedLoc = info;
                     break;
                 }
             }
+        }
 
-            const normalizedBrandName = detectedBrand ? detectedBrand.toLowerCase().replace(/[\s-]/g, '') : '';
-            const searchRemainder = detectedBrand ? normalizedSearch.replace(normalizedBrandName, "").trim() : normalizedSearch;
+        // Filtering Logic
+        if (detectedBrand) {
+            const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
+            results = results.filter(d => 
+                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
+                d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
+            );
 
-            if (searchRemainder.length > 0) {
-                for (const [dept, info] of Object.entries(locationsData)) {
-                    const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
-                    if (normalizedDept.includes(searchRemainder) || info.cities.some(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchRemainder))) {
-                        detectedLoc = info;
-                        break;
-                    }
-                }
-            }
-
-            // FILTERING LOGIC
-            if (detectedBrand && detectedLoc) {
-                const brandMatches = allDealerships.filter(d => {
-                    const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
-                    return (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
-                    d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef);
-                });
-
-                if (brandMatches.length > 0) {
-                    const nearbyBrandMatches = brandMatches.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
-
-                    if (nearbyBrandMatches.length > 0) {
-                        setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-                        setMapZoom(9);
-                        results = brandMatches;
-                    } else {
-                        status = 'fallback_brand';
-                        let nearest = brandMatches[0];
-                        let minDistanceSq = getDistanceSq(detectedLoc.center, nearest);
-
-                        brandMatches.forEach(d => {
-                            const dist = getDistanceSq(detectedLoc.center, d);
-                            if (dist < minDistanceSq) {
-                                minDistanceSq = dist;
-                                nearest = d;
-                            }
-                        });
-
-                        if (nearest.latitude && nearest.longitude) {
-                            const midLat = (detectedLoc.center[0] + nearest.latitude) / 2;
-                            const midLng = (detectedLoc.center[1] + nearest.longitude) / 2;
-                            setMapCenter([midLat, midLng]);
-                            setMapZoom(8);
-                        } else {
-                            setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-                            setMapZoom(8);
-                        }
-                        results = brandMatches;
-                    }
-                } else {
-                    status = 'fallback_nearby';
+            if (detectedLoc) {
+                // Marque + Localisation
+                const brandMatchesInLoc = results.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
+                if (brandMatchesInLoc.length > 0) {
                     setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-                    setMapZoom(10);
-                    // On garde le filtre de catégorie s'il existe
-                    results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : allDealerships; 
+                    setMapZoom(9);
+                } else {
+                    status = 'fallback_brand';
+                    setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
+                    setMapZoom(8);
                 }
             } else {
-                // Location only or Brand only
-                let foundLocation = false;
-                Object.entries(locationsData).forEach(([dept, info]) => {
-                    const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
-                    if (normalizedDept === normalizedSearch || info.cities.some(c => c.toLowerCase().replace(/[\s-]/g, '') === normalizedSearch)) {
-                        if (!foundLocation) {
-                            setMapCenter([info.center[0], info.center[1]]);
-                            setMapZoom(10);
-                            foundLocation = true;
-                        }
-                    }
-                });
-
-                if (!foundLocation) {
-                    if (detectedBrand) {
-                        const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
-                        results = results.filter(d => 
-                            (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
-                            d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
-                        );
-                        
-                        if (results.length > 0) {
-                            // Centrer la carte sur le premier résultat de la marque si aucune localisation n'est fournie
-                            const first = results[0];
-                            if (first.latitude && first.longitude && !latParam) {
-                                setMapCenter([first.latitude, first.longitude]);
-                                setMapZoom(8);
-                            }
-                        } else {
-                            status = 'fallback_nearby';
-                            results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : allDealerships;
-                        }
-                    } else {
-                        results = results.filter(d => 
-                            d.title?.toLowerCase().includes(lower) || 
-                            d.address?.toLowerCase().includes(lower) || 
-                            (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
-                        );
-                        if (results.length === 0) {
-                            status = 'fallback_nearby';
-                            results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : allDealerships;
-                        }
-                    }
+                // Marque seule : Voir toute la France
+                if (!latParam && results.length > 0) {
+                    setMapCenter([46.603354, 1.888334]);
+                    setMapZoom(6);
                 }
+            }
+        } else if (detectedLoc) {
+            // Localisation seule
+            setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
+            setMapZoom(10);
+            results = results.filter(d => 
+                d.address?.toLowerCase().includes(searchRemainder) || 
+                d.title?.toLowerCase().includes(searchRemainder)
+            );
+        } else {
+            // Recherche textuelle classique
+            results = results.filter(d => 
+                d.title?.toLowerCase().includes(lower) || 
+                d.address?.toLowerCase().includes(lower) || 
+                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
+            );
+            if (results.length === 0) {
+                status = 'fallback_nearby';
+                results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : [...allDealerships];
             }
         }
     } else {
@@ -350,6 +292,7 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = filteredDealerships;
+    // Si pas de recherche, on filtre par ce qui est visible à l'écran
     if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude != null && d.longitude != null && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
