@@ -1,5 +1,6 @@
 
 const brandLogos: Record<string, string> = {
+    // Constructeurs Moto
     'BMW': `<g transform='scale(1.5)'>
         <circle cx='0' cy='0' r='10' fill='#fff'/>
         <path d='M0,0 l0,-10 a10,10 0 0,1 0,20 l0,-10' fill='#000'/>
@@ -119,6 +120,35 @@ const brandLogos: Record<string, string> = {
     'Super Soco': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>SOCO</text></g>`,
     'Horwin': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>HORWIN</text></g>`,
     'Silence': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>S</text></g>`,
+
+    // Enseignes Accessoires (Accessoiristes)
+    'Dafy Moto': `<g transform='scale(1.2)'><rect x='-10' y='-6' width='20' height='12' fill='#e30613'/><text y='3' font-size='5' fill='#fff' text-anchor='middle' font-weight='bold'>DAFY</text></g>`,
+    'Maxxess': `<g transform='scale(1.2)'><rect x='-10' y='-6' width='20' height='12' fill='#000'/><text y='3' font-size='4' fill='#fff' text-anchor='middle' font-weight='bold'>MAXXESS</text></g>`,
+    'Moto Axxe': `<g transform='scale(1.2)'><rect x='-10' y='-6' width='20' height='12' fill='#e30613'/><text y='3' font-size='4' fill='#fff' text-anchor='middle' font-weight='bold'>MOTO AXXE</text></g>`,
+    'Cardy': `<g transform='scale(1.2)'><rect x='-10' y='-6' width='20' height='12' fill='#004a99'/><text y='3' font-size='5' fill='#fff' text-anchor='middle' font-weight='bold'>CARDY</text></g>`,
+    'Speedway': `<g transform='scale(1.2)'><rect x='-10' y='-6' width='20' height='12' fill='#000'/><text y='3' font-size='4' fill='#fff' text-anchor='middle' font-weight='bold'>SPEEDWAY</text></g>`,
+
+    // Marques Équipement & Casques
+    'Shark': `<g transform='scale(1.2)'><circle r='10' fill='#004a99'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>SHARK</text></g>`,
+    'Shoei': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>SHOEI</text></g>`,
+    'Arai': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='6' fill='#fff' text-anchor='middle'>ARAI</text></g>`,
+    'HJC': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='6' fill='#fff' text-anchor='middle'>HJC</text></g>`,
+    'LS2': `<g transform='scale(1.2)'><circle r='10' fill='#e30613'/><text y='3' font-size='6' fill='#fff' text-anchor='middle'>LS2</text></g>`,
+    'Nolan': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>NOLAN</text></g>`,
+    'Scorpion': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='4' fill='#fff' text-anchor='middle'>SCORPION</text></g>`,
+    'Alpinestars': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='4' fill='#fff' text-anchor='middle'>ASTARS</text></g>`,
+    'Dainese': `<g transform='scale(1.2)'><circle r='10' fill='#e30613'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>DAINESE</text></g>`,
+    'Furygan': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>FURY</text></g>`,
+    'Ixon': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='6' fill='#fff' text-anchor='middle'>IXON</text></g>`,
+    'Bering': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>BERING</text></g>`,
+    'Segura': `<g transform='scale(1.2)'><circle r='10' fill='#333'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>SEGURA</text></g>`,
+    'Rev\'it': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='5' fill='#fff' text-anchor='middle'>REVIT</text></g>`,
+    'Spidi': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='6' fill='#fff' text-anchor='middle'>SPIDI</text></g>`,
+    'Givi': `<g transform='scale(1.2)'><circle r='10' fill='#e30613'/><text y='3' font-size='6' fill='#fff' text-anchor='middle'>GIVI</text></g>`,
+    'SW-Motech': `<g transform='scale(1.2)'><circle r='10' fill='#000'/><text y='3' font-size='4' fill='#fff' text-anchor='middle'>SW-M</text></g>`,
+    'Shad': `<g transform='scale(1.2)'><circle r='10' fill='#333'/><text y='3' font-size='6' fill='#fff' text-anchor='middle'>SHAD</text></g>`,
+    'Akrapovic': `<g transform='scale(1.2)'><circle r='10' fill='#e30613'/><text y='3' font-size='4' fill='#fff' text-anchor='middle'>AKRA</text></g>`,
+    'Yoshimura': `<g transform='scale(1.2)'><circle r='10' fill='#e30613'/><text y='3' font-size='4' fill='#fff' text-anchor='middle'>YOSHI</text></g>`,
 };
 
 export default brandLogos;
