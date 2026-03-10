@@ -85,7 +85,7 @@
     "imageHint": "BMW GS 1250",
     "engine": {
       "bridage": "❌ Non éligible A2",
-      "type": "Bicylindre à plat (Boxer), ShiftCam, 4 temps, refroidissement air/liquide",
+      "type": "Bicylindre à plat (Boxer), 4 temps, refroidissement air/liquide, technologie ShiftCam",
       "displacement": "1 254 cm³",
       "power": "100 kW (136 ch) à 7 750 tr/min",
       "torque": "143 N.m à 6 250 tr/min",
@@ -109,10 +109,10 @@
       "wetWeight": "249 kg",
       "fuelCapacity": "20 L"
     },
-    "introduction": "La BMW R1250 GS est la référence absolue du trail voyageur. Son moteur Boxer ShiftCam offre un agrément exceptionnel, mais son entretien technologique demande un budget supérieur à la moyenne.",
+    "introduction": "La BMW R1250 GS est l’un des trails les plus réputés pour les voyages. Son moteur boxer est très robuste, mais l’entretien reste plus coûteux que sur des motos de moyenne cylindrée.",
     "content": [
       { "type": "heading", "text": "Intervalles d’entretien constructeur R1250 GS" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
           ["1 000 km", "Révision de rodage"],
           ["10 000 km", "Vidange + contrôles"],
           ["20 000 km", "Vidange + filtres"],
@@ -121,7 +121,7 @@
           ["50 000 km", "Révision majeure"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
           ["1 000 km", "160 à 240 €"],
           ["10 000 km", "260 à 340 €"],
           ["20 000 km", "360 à 440 €"],
@@ -197,7 +197,7 @@
           ["24 000 km", "Bougies + réglages"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
           ["1 000 km", "60 à 140 €"],
           ["6 000 km", "100 à 180 €"],
           ["12 000 km", "150 à 230 €"]
@@ -265,14 +265,14 @@
     "introduction": "La Suzuki SV650 est une icône. Son moteur V-Twin est légendaire pour son caractère et sa solidité. Un classique qui demande un entretien simple mais régulier.",
     "content": [
       { "type": "heading", "text": "Intervalles d’entretien constructeur SV650" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
           ["1 000 km", "Révision de rodage"],
           ["12 000 km", "Vidange + filtres"],
           ["24 000 km", "Bougies + soupapes"],
           ["36 000 km", "Révision intermédiaire"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix"], "rows": [
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
           ["1 000 km", "100 à 180 €"],
           ["12 000 km", "200 à 280 €"],
           ["24 000 km", "400 à 480 €"]
@@ -340,29 +340,36 @@
     "introduction": "L'héritière de la CB500X. Un trail polyvalent, ultra-fiable et parfaitement taillé pour les permis A2. Sa mécanique simple garantit des coûts d'exploitation réduits.",
     "content": [
       { "type": "heading", "text": "Intervalles d’entretien constructeur NX500" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
           ["1 000 km", "Révision de rodage"],
           ["12 000 km", "Vidange + contrôles"],
           ["24 000 km", "Bougies + soupapes"],
           ["36 000 km", "Révision intermédiaire"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
           ["1 000 km", "100 à 180 €"],
           ["12 000 km", "180 à 260 €"],
           ["24 000 km", "320 à 400 €"]
       ]},
-      { "type": "heading", "text": "Consommables à surveiller" },
-      { "type": "list", "items": [
-          "Kit chaîne : 20 000 à 30 000 km",
-          "Pneus : 10 000 à 18 000 km",
-          "Batterie : 4 à 6 ans"
+      { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Pneus", "10 000 à 18 000 km"],
+        ["Plaquettes", "10 000 à 20 000 km"],
+        ["Batterie", "4 à 6 ans"]
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
       { "type": "list", "items": [
           "Suspensions un peu souples en usage intensif",
           "Amortisseur arrière fatigué après gros kilométrage",
           "Mécanique globalement indestructible"
+      ]},
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "list", "items": [
+          "Nettoyer régulièrement la chaîne après usage tout-chemin",
+          "Vérifier la pression des pneus pour optimiser l'usure",
+          "Faire chauffer doucement le bicylindre Honda"
       ]},
       { "type": "heading", "text": "FAQ entretien NX500" },
       { "type": "paragraph", "html": "<strong>Quelle est la consommation ?</strong><br/>Environ 3,5 à 4 L / 100 km." },
@@ -439,478 +446,11 @@
           "Respecter scrupuleusement le temps de chauffe du moteur avant de monter dans les tours",
           "Lubrifier régulièrement le câble d'embrayage pour garantir sa souplesse et sa longévité."
       ]},
-      { "type": "paragraph", "html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
       { "type": "heading", "text": "FAQ entretien Z650" },
       { "type": "paragraph", "html": "<strong>La Z650 est-elle fiable ?</strong><br/>Oui, c'est l'un des moteurs les plus éprouvés du marché." },
       { "type": "paragraph", "html": "<strong>Peut-on l'utiliser en A2 ?</strong><br/>Oui, elle est éligible au permis A2 avec un bridage à 35 kW." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "Un excellent choix pour débuter avec une machine nerveuse et valorisante, dont les coûts d'entretien sont bien maîtrisés." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "yamaha-tracer-7",
-    "modelName": "Yamaha Tracer 7",
-    "brand": "Yamaha",
-    "year": "2021+",
-    "imageUrl": "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Yamaha Tracer 7",
-    "engine": {
-      "bridage": "✔ Permis A2 (bridable à 35 kW)",
-      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
-      "displacement": "689 cm³",
-      "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
-      "torque": "67 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "chassis": {
-      "frame": "Cadre type Diamant en acier",
-      "frontSuspension": "Fourche télescopique, Ø 41 mm, réglable",
-      "rearSuspension": "Mono-amortisseur réglable",
-      "frontBrake": "Double disque, Ø 282 mm",
-      "rearBrake": "Simple disque, Ø 245 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "180/55 ZR 17"
-    },
-    "dimensions": {
-      "length": "2 140 mm",
-      "width": "806 mm",
-      "height": "1 290 mm",
-      "seatHeight": "840 mm",
-      "wheelbase": "1 460 mm",
-      "wetWeight": "196 kg",
-      "fuelCapacity": "17 L"
-    },
-    "introduction": "La Tracer 7 est la version routière de la MT-07. Équipée du moteur CP2, elle offre une polyvalence remarquable pour le voyage et le quotidien en permis A2.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Tracer 7" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Rodage (Forfait Eco)"],
-          ["10 000 km", "Entretien courant (Forfait Essentiel)"],
-          ["20 000 km", "Révision intermédiaire (Forfait Performance)"],
-          ["40 000 km", "Grosse révision (Forfait Excellence)"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["10 000 km", "200 à 280 €"],
-          ["20 000 km", "400 à 480 €"],
-          ["40 000 km", "750 à 830 €"]
-      ]},
-      { "type": "heading", "text": "Fiabilité" },
-      { "type": "list", "items": ["Moteur CP2 indestructible", "Bulle d'origine parfois jugée bruyante", "Sensibilité à la corrosion des vis si usage hivernal"] },
-      { "type": "heading", "text": "FAQ entretien Tracer 7" },
-      { "type": "paragraph", "html": "<strong>Quelle est l'autonomie ?</strong><br/>Environ 350 km grâce au réservoir de 17L." },
-      { "type": "paragraph", "html": "<strong>Est-elle éligible A2 ?</strong><br/>Oui, via un bridage électronique et mécanique en concession." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La routière la plus équilibrée de sa catégorie, économique et fiable." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "honda-cb650r",
-    "modelName": "Honda CB650R",
-    "brand": "Honda",
-    "year": "2021+",
-    "imageUrl": "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Honda CB650R",
-    "engine": {
-      "bridage": "✔ Éligible A2 (bridable à 35 kW)",
-      "type": "4 cylindres en ligne, 4 temps, 16 soupapes",
-      "displacement": "649 cm³",
-      "power": "70 kW (95 ch) à 12 000 tr/min",
-      "torque": "63 N.m à 9 500 tr/min",
-      "alimentation": "Injection électronique PGM-FI"
-    },
-    "chassis": {
-      "frame": "Treillis en acier",
-      "frontSuspension": "Fourche inversée Showa SFF-BP Ø 41 mm",
-      "rearSuspension": "Mono-amortisseur réglable",
-      "frontBrake": "Double disque Ø 310 mm, étriers radiaux",
-      "rearBrake": "Simple disque Ø 240 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "180/55 ZR 17"
-    },
-    "dimensions": {
-      "length": "2 130 mm",
-      "width": "780 mm",
-      "height": "1 075 mm",
-      "seatHeight": "810 mm",
-      "wheelbase": "1 450 mm",
-      "wetWeight": "202 kg",
-      "fuelCapacity": "15,4 L"
-    },
-    "introduction": "La Honda CB650R est l'un des rares roadsters 4 cylindres éligibles au permis A2. Son moteur est réputé pour sa souplesse, mais son entretien est un peu plus complexe que sur un bicylindre.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur CB650R" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + filtres"],
-          ["24 000 km", "Bougies + Filtre air + Contrôles"],
-          ["48 000 km", "Réglage soupapes"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "130 à 210 €"],
-          ["12 000 km", "230 à 310 €"],
-          ["24 000 km", "430 à 510 €"],
-          ["48 000 km", "680 à 760 €"]
-      ]},
-      { "type": "heading", "text": "Consommables" },
-      { "type": "list", "items": ["Pneus : 6 000 à 12 000 km (selon conduite)", "Kit chaîne : 20 000 à 30 000 km", "Plaquettes : 10 000 à 18 000 km"] },
-      { "type": "heading", "text": "Fiabilité" },
-      { "type": "list", "items": ["Moteur Honda extrêmement robuste", "Chaleur moteur sensible en ville", "Suspensions fermes sur mauvais revêtement"] },
-      { "type": "heading", "text": "FAQ entretien CB650R" },
-      { "type": "paragraph", "html": "<strong>Le bridage A2 est-il réversible ?</strong><br/>Oui, après les 2 ans de permis, vous pouvez la débrider pour retrouver ses 95 ch d'origine." },
-      { "type": "paragraph", "html": "<strong>Est-elle coûteuse à entretenir ?</strong><br/>Le 4 cylindres demande 4 bougies et un peu plus de main d'œuvre, ce qui augmente la facture par rapport à une MT-07." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Un choix premium pour les amateurs de 4 cylindres, fiable et valorisante." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "yamaha-mt-03",
-    "modelName": "Yamaha MT-03",
-    "brand": "Yamaha",
-    "year": "2020+",
-    "imageUrl": "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Yamaha MT-03",
-    "engine": {
-      "bridage": "✔ Permis A2 (Natif - Sans bridage)",
-      "type": "Bicylindre en ligne, 4 temps, refroidissement liquide",
-      "displacement": "321 cm³",
-      "power": "30,9 kW (42 ch) à 10 750 tr/min",
-      "torque": "29,6 N.m à 9 000 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "chassis": {
-      "frame": "Cadre type Diamant en acier",
-      "frontSuspension": "Fourche inversée, Ø 37 mm",
-      "rearSuspension": "Bras oscillant, mono-amortisseur",
-      "frontBrake": "Simple disque, Ø 298 mm",
-      "rearBrake": "Simple disque, Ø 220 mm",
-      "frontTire": "110/70-17",
-      "rearTire": "140/70-17"
-    },
-    "dimensions": {
-      "length": "2 090 mm",
-      "width": "755 mm",
-      "height": "1 070 mm",
-      "seatHeight": "780 mm",
-      "wheelbase": "1 380 mm",
-      "wetWeight": "168 kg",
-      "fuelCapacity": "14 L"
-    },
-    "introduction": "La Yamaha MT-03 est la porte d'entrée idéale de la gamme Hyper Naked. Accessible sans bridage pour les permis A2, elle brille par sa légèreté et ses coûts d'entretien réduits.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur MT-03" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Rodage (Forfait Eco)"],
-          ["10 000 km", "Révision annuelle (Forfait Essentiel)"],
-          ["20 000 km", "Révision intermédiaire (Forfait Performance)"],
-          ["40 000 km", "Grosse révision (Forfait Excellence)"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "90 à 170 €"],
-          ["10 000 km", "160 à 240 €"],
-          ["20 000 km", "310 à 390 €"],
-          ["40 000 km", "610 à 690 €"]
-      ]},
-      { "type": "heading", "text": "Consommables" },
-      { "type": "list", "items": ["Pneus : 10 000 à 15 000 km", "Kit chaîne : 20 000 à 30 000 km", "Plaquettes : 10 000 à 20 000 km"] },
-      { "type": "heading", "text": "Fiabilité" },
-      { "type": "list", "items": ["Moteur bicylindre très robuste", "Vibrations à haut régime", "Suspension arrière un peu souple en duo"] },
-      { "type": "heading", "text": "FAQ entretien MT-03" },
-      { "type": "paragraph", "html": "<strong>Est-elle économique ?</strong><br/>Oui, sa consommation est d'environ 3,8 L/100 km et l'assurance est l'une des moins chères du marché A2." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Une excellente première moto, fiable, fun et très peu coûteuse à l'usage." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "yamaha-xsr700",
-    "modelName": "Yamaha XSR700",
-    "brand": "Yamaha",
-    "year": "2021+",
-    "imageUrl": "https://images.unsplash.com/photo-1716651333478-3b04f6dc0b18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg",
-    "imageHint": "Yamaha XSR700",
-    "engine": {
-      "bridage": "✔ Permis A2 (bridable à 35 kW)",
-      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
-      "displacement": "689 cm³",
-      "power": "54 kW (73,4 ch) à 8 750 tr/min",
-      "torque": "67 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "chassis": {
-      "frame": "Cadre type Diamant en acier",
-      "frontSuspension": "Fourche télescopique, Ø 41 mm",
-      "rearSuspension": "Bras oscillant, mono-amortisseur",
-      "frontBrake": "Double disque, Ø 298 mm",
-      "rearBrake": "Simple disque, Ø 245 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "180/55 ZR 17"
-    },
-    "dimensions": {
-      "length": "2 075 mm",
-      "width": "820 mm",
-      "height": "1 130 mm",
-      "seatHeight": "835 mm",
-      "wheelbase": "1 405 mm",
-      "wetWeight": "188 kg",
-      "fuelCapacity": "14 L"
-    },
-    "introduction": "La Yamaha XSR700 allie le style néo-rétro intemporel à l'efficacité moderne du moteur CP2. C'est une excellente alternative à la MT-07 pour ceux qui cherchent un look plus classique en permis A2.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur XSR700" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Rodage (Forfait Eco)"],
-          ["10 000 km", "Entretien courant (Forfait Essentiel)"],
-          ["20 000 km", "Révision intermédiaire (Forfait Performance)"],
-          ["40 000 km", "Grosse révision (Forfait Excellence)"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["10 000 km", "200 à 280 €"],
-          ["20 000 km", "400 à 480 €"],
-          ["40 000 km", "750 à 830 €"]
-      ]},
-      { "type": "heading", "text": "Fiabilité et points à surveiller" },
-      { "type": "list", "items": ["Moteur CP2 réputé increvable", "Finition de certaines pièces métalliques exposées", "Suspensions d'origine un peu souples en conduite dynamique"] },
-      { "type": "heading", "text": "FAQ entretien XSR700" },
-      { "type": "paragraph", "html": "<strong>L'entretien est-il le même que sur la MT-07 ?</strong><br/>Oui, les deux motos partagent la même base mécanique, les coûts et intervalles sont donc identiques." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Style, fiabilité et économie : la XSR700 est une valeur sûre du segment néo-rétro." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "honda-cbr500r",
-    "modelName": "Honda CBR500R",
-    "brand": "Honda",
-    "year": "2022+",
-    "imageUrl": "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Honda CBR500R",
-    "engine": {
-      "bridage": "✔ Permis A2 (Natif - Sans bridage)",
-      "type": "Bicylindre en ligne, 4 temps, 8 soupapes",
-      "displacement": "471 cm³",
-      "power": "35 kW (47,5 ch) à 8 600 tr/min",
-      "torque": "43 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique PGM-FI"
-    },
-    "chassis": {
-      "frame": "Type Diamant en acier",
-      "frontSuspension": "Fourche inversée Showa SFF-BP Ø 41 mm",
-      "rearSuspension": "Mono-amortisseur Pro-Link réglable",
-      "frontBrake": "Double disque Ø 296 mm, étriers radiaux Nissin",
-      "rearBrake": "Simple disque Ø 240 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "160/60 ZR 17"
-    },
-    "dimensions": {
-      "length": "2 080 mm",
-      "width": "760 mm",
-      "height": "1 145 mm",
-      "seatHeight": "785 mm",
-      "wheelbase": "1 410 mm",
-      "wetWeight": "192 kg",
-      "fuelCapacity": "17,1 L"
-    },
-    "introduction": "La CBR500R est la porte d'entrée du monde Supersport chez Honda. Accessible nativement en A2, elle offre un look de sportive radical avec une position et un entretien raisonnables.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur CBR500R" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Filtres + Bougies + Contrôles"],
-          ["48 000 km", "Révision majeure"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "100 à 180 €"],
-          ["12 000 km", "180 à 260 €"],
-          ["24 000 km", "320 à 400 €"]
-      ]},
-      { "type": "heading", "text": "Fiabilité" },
-      { "type": "list", "items": ["Moteur increvable", "Excellente qualité de finition", "Consommation très basse (3,5 L/100 km)"] },
-      { "type": "heading", "text": "FAQ entretien CBR500R" },
-      { "type": "paragraph", "html": "<strong>Est-ce une vraie sportive ?</strong><br/>Elle en a le look, mais ses demi-guidons hauts et son moteur souple la rendent très confortable au quotidien." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La sportive la plus rationnelle du marché pour débuter sans se ruiner." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "kawasaki-ninja-650",
-    "modelName": "Kawasaki Ninja 650",
-    "brand": "Kawasaki",
-    "year": "2020+",
-    "imageUrl": "https://images.unsplash.com/photo-1629587937318-755f52980079?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Kawasaki Ninja 650",
-    "engine": {
-      "bridage": "✔ Éligible A2 (bridable à 35 kW)",
-      "type": "Bicylindre en parallèle, 4 temps, refroidissement liquide",
-      "displacement": "649 cm³",
-      "power": "50,2 kW (68 ch) à 8 000 tr/min",
-      "torque": "64 N.m à 6 700 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "chassis": {
-      "frame": "Treillis, acier haute résistance",
-      "frontSuspension": "Fourche télescopique Ø 41 mm",
-      "rearSuspension": "Back-link avec réglage précharge",
-      "frontBrake": "Double disque en pétales Ø 300 mm",
-      "rearBrake": "Simple disque en pétales Ø 220 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "160/60 ZR 17"
-    },
-    "dimensions": {
-      "length": "2 055 mm",
-      "width": "740 mm",
-      "height": "1 145 mm",
-      "seatHeight": "790 mm",
-      "wheelbase": "1 410 mm",
-      "wetWeight": "193 kg",
-      "fuelCapacity": "15 L"
-    },
-    "introduction": "La Ninja 650 est la sport-GT accessible de Kawasaki. Partageant son moteur avec la Z650, elle offre une protection accrue pour les motards A2 qui souhaitent voyager avec un look sportif.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Ninja 650" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + Filtres + Contrôles"],
-          ["42 000 km", "Gros entretien + Jeu aux soupapes"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Kawasaki)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["12 000 km", "220 à 300 €"],
-          ["24 000 km", "410 à 490 €"],
-          ["42 000 km", "750 à 830 €"]
-      ]},
-      { "type": "heading", "text": "Consommables" },
-      { "type": "list", "items": ["Kit chaîne : 20 000 à 25 000 km", "Pneus : 8 000 à 12 000 km", "Plaquettes : 10 000 à 18 000 km"] },
-      { "type": "heading", "text": "Fiabilité" },
-      { "type": "list", "items": ["Moteur extrêmement fiable", "Écran TFT moderne et lisible", "Vibrations parfois présentes dans les carénages"] },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Une moto polyvalente, facile à prendre en main et dont les coûts d'entretien sont transparents grâce aux forfaits constructeur." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "suzuki-v-strom-650",
-    "modelName": "Suzuki V-Strom 650",
-    "brand": "Suzuki",
-    "year": "2017+",
-    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Suzuki V-Strom 650",
-    "engine": {
-      "bridage": "✔ Éligible A2 (bridable à 35 kW)",
-      "type": "Bicylindre en V à 90°, 4 temps, refroidissement liquide",
-      "displacement": "645 cm³",
-      "power": "52 kW (71 ch) à 8 800 tr/min",
-      "torque": "62 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "chassis": {
-      "frame": "Double poutre en aluminium",
-      "frontSuspension": "Fourche télescopique Ø 43 mm",
-      "rearSuspension": "Mono-amortisseur réglable en précharge",
-      "frontBrake": "Double disque Ø 310 mm",
-      "rearBrake": "Simple disque Ø 260 mm",
-      "frontTire": "110/80 R19",
-      "rearTire": "150/70 R17"
-    },
-    "dimensions": {
-      "length": "2 275 mm",
-      "width": "835 mm",
-      "height": "1 405 mm",
-      "seatHeight": "830 mm",
-      "wheelbase": "1 560 mm",
-      "wetWeight": "213 kg",
-      "fuelCapacity": "20 L"
-    },
-    "introduction": "La Suzuki V-Strom 650 est le couteau suisse du trail. Sa réputation de fiabilité n'est plus à faire et son moteur V-Twin est l'un des plus attachants de la catégorie A2.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur V-Strom 650" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Rodage"],
-          ["12 000 km", "Vidange + filtres"],
-          ["24 000 km", "Bougies + soupapes"],
-          ["36 000 km", "Révision intermédiaire"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix"], "rows": [
-          ["1 000 km", "100 à 180 €"],
-          ["12 000 km", "210 à 290 €"],
-          ["24 000 km", "360 à 440 €"]
-      ]},
-      { "type": "heading", "text": "Fiabilité" },
-      { "type": "list", "items": ["Moteur V-Twin réputé indestructible", "Amortisseur arrière fatigué avec le temps", "Bulle d'origine parfois jugée peu protectrice"] },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Un trail robuste capable de parcourir plus de 100 000 km avec un entretien régulier." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "yamaha-r7",
-    "modelName": "Yamaha R7",
-    "brand": "Yamaha",
-    "year": "2022+",
-    "imageUrl": "https://images.unsplash.com/photo-1623547639149-930472f883b2?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Yamaha R7",
-    "engine": {
-      "bridage": "✔ Permis A2 (bridable à 35 kW)",
-      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
-      "displacement": "689 cm³",
-      "power": "54 kW (73,4 ch) à 8 750 tr/min",
-      "torque": "67 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "chassis": {
-      "frame": "Cadre type Diamant en acier",
-      "frontSuspension": "Fourche inversée KYB, Ø 41 mm, entièrement réglable",
-      "rearSuspension": "Mono-amortisseur réglable",
-      "frontBrake": "Double disque, Ø 298 mm, étriers radiaux Brembo",
-      "rearBrake": "Simple disque, Ø 245 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "180/55 ZR 17"
-    },
-    "dimensions": {
-      "length": "2 070 mm",
-      "width": "705 mm",
-      "height": "1 160 mm",
-      "seatHeight": "835 mm",
-      "wheelbase": "1 395 mm",
-      "wetWeight": "188 kg",
-      "fuelCapacity": "13 L"
-    },
-    "introduction": "La Yamaha R7 est la sportive ultime du segment A2. Utilisant le moteur CP2 de la MT-07 mais avec une partie cycle radicalement plus affûtée, elle offre des sensations de piste accessibles.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur R7" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien"], "rows": [
-          ["1 000 km", "Rodage (Forfait Eco)"],
-          ["10 000 km", "Entretien annuel (Forfait Essentiel)"],
-          ["20 000 km", "Révision intermédiaire (Forfait Performance)"],
-          ["40 000 km", "Grosse révision (Forfait Excellence)"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["10 000 km", "200 à 280 €"],
-          ["20 000 km", "400 à 480 €"],
-          ["40 000 km", "750 à 830 €"]
-      ]},
-      { "type": "heading", "text": "Fiabilité" },
-      { "type": "list", "items": ["Moteur CP2 extrêmement fiable", "Position de conduite exigeante", "Capacité de réservoir limitée pour les longs trajets"] },
-      { "type": "heading", "text": "FAQ entretien R7" },
-      { "type": "paragraph", "html": "<strong>Est-ce une vraie sportive ?</strong><br/>Oui, avec sa position basculée vers l'avant et ses suspensions réglables, elle offre un vrai pilotage sportif." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Une machine radicale et fiable, idéale pour apprendre le pilotage sportif en permis A2." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   }

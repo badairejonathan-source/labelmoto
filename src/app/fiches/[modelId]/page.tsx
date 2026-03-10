@@ -38,8 +38,6 @@ type FicheData = (typeof fichesData)[0];
 interface FicheTechnique extends Omit<FicheData, 'maintenance' | 'reliability'> {
   introduction?: string;
   content?: FicheContent[];
-  maintenance?: { interval: string; cost: string; details: string }[];
-  reliability?: string[];
 }
 
 const parseDisplacement = (displacement: string): number => {
@@ -47,7 +45,6 @@ const parseDisplacement = (displacement: string): number => {
   const match = displacement.match(/(\d+)/);
   return match ? parseInt(match[0], 10) : 0;
 };
-
 
 export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
   const { modelId } = use(params);
@@ -79,96 +76,90 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   };
 
   const renderContent = (content: FicheContent[]) => {
-    if (!content || content.length === 0) {
-      return null;
-    }
+    if (!content || content.length === 0) return null;
 
-    return content.flatMap((block, index) => {
-      const elements: React.ReactNode[] = [];
-      
-      if (block.type === 'heading') {
-        elements.push(<h3 key={index} className="text-2xl font-bold font-serif mt-8 mb-4">{block.text}</h3>);
-      } else if (block.type === 'list' && block.items) {
-        elements.push(
-          <ul key={index} className="list-disc list-inside space-y-2 my-4 pl-4 text-base">
-            {block.items.map((item, i) => <li key={i} className="text-foreground/90" dangerouslySetInnerHTML={{ __html: item }} />)}
-          </ul>
-        );
-      } else if (block.type === 'paragraph' && block.html) {
-          elements.push(<p key={index} className="text-base text-foreground/90 leading-relaxed my-4" dangerouslySetInnerHTML={{ __html: block.html }} />);
-      } else if (block.type === 'table' && block.headers && block.rows) {
-        elements.push(
-          <div key={index} className="my-6 overflow-x-auto">
-             <Table>
-              <TableHeader>
-                <TableRow>
-                  {block.headers.map((header: string, hIndex: number) => (
-                    <TableHead key={hIndex} className="font-semibold">{header}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {block.rows.map((row: string[], rIndex: number) => (
-                  <TableRow key={rIndex}>
-                    {row.map((cell: string, cIndex: number) => (
-                      <TableCell key={cIndex} className={cIndex === 0 ? 'font-medium' : ''}>{cell}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        );
+    return content.map((block, index) => {
+      switch (block.type) {
+        case 'heading':
+          return <h3 key={index} className="text-2xl font-bold font-serif mt-12 mb-6 text-foreground border-b pb-2">{block.text}</h3>;
         
-        if (block.headers.includes('Prix moyen') || block.headers.includes('Coût moyen estimé') || block.headers.includes('Prix moyen constaté')) {
-           elements.push(
-            <div key={`extra-${index}`} className="my-4 text-center">
-              <p className="text-sm text-muted-foreground mb-2">Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.</p>
-              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
-                  🔘 Comparer les ateliers près de moi
-                </Link>
-              </Button>
+        case 'list':
+          return (
+            <ul key={index} className="list-disc list-inside space-y-3 my-6 pl-4 text-base leading-relaxed">
+              {block.items?.map((item, i) => <li key={i} className="text-foreground/90" dangerouslySetInnerHTML={{ __html: item }} />)}
+            </ul>
+          );
+
+        case 'paragraph':
+          if (block.html) {
+            return <p key={index} className="text-base text-foreground/90 leading-relaxed my-6" dangerouslySetInnerHTML={{ __html: block.html }} />;
+          }
+          return <p key={index} className="text-base text-foreground/90 leading-relaxed my-6">{block.text}</p>;
+          
+        case 'table':
+          const isPricingTable = block.headers?.includes('Prix moyen constaté');
+          const isIntervalTable = block.headers?.includes('Entretien à effectuer');
+          const isConsumableTable = block.headers?.includes('Durée moyenne');
+
+          return (
+            <div key={index} className="my-8">
+              <div className="overflow-x-auto rounded-lg border shadow-sm">
+                <Table>
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      {block.headers?.map((header: string, hIndex: number) => (
+                        <TableHead key={hIndex} className="font-bold text-foreground py-4">{header}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {block.rows?.map((row: string[], rIndex: number) => (
+                      <TableRow key={rIndex}>
+                        {row.map((cell: string, cIndex: number) => (
+                          <TableCell key={cIndex} className={cn("py-4", cIndex === 0 ? 'font-bold' : '')}>{cell}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {isPricingTable && (
+                <div className="mt-6 text-center space-y-4">
+                  <p className="text-sm text-muted-foreground max-w-2xl mx-auto italic">
+                    Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.
+                  </p>
+                  <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105">
+                    <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
+                      🔘 Comparer les ateliers près de moi
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           );
-        }
+        
+        case 'signature':
+          return (
+            <div key={index} className="flex justify-end items-center mt-12 mb-8">
+              <p className="text-lg font-bold text-foreground/90 relative z-10">{block.text}</p>
+              {block.imageUrl && (
+                <Image 
+                  src={block.imageUrl} 
+                  alt={block.alt || "Signature"} 
+                  width={120} 
+                  height={120}
+                  className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
+                />
+              )}
+            </div>
+          );
 
-      } else if (block.type === 'signature' && block.imageUrl) {
-        elements.push(
-          <div key={index} className="flex justify-end items-center mt-[-3rem] sm:mt-[-4rem] mr-0 sm:mr-4">
-            <p className="text-lg font-semibold text-foreground/90 relative z-10">{block.text}</p>
-            <Image 
-              src={block.imageUrl} 
-              alt={block.alt || "Signature"} 
-              width={140} 
-              height={140}
-              className="object-contain opacity-70 -rotate-[15deg] pointer-events-none -ml-16"
-            />
-          </div>
-        );
-      } else {
-        elements.push(<p key={index} className="text-base text-foreground/90 leading-relaxed my-4">{block.text}</p>);
+        default:
+          return null;
       }
-
-      return elements;
     });
   };
-
-  const ctaConseilsIndex = fiche.content
-    ? fiche.content.findIndex(
-        (b) => b.type === 'heading' && b.text === 'Conseils pour prolonger la durée de vie'
-      )
-    : -1;
-
-  const contentBeforeCta =
-    ctaConseilsIndex !== -1 && fiche.content
-      ? fiche.content.slice(0, ctaConseilsIndex)
-      : fiche.content || [];
-
-  const contentAfterCta =
-    ctaConseilsIndex !== -1 && fiche.content
-      ? fiche.content.slice(ctaConseilsIndex)
-      : [];
 
   return (
     <div className="bg-background min-h-screen">
@@ -180,24 +171,26 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         onFilterChange={handleFilterChange}
         placeholderText="Rechercher un pro, un article..."
       />
+      
       <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
         <Image
           src="/images/logo-moto.png?v=6"
           alt="Label Moto Watermark"
           width={800}
           height={256}
-          className="opacity-[0.10] rotate-[-15deg] scale-150"
+          className="opacity-[0.08] rotate-[-15deg] scale-150"
         />
       </div>
+
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
+          <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 font-bold transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'entretien
           </Link>
 
           <div className="space-y-8">
-             <div className="relative w-full aspect-[2.5/1] rounded-2xl overflow-hidden mb-8 shadow-lg">
+            <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
               <Image
                 src={fiche.imageUrl}
                 alt={fiche.modelName}
@@ -206,45 +199,65 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 data-ai-hint={fiche.imageHint}
                 priority
               />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-               <div className="absolute bottom-0 left-0 p-6 text-white" style={{textShadow: '0 2px 4px rgba(0,0,0,0.5)'}}>
-                <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-8 text-white">
+                <h1 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tighter leading-none mb-2">
                     {fiche.modelName}
                 </h1>
-                <p className="text-xl md:text-2xl text-white/90">{fiche.year}</p>
-               </div>
+                <p className="text-xl md:text-2xl font-bold text-brand">{fiche.year}</p>
+              </div>
             </div>
 
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3"><Gauge className="h-6 w-6 text-brand" /> Moteur</CardTitle>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-lg border-none bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-brand uppercase font-black text-lg tracking-widest">
+                    <Gauge className="h-6 w-6" /> Moteur
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 text-sm">
+                  <ul className="space-y-3">
                     {fiche.engine.bridage && (
-                      <li><strong>Permis / Bridage:</strong> <span className="text-brand font-bold">{fiche.engine.bridage}</span></li>
+                      <li className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 pb-2 border-b border-border/50">
+                        <span className="font-black text-[10px] uppercase text-muted-foreground tracking-wider">Permis / Bridage:</span>
+                        <span className="text-brand font-black text-sm">{fiche.engine.bridage}</span>
+                      </li>
                     )}
-                    <li><strong>Type:</strong> {fiche.engine.type}</li>
-                    <li><strong>Cylindrée:</strong> {fiche.engine.displacement}</li>
-                    <li><strong>Puissance:</strong> {fiche.engine.power}</li>
-                    <li><strong>Couple:</strong> {fiche.engine.torque}</li>
-                    <li><strong>Alimentation:</strong> {fiche.engine.alimentation}</li>
+                    {[
+                      { label: "Type", value: fiche.engine.type },
+                      { label: "Cylindrée", value: fiche.engine.displacement },
+                      { label: "Puissance", value: fiche.engine.power },
+                      { label: "Couple", value: fiche.engine.torque },
+                      { label: "Alimentation", value: fiche.engine.alimentation }
+                    ].map((item, i) => (
+                      <li key={i} className="flex justify-between items-center text-sm border-b border-border/30 last:border-0 pb-1.5 last:pb-0">
+                        <span className="font-bold text-muted-foreground">{item.label}:</span>
+                        <span className="font-bold text-right ml-4">{item.value}</span>
+                      </li>
+                    ))}
                   </ul>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3"><Settings2 className="h-6 w-6 text-brand" /> Dimensions</CardTitle>
+              <Card className="shadow-lg border-none bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-brand uppercase font-black text-lg tracking-widest">
+                    <Settings2 className="h-6 w-6" /> Dimensions
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li><strong>H. de selle:</strong> {fiche.dimensions.seatHeight}</li>
-                    <li><strong>Poids (TPF):</strong> {fiche.dimensions.wetWeight}</li>
-                    <li><strong>Réservoir:</strong> {fiche.dimensions.fuelCapacity}</li>
-                    <li><strong>Empattement:</strong> {fiche.dimensions.wheelbase}</li>
+                  <ul className="space-y-3">
+                    {[
+                      { label: "H. de selle", value: fiche.dimensions.seatHeight },
+                      { label: "Poids (TPF)", value: fiche.dimensions.wetWeight },
+                      { label: "Réservoir", value: fiche.dimensions.fuelCapacity },
+                      { label: "Empattement", value: fiche.dimensions.wheelbase }
+                    ].map((item, i) => (
+                      <li key={i} className="flex justify-between items-center text-sm border-b border-border/30 last:border-0 pb-1.5 last:pb-0">
+                        <span className="font-bold text-muted-foreground">{item.label}:</span>
+                        <span className="font-bold text-right ml-4">{item.value}</span>
+                      </li>
+                    ))}
                   </ul>
                 </CardContent>
               </Card>
@@ -255,16 +268,16 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               onOpenChange={setIsPartieCycleOpen}
               className="w-full"
             >
-              <Card className="overflow-hidden transition-all duration-300">
+              <Card className="overflow-hidden border-none shadow-lg bg-card/50 backdrop-blur-sm transition-all duration-300">
                 <CollapsibleTrigger asChild>
-                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-4">
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-6">
                     <CardTitle className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-3">
-                        <Droplets className="h-6 w-6 text-brand" /> 
+                      <div className="flex items-center gap-3 text-brand uppercase font-black text-lg tracking-widest">
+                        <Droplets className="h-6 w-6" /> 
                         <span>Partie Cycle</span>
                       </div>
                       <ChevronDown className={cn(
-                        "h-5 w-5 text-muted-foreground transition-transform duration-300",
+                        "h-6 w-6 text-brand transition-transform duration-500",
                         isPartieCycleOpen && "rotate-180"
                       )} />
                     </CardTitle>
@@ -272,22 +285,29 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <CardContent className="pt-0">
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto rounded-lg border">
                       <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-muted/30">
                           <TableRow>
-                            <TableHead>Élément</TableHead>
-                            <TableHead>Spécification</TableHead>
+                            <TableHead className="font-bold text-foreground">Élément</TableHead>
+                            <TableHead className="font-bold text-foreground">Spécification</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          <TableRow><TableCell>Cadre</TableCell><TableCell>{fiche.chassis.frame}</TableCell></TableRow>
-                          <TableRow><TableCell>Suspension AV</TableCell><TableCell>{fiche.chassis.frontSuspension}</TableCell></TableRow>
-                           <TableRow><TableCell>Suspension AR</TableCell><TableCell>{fiche.chassis.rearSuspension}</TableCell></TableRow>
-                          <TableRow><TableCell>Frein AV</TableCell><TableCell>{fiche.chassis.frontBrake}</TableCell></TableRow>
-                          <TableRow><TableCell>Frein AR</TableCell><TableCell>{fiche.chassis.rearBrake}</TableCell></TableRow>
-                          <TableRow><TableCell>Pneu AV</TableCell><TableCell>{fiche.chassis.frontTire}</TableCell></TableRow>
-                          <TableRow><TableCell>Pneu AR</TableCell><TableCell>{fiche.chassis.rearTire}</TableCell></TableRow>
+                          {[
+                            { label: "Cadre", val: fiche.chassis.frame },
+                            { label: "Suspension AV", val: fiche.chassis.frontSuspension },
+                            { label: "Suspension AR", val: fiche.chassis.rearSuspension },
+                            { label: "Frein AV", val: fiche.chassis.frontBrake },
+                            { label: "Frein AR", val: fiche.chassis.rearBrake },
+                            { label: "Pneu AV", val: fiche.chassis.frontTire },
+                            { label: "Pneu AR", val: fiche.chassis.rearTire }
+                          ].map((row, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell className="font-bold py-4">{row.label}</TableCell>
+                              <TableCell className="py-4">{row.val}</TableCell>
+                            </TableRow>
+                          ))}
                         </TableBody>
                       </Table>
                     </div>
@@ -296,120 +316,69 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </Card>
             </Collapsible>
 
-            {fiche.content ? (
-              <div className="pt-8">
-                  <h2 className="text-4xl font-bold font-serif text-center mb-2">
-                    Guide d'entretien
-                  </h2>
-                  {fiche.introduction && (
-                    <p className="text-lg text-center text-muted-foreground leading-relaxed mb-4">{fiche.introduction}</p>
-                  )}
-                  <div className="text-center mb-8">
-                    <p className="text-muted-foreground mb-4">
-                        Préparez votre prochaine révision sans surprise. <br/>
-                        Comparez les garages proches de chez vous pour votre {fiche.modelName}.
-                    </p>
-                    <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                      <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
-                        🔘 Voir les garages autour de moi
-                      </Link>
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                      {renderContent(contentBeforeCta)}
-                  </div>
+            <div className="pt-12">
+              <h2 className="text-4xl md:text-5xl font-black font-serif text-center mb-4 uppercase tracking-tighter">
+                Guide d'entretien
+              </h2>
+              <div className="w-24 h-1.5 bg-brand mx-auto mb-8 rounded-full" />
+              
+              {fiche.introduction && (
+                <p className="text-xl text-center text-muted-foreground leading-relaxed mb-12 max-w-3xl mx-auto font-medium">{fiche.introduction}</p>
+              )}
 
-                  {ctaConseilsIndex !== -1 && (
-                    <div className="my-8 text-center border-y py-8">
-                        <h3 className="text-2xl font-bold font-serif mb-2">🏍️ La {fiche.modelName} vous correspond ?</h3>
-                        <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
-                            Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
-                        </p>
-                        <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                            <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
-                                🔘 Voir les {fiche.modelName} en concession
-                            </Link>
-                        </Button>
-                    </div>
-                  )}
-
-                  <div className="space-y-4">
-                      {renderContent(contentAfterCta)}
-                  </div>
+              <div className="bg-brand/5 border-2 border-brand/20 rounded-3xl p-8 text-center mb-12 shadow-inner">
+                <h4 className="text-2xl font-bold font-serif mb-4">Préparez votre prochaine révision sans surprise.</h4>
+                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto font-medium">
+                    Comparez les garages proches de chez vous pour votre {fiche.modelName} et obtenez le meilleur service au prix juste.
+                </p>
+                <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                  <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
+                    🔘 Voir les garages autour de moi
+                  </Link>
+                </Button>
               </div>
-            ) : (
-              <>
-              {fiche.maintenance && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3"><Wrench className="h-6 w-6 text-brand" /> Plan d'entretien & Coûts</CardTitle>
-                    <CardDescription>Les coûts sont des estimations et peuvent varier selon le garage.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Intervalle</TableHead>
-                            <TableHead>Coût estimé</TableHead>
-                            <TableHead>Opérations principales</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {fiche.maintenance.map((item, index) => (
-                            <TableRow key={index}>
-                              <TableCell className="font-medium">{item.interval}</TableCell>
-                              <TableCell>{item.cost}</TableCell>
-                              <TableCell>{item.details}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              {fiche.reliability && (
-                <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-3"><ShieldCheck className="h-6 w-6 text-brand" /> Fiabilité & Points à surveiller</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="list-disc list-inside space-y-2 text-sm">
-                        {fiche.reliability.map((point, index) => (
-                            <li key={index}>{point}</li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-              )}
-              </>
-            )}
+              
+              <div className="prose prose-brand max-w-none">
+                  {renderContent(fiche.content || [])}
+              </div>
+
+              <div className="my-16 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500/20 rounded-3xl p-8 text-center shadow-xl">
+                  <h3 className="text-3xl font-black font-serif mb-4 uppercase tracking-tight">🏍️ La {fiche.modelName} vous correspond ?</h3>
+                  <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg font-medium">
+                      Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
+                  </p>
+                  <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                      <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
+                          🔘 Voir les {fiche.modelName} en concession
+                      </Link>
+                  </Button>
+              </div>
+            </div>
           </div>
           
           {similarFiches.length > 0 && (
-            <div className="pt-16">
-              <h2 className="text-3xl font-bold font-serif text-center mb-8">
+            <div className="pt-24 border-t border-border/50">
+              <h2 className="text-4xl font-black font-serif text-center mb-12 uppercase tracking-tighter">
                 Découvrez d'autres modèles
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {similarFiches.map(f => (
-                  <Link key={f.modelId} href={`/fiches/${f.modelId}`} className="group">
-                    <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
-                      <div className="relative aspect-video">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {similarFiches.slice(0, 3).map(f => (
+                  <Link key={f.modelId} href={`/fiches/${f.modelId}`} className="group block">
+                    <Card className="h-full overflow-hidden transition-all duration-500 border-none shadow-lg hover:shadow-2xl hover:-translate-y-2 bg-card/50">
+                      <div className="relative aspect-video overflow-hidden">
                         <Image 
                           src={f.imageUrl}
                           alt={f.modelName}
                           fill
-                          className="object-cover"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           data-ai-hint={f.imageHint}
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       </div>
-                      <CardHeader>
-                        <CardTitle className="text-lg group-hover:text-brand group-hover:underline">{f.modelName}</CardTitle>
-                        <CardDescription>{f.engine.displacement}</CardDescription>
+                      <CardHeader className="p-6">
+                        <CardTitle className="text-xl font-black uppercase tracking-tight group-hover:text-brand transition-colors">{f.modelName}</CardTitle>
+                        <CardDescription className="font-bold text-muted-foreground">{f.engine.displacement}</CardDescription>
                       </CardHeader>
                     </Card>
                   </Link>
@@ -417,7 +386,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </div>
             </div>
           )}
-
         </div>
       </main>
     </div>
