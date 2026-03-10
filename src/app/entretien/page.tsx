@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 type ArticleContent = {
   type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
@@ -65,11 +66,11 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07</a>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7</a>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7</a>",
-          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700</a>",
-          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03</a>"
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
         ]
       },
       {
@@ -79,11 +80,11 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet / CB500F</a>", 
-          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R</a>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500</a>",
-          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R</a>",
-          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a>"
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet / CB500F</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>", 
+          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R</a> <span class='text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold ml-1'>Éligible A2</span>",
+          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a> <span class='text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold ml-1'>A1/A2</span>"
         ]
       },
       {
@@ -93,8 +94,8 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650</a>",
-          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650</a>"
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
         ]
       },
       {
@@ -104,8 +105,8 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650</a>",
-          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650</a>"
+          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
         ]
       },
       {
@@ -363,6 +364,7 @@ export default function EntretienPage() {
                             </p>
                         </CardContent>
                         <CardFooter className="p-3 pt-0 lg:p-6 lg:pt-0">
+                            <Badge variant="brand" className="w-full justify-center py-2 mb-2 text-xs font-bold">Focus A2 disponible</Badge>
                             <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-xs lg:text-base py-3 lg:py-5 rounded-full shadow-lg">
                                 <Link href="/map">Voir la carte interactive</Link>
                             </Button>

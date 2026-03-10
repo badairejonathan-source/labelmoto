@@ -13,7 +13,7 @@
       "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
       "torque": "67,0 N.m (6,8 m.kgf) à 6 500 tr/min",
       "alimentation": "Injection électronique",
-      "bridage": "Permis A2 (bridable à 35 kW)"
+      "bridage": "✔ Permis A2 (bridable à 35 kW)"
     },
     "chassis": {
       "frame": "Cadre type Diamant en acier",
@@ -33,7 +33,7 @@
       "wetWeight": "184 kg",
       "fuelCapacity": "14 L"
     },
-    "introduction": "La Yamaha MT-07 est la référence du segment A2. Son moteur CP2 est réputé pour son couple et sa fiabilité exceptionnelle. Un entretien rigoureux est la clé pour conserver son agrément de conduite.",
+    "introduction": "La Yamaha MT-07 est la référence absolue du segment A2. Son moteur CP2 est réputé pour son couple et sa fiabilité exceptionnelle. Un entretien rigoureux est la clé pour conserver son agrément de conduite.",
     "content": [
       { "type": "heading", "text": "Intervalles d’entretien constructeur MT-07" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
@@ -64,15 +64,15 @@
       ]},
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "list", "items": [
-          "Temps de chauffe moteur impératif",
-          "Graissage chaîne tous les 500 km",
-          "Vidange annuelle si moins de 10 000 km parcourus"
+          "Temps de chauffe moteur impératif avant de monter dans les tours",
+          "Graissage de la chaîne tous les 500 km ou après chaque pluie",
+          "Vidange annuelle même si le kilométrage n'est pas atteint"
       ]},
       { "type": "heading", "text": "FAQ entretien MT-07" },
-      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou tous les ans." },
-      { "type": "paragraph", "html": "<strong>Le moteur CP2 est-il fiable ?</strong><br/>Oui, c'est l'un des moteurs les plus robustes du marché." },
+      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou tous les ans au premier des deux termes échus." },
+      { "type": "paragraph", "html": "<strong>Le moteur CP2 est-il fiable ?</strong><br/>Oui, c'est l'un des moteurs les plus robustes et éprouvés du marché actuel." },
       { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Simple et robuste, la MT-07 est économique à l'usage si l'on respecte les forfaits d'entretien constructeur." },
+      { "type": "paragraph", "text": "Simple et robuste, la MT-07 est extrêmement économique à l'usage si l'on respecte les préconisations du constructeur." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   },
@@ -131,25 +131,25 @@
         ["Pneus", "8 000 à 15 000 km"],
         ["Plaquettes", "10 000 à 20 000 km"],
         ["Batterie", "4 à 6 ans"],
-        ["Cardan", "Contrôle régulier"]
+        ["Cardan", "Contrôle régulier d'étanchéité"]
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
       { "type": "list", "items": [
-          "Électronique de bord complexe",
-          "Cardan à surveiller sur fort kilométrage",
-          "Sensibilité à la qualité de la batterie"
+          "Électronique de bord complexe pouvant nécessiter des mises à jour",
+          "Cardan à surveiller sur fort kilométrage (soufflet d'étanchéité)",
+          "Sensibilité à la qualité de la batterie par temps froid"
       ]},
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "list", "items": [
-          "Respecter les mises à jour logicielles en concession",
-          "Vérifier le niveau d'huile régulièrement (Boxer)",
-          "Nettoyer le soufflet de cardan"
+          "Respecter scrupuleusement les mises à jour logicielles en concession",
+          "Vérifier le niveau d'huile régulièrement (le moteur Boxer peut consommer un peu)",
+          "Nettoyer et inspecter régulièrement le soufflet de cardan"
       ]},
       { "type": "heading", "text": "FAQ entretien R1250 GS" },
       { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou tous les ans." },
-      { "type": "paragraph", "html": "<strong>Le cardan demande-t-il beaucoup d'entretien ?</strong><br/>Non, mais un contrôle d'étanchéité est crucial." },
+      { "type": "paragraph", "html": "<strong>Le cardan demande-t-il beaucoup d'entretien ?</strong><br/>Non, c'est son avantage, mais un contrôle visuel est crucial pour éviter les infiltrations d'eau." },
       { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Une machine exceptionnelle pour les longs trajets, dont la fiabilité est prouvée mais le coût d'entretien reste premium." },
+      { "type": "paragraph", "text": "Une machine exceptionnelle dont la fiabilité est prouvée mais dont le coût d'entretien reste dans la catégorie premium." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   },
@@ -166,7 +166,7 @@
       "power": "15 ch (11 kW) à 10 000 tr/min",
       "torque": "11,6 N.m à 8 000 tr/min",
       "alimentation": "Injection électronique PGM-FI",
-      "bridage": "✔ Permis A1 / B (Formation 7h)"
+      "bridage": "✔ Permis A1 / B / A2 (Natif)"
     },
     "chassis": {
       "frame": "Treillis en acier",
@@ -211,14 +211,14 @@
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
       { "type": "list", "items": [
           "Batterie d’origine parfois faiblarde si stockage prolongé",
-          "Chaîne d'origine de qualité standard",
+          "Chaîne d'origine de qualité standard nécessitant une tension régulière",
           "Vibrations mineures à haut régime"
       ]},
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "list", "items": [
-          "Graissage chaîne après chaque trajet sous la pluie",
-          "Contrôle du niveau d'huile fréquent (petit carter)",
-          "Nettoyage des plongeurs de fourche inversée"
+          "Graissage de la chaîne après chaque trajet sous la pluie",
+          "Contrôle fréquent du niveau d'huile (petit carter moteur)",
+          "Nettoyage régulier des plongeurs de fourche inversée"
       ]},
       { "type": "heading", "text": "FAQ entretien CB125R" },
       { "type": "paragraph", "html": "<strong>La CB125R est-elle fiable ?</strong><br/>Oui, le moteur Honda 125 est parmi les plus robustes du marché." },
@@ -285,96 +285,21 @@
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
       { "type": "list", "items": [
-          "Suspensions d'origine un peu souples pour l'attaque",
-          "Régulateur de tension (sur très anciens modèles)",
-          "Peinture moteur exposée aux projections"
+          "Suspensions d'origine un peu souples pour un usage intensif",
+          "Régulateur de tension (sur les très anciens millésimes)",
+          "Peinture moteur exposée aux projections de la route"
       ]},
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "list", "items": [
-          "Surveiller le niveau d'huile (V-Twin)",
-          "Protéger le cylindre avant de la pluie (bavette optionnelle)",
-          "Respecter les préconisations de bougies"
+          "Surveiller régulièrement le niveau d'huile (moteur V-Twin)",
+          "Protéger le cylindre avant de la pluie (bavette optionnelle recommandée)",
+          "Respecter scrupuleusement les préconisations de remplacement des bougies"
       ]},
       { "type": "heading", "text": "FAQ entretien SV650" },
-      { "type": "paragraph", "html": "<strong>La SV650 est-elle fiable ?</strong><br/>C'est l'une des motos les plus fiables de l'histoire." },
-      { "type": "paragraph", "html": "<strong>Combien de kilomètres peut-elle parcourir ?</strong><br/>Beaucoup dépassent les 100 000 km." },
+      { "type": "paragraph", "html": "<strong>La SV650 est-elle fiable ?</strong><br/>C'est l'une des motos les plus fiables et éprouvées de l'histoire moderne." },
+      { "type": "paragraph", "html": "<strong>Combien de kilomètres peut-elle parcourir ?</strong><br/>Beaucoup d'exemplaires dépassent largement les 100 000 km." },
       { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Une moto attachante, robuste et facile à vivre au quotidien." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "yamaha-tracer-7",
-    "modelName": "Yamaha Tracer 7",
-    "brand": "Yamaha",
-    "year": "2021+",
-    "imageUrl": "https://images.unsplash.com/photo-1663738983692-33b5a794b96a?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Yamaha Tracer",
-    "engine": {
-      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
-      "displacement": "689 cm³",
-      "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
-      "torque": "67,0 N.m (6,8 m.kgf) à 6 500 tr/min",
-      "alimentation": "Injection électronique",
-      "bridage": "✔ Permis A2 (bridable à 35 kW)"
-    },
-    "chassis": {
-      "frame": "Cadre type Diamant",
-      "frontSuspension": "Fourche télescopique réglable",
-      "rearSuspension": "Mono-amortisseur réglable",
-      "frontBrake": "Double disque, Ø 282 mm",
-      "rearBrake": "Simple disque, Ø 245 mm",
-      "frontTire": "120/70 R 17",
-      "rearTire": "180/55 R 17"
-    },
-    "dimensions": {
-      "length": "2 140 mm",
-      "width": "840 mm",
-      "height": "1 290 mm",
-      "seatHeight": "835 mm",
-      "wheelbase": "1 460 mm",
-      "wetWeight": "197 kg",
-      "fuelCapacity": "17 L"
-    },
-    "introduction": "La Tracer 7 est la version routière de la MT-07. Son moteur CP2 est idéal pour le voyage comme pour le quotidien. Un suivi régulier garantit une sérénité totale lors de vos road trips.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Tracer 7" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange (Forfait Essentiel)"],
-          ["20 000 km", "Performance (Filtres + Bougies)"],
-          ["40 000 km", "Excellence (Réglage soupapes)"]
-      ]},
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "159 €"],
-          ["10 000 km", "239 €"],
-          ["20 000 km", "449 €"],
-          ["40 000 km", "799 €"]
-      ]},
-      { "type": "heading", "text": "Les consommables à surveiller" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "10 000 à 18 000 km"],
-        ["Kit chaîne", "20 000 à 30 000 km"],
-        ["Plaquettes", "12 000 à 25 000 km"]
-      ]},
-      { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "list", "items": [
-          "Bulle d'origine parfois bruyante",
-          "Selle ferme sur longues distances",
-          "Moteur extrêmement fiable"
-      ]},
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "list", "items": [
-          "Graisser la chaîne après chaque trajet sous la pluie",
-          "Vérifier la pression des pneus (charge/duo)",
-          "Respecter les intervalles de révision"
-      ]},
-      { "type": "heading", "text": "FAQ Tracer 7" },
-      { "type": "paragraph", "html": "<strong>Est-elle adaptée au duo ?</strong><br/>Oui, c'est l'un des meilleurs rapports poids/puissance pour voyager à deux." },
-      { "type": "paragraph", "html": "<strong>La Tracer 7 est-elle fiable ?</strong><br/>Absolument, le moteur CP2 est indestructible." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La routière polyvalente par excellence, économique et performante." },
+      { "type": "paragraph", "text": "Une moto attachante, robuste et extrêmement facile à vivre au quotidien." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   },
@@ -508,7 +433,7 @@
       ]},
       { "type": "heading", "text": "FAQ entretien Z650" },
       { "type": "paragraph", "html": "<strong>La Z650 est-elle fiable ?</strong><br/>Oui, c'est une moto très éprouvée et fiable." },
-      { "type": "paragraph", "html": "<strong>Peut-on l'utiliser en A2 ?</strong><br/>Oui, elle est bridable en 35 kW." },
+      { "type": "paragraph", "html": "<strong>Peut-on l'utiliser en A2 ?</strong><br/>Oui, elle est éligible au permis A2 avec un bridage à 35 kW." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "Un excellent choix pour débuter avec une machine nerveuse et valorisante." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
