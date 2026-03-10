@@ -44,10 +44,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "159 €"],
-          ["10 000 km", "239 €"],
-          ["20 000 km", "449 €"],
-          ["40 000 km", "799 €"]
+          ["1 000 km", "120 à 200 €"],
+          ["10 000 km", "200 à 280 €"],
+          ["20 000 km", "400 à 500 €"],
+          ["40 000 km", "750 à 850 €"]
       ]},
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -85,9 +85,9 @@
     "imageHint": "BMW GS 1250",
     "engine": {
       "bridage": "❌ Non éligible A2",
-      "type": "Bicylindre à plat (Boxer), ShiftCam",
+      "type": "Bicylindre à plat (Boxer), ShiftCam, 4 temps, refroidissement air/liquide",
       "displacement": "1 254 cm³",
-      "power": "136 ch à 7 750 tr/min",
+      "power": "100 kW (136 ch) à 7 750 tr/min",
       "torque": "143 N.m à 6 250 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -117,14 +117,15 @@
           ["10 000 km", "Vidange + contrôles"],
           ["20 000 km", "Vidange + filtres"],
           ["30 000 km", "Révision intermédiaire"],
-          ["40 000 km", "Bougies + contrôle soupapes"]
+          ["40 000 km", "Bougies + contrôle soupapes"],
+          ["50 000 km", "Révision majeure"]
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "200 à 300 €"],
-          ["10 000 km", "300 à 450 €"],
-          ["20 000 km", "400 à 600 €"],
-          ["40 000 km", "600 à 900 €"]
+          ["1 000 km", "160 à 240 €"],
+          ["10 000 km", "260 à 340 €"],
+          ["20 000 km", "360 à 440 €"],
+          ["40 000 km", "560 à 640 €"]
       ]},
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -164,7 +165,7 @@
       "bridage": "✔ Permis A1 / B / A2 (Natif)",
       "type": "Monocylindre, 4 temps, 4 soupapes",
       "displacement": "125 cm³",
-      "power": "15 ch (11 kW) à 10 000 tr/min",
+      "power": "11 kW (15 ch) à 10 000 tr/min",
       "torque": "11,6 N.m à 8 000 tr/min",
       "alimentation": "Injection électronique PGM-FI"
     },
@@ -197,9 +198,9 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "80 à 120 €"],
-          ["6 000 km", "120 à 180 €"],
-          ["12 000 km", "150 à 250 €"]
+          ["1 000 km", "60 à 140 €"],
+          ["6 000 km", "100 à 180 €"],
+          ["12 000 km", "150 à 230 €"]
       ]},
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -239,7 +240,7 @@
       "bridage": "✔ Éligible A2 (bridable à 35 kW)",
       "type": "Bicylindre en V à 90°, 4 temps, refroidissement liquide",
       "displacement": "645 cm³",
-      "power": "73 ch (54 kW) à 8 500 tr/min",
+      "power": "54 kW (73 ch) à 8 500 tr/min",
       "torque": "64 N.m à 8 100 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -272,9 +273,9 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "table", "headers": ["Révision", "Prix"], "rows": [
-          ["1 000 km", "120 à 180 €"],
-          ["12 000 km", "200 à 350 €"],
-          ["24 000 km", "400 à 600 €"]
+          ["1 000 km", "100 à 180 €"],
+          ["12 000 km", "200 à 280 €"],
+          ["24 000 km", "400 à 480 €"]
       ]},
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -314,7 +315,7 @@
       "bridage": "✔ Permis A2 (Natif)",
       "type": "Bicylindre en ligne, 4 temps, refroidissement liquide",
       "displacement": "471 cm³",
-      "power": "47,5 ch (35 kW) à 8 600 tr/min",
+      "power": "35 kW (47,5 ch) à 8 600 tr/min",
       "torque": "43 N.m à 6 500 tr/min",
       "alimentation": "Injection électronique PGM-FI"
     },
@@ -347,9 +348,9 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "120 à 180 €"],
-          ["12 000 km", "200 à 320 €"],
-          ["24 000 km", "350 à 500 €"]
+          ["1 000 km", "100 à 180 €"],
+          ["12 000 km", "180 à 260 €"],
+          ["24 000 km", "320 à 400 €"]
       ]},
       { "type": "heading", "text": "Consommables à surveiller" },
       { "type": "list", "items": [
@@ -382,7 +383,7 @@
       "bridage": "✔ Éligible A2 (bridable à 35 kW)",
       "type": "Bicylindre en parallèle, 4 temps, refroidissement liquide",
       "displacement": "649 cm³",
-      "power": "68 ch (50,2 kW) à 8 000 tr/min",
+      "power": "50,2 kW (68 ch) à 8 000 tr/min",
       "torque": "64 N.m à 6 700 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -415,10 +416,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Kawasaki)" },
       { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "159 €"],
-          ["12 000 km", "259 €"],
-          ["24 000 km", "449 €"],
-          ["42 000 km", "799 €"]
+          ["1 000 km", "120 à 200 €"],
+          ["12 000 km", "220 à 300 €"],
+          ["24 000 km", "410 à 490 €"],
+          ["42 000 km", "750 à 830 €"]
       ]},
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -433,6 +434,12 @@
           "Selle d'origine un peu dure sur longs trajets",
           "Sensibilité du capteur ABS à l'humidité"
       ]},
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "list", "items": [
+          "Respecter scrupuleusement le temps de chauffe du moteur avant de monter dans les tours",
+          "Lubrifier régulièrement le câble d'embrayage pour garantir sa souplesse et sa longévité."
+      ]},
+      { "type": "paragraph", "html": "Pour avoir une idée complète du budget, consultez notre <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">guide sur le coût réel d’une moto par mois</a>." },
       { "type": "heading", "text": "FAQ entretien Z650" },
       { "type": "paragraph", "html": "<strong>La Z650 est-elle fiable ?</strong><br/>Oui, c'est l'un des moteurs les plus éprouvés du marché." },
       { "type": "paragraph", "html": "<strong>Peut-on l'utiliser en A2 ?</strong><br/>Oui, elle est éligible au permis A2 avec un bridage à 35 kW." },
@@ -485,10 +492,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "159 €"],
-          ["10 000 km", "239 €"],
-          ["20 000 km", "449 €"],
-          ["40 000 km", "799 €"]
+          ["1 000 km", "120 à 200 €"],
+          ["10 000 km", "200 à 280 €"],
+          ["20 000 km", "400 à 480 €"],
+          ["40 000 km", "750 à 830 €"]
       ]},
       { "type": "heading", "text": "Fiabilité" },
       { "type": "list", "items": ["Moteur CP2 indestructible", "Bulle d'origine parfois jugée bruyante", "Sensibilité à la corrosion des vis si usage hivernal"] },
@@ -511,7 +518,7 @@
       "bridage": "✔ Éligible A2 (bridable à 35 kW)",
       "type": "4 cylindres en ligne, 4 temps, 16 soupapes",
       "displacement": "649 cm³",
-      "power": "95 ch (70 kW) à 12 000 tr/min",
+      "power": "70 kW (95 ch) à 12 000 tr/min",
       "torque": "63 N.m à 9 500 tr/min",
       "alimentation": "Injection électronique PGM-FI"
     },
@@ -544,10 +551,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "150 à 200 €"],
-          ["12 000 km", "250 à 350 €"],
-          ["24 000 km", "450 à 600 €"],
-          ["48 000 km", "700 à 900 €"]
+          ["1 000 km", "130 à 210 €"],
+          ["12 000 km", "230 à 310 €"],
+          ["24 000 km", "430 à 510 €"],
+          ["48 000 km", "680 à 760 €"]
       ]},
       { "type": "heading", "text": "Consommables" },
       { "type": "list", "items": ["Pneus : 6 000 à 12 000 km (selon conduite)", "Kit chaîne : 20 000 à 30 000 km", "Plaquettes : 10 000 à 18 000 km"] },
@@ -572,7 +579,7 @@
       "bridage": "✔ Permis A2 (Natif - Sans bridage)",
       "type": "Bicylindre en ligne, 4 temps, refroidissement liquide",
       "displacement": "321 cm³",
-      "power": "42 ch (30,9 kW) à 10 750 tr/min",
+      "power": "30,9 kW (42 ch) à 10 750 tr/min",
       "torque": "29,6 N.m à 9 000 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -605,10 +612,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "129 €"],
-          ["10 000 km", "199 €"],
-          ["20 000 km", "349 €"],
-          ["40 000 km", "649 €"]
+          ["1 000 km", "90 à 170 €"],
+          ["10 000 km", "160 à 240 €"],
+          ["20 000 km", "310 à 390 €"],
+          ["40 000 km", "610 à 690 €"]
       ]},
       { "type": "heading", "text": "Consommables" },
       { "type": "list", "items": ["Pneus : 10 000 à 15 000 km", "Kit chaîne : 20 000 à 30 000 km", "Plaquettes : 10 000 à 20 000 km"] },
@@ -632,7 +639,7 @@
       "bridage": "✔ Permis A2 (bridable à 35 kW)",
       "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
       "displacement": "689 cm³",
-      "power": "73,4 ch (54 kW) à 8 750 tr/min",
+      "power": "54 kW (73,4 ch) à 8 750 tr/min",
       "torque": "67 N.m à 6 500 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -665,10 +672,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "159 €"],
-          ["10 000 km", "239 €"],
-          ["20 000 km", "449 €"],
-          ["40 000 km", "799 €"]
+          ["1 000 km", "120 à 200 €"],
+          ["10 000 km", "200 à 280 €"],
+          ["20 000 km", "400 à 480 €"],
+          ["40 000 km", "750 à 830 €"]
       ]},
       { "type": "heading", "text": "Fiabilité et points à surveiller" },
       { "type": "list", "items": ["Moteur CP2 réputé increvable", "Finition de certaines pièces métalliques exposées", "Suspensions d'origine un peu souples en conduite dynamique"] },
@@ -690,7 +697,7 @@
       "bridage": "✔ Permis A2 (Natif - Sans bridage)",
       "type": "Bicylindre en ligne, 4 temps, 8 soupapes",
       "displacement": "471 cm³",
-      "power": "47,5 ch (35 kW) à 8 600 tr/min",
+      "power": "35 kW (47,5 ch) à 8 600 tr/min",
       "torque": "43 N.m à 6 500 tr/min",
       "alimentation": "Injection électronique PGM-FI"
     },
@@ -723,9 +730,9 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "120 à 180 €"],
-          ["12 000 km", "200 à 320 €"],
-          ["24 000 km", "350 à 500 €"]
+          ["1 000 km", "100 à 180 €"],
+          ["12 000 km", "180 à 260 €"],
+          ["24 000 km", "320 à 400 €"]
       ]},
       { "type": "heading", "text": "Fiabilité" },
       { "type": "list", "items": ["Moteur increvable", "Excellente qualité de finition", "Consommation très basse (3,5 L/100 km)"] },
@@ -747,7 +754,7 @@
       "bridage": "✔ Éligible A2 (bridable à 35 kW)",
       "type": "Bicylindre en parallèle, 4 temps, refroidissement liquide",
       "displacement": "649 cm³",
-      "power": "68 ch (50,2 kW) à 8 000 tr/min",
+      "power": "50,2 kW (68 ch) à 8 000 tr/min",
       "torque": "64 N.m à 6 700 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -780,10 +787,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Kawasaki)" },
       { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "159 €"],
-          ["12 000 km", "259 €"],
-          ["24 000 km", "449 €"],
-          ["42 000 km", "799 €"]
+          ["1 000 km", "120 à 200 €"],
+          ["12 000 km", "220 à 300 €"],
+          ["24 000 km", "410 à 490 €"],
+          ["42 000 km", "750 à 830 €"]
       ]},
       { "type": "heading", "text": "Consommables" },
       { "type": "list", "items": ["Kit chaîne : 20 000 à 25 000 km", "Pneus : 8 000 à 12 000 km", "Plaquettes : 10 000 à 18 000 km"] },
@@ -805,7 +812,7 @@
       "bridage": "✔ Éligible A2 (bridable à 35 kW)",
       "type": "Bicylindre en V à 90°, 4 temps, refroidissement liquide",
       "displacement": "645 cm³",
-      "power": "71 ch (52 kW) à 8 800 tr/min",
+      "power": "52 kW (71 ch) à 8 800 tr/min",
       "torque": "62 N.m à 6 500 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -838,9 +845,9 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions" },
       { "type": "table", "headers": ["Révision", "Prix"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["12 000 km", "250 à 350 €"],
-          ["24 000 km", "400 à 600 €"]
+          ["1 000 km", "100 à 180 €"],
+          ["12 000 km", "210 à 290 €"],
+          ["24 000 km", "360 à 440 €"]
       ]},
       { "type": "heading", "text": "Fiabilité" },
       { "type": "list", "items": ["Moteur V-Twin réputé indestructible", "Amortisseur arrière fatigué avec le temps", "Bulle d'origine parfois jugée peu protectrice"] },
@@ -860,7 +867,7 @@
       "bridage": "✔ Permis A2 (bridable à 35 kW)",
       "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
       "displacement": "689 cm³",
-      "power": "73,4 ch (54 kW) à 8 750 tr/min",
+      "power": "54 kW (73,4 ch) à 8 750 tr/min",
       "torque": "67 N.m à 6 500 tr/min",
       "alimentation": "Injection électronique"
     },
@@ -893,10 +900,10 @@
       ]},
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen"], "rows": [
-          ["1 000 km", "159 €"],
-          ["10 000 km", "239 €"],
-          ["20 000 km", "449 €"],
-          ["40 000 km", "799 €"]
+          ["1 000 km", "120 à 200 €"],
+          ["10 000 km", "200 à 280 €"],
+          ["20 000 km", "400 à 480 €"],
+          ["40 000 km", "750 à 830 €"]
       ]},
       { "type": "heading", "text": "Fiabilité" },
       { "type": "list", "items": ["Moteur CP2 extrêmement fiable", "Position de conduite exigeante", "Capacité de réservoir limitée pour les longs trajets"] },

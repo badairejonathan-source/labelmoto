@@ -225,7 +225,7 @@
         },
         {
             "type": "paragraph",
-            "html": "Dans la majorité des cas, un budget réaliste pour débuter tourne autour de <strong>200 à 300 € par mois</strong>."
+            "html": "Dans la majority des cas, un budget réaliste pour débuter tourne autour de <strong>200 à 300 € par mois</strong>."
         },
         {
             "type": "heading",
@@ -529,6 +529,34 @@
       {
         "type": "heading",
         "text": "Comment choisir sa moto A2 ?"
+      },
+      {
+        "type": "heading",
+        "text": "Moto permis A2 : comment vérifier si une moto est compatible ?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Pour être compatible permis A2, une moto doit respecter trois règles :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "<strong>Puissance maximale</strong> : 35 kW (47,5 ch) après bridage – indiquée en P.2 sur la carte grise",
+          "<strong>Puissance d’origine</strong> limitée à 70 kW (95 ch) maximum",
+          "<strong>Rapport puissance/poids</strong> ≤ 0,2 kW/kg"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Ces informations se vérifient directement sur la carte grise (P.2 et Q) ou auprès d’un concessionnaire moto."
+      },
+      {
+        "type": "paragraph",
+        "html": "⚠️ Un bridage doit toujours être homologué et accompagné d’un certificat officiel."
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 Les motos peuvent être A2 natives (ex : KTM 390 Duke) ou bridables (ex : Yamaha MT-07, Kawasaki Z650, Suzuki SV650)."
       },
       {
         "type": "paragraph",
@@ -883,11 +911,3 @@
     ]
   }
 ]
-    
-  
-
-    
-
-    
-
-    
