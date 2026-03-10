@@ -50,6 +50,16 @@ const article = {
       },
       {
         "type": "paragraph",
+        "html": "<strong>BMW</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "<a href=\"/fiches/bmw-r1250-gs\" class=\"text-brand underline hover:text-brand/80\">R1250 GS</a>"
+        ]
+      },
+      {
+        "type": "paragraph",
         "html": "<strong>Yamaha</strong>"
       },
       {
@@ -58,7 +68,8 @@ const article = {
           "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07</a>",
           "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7</a>",
           "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7</a>",
-          "XSR700"
+          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700</a>",
+          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03</a>"
         ]
       },
       {
@@ -67,7 +78,13 @@ const article = {
       },
       {
         "type": "list",
-        "items": ["<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet / CB500F</a>", "CBR500R", "NX500"]
+        "items": [
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet / CB500F</a>", 
+          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R</a>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500</a>",
+          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R</a>",
+          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a>"
+        ]
       },
       {
         "type": "paragraph",
@@ -75,7 +92,21 @@ const article = {
       },
       {
         "type": "list",
-        "items": ["<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650</a>", "Ninja 650"]
+        "items": [
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650</a>",
+          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650</a>"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Suzuki</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650</a>",
+          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650</a>"
+        ]
       },
       {
         "type": "paragraph",
