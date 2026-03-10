@@ -146,7 +146,7 @@
       { "type": "list", "items": ["les intervalles d’entretien constructeur", "le prix moyen des révisions", "les pièces d’usure à surveiller", "les faiblesses connues", "les conseils pour garder ta R7 longtemps"] },
       
       { "type": "heading", "text": "Intervalles d’entretien constructeur R7" },
-      { "type": "paragraph", "text": "Yamaha prévoit un entretien régulier basé on le kilométrage, similaire à la MT-07 mais adapté à une utilisation plus sportive." },
+      { "type": "paragraph", "text": "Yamaha prévoit un entretien régulier basé on le kilométrage, similaire à la MT-07 mais adapté à un usage plus sportif." },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
           ["1 000 km", "Révision de rodage (vidange + contrôles)"],
           ["10 000 km", "Vidange + filtres + contrôles"],

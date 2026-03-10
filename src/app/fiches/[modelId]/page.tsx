@@ -412,7 +412,8 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                         <CardDescription>{f.engine.displacement}</CardDescription>
                       </CardHeader>
                     </Card>
-                  ))}
+                  </Link>
+                ))}
               </div>
             </div>
           )}
