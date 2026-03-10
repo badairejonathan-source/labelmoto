@@ -80,11 +80,10 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet / CB500F</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>", 
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>", 
           "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
           "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R</a> <span class='text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold ml-1'>Éligible A2</span>",
-          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a> <span class='text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold ml-1'>A1/A2</span>"
+          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a> <span class='text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold ml-1'>A1 / B / A2</span>"
         ]
       },
       {
@@ -94,7 +93,7 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
           "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
         ]
       },
