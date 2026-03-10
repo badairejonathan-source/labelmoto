@@ -5,7 +5,7 @@ import React, { useState, use } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, ShieldCheck, Settings2 } from 'lucide-react';
+import { ArrowLeft, Gauge, Droplets, Wrench, ShieldCheck, Settings2, ChevronDown } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import fichesData from '@/app/data/fiches-techniques.json';
@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
 
 type FicheContent = {
   type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
@@ -51,6 +53,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const { modelId } = use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isPartieCycleOpen, setIsPartieCycleOpen] = useState(false);
 
   const fiche = fichesData.find((f) => f.modelId === modelId) as FicheTechnique | undefined;
 
@@ -220,6 +223,9 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm">
+                    {fiche.engine.bridage && (
+                      <li><strong>Permis / Bridage:</strong> <span className="text-brand font-bold">{fiche.engine.bridage}</span></li>
+                    )}
                     <li><strong>Type:</strong> {fiche.engine.type}</li>
                     <li><strong>Cylindrée:</strong> {fiche.engine.displacement}</li>
                     <li><strong>Puissance:</strong> {fiche.engine.power}</li>
@@ -244,32 +250,51 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </Card>
             </div>
             
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3"><Droplets className="h-6 w-6 text-brand" /> Partie Cycle</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Élément</TableHead>
-                        <TableHead>Spécification</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow><TableCell>Cadre</TableCell><TableCell>{fiche.chassis.frame}</TableCell></TableRow>
-                      <TableRow><TableCell>Suspension AV</TableCell><TableCell>{fiche.chassis.frontSuspension}</TableCell></TableRow>
-                       <TableRow><TableCell>Suspension AR</TableCell><TableCell>{fiche.chassis.rearSuspension}</TableCell></TableRow>
-                      <TableRow><TableCell>Frein AV</TableCell><TableCell>{fiche.chassis.frontBrake}</TableCell></TableRow>
-                      <TableRow><TableCell>Frein AR</TableCell><TableCell>{fiche.chassis.rearBrake}</TableCell></TableRow>
-                      <TableRow><TableCell>Pneu AV</TableCell><TableCell>{fiche.chassis.frontTire}</TableCell></TableRow>
-                      <TableRow><TableCell>Pneu AR</TableCell><TableCell>{fiche.chassis.rearTire}</TableCell></TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
+            <Collapsible 
+              open={isPartieCycleOpen} 
+              onOpenChange={setIsPartieCycleOpen}
+              className="w-full"
+            >
+              <Card className="overflow-hidden transition-all duration-300">
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-4">
+                    <CardTitle className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-3">
+                        <Droplets className="h-6 w-6 text-brand" /> 
+                        <span>Partie Cycle</span>
+                      </div>
+                      <ChevronDown className={cn(
+                        "h-5 w-5 text-muted-foreground transition-transform duration-300",
+                        isPartieCycleOpen && "rotate-180"
+                      )} />
+                    </CardTitle>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Élément</TableHead>
+                            <TableHead>Spécification</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow><TableCell>Cadre</TableCell><TableCell>{fiche.chassis.frame}</TableCell></TableRow>
+                          <TableRow><TableCell>Suspension AV</TableCell><TableCell>{fiche.chassis.frontSuspension}</TableCell></TableRow>
+                           <TableRow><TableCell>Suspension AR</TableCell><TableCell>{fiche.chassis.rearSuspension}</TableCell></TableRow>
+                          <TableRow><TableCell>Frein AV</TableCell><TableCell>{fiche.chassis.frontBrake}</TableCell></TableRow>
+                          <TableRow><TableCell>Frein AR</TableCell><TableCell>{fiche.chassis.rearBrake}</TableCell></TableRow>
+                          <TableRow><TableCell>Pneu AV</TableCell><TableCell>{fiche.chassis.frontTire}</TableCell></TableRow>
+                          <TableRow><TableCell>Pneu AR</TableCell><TableCell>{fiche.chassis.rearTire}</TableCell></TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
 
             {fiche.content ? (
               <div className="pt-8">
@@ -387,8 +412,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                         <CardDescription>{f.engine.displacement}</CardDescription>
                       </CardHeader>
                     </Card>
-                  </Link>
-                ))}
+                  ))}
               </div>
             </div>
           )}
