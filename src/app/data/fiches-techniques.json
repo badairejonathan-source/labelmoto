@@ -907,6 +907,8 @@
       ]},
       { "type": "heading", "text": "Fiabilité" },
       { "type": "list", "items": ["Moteur CP2 extrêmement fiable", "Position de conduite exigeante", "Capacité de réservoir limitée pour les longs trajets"] },
+      { "type": "heading", "text": "FAQ entretien R7" },
+      { "type": "paragraph", "html": "<strong>Est-ce une vraie sportive ?</strong><br/>Oui, avec sa position basculée vers l'avant et ses suspensions réglables, elle offre un vrai pilotage sportif." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "Une machine radicale et fiable, idéale pour apprendre le pilotage sportif en permis A2." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }

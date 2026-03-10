@@ -536,7 +536,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Pour être compatible permis A2, une moto doit respecter trois règles :"
+        "html": "Pour être compatible permis A2, une moto doit respecter trois règles :"
       },
       {
         "type": "list",

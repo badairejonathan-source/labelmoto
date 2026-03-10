@@ -178,9 +178,17 @@ function MapPageComponent() {
             } as Dealership;
         });
 
-        // Suppression des doublons basés sur le nom et l'adresse (nettoyage strict)
+        // Suppression des doublons : on favorise les fiches avec photo
+        const sortedForDeduplication = [...results].sort((a, b) => {
+            const aHasPhoto = !!a.imgUrl && a.imgUrl.trim() !== '';
+            const bHasPhoto = !!b.imgUrl && b.imgUrl.trim() !== '';
+            if (aHasPhoto && !bHasPhoto) return -1;
+            if (!aHasPhoto && bHasPhoto) return 1;
+            return 0;
+        });
+
         const seen = new Set();
-        const uniqueResults = results.filter(item => {
+        const uniqueResults = sortedForDeduplication.filter(item => {
             const cleanTitle = item.title?.toLowerCase().trim() || '';
             const cleanAddress = item.address?.toLowerCase().trim().replace(/\s\s+/g, ' ') || '';
             const identifier = `${cleanTitle}|${cleanAddress}`;
