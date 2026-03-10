@@ -75,7 +75,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
     return article.content.map((block, index) => {
       if (block.type === 'heading') {
-        return <h2 key={index} className="text-3xl font-bold font-serif mt-12 mb-6 text-foreground text-center border-y border-foreground/20 py-2">{block.text}</h2>;
+        return <h2 key={index} className="text-3xl font-bold mt-12 mb-6 text-foreground text-center border-y border-foreground/20 py-2">{block.text}</h2>;
       }
       if (block.type === 'list' && block.items) {
         return (
@@ -171,7 +171,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 priority
               />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold font-serif text-foreground leading-tight tracking-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-4">
               {article.title}
             </h1>
             <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium mb-8 border-b pb-4">

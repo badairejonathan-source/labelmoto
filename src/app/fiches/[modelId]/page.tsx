@@ -23,7 +23,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 
 type FicheContent = {
-  type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
+  type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature' | 'cta-compare' | 'cta-concession';
   text?: string;
   html?: string;
   items?: string[];
@@ -81,7 +81,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     return content.map((block, index) => {
       switch (block.type) {
         case 'heading':
-          return <h3 key={index} className="text-2xl font-bold font-serif mt-12 mb-6 text-foreground border-b pb-2">{block.text}</h3>;
+          return <h3 key={index} className="text-2xl font-bold mt-12 mb-6 text-foreground border-b pb-2">{block.text}</h3>;
         
         case 'list':
           return (
@@ -97,10 +97,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           return <p key={index} className="text-base text-foreground/90 leading-relaxed my-6">{block.text}</p>;
           
         case 'table':
-          const isPricingTable = block.headers?.includes('Prix moyen constaté');
-          const isIntervalTable = block.headers?.includes('Entretien à effectuer');
-          const isConsumableTable = block.headers?.includes('Durée moyenne');
-
           return (
             <div key={index} className="my-8">
               <div className="overflow-x-auto rounded-lg border shadow-sm">
@@ -123,19 +119,35 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                   </TableBody>
                 </Table>
               </div>
-              
-              {isPricingTable && (
-                <div className="mt-6 text-center space-y-4">
-                  <p className="text-sm text-muted-foreground max-w-2xl mx-auto italic">
-                    Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.
-                  </p>
-                  <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105">
-                    <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
-                      🔘 Comparer les ateliers près de moi
+            </div>
+          );
+
+        case 'cta-compare':
+          return (
+            <div key={index} className="mt-6 text-center space-y-4">
+              <p className="text-sm text-muted-foreground max-w-2xl mx-auto italic">
+                Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.
+              </p>
+              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105">
+                <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
+                  {block.text || "🔘 Comparer les ateliers près de moi"}
+                </Link>
+              </Button>
+            </div>
+          );
+
+        case 'cta-concession':
+          return (
+            <div key={index} className="my-16 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500/20 rounded-3xl p-8 text-center shadow-xl">
+                <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">🏍️ La {fiche.modelName} vous correspond ?</h3>
+                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg font-medium">
+                    Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
+                </p>
+                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                    <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
+                        {block.text || "🔘 Voir en concession"}
                     </Link>
-                  </Button>
-                </div>
-              )}
+                </Button>
             </div>
           );
         
@@ -201,7 +213,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 p-8 text-white">
-                <h1 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tighter leading-none mb-2">
+                <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-2">
                     {fiche.modelName}
                 </h1>
                 <p className="text-xl md:text-2xl font-bold text-brand">{fiche.year}</p>
@@ -317,7 +329,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
             </Collapsible>
 
             <div className="pt-12">
-              <h2 className="text-4xl md:text-5xl font-black font-serif text-center mb-4 uppercase tracking-tighter">
+              <h2 className="text-4xl md:text-5xl font-black text-center mb-4 uppercase tracking-tighter">
                 Guide d'entretien
               </h2>
               <div className="w-24 h-1.5 bg-brand mx-auto mb-8 rounded-full" />
@@ -327,7 +339,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               )}
 
               <div className="bg-brand/5 border-2 border-brand/20 rounded-3xl p-8 text-center mb-12 shadow-inner">
-                <h4 className="text-2xl font-bold font-serif mb-4">Préparez votre prochaine révision sans surprise.</h4>
+                <h4 className="text-2xl font-bold mb-4">Préparez votre prochaine révision sans surprise.</h4>
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto font-medium">
                     Comparez les garages proches de chez vous pour votre {fiche.modelName} et obtenez le meilleur service au prix juste.
                 </p>
@@ -341,24 +353,12 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               <div className="prose prose-brand max-w-none">
                   {renderContent(fiche.content || [])}
               </div>
-
-              <div className="my-16 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500/20 rounded-3xl p-8 text-center shadow-xl">
-                  <h3 className="text-3xl font-black font-serif mb-4 uppercase tracking-tight">🏍️ La {fiche.modelName} vous correspond ?</h3>
-                  <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg font-medium">
-                      Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
-                  </p>
-                  <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
-                      <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
-                          🔘 Voir les {fiche.modelName} en concession
-                      </Link>
-                  </Button>
-              </div>
             </div>
           </div>
           
           {similarFiches.length > 0 && (
             <div className="pt-24 border-t border-border/50">
-              <h2 className="text-4xl font-black font-serif text-center mb-12 uppercase tracking-tighter">
+              <h2 className="text-4xl font-black text-center mb-12 uppercase tracking-tighter">
                 Découvrez d'autres modèles
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

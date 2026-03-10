@@ -39,14 +39,16 @@
           ["20 000 km", "Bougies + Filtre air (Forfait Performance)"],
           ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
       ]},
-      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint. Pour estimer votre budget, consultez notre <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">guide sur le coût réel d’une moto par mois</a>." },
+      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
           ["1 000 km", "120 à 200 €"],
           ["10 000 km", "200 à 280 €"],
-          ["20 000 km", "410 à 490 €"],
-          ["40 000 km", "760 à 840 €"]
+          ["20 000 km", "400 à 500 €"],
+          ["40 000 km", "750 à 850 €"]
       ]},
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
         ["Pneus", "8 000 à 15 000 km"],
@@ -60,6 +62,7 @@
           "Batterie d’origine parfois juste par grand froid",
           "Tension de chaîne à surveiller régulièrement"
       ]},
+      { "type": "cta-concession", "text": "🔘 Voir les Yamaha MT-07 en concession" },
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "list", "items": [
           "Temps de chauffe moteur impératif avant de monter dans les tours",
@@ -75,445 +78,80 @@
     ]
   },
   {
-    "modelId": "yamaha-r7",
-    "modelName": "Yamaha R7",
+    "modelId": "yamaha-mt-03",
+    "modelName": "Yamaha MT-03",
     "brand": "Yamaha",
-    "year": "2022+",
-    "imageUrl": "https://images.unsplash.com/photo-1623547639149-930472f883b2?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Yamaha R7 Blue",
-    "engine": {
-      "bridage": "✔ Permis A2 (bridable à 35 kW)",
-      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide, DOHC",
-      "displacement": "689 cm³",
-      "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
-      "torque": "67 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "dimensions": {
-      "seatHeight": "835 mm",
-      "wetWeight": "188 kg",
-      "fuelCapacity": "13 L",
-      "wheelbase": "1 395 mm"
-    },
-    "chassis": {
-      "frame": "Cadre acier type diamant",
-      "frontSuspension": "Fourche inversée KYB Ø41 mm, réglable",
-      "rearSuspension": "Bras oscillant avec mono-amortisseur KYB",
-      "frontBrake": "Double disque Ø298 mm, étriers radiaux",
-      "rearBrake": "Disque Ø245 mm",
-      "frontTire": "120/70 ZR17",
-      "rearTire": "180/55 ZR17"
-    },
-    "introduction": "La Yamaha R7 est une sportive accessible basée sur la plateforme MT-07. Elle utilise le moteur CP2 réputé pour son couple et sa fiabilité. Même si elle est conçue pour une utilisation sportive, un entretien régulier permet de conserver ses performances.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur R7" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
-      ]},
-      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée. Pour gérer votre budget sport, consultez notre <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">guide sur le coût réel d’une moto par mois</a>." },
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "150 à 230 €"],
-          ["10 000 km", "190 à 270 €"],
-          ["20 000 km", "350 à 430 €"],
-          ["40 000 km", "610 à 690 €"]
-      ]},
-      { "type": "heading", "text": "Les consommables à surveiller" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "6 000 à 10 000 km"],
-        ["Kit chaîne", "20 000 à 30 000 km"],
-        ["Plaquettes", "8 000 à 15 000 km"],
-        ["Batterie", "3 à 5 ans"]
-      ]},
-      { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "list", "items": [
-          "Suspensions fermes pour usage routier quotidien",
-          "Position de conduite fatigante sur longs trajets",
-          "Chaîne d’origine à surveiller et graisser régulièrement"
-      ]},
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "list", "items": [
-          "Temps de chauffe moteur impératif avant conduite sportive",
-          "Graissage chaîne tous les 500 km",
-          "Contrôle fréquent de la pression des pneus",
-          "Nettoyage régulier après sorties sous la pluie"
-      ]},
-      { "type": "heading", "text": "FAQ entretien R7" },
-      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou une fois par an." },
-      { "type": "paragraph", "html": "<strong>La Yamaha R7 est-elle compatible A2 ?</strong><br/>Oui, elle peut être bridée à 35 kW pour le permis A2." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Sportive et accessible, la Yamaha R7 combine performances et fiabilité grâce à son moteur CP2. Bien entretenue, elle reste relativement économique à l’usage." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "yamaha-xsr700",
-    "modelName": "Yamaha XSR700",
-    "brand": "Yamaha",
-    "year": "2021+",
-    "imageUrl": "https://images.unsplash.com/photo-1716651333478-3b04f6dc0b18?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Yamaha XSR700 Custom",
-    "engine": {
-      "bridage": "✔ Permis A2 (bridable à 35 kW)",
-      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide, DOHC",
-      "displacement": "689 cm³",
-      "power": "54 kW (73,4 ch) à 8 750 tr/min",
-      "torque": "67 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "dimensions": {
-      "seatHeight": "835 mm",
-      "wetWeight": "188 kg",
-      "fuelCapacity": "14 L",
-      "wheelbase": "1 405 mm"
-    },
-    "chassis": {
-      "frame": "Cadre acier type diamant",
-      "frontSuspension": "Fourche télescopique Ø41 mm",
-      "rearSuspension": "Bras oscillant avec mono-amortisseur",
-      "frontBrake": "Double disque Ø282 mm",
-      "rearBrake": "Disque Ø245 mm",
-      "frontTire": "120/70 ZR17",
-      "rearTire": "180/55 ZR17"
-    },
-    "introduction": "La Yamaha XSR700 est un roadster néo-rétro basé sur la plateforme MT-07. Son moteur CP2 combine couple, fiabilité et simplicité mécanique. Un entretien régulier permet de préserver son caractère.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur XSR700" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
-      ]},
-      { "type": "paragraph", "html": "👉 Une vidange annuelle est recommandée. Pour votre budget rétro, voyez notre <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">guide sur le coût réel d’une moto par mois</a>." },
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "150 à 230 €"],
-          ["10 000 km", "190 à 270 €"],
-          ["20 000 km", "350 à 430 €"],
-          ["40 000 km", "610 à 690 €"]
-      ]},
-      { "type": "heading", "text": "Les consommables à surveiller" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "8 000 à 15 000 km"],
-        ["Kit chaîne", "20 000 à 30 000 km"],
-        ["Plaquettes", "10 000 à 20 000 km"],
-        ["Batterie", "3 à 5 ans"]
-      ]},
-      { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "list", "items": [
-          "Suspensions d’origine jugées souples par certains motards",
-          "Affichage compteur parfois difficilement lisible au soleil",
-          "Oxydation de certaines pièces si la moto dort dehors"
-      ]},
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "list", "items": [
-          "Respecter le temps de chauffe du CP2",
-          "Graisser régulièrement la chaîne",
-          "Vérifier la pression des pneus une fois par mois",
-          "Protéger les parties chromées et métalliques"
-      ]},
-      { "type": "heading", "text": "FAQ entretien XSR700" },
-      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou tous les ans au premier terme échu." },
-      { "type": "paragraph", "html": "<strong>Le moteur CP2 est-il fiable ?</strong><br/>Oui, c’est l'un des moteurs les plus robustes de la production actuelle." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La Yamaha XSR700 combine style rétro, moteur coupleux et entretien raisonnable. Elle reste l’une des motos les plus économiques de sa catégorie." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "yamaha-tracer-7",
-    "modelName": "Yamaha Tracer 7",
-    "brand": "Yamaha",
-    "year": "2021+",
-    "imageUrl": "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Yamaha Tracer 7 Blue",
-    "engine": {
-      "bridage": "✔ Permis A2 (bridable à 35 kW)",
-      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
-      "displacement": "689 cm³",
-      "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
-      "torque": "67,0 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "dimensions": {
-      "seatHeight": "835 mm",
-      "wetWeight": "196 kg",
-      "fuelCapacity": "17 L",
-      "wheelbase": "1 460 mm"
-    },
-    "chassis": {
-      "frame": "Cadre acier type diamant",
-      "frontSuspension": "Fourche télescopique Ø41 mm",
-      "rearSuspension": "Bras oscillant, mono-amortisseur",
-      "frontBrake": "Double disque Ø282 mm",
-      "rearBrake": "Disque Ø245 mm",
-      "frontTire": "120/70 ZR17",
-      "rearTire": "180/55 ZR17"
-    },
-    "introduction": "Le trail routier de référence en A2. Polyvalent et agile, il permet de voyager sereinement grâce à son moteur CP2 infatigable.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Tracer 7" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Rodage (Eco)"],
-          ["10 000 km", "Standard (Essentiel)"],
-          ["20 000 km", "Gros entretien (Performance)"],
-          ["40 000 km", "Excellence (Soupapes)"]
-      ]},
-      { "type": "paragraph", "html": "👉 Pour vos road-trips, prévoyez votre budget avec notre <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">guide budgétaire</a>." },
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["10 000 km", "200 à 280 €"],
-          ["20 000 km", "410 à 490 €"],
-          ["40 000 km", "760 à 840 €"]
-      ]},
-      { "type": "heading", "text": "Les consommables à surveiller" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "8 000 à 15 000 km"],
-        ["Kit chaîne", "20 000 à 30 000 km"],
-        ["Plaquettes", "10 000 à 20 000 km"],
-        ["Batterie", "3 à 5 ans"]
-      ]},
-      { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "list", "items": [
-          "Bulle d'origine parfois bruyante à haute vitesse",
-          "Selle ferme pour les très longs trajets",
-          "Vibrations mineures dans les repose-pieds"
-      ]},
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "list", "items": [
-          "Vérifier la tension de chaîne avant chaque voyage",
-          "Maintenir la batterie en charge l'hiver",
-          "Respecter les temps de chauffe"
-      ]},
-      { "type": "heading", "text": "FAQ entretien Tracer 7" },
-      { "type": "paragraph", "html": "<strong>Est-elle fiable ?</strong><br/>Extrêmement fiable, le bloc CP2 a fait ses preuves." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La routière idéale pour débuter le voyage à moto sans se ruiner en entretien." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "bmw-r1250-gs",
-    "modelName": "BMW R1250 GS",
-    "brand": "BMW",
-    "year": "2019+",
-    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "BMW GS 1250",
-    "engine": {
-      "bridage": "❌ Non éligible A2",
-      "type": "Bicylindre à plat (Boxer), 4 temps, refroidissement air/liquide, technologie ShiftCam",
-      "displacement": "1 254 cm³",
-      "power": "100 kW (136 ch) à 7 750 tr/min",
-      "torque": "143 N.m à 6 250 tr/min",
-      "alimentation": "Injection électronique"
-    },
-    "dimensions": {
-      "seatHeight": "850 / 870 mm",
-      "wetWeight": "249 kg",
-      "fuelCapacity": "20 L",
-      "wheelbase": "1 525 mm"
-    },
-    "chassis": {
-      "frame": "Cadre tubulaire acier",
-      "frontSuspension": "BMW Telelever",
-      "rearSuspension": "BMW Paralever",
-      "frontBrake": "Double disque Ø 305 mm",
-      "rearBrake": "Simple disque Ø 276 mm",
-      "frontTire": "120/70 R19",
-      "rearTire": "170/60 R17"
-    },
-    "introduction": "La BMW R1250 GS est la référence des trails de voyage. Son moteur boxer est robuste mais l’entretien reste plus coûteux que la moyenne.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur R1250 GS" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["10 000 km", "Vidange + contrôles"],
-          ["20 000 km", "Vidange + filtres"],
-          ["30 000 km", "Révision intermédiaire"],
-          ["40 000 km", "Bougies + réglage soupapes"],
-          ["50 000 km", "Révision majeure"]
-      ]},
-      { "type": "paragraph", "html": "👉 Une révision annuelle est impérative pour préserver l'électronique. Consultez notre <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">guide budget</a>." },
-      { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "160 à 240 €"],
-          ["10 000 km", "260 à 340 €"],
-          ["20 000 km", "360 à 440 €"],
-          ["40 000 km", "560 à 640 €"]
-      ]},
-      { "type": "heading", "text": "Les consommables à surveiller" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "8 000 à 15 000 km"],
-        ["Plaquettes", "10 000 à 20 000 km"],
-        ["Batterie", "4 à 6 ans"],
-        ["Cardan", "Contrôle d'étanchéité régulier"]
-      ]},
-      { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "list", "items": [
-          "Électronique de bord complexe exigeant des MAJ régulières",
-          "Cardan à surveiller sur fort kilométrage",
-          "Poids à l'arrêt pour les petits gabarits"
-      ]},
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "list", "items": [
-          "Respecter scrupuleusement les intervalles BMW",
-          "Vérifier le niveau d'huile régulièrement",
-          "Nettoyer les soufflets de cardan"
-      ]},
-      { "type": "heading", "text": "FAQ entretien R1250 GS" },
-      { "type": "paragraph", "html": "<strong>Le cardan demande-t-il beaucoup d'entretien ?</strong><br/>Non, mais un contrôle visuel annuel est crucial." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Une machine exceptionnelle dont la fiabilité est prouvée mais dont les coûts d'entretien sont premium." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "honda-nx500",
-    "modelName": "Honda NX500",
-    "brand": "Honda",
-    "year": "2024+",
-    "imageUrl": "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Honda NX500 Red",
-    "engine": {
-      "bridage": "✔ Permis A2 (Natif)",
-      "type": "Bicylindre en ligne, 4 temps, refroidissement liquide",
-      "displacement": "471 cm³",
-      "power": "35 kW (47,5 ch) à 8 600 tr/min",
-      "torque": "43 N.m à 6 500 tr/min",
-      "alimentation": "Injection électronique PGM-FI"
-    },
-    "dimensions": {
-      "seatHeight": "830 mm",
-      "wetWeight": "196 kg",
-      "fuelCapacity": "17,5 L",
-      "wheelbase": "1 445 mm"
-    },
-    "chassis": {
-      "frame": "Type Diamant en acier",
-      "frontSuspension": "Fourche inversée Showa SFF-BP Ø 41 mm",
-      "rearSuspension": "Pro-Link mono-amortisseur",
-      "frontBrake": "Double disque Ø 296 mm",
-      "rearBrake": "Simple disque Ø 240 mm",
-      "frontTire": "110/80 R19",
-      "rearTire": "160/60 R17"
-    },
-    "introduction": "L'héritière de la CB500X. Un trail polyvalent et ultra-fiable, parfaitement taillé pour les permis A2.",
-    "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur NX500" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + soupapes"],
-          ["36 000 km", "Révision intermédiaire"]
-      ]},
-      { "type": "paragraph", "html": "👉 Honda est réputé pour son coût d'usage. Voyez notre <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">comparatif budgétaire</a>." },
-      { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "100 à 180 €"],
-          ["12 000 km", "180 à 260 €"],
-          ["24 000 km", "320 à 400 €"]
-      ]},
-      { "type": "heading", "text": "Les consommables à surveiller" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Kit chaîne", "20 000 à 30 000 km"],
-        ["Pneus", "10 000 à 18 000 km"],
-        ["Plaquettes", "10 000 à 20 000 km"],
-        ["Batterie", "4 à 6 ans"]
-      ]},
-      { "type": "heading", "text": "Fiabilité et problèmes connus" },
-      { "type": "list", "items": [
-          "Suspensions un peu souples en usage tout-terrain chargé",
-          "Bulle d'origine moyenne protection",
-          "Fiabilité mécanique quasi-irréprochable"
-      ]},
-      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
-      { "type": "list", "items": [
-          "Nettoyer la chaîne après usage chemins",
-          "Vérifier la pression des pneus",
-          "Respecter le temps de chauffe"
-      ]},
-      { "type": "heading", "text": "FAQ entretien NX500" },
-      { "type": "paragraph", "html": "<strong>Est-elle fiable ?</strong><br/>Oui, c'est l'une des motos les plus robustes du marché." },
-      { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "La compagne idéale pour débuter le voyage sans se soucier du garage." },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
-    ]
-  },
-  {
-    "modelId": "kawasaki-z650",
-    "modelName": "Kawasaki Z650",
-    "brand": "Kawasaki",
     "year": "2020+",
-    "imageUrl": "https://images.unsplash.com/photo-1629587937318-755f52980079?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "Kawasaki Z650 Green",
+    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Yamaha MT-03",
     "engine": {
-      "bridage": "✔ Permis A2 (bridable à 35 kW)",
-      "type": "Bicylindre en parallèle, 4 temps, refroidissement liquide",
-      "displacement": "649 cm³",
-      "power": "50,2 kW (68 ch) à 8 000 tr/min",
-      "torque": "64 N.m à 6 700 tr/min",
+      "bridage": "✔ Permis A2 (moto A2 native – pas de bridage nécessaire)",
+      "type": "Bicylindre en ligne, 4 temps, refroidissement liquide, DOHC 4 soupapes",
+      "displacement": "321 cm³",
+      "power": "30,9 kW (≈42 ch) à 10 750 tr/min",
+      "torque": "29,6 N.m à 9 000 tr/min",
       "alimentation": "Injection électronique"
     },
     "dimensions": {
-      "seatHeight": "790 mm",
-      "wetWeight": "188 kg",
-      "fuelCapacity": "15 L",
-      "wheelbase": "1 410 mm"
+      "seatHeight": "780 mm",
+      "wetWeight": "168 kg",
+      "fuelCapacity": "14 L",
+      "wheelbase": "1 380 mm"
     },
     "chassis": {
-      "frame": "Treillis en acier",
-      "frontSuspension": "Fourche télescopique Ø 41 mm",
-      "rearSuspension": "Back-link avec réglage précharge",
-      "frontBrake": "Double disque en pétales Ø 300 mm",
-      "rearBrake": "Simple disque en pétales Ø 220 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "160/60 ZR 17"
+      "frame": "Cadre diamant en acier",
+      "frontSuspension": "Fourche inversée KYB Ø37 mm",
+      "rearSuspension": "Mono-amortisseur avec bras oscillant",
+      "frontBrake": "Disque Ø298 mm, étrier 2 pistons",
+      "rearBrake": "Disque Ø220 mm",
+      "frontTire": "110/70 R17",
+      "rearTire": "140/70 R17"
     },
-    "introduction": "Le roadster Sugomi. Maniable et joueur, il est l'un des favoris des jeunes permis pour sa facilité.",
+    "introduction": "La Yamaha MT-03 est l’un des roadsters les plus accessibles du marché. Légère, économique et facile à prendre en main, elle est très populaire auprès des jeunes permis. Son moteur bicylindre de 321 cm³ est réputé fiable et demande peu d’entretien comparé aux motos de cylindrée supérieure.",
     "content": [
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Z650" },
+      { "type": "heading", "text": "Intervalles d’entretien constructeur MT-03" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + Filtres"],
-          ["42 000 km", "Soupapes + Entretien complet"]
+          ["1 000 km", "Révision de rodage (Forfait Eco)"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
+          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
+          ["40 000 km", "Contrôle soupapes (Forfait Excellence)"]
       ]},
-      { "type": "paragraph", "html": "👉 Pour prévoir votre budget mensuel, consultez notre <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">guide des coûts réels</a>." },
-      { "type": "heading", "text": "Prix moyen des révisions" },
+      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
+      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
       { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["12 000 km", "220 à 300 €"],
-          ["24 000 km", "410 à 490 €"],
-          ["42 000 km", "750 à 830 €"]
+          ["1 000 km", "120 à 180 €"],
+          ["10 000 km", "180 à 250 €"],
+          ["20 000 km", "250 à 350 €"],
+          ["40 000 km", "400 à 600 €"]
       ]},
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région." },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Kit chaîne", "20 000 à 25 000 km"],
-        ["Pneus", "7 000 à 12 000 km"],
-        ["Plaquettes", "10 000 à 18 000 km"],
+        ["Pneus", "10 000 à 18 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes", "10 000 à 20 000 km"],
         ["Batterie", "3 à 5 ans"]
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
       { "type": "list", "items": [
-          "Embrayage jugé ferme par certains débutants",
-          "Selle d'origine un peu dure",
-          "Sensibilité du capteur ABS à l'humidité"
+          "Suspension arrière parfois souple",
+          "Manque de protection au vent sur voie rapide",
+          "Chaîne d’origine à surveiller régulièrement"
       ]},
+      { "type": "cta-concession", "text": "🔘 Voir les Yamaha MT-03 en concession" },
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "list", "items": [
-          "Respecter scrupuleusement le temps de chauffe",
-          "Lubrifier le câble d'embrayage",
-          "Graisser la chaîne régulièrement"
+          "Respecter les intervalles de vidange",
+          "Graisser la chaîne régulièrement",
+          "Vérifier souvent la pression des pneus",
+          "Laisser chauffer le moteur avant de rouler"
       ]},
-      { "type": "heading", "text": "FAQ entretien Z650" },
-      { "type": "paragraph", "html": "<strong>La Z650 est-elle fiable ?</strong><br/>Oui, c'est un moteur éprouvé." },
+      { "type": "heading", "text": "FAQ entretien MT-03" },
+      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou une fois par an." },
+      { "type": "paragraph", "html": "<strong>La MT-03 est-elle adaptée aux débutants ?</strong><br/>Oui, sa puissance de 42 ch et son poids léger en font une excellente première moto." },
       { "type": "heading", "text": "Conclusion" },
-      { "type": "paragraph", "text": "Un excellent choix pour débuter avec des coûts maîtrisés." },
+      { "type": "paragraph", "text": "Accessible et économique, la Yamaha MT-03 est une moto idéale pour débuter ou pour un usage quotidien. Avec un entretien régulier, son moteur bicylindre peut parcourir de très nombreux kilomètres sans problème majeur." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   }

@@ -67,10 +67,10 @@ const article = {
         "type": "list",
         "items": [
           "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
+          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
           "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
           "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
+          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
         ]
       },
       {
@@ -240,7 +240,7 @@ export default function EntretienPage() {
     return article.content.map((block, index) => {
       switch (block.type) {
         case 'heading':
-          return <h2 key={index} className="text-3xl font-bold font-serif mt-12 mb-6 text-foreground text-center border-y border-foreground/20 py-2">{block.text}</h2>;
+          return <h2 key={index} className="text-3xl font-bold mt-12 mb-6 text-foreground text-center border-y border-foreground/20 py-2">{block.text}</h2>;
         
         case 'list':
           return (
@@ -330,7 +330,7 @@ export default function EntretienPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
               <article>
-                <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight tracking-tight text-foreground mb-8 text-center">
+                <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight text-foreground mb-8 text-center">
                   {article.title}
                 </h1>
                 
