@@ -177,8 +177,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium mb-8 border-b pb-4">
               <span>Par {article.author}</span>
               <span className="text-muted-foreground/50">•</span>
-              <span>{article.date}</span>
-              <span className="text-muted-foreground/50">•</span>
               <span>{article.readingTime}</span>
             </div>
             
@@ -191,4 +189,3 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     </div>
   );
 }
-    

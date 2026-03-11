@@ -31,8 +31,6 @@ const ArticleCard = ({ article }: { article: Article }) => {
                     <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground font-medium">
                         <span>Par {article.author}</span>
                         <span className="text-muted-foreground/50">•</span>
-                        <span>{article.date}</span>
-                        <span className="text-muted-foreground/50">•</span>
                         <span>{article.readingTime}</span>
                     </div>
                 </div>
