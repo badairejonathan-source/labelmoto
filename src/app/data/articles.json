@@ -243,36 +243,32 @@
         "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite."
       },
       {
-        "type": "heading",
-        "text": "Comment choisir sa moto A2 ?"
-      },
-      {
-        "type": "heading",
-        "text": "Moto permis A2 : comment vérifier si une moto est compatible ?"
+        "type": "paragraph",
+        "html": "Avec le permis A2, tu peux conduire une moto limitée à <strong>35 kW (47,5 chevaux)</strong> avec un rapport puissance/poids maximal de <strong>0,2 kW/kg</strong> (Service Public)."
       },
       {
         "type": "paragraph",
-        "html": "Pour être compatible permis A2, une moto doit respecter trois règles :"
+        "text": "Le but ? Apprendre progressivement sans être dépassé par la puissance."
+      },
+      {
+        "type": "paragraph",
+        "text": "Dans ce guide, on va voir :"
       },
       {
         "type": "list",
         "items": [
-          "<strong>Puissance maximale</strong> : 35 kW (47,5 ch) après bridage – indiquée en P.2 sur la carte grise",
-          "<strong>Puissance d’origine</strong> limitée à 70 kW (95 ch) maximum",
-          "<strong>Rapport puissance/poids</strong> ≤ 0,2 kW/kg"
+          "comment choisir ta moto A2",
+          "les erreurs à éviter",
+          "les meilleures motos par catégorie"
         ]
       },
       {
-        "type": "paragraph",
-        "text": "Ces informations se vérifient directement sur la carte grise (P.2 et Q) ou auprès d’un concessionnaire moto."
+        "type": "heading",
+        "text": "Comment choisir sa moto A2 ?"
       },
       {
         "type": "paragraph",
-        "html": "⚠️ Un bridage doit toujours être homologué et accompagné d’un certificat officiel."
-      },
-      {
-        "type": "paragraph",
-        "html": "👉 Les motos peuvent être A2 natives (ex : KTM 390 Duke) ou bridables (ex : Yamaha MT-07, Kawasaki Z650, Suzuki SV650)."
+        "text": "Avant de regarder un modèle précis, pose-toi ces 4 questions."
       },
       {
         "type": "heading",
@@ -283,12 +279,468 @@
         "text": "Une moto trop haute = peur à l’arrêt. Une moto trop lourde = fatigue + chute à basse vitesse."
       },
       {
+        "type": "paragraph",
+        "html": "➡️ <strong>Privilégie :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "selle basse",
+          "poids < 200 kg",
+          "centre de gravité bas"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "2. Ton usage"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Ville quotidienne → roadster léger",
+          "Autoroute → trail",
+          "Plaisir weekend → sportive"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "3. Ton budget réel"
+      },
+      {
+        "type": "paragraph",
+        "text": "Ne regarde pas que le prix d’achat. Pense à :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "assurance (souvent plus chère que la moto)",
+          "pneus",
+          "révisions",
+          "antivol"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "4. Ton mental"
+      },
+      {
+        "type": "paragraph",
+        "text": "Débutant = la confiance compte plus que la puissance. La meilleure moto n’est pas la plus rapide. C’est celle qui te donne envie de rouler tous les jours."
+      },
+      {
+        "type": "heading",
+        "text": "Meilleures motos roadster permis A2"
+      },
+      {
+        "type": "paragraph",
+        "text": "Les roadsters sont les motos idéales pour apprendre : légers, maniables et économiques."
+      },
+      {
+        "type": "heading",
+        "text": "Yamaha MT-07 / XSR700 (A2)"
+      },
+      {
+        "type": "paragraph",
+        "text": "La référence absolue du permis A2. Son moteur CP2 très coupleux pardonne les erreurs."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "moteur vivant",
+          "très facile en ville",
+          "forte revente"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "très volée",
+          "assurance élevée"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> motard urbain quotidien"
+      },
+      {
+        "type": "heading",
+        "text": "Honda CB500 Hornet"
+      },
+      {
+        "type": "paragraph",
+        "text": "La moto école parfaite. Simple, fiable, rassurante."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "ultra accessible",
+          "faible coût d’entretien",
+          "excellente fiabilité"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "manque de sensations"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> débutant stressé"
+      },
+      {
+        "type": "heading",
+        "text": "Kawasaki Z650"
+      },
+      {
+        "type": "paragraph",
+        "text": "Plus mature, plus valorisante, idéale pour garder après la passerelle A."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "polyvalente",
+          "confortable",
+          "belle finition"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "assurance élevée"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> motard qui veut évoluer"
+      },
+      {
+        "type": "heading",
+        "text": "KTM 390 Duke"
+      },
+      {
+        "type": "paragraph",
+        "text": "La meilleure école de pilotage. Ultra légère."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "fun immédiat",
+          "assurance faible",
+          "hyper maniable"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "moins confortable",
+          "réseau plus rare"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> ville uniquement"
+      },
+      {
+        "type": "heading",
+        "text": "Meilleurs trails permis A2"
+      },
+      {
+        "type": "paragraph",
+        "text": "Confortables et polyvalents, les trails sont parfaits pour rouler toute l’année."
+      },
+      {
+        "type": "heading",
+        "text": "Yamaha Tracer 7"
+      },
+      {
+        "type": "paragraph",
+        "text": "La routière parfaite du permis A2."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "confort",
+          "protection vent",
+          "moteur agréable"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "chère à assurer"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> trajets domicile travail"
+      },
+      {
+        "type": "heading",
+        "text": "Honda NX500 (CB500X)"
+      },
+      {
+        "type": "paragraph",
+        "text": "La moto rationnelle par excellence."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "fiabilité",
+          "faible consommation",
+          "polyvalence"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "peu de caractère"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> utilitaire quotidien"
+      },
+      {
+        "type": "heading",
+        "text": "Royal Enfield Himalayan 450"
+      },
+      {
+        "type": "paragraph",
+        "text": "Simple, robuste et accessible."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "prix",
+          "confort",
+          "facilité"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "performances limitées"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> balade / loisir"
+      },
+      {
+        "type": "heading",
+        "text": "Meilleures sportives permis A2"
+      },
+      {
+        "type": "paragraph",
+        "text": "Pour ceux qui veulent le look sport sans danger."
+      },
+      {
+        "type": "heading",
+        "text": "Yamaha R7"
+      },
+      {
+        "type": "paragraph",
+        "text": "La sportive plaisir."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "look",
+          "sensations",
+          "valorisante"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "position fatigante",
+          "assurance"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> passion"
+      },
+      {
+        "type": "heading",
+        "text": "Honda CBR500R"
+      },
+      {
+        "type": "paragraph",
+        "text": "La sportive facile."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "rassurante",
+          "économique",
+          "fiable"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "manque de caractère"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> débutant sportif"
+      },
+      {
+        "type": "heading",
+        "text": "Kawasaki Ninja 650"
+      },
+      {
+        "type": "paragraph",
+        "text": "Le compromis idéal."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Forces :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "polyvalence",
+          "confort",
+          "performances"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faiblesses :</strong>"
+      },
+      {
+        "type": "list",
+        "items": [
+          "assurance"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Profil :</strong> daily + plaisir"
+      },
+      {
+        "type": "heading",
+        "text": "Tableau comparatif motos A2"
+      },
+      {
+        "type": "table",
+        "headers": ["Moto", "Type", "Facilité", "Budget", "Assurance", "Revente"],
+        "rows": [
+          ["MT-07", "Roadster", "🟩", "🟧", "🟥", "🟩"],
+          ["CB500 Hornet", "Roadster", "🟩", "🟩", "🟩", "🟧"],
+          ["Z650", "Roadster", "🟧", "🟧", "🟥", "🟩"],
+          ["390 Duke", "Roadster", "🟩", "🟩", "🟩", "🟧"],
+          ["Tracer 7", "Trail", "🟩", "🟧", "🟥", "🟩"],
+          ["NX500", "Trail", "🟩", "🟩", "🟩", "🟧"],
+          ["Himalayan", "Trail", "🟧", "🟩", "🟩", "🟧"],
+          ["R7", "Sportive", "🟧", "🟧", "🟥", "🟩"],
+          ["CBR500R", "Sportive", "🟩", "🟩", "🟩", "🟩"],
+          ["Ninja 650", "Sportive", "🟧", "🟧", "🟥", "🟩"]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "FAQ – Permis A2"
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Quelle puissance maximale pour le permis A2 ?</strong><br/>Une moto ne doit pas dépasser 35 kW (47,5 ch) (Service Public)."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Peut-on conduire une 600cc en A2 ?</strong><br/>Oui si elle respecte la puissance et le ratio poids/puissance (rideto.com)."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Combien de temps garder une moto A2 ?</strong><br/>Minimum 2 ans avant la passerelle A (cantal.gouv.fr)."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Quelle est la meilleure moto A2 ?</strong><br/>La meilleure est celle adaptée à ton usage quotidien."
+      },
+      {
         "type": "heading",
         "text": "Conclusion"
       },
       {
         "type": "paragraph",
-        "text": "Choisir sa moto A2 n’est pas une question de performance mais de confiance. Une moto rassurante te fera progresser plus vite qu’une moto impressionnante."
+        "text": "Choisir sa moto A2 n’est pas une question de performance mais de confiance. Une moto rassurante te fera progresser plus vite qu’une moto impressionnante. Prends celle qui te donne envie de rouler — c’est toujours la bonne."
       },
       {
         "type": "signature",
