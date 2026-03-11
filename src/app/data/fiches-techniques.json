@@ -323,6 +323,88 @@
     ]
   },
   {
+    "modelId": "honda-xl750-transalp",
+    "modelName": "Honda XL750 Transalp",
+    "brand": "Honda",
+    "year": "2023+",
+    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Honda XL750 Transalp",
+    "engine": {
+      "bridage": "✔ Permis A2 (bridable à 35 kW)",
+      "type": "Bicylindre en ligne, 4 temps, refroidissement liquide, Unicam, 8 soupapes",
+      "displacement": "755 cm³",
+      "power": "67,5 kW (92 ch) à 9 500 tr/min",
+      "torque": "75 N.m à 7 250 tr/min",
+      "alimentation": "Injection électronique PGM-FI"
+    },
+    "dimensions": {
+      "seatHeight": "850 mm",
+      "wetWeight": "210 kg",
+      "fuelCapacity": "16,9 L",
+      "wheelbase": "1 560 mm"
+    },
+    "chassis": {
+      "frame": "Cadre acier type diamant",
+      "frontSuspension": "Fourche inversée Showa SFF-CA Ø43 mm",
+      "rearSuspension": "Mono-amortisseur Pro-Link",
+      "frontBrake": "Double disque Ø310 mm, étriers 2 pistons",
+      "rearBrake": "Disque Ø256 mm",
+      "frontTire": "90/90 R21",
+      "rearTire": "150/70 R18"
+    },
+    "introduction": "La Honda XL750 Transalp est un trail polyvalent très apprécié pour le voyage comme pour un usage quotidien. Son bicylindre de 755 cm³ offre un excellent compromis entre performances, sobriété et agrément. Un entretien régulier permet de préserver sa fiabilité et d’éviter les grosses factures sur le long terme.",
+    "content": [
+      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
+      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda XL750 Transalp." },
+      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
+      { "type": "heading", "text": "Intervalles d’entretien constructeur XL750 Transalp" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
+          ["1 000 km", "Révision de rodage"],
+          ["12 000 km", "Vidange + contrôles"],
+          ["24 000 km", "Bougies + filtre à air"],
+          ["48 000 km", "Réglage soupapes + entretien complet"]
+      ]},
+      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
+      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
+          ["1 000 km", "150 à 220 €"],
+          ["12 000 km", "220 à 320 €"],
+          ["24 000 km", "400 à 550 €"],
+          ["48 000 km", "700 à 900 €"]
+      ]},
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier, la région et les opérations complémentaires. Il s’agit d’une <strong>estimation réaliste</strong> pour se prémunir d’éventuelles évolutions tarifaires." },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
+      { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "8 000 à 15 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes", "10 000 à 20 000 km"],
+        ["Batterie", "3 à 5 ans"]
+      ]},
+      { "type": "heading", "text": "Fiabilité et problèmes connus" },
+      { "type": "list", "items": [
+          "Chaleur moteur perceptible en ville l’été",
+          "Bulle d’origine parfois jugée un peu juste pour les grands trajets",
+          "Chaîne d’origine à surveiller régulièrement",
+          "Suspensions d’origine orientées confort plus que conduite très sportive"
+      ]},
+      { "type": "cta-concession", "text": "🔘 Voir les Honda XL750 Transalp en concession" },
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "list", "items": [
+          "Respecter les intervalles d’entretien constructeur",
+          "Graisser la chaîne régulièrement, surtout après roulage sous la pluie",
+          "Vérifier la pression des pneus avant les longs trajets",
+          "Vidange annuelle recommandée même en faible kilométrage"
+      ]},
+      { "type": "heading", "text": "FAQ entretien XL750 Transalp" },
+      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 12 000 km ou tous les ans au premier des deux termes échus." },
+      { "type": "paragraph", "html": "<strong>La Honda XL750 Transalp est-elle compatible A2 ?</strong><br/>Oui, Honda la propose en version <strong>A2 permis</strong>, avec bridage à 35 kW." },
+      { "type": "heading", "text": "Conclusion" },
+      { "type": "paragraph", "text": "Polyvalente, confortable et bien pensée pour le voyage, la Honda XL750 Transalp est un trail moderne très cohérent. Bien entretenue, elle reste raisonnable à l’usage et constitue une excellente option pour les motards qui veulent une vraie moto de route et d’aventure." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=3", "alt": "Cachet Label Moto" }
+    ]
+  },
+  {
     "modelId": "yamaha-r7",
     "modelName": "Yamaha R7",
     "brand": "Yamaha",
@@ -545,7 +627,7 @@
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },
       { "type": "list", "items": [
-          "Suspension arrière parfois souple",
+          "Suspension arrière parfois souples",
           "Manque de protection au vent sur voie rapide",
           "Chaîne d’origine à surveiller régulièrement"
       ]},
