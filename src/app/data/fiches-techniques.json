@@ -409,7 +409,7 @@
       { "type": "cta-concession", "text": "🔘 Voir les Honda CBR500R en concession" },
       { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
       { "type": "list", "items": [
-          "Temps de chauffe moteur recommandé avant de monter dans les tours",
+          "Temps de chauffe moteur recommandé avant de rouler fort",
           "Graissage de la chaîne tous les 500 km ou après chaque pluie",
           "Vidange annuelle même si le kilométrage n’est pas atteint"
       ]},
@@ -676,7 +676,7 @@
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
         ["Pneus", "10 000 à 18 000 km"],
-        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Kit chaîne", "20 000 à 35 000 km"],
         ["Plaquettes", "10 000 à 20 000 km"],
         ["Batterie", "3 à 5 ans"]
       ]},
@@ -814,7 +814,7 @@
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "10 000 à 15 000 km"],
+        ["Pneus", "8 000 à 15 000 km"],
         ["Kit chaîne", "20 000 à 30 000 km"],
         ["Plaquettes", "15 000 à 25 000 km"],
         ["Batterie", "3 à 5 ans"]
@@ -1021,7 +1021,7 @@
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "10 000 à 15 000 km"],
+        ["Pneus", "8 000 à 15 000 km"],
         ["Kit chaîne", "20 000 à 30 000 km"],
         ["Plaquettes", "12 000 à 20 000 km"],
         ["Batterie", "3 à 5 ans"]
@@ -1090,9 +1090,9 @@
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "12 000 à 18 000 km"],
+        ["Pneus", "8 000 à 15 000 km"],
         ["Kit chaîne", "20 000 à 35 000 km"],
-        ["Plaquettes", "15 000 à 25 000 km"],
+        ["Plaquettes", "10 000 à 18 000 km"],
         ["Batterie", "3 à 5 ans"]
       ]},
       { "type": "heading", "text": "Fiabilité et problèmes connus" },

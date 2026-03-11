@@ -19,6 +19,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { cn } from '@/lib/utils';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 

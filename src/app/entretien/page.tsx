@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const article = {
     "id": "7",
@@ -25,7 +26,7 @@ const article = {
     "description": "Trouvez rapidement les intervalles d’entretien, le prix des révisions et les points de fiabilité de votre moto.",
     "author": "L'équipe Label Moto",
     "readingTime": "4 min de lecture",
-    "imageUrl": "https://picsum.photos/seed/article-maintenance/1200/600",
+    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
     "imageHint": "motorcycle maintenance",
     "content": [
       {
@@ -39,12 +40,12 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 [A2]</a>",
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F / CB500 Hornet [A2]</a>",
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z650 / Z650RS [A2]</a>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha Tracer 7 [A2]</a>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda NX500 / CB500X [A2]</a>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha R7 [A2]</a>"
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2</a>",
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F / CB500 Hornet A2</a>",
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z650 / Z650RS A2</a>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha Tracer 7 A2</a>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda NX500 / CB500X A2</a>",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha R7 A2</a>"
         ]
       },
       {
@@ -68,11 +69,11 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 [A2]</a>",
-          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 [A2]</a>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 [A2]</a>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 [A2]</a>",
-          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 [A2]</a>"
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2</a>",
+          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>",
+          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"
         ]
       },
       {
@@ -82,12 +83,12 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500F / CB500 Hornet [A2]</a>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X [A2]</a>", 
-          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R [A2]</a>",
-          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R [Éligible A2]</a>",
-          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp [Éligible A2]</a>",
-          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R [A1 / B]</a>"
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500F / CB500 Hornet A2</a>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", 
+          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>",
+          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R éligible A2</a>",
+          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp éligible A2</a>",
+          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R A1 / B / A2</a>"
         ]
       },
       {
@@ -97,8 +98,8 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS [A2]</a>",
-          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650 [A2]</a>"
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>",
+          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650 A2</a>"
         ]
       },
       {
@@ -108,8 +109,8 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 [A2]</a>",
-          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 [A2]</a>"
+          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 A2</a>",
+          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 A2</a>"
         ]
       },
       {
@@ -220,7 +221,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "text": "Un bon entretien ne protège pas seulement votre moto : il protège aussi votre budget. Choisissez votre modèle ci-dessus pour accéder à sa fiche complète."
+        "text": "Un bon entretien ne protège pas seulement votre moto : il protège aussi votre budget. Choisissez votre modèle ci-dessus pour accéder à sa fiche détaillée."
       }
     ]
 } as const;
