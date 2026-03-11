@@ -71,10 +71,6 @@
             "text": "C’est pourquoi l’occasion reste souvent le choix le plus intelligent financièrement."
         },
         {
-            "type": "paragraph",
-            "html": "👉 Si tu hésites encore sur le modèle, consulte d’abord <a href=\"/info/6\" class=\"text-accent underline hover:text-accent/80\">notre guide des meilleures motos A2 pour débuter</a> afin d’éviter d’acheter une moto inadaptée."
-        },
-        {
             "type": "heading",
             "text": "L’assurance : la plus grosse surprise pour un débutant"
         },
@@ -112,36 +108,12 @@
             "html": "Certaines motos coûtent bien plus cher à assurer que d’autres. Par exemple, une sportive ou un modèle très volé peut coûter <strong>2 à 3 fois plus cher</strong> qu’une moto plus sage."
         },
         {
-            "type": "paragraph",
-            "text": "Beaucoup de motards regrettent leur achat uniquement à cause de l’assurance… alors que c’est le poste le plus prévisible."
-        },
-        {
             "type": "heading",
             "text": "Le carburant : vraiment moins cher qu’une voiture ?"
         },
         {
             "type": "paragraph",
-            "text": "C’est souvent l’argument numéro 1 pour passer à la moto : consommer moins. Et sur ce point, c’est généralement vrai… à condition de rester raisonnable sur la poignée de gaz."
-        },
-        {
-            "type": "paragraph",
             "html": "Une moto A2 consomme en moyenne entre <strong>3,5 et 5 litres / 100 km</strong> selon le modèle et la conduite. En usage quotidien, on tourne plutôt autour de 4 L/100."
-        },
-        {
-            "type": "paragraph",
-            "html": "Prenons un exemple concret : Un motard qui roule <strong>12 000 km par an</strong> avec un carburant à 1,90 €/L :"
-        },
-        {
-            "type": "paragraph",
-            "text": "12 000 km × 4 L / 100 = 480 litres/an"
-        },
-        {
-            "type": "paragraph",
-            "html": "480 × 1,90 € = <strong>912 € par an</strong>, soit environ <strong>75 € par mois</strong>"
-        },
-        {
-            "type": "paragraph",
-            "text": "Même en roulant beaucoup, la moto reste souvent plus économique qu’une voiture en carburant."
         },
         {
             "type": "heading",
@@ -150,10 +122,6 @@
         {
             "type": "paragraph",
             "text": "Une moto coûte rarement cher à l’achat… mais elle coûte régulièrement à entretenir. Et contrairement à une voiture, certaines pièces s’usent beaucoup plus vite."
-        },
-        {
-            "type": "paragraph",
-            "text": "Voici les dépenses les plus courantes :"
         },
         {
             "type": "table",
@@ -171,16 +139,8 @@
             "html": "En moyenne, un motard débutant dépense <strong>300 à 600 € par an</strong>, soit environ <strong>25 à 50 € par mois</strong>."
         },
         {
-            "type": "paragraph",
-            "html": "👉 Pour éviter d’acheter une moto mal entretenue, consulte <a href=\"/info/5\" class=\"text-accent underline hover:text-accent/80\">notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion</a>."
-        },
-        {
             "type": "heading",
             "text": "L’équipement du motard : un vrai investissement"
-        },
-        {
-            "type": "paragraph",
-            "text": "Avant même de tourner la clé, tu dois être équipé correctement."
         },
         {
             "type": "table",
@@ -194,111 +154,12 @@
             ]
         },
         {
-            "type": "paragraph",
-            "html": "👉 Budget total moyen : <strong>500 à 1 200 €</strong>"
-        },
-        {
-            "type": "paragraph",
-            "text": "Mieux vaut parfois prendre une moto un peu moins chère et un bon équipement que l’inverse."
-        },
-        {
-            "type": "heading",
-            "text": "Le budget mensuel réel d’un motard débutant"
-        },
-        {
-            "type": "paragraph",
-            "text": "Prenons un exemple concret : jeune permis A2 en zone urbaine."
-        },
-        {
-            "type": "table",
-            "headers": ["Poste", "Coût mensuel moyen"],
-            "rows": [
-                ["Assurance", "120 €"],
-                ["Carburant", "75 €"],
-                ["Entretien", "40 €"],
-                ["Divers", "20 €"]
-            ]
-        },
-        {
-            "type": "paragraph",
-            "html": "➡️ <strong>Total : environ 255 € par mois</strong>"
-        },
-        {
-            "type": "paragraph",
-            "html": "Dans la majority des cas, un budget réaliste pour débuter tourne autour de <strong>200 à 300 € par mois</strong>."
-        },
-        {
-            "type": "heading",
-            "text": "Moto vs voiture : le vrai comparatif"
-        },
-        {
-            "type": "paragraph",
-            "text": "La moto permet souvent :"
-        },
-        {
-            "type": "list",
-            "items": [
-                "moins de carburant",
-                "pas de péage",
-                "stationnement plus simple",
-                "gain de temps quotidien"
-            ]
-        },
-        {
-            "type": "paragraph",
-            "text": "Mais elle demande :"
-        },
-        {
-            "type": "list",
-            "items": [
-                "équipement spécifique",
-                "assurance parfois élevée",
-                "entretien plus fréquent"
-            ]
-        },
-        {
-            "type": "paragraph",
-            "text": "👉 La moto est rentable surtout pour les trajets quotidiens."
-        },
-        {
-            "type": "heading",
-            "text": "FAQ – Budget moto"
-        },
-        {
-            "type": "paragraph",
-            "html": "<strong>Quel budget pour débuter la moto ?</strong><br/>Environ 200 à 300 € par mois tout compris."
-        },
-        {
-            "type": "paragraph",
-            "html": "<strong>La moto est-elle rentable ?</strong><br/>Oui surtout en usage urbain quotidien."
-        },
-        {
-            "type": "paragraph",
-            "html": "<strong>Quelle moto coûte le moins cher ?</strong><br/>Les roadsters 300 à 500 cc sont les plus économiques."
-        },
-        {
-            "type": "paragraph",
-            "html": "<strong>L’assurance moto est-elle chère ?</strong><br/>Pour un jeune permis, c’est souvent le poste le plus élevé."
-        },
-        {
-            "type": "paragraph",
-            "html": "<strong>Combien prévoir par an ?</strong><br/>Entre 2 400 € et 3 600 € environ."
-        },
-        {
             "type": "heading",
             "text": "Conclusion"
         },
         {
             "type": "paragraph",
-            "text": "Une moto coûte surtout cher quand on choisit mal son premier modèle."
-        },
-        {
-            "type": "paragraph",
-            "text": "En anticipant le budget réel, tu évites les mauvaises surprises et tu profites vraiment de ta moto."
-        },
-        {
-            "type": "paragraph",
-            "text": "Choisis une machine adaptée à ton usage… et ton portefeuille te remerciera."
+            "text": "Une moto coûte surtout cher quand on choisit mal son premier modèle. En anticipant le budget réel, tu évites les mauvaises surprises et tu profites vraiment de ta moto."
         },
         {
             "type": "signature",
@@ -323,44 +184,23 @@
         "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper."
       },
       {
-        "type": "paragraph",
-        "text": "Bonne nouvelle : avec une bonne méthode et quelques vérifications simples, tu peux trouver une excellente moto sans mauvaise surprise. Voici la checklist complète pour acheter une moto d’occasion en toute sécurité."
-      },
-      {
-        "type": "paragraph",
-        "html": "Tu n’as pas encore choisi ton modèle ? Consulte d’abord <a href=\"/info/6\" class=\"text-accent underline hover:text-accent/80\">notre guide des meilleures motos A2 pour débuter</a> afin d’éviter d’acheter une moto inadaptée."
-      },
-      {
         "type": "heading",
         "text": "1. Inspection visuelle : le premier diagnostic"
-      },
-      {
-        "type": "paragraph",
-        "text": "Avant même de démarrer la moto, observe-la attentivement. L’état général révèle souvent son histoire. À vérifier absolument :"
       },
       {
         "type": "list",
         "items": [
           "Selle abîmée ou réservoir cabossé → chute probable",
           "Embouts de guidon et repose-pieds rayés → chute/glissade",
-          "Pneus : regarde la date sur les flancs (DOT). Au-delà de 5 ans → remplacement obligatoire pour le CT",
+          "Pneus : regarde la date sur les flancs (DOT). Au-delà de 5 ans → remplacement obligatoire",
           "Disques de frein ou plaquette trop creusés → entretien négligé",
           "Chaîne rouillée ou détendue → mauvais suivi",
-          "Fuite sur la fourche → joints spi à remplacer (pièce peu onéreuse mais beaucoup de main d’œuvre) ce constate beaucoup pendant la période d’ete",
-          "Trop de pièces modifies → demande les pièces d’origine"
+          "Fuite sur la fourche → joints spi à remplacer"
         ]
       },
       {
-        "type": "paragraph",
-        "text": "👉 Une moto propre et cohérente inspire confiance. Une moto trop nettoyée peut cacher une fuite."
-      },
-      {
         "type": "heading",
-        "text": "2. Les documents obligatoires pour une moto d’occasion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Avant de payer, vérifie toujours les papiers. Voici la checklist administrative :"
+        "text": "2. Les documents obligatoires"
       },
       {
         "type": "list",
@@ -369,112 +209,8 @@
           "Numéro VIN identique (cadre / carte grise)",
           "Certificat de non-gage de moins de 15 jours",
           "Factures d’entretien ou carnet tamponné",
-          "Rapport Histovec (preuve de confiance du vendeur)"
+          "Rapport Histovec"
         ]
-      },
-      {
-        "type": "paragraph",
-        "text": "⚠️ Sans documents = gros risque juridique. Une moto peut être gagée, accidentée ou même volée."
-      },
-      {
-        "type": "heading",
-        "text": "3. Kilométrage et entretien : ne te fie pas seulement au compteur"
-      },
-      {
-        "type": "paragraph",
-        "text": "Une moto de 50 000 km entretenue vaut souvent mieux qu’une moto de 10 000 km abandonnée au garage. Observe la cohérence :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "Usure poignées vs km",
-          "Disques de frein d’origine ?",
-          "Jeu dans la transmission",
-          "Vidanges régulières (tous les 6-10 000 km)"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Le facteur n°1 de fiabilité reste l’entretien, pas le kilométrage."
-      },
-      {
-        "type": "heading",
-        "text": "4. Essai routier : indispensable avant achat"
-      },
-      {
-        "type": "paragraph",
-        "text": "Ne jamais acheter sans essayer. Pendant l’essai vérifie :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "démarrage à froid",
-          "embrayage progressif , si trop dur ou trop souple c’est mauvais signe.",
-          "boîte de vitesses fluide",
-          "pas de vibration anormale",
-          "moto stable en ligne droite",
-          "freinage franc sans tremblement"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Une moto qui tire à droite peut avoir un cadre faussé après accident."
-      },
-      {
-        "type": "heading",
-        "text": "5. Prix, négociation et assurance"
-      },
-      {
-        "type": "paragraph",
-        "text": "Avant de négocier :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "compare les annonces similaires",
-          "regarde la cote du marché",
-          "liste les défauts constatés"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Ensuite, pense à l’assurance. Certaines motos coûtent très cher à assurer, surtout pour un jeune permis ou en région parisienne."
-      },
-      {
-        "type": "paragraph",
-        "html": "👉 Vérifie AVANT l’achat pour éviter les mauvaises surprises. Pour une estimation complète, consulte notre article : <a href=\"/info/4\" class=\"text-accent underline hover:text-accent/80\">Le budget réel d’un motard débutant</a>."
-      },
-      {
-        "type": "heading",
-        "text": "Concession ou particulier : que choisir ?"
-      },
-       {
-        "type": "paragraph",
-        "text": "Le choix dépend de votre budget et de votre niveau de confiance. Voici les avantages et inconvénients de chaque option :"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Particulier :</strong> Moins cher, mais aucun recours en cas de problème."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Concessionnaire :</strong> Offre une garantie, un contrôle mécanique et plus de tranquillité, pour un prix légèrement plus élevé."
-      },
-      {
-        "type": "heading",
-        "text": "🧠 FAQ – Achat moto d’occasion"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Quel kilométrage maximum pour une moto ?</strong><br/>Une moto moderne peut dépasser 80 000 km si elle est bien entretenue."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Une moto sans facture est-elle risquée ?</strong><br/>Oui, car il est impossible de prouver l’entretien réel."
-      },
-       {
-        "type": "paragraph",
-        "html": "<strong>Faut-il privilégier une concession ?</strong><br/>Pour un débutant, c'est souvent plus sécurisant."
       },
       {
         "type": "heading",
@@ -482,7 +218,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais. Une bonne moto se choisit avec la tête avant le cœur."
+        "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais."
       },
       {
         "type": "signature",
@@ -505,26 +241,6 @@
       {
         "type": "paragraph",
         "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite."
-      },
-      {
-        "type": "paragraph",
-        "text": "Avec le permis A2, tu peux conduire une moto limitée à 35 kW (47,5 chevaux) avec un rapport puissance/poids maximal de 0,2 kW/kg (Service Public)."
-      },
-      {
-        "type": "paragraph",
-        "text": "Le but ? Apprendre progressivement sans être dépassé par la puissance."
-      },
-      {
-        "type": "paragraph",
-        "text": "Dans ce guide, on va voir :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "comment choisir ta moto A2",
-          "les erreurs à éviter",
-          "les meilleures motos par catégorie"
-        ]
       },
       {
         "type": "heading",
@@ -559,10 +275,6 @@
         "html": "👉 Les motos peuvent être A2 natives (ex : KTM 390 Duke) ou bridables (ex : Yamaha MT-07, Kawasaki Z650, Suzuki SV650)."
       },
       {
-        "type": "paragraph",
-        "text": "Avant de regarder un modèle précis, pose-toi ces 4 questions."
-      },
-      {
         "type": "heading",
         "text": "1. Ton gabarit"
       },
@@ -571,336 +283,12 @@
         "text": "Une moto trop haute = peur à l’arrêt. Une moto trop lourde = fatigue + chute à basse vitesse."
       },
       {
-        "type": "paragraph",
-        "text": "➡️ Privilégie :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "selle basse",
-          "poids < 200 kg",
-          "centre de gravité bas"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "2. Ton usage"
-      },
-      {
-        "type": "list",
-        "items": [
-          "Ville quotidienne → roadster léger",
-          "Autoroute → trail",
-          "Plaisir weekend → sportive"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "3. Ton budget réel"
-      },
-      {
-        "type": "paragraph",
-        "text": "Ne regarde pas que le prix d’achat. Pense à :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "assurance (souvent plus chère que la moto)",
-          "pneus",
-          "révisions",
-          "antivol"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "4. Ton mental"
-      },
-      {
-        "type": "paragraph",
-        "text": "Débutant = la confiance compte plus que la puissance. La meilleure moto n’est pas la plus rapide. C’est celle qui te donne envie de rouler tous les jours."
-      },
-      {
-        "type": "heading",
-        "text": "Meilleures motos roadster permis A2"
-      },
-      {
-        "type": "paragraph",
-        "text": "Les roadsters sont les motos idéales pour apprendre : légers, maniables et économiques."
-      },
-      {
-        "type": "heading",
-        "text": "Yamaha MT-07 / XSR700 (A2)"
-      },
-      {
-        "type": "paragraph",
-        "text": "La référence absolue du permis A2. Son moteur CP2 très coupleux pardonne les erreurs."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : moteur vivant, très facile en ville, forte revente"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : très volée, assurance élevée"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : motard urbain quotidien"
-      },
-      {
-        "type": "heading",
-        "text": "Honda CB500 Hornet"
-      },
-      {
-        "type": "paragraph",
-        "text": "La moto école parfaite. Simple, fiable, rassurante."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : ultra accessible, faible coût d’entretien, excellente fiabilité"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : manque de sensations"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : débutant stressé"
-      },
-      {
-        "type": "heading",
-        "text": "Kawasaki Z650"
-      },
-      {
-        "type": "paragraph",
-        "text": "Plus mature, plus valorisante, idéale pour garder après la passerelle A."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : polyvalente, confortable, belle finition"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : assurance élevée"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : motard qui veut évoluer"
-      },
-      {
-        "type": "heading",
-        "text": "KTM 390 Duke"
-      },
-      {
-        "type": "paragraph",
-        "text": "La meilleure école de pilotage. Ultra légère."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : fun immédiat, assurance faible, hyper maniable"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : moins confortable, réseau plus rare"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : ville uniquement"
-      },
-      {
-        "type": "heading",
-        "text": "Meilleurs trails permis A2"
-      },
-      {
-        "type": "paragraph",
-        "text": "Confortables et polyvalents, les trails sont parfaits pour rouler toute l’année."
-      },
-      {
-        "type": "heading",
-        "text": "Yamaha Tracer 7"
-      },
-      {
-        "type": "paragraph",
-        "text": "La routière parfaite du permis A2."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : confort, protection vent, moteur agréable"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : chère à assurer"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : trajets domicile travail"
-      },
-      {
-        "type": "heading",
-        "text": "Honda NX500 (CB500X)"
-      },
-      {
-        "type": "paragraph",
-        "text": "La moto rationnelle par excellence."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : fiabilité, faible consommation, polyvalence"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : peu de caractère"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : utilitaire quotidien"
-      },
-      {
-        "type": "heading",
-        "text": "Royal Enfield Himalayan 450"
-      },
-      {
-        "type": "paragraph",
-        "text": "Simple, robuste et accessible."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : prix, confort, facilité"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : performances limitées"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : balade / loisir"
-      },
-      {
-        "type": "heading",
-        "text": "Meilleures sportives permis A2"
-      },
-      {
-        "type": "paragraph",
-        "text": "Pour ceux qui veulent le look sport sans danger."
-      },
-      {
-        "type": "heading",
-        "text": "Yamaha R7"
-      },
-      {
-        "type": "paragraph",
-        "text": "La sportive plaisir."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : look, sensations, valorisante"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : position fatigante, assurance"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : passion"
-      },
-      {
-        "type": "heading",
-        "text": "Honda CBR500R"
-      },
-      {
-        "type": "paragraph",
-        "text": "La sportive facile."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : rassurante, économique, fiable"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : manque de caractère"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : débutant sportif"
-      },
-      {
-        "type": "heading",
-        "text": "Kawasaki Ninja 650"
-      },
-      {
-        "type": "paragraph",
-        "text": "Le compromis idéal."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Forces</strong> : polyvalence, confort, performances"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faiblesses</strong> : assurance"
-      },
-      {
-        "type": "paragraph",
-        "text": "👉 Profil : daily + plaisir"
-      },
-      {
-        "type": "heading",
-        "text": "Tableau comparatif motos A2"
-      },
-      {
-        "type": "table",
-        "headers": [
-          "Moto",
-          "Type",
-          "Facilité",
-          "Budget",
-          "Assurance",
-          "Revente"
-        ],
-        "rows": [
-          [ "MT-07", "Roadster", "🟩", "🟧", "🟥", "🟩" ],
-          [ "CB500 Hornet", "Roadster", "🟩", "🟩", "🟩", "🟧" ],
-          [ "Z650", "Roadster", "🟧", "🟧", "🟥", "🟩" ],
-          [ "390 Duke", "Roadster", "🟩", "🟩", "🟩", "🟧" ],
-          [ "Tracer 7", "Trail", "🟩", "🟧", "🟥", "🟩" ],
-          [ "NX500", "Trail", "🟩", "🟩", "🟩", "🟧" ],
-          [ "Himalayan", "Trail", "🟧", "🟩", "🟩", "🟧" ],
-          [ "R7", "Sportive", "🟧", "🟧", "🟥", "🟩" ],
-          [ "CBR500R", "Sportive", "🟩", "🟩", "🟩", "🟩" ],
-          [ "Ninja 650", "Sportive", "🟧", "🟧", "🟥", "🟩" ]
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "FAQ – Permis A2"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Quelle puissance maximale pour le permis A2 ?</strong><br/>Une moto ne doit pas dépasser 35 kW (47,5 ch) (Service Public)."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Peut-on conduire une 600cc en A2 ?</strong><br/>Oui si elle respecte la puissance et le ratio poids/puissance (rideto.com)."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Combien de temps garder une moto A2 ?</strong><br/>Minimum 2 ans avant la passerelle A (cantal.gouv.fr)."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Quelle est la meilleure moto A2 ?</strong><br/>La meilleure est celle adaptée à ton usage quotidien."
-      },
-       {
-        "type": "paragraph",
-        "html": "Maintenant que tu sais quelle moto te correspond, il reste l’étape la plus importante : l’achat. Pour éviter les mauvaises surprises, consulte <a href=\"/info/5\" class=\"text-accent underline hover:text-accent/80\">notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion</a>."
-      },
-      {
         "type": "heading",
         "text": "Conclusion"
       },
       {
         "type": "paragraph",
-        "text": "Choisir sa moto A2 n’est pas une question de performance mais de confiance. Une moto rassurante te fera progresser plus vite qu’une moto impressionnante. Prends celle qui te donne envie de rouler — c’est toujours la bonne."
+        "text": "Choisir sa moto A2 n’est pas une question de performance mais de confiance. Une moto rassurante te fera progresser plus vite qu’une moto impressionnante."
       },
       {
         "type": "signature",
@@ -911,3 +299,4 @@
     ]
   }
 ]
+    

@@ -191,3 +191,4 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     </div>
   );
 }
+    

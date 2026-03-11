@@ -81,6 +81,88 @@
     ]
   },
   {
+    "modelId": "honda-cb650r",
+    "modelName": "Honda CB650R",
+    "brand": "Honda",
+    "year": "2020+",
+    "imageUrl": "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Honda CB650R",
+    "engine": {
+      "bridage": "✔ Permis A2 (version bridée 35 kW / 47,5 ch) – version full power 70 kW / 95 ch disponible",
+      "type": "4 cylindres en ligne, 4 temps, refroidissement liquide, double ACT, 16 soupapes",
+      "displacement": "649 cm³",
+      "power": "35 kW (47,5 ch) [bridée] / 70 kW (95 ch) [full]",
+      "torque": "49 N.m [bridé] / 63 N.m [full]",
+      "alimentation": "Injection électronique PGM-FI"
+    },
+    "dimensions": {
+      "seatHeight": "810 mm",
+      "wetWeight": "202 - 206 kg",
+      "fuelCapacity": "15,4 L",
+      "wheelbase": "1 450 mm"
+    },
+    "chassis": {
+      "frame": "Type diamant en acier",
+      "frontSuspension": "Fourche inversée Showa SFF-BP Ø41 mm",
+      "rearSuspension": "Mono-amortisseur réglable en précharge",
+      "frontBrake": "Double disque Ø310 mm",
+      "rearBrake": "Disque Ø240 mm",
+      "frontTire": "120/70 ZR17",
+      "rearTire": "180/55 ZR17"
+    },
+    "introduction": "La Honda CB650R est un roadster 4 cylindres très apprécié pour sa souplesse, sa finition et son agrément moteur. En version A2, elle reste accessible tout en conservant le caractère d’un 650 quatre cylindres. Son entretien est plus coûteux qu’un bicylindre 500, mais il reste raisonnable si les préconisations constructeur sont respectées.",
+    "content": [
+      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
+      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda CB650R." },
+      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
+      { "type": "heading", "text": "Intervalles d’entretien constructeur CB650R" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
+          ["1 000 km", "Révision de rodage"],
+          ["12 000 km", "Vidange + contrôles"],
+          ["24 000 km", "Bougies + filtre à air"],
+          ["48 000 km", "Réglage soupapes + entretien complet"]
+      ]},
+      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
+      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
+          ["1 000 km", "150 à 220 €"],
+          ["12 000 km", "250 à 350 €"],
+          ["24 000 km", "400 à 550 €"],
+          ["48 000 km", "700 à 900 €"]
+      ]},
+      { "type": "paragraph", "html": "Ces montants restent des estimations prudentes : ils peuvent varier selon l’atelier, la région et les opérations complémentaires." },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
+      { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "8 000 à 15 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes", "10 000 à 20 000 km"],
+        ["Batterie", "3 à 5 ans"]
+      ]},
+      { "type": "heading", "text": "Fiabilité et problèmes connus" },
+      { "type": "list", "items": [
+          "Chaleur moteur perceptible en ville",
+          "Entretien plus coûteux qu’un bicylindre A2 classique",
+          "Chaîne d’origine à surveiller régulièrement",
+          "Poids un peu élevé pour un jeune permis"
+      ]},
+      { "type": "cta-concession", "text": "🔘 Voir les Honda CB650R en concession" },
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "list", "items": [
+          "Temps de chauffe moteur recommandé avant de monter dans les tours",
+          "Graissage de la chaîne tous les 500 km ou après chaque pluie",
+          "Vidange annuelle même si le kilométrage n’est pas atteint",
+          "Contrôle régulier de la pression des pneus"
+      ]},
+      { "type": "heading", "text": "FAQ entretien CB650R" },
+      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 12 000 km ou tous les ans au premier des deux termes échus." },
+      { "type": "paragraph", "html": "<strong>La Honda CB650R est-elle compatible A2 ?</strong><br/>Oui, en version bridée 35 kW / 47,5 ch. La version full power développe 70 kW / 95 ch." },
+      { "type": "heading", "text": "Conclusion" },
+      { "type": "paragraph", "text": "Valorisante, souple et bien finie, la Honda CB650R 2020+ est une moto A2 premium. Son entretien coûte un peu plus cher qu’une 500 bicylindre, mais elle reste une excellente option pour ceux que veulent un vrai 4 cylindres accessible." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=3", "alt": "Cachet Label Moto" }
+    ]
+  },
+  {
     "modelId": "honda-cb500-hornet",
     "modelName": "Honda CB500F / CB500 Hornet",
     "brand": "Honda",
@@ -117,10 +199,10 @@
       { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
       { "type": "heading", "text": "Intervalles d’entretien constructeur CB500F" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["12 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["24 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["48 000 km", "Réglage soupapes + entretien complet (Forfait Excellence)"]
+          ["1 000 km", "Révision de rodage"],
+          ["12 000 km", "Vidange + contrôles"],
+          ["24 000 km", "Bougies + filtre air"],
+          ["48 000 km", "Réglage soupapes + entretien complet"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
       { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
@@ -198,10 +280,10 @@
       { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
       { "type": "heading", "text": "Intervalles d’entretien constructeur NX500" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["12 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["24 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["48 000 km", "Réglage soupapes (Forfait Excellence)"]
+          ["1 000 km", "Révision de rodage"],
+          ["12 000 km", "Vidange + contrôles"],
+          ["24 000 km", "Bougies + filtre air"],
+          ["48 000 km", "Réglage soupapes"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
       { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
@@ -372,7 +454,7 @@
           ["24 000 km", "400 à 550 €"],
           ["48 000 km", "700 à 900 €"]
       ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier, la région et les opérations complémentaires. Il s’agit d’une <strong>estimation réaliste</strong> pour se prémunir d’éventuelles évolutions tarifaires." },
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier, la région et les opérations complémentaires. Il s’agit d’une estimation réaliste pour se prémunir d’éventuelles évolutions tarifaires." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -398,7 +480,7 @@
       ]},
       { "type": "heading", "text": "FAQ entretien XL750 Transalp" },
       { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 12 000 km ou tous les ans au premier des deux termes échus." },
-      { "type": "paragraph", "html": "<strong>La Honda XL750 Transalp est-elle compatible A2 ?</strong><br/>Oui, Honda la propose en version <strong>A2 permis</strong>, avec bridage à 35 kW." },
+      { "type": "paragraph", "html": "<strong>La Honda XL750 Transalp est-elle compatible A2 ?</strong><br/>Oui, Honda la propose en version A2 permis, avec bridage à 35 kW." },
       { "type": "heading", "text": "Conclusion" },
       { "type": "paragraph", "text": "Polyvalente, confortable et bien pensée pour le voyage, la Honda XL750 Transalp est un trail moderne très cohérent. Bien entretenue, elle reste raisonnable à l’usage et constitue une excellente option pour les motards qui veulent une vraie moto de route et d’aventure." },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=3", "alt": "Cachet Label Moto" }
@@ -449,10 +531,10 @@
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "140 à 220 €"],
-          ["10 000 km", "180 à 260 €"],
-          ["20 000 km", "320 à 460 €"],
-          ["40 000 km", "580 à 720 €"]
+          ["1 000 km", "180 à 200 €"],
+          ["10 000 km", "220 à 240 €"],
+          ["20 000 km", "360 à 420 €"],
+          ["40 000 km", "620 à 680 €"]
       ]},
       { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
@@ -530,10 +612,10 @@
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée." },
       { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
       { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "140 à 220 €"],
-          ["10 000 km", "180 à 260 €"],
-          ["20 000 km", "320 à 460 €"],
-          ["40 000 km", "580 à 720 €"]
+          ["1 000 km", "180 à 200 €"],
+          ["10 000 km", "220 à 240 €"],
+          ["20 000 km", "360 à 420 €"],
+          ["40 000 km", "620 à 680 €"]
       ]},
       { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
@@ -648,3 +730,4 @@
     ]
   }
 ]
+    

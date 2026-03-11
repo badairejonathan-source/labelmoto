@@ -391,3 +391,4 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     </div>
   );
 }
+    

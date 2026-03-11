@@ -83,8 +83,8 @@ const article = {
           "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500F / CB500 Hornet</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
           "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>", 
           "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp</a> <span class='text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold ml-1'>Éligible A2</span>",
           "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R</a> <span class='text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold ml-1'>Éligible A2</span>",
+          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp</a> <span class='text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold ml-1'>Éligible A2</span>",
           "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a> <span class='text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold ml-1'>A1 / B / A2</span>"
         ]
       },
@@ -117,87 +117,6 @@ const article = {
       {
         "type": "heading",
         "text": "Comment fonctionne l’entretien d’une moto ?"
-      },
-      {
-        "type": "paragraph",
-        "text": "Une moto demande un suivi plus fréquent qu’une voiture. Le moteur tourne plus vite et les éléments de sécurité sont plus sollicités. L’entretien repose sur trois éléments principaux."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Les révisions périodiques</strong>"
-      },
-      {
-        "type": "list",
-        "items": [
-          "1 000 km → révision de rodage",
-          "10 000 km → entretien courant",
-          "20 000 km → contrôle mécanique important",
-          "40 000 km → grosse révision"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Même avec peu de kilomètres, une vidange annuelle reste recommandée."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Les consommables</strong>"
-      },
-      {
-        "type": "table",
-        "headers": ["Pièce", "Durée moyenne"],
-        "rows": [
-          ["Pneus", "8 000 à 15 000 km"],
-          ["Kit chaîne", "20 000 à 30 000 km"],
-          ["Plaquettes", "10 000 à 20 000 km"],
-          ["Batterie", "3 à 5 ans"]
-        ]
-      },
-       {
-        "type": "paragraph",
-        "text": "Un mauvais suivi multiplie souvent les réparations."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Les contrôles de sécurité</strong>"
-      },
-      {
-        "type": "paragraph",
-        "text": "Pression pneus, tension chaîne et niveaux permettent d’éviter la majorité des pannes."
-      },
-      {
-        "type": "heading",
-        "text": "Combien coûte l’entretien d’une moto ?"
-      },
-      {
-        "type": "table",
-        "headers": ["Usage", "Budget annuel"],
-        "rows": [
-          ["Occasionnel", "200 à 400 €"],
-          ["Quotidien", "400 à 800 €"],
-          ["Gros rouleur", "800 € et +"]
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Le coût dépend surtout du modèle, du style de conduite et du suivi."
-      },
-      {
-        "type": "paragraph",
-        "html": "A2 👉 Pour estimer ton budget global, consulte aussi <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">notre guide sur le coût réel d’une moto par mois</a>."
-      },
-      {
-        "type": "heading",
-        "text": "Pourquoi respecter l’entretien constructeur ?"
-      },
-      {
-        "type": "list",
-        "items": [
-          "éviter les pannes coûteuses",
-          "augmenter la durée de vie moteur",
-          "faciliter la revente",
-          "rouler en sécurité"
-        ]
       },
       {
         "type": "heading",
@@ -375,3 +294,4 @@ export default function EntretienPage() {
     </div>
   );
 }
+    
