@@ -34,7 +34,7 @@ type ArticleContent = {
 const article = {
     "id": "7",
     "title": "Entretien moto : intervalles, prix et conseils par modèle",
-    "description": "Trouve rapidement les intervalles d’entretien et le coût des révisions pour ta moto.",
+    "description": "Trouvez rapidement les intervalles d’entretien, le prix des révisions et les points de fiabilité de votre moto.",
     "author": "L'équipe Label Moto",
     "date": "29 juillet 2024",
     "readingTime": "4 min de lecture",
@@ -43,19 +43,26 @@ const article = {
     "content": [
       {
         "type": "paragraph",
-        "text": "Entretenir sa moto, ce n’est pas seulement éviter les pannes. C’est aussi préserver le plaisir de conduite, la sécurité et la valeur de revente."
-      },
-      {
-        "type": "paragraph",
-        "html": "Pourtant, beaucoup de motards — surtout débutants — ne savent pas exactement :<br/>• quand faire une révision<br/>• ce que vérifie réellement un garage<br/>• combien prévoir dans le budget annuel"
-      },
-      {
-        "type": "paragraph",
-        "text": "Résultat : soit ils dépensent trop… soit ils attendent trop longtemps. Dans cette rubrique, tu trouveras une fiche d’entretien complète pour chaque modèle, avec les intervalles constructeur, les coûts moyens et les points de fiabilité à surveiller."
+        "text": "Trouvez rapidement les intervalles d’entretien, le prix des révisions et les points de fiabilité de votre moto. Choisissez votre marque puis votre modèle pour accéder à sa fiche complète."
       },
       {
         "type": "heading",
-        "text": "Choisir sa moto"
+        "text": "Modèles les plus recherchés"
+      },
+      {
+        "type": "list",
+        "items": [
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">Yamaha MT-07 A2</a>",
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">Honda CB500F / CB500 Hornet A2</a>",
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Kawasaki Z650 / Z650RS A2</a>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Yamaha Tracer 7 A2</a>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">Honda NX500 / CB500X A2</a>",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">Yamaha R7 A2</a>"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Trouver la fiche de votre moto"
       },
       {
         "type": "paragraph",
@@ -74,11 +81,11 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2</a>",
+          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>",
+          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"
         ]
       },
       {
@@ -88,12 +95,12 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500F / CB500 Hornet</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>", 
-          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R</a> <span class='text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold ml-1'>Éligible A2</span>",
-          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp</a> <span class='text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold ml-1'>Éligible A2</span>",
-          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a> <span class='text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold ml-1'>A1 / B / A2</span>"
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500F / CB500 Hornet A2</a>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", 
+          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>",
+          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R éligible A2</a>",
+          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp éligible A2</a>",
+          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R A1 / B / A2</a>"
         ]
       },
       {
@@ -103,8 +110,8 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>",
+          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650 A2</a>"
         ]
       },
       {
@@ -114,13 +121,13 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>",
-          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650</a> <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-bold ml-1'>A2</span>"
+          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 A2</a>",
+          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 A2</a>"
         ]
       },
       {
         "type": "paragraph",
-        "text": "(De nouveaux modèles seront ajoutés régulièrement)"
+        "html": "<em>De nouveaux modèles seront ajoutés régulièrement.</em>"
       },
       {
         "type": "heading",
@@ -128,7 +135,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "text": "Contrairement à une voiture, une moto demande un suivi plus fréquent. Le moteur tourne plus vite, les pièces sont plus exposées et les éléments de sécurité (freins, pneus, transmission) travaillent davantage."
+        "text": "Une moto demande un suivi plus fréquent qu’une voiture. Le moteur tourne plus vite, les pièces sont plus exposées et les organes de sécurité comme les freins, pneus et transmission travaillent davantage."
       },
       {
         "type": "heading",
@@ -143,13 +150,13 @@ const article = {
         "items": [
           "<strong>1 000 km</strong> → révision de rodage",
           "<strong>10 000 km</strong> → entretien courant",
-          "<strong>20 000 km</strong> → contrôle mécanique important",
+          "<strong>20 000 km</strong> → contrôle mécanique plus complet",
           "<strong>40 000 km</strong> → grosse révision"
         ]
       },
       {
         "type": "paragraph",
-        "text": "Même si tu roules peu, une vidange annuelle reste recommandée."
+        "text": "Même si vous roulez peu, une vidange annuelle reste souvent recommandée."
       },
       {
         "type": "heading",
@@ -157,7 +164,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "text": "Certaines pièces s’usent naturellement :"
+        "text": "Certaines pièces s’usent naturellement et doivent être surveillées régulièrement."
       },
       {
         "type": "table",
@@ -171,7 +178,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "<em>Un mauvais entretien multiplie souvent la facture par deux.</em>"
+        "html": "Un mauvais suivi multiplie souvent la facture finale."
       },
       {
         "type": "heading",
@@ -179,7 +186,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "text": "Pression pneus, tension chaîne, niveaux… Ce sont de petites vérifications régulières qui évitent les grosses réparations."
+        "text": "Pression des pneus, tension de chaîne, niveaux, freins… Ces vérifications simples évitent une grande partie des pannes et prolongent la durée de vie de la moto."
       },
       {
         "type": "heading",
@@ -187,7 +194,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "text": "En moyenne, un motard dépense par an :"
+        "text": "Le budget d’entretien dépend du modèle, du style de conduite et de la fréquence d’utilisation."
       },
       {
         "type": "table",
@@ -200,19 +207,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "La différence vient surtout :<br/>• du modèle<br/>• du style de conduite<br/>• du suivi régulier"
-      },
-      {
-        "type": "paragraph",
-        "html": "👉 Pour estimer ton budget global, consulte aussi notre guide sur le coût réel d’une moto par mois."
-      },
-      {
-        "type": "heading",
-        "text": "Le détail par fiche"
-      },
-      {
-        "type": "paragraph",
-        "html": "Chaque fiche détaille :<br/>• intervalles d’entretien<br/>• coût des révisions<br/>• fiabilité connue<br/>• conseils de longévité"
+        "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">coût réel d’une moto par mois</a>."
       },
       {
         "type": "heading",
@@ -222,14 +217,15 @@ const article = {
         "type": "list",
         "items": [
           "d’éviter les pannes coûteuses",
-          "d’augmenter la durée de vie moteur",
+          "d’augmenter la durée de vie du moteur",
           "de faciliter la revente",
-          "de rouler en sécurité"
+          "de rouler plus sereinement",
+          "de préserver les performances de la moto"
         ]
       },
       {
         "type": "paragraph",
-        "text": "Une moto bien entretenue dépasse souvent 80 000 km sans problème majeur."
+        "text": "Une moto bien entretenue peut dépasser 80 000 km sans problème majeur, et souvent bien plus selon les modèles."
       },
       {
         "type": "heading",
@@ -237,11 +233,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "text": "Un bon entretien ne sert pas seulement à protéger ta moto… Il protège surtout ton budget. Prendre 5 minutes pour vérifier sa machine régulièrement peut éviter plusieurs centaines d’euros de réparation."
-      },
-      {
-        "type": "paragraph",
-        "text": "Choisis ta moto ci-dessus pour accéder à sa fiche complète."
+        "text": "Un bon entretien ne protège pas seulement votre moto : il protège aussi votre budget. Choisissez votre modèle ci-dessus pour accéder à sa fiche détaillée."
       },
       {
         "type": "signature",
