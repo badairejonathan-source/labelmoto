@@ -21,13 +21,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const article = {
-    "id": "7",
     "title": "Entretien moto : intervalles, prix et conseils par modèle",
-    "description": "Trouvez rapidement les intervalles d’entretien, le prix des révisions et les points de fiabilité de votre moto.",
-    "author": "L'équipe Label Moto",
-    "readingTime": "4 min de lecture",
-    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
-    "imageHint": "motorcycle maintenance",
     "content": [
       {
         "type": "paragraph",
@@ -41,11 +35,11 @@ const article = {
         "type": "list",
         "items": [
           "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2</a>",
+          "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z900 A2 / Full</a>",
           "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F / CB500 Hornet A2</a>",
           "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z650 / Z650RS A2</a>",
           "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha Tracer 7 A2</a>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda NX500 / CB500X A2</a>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha R7 A2</a>"
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda NX500 / CB500X A2</a>"
         ]
       },
       {
@@ -98,6 +92,8 @@ const article = {
       {
         "type": "list",
         "items": [
+          "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80\">Z900 A2 / Full</a>",
+          "<a href=\"/fiches/kawasaki-z900rs\" class=\"text-brand underline hover:text-brand/80\">Z900RS A2 / Full</a>",
           "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>",
           "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650 A2</a>"
         ]
@@ -151,10 +147,6 @@ const article = {
         "text": "2. Les consommables"
       },
       {
-        "type": "paragraph",
-        "text": "Certaines pièces s’usent naturellement et doivent être surveillées régulièrement."
-      },
-      {
         "type": "table",
         "headers": ["Pièce", "Durée moyenne"],
         "rows": [
@@ -163,10 +155,6 @@ const article = {
           ["Plaquettes", "10 000 à 20 000 km"],
           ["Batterie", "3 à 5 ans"]
         ]
-      },
-      {
-        "type": "paragraph",
-        "html": "Un mauvais suivi multiplie souvent la facture finale."
       },
       {
         "type": "heading",
@@ -181,10 +169,6 @@ const article = {
         "text": "Combien coûte l’entretien d’une moto ?"
       },
       {
-        "type": "paragraph",
-        "text": "Le budget d’entretien dépend du modèle, du style de conduite et de la fréquence d’utilisation."
-      },
-      {
         "type": "table",
         "headers": ["Type d’usage", "Budget annuel"],
         "rows": [
@@ -195,33 +179,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80 font-bold\">coût réel d’une moto par mois</a>."
-      },
-      {
-        "type": "heading",
-        "text": "Pourquoi suivre l’entretien constructeur ?"
-      },
-      {
-        "type": "list",
-        "items": [
-          "d’éviter les pannes coûteuses",
-          "d’augmenter la durée de vie du moteur",
-          "de faciliter la revente",
-          "de rouler plus sereinement",
-          "de préserver les performances de la moto"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Une moto bien entretenue peut dépasser 80 000 km sans problème majeur, et souvent bien plus selon les modèles."
-      },
-      {
-        "type": "heading",
-        "text": "Conclusion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Un bon entretien ne protège pas seulement votre moto : il protège aussi votre budget. Choisissez votre modèle ci-dessus pour accéder à sa fiche détaillée."
+        "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <strong>coût réel d’une moto par mois</strong>."
       }
     ]
 } as const;
@@ -241,28 +199,21 @@ export default function EntretienPage() {
   };
 
   const renderContent = () => {
-    if (!article.content || article.content.length === 0) {
-      return <p className="text-lg text-muted-foreground">Contenu de l'article à venir...</p>;
-    }
-
     return article.content.map((block, index) => {
       switch (block.type) {
         case 'heading':
           return <h2 key={index} className="text-2xl font-bold mt-12 mb-6 text-foreground border-b pb-2">{block.text}</h2>;
-        
         case 'list':
           return (
             <ul key={index} className="list-disc list-inside space-y-2 my-4 ml-4">
               {block.items?.map((item, i) => <li key={i} className="text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />)}
             </ul>
           );
-
         case 'paragraph':
           if (block.html) {
             return <p key={index} className="text-base leading-relaxed my-4" dangerouslySetInnerHTML={{ __html: block.html }} />;
           }
           return <p key={index} className="text-base leading-relaxed my-4">{block.text}</p>;
-          
         case 'table':
           return (
             <div key={index} className="my-6 overflow-x-auto rounded-lg border shadow-sm">
@@ -286,7 +237,6 @@ export default function EntretienPage() {
               </Table>
             </div>
           );
-
         default:
           return null;
       }
