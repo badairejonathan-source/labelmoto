@@ -39,12 +39,12 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">Yamaha MT-07 A2</a>",
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">Honda CB500F / CB500 Hornet A2</a>",
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Kawasaki Z650 / Z650RS A2</a>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Yamaha Tracer 7 A2</a>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">Honda NX500 / CB500X A2</a>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">Yamaha R7 A2</a>"
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 [A2]</a>",
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F / CB500 Hornet [A2]</a>",
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z650 / Z650RS [A2]</a>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha Tracer 7 [A2]</a>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda NX500 / CB500X [A2]</a>",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha R7 [A2]</a>"
         ]
       },
       {
@@ -53,7 +53,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "<strong>BMW</strong>"
+        "html": "<span class=\"text-xl font-bold\">BMW</span>"
       },
       {
         "type": "list",
@@ -63,53 +63,53 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "<strong>Yamaha</strong>"
+        "html": "<span class=\"text-xl font-bold\">Yamaha</span>"
       },
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2</a>",
-          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>",
-          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"
+          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 [A2]</a>",
+          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 [A2]</a>",
+          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 [A2]</a>",
+          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 [A2]</a>",
+          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 [A2]</a>"
         ]
       },
       {
         "type": "paragraph",
-        "html": "<strong>Honda</strong>"
+        "html": "<span class=\"text-xl font-bold\">Honda</span>"
       },
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500F / CB500 Hornet A2</a>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", 
-          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>",
-          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R éligible A2</a>",
-          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp éligible A2</a>",
-          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R A1 / B / A2</a>"
+          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500F / CB500 Hornet [A2]</a>",
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X [A2]</a>", 
+          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R [A2]</a>",
+          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R [Éligible A2]</a>",
+          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp [Éligible A2]</a>",
+          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R [A1 / B]</a>"
         ]
       },
       {
         "type": "paragraph",
-        "html": "<strong>Kawasaki</strong>"
+        "html": "<span class=\"text-xl font-bold\">Kawasaki</span>"
       },
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>",
-          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650 A2</a>"
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS [A2]</a>",
+          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650 [A2]</a>"
         ]
       },
       {
         "type": "paragraph",
-        "html": "<strong>Suzuki</strong>"
+        "html": "<span class=\"text-xl font-bold\">Suzuki</span>"
       },
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 A2</a>",
-          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 A2</a>"
+          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 [A2]</a>",
+          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 [A2]</a>"
         ]
       },
       {
@@ -194,7 +194,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80\">coût réel d’une moto par mois</a>."
+        "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <a href=\"/info/4\" class=\"text-brand underline hover:text-brand/80 font-bold\">coût réel d’une moto par mois</a>."
       },
       {
         "type": "heading",
@@ -247,7 +247,7 @@ export default function EntretienPage() {
     return article.content.map((block, index) => {
       switch (block.type) {
         case 'heading':
-          return <h2 key={index} className="text-3xl font-bold mt-12 mb-6 text-foreground text-center border-y border-foreground/20 py-2">{block.text}</h2>;
+          return <h2 key={index} className="text-2xl font-bold mt-12 mb-6 text-foreground border-b pb-2">{block.text}</h2>;
         
         case 'list':
           return (
@@ -264,12 +264,12 @@ export default function EntretienPage() {
           
         case 'table':
           return (
-            <div key={index} className="my-6 overflow-x-auto">
+            <div key={index} className="my-6 overflow-x-auto rounded-lg border shadow-sm">
               <Table className="min-w-full text-sm">
-                <TableHeader>
+                <TableHeader className="bg-muted/50">
                   <TableRow>
                     {block.headers?.map((header: string, hIndex: number) => (
-                      <TableHead key={hIndex} className="font-semibold">{header}</TableHead>
+                      <TableHead key={hIndex} className="font-bold text-foreground py-4">{header}</TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
@@ -277,7 +277,7 @@ export default function EntretienPage() {
                   {block.rows?.map((row: (string | number)[], rIndex: number) => (
                     <TableRow key={rIndex}>
                       {row.map((cell: (string | number), cIndex: number) => (
-                        <TableCell key={cIndex} className={cIndex === 0 ? 'font-medium' : ''}>{cell}</TableCell>
+                        <TableCell key={cIndex} className={cn("py-4", cIndex === 0 ? 'font-bold' : '')}>{cell}</TableCell>
                       ))}
                     </TableRow>
                   ))}
@@ -313,7 +313,7 @@ export default function EntretienPage() {
       </div>
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 font-bold">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil
           </Link>
@@ -321,7 +321,7 @@ export default function EntretienPage() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-8">
               <article>
-                <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight text-foreground mb-8 text-center">
+                <h1 className="text-4xl md:text-5xl font-black leading-tight tracking-tighter text-foreground mb-12 uppercase">
                   {article.title}
                 </h1>
                 <div className="space-y-4">
@@ -332,29 +332,29 @@ export default function EntretienPage() {
 
             <aside className="md:col-span-4 relative">
                 <div className="md:sticky md:top-28 space-y-6">
-                    <Card className="overflow-hidden shadow-lg border-2 border-primary/20 max-w-sm mx-auto md:max-w-none">
-                        <CardHeader className="p-4 lg:p-6">
-                            <CardTitle className="flex items-center gap-2 text-primary text-base lg:text-xl">
-                                <Map className="h-4 w-4 lg:h-5 w-5"/>
-                                Trouver une concession
+                    <Card className="overflow-hidden shadow-xl border-2 border-brand/20 bg-card/50 backdrop-blur-sm rounded-3xl">
+                        <CardHeader className="p-6">
+                            <CardTitle className="flex items-center gap-3 text-brand text-xl font-black uppercase tracking-widest">
+                                <Map className="h-6 w-6"/>
+                                Trouver un pro
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
-                            <Link href="/map" className="block group rounded-lg overflow-hidden border">
+                        <CardContent className="px-6 pb-6">
+                            <Link href="/map" className="block group rounded-2xl overflow-hidden border-2 border-white shadow-lg">
                               <Image 
                                   src="/images/apercucartezoom.png"
                                   alt="Aperçu de la carte"
                                   width={400}
                                   height={300}
-                                  className="object-cover w-full h-40 lg:h-auto transition-transform duration-300 group-hover:scale-105"
+                                  className="object-cover w-full h-48 transition-transform duration-500 group-hover:scale-110"
                               />
                             </Link>
-                            <p className="text-muted-foreground text-sm mt-4 hidden md:block">
+                            <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">
                                 Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
                             </p>
                         </CardContent>
-                        <CardFooter className="p-4 pt-0 lg:p-6 lg:pt-0">
-                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-xs lg:text-base py-3 lg:py-5 rounded-full shadow-lg">
+                        <CardFooter className="px-6 pb-8">
+                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
                                 <Link href="/map">Voir la carte interactive</Link>
                             </Button>
                         </CardFooter>

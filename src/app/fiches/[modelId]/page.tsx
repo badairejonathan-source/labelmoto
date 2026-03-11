@@ -124,11 +124,11 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
 
         case 'cta-compare':
           return (
-            <div key={index} className="mt-6 text-center space-y-4">
+            <div key={index} className="my-8 text-center space-y-4 bg-brand/5 p-8 rounded-3xl border border-brand/10">
               <p className="text-sm text-muted-foreground max-w-2xl mx-auto italic">
                 Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.
               </p>
-              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105">
+              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
                 <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
                   {block.text || "🔘 Comparer les ateliers près de moi"}
                 </Link>
@@ -337,18 +337,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               {fiche.introduction && (
                 <p className="text-xl text-center text-muted-foreground leading-relaxed mb-12 max-w-3xl mx-auto font-medium">{fiche.introduction}</p>
               )}
-
-              <div className="bg-brand/5 border-2 border-brand/20 rounded-3xl p-8 text-center mb-12 shadow-inner">
-                <h4 className="text-2xl font-bold mb-4">Préparez votre prochaine révision sans surprise.</h4>
-                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto font-medium">
-                    Comparez les garages proches de chez vous pour votre {fiche.modelName} et obtenez le meilleur service au prix juste.
-                </p>
-                <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
-                  <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
-                    🔘 Voir les garages autour de moi
-                  </Link>
-                </Button>
-              </div>
               
               <div className="prose prose-brand max-w-none">
                   {renderContent(fiche.content || [])}
@@ -391,4 +379,3 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     </div>
   );
 }
-    
