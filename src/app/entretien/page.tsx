@@ -18,25 +18,12 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-
-type ArticleContent = {
-  type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
-  text?: string;
-  html?: string;
-  items?: string[];
-  headers?: string[];
-  rows?: (string | number)[][];
-  imageUrl?: string;
-  alt?: string;
-};
 
 const article = {
     "id": "7",
     "title": "Entretien moto : intervalles, prix et conseils par modèle",
     "description": "Trouvez rapidement les intervalles d’entretien, le prix des révisions et les points de fiabilité de votre moto.",
     "author": "L'équipe Label Moto",
-    "date": "29 juillet 2024",
     "readingTime": "4 min de lecture",
     "imageUrl": "https://picsum.photos/seed/article-maintenance/1200/600",
     "imageHint": "motorcycle maintenance",
@@ -233,13 +220,7 @@ const article = {
       },
       {
         "type": "paragraph",
-        "text": "Un bon entretien ne protège pas seulement votre moto : il protège aussi votre budget. Choisissez votre modèle ci-dessus pour accéder à sa fiche détaillée."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=3",
-        "alt": "Cachet Label Moto"
+        "text": "Un bon entretien ne protège pas seulement votre moto : il protège aussi votre budget. Choisissez votre modèle ci-dessus pour accéder à sa fiche complète."
       }
     ]
 } as const;
@@ -304,23 +285,6 @@ export default function EntretienPage() {
               </Table>
             </div>
           );
-        
-        case 'signature':
-          if (block.imageUrl) {
-            return (
-              <div key={index} className="flex justify-end items-center mt-[-3rem] sm:mt-[-4rem] mr-0 sm:mr-4">
-                <p className="text-lg font-semibold text-foreground/90 relative z-10">{block.text}</p>
-                <Image 
-                  src={block.imageUrl} 
-                  alt={block.alt || "Signature"} 
-                  width={140} 
-                  height={140}
-                  className="object-contain opacity-70 -rotate-[15deg] pointer-events-none -ml-16"
-                />
-              </div>
-            )
-          }
-          return null;
 
         default:
           return null;
@@ -389,7 +353,6 @@ export default function EntretienPage() {
                             </p>
                         </CardContent>
                         <CardFooter className="p-3 pt-0 lg:p-6 lg:pt-0">
-                            <Badge variant="brand" className="w-full justify-center py-2 mb-2 text-xs font-bold">Focus A2 disponible</Badge>
                             <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-xs lg:text-base py-3 lg:py-5 rounded-full shadow-lg">
                                 <Link href="/map">Voir la carte interactive</Link>
                             </Button>
