@@ -32,25 +32,14 @@
     },
     "introduction": "La Yamaha MT-07 est la référence absolue du segment A2. Son moteur CP2 est réputé pour son couple et sa fiabilité exceptionnelle. Un entretien rigoureux est la clé pour conserver son agrément de conduite.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha MT-07." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur MT-07" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["20 000 km", "Bougies + Filtre air (Forfait Performance)"],
-          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
+      { "type": "heading", "text": "Intervalles et prix des révisions MT-07" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)", "120 à 200 €"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)", "200 à 280 €"],
+          ["20 000 km", "Bougies + Filtre air (Forfait Performance)", "400 à 500 €"],
+          ["40 000 km", "Réglage soupapes (Forfait Excellence)", "750 à 850 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["10 000 km", "200 à 280 €"],
-          ["20 000 km", "400 à 500 €"],
-          ["40 000 km", "750 à 850 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -112,25 +101,14 @@
     },
     "introduction": "La Honda CB125R est l’un des roadsters 125 les plus valorisants du marché. Légère, bien finie et économique, elle reste simple à entretenir. Son moteur monocylindre 125 cm³ est fiable, à condition de respecter les vidanges régulières et de surveiller les consommables.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda CB125R." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur CB125R" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["6 000 km", "Vidange + contrôles"],
-          ["12 000 km", "Vidange + filtre + contrôle général"],
-          ["24 000 km", "Bougie + filtre à air + contrôle complet"]
+      { "type": "heading", "text": "Intervalles et prix des révisions CB125R" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "90 à 130 €"],
+          ["6 000 km", "Vidange + contrôles", "120 à 180 €"],
+          ["12 000 km", "Vidange + filtre + contrôle général", "180 à 250 €"],
+          ["24 000 km", "Bougie + filtre à air + contrôle complet", "250 à 350 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "90 à 130 €"],
-          ["6 000 km", "120 à 180 €"],
-          ["12 000 km", "180 à 250 €"],
-          ["24 000 km", "250 à 350 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -195,25 +173,14 @@
     },
     "introduction": "La Honda CB650R est un roadster 4 cylindres très apprécié pour sa souplesse, sa finition et son agrément moteur. En version A2, elle reste accessible tout en conservant le caractère d’un 650 quatre cylindres. Son entretien est plus coûteux qu’un bicylindre 500, mais il reste raisonnable si les préconisations constructeur sont respectées.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda CB650R." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur CB650R" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + filtre à air"],
-          ["48 000 km", "Réglage soupapes + entretien complet"]
+      { "type": "heading", "text": "Intervalles et prix des révisions CB650R" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "150 à 220 €"],
+          ["12 000 km", "Vidange + contrôles", "250 à 350 €"],
+          ["24 000 km", "Bougies + filtre à air", "400 à 550 €"],
+          ["48 000 km", "Réglage soupapes + entretien complet", "700 à 900 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "150 à 220 €"],
-          ["12 000 km", "250 à 350 €"],
-          ["24 000 km", "400 à 550 €"],
-          ["48 000 km", "700 à 900 €"]
-      ]},
-      { "type": "paragraph", "html": "Ces montants restent des estimations prudentes : ils peuvent varier selon l’atelier, la région et les opérations complémentaires." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -277,25 +244,14 @@
     },
     "introduction": "La Honda CB500F (aujourd’hui appelée CB500 Hornet) est l’une des motos les plus accessibles pour le permis A2. Son moteur bicylindre de 471 cm³ est réputé pour sa souplesse, sa fiabilité et son faible coût d’entretien.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda CB500F." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur CB500F" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + filtre air"],
-          ["48 000 km", "Réglage soupapes + entretien complet"]
+      { "type": "heading", "text": "Intervalles et prix des révisions CB500F" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "120 à 180 €"],
+          ["12 000 km", "Vidange + contrôles", "200 à 280 €"],
+          ["24 000 km", "Bougies + filtre air", "350 à 450 €"],
+          ["48 000 km", "Réglage soupapes + entretien complet", "600 à 800 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 180 €"],
-          ["12 000 km", "200 à 280 €"],
-          ["24 000 km", "350 à 450 €"],
-          ["48 000 km", "600 à 800 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -358,25 +314,14 @@
     },
     "introduction": "La Honda NX500 (anciennement CB500X) est l’un des trails A2 les plus polyvalents du marché. Elle combine confort, autonomie et fiabilité. Son moteur bicylindre de 471 cm³ est réputé robuste et demande un entretien relativement simple.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda NX500." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur NX500" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + filtre air"],
-          ["48 000 km", "Réglage soupapes"]
+      { "type": "heading", "text": "Intervalles et prix des révisions NX500" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "120 à 180 €"],
+          ["12 000 km", "Vidange + contrôles", "200 à 280 €"],
+          ["24 000 km", "Bougies + filtre air", "350 à 450 €"],
+          ["48 000 km", "Réglage soupapes + entretien complet", "600 à 800 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 180 €"],
-          ["12 000 km", "200 à 280 €"],
-          ["24 000 km", "350 à 450 €"],
-          ["48 000 km", "600 à 800 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -439,25 +384,14 @@
     },
     "introduction": "La Honda CBR500R est l’une des sportives A2 les plus accessibles du marché. Son moteur bicylindre de 471 cm³ est réputé pour sa souplesse, sa sobriété et sa très bonne fiabilité. Un entretien suivi permet de conserver ses performances et d’éviter les réparations coûteuses.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda CBR500R." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur CBR500R" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + filtre à air"],
-          ["48 000 km", "Réglage soupapes + entretien complet"]
+      { "type": "heading", "text": "Intervalles et prix des révisions CBR500R" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "120 à 180 €"],
+          ["12 000 km", "Vidange + contrôles", "200 à 280 €"],
+          ["24 000 km", "Bougies + filtre à air", "350 à 450 €"],
+          ["48 000 km", "Réglage soupapes + entretien complet", "600 à 800 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 180 €"],
-          ["12 000 km", "200 à 280 €"],
-          ["24 000 km", "350 à 450 €"],
-          ["48 000 km", "600 à 800 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -519,25 +453,14 @@
     },
     "introduction": "La Honda XL750 Transalp est un trail polyvalent très apprécié pour le voyage comme pour un usage quotidien. Son bicylindre de 755 cm³ offre un excellent compromis entre performances, sobriété et agrément. Un entretien régulier permet de préserver sa fiabilité et d’éviter les grosses factures sur le long terme.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda XL750 Transalp." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur XL750 Transalp" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles"],
-          ["24 000 km", "Bougies + filtre à air"],
-          ["48 000 km", "Réglage soupapes + entretien complet"]
+      { "type": "heading", "text": "Intervalles et prix des révisions XL750 Transalp" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "150 à 220 €"],
+          ["12 000 km", "Vidange + contrôles", "220 à 320 €"],
+          ["24 000 km", "Bougies + filtre à air", "400 à 550 €"],
+          ["48 000 km", "Réglage soupapes + entretien complet", "700 à 900 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "150 à 220 €"],
-          ["12 000 km", "220 à 320 €"],
-          ["24 000 km", "400 à 550 €"],
-          ["48 000 km", "700 à 900 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier, la région et les opérations complémentaires. Il s’agit d’une estimation réaliste pour se prémunir d’éventuelles évolutions tarifaires." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -601,25 +524,14 @@
     },
     "introduction": "La Yamaha R7 est une sportive accessible basée sur la plateforme MT-07. Elle utilise le moteur CP2 réputé pour son couple et sa fiabilité. Même si elle est conçue pour une utilisation sportive, un entretien régulier permet de conserver ses performances.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha R7." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur R7" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
+      { "type": "heading", "text": "Intervalles et prix des révisions R7" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)", "180 à 200 €"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)", "220 à 240 €"],
+          ["20 000 km", "Bougies + filtre air (Forfait Performance)", "360 à 420 €"],
+          ["40 000 km", "Réglage soupapes (Forfait Excellence)", "620 à 680 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "180 à 200 €"],
-          ["10 000 km", "220 à 240 €"],
-          ["20 000 km", "360 à 420 €"],
-          ["40 000 km", "620 à 680 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -682,25 +594,14 @@
     },
     "introduction": "La Yamaha XSR700 est un roadster néo-rétro basé sur la plateforme MT-07. Son moteur CP2 combine couple, fiabilité et simplicité mécanique. Un entretien régulier permet de préserver ses performances et sa longévité.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha XSR700." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur XSR700" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
+      { "type": "heading", "text": "Intervalles et prix des révisions XSR700" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)", "180 à 200 €"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)", "220 à 240 €"],
+          ["20 000 km", "Bougies + filtre air (Forfait Performance)", "360 à 420 €"],
+          ["40 000 km", "Réglage soupapes (Forfait Excellence)", "620 à 680 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée." },
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "180 à 200 €"],
-          ["10 000 km", "220 à 240 €"],
-          ["20 000 km", "360 à 420 €"],
-          ["40 000 km", "620 à 680 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -763,25 +664,14 @@
     },
     "introduction": "La Yamaha MT-03 est l’un des roadsters les plus accessibles du marché. Légère, économique et facile à prendre en main, elle est très populaire auprès des jeunes permis. Son moteur bicylindre de 321 cm³ est réputé fiable.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha MT-03." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur MT-03" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["40 000 km", "Contrôle soupapes (Forfait Excellence)"]
+      { "type": "heading", "text": "Intervalles et prix des révisions MT-03" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)", "120 à 180 €"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)", "180 à 250 €"],
+          ["20 000 km", "Bougies + filtre air (Forfait Performance)", "250 à 350 €"],
+          ["40 000 km", "Contrôle soupapes (Forfait Excellence)", "400 à 600 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 180 €"],
-          ["10 000 km", "180 à 250 €"],
-          ["20 000 km", "250 à 350 €"],
-          ["40 000 km", "400 à 600 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -844,25 +734,14 @@
     },
     "introduction": "La BMW R1250 GS est la référence mondiale du trail voyageur. Son moteur Boxer avec technologie ShiftCam offre un couple camionesque dès les bas régimes. Un entretien rigoureux chez des spécialistes est indispensable pour préserver sa valeur et sa fiabilité légendaire.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre BMW R1250 GS." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur R1250 GS" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["10 000 km", "Vidange + contrôles périodiques"],
-          ["20 000 km", "Révision complète + bougies + filtre à air"],
-          ["40 000 km", "Gros entretien + jeu aux soupapes"]
+      { "type": "heading", "text": "Intervalles et prix des révisions R1250 GS" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "180 à 260 €"],
+          ["10 000 km", "Vidange + contrôles périodiques", "220 à 300 €"],
+          ["20 000 km", "Révision complète + bougies + filtre à air", "400 à 480 €"],
+          ["40 000 km", "Gros entretien + jeu aux soupapes", "750 à 830 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "180 à 260 €"],
-          ["10 000 km", "220 à 300 €"],
-          ["20 000 km", "400 à 480 €"],
-          ["40 000 km", "750 à 830 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs varient selon les régions et les concessions. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -924,25 +803,14 @@
     },
     "introduction": "La Yamaha Tracer 7 est le trail routier léger par excellence. Basée sur le moteur CP2 de la MT-07, elle allie polyvalence et fun. Un entretien suivi permet de profiter pleinement de ses capacités de voyageuse.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha Tracer 7." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Tracer 7" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage (Forfait Eco)"],
-          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
-          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
-          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
+      { "type": "heading", "text": "Intervalles et prix des révisions Tracer 7" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)", "140 à 220 €"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)", "200 à 280 €"],
+          ["20 000 km", "Bougies + filtre air (Forfait Performance)", "400 à 480 €"],
+          ["40 000 km", "Réglage soupapes (Forfait Excellence)", "700 à 780 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "140 à 220 €"],
-          ["10 000 km", "200 à 280 €"],
-          ["20 000 km", "400 à 480 €"],
-          ["40 000 km", "700 à 780 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs varient selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -1004,25 +872,14 @@
     },
     "introduction": "La Kawasaki Z650 est le roadster maniable par excellence. Son bicylindre pétillant offre des reprises généreuses. Suivre les forfaits constructeur est crucial pour maintenir sa santé mécanique.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Kawasaki Z650." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Z650" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles périodiques"],
-          ["24 000 km", "Révision intermédiaire + bougies"],
-          ["42 000 km", "Gros entretien + jeu aux soupapes"]
+      { "type": "heading", "text": "Intervalles et prix des révisions Z650" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "120 à 200 €"],
+          ["12 000 km", "Vidange + contrôles périodiques", "220 à 300 €"],
+          ["24 000 km", "Révision intermédiaire + bougies", "410 à 490 €"],
+          ["42 000 km", "Gros entretien + jeu aux soupapes", "710 à 790 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["12 000 km", "220 à 300 €"],
-          ["24 000 km", "410 à 490 €"],
-          ["42 000 km", "710 à 790 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs varient selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -1084,25 +941,14 @@
     },
     "introduction": "La Kawasaki Ninja 650 est la sportive polyvalente par excellence. Confortable et protectrice, elle est idéale pour débuter en catégorie Sport. Son entretien suit la logique des bicylindres Kawasaki.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Kawasaki Ninja 650." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur Ninja 650" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles périodiques"],
-          ["24 000 km", "Révision intermédiaire + bougies"],
-          ["42 000 km", "Gros entretien + jeu aux soupapes"]
+      { "type": "heading", "text": "Intervalles et prix des révisions Ninja 650" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "120 à 200 €"],
+          ["12 000 km", "Vidange + contrôles périodiques", "220 à 300 €"],
+          ["24 000 km", "Révision intermédiaire + bougies", "410 à 490 €"],
+          ["42 000 km", "Gros entretien + jeu aux soupapes", "710 à 790 €"]
       ]},
       { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["12 000 km", "220 à 300 €"],
-          ["24 000 km", "410 à 490 €"],
-          ["42 000 km", "710 à 790 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs varient selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -1164,25 +1010,14 @@
     },
     "introduction": "La Suzuki SV650 est une icône. Son moteur V-Twin est célèbre pour son caractère et sa fiabilité. Une conception simple qui rend l'entretien abordable.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Suzuki SV650." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur SV650" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["6 000 km", "Contrôles intermédiaires"],
-          ["12 000 km", "Vidange + contrôles périodiques"],
-          ["24 000 km", "Gros entretien + bougies + filtre à air"]
+      { "type": "heading", "text": "Intervalles et prix des révisions SV650" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "110 à 190 €"],
+          ["12 000 km", "Vidange + contrôles périodiques", "210 à 290 €"],
+          ["24 000 km", "Gros entretien + bougies + filtre à air", "380 à 460 €"],
+          ["48 000 km", "Jeu aux soupapes + entretien complet", "650 à 730 €"]
       ]},
-      { "type": "paragraph", "html": "👉 Suzuki préconise souvent un contrôle tous les 6 000 km pour une fiabilité optimale." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "110 à 190 €"],
-          ["12 000 km", "210 à 290 €"],
-          ["24 000 km", "380 à 460 €"],
-          ["48 000 km", "650 à 730 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs varient selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
+      { "type": "paragraph", "html": "👉 Suzuki préconise souvent un contrôle visuel tous les 6 000 km pour une fiabilité optimale." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -1244,25 +1079,14 @@
     },
     "introduction": "La Suzuki V-Strom 650 est le couteau suisse du motard. Réputée pour son confort et son autonomie, elle est l'alliée des voyageurs. Son moteur V-Twin Suzuki est une référence de fiabilité.",
     "content": [
-      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
-      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Suzuki V-Strom 650." },
-      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
-      { "type": "heading", "text": "Intervalles d’entretien constructeur V-Strom 650" },
-      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
-          ["1 000 km", "Révision de rodage"],
-          ["12 000 km", "Vidange + contrôles périodiques"],
-          ["24 000 km", "Gros entretien + bougies + filtre à air"],
-          ["48 000 km", "Entretien complet + jeu aux soupapes"]
+      { "type": "heading", "text": "Intervalles et prix des révisions V-Strom 650" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
+          ["1 000 km", "Révision de rodage", "120 à 200 €"],
+          ["12 000 km", "Vidange + contrôles périodiques", "230 à 310 €"],
+          ["24 000 km", "Gros entretien + bougies + filtre à air", "420 à 500 €"],
+          ["48 000 km", "Jeu aux soupapes + entretien complet", "680 à 760 €"]
       ]},
       { "type": "paragraph", "html": "👉 Un contrôle visuel tous les 6 000 km est conseillé par Suzuki." },
-      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
-      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
-          ["1 000 km", "120 à 200 €"],
-          ["12 000 km", "230 à 310 €"],
-          ["24 000 km", "420 à 500 €"],
-          ["48 000 km", "680 à 760 €"]
-      ]},
-      { "type": "paragraph", "html": "Les tarifs varient selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
@@ -1293,4 +1117,3 @@
     ]
   }
 ]
-    
