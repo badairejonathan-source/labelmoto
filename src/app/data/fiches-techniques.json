@@ -32,6 +32,9 @@
     },
     "introduction": "La Yamaha MT-07 est la référence absolue du segment A2. Son moteur CP2 est réputé pour son couple et sa fiabilité exceptionnelle. Un entretien rigoureux est la clé pour conserver son agrément de conduite.",
     "content": [
+      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
+      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha MT-07." },
+      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
       { "type": "heading", "text": "Intervalles d’entretien constructeur MT-07" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
           ["1 000 km", "Révision de rodage (Forfait Eco)"],
@@ -78,6 +81,249 @@
     ]
   },
   {
+    "modelId": "honda-cb500-hornet",
+    "modelName": "Honda CB500F / CB500 Hornet",
+    "brand": "Honda",
+    "year": "2022+",
+    "imageUrl": "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?q=80&w=2000&auto=format&fit=crop",
+    "imageHint": "Honda CB500 Hornet",
+    "engine": {
+      "bridage": "✔ Permis A2 (moto A2 native – pas de bridage nécessaire)",
+      "type": "Bicylindre en ligne, 4 temps, refroidissement liquide, DOHC 8 soupapes",
+      "displacement": "471 cm³",
+      "power": "35 kW (≈47,5 ch) à 8 500 tr/min",
+      "torque": "43 N.m à 6 500 tr/min",
+      "alimentation": "Injection électronique PGM-FI"
+    },
+    "dimensions": {
+      "seatHeight": "785 mm",
+      "wetWeight": "189 kg",
+      "fuelCapacity": "17,1 L",
+      "wheelbase": "1 410 mm"
+    },
+    "chassis": {
+      "frame": "Cadre acier type diamant",
+      "frontSuspension": "Fourche inversée Showa SFF-BP Ø41 mm",
+      "rearSuspension": "Mono-amortisseur Pro-Link réglable",
+      "frontBrake": "Double disque Ø296 mm, étriers 4 pistons",
+      "rearBrake": "Disque Ø240 mm",
+      "frontTire": "120/70 ZR17",
+      "rearTire": "160/60 ZR17"
+    },
+    "introduction": "La Honda CB500F (aujourd’hui appelée CB500 Hornet) est l’une des motos les plus accessibles pour le permis A2. Son moteur bicylindre de 471 cm³ est réputé pour sa souplesse, sa fiabilité et son faible coût d’entretien.",
+    "content": [
+      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
+      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Honda CB500F." },
+      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
+      { "type": "heading", "text": "Intervalles d’entretien constructeur CB500F" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)"],
+          ["12 000 km", "Vidange + contrôles (Forfait Essentiel)"],
+          ["24 000 km", "Bougies + filtre air (Forfait Performance)"],
+          ["48 000 km", "Réglage soupapes + entretien complet (Forfait Excellence)"]
+      ]},
+      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
+      { "type": "heading", "text": "Prix moyen des révisions (estimation)" },
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
+          ["1 000 km", "120 à 180 €"],
+          ["12 000 km", "200 à 280 €"],
+          ["24 000 km", "350 à 450 €"],
+          ["48 000 km", "600 à 800 €"]
+      ]},
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
+      { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "10 000 à 18 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes", "10 000 à 20 000 km"],
+        ["Batterie", "3 à 5 ans"]
+      ]},
+      { "type": "heading", "text": "Fiabilité et problèmes connus" },
+      { "type": "list", "items": [
+          "Suspensions parfois jugées souples en conduite sportive",
+          "Peinture du cadre sensible aux projections",
+          "Chaîne d’origine à surveiller régulièrement"
+      ]},
+      { "type": "cta-concession", "text": "🔘 Voir les Honda CB500F en concession" },
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "list", "items": [
+          "Respecter les intervalles d’entretien constructeur",
+          "Graisser la chaîne régulièrement",
+          "Vérifier la pression des pneus",
+          "Laisser chauffer le moteur avant de rouler"
+      ]},
+      { "type": "heading", "text": "FAQ entretien CB500F" },
+      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 12 000 km ou une fois par an." },
+      { "type": "paragraph", "html": "<strong>La CB500F est-elle fiable ?</strong><br/>Oui, le moteur bicylindre Honda de 471 cm³ est réputé pour sa robustesse et sa longévité." },
+      { "type": "heading", "text": "Conclusion" },
+      { "type": "paragraph", "text": "La Honda CB500F / Hornet 500 est une moto simple, fiable et économique, parfaitement adaptée aux jeunes permis A2. Avec un entretien régulier, elle reste l’une des motos les plus accessibles et durables de sa catégorie." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
+    ]
+  },
+  {
+    "modelId": "yamaha-r7",
+    "modelName": "Yamaha R7",
+    "brand": "Yamaha",
+    "year": "2022+",
+    "imageUrl": "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Yamaha R7",
+    "engine": {
+      "bridage": "✔ Permis A2 (bridable à 35 kW)",
+      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide, DOHC",
+      "displacement": "689 cm³",
+      "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
+      "torque": "67 N.m à 6 500 tr/min",
+      "alimentation": "Injection électronique"
+    },
+    "dimensions": {
+      "seatHeight": "835 mm",
+      "wetWeight": "188 kg",
+      "fuelCapacity": "13 L",
+      "wheelbase": "1 395 mm"
+    },
+    "chassis": {
+      "frame": "Cadre acier type diamant",
+      "frontSuspension": "Fourche inversée KYB Ø41 mm, entièrement réglable",
+      "rearSuspension": "Bras oscillant avec mono-amortisseur KYB",
+      "frontBrake": "Double disque Ø298 mm, étriers radiaux 4 pistons",
+      "rearBrake": "Disque Ø245 mm",
+      "frontTire": "120/70 ZR17",
+      "rearTire": "180/55 ZR17"
+    },
+    "introduction": "La Yamaha R7 est une sportive accessible basée sur la plateforme MT-07. Elle utilise le moteur CP2 réputé pour son couple et sa fiabilité. Même si elle est conçue pour une utilisation sportive, un entretien régulier permet de conserver ses performances.",
+    "content": [
+      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
+      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha R7." },
+      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
+      { "type": "heading", "text": "Intervalles d’entretien constructeur R7" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
+          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
+          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
+      ]},
+      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint." },
+      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
+          ["1 000 km", "140 à 220 €"],
+          ["10 000 km", "180 à 260 €"],
+          ["20 000 km", "320 à 460 €"],
+          ["40 000 km", "580 à 720 €"]
+      ]},
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
+      { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "6 000 à 10 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes", "8 000 à 15 000 km"],
+        ["Batterie", "3 à 5 ans"]
+      ]},
+      { "type": "heading", "text": "Fiabilité et problèmes connus" },
+      { "type": "list", "items": [
+          "Suspensions fermes pour usage routier",
+          "Position de conduite fatigante sur longs trajets",
+          "Chaîne d’origine à surveiller régulièrement"
+      ]},
+      { "type": "cta-concession", "text": "🔘 Voir les Yamaha R7 en concession" },
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "list", "items": [
+          "Temps de chauffe moteur avant conduite sportive",
+          "Graissage chaîne régulier",
+          "Vidange annuelle recommandée",
+          "Contrôle fréquent de la pression des pneus"
+      ]},
+      { "type": "heading", "text": "FAQ entretien R7" },
+      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou une fois par an." },
+      { "type": "paragraph", "html": "<strong>La Yamaha R7 est-elle compatible A2 ?</strong><br/>Oui, elle peut être bridée à 35 kW pour le permis A2." },
+      { "type": "heading", "text": "Conclusion" },
+      { "type": "paragraph", "text": "Sportive et accessible, la Yamaha R7 combine performances et fiabilité grâce à son moteur CP2. Bien entretenue, elle reste relativement économique à l’usage pour une moto de cette catégorie." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
+    ]
+  },
+  {
+    "modelId": "yamaha-xsr700",
+    "modelName": "Yamaha XSR700",
+    "brand": "Yamaha",
+    "year": "2021+",
+    "imageUrl": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop",
+    "imageHint": "Yamaha XSR700",
+    "engine": {
+      "bridage": "✔ Permis A2 (bridable à 35 kW)",
+      "type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide, DOHC",
+      "displacement": "689 cm³",
+      "power": "54 kW (73,4 ch) à 8 750 tr/min",
+      "torque": "67 N.m à 6 500 tr/min",
+      "alimentation": "Injection électronique"
+    },
+    "dimensions": {
+      "seatHeight": "835 mm",
+      "wetWeight": "188 kg",
+      "fuelCapacity": "14 L",
+      "wheelbase": "1 405 mm"
+    },
+    "chassis": {
+      "frame": "Cadre acier type diamant",
+      "frontSuspension": "Fourche télescopique Ø41 mm",
+      "rearSuspension": "Bras oscillant avec mono-amortisseur",
+      "frontBrake": "Double disque Ø282 mm",
+      "rearBrake": "Disque Ø245 mm",
+      "frontTire": "120/70 ZR17",
+      "rearTire": "180/55 ZR17"
+    },
+    "introduction": "La Yamaha XSR700 est un roadster néo-rétro basé sur la plateforme MT-07. Son moteur CP2 combine couple, fiabilité et simplicité mécanique. Un entretien régulier permet de préserver ses performances et sa longévité.",
+    "content": [
+      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
+      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha XSR700." },
+      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
+      { "type": "heading", "text": "Intervalles d’entretien constructeur XSR700" },
+      { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
+          ["1 000 km", "Révision de rodage (Forfait Eco)"],
+          ["10 000 km", "Vidange + contrôles (Forfait Essentiel)"],
+          ["20 000 km", "Bougies + filtre air (Forfait Performance)"],
+          ["40 000 km", "Réglage soupapes (Forfait Excellence)"]
+      ]},
+      { "type": "paragraph", "html": "👉 Une vidange annuelle reste recommandée." },
+      { "type": "heading", "text": "Prix moyen des révisions (Forfaits Yamaha)" },
+      { "type": "table", "headers": ["Révision", "Prix moyen constaté"], "rows": [
+          ["1 000 km", "140 à 220 €"],
+          ["10 000 km", "180 à 260 €"],
+          ["20 000 km", "320 à 460 €"],
+          ["40 000 km", "580 à 720 €"]
+      ]},
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
+      { "type": "heading", "text": "Les consommables à surveiller" },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
+        ["Pneus", "8 000 à 15 000 km"],
+        ["Kit chaîne", "20 000 à 30 000 km"],
+        ["Plaquettes", "10 000 à 20 000 km"],
+        ["Batterie", "3 à 5 ans"]
+      ]},
+      { "type": "heading", "text": "Fiabilité et problèmes connus" },
+      { "type": "list", "items": [
+          "Suspensions d’origine assez souples",
+          "Affichage compteur parfois difficile au soleil",
+          "Chaîne d’origine à surveiller régulièrement"
+      ]},
+      { "type": "cta-concession", "text": "🔘 Voir les Yamaha XSR700 en concession" },
+      { "type": "heading", "text": "Conseils pour prolonger la durée de vie" },
+      { "type": "list", "items": [
+          "Temps de chauffe moteur recommandé",
+          "Graissage chaîne régulier",
+          "Contrôle pression pneus fréquent",
+          "Vidange annuelle conseillée"
+      ]},
+      { "type": "heading", "text": "FAQ entretien XSR700" },
+      { "type": "paragraph", "html": "<strong>Quand faire la vidange ?</strong><br/>Tous les 10 000 km ou tous les ans." },
+      { "type": "paragraph", "html": "<strong>Le moteur CP2 est-il fiable ?</strong><br/>Oui, c’est un moteur Yamaha très éprouvé utilisé sur plusieurs modèles." },
+      { "type": "heading", "text": "Conclusion" },
+      { "type": "paragraph", "text": "La Yamaha XSR700 combine style rétro, moteur coupleux et entretien raisonnable. Bien suivie, elle reste l’une des motos les plus agréables et économiques de la catégorie néo-rétro." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
+    ]
+  },
+  {
     "modelId": "yamaha-mt-03",
     "modelName": "Yamaha MT-03",
     "brand": "Yamaha",
@@ -107,8 +353,11 @@
       "frontTire": "110/70 R17",
       "rearTire": "140/70 R17"
     },
-    "introduction": "La Yamaha MT-03 est l’un des roadsters les plus accessibles du marché. Légère, économique et facile à prendre en main, elle est très populaire auprès des jeunes permis. Son moteur bicylindre de 321 cm³ est réputé fiable et demande peu d’entretien comparé aux motos de cylindrée supérieure.",
+    "introduction": "La Yamaha MT-03 est l’un des roadsters les plus accessibles du marché. Légère, économique et facile à prendre en main, elle est très populaire auprès des jeunes permis. Son moteur bicylindre de 321 cm³ est réputé fiable.",
     "content": [
+      { "type": "heading", "text": "Préparez votre prochaine révision sans surprise." },
+      { "type": "paragraph", "text": "Comparez les garages proches de chez vous pour votre Yamaha MT-03." },
+      { "type": "cta-compare", "text": "🔘 Voir les garages autour de moi" },
       { "type": "heading", "text": "Intervalles d’entretien constructeur MT-03" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer"], "rows": [
           ["1 000 km", "Révision de rodage (Forfait Eco)"],
@@ -124,7 +373,7 @@
           ["20 000 km", "250 à 350 €"],
           ["40 000 km", "400 à 600 €"]
       ]},
-      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région." },
+      { "type": "paragraph", "html": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous." },
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
