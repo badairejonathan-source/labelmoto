@@ -123,8 +123,9 @@ function InfoPageComponent() {
                         </h1>
                         <div className="mt-2 w-20 h-0.5 bg-brand mx-auto" />
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                        <div className="lg:col-span-2">
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                        <div className="md:col-span-8">
                             {filteredArticles.map((article) => (
                                 <ArticleCard key={article.id} article={article as Article} />
                             ))}
@@ -135,16 +136,16 @@ function InfoPageComponent() {
                             )}
                         </div>
 
-                        <aside className="relative mt-12 lg:mt-0">
-                            <div className="lg:sticky lg:top-28 space-y-6">
-                                <Card className="overflow-hidden shadow-lg border-2 border-primary/20 max-w-sm mx-auto lg:max-w-none">
-                                    <CardHeader className="p-3 lg:p-6">
+                        <aside className="md:col-span-4 relative">
+                            <div className="md:sticky md:top-28 space-y-6">
+                                <Card className="overflow-hidden shadow-lg border-2 border-primary/20 max-w-sm mx-auto md:max-w-none">
+                                    <CardHeader className="p-4 lg:p-6">
                                         <CardTitle className="flex items-center gap-2 text-primary text-base lg:text-xl">
                                             <Map className="h-4 w-4 lg:h-5 w-5"/>
                                             Trouver une concession
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-3 pt-0 lg:p-6 lg:pt-0">
+                                    <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
                                         <Link href="/map" className="block group rounded-lg overflow-hidden border">
                                           <Image 
                                               src="/images/apercucartezoom.png"
@@ -154,11 +155,11 @@ function InfoPageComponent() {
                                               className="object-cover w-full h-40 lg:h-auto transition-transform duration-300 group-hover:scale-105"
                                           />
                                         </Link>
-                                        <p className="text-muted-foreground text-sm mt-4 hidden lg:block">
+                                        <p className="text-muted-foreground text-sm mt-4 hidden md:block">
                                             Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
                                         </p>
                                     </CardContent>
-                                    <CardFooter className="p-3 pt-0 lg:p-6 lg:pt-0">
+                                    <CardFooter className="p-4 pt-0 lg:p-6 lg:pt-0">
                                         <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-xs lg:text-base py-3 lg:py-5 rounded-full shadow-lg">
                                             <Link href="/map">Voir la carte interactive</Link>
                                         </Button>
