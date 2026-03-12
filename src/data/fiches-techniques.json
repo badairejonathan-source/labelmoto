@@ -15,21 +15,8 @@
       "torque": "67,0 N.m (6,8 m.kgf) à 6 500 tr/min",
       "alimentation": "Injection électronique"
     },
-    "dimensions": {
-      "seatHeight": "805 mm",
-      "wetWeight": "184 kg",
-      "fuelCapacity": "14 L",
-      "wheelbase": "1 400 mm"
-    },
-    "chassis": {
-      "frame": "Cadre type Diamant en acier",
-      "frontSuspension": "Fourche télescopique, Ø 41 mm",
-      "rearSuspension": "Mono-amortisseur réglable",
-      "frontBrake": "Double disque, Ø 298 mm",
-      "rearBrake": "Simple disque, Ø 245 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "180/55 ZR 17"
-    },
+    "dimensions": { "seatHeight": "805 mm", "wetWeight": "184 kg", "fuelCapacity": "14 L", "wheelbase": "1 400 mm" },
+    "chassis": { "frame": "Cadre type Diamant en acier", "frontSuspension": "Fourche télescopique, Ø 41 mm", "rearSuspension": "Mono-amortisseur réglable", "frontBrake": "Double disque, Ø 298 mm", "rearBrake": "Simple disque, Ø 245 mm", "frontTire": "120/70 ZR 17", "rearTire": "180/55 ZR 17" },
     "introduction": "La Yamaha MT-07 est la référence absolue du segment A2. Son moteur CP2 est réputé pour son couple et sa fiabilité exceptionnelle.",
     "content": [
       { "type": "heading", "text": "Intervalles et prix des révisions MT-07" },
@@ -41,12 +28,7 @@
       ]},
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "heading", "text": "Les consommables à surveiller" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [
-        ["Pneus", "8 000 à 15 000 km"],
-        ["Kit chaîne", "20 000 à 30 000 km"],
-        ["Plaquettes", "10 000 à 20 000 km"],
-        ["Batterie", "3 à 5 ans"]
-      ]},
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [["Pneus", "8 000 à 15 000 km"], ["Kit chaîne", "20 000 à 30 000 km"], ["Plaquettes", "10 000 à 20 000 km"], ["Batterie", "3 à 5 ans"]] },
       { "type": "cta-concession", "text": "🔘 Voir les Yamaha MT-07 en concession" },
       { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
@@ -66,33 +48,20 @@
       "torque": "A2: 91,2 N.m / Full: 98,6 N.m",
       "alimentation": "Injection électronique"
     },
-    "dimensions": {
-      "seatHeight": "820 mm",
-      "wetWeight": "212 kg",
-      "fuelCapacity": "17 L",
-      "wheelbase": "1 455 mm"
-    },
-    "chassis": {
-      "frame": "Treillis, acier haute résistance",
-      "frontSuspension": "Fourche inversée 41 mm réglable",
-      "rearSuspension": "Horizontal Back-link réglable",
-      "frontBrake": "Double disque Ø 300 mm",
-      "rearBrake": "Simple disque Ø 250 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "180/55 ZR 17"
-    },
-    "introduction": "La Kawasaki Z900 est l’un des roadsters 4 cylindres les plus appréciés. Son moteur est réputé pour sa souplesse et son caractère.",
+    "dimensions": { "seatHeight": "820 mm", "wetWeight": "212 kg", "fuelCapacity": "17 L", "wheelbase": "1 455 mm" },
+    "chassis": { "frame": "Treillis, acier haute résistance", "frontSuspension": "Fourche inversée 41 mm réglable", "rearSuspension": "Horizontal Back-link réglable", "frontBrake": "Double disque Ø 300 mm", "rearBrake": "Simple disque Ø 250 mm", "frontTire": "120/70 ZR 17", "rearTire": "180/55 ZR 17" },
+    "introduction": "La Kawasaki Z900 est l’un des roadsters 4 cylindres les plus appréciés du marché.",
     "content": [
       { "type": "heading", "text": "Intervalles et prix des révisions Z900" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
-          ["1 000 km", "Révision de rodage", "170 à 250 €"],
-          ["12 000 km", "Vidange + contrôles", "270 à 350 €"],
-          ["24 000 km", "Bougies + Filtre air", "420 à 500 €"],
-          ["42 000 km", "Réglage soupapes", "750 à 830 €"]
+          ["1 000 km", "Révision de rodage", "150 à 220 €"],
+          ["12 000 km", "Vidange + contrôles", "250 à 350 €"],
+          ["24 000 km", "Bougies + filtre à air", "400 à 550 €"],
+          ["42 000 km", "Réglage soupapes + entretien complet", "700 à 950 €"]
       ]},
-      { "type": "cta-compare", "text": "🔘 Comparer les ateliers" },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "cta-concession", "text": "🔘 Voir en concession" },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2" }
     ]
   },
   {
@@ -110,33 +79,20 @@
       "torque": "98,5 N.m à 6 500 tr/min",
       "alimentation": "Injection électronique"
     },
-    "dimensions": {
-      "seatHeight": "835 mm",
-      "wetWeight": "215 kg",
-      "fuelCapacity": "17 L",
-      "wheelbase": "1 470 mm"
-    },
-    "chassis": {
-      "frame": "Treillis, acier haute résistance",
-      "frontSuspension": "Fourche inversée 41 mm réglable",
-      "rearSuspension": "Horizontal Back-link réglable",
-      "frontBrake": "Double disque Ø 300 mm",
-      "rearBrake": "Simple disque Ø 250 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "180/55 ZR 17"
-    },
-    "introduction": "La Z900RS allie le style néo-rétro à la performance moderne. Son entretien demande une attention particulière sur la partie cycle.",
+    "dimensions": { "seatHeight": "835 mm", "wetWeight": "215 kg", "fuelCapacity": "17 L", "wheelbase": "1 470 mm" },
+    "chassis": { "frame": "Treillis, acier haute résistance", "frontSuspension": "Fourche inversée 41 mm réglable", "rearSuspension": "Horizontal Back-link réglable", "frontBrake": "Double disque Ø 300 mm", "rearBrake": "Simple disque Ø 250 mm", "frontTire": "120/70 ZR 17", "rearTire": "180/55 ZR 17" },
+    "introduction": "La Z900RS allie le style néo-rétro à la performance moderne.",
     "content": [
       { "type": "heading", "text": "Intervalles et prix des révisions Z900RS" },
       { "type": "table", "headers": ["Kilométrage", "Entretien à effectuer", "Prix moyen (est.)"], "rows": [
-          ["1 000 km", "Révision de rodage", "170 à 250 €"],
-          ["12 000 km", "Vidange + contrôles", "270 à 350 €"],
-          ["24 000 km", "Bougies + Filtre air", "420 à 500 €"],
-          ["42 000 km", "Réglage soupapes", "750 à 830 €"]
+          ["1 000 km", "Révision de rodage", "150 à 220 €"],
+          ["12 000 km", "Vidange + contrôles", "250 à 350 €"],
+          ["24 000 km", "Bougies + filtre à air", "400 à 550 €"],
+          ["42 000 km", "Réglage soupapes + entretien complet", "700 à 950 €"]
       ]},
-      { "type": "cta-compare", "text": "🔘 Comparer les ateliers" },
+      { "type": "cta-compare", "text": "🔘 Comparer les ateliers près de moi" },
       { "type": "cta-concession", "text": "🔘 Voir en concession" },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2" }
     ]
   },
   {
@@ -154,21 +110,8 @@
       "torque": "43,0 N.m à 6 500 tr/min",
       "alimentation": "Injection électronique PGM-FI"
     },
-    "dimensions": {
-      "seatHeight": "785 mm",
-      "wetWeight": "188 kg",
-      "fuelCapacity": "17,1 L",
-      "wheelbase": "1 410 mm"
-    },
-    "chassis": {
-      "frame": "Type Diamant en acier",
-      "frontSuspension": "Fourche inversée Showa SFF-BP Ø 41 mm",
-      "rearSuspension": "Pro-Link avec monoamortisseur réglable",
-      "frontBrake": "Double disque Ø 296 mm",
-      "rearBrake": "Simple disque Ø 240 mm",
-      "frontTire": "120/70 ZR 17",
-      "rearTire": "160/60 ZR 17"
-    },
+    "dimensions": { "seatHeight": "785 mm", "wetWeight": "188 kg", "fuelCapacity": "17,1 L", "wheelbase": "1 410 mm" },
+    "chassis": { "frame": "Type Diamant en acier", "frontSuspension": "Fourche inversée Showa SFF-BP Ø 41 mm", "rearSuspension": "Pro-Link avec monoamortisseur réglable", "frontBrake": "Double disque Ø 296 mm", "rearBrake": "Simple disque Ø 240 mm", "frontTire": "120/70 ZR 17", "rearTire": "160/60 ZR 17" },
     "introduction": "La Honda CB500 Hornet est la moto école par excellence : fiable, économique et ultra-maniable.",
     "content": [
       { "type": "heading", "text": "Intervalles et prix des révisions CB500 Hornet" },
@@ -180,7 +123,7 @@
       ]},
       { "type": "cta-compare", "text": "🔘 Comparer les ateliers" },
       { "type": "cta-concession", "text": "🔘 Voir en concession" },
-      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2" }
     ]
   }
 ]

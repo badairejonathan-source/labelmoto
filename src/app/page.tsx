@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/app/header';
-import { Bike, Wrench, FileText, Home, CheckCircle, ArrowRight } from 'lucide-react';
+import { Bike, Wrench, FileText, CheckCircle, ArrowRight } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import articlesData from '@/data/articles.json';
 import { useUser } from '@/firebase';
@@ -38,7 +38,6 @@ export default function LandingPage() {
             />
             <main className="py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* Hero Section restructurée : Carte qui dépasse et CTA à cheval */}
                 <div className="relative rounded-2xl border-2 border-brand bg-black mb-24 md:mb-32 overflow-visible">
                      <Image
                         src={hero.src}
@@ -71,8 +70,6 @@ export default function LandingPage() {
                                         />
                                     </div>
                                 </Link>
-                                
-                                {/* Bouton CTA "à cheval" sur la carte */}
                                 <div className="absolute -left-8 md:-left-20 top-1/2 -translate-y-1/2 z-50">
                                     <Link href="/map">
                                         <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-[10px] md:text-base px-4 md:px-8 py-3 md:py-6 rounded-full shadow-2xl border-2 md:border-4 border-white whitespace-nowrap transition-transform hover:scale-105">
@@ -158,9 +155,6 @@ export default function LandingPage() {
                                             sizes="(max-width: 768px) 100vw, 33vw"
                                             data-ai-hint={article.imageHint}
                                         />
-                                        <div className="absolute top-2 left-2 bg-brand text-white text-[8px] uppercase font-bold px-1.5 py-0.5 rounded shadow-sm">
-                                            Focus Moto
-                                        </div>
                                     </div>
                                     <div className="p-4 flex flex-col flex-grow">
                                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-2 font-medium">
@@ -245,10 +239,10 @@ export default function LandingPage() {
                       <div className="flex-grow flex flex-col lg:flex-row items-center p-6 md:p-8 lg:px-12 lg:py-8 gap-6 lg:gap-8">
                         <div className="flex-1 text-center lg:text-left">
                           <h2 className="text-xl md:text-3xl font-extrabold text-foreground leading-tight mb-3">
-                            Professionnels, rejoignez le réseau Label Moto.
+                            Professionnels, rejoignez le network Label Moto.
                           </h2>
                           <p className="text-muted-foreground text-sm md:text-base mb-6 max-w-2xl mx-auto lg:mx-0">
-                            Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
+                            Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
                           <div className="relative inline-block group/cta">
                             <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-xs md:text-base px-6 md:px-8 py-4 rounded-full shadow-lg transition-all hover:shadow-brand/25 hover:-translate-y-1">

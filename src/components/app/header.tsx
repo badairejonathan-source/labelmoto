@@ -296,14 +296,9 @@ const Header: React.FC<HeaderProps> = ({
 
     // Définition de la prédiction ( Ghost Text )
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
-        // On construit la prédiction en gardant la casse de la marque originale
-        // Mais en s'assurant qu'elle commence par ce que l'utilisateur a tapé
         const brandMatch = bestBrandMatch;
-        // On cherche l'index de fin de la correspondance pour proposer la suite
-        // Pour gérer les tirets/espaces, on compare les versions normalisées
         const matchLabel = brandMatch;
         if (matchLabel.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
-            // On propose le label complet si le début correspond
             setPrediction(searchTerm + matchLabel.substring(searchTerm.length));
         } else {
             setPrediction('');
@@ -312,7 +307,6 @@ const Header: React.FC<HeaderProps> = ({
         setPrediction('');
     }
 
-    // Masquer les suggestions si c'est une marque exacte
     if (isStrictBrand) {
         setSuggestions([]);
     }
@@ -352,7 +346,6 @@ const Header: React.FC<HeaderProps> = ({
     if (prediction && prediction !== searchTerm) {
         onSearchTermChange(prediction);
         setPrediction('');
-        // Attendre le prochain cycle pour déclencher la recherche réelle
         setTimeout(() => onSearch(), 10);
     } else if (suggestions.length > 0) {
         const firstBrandOnly = suggestions.find(s => s.type === 'brand-only');
@@ -397,8 +390,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none relative overflow-hidden rounded-xl py-2">
-            {/* Map background preview */}
-            <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
                 <Image 
                     src="/images/apercucarte.png" 
                     alt="" 
@@ -422,7 +414,6 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="hidden md:block w-24 shrink-0" aria-hidden="true" />
 
                 <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
-                  {/* Prédiction ( Ghost Text ) - Placé derrière l'input transparent */}
                   {prediction && searchTerm && (
                     <div className="absolute inset-0 px-4 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
                         <span className="text-sm text-transparent select-none">{searchTerm}</span>

@@ -9,49 +9,15 @@
     "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlfGVufDB8fHx8MTc3MTUxMDk3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
     "imageHint": "motorcycle budget",
     "content": [
-        {
-            "type": "paragraph",
-            "text": "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours."
-        },
-        {
-            "type": "paragraph",
-            "text": "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent."
-        },
-        {
-            "type": "paragraph",
-            "text": "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis."
-        },
-        {
-            "type": "paragraph",
-            "html": "Dans cet article, on va détailler <strong>le coût réel d’une moto pour un débutant</strong> :"
-        },
-        {
-            "type": "list",
-            "items": ["Le prix d’achat initial", "L'assurance jeune permis", "Le budget carburant", "L'entretien courant", "L'équipement obligatoire"]
-        },
-        {
-            "type": "heading",
-            "text": "L’assurance : la plus grosse surprise pour un débutant"
-        },
-        {
-            "type": "paragraph",
-            "text": "C’est presque toujours le moment où le futur motard tombe de haut. On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double."
-        },
-        {
-            "type": "table",
-            "headers": ["Profil", "Prix mensuel moyen"],
-            "rows": [
-                ["Jeune permis A2", "80 à 200 €"],
-                ["2 ans d’expérience", "50 à 120 €"],
-                ["Motard expérimenté", "30 à 70 €"]
-            ]
-        },
-        {
-            "type": "signature",
-            "text": "L'équipe Label Moto",
-            "imageUrl": "/images/Stamp-LM.png?v=2",
-            "alt": "Cachet Label Moto"
-        }
+        { "type": "paragraph", "text": "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours." },
+        { "type": "paragraph", "text": "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent." },
+        { "type": "paragraph", "text": "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis." },
+        { "type": "paragraph", "html": "Dans cet article, on va détailler <strong>le coût réel d’une moto pour un débutant</strong> :" },
+        { "type": "list", "items": ["Le prix d’achat initial", "L'assurance jeune permis", "Le budget carburant", "L'entretien courant", "L'équipement obligatoire"] },
+        { "type": "heading", "text": "L’assurance : la plus grosse surprise pour un débutant" },
+        { "type": "paragraph", "text": "C’est presque toujours le moment où le futur motard tombe de haut. On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double." },
+        { "type": "table", "headers": ["Profil", "Prix mensuel moyen"], "rows": [["Jeune permis A2", "80 à 200 €"], ["2 ans d’expérience", "50 à 120 €"], ["Motard expérimenté", "30 à 70 €"]] },
+        { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   },
   {
@@ -63,29 +29,12 @@
     "imageUrl": "/images/evitelespieges.jpg",
     "imageHint": "motorcycle road trip",
     "content": [
-      {
-        "type": "paragraph",
-        "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper."
-      },
-      {
-        "type": "paragraph",
-        "text": "Bonne nouvelle : avec une bonne méthode et quelques vérifications simples, tu peux trouver une excellente moto sans mauvaise surprise. Voici la checklist complète pour acheter une moto d’occasion en toute sécurité."
-      },
-      {
-        "type": "heading",
-        "text": "1. Inspection visuelle : le premier diagnostic"
-      },
-      {
-        "type": "paragraph",
-        "text": "Avant même de démarrer la moto, observe-la attentivement. L’état général révèle souvent son histoire."
-      },
-      {
-        "type": "paragraph",
-        "text": "À vérifier absolument :"
-      },
-      {
-        "type": "list",
-        "items": [
+      { "type": "paragraph", "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper." },
+      { "type": "paragraph", "text": "Bonne nouvelle : avec une bonne méthode et quelques vérifications simples, tu peux trouver une excellente moto sans mauvaise surprise. Voici la checklist complète pour acheter une moto d’occasion en toute sécurité." },
+      { "type": "heading", "text": "1. Inspection visuelle : le premier diagnostic" },
+      { "type": "paragraph", "text": "Avant même de démarrer la moto, observe-la attentivement. L’état général révèle souvent son histoire." },
+      { "type": "paragraph", "text": "À vérifier absolument :" },
+      { "type": "list", "items": [
           "Selle abîmée ou réservoir cabossé → chute probable",
           "Embouts de guidon et repose-pieds rayés → chute/glissade",
           "Pneus : regarde la date sur les flancs (DOT). Au-delà de 5 ans → remplacement obligatoire pour le CT",
@@ -95,25 +44,11 @@
           "Trop de pièces modifiées → demande les pièces d’origine"
         ]
       },
-      {
-        "type": "paragraph",
-        "html": "👉 <strong>Une moto propre et cohérente inspire confiance.</strong> Une moto trop nettoyée peut cacher une fuite."
-      },
-      {
-        "type": "heading",
-        "text": "2. Les documents obligatoires pour une moto d’occasion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Avant de payer, vérifie toujours les papiers :"
-      },
-      {
-        "type": "heading",
-        "text": "Checklist administrative :"
-      },
-      {
-        "type": "list",
-        "items": [
+      { "type": "paragraph", "html": "👉 <strong>Une moto propre et cohérente inspire confiance.</strong> Une moto trop nettoyée peut cacher une fuite." },
+      { "type": "heading", "text": "2. Les documents obligatoires pour une moto d’occasion" },
+      { "type": "paragraph", "text": "Avant de payer, vérifie toujours les papiers :" },
+      { "type": "heading", "text": "Checklist administrative :" },
+      { "type": "list", "items": [
           "Carte grise au nom du vendeur",
           "Numéro VIN identique (cadre / carte grise)",
           "Certificat de non-gage de moins de 15 jours",
@@ -121,124 +56,28 @@
           "Rapport Histovec (preuve de confiance du vendeur)"
         ]
       },
-      {
-        "type": "paragraph",
-        "html": "⚠️ <strong>Sans documents = gros risque juridique.</strong> Une moto peut être gagée, accidentée ou même volée."
-      },
-      {
-        "type": "heading",
-        "text": "3. Kilométrage et entretien : ne te fie pas seulement au compteur"
-      },
-      {
-        "type": "paragraph",
-        "text": "Une moto de 50 000 km entretenue vaut souvent mieux qu’une moto de 10 000 km abandonnée au garage."
-      },
-      {
-        "type": "paragraph",
-        "text": "Observe la cohérence :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "Usure poignées vs km",
-          "Disques de frein d’origine ?",
-          "Jeu dans la transmission",
-          "Vidanges régulières (tous les 6-10 000 km)"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "html": "👉 <strong>Le facteur n°1 de fiabilité reste l’entretien, pas le kilométrage.</strong>"
-      },
-      {
-        "type": "heading",
-        "text": "4. Essai routier : indispensable avant achat"
-      },
-      {
-        "type": "paragraph",
-        "text": "Ne jamais acheter sans essayer. Pendant l’essai vérifie :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "démarrage à froid",
-          "embrayage progressif , si trop dur ou trop souple c’est mauvais signe.",
-          "boîte de vitesses fluide",
-          "pas de vibration anormale",
-          "moto stable en ligne droite",
-          "freinage franc sans tremblement"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Une moto qui tire à droite peut avoir un cadre faussé après accident."
-      },
-      {
-        "type": "heading",
-        "text": "5. Prix, négociation et assurance"
-      },
-      {
-        "type": "paragraph",
-        "text": "Avant de négocier :"
-      },
-      {
-        "type": "list",
-        "items": [
-          "compare les annonces similaires",
-          "regarde la cote du marché",
-          "liste les défauts constatés"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Ensuite, pense à l’assurance. Certaines motos coûtent très cher à assurer, surtout pour un jeune permis ou en région parisienne."
-      },
-      {
-        "type": "paragraph",
-        "html": "👉 <strong>Vérifie AVANT l’achat pour éviter les mauvaises surprises.</strong>"
-      },
-      {
-        "type": "heading",
-        "text": "Concession ou particulier : que choisir ?"
-      },
-      {
-        "type": "table",
-        "headers": ["Type", "Avantages", "Inconvénients"],
-        "rows": [
-          ["Particulier", "Moins cher", "Aucun recours"],
-          ["Concessionnaire", "Garantie, contrôle mécanique, tranquillité", "Prix légèrement plus élevé"]
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "🧠 FAQ – Achat moto d’occasion"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Quel kilométrage maximum pour une moto ?</strong><br/>Une moto moderne peut dépasser 80 000 km si elle est bien entretenue."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Une moto sans facture est-elle risquée ?</strong><br/>Oui, car impossible de prouver l’entretien réel."
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Faut-il privilégier une concession ?</strong><br/>Pour un débutant : oui, c’est plus sécurisant."
-      },
-      {
-        "type": "heading",
-        "text": "🏁 Conclusion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais. Une bonne moto se choisit avec la tête avant le cœur."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
+      { "type": "paragraph", "html": "⚠️ <strong>Sans documents = gros risque juridique.</strong> Une moto peut être gagée, accidentée ou même volée." },
+      { "type": "heading", "text": "3. Kilométrage et entretien : ne te fie pas seulement au compteur" },
+      { "type": "paragraph", "text": "Une moto de 50 000 km entretenue vaut souvent mieux qu’une moto de 10 000 km abandonnée au garage. Observe la cohérence :" },
+      { "type": "list", "items": ["Usure poignées vs km", "Disques de frein d’origine ?", "Jeu dans la transmission", "Vidanges régulières (tous les 6-10 000 km)"] },
+      { "type": "paragraph", "html": "👉 <strong>Le facteur n°1 de fiabilité reste l’entretien, pas le kilométrage.</strong>" },
+      { "type": "heading", "text": "4. Essai routier : indispensable avant achat" },
+      { "type": "paragraph", "text": "Ne jamais acheter sans essayer. Pendant l’essai vérifie :" },
+      { "type": "list", "items": ["démarrage à froid", "embrayage progressif , si trop dur ou trop souple c’est mauvais signe.", "boîte de vitesses fluide", "pas de vibration anormale", "moto stable en ligne droite", "freinage franc sans tremblement"] },
+      { "type": "paragraph", "text": "Une moto qui tire à droite peut avoir un cadre faussé après accident." },
+      { "type": "heading", "text": "5. Prix, négociation et assurance" },
+      { "type": "paragraph", "text": "Avant de négocier : compare les annonces, regarde la cote du marché et liste les défauts constatés." },
+      { "type": "paragraph", "text": "Ensuite, pense à l’assurance. Certaines motos coûtent très cher à assurer, surtout pour un jeune permis ou en région parisienne." },
+      { "type": "paragraph", "html": "👉 <strong>Vérifie AVANT l’achat pour éviter les mauvaises surprises.</strong>" },
+      { "type": "heading", "text": "Concession ou particulier : que choisir ?" },
+      { "type": "table", "headers": ["Type", "Avantages", "Inconvénients"], "rows": [["Particulier", "Moins cher", "Aucun recours"], ["Concessionnaire", "Garantie, contrôle mécanique, tranquillité", "Prix légèrement plus élevé"]] },
+      { "type": "heading", "text": "🧠 FAQ – Achat moto d’occasion" },
+      { "type": "paragraph", "html": "<strong>Quel kilométrage maximum pour une moto ?</strong><br/>Une moto moderne peut dépasser 80 000 km si elle est bien entretenue." },
+      { "type": "paragraph", "html": "<strong>Une moto sans facture est-elle risquée ?</strong><br/>Oui, car impossible de prouver l’entretien réel." },
+      { "type": "paragraph", "html": "<strong>Faut-il privilégier une concession ?</strong><br/>Pour un débutant : oui, c’est plus sécurisant." },
+      { "type": "heading", "text": "🏁 Conclusion" },
+      { "type": "paragraph", "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais. Une bonne moto se choisit avec la tête avant le cœur." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   },
   {
@@ -250,22 +89,10 @@
     "imageUrl": "/images/achat-occasion.jpg",
     "imageHint": "motorcycle A2 guide",
     "content": [
-      {
-        "type": "paragraph",
-        "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite."
-      },
-      {
-        "type": "paragraph",
-        "html": "Avec le permis A2, tu peux conduire une moto limitée à <strong>35 kW (47,5 chevaux)</strong> avec un rapport puissance/poids maximal de <strong>0,2 kW/kg</strong>."
-      },
-      {
-        "type": "heading",
-        "text": "Tableau comparatif motos A2"
-      },
-      {
-        "type": "table",
-        "headers": ["Moto", "Type", "Facilité", "Budget", "Assurance", "Revente"],
-        "rows": [
+      { "type": "paragraph", "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite." },
+      { "type": "paragraph", "html": "Avec le permis A2, tu peux conduire une moto limitée à <strong>35 kW (47,5 chevaux)</strong> avec un rapport puissance/poids maximal de <strong>0,2 kW/kg</strong>." },
+      { "type": "heading", "text": "Tableau comparatif motos A2" },
+      { "type": "table", "headers": ["Moto", "Type", "Facilité", "Budget", "Assurance", "Revente"], "rows": [
           ["MT-07", "Roadster", "🟩", "🟧", "🟥", "🟩"],
           ["CB500 Hornet", "Roadster", "🟩", "🟩", "🟩", "🟧"],
           ["Z650", "Roadster", "🟧", "🟧", "🟥", "🟩"],
@@ -278,20 +105,9 @@
           ["Ninja 650", "Sportive", "🟧", "🟧", "🟥", "🟩"]
         ]
       },
-      {
-        "type": "heading",
-        "text": "FAQ – Permis A2"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Quelle puissance maximale ?</strong><br/>Une moto ne doit pas dépasser 35 kW (47,5 ch).<br/><strong>Peut-on conduire une 600cc en A2 ?</strong><br/>Oui si elle est bridable et respecte le ratio poids/puissance.<br/><strong>Temps de conservation ?</strong><br/>Minimum 2 ans avant la passerelle A."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
+      { "type": "heading", "text": "FAQ – Permis A2" },
+      { "type": "paragraph", "html": "<strong>Quelle puissance maximale ?</strong><br/>Une moto ne doit pas dépasser 35 kW (47,5 ch).<br/><strong>Peut-on conduire une 600cc en A2 ?</strong><br/>Oui si elle est bridable et respecte le ratio poids/puissance.<br/><strong>Temps de conservation ?</strong><br/>Minimum 2 ans avant la passerelle A." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   }
 ]

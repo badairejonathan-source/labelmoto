@@ -42,133 +42,22 @@ const article = {
           "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda NX500 / CB500X A2</a>"
         ]
       },
-      {
-        "type": "heading",
-        "text": "Trouver la fiche de votre moto"
-      },
-      {
-        "type": "paragraph",
-        "html": "<span class=\"text-xl font-bold\">BMW</span>"
-      },
-      {
-        "type": "list",
-        "items": [
-          "<a href=\"/fiches/bmw-r1250-gs\" class=\"text-brand underline hover:text-brand/80\">R1250 GS</a>"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "html": "<span class=\"text-xl font-bold\">Yamaha</span>"
-      },
-      {
-        "type": "list",
-        "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2</a>",
-          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>",
-          "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>",
-          "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>",
-          "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "html": "<span class=\"text-xl font-bold\">Honda</span>"
-      },
-      {
-        "type": "list",
-        "items": [
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet A2</a>",
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", 
-          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>",
-          "<a href=\"/fiches/honda-cb650r\" class=\"text-brand underline hover:text-brand/80\">CB650R éligible A2</a>",
-          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp éligible A2</a>",
-          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R A1 / B / A2</a>"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "html": "<span class=\"text-xl font-bold\">Kawasaki</span>"
-      },
-      {
-        "type": "list",
-        "items": [
-          "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80\">Z900 A2 / Full</a>",
-          "<a href=\"/fiches/kawasaki-z900rs\" class=\"text-brand underline hover:text-brand/80\">Z900RS A2 / Full</a>",
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>",
-          "<a href=\"/fiches/kawasaki-ninja-650\" class=\"text-brand underline hover:text-brand/80\">Ninja 650 A2</a>"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "html": "<span class=\"text-xl font-bold\">Suzuki</span>"
-      },
-      {
-        "type": "list",
-        "items": [
-          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 A2</a>",
-          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 A2</a>"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "html": "<em>De nouveaux modèles seront ajoutés régulièrement.</em>"
-      },
-      {
-        "type": "heading",
-        "text": "Comment fonctionne l’entretien d’une moto ?"
-      },
-      {
-        "type": "paragraph",
-        "text": "Une moto demande un suivi plus fréquent qu’une voiture. Le moteur tourne plus vite, les pièces sont plus exposées et les organes de sécurité comme les freins, pneus et transmission travaillent davantage."
-      },
-      {
-        "type": "heading",
-        "text": "1. Les révisions périodiques"
-      },
-      {
-        "type": "list",
-        "items": [
-          "<strong>1 000 km</strong> → révision de rodage",
-          "<strong>10 000 km</strong> → entretien courant",
-          "<strong>20 000 km</strong> → contrôle mécanique plus complet",
-          "<strong>40 000 km</strong> → grosse révision"
-        ]
-      },
-      {
-        "type": "paragraph",
-        "text": "Même si vous roulez peu, une vidange annuelle reste souvent recommandée."
-      },
-      {
-        "type": "heading",
-        "text": "2. Les consommables"
-      },
-      {
-        "type": "table",
-        "headers": ["Pièce", "Durée moyenne"],
-        "rows": [
-          ["Pneus", "8 000 à 15 000 km"],
-          ["Kit chaîne", "20 000 à 30 000 km"],
-          ["Plaquettes", "10 000 à 20 000 km"],
-          ["Batterie", "3 à 5 ans"]
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Combien coûte l’entretien d’une moto ?"
-      },
-      {
-        "type": "table",
-        "headers": ["Type d’usage", "Budget annuel"],
-        "rows": [
-          ["Utilisation occasionnelle", "200 à 400 €"],
-          ["Usage quotidien", "400 à 800 €"],
-          ["Gros rouleur", "800 € et +"]
-        ]
-      },
-      {
-        "type": "paragraph",
-        "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <strong>coût réel d’une moto par mois</strong>."
-      }
+      { "type": "heading", "text": "Trouver la fiche de votre moto" },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">BMW</span>" },
+      { "type": "list", "items": ["<a href=\"/fiches/bmw-r1250-gs\" class=\"text-brand underline hover:text-brand/80\">R1250 GS</a>"] },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Yamaha</span>" },
+      { "type": "list", "items": ["<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2</a>", "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>", "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>", "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>", "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"] },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Honda</span>" },
+      { "type": "list", "items": ["<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet A2</a>", "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>"] },
+      { "type": "paragraph", "html": "<em>De nouveaux modèles seront ajoutés régulièrement.</em>" },
+      { "type": "heading", "text": "Comment fonctionne l’entretien d’une moto ?" },
+      { "type": "paragraph", "text": "Une moto demande un suivi plus fréquent qu’une voiture. Le moteur tourne plus vite, les pièces sont plus exposées et les organes de sécurité comme les freins, pneus et transmission travaillent davantage." },
+      { "type": "heading", "text": "1. Les révisions périodiques" },
+      { "type": "list", "items": ["<strong>1 000 km</strong> → révision de rodage", "<strong>10 000 km</strong> → entretien courant", "<strong>20 000 km</strong> → contrôle mécanique plus complet", "<strong>40 000 km</strong> → grosse révision"] },
+      { "type": "paragraph", "text": "Même si vous roulez peu, une vidange annuelle reste souvent recommandée." },
+      { "type": "heading", "text": "2. Les consommables" },
+      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [["Pneus", "8 000 à 15 000 km"], ["Kit chaîne", "20 000 à 30 000 km"], ["Plaquettes", "10 000 à 20 000 km"], ["Batterie", "3 à 5 ans"]] },
+      { "type": "paragraph", "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <strong>coût réel d’une moto par mois</strong>." }
     ]
 } as const;
 

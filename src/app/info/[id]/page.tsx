@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type ArticleContent = {
   type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
@@ -66,7 +67,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const { imageUrl, imageHint } = article;
-
   const firstParagraphIndex = article.content?.findIndex(b => b.type === 'paragraph') ?? -1;
 
   const renderContent = () => {
@@ -88,7 +88,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       if (block.type === 'paragraph' && block.html) {
           const isFirst = index === firstParagraphIndex;
           const dropCapClass = isFirst ? "first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:float-left" : "";
-          return <p key={index} className={`text-lg text-foreground/90 leading-relaxed text-justify ${dropCapClass}`} dangerouslySetInnerHTML={{ __html: block.html }} />;
+          return <p key={index} className={cn("text-lg text-foreground/90 leading-relaxed text-justify", dropCapClass)} dangerouslySetInnerHTML={{ __html: block.html }} />;
       }
       if (block.type === 'table' && block.headers && block.rows) {
         return (
@@ -131,7 +131,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       
       const isFirst = index === firstParagraphIndex;
       const dropCapClass = isFirst && block.type === 'paragraph' ? "first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:float-left" : "";
-      return <p key={index} className={`text-lg text-foreground/90 leading-relaxed text-justify ${dropCapClass}`}>{block.text}</p>;
+      return <p key={index} className={cn("text-lg text-foreground/90 leading-relaxed text-justify", dropCapClass)}>{block.text}</p>;
     });
   };
 
