@@ -57,100 +57,181 @@
   {
     "id": "5",
     "title": "Achat moto d’occasion : le guide complet pour éviter les pièges",
-    "description": "Apprenez à inspecter une moto comme un pro : de l'examen visuel approfondi aux vérifications administratives cruciales, suivez notre guide pour acheter en toute sérénité.",
+    "description": "Apprenez à inspecter une moto, vérifier les documents administratifs et négocier le meilleur prix pour acheter en toute sérénité.",
     "author": "L'équipe Label Moto",
-    "readingTime": "15 min de lecture",
+    "readingTime": "10 min de lecture",
     "imageUrl": "/images/evitelespieges.jpg",
-    "imageHint": "motorcycle inspection",
+    "imageHint": "motorcycle road trip",
     "content": [
       {
         "type": "paragraph",
-        "text": "Acheter une moto d’occasion est souvent une excellente affaire financière, mais cela peut vite se transformer en cauchemar si l'on ne respecte pas une méthodologie stricte. Entre les vices cachés et les vendeurs peu scrupuleux, voici notre guide ultime pour ne rien laisser au hasard."
-      },
-      {
-        "type": "heading",
-        "text": "1. L'inspection statique : ce que la moto raconte"
+        "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper."
       },
       {
         "type": "paragraph",
-        "text": "Avant même de discuter avec le vendeur, faites le tour de la moto. Elle doit être propre (mais pas trop, une moto trop rutilante peut cacher des fuites récentes)."
+        "text": "Bonne nouvelle : avec une bonne méthode et quelques vérifications simples, tu peux trouver une excellente moto sans mauvaise surprise. Voici la checklist complète pour acheter une moto d’occasion en toute sécurité."
+      },
+      {
+        "type": "heading",
+        "text": "1. Inspection visuelle : le premier diagnostic"
+      },
+      {
+        "type": "paragraph",
+        "text": "Avant même de démarrer la moto, observe-la attentivement. L’état général révèle souvent son histoire."
+      },
+      {
+        "type": "paragraph",
+        "text": "À vérifier absolument :"
       },
       {
         "type": "list",
         "items": [
-          "<strong>Signes de chute :</strong> Vérifiez les extrémités (embouts de guidon, leviers, repose-pieds, sélecteur). S'ils sont neufs sur une moto de 30 000 km, posez des questions.",
-          "<strong>Le cadre :</strong> Cherchez des éclats de peinture ou des soudures non d'origine, surtout près de la colonne de direction.",
-          "<strong>Les butées de direction :</strong> Elles doivent être intactes. Si elles sont marquées ou cassées, la moto a subi un choc violent.",
-          "<strong>Les fuites :</strong> Passez votre doigt sous les tubes de fourche (joints spi), autour du joint d'embase du moteur et de l'amortisseur arrière."
+          "Selle abîmée ou réservoir cabossé → chute probable",
+          "Embouts de guidon et repose-pieds rayés → chute/glissade",
+          "Pneus : regarde la date sur les flancs (DOT). Au-delà de 5 ans → remplacement obligatoire pour le CT",
+          "Disques de frein ou plaquette trop creusés → entretien négligé",
+          "Chaîne rouillée ou détendue → mauvais suivi",
+          "Fuite sur la fourche → joints spi à remplacer (pièce peu onéreuse mais beaucoup de main d’œuvre) se constate beaucoup pendant la période d’été",
+          "Trop de pièces modifiées → demande les pièces d’origine"
         ]
       },
       {
+        "type": "paragraph",
+        "html": "👉 <strong>Une moto propre et cohérente inspire confiance.</strong> Une moto trop nettoyée peut cacher une fuite."
+      },
+      {
         "type": "heading",
-        "text": "2. Les consommables : le budget caché"
+        "text": "2. Les documents obligatoires pour une moto d’occasion"
       },
       {
         "type": "paragraph",
-        "text": "Un kit chaîne ou un train de pneus à changer, c'est immédiatement 300 à 500 € de frais à prévoir après l'achat."
+        "text": "Avant de payer, vérifie toujours les papiers :"
+      },
+      {
+        "type": "heading",
+        "text": "Checklist administrative :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Carte grise au nom du vendeur",
+          "Numéro VIN identique (cadre / carte grise)",
+          "Certificat de non-gage de moins de 15 jours",
+          "Factures d’entretien ou carnet tamponné",
+          "Rapport Histovec (preuve de confiance du vendeur)"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "⚠️ <strong>Sans documents = gros risque juridique.</strong> Une moto peut être gagée, accidentée ou même volée."
+      },
+      {
+        "type": "heading",
+        "text": "3. Kilométrage et entretien : ne te fie pas seulement au compteur"
+      },
+      {
+        "type": "paragraph",
+        "text": "Une moto de 50 000 km entretenue vaut souvent mieux qu’une moto de 10 000 km abandonnée au garage."
+      },
+      {
+        "type": "paragraph",
+        "text": "Observe la cohérence :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Usure poignées vs km",
+          "Disques de frein d’origine ?",
+          "Jeu dans la transmission",
+          "Vidanges régulières (tous les 6-10 000 km)"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Le facteur n°1 de fiabilité reste l’entretien, pas le kilométrage.</strong>"
+      },
+      {
+        "type": "heading",
+        "text": "4. Essai routier : indispensable avant achat"
+      },
+      {
+        "type": "paragraph",
+        "text": "Ne jamais acheter sans essayer. Pendant l’essai vérifie :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Démarrage à froid",
+          "Embrayage progressif (si trop dur ou trop souple c’est mauvais signe)",
+          "Boîte de vitesses fluide",
+          "Pas de vibration anormale",
+          "Moto stable en ligne droite",
+          "Freinage franc sans tremblement"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Une moto qui tire à droite peut avoir un cadre faussé après accident."
+      },
+      {
+        "type": "heading",
+        "text": "5. Prix, négociation et assurance"
+      },
+      {
+        "type": "paragraph",
+        "text": "Avant de négocier :"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Compare les annonces similaires",
+          "Regarde la cote du marché",
+          "Liste les défauts constatés"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Ensuite, pense à l’assurance. Certaines motos coûtent très cher à assurer, surtout pour un jeune permis ou en région parisienne."
+      },
+      {
+        "type": "paragraph",
+        "html": "👉 <strong>Vérifie AVANT l’achat pour éviter les mauvaises surprises.</strong>"
+      },
+      {
+        "type": "heading",
+        "text": "Concession ou particulier : que choisir ?"
       },
       {
         "type": "table",
-        "headers": ["Élément", "Point de contrôle", "Alerte"],
+        "headers": ["Type", "Avantages", "Inconvénients"],
         "rows": [
-          ["Pneus", "Témoins d'usure et DOT (date)", "Plus de 5 ans = gomme séchée"],
-          ["Kit chaîne", "Tension et dents de la couronne", "Dents pointues ou chaîne rouillée"],
-          ["Disques", "Épaisseur et bordure (trottoir)", "Un rebord saillant = disque mort"],
-          ["Plaquettes", "Épaisseur de la garniture", "Moins de 2mm = à changer"]
+          ["Particulier", "Moins cher", "Aucun recours"],
+          ["Concessionnaire", "Garantie, contrôle mécanique, tranquillité", "Prix légèrement plus élevé"]
         ]
       },
       {
         "type": "heading",
-        "text": "3. L'examen administratif : la sécurité légale"
+        "text": "🧠 FAQ – Achat moto d’occasion"
       },
       {
         "type": "paragraph",
-        "text": "Ne signez rien avant d'avoir vérifié ces points :"
+        "html": "<strong>Quel kilométrage maximum pour une moto ?</strong><br/>Une moto moderne peut dépasser 80 000 km si elle est bien entretenue."
       },
       {
-        "type": "list",
-        "items": [
-          "<strong>La Carte Grise :</strong> Elle doit être au nom exact du vendeur. Si c'est 'la moto d'un ami', fuyez.",
-          "<strong>Le VIN :</strong> Comparez le numéro de série sur le cadre avec celui de la carte grise (champ E). Ils doivent être identiques.",
-          "<strong>Certificat de non-gage :</strong> Indispensable pour savoir si la moto peut être vendue (crédit en cours, opposition judiciaire).",
-          "<strong>Histovec :</strong> Le site officiel de l'État qui retrace l'historique des propriétaires et les accidents graves ayant entraîné une procédure d'expert."
-        ]
+        "type": "paragraph",
+        "html": "<strong>Une moto sans facture est-elle risquée ?</strong><br/>Oui, car impossible de prouver l’entretien réel."
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Faut-il privilégier une concession ?</strong><br/>Pour un débutant : oui, c’est plus sécurisant."
       },
       {
         "type": "heading",
-        "text": "4. L'essai dynamique : la vérité de la route"
+        "text": "🏁 Conclusion"
       },
       {
         "type": "paragraph",
-        "text": "Exigez que le moteur soit <strong>froid</strong> à votre arrivée. Un moteur chaud peut masquer des difficultés de démarrage ou des bruits de distribution."
-      },
-      {
-        "type": "list",
-        "items": [
-          "<strong>Au démarrage :</strong> Pas de fumée bleue (huile) ou blanche (liquide de refroidissement) persistante.",
-          "<strong>En roulant :</strong> Lâchez doucement le guidon à basse vitesse (si possible) : la moto doit filer droit.",
-          "<strong>La boîte :</strong> Les rapports doivent passer sans forcer et ne pas 'sauter' à l'accélération.",
-          "<strong>L'embrayage :</strong> Accélérez fort en 4ème ou 5ème : si le moteur monte dans les tours sans que la vitesse n'augmente, l'embrayage patine."
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "5. La négociation : l'art du compromis"
-      },
-      {
-        "type": "paragraph",
-        "text": "Ne négociez pas 'pour le principe'. Utilisez les éléments factuels relevés lors de l'inspection (pneu à changer = -150€, révision proche = -200€). Soyez respectueux : un vendeur braqué ne baissera jamais son prix."
-      },
-      {
-        "type": "heading",
-        "text": "Conclusion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Prendre son temps est votre meilleure arme. Si vous avez un doute, demandez à un ami plus expérimenté de vous accompagner ou passez votre chemin. La 'bonne affaire' n'en est une que si la sécurité et la fiabilité sont au rendez-vous."
+        "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais. Une bonne moto se choisit avec la tête avant le cœur."
       },
       {
         "type": "signature",
@@ -175,207 +256,7 @@
       },
       {
         "type": "paragraph",
-        "html": "Avec le permis A2, tu peux conduire une moto limitée à <strong>35 kW (47,5 chevaux)</strong> avec un rapport puissance/poids maximal de <strong>0,2 kW/kg</strong> (Service Public)."
-      },
-      {
-        "type": "paragraph",
-        "text": "Le but ? Apprendre progressivement sans être dépassé par la puissance."
-      },
-      {
-        "type": "paragraph",
-        "text": "Dans ce guide, on va voir : comment choisir ta moto A2, les erreurs à éviter, et les meilleures motos par catégorie."
-      },
-      {
-        "type": "heading",
-        "text": "Comment choisir sa moto A2 ?"
-      },
-      {
-        "type": "paragraph",
-        "html": "Avant de regarder un modèle précis, pose-toi ces 4 questions :<br/><br/><strong>1. Ton gabarit</strong><br/>Une moto trop haute = peur à l’arrêt. Privilégie une selle basse et un poids < 200 kg.<br/><br/><strong>2. Ton usage</strong><br/>Ville quotidien → roadster, Autoroute → trail, Plaisir weekend → sportive.<br/><br/><strong>3. Ton budget réel</strong><br/>L'assurance coûte souvent plus cher que la moto elle-même pour un jeune permis.<br/><br/><strong>4. Ton mental</strong><br/>La confiance compte plus que la puissance brute."
-      },
-      {
-        "type": "heading",
-        "text": "Meilleures motos roadster permis A2"
-      },
-      {
-        "type": "paragraph",
-        "text": "Les roadsters sont les motos idéales pour apprendre : légers, maniables et économiques."
-      },
-      {
-        "type": "heading",
-        "text": "Yamaha MT-07 / XSR700 (A2)"
-      },
-      {
-        "type": "paragraph",
-        "text": "La référence absolue du permis A2. Son moteur CP2 très coupleux pardonne les erreurs."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : moteur vivant, très facile en ville, forte revente",
-          "Faiblesses : très volée, assurance élevée",
-          "👉 Profil : motard urbain quotidien"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Honda CB500 Hornet"
-      },
-      {
-        "type": "paragraph",
-        "text": "La moto école parfaite. Simple, fiable, rassurante."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : ultra accessible, faible coût d’entretien, excellente fiabilité",
-          "Faiblesses : manque de sensations",
-          "👉 Profil : débutant stressé"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Kawasaki Z650"
-      },
-      {
-        "type": "paragraph",
-        "text": "Plus mature, plus valorisante, idéale pour garder après la passerelle A."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : polyvalente, confortable, belle finition",
-          "Faiblesses : assurance élevée",
-          "👉 Profil : motard qui veut évoluer"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "KTM 390 Duke"
-      },
-      {
-        "type": "paragraph",
-        "text": "La meilleure école de pilotage. Ultra légère."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : fun immédiat, assurance faible, hyper maniable",
-          "Faiblesses : moins confortable, réseau plus rare",
-          "👉 Profil : ville uniquement"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Meilleurs trails permis A2"
-      },
-      {
-        "type": "paragraph",
-        "text": "Confortables et polyvalents, les trails sont parfaits pour rouler toute l’année."
-      },
-      {
-        "type": "heading",
-        "text": "Yamaha Tracer 7"
-      },
-      {
-        "type": "paragraph",
-        "text": "La routière parfaite du permis A2."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : confort, protection vent, moteur agréable",
-          "Faiblesses : chère à assurer",
-          "👉 Profil : trajets domicile travail"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Honda NX500 (CB500X)"
-      },
-      {
-        "type": "paragraph",
-        "text": "La moto rationnelle par excellence."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : fiabilité, faible consommation, polyvalence",
-          "Faiblesses : peu de caractère",
-          "👉 Profil : utilitaire quotidien"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Royal Enfield Himalayan 450"
-      },
-      {
-        "type": "paragraph",
-        "text": "Simple, robuste et accessible."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : prix, confort, facilité",
-          "Faiblesses : performances limitées",
-          "👉 Profil : balade / loisir"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Meilleures sportives permis A2"
-      },
-      {
-        "type": "paragraph",
-        "text": "Pour ceux qui veulent le look sport sans danger."
-      },
-      {
-        "type": "heading",
-        "text": "Yamaha R7"
-      },
-      {
-        "type": "paragraph",
-        "text": "La sportive plaisir."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : look, sensations, valorisante",
-          "Faiblesses : position fatigante, assurance",
-          "👉 Profil : passion"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Honda CBR500R"
-      },
-      {
-        "type": "paragraph",
-        "text": "La sportive facile."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : rassurante, économique, fiable",
-          "Faiblesses : manque de caractère",
-          "👉 Profil : débutant sportif"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "Kawasaki Ninja 650"
-      },
-      {
-        "type": "paragraph",
-        "text": "Le compromis idéal."
-      },
-      {
-        "type": "list",
-        "items": [
-          "Forces : polyvalence, confort, performances",
-          "Faiblesses : assurance",
-          "👉 Profil : daily + plaisir"
-        ]
+        "html": "Avec le permis A2, tu peux conduire une moto limitée à <strong>35 kW (47,5 chevaux)</strong> avec un rapport puissance/poids maximal de <strong>0,2 kW/kg</strong>."
       },
       {
         "type": "heading",
@@ -403,15 +284,7 @@
       },
       {
         "type": "paragraph",
-        "html": "<strong>Quelle puissance maximale ?</strong><br/>Une moto ne doit pas dépasser 35 kW (47,5 ch) (Service Public)<br/><strong>Peut-on conduire une 600cc en A2 ?</strong><br/>Oui si elle respecte la puissance et le ratio poids/puissance (rideto.com)<br/><strong>Temps de conservation ?</strong><br/>Minimum 2 ans avant la passerelle A (cantal.gouv.fr)<br/><strong>Quelle est la meilleure moto A2 ?</strong><br/>La meilleure est celle adaptée à ton usage quotidien."
-      },
-      {
-        "type": "heading",
-        "text": "Conclusion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Choisir sa moto A2 n’est pas une question de performance mais de confiance. Une moto rassurante te fera progresser plus vite qu’une moto impressionnante. Prends celle qui te donne envie de rouler — c’est toujours la bonne."
+        "html": "<strong>Quelle puissance maximale ?</strong><br/>Une moto ne doit pas dépasser 35 kW (47,5 ch).<br/><strong>Peut-on conduire une 600cc en A2 ?</strong><br/>Oui si elle est bridable et respecte le ratio poids/puissance.<br/><strong>Temps de conservation ?</strong><br/>Minimum 2 ans avant la passerelle A."
       },
       {
         "type": "signature",

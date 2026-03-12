@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { ArrowLeft, Map } from 'lucide-react';
 
 import Header from '@/components/app/header';
-import articlesData from '@/app/data/articles.json';
+import articlesData from '@/data/articles.json';
 import {
   Table,
   TableBody,
@@ -36,7 +36,6 @@ type Article = {
   title: string;
   description: string;
   author: string;
-  date: string;
   readingTime: string;
   imageUrl: string;
   imageHint: string;
@@ -93,9 +92,9 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       }
       if (block.type === 'table' && block.headers && block.rows) {
         return (
-          <div key={index} className="my-8 overflow-x-auto">
+          <div key={index} className="my-8 overflow-x-auto rounded-lg border">
             <Table className="min-w-full text-sm">
-              <TableHeader>
+              <TableHeader className="bg-muted/50">
                 <TableRow>
                   {block.headers.map((header: string, hIndex: number) => (
                     <TableHead key={hIndex} className="font-semibold">{header}</TableHead>

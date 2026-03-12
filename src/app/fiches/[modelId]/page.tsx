@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { ArrowLeft, Gauge, Droplets, Wrench, ShieldCheck, Settings2, ChevronDown } from 'lucide-react';
 
 import Header from '@/components/app/header';
-import fichesData from '@/app/data/fiches-techniques.json';
+import fichesData from '@/data/fiches-techniques.json';
 import {
   Table,
   TableBody,
