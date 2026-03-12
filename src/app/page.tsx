@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/app/header';
 import { Bike, Wrench, FileText, Home, CheckCircle, ArrowRight } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
-import articlesData from '@/app/data/articles.json';
+import articlesData from '@/data/articles.json';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 
@@ -159,7 +159,7 @@ export default function LandingPage() {
                                             data-ai-hint={article.imageHint}
                                         />
                                         <div className="absolute top-2 left-2 bg-brand text-white text-[8px] uppercase font-bold px-1.5 py-0.5 rounded shadow-sm">
-                                            A2 Focus
+                                            Focus Moto
                                         </div>
                                     </div>
                                     <div className="p-4 flex flex-col flex-grow">
@@ -212,20 +212,20 @@ export default function LandingPage() {
                         <div className="relative z-10 p-6 md:p-10">
                             <div className="max-w-4xl mx-auto text-center text-white">
                                 <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                                    🚦 Rejoignez la route digitale des motards
+                                    🚦 Ne perdez plus votre temps dans les recherches.
                                 </h2>
-                                <div className="space-y-3 text-sm text-gray-200" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
+                                <div className="space-y-4 text-sm md:text-base text-gray-200" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
                                     <p>
-                                        Parce que nous savons que le temps passé à chercher une concession, c’est du temps en moins sur la route, notre mission est simple : rendre la vie des motards plus fluide, plus connectée et plus fiable.
+                                        Parce que chaque minute passée à chercher un garage est une minute de moins à pencher dans les virages, nous avons créé LABEL MOTO. Notre mission : rendre votre vie de motard plus fluide, plus connectée et surtout, plus fiable.
                                     </p>
                                     <p>
-                                        Grâce à notre annuaire des concessions moto, vous pouvez dès maintenant acheter une moto près de chez vous, réserver votre essai, planifier un entretien, ou simplement découvrir la meilleure concession moto selon votre région et vos besoins.
+                                        Trouvez en un clic votre future bécane, réservez un essai en concession, ou dénichez le préparateur qui saura sublimer votre machine. Que ce soit pour un entretien de routine ou l’équipement de votre vie, accédez uniquement à des professionnels sélectionnés.
                                     </p>
                                     <p>
-                                        Alors, prêt à prendre la route du futur ? Rejoignez notre communauté dès aujourd’hui, partagez vos expériences, et contribue à bâtir la plateforme de référence pour tous les passionnés de deux-roues.
+                                        Prêt à passer la vitesse supérieure? Rejoignez la première alliance digitale des passionnés. Partagez vos avis, notez vos expériences et bâtissons ensemble le roadbook de référence du deux-roues en France.
                                     </p>
-                                    <p className="font-semibold text-white">
-                                        Parce qu’ici, chaque motard trouve sa route… et sa concession. <Image src="/images/Stamp-LM.png?v=3" alt="Cachet Label Moto" width={32} height={32} className="inline-block -mt-1.5 opacity-80" />
+                                    <p className="font-semibold text-white pt-2">
+                                        L'équipe Label Moto <Image src="/images/Stamp-LM.png?v=3" alt="Cachet Label Moto" width={32} height={32} className="inline-block -mt-1.5 opacity-80" />
                                     </p>
                                 </div>
                             </div>

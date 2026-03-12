@@ -396,8 +396,17 @@ const Header: React.FC<HeaderProps> = ({
             </Link>
           </div>
           
-          <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none">
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight">
+          <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none relative overflow-hidden rounded-xl py-2">
+            {/* Map background preview */}
+            <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+                <Image 
+                    src="/images/apercucarte.png" 
+                    alt="" 
+                    fill 
+                    className="object-cover grayscale"
+                />
+            </div>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight relative z-10">
               <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
               <span className="text-brand italic block lg:inline">Fini la galère.</span>
             </p>

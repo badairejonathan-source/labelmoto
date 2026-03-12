@@ -91,7 +91,7 @@
           "Pneus : regarde la date sur les flancs (DOT). Au-delà de 5 ans → remplacement obligatoire pour le CT",
           "Disques de frein ou plaquette trop creusés → entretien négligé",
           "Chaîne rouillée ou détendue → mauvais suivi",
-          "Fuite sur la fourche → joints spi à remplacer (pièce peu onéreuse mais beaucoup de main d’œuvre) se constate beaucoup pendant la période d’été",
+          "Fuite sur la fourche → joints spi à remplacer (pièce peu onéreuse mais beaucoup de main d’œuvre) ce constate beaucoup pendant la période d’été",
           "Trop de pièces modifiées → demande les pièces d’origine"
         ]
       },
@@ -161,12 +161,12 @@
       {
         "type": "list",
         "items": [
-          "Démarrage à froid",
-          "Embrayage progressif (si trop dur ou trop souple c’est mauvais signe)",
-          "Boîte de vitesses fluide",
-          "Pas de vibration anormale",
-          "Moto stable en ligne droite",
-          "Freinage franc sans tremblement"
+          "démarrage à froid",
+          "embrayage progressif , si trop dur ou trop souple c’est mauvais signe.",
+          "boîte de vitesses fluide",
+          "pas de vibration anormale",
+          "moto stable en ligne droite",
+          "freinage franc sans tremblement"
         ]
       },
       {
@@ -184,9 +184,9 @@
       {
         "type": "list",
         "items": [
-          "Compare les annonces similaires",
-          "Regarde la cote du marché",
-          "Liste les défauts constatés"
+          "compare les annonces similaires",
+          "regarde la cote du marché",
+          "liste les défauts constatés"
         ]
       },
       {
