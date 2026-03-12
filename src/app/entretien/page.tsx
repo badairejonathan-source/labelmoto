@@ -126,10 +126,6 @@ const article = {
         "text": "1. Les révisions périodiques"
       },
       {
-        "type": "paragraph",
-        "text": "Elles sont prévues par le constructeur selon le kilométrage. En général :"
-      },
-      {
         "type": "list",
         "items": [
           "<strong>1 000 km</strong> → révision de rodage",
@@ -155,14 +151,6 @@ const article = {
           ["Plaquettes", "10 000 à 20 000 km"],
           ["Batterie", "3 à 5 ans"]
         ]
-      },
-      {
-        "type": "heading",
-        "text": "3. Les contrôles de sécurité"
-      },
-      {
-        "type": "paragraph",
-        "text": "Pression des pneus, tension de chaîne, niveaux, freins… Ces vérifications simples évitent une grande partie des pannes et prolongent la durée de vie de la moto."
       },
       {
         "type": "heading",

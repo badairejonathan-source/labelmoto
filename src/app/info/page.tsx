@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/app/header';
-import articlesData from '@/app/data/articles.json';
+import articlesData from '@/data/articles.json';
 import { Loader2, Map, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

@@ -1,0 +1,178 @@
+
+[
+  {
+    "id": "4",
+    "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu. Cet article détaille le coût réel d’une moto pour un débutant.",
+    "author": "L'équipe Label Moto",
+    "readingTime": "8 min de lecture",
+    "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlfGVufDB8fHx8MTc3MTUxMDk3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "imageHint": "motorcycle budget",
+    "content": [
+        {
+            "type": "paragraph",
+            "text": "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours."
+        },
+        {
+            "type": "paragraph",
+            "text": "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent."
+        },
+        {
+            "type": "paragraph",
+            "text": "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis."
+        },
+        {
+            "type": "paragraph",
+            "html": "Dans cet article, on va détailler <strong>le coût réel d’une moto pour un débutant</strong> :"
+        },
+        {
+            "type": "list",
+            "items": ["Le prix d’achat initial", "L'assurance jeune permis", "Le budget carburant", "L'entretien courant", "L'équipement obligatoire"]
+        },
+        {
+            "type": "heading",
+            "text": "L’assurance : la plus grosse surprise pour un débutant"
+        },
+        {
+            "type": "paragraph",
+            "text": "C’est presque toujours le moment où le futur motard tombe de haut. On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double."
+        },
+        {
+            "type": "table",
+            "headers": ["Profil", "Prix mensuel moyen"],
+            "rows": [
+                ["Jeune permis A2", "80 à 200 €"],
+                ["2 ans d’expérience", "50 à 120 €"],
+                ["Motard expérimenté", "30 à 70 €"]
+            ]
+        },
+        {
+            "type": "signature",
+            "text": "L'équipe Label Moto",
+            "imageUrl": "/images/Stamp-LM.png?v=2",
+            "alt": "Cachet Label Moto"
+        }
+    ]
+  },
+  {
+    "id": "5",
+    "title": "Achat moto d’occasion : le guide complet pour éviter les pièges",
+    "description": "Apprenez à inspecter une moto, vérifier les documents administratifs et négocier le meilleur prix pour acheter en toute sérénité.",
+    "author": "L'équipe Label Moto",
+    "readingTime": "10 min de lecture",
+    "imageUrl": "/images/evitelespieges.jpg",
+    "imageHint": "motorcycle inspection",
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper."
+      },
+      {
+        "type": "heading",
+        "text": "1. L'inspection visuelle : le premier diagnostic"
+      },
+      {
+        "type": "paragraph",
+        "text": "Avant même de démarrer le moteur, faites le tour de la machine. Cherchez des signes de chute (embouts de guidon rayés, leviers tordus, carénages repeints). Une moto propre n'est pas forcément une moto saine."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Selle abîmée ou réservoir cabossé → chute probable",
+          "Embouts de guidon et repose-pieds rayés → glissade",
+          "Pneus : vérifiez le DOT (date de fabrication). Au-delà de 5 ans → remplacement",
+          "Disques de frein : si un rebord est saillant, le disque est usé",
+          "Chaîne : une chaîne rouillée ou trop détendue indique un mauvais entretien"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "2. Les documents obligatoires et l'administratif"
+      },
+      {
+        "type": "paragraph",
+        "text": "Ne négligez jamais l'aspect administratif. Une carte grise qui n'est pas au nom du vendeur est un signal d'alarme majeur."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Carte grise originale (vérifiez le VIN sur le cadre)",
+          "Certificat de situation administrative (non-gage) de moins de 15 jours",
+          "Rapport Histovec (historique des propriétaires et accidents)",
+          "Factures d'entretien ou carnet tamponné"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "3. L'essai dynamique et la négociation"
+      },
+      {
+        "type": "paragraph",
+        "text": "Un moteur doit démarrer à froid sans bruits suspects. Une fois en route, vérifiez que les vitesses passent sans accrocher et que la moto freine droit. Utilisez chaque défaut constaté pour négocier le prix de manière rationnelle."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "title": "Achat moto A2 : le guide complet des meilleures motos pour débuter",
+    "description": "Obtenir le permis A2 est le vrai début de la vie de motard. Ce guide vous aide à choisir votre première machine selon votre profil et votre budget.",
+    "author": "L'équipe Label Moto",
+    "readingTime": "12 min de lecture",
+    "imageUrl": "/images/achat-occasion.jpg",
+    "imageHint": "motorcycle A2 guide",
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite."
+      },
+      {
+        "type": "heading",
+        "text": "Comment choisir sa moto A2 ?"
+      },
+      {
+        "type": "paragraph",
+        "html": "Avant de regarder un modèle précis, pose-toi ces 4 questions :<br/><br/><strong>1. Ton gabarit :</strong> Une moto trop haute = peur à l’arrêt. Privilégie une selle basse.<br/><strong>2. Ton usage :</strong> Ville quotidien → roadster, Autoroute → trail, Plaisir weekend → sportive.<br/><strong>3. Ton budget réel :</strong> L'assurance coûte souvent plus cher que la moto elle-même.<br/><strong>4. Ton mental :</strong> La confiance compte plus que la puissance brute."
+      },
+      {
+        "type": "heading",
+        "text": "Tableau comparatif des meilleures motos A2"
+      },
+      {
+        "type": "table",
+        "headers": ["Modèle", "Type", "Facilité", "Budget", "Assurance", "Revente"],
+        "rows": [
+          ["Yamaha MT-07", "Roadster", "🟩", "🟧", "🟥", "🟩"],
+          ["Honda CB500 Hornet", "Roadster", "🟩", "🟩", "🟩", "🟧"],
+          ["Kawasaki Z650", "Roadster", "🟧", "🟧", "🟥", "🟩"],
+          ["KTM 390 Duke", "Roadster", "🟩", "🟩", "🟩", "🟧"],
+          ["Yamaha Tracer 7", "Trail", "🟩", "🟧", "🟥", "🟩"],
+          ["Honda NX500", "Trail", "🟩", "🟩", "🟩", "🟧"],
+          ["RE Himalayan 450", "Trail", "🟧", "🟩", "🟩", "🟧"],
+          ["Yamaha R7", "Sportive", "🟧", "🟧", "🟥", "🟩"],
+          ["Honda CBR500R", "Sportive", "🟩", "🟩", "🟩", "🟩"],
+          ["Kawasaki Ninja 650", "Sportive", "🟧", "🟧", "🟥", "🟩"]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "FAQ – Permis A2"
+      },
+      {
+        "type": "paragraph",
+        "html": "<strong>Quelle puissance maximale ?</strong><br/>35 kW (47,5 ch).<br/><strong>Peut-on conduire une 600cc ?</strong><br/>Oui si elle est bridable et respecte le ratio poids/puissance.<br/><strong>Temps de conservation ?</strong><br/>Minimum 2 ans avant la passerelle A."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
+      }
+    ]
+  }
+]
