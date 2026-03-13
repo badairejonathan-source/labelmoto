@@ -30,6 +30,7 @@
         "id": { "type": "string" },
         "display_title": { "type": "string" },
         "brand": { "type": "string" },
+        "model": { "type": "string" },
         "year_range": { "type": "string" },
         "imageUrl": { "type": "string" },
         "category": { "type": "string" },
@@ -46,18 +47,6 @@
             "weight_tpf_kg": { "type": "number" },
             "tank_l": { "type": "number" },
             "wheelbase_mm": { "type": "number" },
-            "variants": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "title": { "type": "string" },
-                  "power": { "type": "string" },
-                  "torque": { "type": "string" },
-                  "license_bridging": { "type": "string" }
-                }
-              }
-            },
             "cycle_parts": {
               "type": "object",
               "properties": {
@@ -69,6 +58,19 @@
                 "rear_suspension": { "type": "string" },
                 "rear_tire": { "type": "string" }
               }
+            }
+          }
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "power": { "type": "string" },
+              "torque": { "type": "string" },
+              "license_bridging": { "type": "string" }
             }
           }
         },
@@ -84,8 +86,13 @@
             "longevity_tips": { "type": "array", "items": { "type": "string" } }
           }
         },
-        "seo": { "type": "object" },
-        "relations": { "type": "object" }
+        "relations": {
+          "type": "object",
+          "properties": {
+            "related_articles": { "type": "array", "items": { "type": "string" } },
+            "related_models": { "type": "array", "items": { "type": "string" } }
+          }
+        }
       }
     }
   },

@@ -5,7 +5,7 @@ import React, { useState, use, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, Info, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -41,41 +41,45 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
-  // Map Firestore data to the UI format based on the rich structure provided
   const displayData = useMemo(() => {
     if (!fiche) return null;
 
-    const ts = fiche.technical_sheet || {};
-    const variants = ts.variants || [];
+    // Récupération des variantes (racine ou technical_sheet)
+    const variants = fiche.variants || (fiche.technical_sheet?.variants) || [];
     
-    // Si des variantes existent, on fusionne les données de la variante active avec les données de base
+    // Données de base
+    const ts = fiche.technical_sheet || {};
+    
+    // Fusion des données de la variante active avec les données de base
     const activeVariant = variants[selectedVariantIndex] || {};
+    
+    // On donne la priorité aux champs de la variante pour la puissance/couple/bridage
     const effectiveTs = { ...ts, ...activeVariant };
     
-    const cp = ts.cycle_parts || {};
+    const cp = ts.cycle_parts || fiche.cycle_parts || {};
     const sg = fiche.service_guide || {};
 
     return {
-      modelName: fiche.display_title || fiche.modelName || fiche.id?.replace(/-/g, ' ').toUpperCase(),
+      modelName: fiche.display_title || fiche.model || fiche.id?.replace(/-/g, ' ').toUpperCase(),
       brand: fiche.brand || (fiche.id?.split('-')[0] || '').toUpperCase(),
-      year: fiche.year_range || fiche.year || "2021+",
+      year: fiche.year_range || "2021+",
       imageUrl: fiche.imageUrl || "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
-      introduction: sg.intro || fiche.introduction || "Fiche technique détaillée et guide d'entretien complet.",
+      introduction: sg.intro || fiche.introduction || "",
       hasVariants: variants.length > 1,
       variants: variants,
       engine: {
-        bridage: effectiveTs.license_bridging || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
-        type: effectiveTs.engine_type || "Donnée non renseignée",
-        displacement: effectiveTs.displacement_cc ? `${effectiveTs.displacement_cc} cm³` : "Donnée non renseignée",
-        power: effectiveTs.power || "Donnée non renseignée",
-        torque: effectiveTs.torque || "Donnée non renseignée",
-        alimentation: effectiveTs.fuel_system || "Donnée non renseignée"
+        bridage: activeVariant.license_bridging || ts.license_bridging || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
+        type: ts.engine_type || "Donnée non renseignée",
+        displacement: (ts.displacement_cc) ? `${ts.displacement_cc} cm³` : "Donnée non renseignée",
+        power: activeVariant.power || ts.power || "Donnée non renseignée",
+        torque: activeVariant.torque || ts.torque || "Donnée non renseignée",
+        alimentation: ts.fuel_system || "Donnée non renseignée"
       },
       dimensions: {
-        seatHeight: ts.seat_height_mm ? `${ts.seat_height_mm} mm` : "Donnée non renseignée",
-        wetWeight: ts.weight_tpf_kg ? `${ts.weight_tpf_kg} kg` : "Donnée non renseignée",
-        fuelCapacity: ts.tank_l ? `${ts.tank_l} L` : "Donnée non renseignée",
-        wheelbase: ts.wheelbase_mm ? `${ts.wheelbase_mm} mm` : "Donnée non renseignée",
+        seatHeight: (ts.seat_height_mm) ? `${ts.seat_height_mm} mm` : "Donnée non renseignée",
+        wetWeight: (ts.weight_tpf_kg) ? `${ts.weight_tpf_kg} kg` : "Donnée non renseignée",
+        fuelCapacity: (ts.tank_l) ? `${ts.tank_l} L` : "Donnée non renseignée",
+        wheelbase: (ts.wheelbase_mm) ? `${ts.wheelbase_mm} mm` : "Donnée non renseignée",
       },
       chassis: {
         frame: cp.frame || "Donnée non renseignée",
@@ -86,11 +90,11 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         frontTire: cp.front_tire || "Donnée non renseignée",
         rearTire: cp.rear_tire || "Donnée non renseignée"
       },
-      serviceSchedule: sg.service_schedule || [],
-      consumables: sg.consumables || [],
-      faq: sg.faq || [],
-      knownIssues: sg.known_issues || [],
-      longevityTips: sg.longevity_tips || [],
+      serviceSchedule: sg.service_schedule || fiche.service_schedule || [],
+      consumables: sg.consumables || fiche.consumables || [],
+      faq: sg.faq || fiche.faq || [],
+      knownIssues: sg.known_issues || fiche.known_issues || [],
+      longevityTips: sg.longevity_tips || fiche.longevity_tips || [],
       conclusion: sg.conclusion || "",
       ctas: {
         compare: { 
@@ -120,7 +124,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />
-        <p className="text-muted-foreground font-bold animate-pulse">Chargement de la fiche technique...</p>
+        <p className="text-muted-foreground font-bold animate-pulse">Récupération des données Firestore...</p>
       </div>
     );
   }
@@ -194,7 +198,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                   <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${displayData.variants.length}, 1fr)` }}>
                     {displayData.variants.map((v: any, idx: number) => (
                       <TabsTrigger key={idx} value={String(idx)} className="font-bold uppercase text-[10px] tracking-tight">
-                        {v.title || `Version ${idx + 1}`}
+                        {v.label || v.title || `Version ${idx + 1}`}
                       </TabsTrigger>
                     ))}
                   </TabsList>
@@ -213,7 +217,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 <CardContent>
                   <ul className="space-y-3">
                     {displayData.engine?.bridage && (
-                      <li className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 pb-2 border-b border-border/50">
+                      <li className="flex flex-col gap-1 pb-2 border-b border-border/50">
                         <span className="font-black text-[10px] uppercase text-muted-foreground tracking-wider">Permis / Bridage:</span>
                         <span className="text-brand font-black text-sm">{displayData.engine.bridage}</span>
                       </li>
