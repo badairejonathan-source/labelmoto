@@ -27,23 +27,53 @@
       "type": "object",
       "description": "Données techniques et guide d'entretien complet pour un modèle de moto.",
       "properties": {
-        "modelId": { "type": "string" },
-        "modelName": { "type": "string" },
+        "id": { "type": "string" },
+        "display_title": { "type": "string" },
         "brand": { "type": "string" },
-        "year": { "type": "string" },
+        "year_range": { "type": "string" },
         "imageUrl": { "type": "string" },
-        "introduction": { "type": "string" },
-        "power": { "type": "string" },
-        "torque": { "type": "string" },
-        "seat_height_mm": { "type": "number" },
-        "tank_l": { "type": "number" },
-        "weight_tpf_kg": { "type": "number" },
-        "wheelbase_mm": { "type": "number" },
-        "engine": { "type": "object" },
-        "dimensions": { "type": "object" },
-        "chassis": { "type": "object" },
-        "content": { "type": "array" },
-        "type": { "type": "string" }
+        "category": { "type": "string" },
+        "technical_sheet": {
+          "type": "object",
+          "properties": {
+            "engine_type": { "type": "string" },
+            "power": { "type": "string" },
+            "torque": { "type": "string" },
+            "license_bridging": { "type": "string" },
+            "displacement_cc": { "type": "number" },
+            "fuel_system": { "type": "string" },
+            "seat_height_mm": { "type": "number" },
+            "weight_tpf_kg": { "type": "number" },
+            "tank_l": { "type": "number" },
+            "wheelbase_mm": { "type": "number" },
+            "cycle_parts": {
+              "type": "object",
+              "properties": {
+                "frame": { "type": "string" },
+                "front_brake": { "type": "string" },
+                "front_suspension": { "type": "string" },
+                "front_tire": { "type": "string" },
+                "rear_brake": { "type": "string" },
+                "rear_suspension": { "type": "string" },
+                "rear_tire": { "type": "string" }
+              }
+            }
+          }
+        },
+        "service_guide": {
+          "type": "object",
+          "properties": {
+            "intro": { "type": "string" },
+            "conclusion": { "type": "string" },
+            "service_schedule": { "type": "array", "items": { "type": "object" } },
+            "consumables": { "type": "array", "items": { "type": "object" } },
+            "faq": { "type": "array", "items": { "type": "object" } },
+            "known_issues": { "type": "array", "items": { "type": "string" } },
+            "longevity_tips": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "seo": { "type": "object" },
+        "relations": { "type": "object" }
       }
     }
   },

@@ -5,7 +5,7 @@ import React, { useState, use, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2 } from 'lucide-react';
+import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, Info, CheckCircle2, AlertTriangle, HelpCircle } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -19,20 +19,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-
-type FicheContent = {
-  type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature' | 'cta-compare' | 'cta-concession';
-  text?: string;
-  html?: string;
-  items?: string[];
-  headers?: string[];
-  rows?: any[];
-  imageUrl?: string;
-  alt?: string;
-};
 
 export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
   const { modelId } = use(params);
@@ -44,40 +39,61 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
-  // Map Firestore data to the UI format (handles both rich and flat structures)
+  // Map Firestore data to the UI format based on the rich structure provided
   const displayData = useMemo(() => {
     if (!fiche) return null;
 
+    const ts = fiche.technical_sheet || {};
+    const cp = ts.cycle_parts || {};
+    const sg = fiche.service_guide || {};
+
     return {
-      modelName: fiche.modelName || fiche.id?.replace(/-/g, ' ').toUpperCase(),
+      modelName: fiche.display_title || fiche.modelName || fiche.id?.replace(/-/g, ' ').toUpperCase(),
       brand: fiche.brand || (fiche.id?.split('-')[0] || '').toUpperCase(),
-      year: fiche.year || "2021+",
+      year: fiche.year_range || fiche.year || "2021+",
       imageUrl: fiche.imageUrl || "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
-      introduction: fiche.introduction || "Fiche technique détaillée et guide d'entretien complet.",
+      introduction: sg.intro || fiche.introduction || "Fiche technique détaillée et guide d'entretien complet.",
       engine: {
-        bridage: fiche.engine?.bridage || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
-        type: fiche.engine_type || fiche.engine?.type || "Bicylindre en ligne CP2",
-        displacement: fiche.displacement || fiche.engine?.displacement || "689 cm³",
-        power: fiche.power || fiche.engine?.power || "Donnée non renseignée",
-        torque: fiche.torque || fiche.engine?.torque || "Donnée non renseignée",
-        alimentation: fiche.alimentation || fiche.engine?.alimentation || "Injection électronique"
+        bridage: ts.license_bridging || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
+        type: ts.engine_type || "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
+        displacement: ts.displacement_cc ? `${ts.displacement_cc} cm³` : "689 cm³",
+        power: ts.power || "Donnée non renseignée",
+        torque: ts.torque || "Donnée non renseignée",
+        alimentation: ts.fuel_system || "Injection électronique"
       },
       dimensions: {
-        seatHeight: fiche.seat_height_mm ? `${fiche.seat_height_mm} mm` : (fiche.dimensions?.seatHeight || "Donnée non renseignée"),
-        wetWeight: fiche.weight_tpf_kg ? `${fiche.weight_tpf_kg} kg` : (fiche.dimensions?.wetWeight || "Donnée non renseignée"),
-        fuelCapacity: fiche.tank_l ? `${fiche.tank_l} L` : (fiche.dimensions?.fuelCapacity || "Donnée non renseignée"),
-        wheelbase: fiche.wheelbase_mm ? `${fiche.wheelbase_mm} mm` : (fiche.dimensions?.wheelbase || "Donnée non renseignée"),
+        seatHeight: ts.seat_height_mm ? `${ts.seat_height_mm} mm` : "Donnée non renseignée",
+        wetWeight: ts.weight_tpf_kg ? `${ts.weight_tpf_kg} kg` : "Donnée non renseignée",
+        fuelCapacity: ts.tank_l ? `${ts.tank_l} L` : "Donnée non renseignée",
+        wheelbase: ts.wheelbase_mm ? `${ts.wheelbase_mm} mm` : "Donnée non renseignée",
       },
-      chassis: fiche.chassis || {
-        frame: "Cadre type Diamant en acier",
-        frontSuspension: "Fourche télescopique",
-        rearSuspension: "Mono-amortisseur réglable",
-        frontBrake: "Double disque",
-        rearBrake: "Simple disque",
-        frontTire: "120/70 ZR 17",
-        rearTire: "180/55 ZR 17"
+      chassis: {
+        frame: cp.frame || "Donnée non renseignée",
+        frontSuspension: cp.front_suspension || "Donnée non renseignée",
+        rearSuspension: cp.rear_suspension || "Donnée non renseignée",
+        frontBrake: cp.front_brake || "Donnée non renseignée",
+        rearBrake: cp.rear_brake || "Donnée non renseignée",
+        frontTire: cp.front_tire || "Donnée non renseignée",
+        rearTire: cp.rear_tire || "Donnée non renseignée"
       },
-      content: fiche.content || []
+      // Service Guide Data
+      serviceSchedule: sg.service_schedule || [],
+      consumables: sg.consumables || [],
+      faq: sg.faq || [],
+      knownIssues: sg.known_issues || [],
+      longevityTips: sg.longevity_tips || [],
+      conclusion: sg.conclusion || "",
+      ctas: {
+        compare: { 
+          button: sg.compare_cta_button || "Comparer les ateliers près de moi",
+          text: sg.compare_cta_text || "Les tarifs peuvent varier selon l’atelier et la région."
+        },
+        concession: {
+          title: sg.concession_cta_title || `La ${fiche.display_title} vous correspond ?`,
+          button: sg.concession_cta_button || "Voir en concession",
+          text: sg.concession_cta_text || "Si vous envisagez d’en acheter une, comparez les offres disponibles."
+        }
+      }
     };
   }, [fiche]);
 
@@ -103,7 +119,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   if (!fiche || !displayData) {
     return (
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
-            <h1 className="text-4xl font-black mb-4">FICHE NON DISPONIBLE</h1>
+            <h1 className="text-4xl font-black mb-4 uppercase">FICHE NON DISPONIBLE</h1>
             <p className="text-muted-foreground mb-8">Nous n'avons pas encore intégré les données pour le modèle "{modelId}".</p>
             <Button asChild>
                 <Link href="/entretien">Retour à l'entretien</Link>
@@ -111,107 +127,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         </div>
     );
   }
-
-  const renderContent = (content: FicheContent[]) => {
-    if (!content || content.length === 0) return null;
-
-    return content.map((block, index) => {
-      switch (block.type) {
-        case 'heading':
-          return <h3 key={index} className="text-2xl font-bold mt-12 mb-6 text-foreground border-b pb-2">{block.text}</h3>;
-        
-        case 'list':
-          return (
-            <ul key={index} className="list-disc list-inside space-y-3 my-6 pl-4 text-base leading-relaxed">
-              {block.items?.map((item, i) => <li key={i} className="text-foreground/90" dangerouslySetInnerHTML={{ __html: item }} />)}
-            </ul>
-          );
-
-        case 'paragraph':
-          if (block.html) {
-            return <p key={index} className="text-base text-foreground/90 leading-relaxed my-6" dangerouslySetInnerHTML={{ __html: block.html }} />;
-          }
-          return <p key={index} className="text-base text-foreground/90 leading-relaxed my-6">{block.text}</p>;
-          
-        case 'table':
-          return (
-            <div key={index} className="my-8">
-              <div className="overflow-x-auto rounded-lg border shadow-sm">
-                <Table>
-                  <TableHeader className="bg-muted/50">
-                    <TableRow>
-                      {block.headers?.map((header: string, hIndex: number) => (
-                        <TableHead key={hIndex} className="font-bold text-foreground py-4">{header}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {block.rows?.map((row: any, rIndex: number) => {
-                      const cells = Array.isArray(row) ? row : row.data || [];
-                      return (
-                        <TableRow key={rIndex}>
-                          {cells.map((cell: string, cIndex: number) => (
-                            <TableCell key={cIndex} className={cn("py-4", cIndex === 0 ? 'font-bold' : '')}>{cell}</TableCell>
-                          ))}
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          );
-
-        case 'cta-compare':
-          return (
-            <div key={index} className="my-8 text-center space-y-4 bg-brand/5 p-8 rounded-3xl border border-brand/10">
-              <p className="text-sm text-muted-foreground max-w-2xl mx-auto italic">
-                Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.
-              </p>
-              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
-                <Link href={`/map?filter=service&search=${encodeURIComponent(displayData.brand)}`}>
-                  {block.text || "🔘 Comparer les ateliers près de moi"}
-                </Link>
-              </Button>
-            </div>
-          );
-
-        case 'cta-concession':
-          return (
-            <div key={index} className="my-16 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500/20 rounded-3xl p-8 text-center shadow-xl">
-                <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">🏍️ La {displayData.modelName} vous correspond ?</h3>
-                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg font-medium">
-                    Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
-                </p>
-                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
-                    <Link href={`/map?filter=shopping&search=${encodeURIComponent(displayData.brand)}`}>
-                        {block.text || "🔘 Voir en concession"}
-                    </Link>
-                </Button>
-            </div>
-          );
-        
-        case 'signature':
-          return (
-            <div key={index} className="flex justify-end items-center mt-12 mb-8">
-              <p className="text-lg font-bold text-foreground/90 relative z-10">{block.text}</p>
-              {block.imageUrl && (
-                <Image 
-                  src={block.imageUrl} 
-                  alt={block.alt || "Signature"} 
-                  width={120} 
-                  height={120}
-                  className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
-                />
-              )}
-            </div>
-          );
-
-        default:
-          return null;
-      }
-    });
-  };
 
   return (
     <div className="bg-background min-h-screen">
@@ -242,6 +157,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           </Link>
 
           <div className="space-y-8">
+            {/* Hero Section */}
             <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
               <Image
                 src={displayData.imageUrl}
@@ -259,6 +175,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </div>
             </div>
 
+            {/* Quick Specs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="shadow-lg border-none bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -314,6 +231,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </Card>
             </div>
             
+            {/* Chassis Collapsible */}
             <Collapsible 
               open={isPartieCycleOpen} 
               onOpenChange={setIsPartieCycleOpen}
@@ -367,6 +285,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </Card>
             </Collapsible>
 
+            {/* Maintenance Guide Section */}
             <div className="pt-12">
               <h2 className="text-4xl md:text-5xl font-black text-center mb-4 uppercase tracking-tighter">
                 Guide d'entretien
@@ -374,11 +293,177 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               <div className="w-24 h-1.5 bg-brand mx-auto mb-8 rounded-full" />
               
               {displayData.introduction && (
-                <p className="text-xl text-center text-muted-foreground leading-relaxed mb-12 max-w-3xl mx-auto font-medium">{displayData.introduction}</p>
+                <p className="text-xl text-center text-muted-foreground leading-relaxed mb-12 max-w-3xl mx-auto font-medium">
+                  {displayData.introduction}
+                </p>
               )}
-              
-              <div className="prose prose-brand max-w-none">
-                  {renderContent(displayData.content || [])}
+
+              <div className="space-y-12">
+                {/* Service Schedule Table */}
+                {displayData.serviceSchedule.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <Wrench className="h-6 w-6 text-brand" />
+                      <h3 className="text-2xl font-bold uppercase tracking-tight">Intervalles et prix des révisions</h3>
+                    </div>
+                    <div className="overflow-x-auto rounded-xl border shadow-sm">
+                      <Table>
+                        <TableHeader className="bg-muted/50">
+                          <TableRow>
+                            <TableHead className="font-bold text-foreground py-4">Kilométrage</TableHead>
+                            <TableHead className="font-bold text-foreground py-4">Entretien à effectuer</TableHead>
+                            <TableHead className="font-bold text-foreground py-4">Prix moyen (est.)</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {displayData.serviceSchedule.map((item: any, idx: number) => (
+                            <TableRow key={idx}>
+                              <TableCell className="font-bold py-4">{item.km.toLocaleString()} km</TableCell>
+                              <TableCell className="py-4">{item.service_label}</TableCell>
+                              <TableCell className="py-4 font-bold text-brand">{item.price_estimate}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    <p className="text-sm italic text-muted-foreground">👉 Une vidange annuelle reste recommandée même si le kilométrage n’est pas atteint.</p>
+                  </div>
+                )}
+
+                {/* Compare CTA */}
+                <div className="my-8 text-center space-y-4 bg-brand/5 p-8 rounded-3xl border border-brand/10">
+                  <p className="text-sm text-muted-foreground max-w-2xl mx-auto italic">
+                    {displayData.ctas.compare.text}
+                  </p>
+                  <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
+                    <Link href={`/map?filter=service&search=${encodeURIComponent(displayData.brand)}`}>
+                      🔘 {displayData.ctas.compare.button}
+                    </Link>
+                  </Button>
+                </div>
+
+                {/* Consumables Table */}
+                {displayData.consumables.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <Droplets className="h-6 w-6 text-brand" />
+                      <h3 className="text-2xl font-bold uppercase tracking-tight">Les consommables à surveiller</h3>
+                    </div>
+                    <div className="overflow-x-auto rounded-xl border shadow-sm">
+                      <Table>
+                        <TableHeader className="bg-muted/50">
+                          <TableRow>
+                            <TableHead className="font-bold text-foreground py-4">Pièce</TableHead>
+                            <TableHead className="font-bold text-foreground py-4">Durée de vie moyenne</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {displayData.consumables.map((item: any, idx: number) => (
+                            <TableRow key={idx}>
+                              <TableCell className="font-bold py-4">{item.part}</TableCell>
+                              <TableCell className="py-4">{item.average_lifetime}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reliability & Tips Accordions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {displayData.longevityTips.length > 0 && (
+                    <Card className="border-none shadow-md bg-green-50/50 dark:bg-green-900/10">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="flex items-center gap-2 text-green-600 uppercase font-black text-sm tracking-widest">
+                          <CheckCircle2 className="h-5 w-5" /> Conseils de longévité
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-3 text-sm font-medium text-foreground/80">
+                          {displayData.longevityTips.map((tip: string, idx: number) => (
+                            <li key={idx} className="flex gap-2">
+                              <span className="text-green-500">•</span> {tip}
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {displayData.knownIssues.length > 0 && (
+                    <Card className="border-none shadow-md bg-orange-50/50 dark:bg-orange-900/10">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="flex items-center gap-2 text-orange-600 uppercase font-black text-sm tracking-widest">
+                          <AlertTriangle className="h-5 w-5" /> Points de fiabilité
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-3 text-sm font-medium text-foreground/80">
+                          {displayData.knownIssues.map((issue: string, idx: number) => (
+                            <li key={idx} className="flex gap-2">
+                              <span className="text-orange-500">•</span> {issue}
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* FAQ Section */}
+                {displayData.faq.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <HelpCircle className="h-6 w-6 text-brand" />
+                      <h3 className="text-2xl font-bold uppercase tracking-tight">Questions fréquentes</h3>
+                    </div>
+                    <Accordion type="single" collapsible className="w-full">
+                      {displayData.faq.map((item: any, idx: number) => (
+                        <AccordionItem key={idx} value={`item-${idx}`} className="border-b-brand/10">
+                          <AccordionTrigger className="text-left font-bold text-foreground py-4 hover:text-brand transition-colors">
+                            {item.question}
+                          </AccordionTrigger>
+                          <AccordionContent className="text-muted-foreground leading-relaxed pb-4">
+                            {item.answer}
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </div>
+                )}
+
+                {/* Conclusion & Signature */}
+                {displayData.conclusion && (
+                  <div className="pt-8 border-t border-brand/10">
+                    <p className="text-lg italic text-foreground/90 leading-relaxed mb-12">
+                      "{displayData.conclusion}"
+                    </p>
+                    <div className="flex justify-end items-center">
+                      <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
+                      <Image 
+                        src="/images/Stamp-LM.png?v=2" 
+                        alt="Signature Label Moto" 
+                        width={120} 
+                        height={120}
+                        className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Concession CTA */}
+                <div className="my-16 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500/20 rounded-3xl p-8 text-center shadow-xl">
+                    <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">🏍️ {displayData.ctas.concession.title}</h3>
+                    <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg font-medium">
+                        {displayData.ctas.concession.text}
+                    </p>
+                    <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                        <Link href={`/map?filter=shopping&search=${encodeURIComponent(displayData.brand)}`}>
+                            🔘 {displayData.ctas.concession.button}
+                        </Link>
+                    </Button>
+                </div>
               </div>
             </div>
           </div>
