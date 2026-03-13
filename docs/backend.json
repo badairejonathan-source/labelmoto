@@ -46,23 +46,13 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/concessions/{dealershipId}",
-        "definition": {
-          "entityName": "Dealership",
-          "schema": { "$ref": "#/backend/entities/Dealership" },
-          "description": "Liste des concessions et ateliers moto."
-        }
-      },
-      {
-        "path": "/motorcycle_sheets/{modelId}",
-        "definition": {
-          "entityName": "TechnicalSheet",
-          "schema": { "$ref": "#/backend/entities/TechnicalSheet" },
-          "description": "Fiches techniques et guides d'entretien."
-        }
-      }
-    ]
+    "/concessions/{dealershipId}": {
+      "schema": { "$ref": "#/backend/entities/Dealership" },
+      "description": "Liste des concessions et ateliers moto."
+    },
+    "/motorcycle_sheets/{modelId}": {
+      "schema": { "$ref": "#/backend/entities/TechnicalSheet" },
+      "description": "Fiches techniques et guides d'entretien."
+    }
   }
 }

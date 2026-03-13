@@ -60,6 +60,11 @@ service cloud.firestore {
         allow write: if isAdmin();
       }
     }
+
+    match /motorcycle_sheets/{modelId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
     
     match /pending_concessions/{submissionId} {
       allow get, list: if isAdmin();
