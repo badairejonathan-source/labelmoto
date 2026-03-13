@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -35,7 +34,7 @@ const article = {
         "type": "list",
         "items": [
           "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2 (2021+)</a>",
-          "<a href=\"/fiches/honda-cb500f\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F A2</a>",
+          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F A2</a>",
           "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500 Hornet A2 (2024+)</a>",
           "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z900 A2 / Full</a>",
           "<a href=\"/fiches/suzuki-gsx-8s\" class=\"text-brand underline hover:text-brand/80 font-bold\">Suzuki GSX-8S A2</a>",
@@ -45,7 +44,7 @@ const article = {
       { "type": "heading", "text": "Trouver la fiche de votre moto" },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Honda</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/honda-cb500f\" class=\"text-brand underline hover:text-brand/80\">CB500F A2</a>", 
+          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80\">CB500F A2</a>", 
           "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet A2</a>", 
           "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", 
           "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>", 
