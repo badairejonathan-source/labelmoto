@@ -53,8 +53,7 @@ const article = {
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">BMW</span>" },
       { "type": "list", "items": [
           "<a href=\"/fiches/bmw-r1250gs-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">R 1250 GS (2021+)</a>",
-          "<a href=\"/fiches/bmw-f750gs-2018-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 750 GS (2018+)</a>",
-          "<a href=\"/fiches/bmw-f850gs-2018-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 850 GS (2018+)</a>",
+          "<a href=\"/fiches/bmw-f750-850-gs-2018-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 750 GS / F 850 GS (2018+)</a>",
           "<a href=\"/fiches/bmw-f900r-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 900 R (2020+)</a>",
           "<a href=\"/fiches/bmw-s1000rr-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">S 1000 RR (2019+)</a>",
           "<a href=\"/fiches/bmw-g310r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">G 310 R A2 (2021+)</a>"
@@ -164,7 +163,7 @@ export default function EntretienPage() {
       </div>
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand mb-8 font-black uppercase text-xs tracking-widest transition-colors">
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand font-black uppercase text-xs tracking-widest transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil
           </Link>

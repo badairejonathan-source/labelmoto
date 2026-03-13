@@ -44,31 +44,31 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const displayData = useMemo(() => {
     if (!fiche) return null;
 
-    // Récupération des variantes (racine ou technical_sheet)
+    // Récupération des variantes (priorité racine, puis technical_sheet)
     const variants = fiche.variants || (fiche.technical_sheet?.variants) || [];
     
     // Données de base
     const ts = fiche.technical_sheet || {};
     
-    // Fusion des données de la variante active avec les données de base
+    // Sélection de la variante active
     const activeVariant = variants[selectedVariantIndex] || {};
     
-    // On donne la priorité aux champs de la variante pour la puissance/couple/bridage
+    // Fusion des données de la variante avec les données de base pour l'affichage
     const effectiveTs = { ...ts, ...activeVariant };
     
-    const cp = ts.cycle_parts || fiche.cycle_parts || {};
+    const cp = ts.cycle_parts || fiche.cycle_parts || activeVariant.cycle_parts || {};
     const sg = fiche.service_guide || {};
 
     return {
-      modelName: fiche.display_title || fiche.model || fiche.id?.replace(/-/g, ' ').toUpperCase(),
-      brand: fiche.brand || (fiche.id?.split('-')[0] || '').toUpperCase(),
+      modelName: fiche.display_title || fiche.model || modelId.replace(/-/g, ' ').toUpperCase(),
+      brand: fiche.brand || (modelId.split('-')[0] || '').toUpperCase(),
       year: fiche.year_range || "2021+",
       imageUrl: fiche.imageUrl || "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
       introduction: sg.intro || fiche.introduction || "",
       hasVariants: variants.length > 1,
       variants: variants,
       engine: {
-        bridage: activeVariant.license_bridging || ts.license_bridging || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
+        bridage: activeVariant.license_bridging || ts.license_bridging || (modelId.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
         type: ts.engine_type || "Donnée non renseignée",
         displacement: (ts.displacement_cc) ? `${ts.displacement_cc} cm³` : "Donnée non renseignée",
         power: activeVariant.power || ts.power || "Donnée non renseignée",
@@ -108,7 +108,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         }
       }
     };
-  }, [fiche, selectedVariantIndex]);
+  }, [fiche, selectedVariantIndex, modelId]);
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
