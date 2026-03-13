@@ -50,6 +50,13 @@ const article = {
           "<a href=\"/fiches/yamaha-tenere-700-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Ténéré 700 (2019+)</a>",
           "<a href=\"/fiches/yamaha-mt-09-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">MT-09 (2021+)</a>"
       ] },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">BMW</span>" },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/bmw-r1250gs-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">R 1250 GS (2021+)</a>",
+          "<a href=\"/fiches/bmw-f900r-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 900 R (2020+)</a>",
+          "<a href=\"/fiches/bmw-s1000rr-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">S 1000 RR (2019+)</a>",
+          "<a href=\"/fiches/bmw-g310r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">G 310 R A2 (2021+)</a>"
+      ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Suzuki</span>" },
       { "type": "list", "items": [
           "<a href=\"/fiches/suzuki-v-strom-650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">V-Strom 650 (2021+)</a>",
