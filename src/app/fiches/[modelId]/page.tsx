@@ -107,6 +107,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     router.push(`/map?filter=${filter}`);
   };
 
+  // Only show the not found UI if we're done loading AND data is missing
   if (isLoading) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
