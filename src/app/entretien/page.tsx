@@ -25,37 +25,43 @@ const article = {
     "content": [
       {
         "type": "paragraph",
-        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète, récupérée en temps réel depuis notre base de données."
+        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète, récupérée en temps réel depuis notre base de données Firestore."
       },
       {
         "type": "heading",
-        "text": "Modèles disponibles"
+        "text": "Modèles disponibles par marque"
       },
-      {
-        "type": "list",
-        "items": [
-          "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2 (2021+)</a>",
-          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F A2 (2022+)</a>"
-        ]
-      },
-      { "type": "heading", "text": "Rechercher par marque" },
-      { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Honda</span>" },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Honda</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80\">CB500F A2 (2022+)</a>"
+          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500F A2 (2022+)</a>",
+          "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500 Hornet A2 (2024+)</a>",
+          "<a href=\"/fiches/honda-cb125r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB125R (2021+)</a>",
+          "<a href=\"/fiches/honda-cb750-hornet-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB750 Hornet (2023+)</a>",
+          "<a href=\"/fiches/honda-xl750-transalp-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">XL750 Transalp (2023+)</a>"
       ] },
-      { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Yamaha</span>" },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Yamaha</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2 (2021+)</a>"
+          "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">MT-07 A2 (2021+)</a>",
+          "<a href=\"/fiches/yamaha-tracer-7-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Tracer 7 A2 (2021+)</a>",
+          "<a href=\"/fiches/yamaha-xsr700-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">XSR700 A2 (2021+)</a>",
+          "<a href=\"/fiches/yamaha-r7-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">YZF-R7 A2 (2022+)</a>"
       ] },
-      { "type": "paragraph", "html": "<em>De nouveaux modèles sont ajoutés régulièrement dès leur saisie dans la collection motorcycle_sheets.</em>" },
-      { "type": "heading", "text": "Comment fonctionne l’entretien d’une moto ?" },
-      { "type": "paragraph", "text": "Une moto demande un suivi plus fréquent qu’une voiture. Le moteur tourne plus vite, les pièces sont plus exposées et les organes de sécurité comme les freins, pneus et transmission travaillent davantage." },
-      { "type": "heading", "text": "1. Les révisions périodiques" },
-      { "type": "list", "items": ["<strong>1 000 km</strong> → révision de rodage", "<strong>10 000 km</strong> → entretien courant", "<strong>20 000 km</strong> → contrôle mécanique plus complet", "<strong>40 000 km</strong> → grosse révision"] },
-      { "type": "paragraph", "text": "Même si vous roulez peu, une vidange annuelle reste souvent recommandée." },
-      { "type": "heading", "text": "2. Les consommables" },
-      { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [["Pneus", "8 000 à 15 000 km"], ["Kit chaîne", "20 000 à 30 000 km"], ["Plaquettes", "10 000 à 20 000 km"], ["Batterie", "3 à 5 ans"]] },
-      { "type": "paragraph", "html": "👉 Pour aller plus loin, consultez nos guides pratiques sur l'achat et le budget moto." }
+      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Suzuki</span>" },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/suzuki-v-strom-650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">V-Strom 650 (2021+)</a>",
+          "<a href=\"/fiches/suzuki-sv650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">SV650 A2 (2021+)</a>"
+      ] },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Kawasaki</span>" },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/kawasaki-z650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z650 A2 (2021+)</a>",
+          "<a href=\"/fiches/kawasaki-z900-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z900 A2 (2021+)</a>"
+      ] },
+      { "type": "paragraph", "html": "<div class=\"p-4 bg-muted/50 rounded-xl border-l-4 border-brand mt-8\"><p class=\"text-sm italic\">De nouveaux modèles sont ajoutés régulièrement par nos administrateurs. Si votre modèle n'est pas encore listé, revenez bientôt !</p></div>" },
+      { "type": "heading", "text": "Pourquoi suivre l'entretien ?" },
+      { "type": "paragraph", "text": "Une moto demande un suivi plus rigoureux qu’une voiture. Le moteur tourne à des régimes plus élevés, les consommables s'usent plus vite et les organes de sécurité sont vitaux. Respecter les préconisations constructeur garantit la longévité de votre machine et sa valeur à la revente." },
+      { "type": "heading", "text": "Intervalles types" },
+      { "type": "table", "headers": ["Élément", "Fréquence conseillée"], "rows": [["Vidange moteur", "Tous les 10 000 km ou 1 an"], ["Kit chaîne", "Graissage tous les 500 km"], ["Pneus", "Selon usure (moyenne 10 000 km)"], ["Jeu aux soupapes", "Tous les 24 000 ou 40 000 km"]] },
+      { "type": "paragraph", "html": "👉 Pour trouver un professionnel compétent pour votre révision, utilisez notre carte interactive." }
     ]
 } as const;
 
@@ -77,34 +83,39 @@ export default function EntretienPage() {
     return article.content.map((block, index) => {
       switch (block.type) {
         case 'heading':
-          return <h2 key={index} className="text-2xl font-bold mt-12 mb-6 text-foreground border-b pb-2">{block.text}</h2>;
+          return <h2 key={index} className="text-2xl font-black mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2 uppercase tracking-tight">{block.text}</h2>;
         case 'list':
           return (
-            <ul key={index} className="list-disc list-inside space-y-2 my-4 ml-4">
-              {block.items?.map((item, i) => <li key={i} className="text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />)}
+            <ul key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 my-6">
+              {block.items?.map((item, i) => (
+                <li key={i} className="flex items-center gap-2 group">
+                  <div className="h-1.5 w-1.5 rounded-full bg-brand group-hover:scale-150 transition-transform" />
+                  <div className="text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />
+                </li>
+              ))}
             </ul>
           );
         case 'paragraph':
           if (block.html) {
-            return <p key={index} className="text-base leading-relaxed my-4" dangerouslySetInnerHTML={{ __html: block.html }} />;
+            return <div key={index} className="text-base leading-relaxed my-4 text-foreground/80" dangerouslySetInnerHTML={{ __html: block.html }} />;
           }
-          return <p key={index} className="text-base leading-relaxed my-4">{block.text}</p>;
+          return <p key={index} className="text-base leading-relaxed my-4 text-foreground/80">{block.text}</p>;
         case 'table':
           return (
-            <div key={index} className="my-6 overflow-x-auto rounded-lg border shadow-sm">
+            <div key={index} className="my-6 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
               <Table className="min-w-full text-sm">
                 <TableHeader className="bg-muted/50">
                   <TableRow>
                     {block.headers?.map((header: string, hIndex: number) => (
-                      <TableHead key={hIndex} className="font-bold text-foreground py-4">{header}</TableHead>
+                      <TableHead key={hIndex} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{header}</TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {block.rows?.map((row: (string | number)[], rIndex: number) => (
-                    <TableRow key={rIndex}>
+                    <TableRow key={rIndex} className="hover:bg-muted/30">
                       {row.map((cell: (string | number), cIndex: number) => (
-                        <TableCell key={cIndex} className={cn("py-4", cIndex === 0 ? 'font-bold' : '')}>{cell}</TableCell>
+                        <TableCell key={cIndex} className={cn("py-4", cIndex === 0 ? 'font-bold text-foreground' : 'text-muted-foreground')}>{cell}</TableCell>
                       ))}
                     </TableRow>
                   ))}
@@ -126,7 +137,7 @@ export default function EntretienPage() {
         onSearch={handleSearch}
         activeFilter={null}
         onFilterChange={handleFilterChange}
-        placeholderText="Recherche par nom, ville, departement"
+        placeholderText="Recherche par marque, modèle..."
       />
       <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
         <Image
@@ -134,20 +145,20 @@ export default function EntretienPage() {
           alt="Label Moto Watermark"
           width={800}
           height={256}
-          className="opacity-[0.10] rotate-[-15deg] scale-150"
+          className="opacity-[0.05] rotate-[-15deg] scale-150"
         />
       </div>
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 font-bold">
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand mb-8 font-black uppercase text-xs tracking-widest transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil
           </Link>
           
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div className="md:col-span-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div className="lg:col-span-8">
               <article>
-                <h1 className="text-4xl md:text-5xl font-black leading-tight tracking-tighter text-foreground mb-12 uppercase">
+                <h1 className="text-4xl md:text-6xl font-black leading-none tracking-tighter text-foreground mb-8 uppercase">
                   {article.title}
                 </h1>
                 <div className="space-y-4">
@@ -156,31 +167,31 @@ export default function EntretienPage() {
               </article>
             </div>
 
-            <aside className="md:col-span-4 relative">
+            <aside className="lg:col-span-4 relative">
                 <div className="md:sticky md:top-28 space-y-6">
-                    <Card className="overflow-hidden shadow-xl border-2 border-brand/20 bg-card/50 backdrop-blur-sm rounded-3xl">
-                        <CardHeader className="p-6">
-                            <CardTitle className="flex items-center gap-3 text-brand text-xl font-black uppercase tracking-widest">
+                    <Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20">
+                        <CardHeader className="p-6 bg-brand text-brand-foreground">
+                            <CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest">
                                 <Map className="h-6 w-6"/>
                                 Trouver un pro
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 pb-6">
-                            <Link href="/map" className="block group rounded-2xl overflow-hidden border-2 border-white shadow-lg">
+                        <CardContent className="p-6">
+                            <Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl">
                               <Image 
                                   src="/images/apercucartezoom.png"
                                   alt="Aperçu de la carte"
                                   width={400}
                                   height={300}
-                                  className="object-cover w-full h-48 transition-transform duration-500 group-hover:scale-110"
+                                  className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110"
                               />
                             </Link>
                             <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">
-                                Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
+                                Comparez les ateliers et concessions pour votre prochaine révision directement sur notre carte interactive.
                             </p>
                         </CardContent>
                         <CardFooter className="px-6 pb-8">
-                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
                                 <Link href="/map">Voir la carte interactive</Link>
                             </Button>
                         </CardFooter>
