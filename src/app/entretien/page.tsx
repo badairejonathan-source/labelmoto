@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -24,55 +25,29 @@ const article = {
     "content": [
       {
         "type": "paragraph",
-        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète."
+        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète, récupérée en temps réel depuis notre base de données."
       },
       {
         "type": "heading",
-        "text": "Modèles les plus recherchés"
+        "text": "Modèles disponibles"
       },
       {
         "type": "list",
         "items": [
           "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2 (2021+)</a>",
-          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F A2</a>",
-          "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500 Hornet A2 (2024+)</a>",
-          "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z900 A2 / Full</a>",
-          "<a href=\"/fiches/suzuki-gsx-8s\" class=\"text-brand underline hover:text-brand/80 font-bold\">Suzuki GSX-8S A2</a>",
-          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80 font-bold\">Suzuki SV650 A2</a>"
+          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F A2 (2022+)</a>"
         ]
       },
-      { "type": "heading", "text": "Trouver la fiche de votre moto" },
+      { "type": "heading", "text": "Rechercher par marque" },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Honda</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80\">CB500F A2</a>", 
-          "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet A2</a>", 
-          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", 
-          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>", 
-          "<a href=\"/fiches/honda-cb750-hornet\" class=\"text-brand underline hover:text-brand/80\">CB750 Hornet (A2/Full)</a>",
-          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a>",
-          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp</a>"
+          "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-brand underline hover:text-brand/80\">CB500F A2 (2022+)</a>"
       ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Yamaha</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2 (2021+)</a>", 
-          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>", 
-          "<a href=\"/fiches/yamaha-tracer-7-2021-plus\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>", 
-          "<a href=\"/fiches/yamaha-r7-2022-plus\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>", 
-          "<a href=\"/fiches/yamaha-xsr700-2021-plus\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"
+          "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2 (2021+)</a>"
       ] },
-      { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Kawasaki</span>" },
-      { "type": "list", "items": [
-          "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80\">Z900 A2 / Full</a>", 
-          "<a href=\"/fiches/kawasaki-z900rs\" class=\"text-brand underline hover:text-brand/80\">Z900RS A2 / Full</a>", 
-          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>"
-      ] },
-      { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Suzuki</span>" },
-      { "type": "list", "items": [
-          "<a href=\"/fiches/suzuki-gsx-8s\" class=\"text-brand underline hover:text-brand/80\">GSX-8S A2</a>", 
-          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 A2</a>",
-          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 A2</a>"
-      ] },
-      { "type": "paragraph", "html": "<em>De nouveaux modèles sont ajoutés régulièrement depuis notre base de données Firestore.</em>" },
+      { "type": "paragraph", "html": "<em>De nouveaux modèles sont ajoutés régulièrement dès leur saisie dans la collection motorcycle_sheets.</em>" },
       { "type": "heading", "text": "Comment fonctionne l’entretien d’une moto ?" },
       { "type": "paragraph", "text": "Une moto demande un suivi plus fréquent qu’une voiture. Le moteur tourne plus vite, les pièces sont plus exposées et les organes de sécurité comme les freins, pneus et transmission travaillent davantage." },
       { "type": "heading", "text": "1. Les révisions périodiques" },
@@ -80,7 +55,7 @@ const article = {
       { "type": "paragraph", "text": "Même si vous roulez peu, une vidange annuelle reste souvent recommandée." },
       { "type": "heading", "text": "2. Les consommables" },
       { "type": "table", "headers": ["Pièce", "Durée moyenne"], "rows": [["Pneus", "8 000 à 15 000 km"], ["Kit chaîne", "20 000 à 30 000 km"], ["Plaquettes", "10 000 à 20 000 km"], ["Batterie", "3 à 5 ans"]] },
-      { "type": "paragraph", "html": "👉 Pour aller plus loin, consulte aussi notre guide sur le <strong>coût réel d’une moto par mois</strong>." }
+      { "type": "paragraph", "html": "👉 Pour aller plus loin, consultez nos guides pratiques sur l'achat et le budget moto." }
     ]
 } as const;
 
