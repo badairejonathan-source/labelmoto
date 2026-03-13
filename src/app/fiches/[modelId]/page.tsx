@@ -5,10 +5,9 @@ import React, { useState, use } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, ShieldCheck, Settings2, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Gauge, Droplets, Wrench, ShieldCheck, Settings2, ChevronDown, Loader2 } from 'lucide-react';
 
 import Header from '@/components/app/header';
-import fichesData from '@/data/fiches-techniques.json';
 import {
   Table,
   TableBody,
@@ -21,6 +20,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 type FicheContent = {
   type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature' | 'cta-compare' | 'cta-concession';
@@ -28,22 +29,9 @@ type FicheContent = {
   html?: string;
   items?: string[];
   headers?: string[];
-  rows?: string[][];
+  rows?: any[]; // Handle potential { data: string[] } or string[]
   imageUrl?: string;
   alt?: string;
-};
-
-type FicheData = (typeof fichesData)[0];
-
-interface FicheTechnique extends Omit<FicheData, 'maintenance' | 'reliability'> {
-  introduction?: string;
-  content?: FicheContent[];
-}
-
-const parseDisplacement = (displacement: string): number => {
-  if (!displacement) return 0;
-  const match = displacement.match(/(\d+)/);
-  return match ? parseInt(match[0], 10) : 0;
 };
 
 export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
@@ -51,19 +39,10 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [isPartieCycleOpen, setIsPartieCycleOpen] = useState(false);
-
-  const fiche = fichesData.find((f) => f.modelId === modelId) as FicheTechnique | undefined;
-
-  if (!fiche) {
-    notFound();
-  }
-
-  const currentDisplacement = parseDisplacement(fiche.engine.displacement);
-  const similarFiches = fichesData.filter(f => {
-    if (f.modelId === fiche.modelId) return false;
-    const displacement = parseDisplacement(f.engine.displacement);
-    return Math.abs(currentDisplacement - displacement) <= 250;
-  });
+  
+  const firestore = useFirestore();
+  const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
+  const { data: fiche, isLoading } = useDoc(ficheRef);
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -74,6 +53,27 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const handleFilterChange = (filter: 'shopping' | 'service') => {
     router.push(`/map?filter=${filter}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />
+        <p className="text-muted-foreground font-bold animate-pulse">Chargement de la fiche technique...</p>
+      </div>
+    );
+  }
+
+  if (!fiche) {
+    return (
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
+            <h1 className="text-4xl font-black mb-4">FICHE NON DISPONIBLE</h1>
+            <p className="text-muted-foreground mb-8">Nous n'avons pas encore intégré les données pour ce modèle.</p>
+            <Button asChild>
+                <Link href="/entretien">Retour à l'entretien</Link>
+            </Button>
+        </div>
+    );
+  }
 
   const renderContent = (content: FicheContent[]) => {
     if (!content || content.length === 0) return null;
@@ -109,13 +109,16 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {block.rows?.map((row: string[], rIndex: number) => (
-                      <TableRow key={rIndex}>
-                        {row.map((cell: string, cIndex: number) => (
-                          <TableCell key={cIndex} className={cn("py-4", cIndex === 0 ? 'font-bold' : '')}>{cell}</TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
+                    {block.rows?.map((row: any, rIndex: number) => {
+                      const cells = Array.isArray(row) ? row : row.data || [];
+                      return (
+                        <TableRow key={rIndex}>
+                          {cells.map((cell: string, cIndex: number) => (
+                            <TableCell key={cIndex} className={cn("py-4", cIndex === 0 ? 'font-bold' : '')}>{cell}</TableCell>
+                          ))}
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
@@ -208,7 +211,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 alt={fiche.modelName}
                 fill
                 className="object-cover"
-                data-ai-hint={fiche.imageHint}
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -229,18 +231,18 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {fiche.engine.bridage && (
+                    {fiche.engine?.bridage && (
                       <li className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 pb-2 border-b border-border/50">
                         <span className="font-black text-[10px] uppercase text-muted-foreground tracking-wider">Permis / Bridage:</span>
                         <span className="text-brand font-black text-sm">{fiche.engine.bridage}</span>
                       </li>
                     )}
                     {[
-                      { label: "Type", value: fiche.engine.type },
-                      { label: "Cylindrée", value: fiche.engine.displacement },
-                      { label: "Puissance", value: fiche.engine.power },
-                      { label: "Couple", value: fiche.engine.torque },
-                      { label: "Alimentation", value: fiche.engine.alimentation }
+                      { label: "Type", value: fiche.engine?.type },
+                      { label: "Cylindrée", value: fiche.engine?.displacement },
+                      { label: "Puissance", value: fiche.engine?.power },
+                      { label: "Couple", value: fiche.engine?.torque },
+                      { label: "Alimentation", value: fiche.engine?.alimentation }
                     ].map((item, i) => (
                       <li key={i} className="flex justify-between items-center text-sm border-b border-border/30 last:border-0 pb-1.5 last:pb-0">
                         <span className="font-bold text-muted-foreground">{item.label}:</span>
@@ -260,10 +262,10 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 <CardContent>
                   <ul className="space-y-3">
                     {[
-                      { label: "H. de selle", value: fiche.dimensions.seatHeight },
-                      { label: "Poids (TPF)", value: fiche.dimensions.wetWeight },
-                      { label: "Réservoir", value: fiche.dimensions.fuelCapacity },
-                      { label: "Empattement", value: fiche.dimensions.wheelbase }
+                      { label: "H. de selle", value: fiche.dimensions?.seatHeight },
+                      { label: "Poids (TPF)", value: fiche.dimensions?.wetWeight },
+                      { label: "Réservoir", value: fiche.dimensions?.fuelCapacity },
+                      { label: "Empattement", value: fiche.dimensions?.wheelbase }
                     ].map((item, i) => (
                       <li key={i} className="flex justify-between items-center text-sm border-b border-border/30 last:border-0 pb-1.5 last:pb-0">
                         <span className="font-bold text-muted-foreground">{item.label}:</span>
@@ -307,13 +309,13 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                         </TableHeader>
                         <TableBody>
                           {[
-                            { label: "Cadre", val: fiche.chassis.frame },
-                            { label: "Suspension AV", val: fiche.chassis.frontSuspension },
-                            { label: "Suspension AR", val: fiche.chassis.rearSuspension },
-                            { label: "Frein AV", val: fiche.chassis.frontBrake },
-                            { label: "Frein AR", val: fiche.chassis.rearBrake },
-                            { label: "Pneu AV", val: fiche.chassis.frontTire },
-                            { label: "Pneu AR", val: fiche.chassis.rearTire }
+                            { label: "Cadre", val: fiche.chassis?.frame },
+                            { label: "Suspension AV", val: fiche.chassis?.frontSuspension },
+                            { label: "Suspension AR", val: fiche.chassis?.rearSuspension },
+                            { label: "Frein AV", val: fiche.chassis?.frontBrake },
+                            { label: "Frein AR", val: fiche.chassis?.rearBrake },
+                            { label: "Pneu AV", val: fiche.chassis?.frontTire },
+                            { label: "Pneu AR", val: fiche.chassis?.rearTire }
                           ].map((row, idx) => (
                             <TableRow key={idx}>
                               <TableCell className="font-bold py-4">{row.label}</TableCell>
@@ -343,37 +345,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </div>
             </div>
           </div>
-          
-          {similarFiches.length > 0 && (
-            <div className="pt-24 border-t border-border/50">
-              <h2 className="text-4xl font-black text-center mb-12 uppercase tracking-tighter">
-                Découvrez d'autres modèles
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {similarFiches.slice(0, 3).map(f => (
-                  <Link key={f.modelId} href={`/fiches/${f.modelId}`} className="group block">
-                    <Card className="h-full overflow-hidden transition-all duration-500 border-none shadow-lg hover:shadow-2xl hover:-translate-y-2 bg-card/50">
-                      <div className="relative aspect-video overflow-hidden">
-                        <Image 
-                          src={f.imageUrl}
-                          alt={f.modelName}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-110"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          data-ai-hint={f.imageHint}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      </div>
-                      <CardHeader className="p-6">
-                        <CardTitle className="text-xl font-black uppercase tracking-tight group-hover:text-brand transition-colors">{f.modelName}</CardTitle>
-                        <CardDescription className="font-bold text-muted-foreground">{f.engine.displacement}</CardDescription>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </main>
     </div>

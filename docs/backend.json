@@ -7,349 +7,60 @@
       "type": "object",
       "description": "Represents an approved and active motorcycle dealership listed in the Moto Trust application.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Dealership entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The official name of the dealership."
-        },
-        "brand": {
-          "type": "string",
-          "description": "The primary motorcycle brand associated with the dealership.",
-          "format": "enum",
-          "items": {
-            "type": "string"
-          }
-        },
-        "types": {
-          "type": "array",
-          "description": "A list of types indicating the dealership's affiliation or business model (e.g., Official, Independent, Partner).",
-          "items": {
-            "type": "string"
-          }
-        },
-        "services": {
-          "type": "array",
-          "description": "A list of services offered by the dealership (e.g., Sales, Repair, Rental).",
-          "items": {
-            "type": "string"
-          }
-        },
-        "address": {
-          "type": "string",
-          "description": "The physical street address of the dealership."
-        },
-        "phone": {
-          "type": "string",
-          "description": "The contact phone number for the dealership."
-        },
-        "latitude": {
-          "type": "number",
-          "description": "The geographical latitude coordinate of the dealership's location."
-        },
-        "longitude": {
-          "type": "number",
-          "description": "The geographical longitude coordinate of the dealership's location."
-        },
-        "openNow": {
-          "type": "boolean",
-          "description": "Indicates whether the dealership is currently open for business."
-        },
-        "stockCount": {
-          "type": "number",
-          "description": "The current number of motorcycles in stock at the dealership."
-        },
-        "rating": {
-          "type": "number",
-          "description": "The average customer rating of the dealership, typically on a scale (e.g., 1-5)."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "brand",
-        "types",
-        "services",
-        "address",
-        "phone",
-        "latitude",
-        "longitude",
-        "openNow",
-        "stockCount",
-        "rating"
-      ]
-    },
-    "Comment": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Comment",
-      "type": "object",
-      "description": "Represents a user review or comment on a dealership.",
-      "properties": {
         "id": { "type": "string" },
-        "userId": { "type": "string" },
-        "userName": { "type": "string" },
-        "dealershipId": { "type": "string" },
-        "dealershipName": { "type": "string" },
-        "content": { "type": "string" },
+        "title": { "type": "string" },
+        "address": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "website": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
         "rating": { "type": "number" },
-        "date": { "type": "string", "format": "date-time" },
-        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] }
-      },
-      "required": ["id", "userId", "dealershipId", "content", "rating", "status"]
+        "category": { "type": "string" },
+        "appSection": { "type": "string", "enum": ["shopping", "service", "both"] },
+        "brands": { "type": "array", "items": { "type": "string" } }
+      }
     },
-    "AdvicePost": {
+    "TechnicalSheet": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "AdvicePost",
+      "title": "TechnicalSheet",
       "type": "object",
-      "description": "Represents an article or blog post providing advice and information related to motorcycles.",
+      "description": "Données techniques et guide d'entretien complet pour un modèle de moto.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the AdvicePost entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title of the advice post."
-        },
-        "category": {
-          "type": "string",
-          "description": "The category to which the advice post belongs (e.g., Maintenance, Riding Tips, Gear)."
-        },
-        "summary": {
-          "type": "string",
-          "description": "A brief summary or excerpt of the advice post content."
-        },
-        "readTime": {
-          "type": "string",
-          "description": "An estimate of the time required to read the post (e.g., '5 min read')."
-        },
-        "date": {
-          "type": "string",
-          "description": "The publication date and time of the advice post.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "title",
-        "category",
-        "summary",
-        "readTime",
-        "date"
-      ]
-    },
-    "ProfessionalProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "ProfessionalProfile",
-      "type": "object",
-      "description": "Represents a professional user account, typically a dealership owner or manager, who can submit new dealerships.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the ProfessionalProfile entity."
-        },
-        "email": {
-          "type": "string",
-          "description": "The professional's email address, used for contact and login (assumed external auth system handles actual login).",
-          "format": "email"
-        },
-        "firstName": {
-          "type": "string",
-          "description": "The first name of the professional user."
-        },
-        "lastName": {
-          "type": "string",
-          "description": "The last name of the professional user."
-        },
-        "companyName": {
-          "type": "string",
-          "description": "The name of the company or organization the professional user represents (optional)."
-        },
-        "phone": {
-          "type": "string",
-          "description": "The contact phone number for the professional user (optional)."
-        }
-      },
-      "required": [
-        "id",
-        "email",
-        "firstName",
-        "lastName"
-      ]
-    },
-    "StandardProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "StandardProfile",
-      "type": "object",
-      "description": "Represents a standard, non-professional user account.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the StandardProfile entity, matching the user's Auth UID."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address.",
-          "format": "email"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The user's display name."
-        }
-      },
-      "required": [
-        "id",
-        "email"
-      ]
-    },
-    "DealershipSubmission": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "DealershipSubmission",
-      "type": "object",
-      "description": "Represents a submitted application for a new motorcycle dealership by a professional user, pending review and approval.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the DealershipSubmission entity."
-        },
-        "professionalId": {
-          "type": "string",
-          "description": "Reference to the ProfessionalProfile entity that submitted this dealership application. (Relationship: ProfessionalProfile 1:N DealershipSubmission)"
-        },
-        "name": {
-          "type": "string",
-          "description": "The proposed name of the dealership."
-        },
-        "brand": {
-          "type": "string",
-          "description": "The primary motorcycle brand proposed for the dealership.",
-          "format": "enum",
-          "items": {
-            "type": "string"
-          }
-        },
-        "types": {
-          "type": "array",
-          "description": "A list of proposed types indicating the dealership's affiliation or business model.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "services": {
-          "type": "array",
-          "description": "A list of proposed services offered by the dealership.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "address": {
-          "type": "string",
-          "description": "The proposed physical street address of the dealership."
-        },
-        "phone": {
-          "type": "string",
-          "description": "The proposed contact phone number for the dealership."
-        },
-        "latitude": {
-          "type": "number",
-          "description": "The geographical latitude coordinate of the proposed dealership's location."
-        },
-        "longitude": {
-          "type": "number",
-          "description": "The geographical longitude coordinate of the proposed dealership's location."
-        },
-        "submissionDate": {
-          "type": "string",
-          "description": "The date and time when the dealership application was submitted.",
-          "format": "date-time"
-        },
-        "status": {
-          "type": "string",
-          "description": "The current status of the dealership application (e.g., PENDING, APPROVED, REJECTED).",
-          "format": "enum",
-          "items": {
-            "type": "string"
-          }
-        },
-        "notes": {
-          "type": "string",
-          "description": "Internal notes or comments regarding the review of the dealership submission (optional)."
-        }
-      },
-      "required": [
-        "id",
-        "professionalId",
-        "name",
-        "brand",
-        "types",
-        "services",
-        "address",
-        "phone",
-        "latitude",
-        "longitude",
-        "submissionDate",
-        "status"
-      ]
+        "modelId": { "type": "string" },
+        "modelName": { "type": "string" },
+        "brand": { "type": "string" },
+        "year": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "introduction": { "type": "string" },
+        "engine": { "type": "object" },
+        "dimensions": { "type": "object" },
+        "chassis": { "type": "object" },
+        "content": { "type": "array" }
+      }
     }
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
     "structure": [
       {
-        "path": "/professionalProfiles/{professionalId}",
-        "definition": {
-          "entityName": "ProfessionalProfile",
-          "schema": {
-            "$ref": "#/backend/entities/ProfessionalProfile"
-          },
-          "description": "Stores the profiles of professional users."
-        }
-      },
-      {
-        "path": "/standardProfiles/{userId}",
-        "definition": {
-          "entityName": "StandardProfile",
-          "schema": {
-            "$ref": "#/backend/entities/StandardProfile"
-          },
-          "description": "Stores the profiles of standard users."
-        }
-      },
-      {
         "path": "/concessions/{dealershipId}",
         "definition": {
           "entityName": "Dealership",
-          "schema": {
-            "$ref": "#/backend/entities/Dealership"
-          },
-          "description": "Stores approved and active motorcycle dealerships."
+          "schema": { "$ref": "#/backend/entities/Dealership" },
+          "description": "Liste des concessions et ateliers moto."
         }
       },
       {
-        "path": "/pending_concessions/{submissionId}",
+        "path": "/motorcycle_sheets/{modelId}",
         "definition": {
-          "entityName": "DealershipSubmission",
-          "schema": {
-            "$ref": "#/backend/entities/DealershipSubmission"
-          },
-          "description": "Stores dealership applications pending review."
-        }
-      },
-      {
-        "path": "/pending_comments/{commentId}",
-        "definition": {
-          "entityName": "Comment",
-          "schema": {
-            "$ref": "#/backend/entities/Comment"
-          },
-          "description": "Stores user comments pending moderation."
+          "entityName": "TechnicalSheet",
+          "schema": { "$ref": "#/backend/entities/TechnicalSheet" },
+          "description": "Fiches techniques et guides d'entretien."
         }
       }
     ]
