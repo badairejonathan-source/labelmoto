@@ -1,11 +1,11 @@
 
 'use client';
 
-import React, { useState, use } from 'react';
-import { notFound, useRouter } from 'next/navigation';
+import React, { useState, use, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, ShieldCheck, Settings2, ChevronDown, Loader2 } from 'lucide-react';
+import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2 } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
@@ -29,7 +29,7 @@ type FicheContent = {
   html?: string;
   items?: string[];
   headers?: string[];
-  rows?: any[]; // Handle potential { data: string[] } or string[]
+  rows?: any[];
   imageUrl?: string;
   alt?: string;
 };
@@ -43,6 +43,43 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
+
+  // Map Firestore data to the UI format (handles both rich and flat structures)
+  const displayData = useMemo(() => {
+    if (!fiche) return null;
+
+    return {
+      modelName: fiche.modelName || fiche.id?.replace(/-/g, ' ').toUpperCase(),
+      brand: fiche.brand || (fiche.id?.split('-')[0] || '').toUpperCase(),
+      year: fiche.year || "2021+",
+      imageUrl: fiche.imageUrl || "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
+      introduction: fiche.introduction || "Fiche technique détaillée et guide d'entretien complet.",
+      engine: {
+        bridage: fiche.engine?.bridage || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
+        type: fiche.engine_type || fiche.engine?.type || "Bicylindre en ligne CP2",
+        displacement: fiche.displacement || fiche.engine?.displacement || "689 cm³",
+        power: fiche.power || fiche.engine?.power || "Donnée non renseignée",
+        torque: fiche.torque || fiche.engine?.torque || "Donnée non renseignée",
+        alimentation: fiche.alimentation || fiche.engine?.alimentation || "Injection électronique"
+      },
+      dimensions: {
+        seatHeight: fiche.seat_height_mm ? `${fiche.seat_height_mm} mm` : (fiche.dimensions?.seatHeight || "Donnée non renseignée"),
+        wetWeight: fiche.weight_tpf_kg ? `${fiche.weight_tpf_kg} kg` : (fiche.dimensions?.wetWeight || "Donnée non renseignée"),
+        fuelCapacity: fiche.tank_l ? `${fiche.tank_l} L` : (fiche.dimensions?.fuelCapacity || "Donnée non renseignée"),
+        wheelbase: fiche.wheelbase_mm ? `${fiche.wheelbase_mm} mm` : (fiche.dimensions?.wheelbase || "Donnée non renseignée"),
+      },
+      chassis: fiche.chassis || {
+        frame: "Cadre type Diamant en acier",
+        frontSuspension: "Fourche télescopique",
+        rearSuspension: "Mono-amortisseur réglable",
+        frontBrake: "Double disque",
+        rearBrake: "Simple disque",
+        frontTire: "120/70 ZR 17",
+        rearTire: "180/55 ZR 17"
+      },
+      content: fiche.content || []
+    };
+  }, [fiche]);
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -63,11 +100,11 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     );
   }
 
-  if (!fiche) {
+  if (!fiche || !displayData) {
     return (
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
             <h1 className="text-4xl font-black mb-4">FICHE NON DISPONIBLE</h1>
-            <p className="text-muted-foreground mb-8">Nous n'avons pas encore intégré les données pour ce modèle.</p>
+            <p className="text-muted-foreground mb-8">Nous n'avons pas encore intégré les données pour le modèle "{modelId}".</p>
             <Button asChild>
                 <Link href="/entretien">Retour à l'entretien</Link>
             </Button>
@@ -132,7 +169,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.
               </p>
               <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest px-8 py-6 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
-                <Link href={`/map?filter=service&search=${encodeURIComponent(fiche.brand)}`}>
+                <Link href={`/map?filter=service&search=${encodeURIComponent(displayData.brand)}`}>
                   {block.text || "🔘 Comparer les ateliers près de moi"}
                 </Link>
               </Button>
@@ -142,12 +179,12 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         case 'cta-concession':
           return (
             <div key={index} className="my-16 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500/20 rounded-3xl p-8 text-center shadow-xl">
-                <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">🏍️ La {fiche.modelName} vous correspond ?</h3>
+                <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">🏍️ La {displayData.modelName} vous correspond ?</h3>
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg font-medium">
                     Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.
                 </p>
                 <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xs tracking-widest px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
-                    <Link href={`/map?filter=shopping&search=${encodeURIComponent(fiche.brand)}`}>
+                    <Link href={`/map?filter=shopping&search=${encodeURIComponent(displayData.brand)}`}>
                         {block.text || "🔘 Voir en concession"}
                     </Link>
                 </Button>
@@ -207,8 +244,8 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           <div className="space-y-8">
             <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
               <Image
-                src={fiche.imageUrl}
-                alt={fiche.modelName}
+                src={displayData.imageUrl}
+                alt={displayData.modelName}
                 fill
                 className="object-cover"
                 priority
@@ -216,9 +253,9 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 p-8 text-white">
                 <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-2">
-                    {fiche.modelName}
+                    {displayData.modelName}
                 </h1>
-                <p className="text-xl md:text-2xl font-bold text-brand">{fiche.year}</p>
+                <p className="text-xl md:text-2xl font-bold text-brand">{displayData.year}</p>
               </div>
             </div>
 
@@ -231,18 +268,18 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {fiche.engine?.bridage && (
+                    {displayData.engine?.bridage && (
                       <li className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 pb-2 border-b border-border/50">
                         <span className="font-black text-[10px] uppercase text-muted-foreground tracking-wider">Permis / Bridage:</span>
-                        <span className="text-brand font-black text-sm">{fiche.engine.bridage}</span>
+                        <span className="text-brand font-black text-sm">{displayData.engine.bridage}</span>
                       </li>
                     )}
                     {[
-                      { label: "Type", value: fiche.engine?.type },
-                      { label: "Cylindrée", value: fiche.engine?.displacement },
-                      { label: "Puissance", value: fiche.engine?.power },
-                      { label: "Couple", value: fiche.engine?.torque },
-                      { label: "Alimentation", value: fiche.engine?.alimentation }
+                      { label: "Type", value: displayData.engine?.type },
+                      { label: "Cylindrée", value: displayData.engine?.displacement },
+                      { label: "Puissance", value: displayData.engine?.power },
+                      { label: "Couple", value: displayData.engine?.torque },
+                      { label: "Alimentation", value: displayData.engine?.alimentation }
                     ].map((item, i) => (
                       <li key={i} className="flex justify-between items-center text-sm border-b border-border/30 last:border-0 pb-1.5 last:pb-0">
                         <span className="font-bold text-muted-foreground">{item.label}:</span>
@@ -262,10 +299,10 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 <CardContent>
                   <ul className="space-y-3">
                     {[
-                      { label: "H. de selle", value: fiche.dimensions?.seatHeight },
-                      { label: "Poids (TPF)", value: fiche.dimensions?.wetWeight },
-                      { label: "Réservoir", value: fiche.dimensions?.fuelCapacity },
-                      { label: "Empattement", value: fiche.dimensions?.wheelbase }
+                      { label: "H. de selle", value: displayData.dimensions?.seatHeight },
+                      { label: "Poids (TPF)", value: displayData.dimensions?.wetWeight },
+                      { label: "Réservoir", value: displayData.dimensions?.fuelCapacity },
+                      { label: "Empattement", value: displayData.dimensions?.wheelbase }
                     ].map((item, i) => (
                       <li key={i} className="flex justify-between items-center text-sm border-b border-border/30 last:border-0 pb-1.5 last:pb-0">
                         <span className="font-bold text-muted-foreground">{item.label}:</span>
@@ -309,13 +346,13 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                         </TableHeader>
                         <TableBody>
                           {[
-                            { label: "Cadre", val: fiche.chassis?.frame },
-                            { label: "Suspension AV", val: fiche.chassis?.frontSuspension },
-                            { label: "Suspension AR", val: fiche.chassis?.rearSuspension },
-                            { label: "Frein AV", val: fiche.chassis?.frontBrake },
-                            { label: "Frein AR", val: fiche.chassis?.rearBrake },
-                            { label: "Pneu AV", val: fiche.chassis?.frontTire },
-                            { label: "Pneu AR", val: fiche.chassis?.rearTire }
+                            { label: "Cadre", val: displayData.chassis?.frame },
+                            { label: "Suspension AV", val: displayData.chassis?.frontSuspension },
+                            { label: "Suspension AR", val: displayData.chassis?.rearSuspension },
+                            { label: "Frein AV", val: displayData.chassis?.frontBrake },
+                            { label: "Frein AR", val: displayData.chassis?.rearBrake },
+                            { label: "Pneu AV", val: displayData.chassis?.frontTire },
+                            { label: "Pneu AR", val: displayData.chassis?.rearTire }
                           ].map((row, idx) => (
                             <TableRow key={idx}>
                               <TableCell className="font-bold py-4">{row.label}</TableCell>
@@ -336,12 +373,12 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               </h2>
               <div className="w-24 h-1.5 bg-brand mx-auto mb-8 rounded-full" />
               
-              {fiche.introduction && (
-                <p className="text-xl text-center text-muted-foreground leading-relaxed mb-12 max-w-3xl mx-auto font-medium">{fiche.introduction}</p>
+              {displayData.introduction && (
+                <p className="text-xl text-center text-muted-foreground leading-relaxed mb-12 max-w-3xl mx-auto font-medium">{displayData.introduction}</p>
               )}
               
               <div className="prose prose-brand max-w-none">
-                  {renderContent(fiche.content || [])}
+                  {renderContent(displayData.content || [])}
               </div>
             </div>
           </div>

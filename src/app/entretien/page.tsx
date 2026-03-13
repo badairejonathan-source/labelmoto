@@ -34,7 +34,7 @@ const article = {
       {
         "type": "list",
         "items": [
-          "<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2</a>",
+          "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2</a>",
           "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z900 A2 / Full</a>",
           "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500 Hornet A2</a>",
           "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z650 / Z650RS A2</a>",
@@ -46,7 +46,7 @@ const article = {
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">BMW</span>" },
       { "type": "list", "items": ["<a href=\"/fiches/bmw-r1250-gs\" class=\"text-brand underline hover:text-brand/80\">R1250 GS</a>"] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Yamaha</span>" },
-      { "type": "list", "items": ["<a href=\"/fiches/yamaha-mt-07\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2</a>", "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>", "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>", "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>", "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"] },
+      { "type": "list", "items": ["<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2 (2021+)</a>", "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>", "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>", "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>", "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Honda</span>" },
       { "type": "list", "items": ["<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet A2</a>", "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>"] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Kawasaki</span>" },

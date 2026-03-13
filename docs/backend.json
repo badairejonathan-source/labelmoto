@@ -33,10 +33,17 @@
         "year": { "type": "string" },
         "imageUrl": { "type": "string" },
         "introduction": { "type": "string" },
+        "power": { "type": "string" },
+        "torque": { "type": "string" },
+        "seat_height_mm": { "type": "number" },
+        "tank_l": { "type": "number" },
+        "weight_tpf_kg": { "type": "number" },
+        "wheelbase_mm": { "type": "number" },
         "engine": { "type": "object" },
         "dimensions": { "type": "object" },
         "chassis": { "type": "object" },
-        "content": { "type": "array" }
+        "content": { "type": "array" },
+        "type": { "type": "string" }
       }
     }
   },
