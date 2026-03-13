@@ -33,30 +33,35 @@ const article = {
       },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Honda</span>" },
       { "type": "list", "items": [
+          "<a href=\"/fiches/honda-cb125r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB125R (2021+)</a>",
           "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500F A2 (2022+)</a>",
           "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500 Hornet A2 (2024+)</a>",
-          "<a href=\"/fiches/honda-cb125r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB125R (2021+)</a>",
           "<a href=\"/fiches/honda-cb750-hornet-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB750 Hornet (2023+)</a>",
-          "<a href=\"/fiches/honda-xl750-transalp-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">XL750 Transalp (2023+)</a>"
+          "<a href=\"/fiches/honda-xl750-transalp-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">XL750 Transalp (2023+)</a>",
+          "<a href=\"/fiches/honda-nt1100-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">NT1100 (2022+)</a>",
+          "<a href=\"/fiches/honda-crf1100l-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CRF1100L Africa Twin (2020+)</a>"
       ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Yamaha</span>" },
       { "type": "list", "items": [
           "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">MT-07 A2 (2021+)</a>",
           "<a href=\"/fiches/yamaha-tracer-7-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Tracer 7 A2 (2021+)</a>",
           "<a href=\"/fiches/yamaha-xsr700-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">XSR700 A2 (2021+)</a>",
-          "<a href=\"/fiches/yamaha-r7-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">YZF-R7 A2 (2022+)</a>"
+          "<a href=\"/fiches/yamaha-r7-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">YZF-R7 A2 (2022+)</a>",
+          "<a href=\"/fiches/yamaha-tenere-700-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Ténéré 700 (2019+)</a>",
+          "<a href=\"/fiches/yamaha-mt-09-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">MT-09 (2021+)</a>"
       ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Suzuki</span>" },
       { "type": "list", "items": [
           "<a href=\"/fiches/suzuki-v-strom-650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">V-Strom 650 (2021+)</a>",
-          "<a href=\"/fiches/suzuki-sv650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">SV650 A2 (2021+)</a>"
+          "<a href=\"/fiches/suzuki-sv650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">SV650 A2 (2021+)</a>",
+          "<a href=\"/fiches/suzuki-gsx-8s-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">GSX-8S (2023+)</a>"
       ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Kawasaki</span>" },
       { "type": "list", "items": [
           "<a href=\"/fiches/kawasaki-z650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z650 A2 (2021+)</a>",
           "<a href=\"/fiches/kawasaki-z900-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z900 A2 (2021+)</a>"
       ] },
-      { "type": "paragraph", "html": "<div class=\"p-4 bg-muted/50 rounded-xl border-l-4 border-brand mt-8\"><p class=\"text-sm italic\">De nouveaux modèles sont ajoutés régulièrement par nos administrateurs. Si votre modèle n'est pas encore listé, revenez bientôt !</p></div>" },
+      { "type": "paragraph", "html": "<div class=\"p-4 bg-muted/50 rounded-xl border-l-4 border-brand mt-8\"><p class=\"text-sm italic\">De nouveaux modèles sont ajoutés régulièrement. Si votre modèle n'est pas encore listé, revenez bientôt !</p></div>" },
       { "type": "heading", "text": "Pourquoi suivre l'entretien ?" },
       { "type": "paragraph", "text": "Une moto demande un suivi plus rigoureux qu’une voiture. Le moteur tourne à des régimes plus élevés, les consommables s'usent plus vite et les organes de sécurité sont vitaux. Respecter les préconisations constructeur garantit la longévité de votre machine et sa valeur à la revente." },
       { "type": "heading", "text": "Intervalles types" },
