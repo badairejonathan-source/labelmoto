@@ -46,6 +46,18 @@
             "weight_tpf_kg": { "type": "number" },
             "tank_l": { "type": "number" },
             "wheelbase_mm": { "type": "number" },
+            "variants": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "power": { "type": "string" },
+                  "torque": { "type": "string" },
+                  "license_bridging": { "type": "string" }
+                }
+              }
+            },
             "cycle_parts": {
               "type": "object",
               "properties": {

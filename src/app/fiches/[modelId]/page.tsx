@@ -5,7 +5,7 @@ import React, { useState, use, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, Info, CheckCircle2, AlertTriangle, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, Info, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -28,12 +28,14 @@ import {
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
   const { modelId } = use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [isPartieCycleOpen, setIsPartieCycleOpen] = useState(false);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
@@ -44,6 +46,12 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     if (!fiche) return null;
 
     const ts = fiche.technical_sheet || {};
+    const variants = ts.variants || [];
+    
+    // Si des variantes existent, on fusionne les données de la variante active avec les données de base
+    const activeVariant = variants[selectedVariantIndex] || {};
+    const effectiveTs = { ...ts, ...activeVariant };
+    
     const cp = ts.cycle_parts || {};
     const sg = fiche.service_guide || {};
 
@@ -53,13 +61,15 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
       year: fiche.year_range || fiche.year || "2021+",
       imageUrl: fiche.imageUrl || "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
       introduction: sg.intro || fiche.introduction || "Fiche technique détaillée et guide d'entretien complet.",
+      hasVariants: variants.length > 1,
+      variants: variants,
       engine: {
-        bridage: ts.license_bridging || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
-        type: ts.engine_type || "Donnée non renseignée",
-        displacement: ts.displacement_cc ? `${ts.displacement_cc} cm³` : "Donnée non renseignée",
-        power: ts.power || "Donnée non renseignée",
-        torque: ts.torque || "Donnée non renseignée",
-        alimentation: ts.fuel_system || "Donnée non renseignée"
+        bridage: effectiveTs.license_bridging || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
+        type: effectiveTs.engine_type || "Donnée non renseignée",
+        displacement: effectiveTs.displacement_cc ? `${effectiveTs.displacement_cc} cm³` : "Donnée non renseignée",
+        power: effectiveTs.power || "Donnée non renseignée",
+        torque: effectiveTs.torque || "Donnée non renseignée",
+        alimentation: effectiveTs.fuel_system || "Donnée non renseignée"
       },
       dimensions: {
         seatHeight: ts.seat_height_mm ? `${ts.seat_height_mm} mm` : "Donnée non renseignée",
@@ -76,7 +86,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         frontTire: cp.front_tire || "Donnée non renseignée",
         rearTire: cp.rear_tire || "Donnée non renseignée"
       },
-      // Service Guide Data
       serviceSchedule: sg.service_schedule || [],
       consumables: sg.consumables || [],
       faq: sg.faq || [],
@@ -95,7 +104,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         }
       }
     };
-  }, [fiche]);
+  }, [fiche, selectedVariantIndex]);
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -107,7 +116,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     router.push(`/map?filter=${filter}`);
   };
 
-  // Only show the not found UI if we're done loading AND data is missing
   if (isLoading) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
@@ -175,6 +183,24 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 <p className="text-xl md:text-2xl font-bold text-brand">{displayData.year}</p>
               </div>
             </div>
+
+            {/* Variant Switcher */}
+            {displayData.hasVariants && (
+              <div className="flex flex-col items-center gap-4 bg-muted/30 p-4 rounded-2xl border border-border/50">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                  <LayoutGrid className="h-3 w-3" /> Sélectionner la version
+                </div>
+                <Tabs value={String(selectedVariantIndex)} onValueChange={(v) => setSelectedVariantIndex(Number(v))} className="w-full max-w-md">
+                  <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${displayData.variants.length}, 1fr)` }}>
+                    {displayData.variants.map((v: any, idx: number) => (
+                      <TabsTrigger key={idx} value={String(idx)} className="font-bold uppercase text-[10px] tracking-tight">
+                        {v.title || `Version ${idx + 1}`}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+              </div>
+            )}
 
             {/* Quick Specs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
