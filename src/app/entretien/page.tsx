@@ -36,7 +36,7 @@ const article = {
         "items": [
           "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Yamaha MT-07 A2 (2021+)</a>",
           "<a href=\"/fiches/honda-cb500f\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500F A2</a>",
-          "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500 Hornet A2</a>",
+          "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-brand underline hover:text-brand/80 font-bold\">Honda CB500 Hornet A2 (2024+)</a>",
           "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80 font-bold\">Kawasaki Z900 A2 / Full</a>",
           "<a href=\"/fiches/suzuki-gsx-8s\" class=\"text-brand underline hover:text-brand/80 font-bold\">Suzuki GSX-8S A2</a>",
           "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80 font-bold\">Suzuki SV650 A2</a>"
@@ -44,14 +44,36 @@ const article = {
       },
       { "type": "heading", "text": "Trouver la fiche de votre moto" },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Honda</span>" },
-      { "type": "list", "items": ["<a href=\"/fiches/honda-cb500f\" class=\"text-brand underline hover:text-brand/80\">CB500F A2</a>", "<a href=\"/fiches/honda-cb500-hornet\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet A2</a>", "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>", "<a href=\"/fiches/honda-cb750-hornet\" class=\"text-brand underline hover:text-brand/80\">CB750 Hornet (A2/Full)</a>"] },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/honda-cb500f\" class=\"text-brand underline hover:text-brand/80\">CB500F A2</a>", 
+          "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-brand underline hover:text-brand/80\">CB500 Hornet A2</a>", 
+          "<a href=\"/fiches/honda-nx500\" class=\"text-brand underline hover:text-brand/80\">NX500 / CB500X A2</a>", 
+          "<a href=\"/fiches/honda-cbr500r\" class=\"text-brand underline hover:text-brand/80\">CBR500R A2</a>", 
+          "<a href=\"/fiches/honda-cb750-hornet\" class=\"text-brand underline hover:text-brand/80\">CB750 Hornet (A2/Full)</a>",
+          "<a href=\"/fiches/honda-cb125r\" class=\"text-brand underline hover:text-brand/80\">CB125R</a>",
+          "<a href=\"/fiches/honda-xl750-transalp\" class=\"text-brand underline hover:text-brand/80\">XL750 Transalp</a>"
+      ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Yamaha</span>" },
-      { "type": "list", "items": ["<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2 (2021+)</a>", "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>", "<a href=\"/fiches/yamaha-tracer-7\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>", "<a href=\"/fiches/yamaha-r7\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>", "<a href=\"/fiches/yamaha-xsr700\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"] },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/yamaha-mt-07-2021-plus\" class=\"text-brand underline hover:text-brand/80\">MT-07 A2 (2021+)</a>", 
+          "<a href=\"/fiches/yamaha-mt-03\" class=\"text-brand underline hover:text-brand/80\">MT-03 A2</a>", 
+          "<a href=\"/fiches/yamaha-tracer-7-2021-plus\" class=\"text-brand underline hover:text-brand/80\">Tracer 7 A2</a>", 
+          "<a href=\"/fiches/yamaha-r7-2022-plus\" class=\"text-brand underline hover:text-brand/80\">R7 A2</a>", 
+          "<a href=\"/fiches/yamaha-xsr700-2021-plus\" class=\"text-brand underline hover:text-brand/80\">XSR700 A2</a>"
+      ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Kawasaki</span>" },
-      { "type": "list", "items": ["<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80\">Z900 A2 / Full</a>", "<a href=\"/fiches/kawasaki-z900rs\" class=\"text-brand underline hover:text-brand/80\">Z900RS A2 / Full</a>", "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>"] },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/kawasaki-z900\" class=\"text-brand underline hover:text-brand/80\">Z900 A2 / Full</a>", 
+          "<a href=\"/fiches/kawasaki-z900rs\" class=\"text-brand underline hover:text-brand/80\">Z900RS A2 / Full</a>", 
+          "<a href=\"/fiches/kawasaki-z650\" class=\"text-brand underline hover:text-brand/80\">Z650 / Z650RS A2</a>"
+      ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-bold\">Suzuki</span>" },
-      { "type": "list", "items": ["<a href=\"/fiches/suzuki-gsx-8s\" class=\"text-brand underline hover:text-brand/80\">GSX-8S A2</a>", "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 A2</a>"] },
-      { "type": "paragraph", "html": "<em>De nouveaux modèles sont ajoutés régulièrement depuis notre base de données.</em>" },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/suzuki-gsx-8s\" class=\"text-brand underline hover:text-brand/80\">GSX-8S A2</a>", 
+          "<a href=\"/fiches/suzuki-sv650\" class=\"text-brand underline hover:text-brand/80\">SV650 A2</a>",
+          "<a href=\"/fiches/suzuki-v-strom-650\" class=\"text-brand underline hover:text-brand/80\">V-Strom 650 A2</a>"
+      ] },
+      { "type": "paragraph", "html": "<em>De nouveaux modèles sont ajoutés régulièrement depuis notre base de données Firestore.</em>" },
       { "type": "heading", "text": "Comment fonctionne l’entretien d’une moto ?" },
       { "type": "paragraph", "text": "Une moto demande un suivi plus fréquent qu’une voiture. Le moteur tourne plus vite, les pièces sont plus exposées et les organes de sécurité comme les freins, pneus et transmission travaillent davantage." },
       { "type": "heading", "text": "1. Les révisions périodiques" },

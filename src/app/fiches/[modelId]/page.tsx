@@ -55,11 +55,11 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
       introduction: sg.intro || fiche.introduction || "Fiche technique détaillée et guide d'entretien complet.",
       engine: {
         bridage: ts.license_bridging || (fiche.id?.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
-        type: ts.engine_type || "Bicylindre en ligne CP2, 4 temps, refroidissement liquide",
-        displacement: ts.displacement_cc ? `${ts.displacement_cc} cm³` : "689 cm³",
+        type: ts.engine_type || "Donnée non renseignée",
+        displacement: ts.displacement_cc ? `${ts.displacement_cc} cm³` : "Donnée non renseignée",
         power: ts.power || "Donnée non renseignée",
         torque: ts.torque || "Donnée non renseignée",
-        alimentation: ts.fuel_system || "Injection électronique"
+        alimentation: ts.fuel_system || "Donnée non renseignée"
       },
       dimensions: {
         seatHeight: ts.seat_height_mm ? `${ts.seat_height_mm} mm` : "Donnée non renseignée",
@@ -89,7 +89,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           text: sg.compare_cta_text || "Les tarifs peuvent varier selon l’atelier et la région."
         },
         concession: {
-          title: sg.concession_cta_title || `La ${fiche.display_title} vous correspond ?`,
+          title: sg.concession_cta_title || `La ${fiche.display_title || 'moto'} vous correspond ?`,
           button: sg.concession_cta_button || "Voir en concession",
           text: sg.concession_cta_text || "Si vous envisagez d’en acheter une, comparez les offres disponibles."
         }
@@ -318,7 +318,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                         <TableBody>
                           {displayData.serviceSchedule.map((item: any, idx: number) => (
                             <TableRow key={idx}>
-                              <TableCell className="font-bold py-4">{item.km.toLocaleString()} km</TableCell>
+                              <TableCell className="font-bold py-4">{item.km?.toLocaleString() || '-'} km</TableCell>
                               <TableCell className="py-4">{item.service_label}</TableCell>
                               <TableCell className="py-4 font-bold text-brand">{item.price_estimate}</TableCell>
                             </TableRow>
