@@ -24,19 +24,32 @@ const article = {
     "content": [
       {
         "type": "paragraph",
-        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète, récupérée en temps réel depuis notre base de données Firestore."
+        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète, récupérée en temps réel depuis notre base de données."
       },
       {
         "type": "heading",
         "text": "Modèles disponibles par marque"
       },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">BMW</span>" },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/bmw-f750-850-gs-2018-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 750 GS / F 850 GS <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
+          "<a href=\"/fiches/bmw-f900r-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 900 R <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
+          "<a href=\"/fiches/bmw-r1250gs-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">R 1250 GS (2021+)</a>",
+          "<a href=\"/fiches/bmw-s1000rr-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">S 1000 RR (2019+)</a>",
+          "<a href=\"/fiches/bmw-g310r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">G 310 R A2 (2021+)</a>"
+      ] },
+      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Kawasaki</span>" },
+      { "type": "list", "items": [
+          "<a href=\"/fiches/kawasaki-z900-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z900 <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
+          "<a href=\"/fiches/kawasaki-z650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z650 A2 (2021+)</a>"
+      ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Honda</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/honda-cb125r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB125R (2021+)</a>",
           "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500F A2 (2022+)</a>",
           "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500 Hornet A2 (2024+)</a>",
           "<a href=\"/fiches/honda-cb750-hornet-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB750 Hornet (2023+)</a>",
           "<a href=\"/fiches/honda-xl750-transalp-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">XL750 Transalp (2023+)</a>",
+          "<a href=\"/fiches/honda-cb125r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB125R (2021+)</a>",
           "<a href=\"/fiches/honda-nt1100-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">NT1100 (2022+)</a>",
           "<a href=\"/fiches/honda-crf1100l-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CRF1100L Africa Twin (2020+)</a>"
       ] },
@@ -49,24 +62,11 @@ const article = {
           "<a href=\"/fiches/yamaha-tenere-700-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Ténéré 700 (2019+)</a>",
           "<a href=\"/fiches/yamaha-mt-09-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">MT-09 (2021+)</a>"
       ] },
-      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">BMW</span>" },
-      { "type": "list", "items": [
-          "<a href=\"/fiches/bmw-r1250gs-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">R 1250 GS (2021+)</a>",
-          "<a href=\"/fiches/bmw-f750-850-gs-2018-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 750 GS / F 850 GS (2018+)</a>",
-          "<a href=\"/fiches/bmw-f900r-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 900 R (2020+)</a>",
-          "<a href=\"/fiches/bmw-s1000rr-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">S 1000 RR (2019+)</a>",
-          "<a href=\"/fiches/bmw-g310r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">G 310 R A2 (2021+)</a>"
-      ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Suzuki</span>" },
       { "type": "list", "items": [
           "<a href=\"/fiches/suzuki-v-strom-650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">V-Strom 650 (2021+)</a>",
           "<a href=\"/fiches/suzuki-sv650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">SV650 A2 (2021+)</a>",
           "<a href=\"/fiches/suzuki-gsx-8s-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">GSX-8S (2023+)</a>"
-      ] },
-      { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Kawasaki</span>" },
-      { "type": "list", "items": [
-          "<a href=\"/fiches/kawasaki-z650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z650 A2 (2021+)</a>",
-          "<a href=\"/fiches/kawasaki-z900-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z900 A2 (2021+)</a>"
       ] },
       { "type": "paragraph", "html": "<div class=\"p-4 bg-muted/50 rounded-xl border-l-4 border-brand mt-8\"><p class=\"text-sm italic\">De nouveaux modèles sont ajoutés régulièrement. Si votre modèle n'est pas encore listé, revenez bientôt !</p></div>" },
       { "type": "heading", "text": "Pourquoi suivre l'entretien ?" },

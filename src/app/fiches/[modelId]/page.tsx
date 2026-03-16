@@ -52,10 +52,12 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     // Sélection de la variante active
     const activeVariant = variants[selectedVariantIndex] || {};
     
-    // Fusion des données de la variante avec les données de base pour l'affichage
-    const effectiveTs = { ...ts, ...activeVariant };
-    
-    const cp = ts.cycle_parts || fiche.cycle_parts || activeVariant.cycle_parts || {};
+    // Cycle parts merge logic
+    const baseCp = ts.cycle_parts || fiche.cycle_parts || {};
+    const variantCp = activeVariant.cycle_parts || {};
+    const cp = { ...baseCp, ...variantCp };
+
+    // Service guide logic
     const sg = fiche.service_guide || {};
 
     return {
@@ -68,17 +70,17 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
       variants: variants,
       engine: {
         bridage: activeVariant.license_bridging || ts.license_bridging || (modelId.includes('a2') ? "✔ Permis A2" : "✔ Version standard"),
-        type: ts.engine_type || "Donnée non renseignée",
-        displacement: (ts.displacement_cc) ? `${ts.displacement_cc} cm³` : "Donnée non renseignée",
+        type: activeVariant.engine_type || ts.engine_type || "Donnée non renseignée",
+        displacement: (activeVariant.displacement_cc || ts.displacement_cc) ? `${activeVariant.displacement_cc || ts.displacement_cc} cm³` : "Donnée non renseignée",
         power: activeVariant.power || ts.power || "Donnée non renseignée",
         torque: activeVariant.torque || ts.torque || "Donnée non renseignée",
-        alimentation: ts.fuel_system || "Donnée non renseignée"
+        alimentation: activeVariant.fuel_system || ts.fuel_system || "Donnée non renseignée"
       },
       dimensions: {
-        seatHeight: (ts.seat_height_mm) ? `${ts.seat_height_mm} mm` : "Donnée non renseignée",
-        wetWeight: (ts.weight_tpf_kg) ? `${ts.weight_tpf_kg} kg` : "Donnée non renseignée",
-        fuelCapacity: (ts.tank_l) ? `${ts.tank_l} L` : "Donnée non renseignée",
-        wheelbase: (ts.wheelbase_mm) ? `${ts.wheelbase_mm} mm` : "Donnée non renseignée",
+        seatHeight: (activeVariant.seat_height_mm || ts.seat_height_mm) ? `${activeVariant.seat_height_mm || ts.seat_height_mm} mm` : "Donnée non renseignée",
+        wetWeight: (activeVariant.weight_tpf_kg || ts.weight_tpf_kg) ? `${activeVariant.weight_tpf_kg || ts.weight_tpf_kg} kg` : "Donnée non renseignée",
+        fuelCapacity: (activeVariant.tank_l || ts.tank_l) ? `${activeVariant.tank_l || ts.tank_l} L` : "Donnée non renseignée",
+        wheelbase: (activeVariant.wheelbase_mm || ts.wheelbase_mm) ? `${activeVariant.wheelbase_mm || ts.wheelbase_mm} mm` : "Donnée non renseignée",
       },
       chassis: {
         frame: cp.frame || "Donnée non renseignée",
