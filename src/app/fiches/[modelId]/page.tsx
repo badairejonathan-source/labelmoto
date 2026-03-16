@@ -138,7 +138,9 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   if (!fiche || !displayData) {
     return (
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
-            <h1 className="text-4xl font-black mb-4 uppercase">FICHE NON DISPONIBLE</h1>
+            <h1 className="text-4xl font-black mb-4 uppercase">
+                la fiche de la "{modelId}" ne s'affiche toujours pas , depeche toi
+            </h1>
             <p className="text-muted-foreground mb-8">Nous n'avons pas encore intégré les données pour le modèle "{modelId}".</p>
             <Button asChild>
                 <Link href="/entretien">Retour à l'entretien</Link>

@@ -40,7 +40,7 @@ const article = {
       ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Kawasaki</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/kawasaki-z900-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z900 <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
+          "<a href=\"/fiches/kawasaki-z900-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z900 <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
           "<a href=\"/fiches/kawasaki-z650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z650 A2 (2021+)</a>",
           "<a href=\"/fiches/kawasaki-er6n-2012-2016\" class=\"text-foreground hover:text-brand font-bold transition-colors\">ER-6n (2012-2016)</a>",
           "<a href=\"/fiches/kawasaki-versys-650-2015-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Versys 650 (2015+)</a>"
