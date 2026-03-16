@@ -32,22 +32,27 @@ const article = {
       },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">BMW</span>" },
       { "type": "list", "items": [
-          "<a href=\"/fiches/bmw-f750-850-gs-2018-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 750 GS / F 850 GS <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
+          "<a href=\"/fiches/bmw-f750-gs-f850-gs-2018-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 750 GS / F 850 GS <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
           "<a href=\"/fiches/bmw-f900r-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">F 900 R <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
-          "<a href=\"/fiches/bmw-r1250gs-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">R 1250 GS (2021+)</a>",
+          "<a href=\"/fiches/bmw-r1250-gs-r1300-gs-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">R 1250 GS / R 1300 GS</a>",
           "<a href=\"/fiches/bmw-s1000rr-2019-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">S 1000 RR (2019+)</a>",
           "<a href=\"/fiches/bmw-g310r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">G 310 R A2 (2021+)</a>"
       ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Kawasaki</span>" },
       { "type": "list", "items": [
           "<a href=\"/fiches/kawasaki-z900-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z900 <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
-          "<a href=\"/fiches/kawasaki-z650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z650 A2 (2021+)</a>"
+          "<a href=\"/fiches/kawasaki-z650-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Z650 A2 (2021+)</a>",
+          "<a href=\"/fiches/kawasaki-er6n-2012-2016\" class=\"text-foreground hover:text-brand font-bold transition-colors\">ER-6n (2012-2016)</a>",
+          "<a href=\"/fiches/kawasaki-versys-650-2015-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">Versys 650 (2015+)</a>"
       ] },
       { "type": "paragraph", "html": "<span class=\"text-xl font-black text-brand uppercase tracking-tighter\">Honda</span>" },
       { "type": "list", "items": [
+          "<a href=\"/fiches/honda-cb1000-hornet-2024-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB1000 Hornet (2024+)</a>",
           "<a href=\"/fiches/honda-cb500f-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500F A2 (2022+)</a>",
-          "<a href=\"/fiches/honda-cb500-hornet-2024-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB500 Hornet A2 (2024+)</a>",
+          "<a href=\"/fiches/honda-cb650r-2020-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB650R <span class='text-[10px] bg-brand/10 text-brand px-1.5 py-0.5 rounded ml-1 uppercase'>A2 / Full</span></a>",
           "<a href=\"/fiches/honda-cb750-hornet-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB750 Hornet (2023+)</a>",
+          "<a href=\"/fiches/honda-cbr500r-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CBR500R A2 (2022+)</a>",
+          "<a href=\"/fiches/honda-nx500-2024-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">NX500 A2 (2024+)</a>",
           "<a href=\"/fiches/honda-xl750-transalp-2023-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">XL750 Transalp (2023+)</a>",
           "<a href=\"/fiches/honda-cb125r-2021-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">CB125R (2021+)</a>",
           "<a href=\"/fiches/honda-nt1100-2022-plus\" class=\"text-foreground hover:text-brand font-bold transition-colors\">NT1100 (2022+)</a>",
