@@ -68,7 +68,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     return {
       modelName: fiche.display_title || fiche.model || modelId.replace(/-/g, ' ').toUpperCase(),
       brand: fiche.brand || (modelId.split('-')[0] || '').toUpperCase(),
-      year: fiche.year_range || "2021+",
+      year: fiche.year_range || "Donnée non renseignée",
       imageUrl: fiche.imageUrl || "https://images.unsplash.com/photo-1621699353928-09192b03a31c?q=80&w=2070&auto=format&fit=crop",
       introduction: sg.intro || fiche.introduction || "",
       hasVariants: variants.length > 1,
@@ -130,7 +130,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />
-        <p className="text-muted-foreground font-bold animate-pulse">Récupération des données Firestore...</p>
+        <p className="text-muted-foreground font-bold animate-pulse">Chargement de la fiche technique...</p>
       </div>
     );
   }
@@ -139,11 +139,11 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
     return (
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
             <h1 className="text-4xl font-black mb-4 uppercase">
-                la fiche de la "{modelId}" ne s'affiche toujours pas , depeche toi
+                FICHE NON TROUVÉE
             </h1>
-            <p className="text-muted-foreground mb-8">Nous n'avons pas encore intégré les données pour le modèle "{modelId}".</p>
+            <p className="text-muted-foreground mb-8">Nous n'avons pas trouvé de données pour le modèle "{modelId}".</p>
             <Button asChild>
-                <Link href="/entretien">Retour à l'entretien</Link>
+                <Link href="/entretien">Retour à la liste</Link>
             </Button>
         </div>
     );
