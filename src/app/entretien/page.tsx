@@ -24,7 +24,7 @@ const article = {
     "content": [
       {
         "type": "paragraph",
-        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète, récupérée en temps réel depuis notre base de données."
+        "html": "Trouvez rapidement les <strong>intervalles d’entretien</strong>, le <strong>prix des révisions</strong> et les <strong>points de fiabilité</strong> de votre moto. Choisissez votre <strong>marque</strong> puis votre <strong>modèle</strong> pour accéder à sa fiche complète."
       },
       {
         "type": "heading",

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, use, useMemo } from 'react';
+import React, { useState, use, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -39,6 +39,11 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
+
+  // Reset selected variant when changing model
+  useEffect(() => {
+    setSelectedVariantIndex(0);
+  }, [modelId]);
 
   const displayData = useMemo(() => {
     if (!fiche) return null;
