@@ -117,36 +117,41 @@ export default function EntretienPage() {
   const renderNote = (note: string) => {
     if (!note) return null;
     
+    const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
     const budgetTrigger = "notre guide sur le coût réel d’une moto par mois";
     const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
     
+    let content: React.ReactNode = note;
+
     if (note.includes(budgetTrigger)) {
       const parts = note.split(budgetTrigger);
-      return (
-        <span className="text-foreground">
+      content = (
+        <>
           {parts[0]}
           <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
-            Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
+            {budgetArticleTitle}
           </Link>
           {parts[1]}
-        </span>
+        </>
       );
-    }
-
-    if (note.includes(budgetTrigger2)) {
+    } else if (note.includes(budgetTrigger2)) {
       const parts = note.split(budgetTrigger2);
-      return (
-        <span className="text-foreground">
+      content = (
+        <>
           {parts[0]}
           <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
-            Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
+            {budgetArticleTitle}
           </Link>
           {parts[1]}
-        </span>
+        </>
       );
     }
 
-    return <span className="text-foreground">{note}</span>;
+    return (
+      <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-medium">
+        {content}
+      </div>
+    );
   };
 
   const renderTable = (tableData: any) => {
@@ -169,7 +174,7 @@ export default function EntretienPage() {
             {rows.map((row: any, ri: number) => (
               <TableRow key={ri} className="hover:bg-muted/30">
                 {Object.values(row).map((cell: any, ci: number) => (
-                  <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold text-foreground' : 'text-foreground/80')}>
+                  <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold text-foreground' : 'text-foreground font-medium')}>
                     {String(cell)}
                   </TableCell>
                 ))}
@@ -181,16 +186,16 @@ export default function EntretienPage() {
     );
   };
 
-  const renderComparison = (item: any) => {
-    if (!item.strengths && !item.weaknesses) return null;
-
+  const renderComparisonCard = (item: any) => {
     return (
-      <Card key={item.title} className="border-2 border-muted overflow-hidden bg-card/50 h-full flex flex-col">
-        <CardHeader className="bg-muted/30 py-4">
-          <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">{item.title}</CardTitle>
+      <Card key={item.title} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm">
+        <CardHeader className="bg-muted/30 py-4 border-b">
+          <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground text-center">
+            {item.title}
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-6 flex-grow">
-          {item.strengths && (
+          {item.strengths && Array.isArray(item.strengths) && (
             <div className="space-y-3">
               <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
                 <CheckCircle2 className="h-3 w-3" /> Avantages
@@ -204,7 +209,7 @@ export default function EntretienPage() {
               </ul>
             </div>
           )}
-          {item.weaknesses && (
+          {item.weaknesses && Array.isArray(item.weaknesses) && (
             <div className="space-y-3">
               <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
                 <AlertTriangle className="h-3 w-3" /> Inconvénients
@@ -223,11 +228,11 @@ export default function EntretienPage() {
     );
   };
 
-  const renderComparisonTable = (items: any[]) => {
+  const renderComparisonGrid = (items: any[]) => {
     if (!items || items.length === 0) return null;
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-12">
-        {items.map((item, i) => renderComparison(item))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+        {items.map((item) => renderComparisonCard(item))}
       </div>
     );
   };
@@ -237,7 +242,7 @@ export default function EntretienPage() {
       return (
         <div key={idx} className="mb-12">
           {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-          {renderComparisonTable(section.items)}
+          {renderComparisonGrid(section.items)}
         </div>
       );
     }
@@ -247,52 +252,57 @@ export default function EntretienPage() {
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         
         {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
-          <p key={pi} className="text-lg text-foreground leading-relaxed mb-6">{p}</p>
+          <p key={pi} className="text-lg text-foreground font-medium leading-relaxed mb-6">{p}</p>
         ))}
 
         {section.list && Array.isArray(section.list) && (
           <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
             {section.list.map((item: string, li: number) => (
-              <li key={li} className="text-lg text-foreground font-medium">{item}</li>
+              <li key={li} className="text-lg text-foreground font-bold">{item}</li>
             ))}
           </ul>
         )}
 
         {section.table && renderTable(section.table)}
         
-        {section.note && (
-          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm">
-            {renderNote(section.note)}
+        {section.note && renderNote(section.note)}
+
+        {section.subsections && Array.isArray(section.subsections) && (
+          <div className="space-y-6">
+            {section.subsections.map((sub: any, si: number) => {
+              if (sub.items && Array.isArray(sub.items)) {
+                return (
+                  <div key={si} className="mt-8">
+                    {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground">{sub.title}</h3>}
+                    {renderComparisonGrid(sub.items)}
+                  </div>
+                );
+              }
+
+              return (
+                <div key={si} className="ml-0 md:ml-6 mt-8 p-6 bg-muted/20 rounded-2xl border border-border/50">
+                  {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground">{sub.title}</h3>}
+                  
+                  {sub.content && Array.isArray(sub.content) && sub.content.map((p: string, spi: number) => (
+                    <p key={spi} className="text-base text-foreground font-medium leading-relaxed mb-4">{p}</p>
+                  ))}
+
+                  {sub.list && Array.isArray(sub.list) && (
+                    <ul className="list-disc list-inside space-y-2 mb-6 pl-4">
+                      {sub.list.map((item: string, sli: number) => (
+                        <li key={sli} className="text-base text-foreground font-bold">{item}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {sub.table && renderTable(sub.table)}
+                  
+                  {sub.note && renderNote(sub.note)}
+                </div>
+              );
+            })}
           </div>
         )}
-
-        {section.subsections && Array.isArray(section.subsections) && section.subsections.map((sub: any, si: number) => (
-          <div key={si} className="ml-0 md:ml-6 mt-8 p-6 bg-muted/20 rounded-2xl border border-border/50">
-            {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground">{sub.title}</h3>}
-            
-            {sub.content && Array.isArray(sub.content) && sub.content.map((p: string, spi: number) => (
-              <p key={spi} className="text-base text-foreground leading-relaxed mb-4">{p}</p>
-            ))}
-
-            {sub.list && Array.isArray(sub.list) && (
-              <ul className="list-disc list-inside space-y-2 mb-6 pl-4">
-                {sub.list.map((item: string, sli: number) => (
-                  <li key={sli} className="text-base text-foreground font-medium">{item}</li>
-                ))}
-              </ul>
-            )}
-
-            {sub.table && renderTable(sub.table)}
-
-            {sub.items && renderComparisonTable(sub.items)}
-
-            {sub.note && (
-              <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 italic shadow-sm">
-                {renderNote(sub.note)}
-              </div>
-            )}
-          </div>
-        ))}
       </div>
     );
   };
@@ -329,7 +339,7 @@ export default function EntretienPage() {
             <h1 className="text-4xl md:text-6xl font-black leading-none tracking-tighter text-foreground mb-4 uppercase">
               Catalogue des Fiches Techniques
             </h1>
-            <p className="text-xl text-muted-foreground font-medium max-w-3xl">
+            <p className="text-xl text-muted-foreground font-bold max-w-3xl">
               Sélectionnez une marque pour accéder aux guides d'entretien officiels et aux spécifications techniques.
             </p>
           </div>
@@ -418,13 +428,13 @@ export default function EntretienPage() {
 
                     <div className="mb-12">
                       {article.intro && Array.isArray(article.intro) && article.intro.map((p: string, i: number) => (
-                        <p key={i} className="text-xl leading-relaxed text-foreground font-medium mb-4">{p}</p>
+                        <p key={i} className="text-xl leading-relaxed text-foreground font-black mb-4">{p}</p>
                       ))}
                       
                       {article.intro_points && Array.isArray(article.intro_points) && (
                         <ul className="list-none space-y-3 my-6 pl-0">
                           {article.intro_points.map((pt: string, i: number) => (
-                            <li key={i} className="flex items-center gap-3 text-lg text-foreground font-bold">
+                            <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black">
                               <CheckCircle2 className="h-5 w-5 text-brand shrink-0" />
                               {pt}
                             </li>
@@ -433,7 +443,7 @@ export default function EntretienPage() {
                       )}
 
                       {article.intro_conclusion && (
-                        <p className="text-lg leading-relaxed text-foreground italic border-l-4 border-brand pl-6 my-8">
+                        <p className="text-lg leading-relaxed text-foreground font-bold italic border-l-4 border-brand pl-6 my-8">
                           {article.intro_conclusion}
                         </p>
                       )}
@@ -451,11 +461,11 @@ export default function EntretienPage() {
                         </div>
                         <div className="space-y-4">
                           {article.conclusion.map((line: string, i: number) => (
-                            <p key={i} className="text-lg text-foreground leading-relaxed">{line}</p>
+                            <p key={i} className="text-lg text-foreground font-bold leading-relaxed">{line}</p>
                           ))}
                         </div>
                         <div className="flex justify-end items-center mt-8">
-                          <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
+                          <p className="text-lg font-black text-foreground relative z-10">L'équipe Label Moto</p>
                           <Image 
                             src="/images/Stamp-LM.png?v=2" 
                             alt="Signature" 
@@ -470,7 +480,7 @@ export default function EntretienPage() {
                 ) : (
                   <div className="py-20 text-center border-2 border-dashed rounded-3xl bg-muted/10">
                     <Info className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-                    <p className="text-muted-foreground font-medium">L'article conseils est introuvable ou n'est pas encore publié.</p>
+                    <p className="text-muted-foreground font-bold">L'article conseils est introuvable ou n'est pas encore publié.</p>
                   </div>
                 )}
               </div>
@@ -495,7 +505,7 @@ export default function EntretienPage() {
                                   className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110"
                               />
                             </Link>
-                            <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">
+                            <p className="text-muted-foreground text-sm mt-6 font-bold leading-relaxed">
                                 Comparez les ateliers et concessions pour votre prochaine révision directement sur notre carte interactive.
                             </p>
                         </CardContent>
