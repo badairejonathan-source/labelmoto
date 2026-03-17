@@ -117,36 +117,36 @@ export default function EntretienPage() {
   const renderNote = (note: string) => {
     if (!note) return null;
     
-    const trigger = "notre guide sur le coût réel d’une moto par mois";
-    const trigger2 = "notre guide sur le coût moyen d’une moto par mois";
+    const budgetTrigger = "notre guide sur le coût réel d’une moto par mois";
+    const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
     
-    if (note.includes(trigger)) {
-      const parts = note.split(trigger);
+    if (note.includes(budgetTrigger)) {
+      const parts = note.split(budgetTrigger);
       return (
-        <>
+        <span className="text-foreground">
           {parts[0]}
           <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
             Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
-        </>
+        </span>
       );
     }
 
-    if (note.includes(trigger2)) {
-      const parts = note.split(trigger2);
+    if (note.includes(budgetTrigger2)) {
+      const parts = note.split(budgetTrigger2);
       return (
-        <>
+        <span className="text-foreground">
           {parts[0]}
           <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
             Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
-        </>
+        </span>
       );
     }
 
-    return note;
+    return <span className="text-foreground">{note}</span>;
   };
 
   const renderTable = (tableData: any) => {
@@ -261,7 +261,7 @@ export default function EntretienPage() {
         {section.table && renderTable(section.table)}
         
         {section.note && (
-          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-foreground rounded-r-lg">
+          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm">
             {renderNote(section.note)}
           </div>
         )}
@@ -287,7 +287,7 @@ export default function EntretienPage() {
             {sub.items && renderComparisonTable(sub.items)}
 
             {sub.note && (
-              <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-foreground">
+              <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 italic shadow-sm">
                 {renderNote(sub.note)}
               </div>
             )}
@@ -314,7 +314,7 @@ export default function EntretienPage() {
           alt="Label Moto Watermark"
           width={800}
           height={256}
-          className="opacity-[0.05] rotate-[-15deg] scale-150"
+          className="opacity-[0.08] rotate-[-15deg] scale-150"
         />
       </div>
 
@@ -455,7 +455,7 @@ export default function EntretienPage() {
                           ))}
                         </div>
                         <div className="flex justify-end items-center mt-8">
-                          <p className="text-lg font-bold text-foreground relative z-10">L'équipe Label Moto</p>
+                          <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
                           <Image 
                             src="/images/Stamp-LM.png?v=2" 
                             alt="Signature" 

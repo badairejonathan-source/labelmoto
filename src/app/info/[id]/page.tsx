@@ -50,50 +50,51 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const renderNote = (note: string) => {
     if (!note) return null;
     
-    // Guide budget
+    // Guide budget (ID 4)
     const budgetTrigger = "notre guide sur le coût réel d’une moto par mois";
     const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
+    const preventionTrigger = "Vérifie AVANT l’achat pour éviter les mauvaises surprises";
     
     if (note.includes(budgetTrigger)) {
       const parts = note.split(budgetTrigger);
       return (
-        <>
+        <span className="text-foreground">
           {parts[0]}
           <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
             Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
-        </>
+        </span>
       );
     }
 
     if (note.includes(budgetTrigger2)) {
       const parts = note.split(budgetTrigger2);
       return (
-        <>
+        <span className="text-foreground">
           {parts[0]}
           <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
             Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
-        </>
+        </span>
       );
     }
 
-    // Note spécifique achat occasion
-    if (note.includes("Vérifie AVANT l’achat pour éviter les mauvaises surprises")) {
-        const parts = note.split("Vérifie AVANT l’achat pour éviter les mauvaises surprises");
+    if (note.includes(preventionTrigger)) {
+        const parts = note.split(preventionTrigger);
         return (
-            <>
-                👉 Vérifie AVANT l’achat pour éviter les mauvaises surprises.{" "}
+            <span className="text-foreground">
+                👉 {preventionTrigger}.{" "}
                 <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
                     Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
-                </Link>.
-            </>
+                </Link>
+                {parts[1]}
+            </span>
         );
     }
 
-    return note;
+    return <span className="text-foreground">{note}</span>;
   };
 
   const renderTable = (tableData: any) => {
@@ -180,7 +181,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const renderSection = (section: any, idx: number) => {
-    // Si la section est un bloc de comparaison
+    // Check if section itself is an item of a comparison
     if (section.items && Array.isArray(section.items)) {
       return (
         <div key={idx} className="mb-12">
@@ -209,7 +210,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {section.table && renderTable(section.table)}
         
         {section.note && (
-          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-foreground rounded-r-lg">
+          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm">
             {renderNote(section.note)}
           </div>
         )}
@@ -237,7 +238,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 {sub.items && renderComparisonTable(sub.items)}
 
                 {sub.note && (
-                  <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-foreground">
+                  <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 italic shadow-sm">
                     {renderNote(sub.note)}
                   </div>
                 )}
@@ -388,7 +389,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                           )}
                         </div>
                         <div className="flex justify-end items-center mt-8">
-                          <p className="text-lg font-bold text-foreground relative z-10">L'équipe Label Moto</p>
+                          <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
                           <Image 
                             src="/images/Stamp-LM.png?v=2" 
                             alt="Signature" 
