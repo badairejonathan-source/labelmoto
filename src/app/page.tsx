@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -34,7 +35,6 @@ export default function LandingPage() {
         }
     };
 
-    // Helper correction : Mapping de l'image avec fallback robuste
     const getArticleImage = (article: any) => {
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         const id = (article.id || '').toLowerCase();
@@ -53,7 +53,7 @@ export default function LandingPage() {
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
                 onSearch={handleSearch}
-                placeholderText="Recherche par nom, ville, departement"
+                placeholderText="Trouver une concession, une ville, une marque..."
             />
             <main className="py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">

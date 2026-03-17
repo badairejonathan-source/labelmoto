@@ -116,7 +116,6 @@ function MapPageComponent() {
   const [ratingFilter, setRatingFilter] = useState<number>(0);
   const { firestore } = useFirebase();
 
-  // Articles pour les publicités dans la liste
   const articlesRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
   const { data: articlesForAds } = useCollection(articlesRef);
   
@@ -474,7 +473,7 @@ function MapPageComponent() {
 
   return (
     <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
-      <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Rechercher un pro, un article..." />
+      <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Trouver une concession, une ville, une marque..." />
       
       <div className="flex-1 flex overflow-hidden relative">
         {!isMobile && (

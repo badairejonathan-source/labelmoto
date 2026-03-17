@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -67,7 +68,6 @@ function InfoPageComponent() {
     const searchParam = searchParams.get('search');
     
     const [searchTerm, setSearchTerm] = useState(searchParam || '');
-    const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
 
     const firestore = useFirestore();
     const articlesRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
@@ -75,13 +75,12 @@ function InfoPageComponent() {
 
     const handleSearchTermChange = (newTerm: string) => {
         setSearchTerm(newTerm);
-        if (newTerm.trim() === '') {
-            setSubmittedSearchTerm('');
-        }
     };
 
     const handleSearch = () => {
-        setSubmittedSearchTerm(searchTerm);
+        if (searchTerm.trim() !== '') {
+            router.push(`/map?search=${encodeURIComponent(searchTerm)}`);
+        }
     };
 
     const handleFilterChange = (filter: 'shopping' | 'service') => {
@@ -89,26 +88,14 @@ function InfoPageComponent() {
     };
     
     useEffect(() => {
-        setSubmittedSearchTerm(searchParam || '');
         setSearchTerm(searchParam || '');
     }, [searchParam]);
 
     const filteredArticles = React.useMemo(() => {
         if (!allArticles) return [];
-        
         const EXCLUDED_ARTICLE_ID = 'entretien-moto-intervalles-prix-conseils-par-modele';
-        let results = allArticles.filter(a => a.id !== EXCLUDED_ARTICLE_ID);
-
-        if (submittedSearchTerm && submittedSearchTerm.trim() !== '') {
-            const lowerCaseSearch = submittedSearchTerm.toLowerCase();
-            results = results.filter(article => 
-                (article.display_title || article.title || "").toLowerCase().includes(lowerCaseSearch) ||
-                (article.description || "").toLowerCase().includes(lowerCaseSearch) ||
-                (article.author || "").toLowerCase().includes(lowerCaseSearch)
-            );
-        }
-        return results;
-    }, [allArticles, submittedSearchTerm]);
+        return allArticles.filter(a => a.id !== EXCLUDED_ARTICLE_ID);
+    }, [allArticles]);
 
     return (
         <div className="bg-background min-h-screen">
@@ -118,7 +105,7 @@ function InfoPageComponent() {
                 onSearch={handleSearch}
                 activeFilter={null}
                 onFilterChange={handleFilterChange}
-                placeholderText="Rechercher un article..."
+                placeholderText="Trouver une concession, une ville, une marque..."
             />
             <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
                 <Image

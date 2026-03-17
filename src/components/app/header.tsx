@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -153,7 +152,7 @@ const Header: React.FC<HeaderProps> = ({
     className, 
     activeFilter = null, 
     onFilterChange, 
-    placeholderText = "Recherche par nom, ville, departement" 
+    placeholderText = "Trouver une concession, une ville, une marque..." 
 }) => {
   const router = useRouter();
   const firestore = useFirestore();
@@ -207,7 +206,6 @@ const Header: React.FC<HeaderProps> = ({
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
     
-    // Détection de si la saisie est une marque exacte (insensible au tiret/espace)
     const isStrictBrand = brandsList.some(b => {
         const normalizedBrand = b.toLowerCase().replace(/[\s-]/g, '');
         return normalizedBrand === normalizedTerm;
@@ -215,7 +213,6 @@ const Header: React.FC<HeaderProps> = ({
 
     const results: Suggestion[] = [];
 
-    // 1. Détection des marques pour prédiction et suggestions
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
     let bestBrandMatch: string | null = null;
 
@@ -232,7 +229,6 @@ const Header: React.FC<HeaderProps> = ({
         }
     });
 
-    // 2. Détection "Marque + Localisation"
     if (bestBrandMatch) {
         const normalizedBrandMatch = bestBrandMatch.toLowerCase().replace(/[\s-]/g, '');
         const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
@@ -256,7 +252,6 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
-    // 3. Localisations seules
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (normalizedDept.includes(normalizedTerm)) {
@@ -283,7 +278,6 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 4. Concessions
     const filteredDealers = allDealers.filter(d => {
         const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
         const normalizedSubLabel = d.subLabel?.toLowerCase().replace(/[\s-]/g, '') || '';
@@ -294,7 +288,6 @@ const Header: React.FC<HeaderProps> = ({
     const uniqueResults = results.filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     setSuggestions(uniqueResults.slice(0, 8));
 
-    // Définition de la prédiction ( Ghost Text )
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
         const brandMatch = bestBrandMatch;
         const matchLabel = brandMatch;
