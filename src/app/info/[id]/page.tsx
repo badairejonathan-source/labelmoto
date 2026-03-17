@@ -52,28 +52,28 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     
     // Guide budget
     const budgetTrigger = "notre guide sur le coût réel d’une moto par mois";
+    const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
+    
     if (note.includes(budgetTrigger)) {
       const parts = note.split(budgetTrigger);
       return (
         <>
           {parts[0]}
-          <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
-            {budgetTrigger}
+          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+            Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
         </>
       );
     }
 
-    // Guide budget (variante texte)
-    const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
     if (note.includes(budgetTrigger2)) {
       const parts = note.split(budgetTrigger2);
       return (
         <>
           {parts[0]}
-          <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
-            {budgetTrigger2}
+          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+            Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
         </>
@@ -82,11 +82,12 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
     // Note spécifique achat occasion
     if (note.includes("Vérifie AVANT l’achat pour éviter les mauvaises surprises")) {
+        const parts = note.split("Vérifie AVANT l’achat pour éviter les mauvaises surprises");
         return (
             <>
                 👉 Vérifie AVANT l’achat pour éviter les mauvaises surprises.{" "}
-                <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
-                    Anticipe ton budget ici
+                <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+                    Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
                 </Link>.
             </>
         );

@@ -119,8 +119,8 @@ export default function EntretienPage() {
       return (
         <>
           {parts[0]}
-          <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
-            {trigger}
+          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+            Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
         </>
@@ -132,8 +132,8 @@ export default function EntretienPage() {
       return (
         <>
           {parts[0]}
-          <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
-            {trigger2}
+          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+            Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant
           </Link>
           {parts[1]}
         </>
