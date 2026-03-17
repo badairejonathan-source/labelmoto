@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, ChevronDown, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
 
 import Header from '@/components/app/header';
@@ -26,39 +26,39 @@ const brandsData = [
   {
     name: "BMW",
     models: [
+      { id: "bmw-g310r-2021-plus", label: "G 310 R", tags: ["A2"] },
       { id: "bmw-f750-gs-f850-gs-2018-plus", label: "F 750 GS / F 850 GS", tags: ["A2 / Full"] },
       { id: "bmw-f900r-2020-plus", label: "F 900 R", tags: ["A2 / Full"] },
       { id: "bmw-r1250-gs-r1300-gs-2019-plus", label: "R 1250 GS / R 1300 GS" },
-      { id: "bmw-g310r-2021-plus", label: "G 310 R", tags: ["A2"] },
     ]
   },
   {
     name: "Honda",
     models: [
-      { id: "honda-cb1000-hornet-2025-plus", label: "CB1000 Hornet (2025+)" },
-      { id: "honda-cb500f-2022-plus", label: "CB500F", tags: ["A2"] },
-      { id: "honda-cb650r-2020-plus", label: "CB650R", tags: ["A2 / Full"] },
-      { id: "honda-cb750-hornet-2023-plus", label: "CB750 Hornet (2023+)" },
-      { id: "honda-cbr500r-2022-plus", label: "CBR500R", tags: ["A2"] },
-      { id: "honda-nx500-2024-plus", label: "NX500", tags: ["A2"] },
-      { id: "honda-xl750-transalp-2023-plus", label: "XL750 Transalp (2023+)" },
+      { id: "honda-cb500f-2022-plus", label: "CB 500 F", tags: ["A2"] },
+      { id: "honda-cbr500r-2022-plus", label: "CBR 500 R", tags: ["A2"] },
+      { id: "honda-nx500-2024-plus", label: "NX 500", tags: ["A2"] },
+      { id: "honda-cb650r-2020-plus", label: "CB 650 R", tags: ["A2 / Full"] },
+      { id: "honda-cb750-hornet-2023-plus", label: "CB 750 Hornet" },
+      { id: "honda-xl750-transalp-2023-plus", label: "XL 750 Transalp" },
+      { id: "honda-cb1000-hornet-2025-plus", label: "CB 1000 Hornet (2025+)" },
     ]
   },
   {
     name: "Kawasaki",
     models: [
-      { id: "kawasaki-z900-2020-plus", label: "Z900", tags: ["A2 / Full"] },
-      { id: "kawasaki-z650-2020-plus", label: "Z650", tags: ["A2 / Full"] },
       { id: "kawasaki-er6n-2012-plus", label: "ER-6n (2012+)" },
-      { id: "kawasaki-versys-650-2022-plus", label: "Versys 650 (2022+)", tags: ["A2 / Full"] },
+      { id: "kawasaki-z650-2020-plus", label: "Z 650", tags: ["A2 / Full"] },
+      { id: "kawasaki-versys-650-2022-plus", label: "Versys 650", tags: ["A2 / Full"] },
+      { id: "kawasaki-z900-2020-plus", label: "Z 900", tags: ["A2 / Full"] },
     ]
   },
   {
     name: "Suzuki",
     models: [
+      { id: "suzuki-sv650-2016-plus", label: "SV 650", tags: ["A2 / Full"] },
+      { id: "suzuki-v-strom-650-2017-plus", label: "V-Strom 650", tags: ["A2 / Full"] },
       { id: "suzuki-gsx-8s-2023-plus", label: "GSX-8S", tags: ["A2 / Full"] },
-      { id: "suzuki-sv650-2016-plus", label: "SV650", tags: ["A2 / Full"] },
-      { id: "suzuki-v-strom-650-2017-plus", label: "V-Strom 650 (2017+)", tags: ["A2 / Full"] },
     ]
   },
   {
@@ -73,7 +73,7 @@ const brandsData = [
       { id: "yamaha-mt-03-2020-plus", label: "MT-03", tags: ["A2"] },
       { id: "yamaha-mt-07-2021-plus", label: "MT-07", tags: ["A2 / Full"] },
       { id: "yamaha-tracer-7-2021-plus", label: "Tracer 7", tags: ["A2 / Full"] },
-      { id: "yamaha-xsr700-2021-plus", label: "XSR700", tags: ["A2 / Full"] },
+      { id: "yamaha-xsr700-2021-plus", label: "XSR 700", tags: ["A2 / Full"] },
       { id: "yamaha-r7-2022-plus", label: "YZF-R7", tags: ["A2 / Full"] },
     ]
   }
@@ -106,6 +106,23 @@ export default function EntretienPage() {
 
   const handleFilterChange = (filter: 'shopping' | 'service') => {
     router.push(`/map?filter=${filter}`);
+  };
+
+  const renderNote = (note: string) => {
+    const trigger = "notre guide sur le coût réel d’une moto par mois";
+    if (note.includes(trigger)) {
+      const parts = note.split(trigger);
+      return (
+        <>
+          {parts[0]}
+          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+            {trigger}
+          </Link>
+          {parts[1]}
+        </>
+      );
+    }
+    return note;
   };
 
   const renderTable = (tableData: any) => {
@@ -159,8 +176,8 @@ export default function EntretienPage() {
       {section.table && renderTable(section.table)}
       
       {section.note && (
-        <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-brand-foreground/80 rounded-r-lg">
-          {section.note}
+        <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-foreground rounded-r-lg">
+          {renderNote(section.note)}
         </div>
       )}
 
@@ -183,8 +200,8 @@ export default function EntretienPage() {
           {sub.table && renderTable(sub.table)}
 
           {sub.note && (
-            <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-muted-foreground">
-              {sub.note}
+            <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-foreground">
+              {renderNote(sub.note)}
             </div>
           )}
         </div>
@@ -344,9 +361,11 @@ export default function EntretienPage() {
                           <Info className="h-6 w-6 text-brand" />
                           <h3 className="text-2xl font-black uppercase m-0">Le mot de la fin</h3>
                         </div>
-                        {article.conclusion.map((line: string, i: number) => (
-                          <p key={i} className="text-lg text-foreground/80 leading-relaxed mb-4">{line}</p>
-                        ))}
+                        <div className="space-y-4">
+                          {article.conclusion.map((line: string, i: number) => (
+                            <p key={i} className="text-lg text-foreground/80 leading-relaxed">{line}</p>
+                          ))}
+                        </div>
                         <div className="flex justify-end items-center mt-8">
                           <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
                           <Image 
