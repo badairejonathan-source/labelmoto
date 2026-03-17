@@ -109,19 +109,37 @@ export default function EntretienPage() {
   };
 
   const renderNote = (note: string) => {
+    if (!note) return null;
+    
     const trigger = "notre guide sur le coût réel d’une moto par mois";
+    const trigger2 = "notre guide sur le coût moyen d’une moto par mois";
+    
     if (note.includes(trigger)) {
       const parts = note.split(trigger);
       return (
         <>
           {parts[0]}
-          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+          <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
             {trigger}
           </Link>
           {parts[1]}
         </>
       );
     }
+
+    if (note.includes(trigger2)) {
+      const parts = note.split(trigger2);
+      return (
+        <>
+          {parts[0]}
+          <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
+            {trigger2}
+          </Link>
+          {parts[1]}
+        </>
+      );
+    }
+
     return note;
   };
 
