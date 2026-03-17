@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Map, Wrench, Info, CheckCircle2, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Map, Wrench, Info, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 import Header from '@/components/app/header';
@@ -18,6 +19,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 const brandsData = [
   {
@@ -70,32 +73,13 @@ const brandsData = [
   }
 ];
 
-const articleContent = {
-  title: "Entretien moto : intervalles, prix et conseils par modèle",
-  intro: "Trouvez rapidement les intervalles d’entretien, le prix des révisions et les points de fiabilité de votre moto. Un suivi rigoureux garantit la longévité de votre machine et sa valeur à la revente.",
-  sections: [
-    {
-      title: "Pourquoi suivre l'entretien ?",
-      text: "Une moto demande un suivi plus rigoureux qu’une voiture. Le moteur tourne à des régimes plus élevés, les consommables s'usent plus vite et les organes de sécurité sont vitaux. Respecter les préconisations constructeur est essentiel pour votre sécurité."
-    },
-    {
-      title: "Intervalles types de maintenance",
-      table: {
-        headers: ["Élément", "Fréquence conseillée"],
-        rows: [
-          ["Vidange moteur", "Tous les 10 000 km ou 1 an"],
-          ["Kit chaîne", "Graissage tous les 500 km"],
-          ["Pneus", "Selon usure (moyenne 10 000 km)"],
-          ["Jeu aux soupapes", "Tous les 24 000 ou 40 000 km"]
-        ]
-      }
-    }
-  ]
-};
-
 export default function EntretienPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const firestore = useFirestore();
+  const articleRef = useMemoFirebase(() => doc(firestore, 'advicePosts', 'entretien-moto-intervalles-prix-conseils-par-modele'), [firestore]);
+  const { data: article, isLoading: isArticleLoading } = useDoc(articleRef);
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -105,6 +89,67 @@ export default function EntretienPage() {
 
   const handleFilterChange = (filter: 'shopping' | 'service') => {
     router.push(`/map?filter=${filter}`);
+  };
+
+  const renderArticleContent = () => {
+    if (!article || !article.content) return null;
+
+    return article.content.map((block: any, index: number) => {
+      switch (block.type) {
+        case 'heading':
+          return <h2 key={index} className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{block.text}</h2>;
+        case 'paragraph':
+          return <p key={index} className="text-lg text-foreground/80 leading-relaxed mb-6" dangerouslySetInnerHTML={block.html ? { __html: block.html } : undefined}>{block.text}</p>;
+        case 'list':
+          return (
+            <ul key={index} className="list-disc list-inside space-y-3 mb-8 pl-4">
+              {block.items?.map((item: string, i: number) => (
+                <li key={i} className="text-lg text-foreground/80" dangerouslySetInnerHTML={{ __html: item }} />
+              ))}
+            </ul>
+          );
+        case 'table':
+          return (
+            <div key={index} className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
+              <Table>
+                <TableHeader className="bg-muted/50">
+                  <TableRow>
+                    {block.headers?.map((h: string, i: number) => (
+                      <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {block.rows?.map((row: string[], ri: number) => (
+                    <TableRow key={ri} className="hover:bg-muted/30">
+                      {row.map((cell: string, ci: number) => (
+                        <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{cell}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          );
+        case 'signature':
+          return (
+            <div key={index} className="flex justify-end items-center mt-8">
+              <p className="text-lg font-bold text-foreground/90 relative z-10">{block.text}</p>
+              {block.imageUrl && (
+                <Image 
+                  src={block.imageUrl} 
+                  alt="Signature" 
+                  width={120} 
+                  height={120}
+                  className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
+                />
+              )}
+            </div>
+          );
+        default:
+          return null;
+      }
+    });
   };
 
   return (
@@ -145,7 +190,6 @@ export default function EntretienPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* Main Column: Sheets Grid */}
             <div className="lg:col-span-8 space-y-12">
               {brandsData.map((brand) => (
                 <section key={brand.name}>
@@ -177,55 +221,31 @@ export default function EntretienPage() {
                 </section>
               ))}
 
-              {/* Informative Article Section */}
               <div className="pt-16 border-t border-border/50">
-                <article className="prose prose-neutral dark:prose-invert max-w-none">
-                  <div className="flex items-center gap-3 mb-6">
-                    <Info className="h-8 w-8 text-brand" />
-                    <h2 className="text-3xl font-black uppercase tracking-tight m-0">{articleContent.title}</h2>
+                {isArticleLoading ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                    <Loader2 className="h-10 w-10 animate-spin mb-4" />
+                    <p className="font-bold uppercase tracking-widest text-xs">Chargement de l'article conseils...</p>
                   </div>
-                  <p className="text-lg leading-relaxed text-muted-foreground mb-12 italic border-l-4 border-brand pl-6">
-                    {articleContent.intro}
-                  </p>
-
-                  <div className="space-y-12">
-                    {articleContent.sections.map((section, idx) => (
-                      <div key={idx}>
-                        <h3 className="text-xl font-bold uppercase tracking-wide mb-4 flex items-center gap-2">
-                          <CheckCircle2 className="h-5 w-5 text-brand" />
-                          {section.title}
-                        </h3>
-                        {section.text && <p className="text-base text-foreground/80 leading-relaxed mb-6">{section.text}</p>}
-                        {section.table && (
-                          <div className="my-6 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
-                            <Table>
-                              <TableHeader className="bg-muted/50">
-                                <TableRow>
-                                  {section.table.headers.map((h, i) => (
-                                    <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
-                                  ))}
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {section.table.rows.map((row, ri) => (
-                                  <TableRow key={ri} className="hover:bg-muted/30">
-                                    {row.map((cell, ci) => (
-                                      <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{cell}</TableCell>
-                                    ))}
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </article>
+                ) : article ? (
+                  <article className="prose prose-neutral dark:prose-invert max-w-none">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Info className="h-8 w-8 text-brand" />
+                      <h2 className="text-3xl font-black uppercase tracking-tight m-0">{article.title}</h2>
+                    </div>
+                    {article.description && (
+                      <p className="text-lg leading-relaxed text-muted-foreground mb-12 italic border-l-4 border-brand pl-6">
+                        {article.description}
+                      </p>
+                    )}
+                    <div className="space-y-4">
+                      {renderArticleContent()}
+                    </div>
+                  </article>
+                ) : null}
               </div>
             </div>
 
-            {/* Sidebar: Map CTA */}
             <aside className="lg:col-span-4 relative">
                 <div className="md:sticky md:top-28 space-y-6">
                     <Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20">
