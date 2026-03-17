@@ -62,6 +62,12 @@ const brandsData = [
     ]
   },
   {
+    name: "Triumph",
+    models: [
+      { id: "triumph-trident-660-2021-plus", label: "Trident 660", tags: ["A2 / Full"] },
+    ]
+  },
+  {
     name: "Yamaha",
     models: [
       { id: "yamaha-mt-03-2020-plus", label: "MT-03", tags: ["A2"] },
@@ -105,7 +111,6 @@ export default function EntretienPage() {
   const renderTable = (tableData: any) => {
     if (!tableData) return null;
     
-    // Support standard structure (headers/rows) or custom budget structure
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
 
