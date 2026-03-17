@@ -131,9 +131,9 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     );
   };
 
-  const renderComparisonCard = (item: any) => {
+  const renderComparisonCard = (item: any, idx: number) => {
     return (
-      <Card key={item.title} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm">
+      <Card key={idx} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm">
         <CardHeader className="bg-muted/30 py-4 border-b">
           <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground text-center">
             {item.title}
@@ -177,13 +177,15 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (!items || items.length === 0) return null;
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-        {items.map((item) => renderComparisonCard(item))}
+        {items.map((item, idx) => renderComparisonCard(item, idx))}
       </div>
     );
   };
 
   const renderSection = (section: any, idx: number) => {
-    // Si la section contient des items de comparaison directs
+    // Check if this section has subsections that are comparison items
+    const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
+
     if (section.items && Array.isArray(section.items)) {
       return (
         <div key={idx} className="mb-12">
@@ -213,43 +215,19 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         
         {section.note && renderNote(section.note)}
 
-        {section.subsections && Array.isArray(section.subsections) && (
-          <div className="space-y-6">
-            {section.subsections.map((sub: any, si: number) => {
-              // Vérifier si la sous-section est elle-même un conteneur de comparaison
-              if (sub.items && Array.isArray(sub.items)) {
-                return (
-                  <div key={si} className="mt-8">
-                    {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground">{sub.title}</h3>}
-                    {renderComparisonGrid(sub.items)}
-                  </div>
-                );
-              }
-
-              return (
-                <div key={si} className="ml-0 md:ml-6 mt-8 p-6 bg-muted/20 rounded-2xl border border-border/50">
-                  {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground">{sub.title}</h3>}
-                  
-                  {sub.content && Array.isArray(sub.content) && sub.content.map((p: string, spi: number) => (
-                    <p key={spi} className="text-base text-foreground font-medium leading-relaxed mb-4">{p}</p>
-                  ))}
-
-                  {sub.list && Array.isArray(sub.list) && (
-                    <ul className="list-disc list-inside space-y-2 mb-6 pl-4">
-                      {sub.list.map((item: string, sli: number) => (
-                        <li key={sli} className="text-base text-foreground font-bold">{item}</li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {sub.table && renderTable(sub.table)}
-                  
-                  {sub.note && renderNote(sub.note)}
-                </div>
-              );
-            })}
-          </div>
+        {hasComparisonSubsections ? (
+            <div className="mt-8">
+                {renderComparisonGrid(section.subsections)}
+            </div>
+        ) : (
+            section.subsections && Array.isArray(section.subsections) && (
+              <div className="space-y-6">
+                {section.subsections.map((sub: any, si: number) => renderSection(sub, si))}
+              </div>
+            )
         )}
+
+        {section.conclusion && <p className="text-lg text-foreground font-medium mt-6 italic border-l-4 border-muted pl-4">{section.conclusion}</p>}
       </div>
     );
   };
