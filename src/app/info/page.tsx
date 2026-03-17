@@ -14,8 +14,16 @@ import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 
 const ArticleCard = ({ article }: { article: any }) => {
-    // Utilisation de l'image de l'article ou d'un fallback élégant
-    const imageUrl = article.imageUrl || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
+    // Correction : Mapping de l'image locale si manquante dans Firestore
+    const imageUrl = React.useMemo(() => {
+        if (article.imageUrl) return article.imageUrl;
+        const id = article.id?.toLowerCase() || '';
+        if (id.includes('pieges') || id.includes('occasion')) return "/images/evitelespieges.jpg";
+        if (id.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+        if (id.includes('a2')) return "/images/achat-occasion.jpg";
+        return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
+    }, [article]);
+
     const title = article.display_title || article.title || "Sans titre";
 
     return (
@@ -86,7 +94,6 @@ function InfoPageComponent() {
     const filteredArticles = React.useMemo(() => {
         if (!allArticles) return [];
         
-        // Exclure l'article guide d'entretien de la liste générale car il a sa propre section
         const EXCLUDED_ARTICLE_ID = 'entretien-moto-intervalles-prix-conseils-par-modele';
         let results = allArticles.filter(a => a.id !== EXCLUDED_ARTICLE_ID);
 

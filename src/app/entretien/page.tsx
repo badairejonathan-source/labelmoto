@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, Plus, Minus, HelpCircle, AlertTriangle } from 'lucide-react';
@@ -114,9 +114,15 @@ export default function EntretienPage() {
     router.push(`/map?filter=${filter}`);
   };
 
+  // Correction : Mapping de l'image locale si manquante dans Firestore
+  const imageUrl = useMemo(() => {
+    if (article?.imageUrl) return article.imageUrl;
+    return "/images/achat-occasion.jpg"; // Placeholder pour l'entretien
+  }, [article]);
+
   const renderNote = (note: string) => {
     if (!note) return null;
-    
+    const budgetId = "4";
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
     const budgetTrigger = "notre guide sur le coût réel d’une moto par mois";
     const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
@@ -129,7 +135,7 @@ export default function EntretienPage() {
       content = (
         <>
           {parts[0]}
-          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+          <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
             {budgetArticleTitle}
           </Link>
           {parts[1]}
@@ -140,7 +146,7 @@ export default function EntretienPage() {
       content = (
         <>
           {parts[0]}
-          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+          <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
             {budgetArticleTitle}
           </Link>
           {parts[1]}
@@ -151,7 +157,7 @@ export default function EntretienPage() {
         content = (
             <>
                 👉 {preventionTrigger}.{" "}
-                <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+                <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
                     {budgetArticleTitle}
                 </Link>
                 {parts[1]}
@@ -184,7 +190,7 @@ export default function EntretienPage() {
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              const rowValues = Array.isArray(row) ? row : headers.map((header: string) => {
+              const rowValues = headers.map((header: string) => {
                 const slug = header.toLowerCase()
                   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                   .replace(/[^a-z0-9]/g, '_')
@@ -264,6 +270,7 @@ export default function EntretienPage() {
   };
 
   const renderSection = (section: any, idx: number) => {
+    const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
 
     return (
@@ -289,6 +296,10 @@ export default function EntretienPage() {
         {hasComparisonSubsections ? (
             <div className="mt-8">
                 {renderComparisonGrid(section.subsections)}
+            </div>
+        ) : hasComparisonData ? (
+            <div className="mt-8">
+                {renderComparisonGrid([section])}
             </div>
         ) : (
             section.subsections && Array.isArray(section.subsections) && (
@@ -422,16 +433,14 @@ export default function EntretienPage() {
                       </h2>
                     </div>
 
-                    {article.imageUrl && (
-                      <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-12 shadow-xl border-4 border-white bg-muted">
-                        <Image
-                          src={article.imageUrl}
-                          alt={article.display_title || article.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
+                    <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-12 shadow-xl border-4 border-white bg-muted">
+                      <Image
+                        src={imageUrl}
+                        alt={article.display_title || article.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
 
                     <div className="mb-12">
                       {article.intro && Array.isArray(article.intro) && article.intro.map((p: string, i: number) => (

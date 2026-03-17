@@ -35,6 +35,16 @@ export default function LandingPage() {
         }
     };
 
+    // Helper correction : Mapping de l'image locale si manquante dans Firestore
+    const getArticleImage = (article: any) => {
+        if (article.imageUrl) return article.imageUrl;
+        const id = article.id?.toLowerCase() || '';
+        if (id.includes('pieges') || id.includes('occasion')) return "/images/evitelespieges.jpg";
+        if (id.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+        if (id.includes('a2')) return "/images/achat-occasion.jpg";
+        return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
+    };
+
     return (
         <div className="min-h-screen bg-background">
             <Header 
@@ -160,7 +170,7 @@ export default function LandingPage() {
                                     >
                                         <div className="relative aspect-video overflow-hidden bg-muted">
                                             <Image
-                                                src={article.imageUrl || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"}
+                                                src={getArticleImage(article)}
                                                 alt={article.display_title || article.title}
                                                 fill
                                                 className="object-cover transition-transform duration-700 group-hover:scale-110"

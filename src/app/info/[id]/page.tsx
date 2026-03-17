@@ -118,7 +118,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              // Logic to map row data to headers dynamically to prevent column mixing
               const rowValues = headers.map((header: string) => {
                 const slug = header.toLowerCase()
                   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -199,7 +198,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const renderSection = (section: any, idx: number) => {
-    // Check if this section or its subsections contain comparison data (strengths/weaknesses)
     const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
 
@@ -265,7 +263,15 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  const imageUrl = article.imageUrl || "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
+  // Correction : Mapping de l'image locale si manquante dans Firestore
+  const imageUrl = useMemo(() => {
+    if (article.imageUrl) return article.imageUrl;
+    const articleId = article.id || id;
+    if (articleId.includes('pieges') || articleId.includes('occasion')) return "/images/evitelespieges.jpg";
+    if (articleId.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+    if (articleId.includes('a2')) return "/images/achat-occasion.jpg";
+    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
+  }, [article, id]);
 
   return (
     <div className="bg-background min-h-screen">
