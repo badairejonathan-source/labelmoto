@@ -68,13 +68,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
-  // Déterminer si les coordonnées GPS sont valides
   const hasValidGPS = dealership.latitude !== undefined && 
                      dealership.longitude !== undefined && 
                      !isNaN(dealership.latitude) && 
                      !isNaN(dealership.longitude);
 
-  // Handle automatic opening of reviews tab if coming from login redirect
   useEffect(() => {
     const view = searchParams.get('view');
     const selectedId = searchParams.get('selectedId');
@@ -83,7 +81,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
   }, [searchParams, dealership.id]);
 
-  // Approved comments for this dealership
   const commentsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return collection(firestore, 'concessions', dealership.id, 'comments');
@@ -103,14 +100,22 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const handleToggleHours = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setShowHours(!showHours);
-    if (showReviews) setShowReviews(false);
+    if (showHours) {
+      setShowHours(false);
+    } else {
+      setShowHours(true);
+      setShowReviews(false);
+    }
   };
 
   const handleToggleReviews = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setShowReviews(!showReviews);
-    if (showHours) setShowHours(false);
+    if (showReviews) {
+      setShowReviews(false);
+    } else {
+      setShowReviews(true);
+      setShowHours(false);
+    }
   };
 
   const handleOpenReviewDialog = (e: React.MouseEvent) => {
@@ -231,7 +236,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       >
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
           
-          <div className="flex flex-1 flex-row items-stretch bg-card min-w-0">
+          {/* Main Content Area */}
+          <div className="flex flex-1 flex-row items-stretch bg-card min-w-0 pr-8 md:pr-10">
             <div
               onClick={handleImageClick}
               className={cn(
@@ -350,39 +356,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
+          {/* Sliding Panels (Behind Buttons) */}
           <div className={cn(
-            "absolute inset-y-0 right-0 z-30 flex transition-transform duration-500 ease-in-out w-full",
-            (showHours || showReviews) ? "translate-x-0" : "translate-x-[calc(100%-32px)] md:translate-x-[calc(100%-40px)]"
+            "absolute inset-y-0 left-0 right-8 md:right-10 z-30 transition-transform duration-500 ease-in-out bg-background border-r border-border/50 shadow-[-10px_0_30px_rgba(0,0,0,0.1)]",
+            (showHours || showReviews) ? "translate-x-0" : "translate-x-[105%]"
           )}>
-            <div className="flex flex-col h-full flex-none">
-                <div 
-                    onClick={handleToggleHours}
-                    className={cn(
-                        "flex-1 w-8 md:w-10 flex flex-col items-center justify-center border-l-2 border-brand cursor-pointer transition-all",
-                        showHours ? "bg-white/30 backdrop-blur-md" : "bg-brand/5 hover:bg-brand/10 border-b border-white/20"
-                    )}
-                >
-                    <ChevronLeft className={cn("h-4 w-4 text-brand transition-transform", showHours && "rotate-180")} />
-                    <span className="text-[8px] md:text-[9px] font-black text-brand tracking-tighter uppercase whitespace-nowrap mt-2" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-                        HORAIRES
-                    </span>
-                </div>
-                <div 
-                    onClick={handleToggleReviews}
-                    className={cn(
-                        "flex-1 w-8 md:w-10 flex flex-col items-center justify-center border-l-2 border-blue-500 cursor-pointer transition-all",
-                        showReviews ? "bg-white/30 backdrop-blur-md" : "bg-blue-500/5 hover:bg-blue-500/10"
-                    )}
-                >
-                    <ChevronLeft className={cn("h-4 w-4 text-blue-500 transition-transform", showReviews && "rotate-180")} />
-                    <span className="text-[8px] md:text-[9px] font-black text-blue-500 tracking-tighter uppercase whitespace-nowrap mt-2" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-                        AVIS
-                    </span>
-                </div>
-            </div>
-
             {showHours && (
-                <div className="flex-1 bg-background/95 backdrop-blur-sm p-3 md:p-4 flex flex-col justify-center border-l shadow-xl overflow-hidden">
+                <div className="h-full w-full bg-background/98 backdrop-blur-md p-3 md:p-4 flex flex-col justify-center overflow-hidden">
                     <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-8 gap-y-0.5 text-[10px] sm:text-xs md:text-sm max-w-md mx-auto w-full">
                         {weekDays.map(day => {
                             const hours = dealership[day as keyof Dealership];
@@ -399,7 +379,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             )}
 
             {showReviews && (
-                <div className="flex-1 bg-background/95 backdrop-blur-sm pt-1 px-4 pb-4 md:pt-2 md:px-6 md:pb-6 flex flex-col border-l shadow-xl overflow-hidden">
+                <div className="h-full w-full bg-background/98 backdrop-blur-md pt-1 px-4 pb-4 md:pt-2 md:px-6 md:pb-6 flex flex-col overflow-hidden">
                     <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar mt-2">
                         {isCommentsLoading ? (
                             <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-blue-500" /></div>
@@ -441,6 +421,35 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 </div>
             )}
           </div>
+
+          {/* Action Buttons Strip (Fixed at Right) */}
+          <div className="absolute inset-y-0 right-0 w-8 md:w-10 z-40 flex flex-col h-full bg-card border-l border-border/50 shadow-[-4px_0_10px_rgba(0,0,0,0.05)]">
+              <button 
+                  onClick={handleToggleHours}
+                  className={cn(
+                      "flex-1 flex flex-col items-center justify-center transition-all duration-300 border-b border-border/50 focus:outline-none",
+                      showHours ? "bg-brand text-brand-foreground" : "bg-brand/5 hover:bg-brand/10 text-brand"
+                  )}
+              >
+                  <ChevronLeft className={cn("h-4 w-4 transition-transform duration-500", showHours && "rotate-180")} />
+                  <span className="text-[8px] md:text-[9px] font-black tracking-tighter uppercase whitespace-nowrap mt-2" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                      HORAIRES
+                  </span>
+              </button>
+              <button 
+                  onClick={handleToggleReviews}
+                  className={cn(
+                      "flex-1 flex flex-col items-center justify-center transition-all duration-300 focus:outline-none",
+                      showReviews ? "bg-blue-600 text-white" : "bg-blue-500/5 hover:bg-blue-500/10 text-blue-500"
+                  )}
+              >
+                  <ChevronLeft className={cn("h-4 w-4 transition-transform duration-500", showReviews && "rotate-180")} />
+                  <span className="text-[8px] md:text-[9px] font-black tracking-tighter uppercase whitespace-nowrap mt-2" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                      AVIS
+                  </span>
+              </button>
+          </div>
+
         </div>
       </Card>
     </>
