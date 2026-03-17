@@ -80,7 +80,6 @@ export default function EntretienPage() {
   const firestore = useFirestore();
   const articleId = 'entretien-moto-intervalles-prix-conseils-par-modele';
   
-  // On tente de récupérer l'article dans la collection 'articles' comme spécifié
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', articleId), [firestore, articleId]);
   const { data: article, isLoading: isArticleLoading } = useDoc(articleRef);
 
@@ -95,64 +94,86 @@ export default function EntretienPage() {
   };
 
   const renderArticleContent = () => {
-    if (!article || !article.content || !Array.isArray(article.content)) return null;
+    if (!article) return null;
 
-    return article.content.map((block: any, index: number) => {
-      switch (block.type) {
-        case 'heading':
-          return <h2 key={index} className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{block.text}</h2>;
-        case 'paragraph':
-          return <p key={index} className="text-lg text-foreground/80 leading-relaxed mb-6" dangerouslySetInnerHTML={block.html ? { __html: block.html } : undefined}>{block.text}</p>;
-        case 'list':
-          return (
-            <ul key={index} className="list-disc list-inside space-y-3 mb-8 pl-4">
-              {block.items?.map((item: string, i: number) => (
-                <li key={i} className="text-lg text-foreground/80" dangerouslySetInnerHTML={{ __html: item }} />
-              ))}
-            </ul>
-          );
-        case 'table':
-          return (
-            <div key={index} className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    {block.headers?.map((h: string, i: number) => (
-                      <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {block.rows?.map((row: any[], ri: number) => (
-                    <TableRow key={ri} className="hover:bg-muted/30">
-                      {row.map((cell: string, ci: number) => (
-                        <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{cell}</TableCell>
+    // Récupération flexible du contenu (tableau ou texte brut)
+    const content = article.content || article.body || article.text;
+
+    if (!content) {
+      return <p className="text-muted-foreground italic">Le contenu de cet article est vide ou en attente de rédaction.</p>;
+    }
+
+    // Cas 1 : Le contenu est un tableau de blocs (format riche)
+    if (Array.isArray(content)) {
+      return content.map((block: any, index: number) => {
+        switch (block.type) {
+          case 'heading':
+            return <h2 key={index} className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{block.text}</h2>;
+          case 'paragraph':
+            return <p key={index} className="text-lg text-foreground/80 leading-relaxed mb-6" dangerouslySetInnerHTML={block.html ? { __html: block.html } : undefined}>{block.text}</p>;
+          case 'list':
+            return (
+              <ul key={index} className="list-disc list-inside space-y-3 mb-8 pl-4">
+                {block.items?.map((item: string, i: number) => (
+                  <li key={i} className="text-lg text-foreground/80" dangerouslySetInnerHTML={{ __html: item }} />
+                ))}
+              </ul>
+            );
+          case 'table':
+            return (
+              <div key={index} className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
+                <Table>
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      {block.headers?.map((h: string, i: number) => (
+                        <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
                       ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          );
-        case 'signature':
-          return (
-            <div key={index} className="flex justify-end items-center mt-8">
-              <p className="text-lg font-bold text-foreground/90 relative z-10">{block.text}</p>
-              {block.imageUrl && (
-                <Image 
-                  src={block.imageUrl} 
-                  alt="Signature" 
-                  width={120} 
-                  height={120}
-                  className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
-                />
-              )}
-            </div>
-          );
-        default:
-          return null;
-      }
-    });
+                  </TableHeader>
+                  <TableBody>
+                    {block.rows?.map((row: any[], ri: number) => (
+                      <TableRow key={ri} className="hover:bg-muted/30">
+                        {row.map((cell: string, ci: number) => (
+                          <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{cell}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            );
+          case 'signature':
+            return (
+              <div key={index} className="flex justify-end items-center mt-8">
+                <p className="text-lg font-bold text-foreground/90 relative z-10">{block.text}</p>
+                {block.imageUrl && (
+                  <Image 
+                    src={block.imageUrl} 
+                    alt="Signature" 
+                    width={120} 
+                    height={120}
+                    className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
+                  />
+                )}
+              </div>
+            );
+          default:
+            return null;
+        }
+      });
+    }
+
+    // Cas 2 : Le contenu est une chaîne de caractères (texte brut ou HTML)
+    if (typeof content === 'string') {
+      return (
+        <div 
+          className="text-lg text-foreground/80 leading-relaxed whitespace-pre-wrap"
+          dangerouslySetInnerHTML={{ __html: content }} 
+        />
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -248,8 +269,8 @@ export default function EntretienPage() {
                 ) : (
                   <div className="py-20 text-center border-2 border-dashed rounded-3xl bg-muted/10">
                     <Info className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-                    <p className="text-muted-foreground font-medium">L'article conseils est en cours de préparation ou introuvable.</p>
-                    <p className="text-[10px] text-muted-foreground/50 mt-2 uppercase tracking-widest">ID: {articleId}</p>
+                    <p className="text-muted-foreground font-medium">L'article conseils est introuvable dans la base de données.</p>
+                    <p className="text-[10px] text-muted-foreground/50 mt-2 uppercase tracking-widest">ID Recherché: {articleId}</p>
                   </div>
                 )}
               </div>
