@@ -15,15 +15,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/ui/table";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/ui/card';
-import { Button } from '@/ui/button';
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/ui/accordion";
+} from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -54,6 +54,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     const budgetTrigger = "notre guide sur le coût réel d’une moto par mois";
     const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
     const preventionTrigger = "Vérifie AVANT l’achat pour éviter les mauvaises surprises";
+    const budgetId = "4";
     
     let content: React.ReactNode = note;
 
@@ -62,7 +63,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       content = (
         <>
           {parts[0]}
-          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+          <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
             {budgetArticleTitle}
           </Link>
           {parts[1]}
@@ -73,7 +74,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       content = (
         <>
           {parts[0]}
-          <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+          <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
             {budgetArticleTitle}
           </Link>
           {parts[1]}
@@ -84,7 +85,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         content = (
             <>
                 👉 {preventionTrigger}.{" "}
-                <Link href="/info/4" className="text-brand font-black underline hover:text-foreground transition-colors">
+                <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
                     {budgetArticleTitle}
                 </Link>
                 {parts[1]}
@@ -117,7 +118,8 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              const rowValues = Array.isArray(row) ? row : headers.map((header: string) => {
+              // Logic to map row data to headers dynamically to prevent column mixing
+              const rowValues = headers.map((header: string) => {
                 const slug = header.toLowerCase()
                   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                   .replace(/[^a-z0-9]/g, '_')
@@ -161,7 +163,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6 flex-grow">
-              {item.strengths && Array.isArray(item.strengths) && (
+              {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (
                 <div className="space-y-3">
                   <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
                     <CheckCircle2 className="h-3 w-3" /> Avantages
@@ -175,7 +177,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                   </ul>
                 </div>
               )}
-              {item.weaknesses && Array.isArray(item.weaknesses) && (
+              {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (
                 <div className="space-y-3">
                   <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
                     <AlertTriangle className="h-3 w-3" /> Inconvénients
@@ -197,6 +199,8 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const renderSection = (section: any, idx: number) => {
+    // Check if this section or its subsections contain comparison data (strengths/weaknesses)
+    const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
 
     return (
@@ -222,6 +226,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {hasComparisonSubsections ? (
             <div className="mt-8">
                 {renderComparisonGrid(section.subsections)}
+            </div>
+        ) : hasComparisonData ? (
+            <div className="mt-8">
+                {renderComparisonGrid([section])}
             </div>
         ) : (
             section.subsections && Array.isArray(section.subsections) && (
@@ -288,12 +296,12 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-8">
               <article>
-                <div className="relative w-full aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted">
+                <div className="relative w-full aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
                   <Image
                     src={imageUrl}
                     alt={article.display_title || article.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                     priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
