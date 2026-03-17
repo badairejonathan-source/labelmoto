@@ -69,7 +69,7 @@ export default function LandingPage() {
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12 md:pb-20">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
                             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-4 uppercase leading-[0.95]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                                Du A2 au motard expérimenté : trouver les pros en quelques clics
+                                Du A2 au motard expérimenté : trouver les professionnels les plus proches en quelques clics
                             </h1>
                             <p className="text-sm md:text-lg max-w-3xl mx-auto md:mx-0 mb-4 md:mb-6 text-gray-200 font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit pour vous laisser plus de temps sur la route.
