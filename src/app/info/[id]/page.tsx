@@ -5,7 +5,7 @@ import React, { useState, use, useMemo } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle, AlertTriangle } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -97,57 +97,119 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     );
   };
 
-  const renderSection = (section: any, idx: number) => (
-    <div key={idx} className="mb-12">
-      {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-      
-      {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
-        <p key={pi} className="text-lg text-foreground/80 leading-relaxed mb-6">{p}</p>
-      ))}
+  const renderComparison = (item: any) => {
+    if (!item.strengths && !item.weaknesses) return null;
 
-      {section.list && Array.isArray(section.list) && (
-        <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
-          {section.list.map((item: string, li: number) => (
-            <li key={li} className="text-lg text-foreground/80">{item}</li>
-          ))}
-        </ul>
-      )}
-
-      {section.table && renderTable(section.table)}
-      
-      {section.note && (
-        <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-foreground rounded-r-lg">
-          {renderNote(section.note)}
-        </div>
-      )}
-
-      {section.subsections && Array.isArray(section.subsections) && section.subsections.map((sub: any, si: number) => (
-        <div key={si} className="ml-0 md:ml-6 mt-8 p-6 bg-muted/20 rounded-2xl border border-border/50">
-          {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground/90">{sub.title}</h3>}
-          
-          {sub.content && Array.isArray(sub.content) && sub.content.map((p: string, spi: number) => (
-            <p key={spi} className="text-base text-foreground/70 leading-relaxed mb-4">{p}</p>
-          ))}
-
-          {sub.list && Array.isArray(sub.list) && (
-            <ul className="list-disc list-inside space-y-2 mb-6 pl-4">
-              {sub.list.map((item: string, sli: number) => (
-                <li key={sli} className="text-base text-foreground/70">{item}</li>
-              ))}
-            </ul>
-          )}
-
-          {sub.table && renderTable(sub.table)}
-
-          {sub.note && (
-            <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-foreground">
-              {renderNote(sub.note)}
+    return (
+      <Card key={item.title} className="border-2 border-muted overflow-hidden my-4 bg-card/50">
+        <CardHeader className="bg-muted/30 py-4">
+          <CardTitle className="text-xl font-black uppercase tracking-tight">{item.title}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 space-y-6">
+          {item.strengths && (
+            <div className="space-y-3">
+              <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
+                <CheckCircle2 className="h-3 w-3" /> Avantages
+              </div>
+              <ul className="list-none space-y-2">
+                {item.strengths.map((s: string, j: number) => (
+                  <li key={j} className="text-sm font-bold flex items-start gap-2 text-foreground/90">
+                    <span className="text-green-500 font-black">•</span> {s}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
-        </div>
-      ))}
-    </div>
-  );
+          {item.weaknesses && (
+            <div className="space-y-3">
+              <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
+                <AlertTriangle className="h-3 w-3" /> Inconvénients
+              </div>
+              <ul className="list-none space-y-2">
+                {item.weaknesses.map((w: string, j: number) => (
+                  <li key={j} className="text-sm text-muted-foreground flex items-start gap-2">
+                    <span className="text-red-400 font-black">•</span> {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderSection = (section: any, idx: number) => {
+    // Si la section est un bloc de comparaison (cas spécifique "Concession ou particulier")
+    if (section.strengths || section.weaknesses) {
+      return renderComparison(section);
+    }
+
+    return (
+      <div key={idx} className="mb-12">
+        {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+        
+        {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
+          <p key={pi} className="text-lg text-foreground/80 leading-relaxed mb-6">{p}</p>
+        ))}
+
+        {section.list && Array.isArray(section.list) && (
+          <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
+            {section.list.map((item: string, li: number) => (
+              <li key={li} className="text-lg text-foreground/80">{item}</li>
+            ))}
+          </ul>
+        )}
+
+        {section.table && renderTable(section.table)}
+        
+        {section.note && (
+          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-foreground rounded-r-lg">
+            {renderNote(section.note)}
+          </div>
+        )}
+
+        {/* Support pour les tableaux de comparaison imbriqués dans une section */}
+        {section.items && Array.isArray(section.items) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+            {section.items.map((item: any) => renderComparison(item))}
+          </div>
+        )}
+
+        {section.subsections && Array.isArray(section.subsections) && (
+          <div className="space-y-6">
+            {section.subsections.map((sub: any, si: number) => (
+              <div key={si} className="ml-0 md:ml-6 mt-8 p-6 bg-muted/20 rounded-2xl border border-border/50">
+                {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground/90">{sub.title}</h3>}
+                
+                {sub.content && Array.isArray(sub.content) && sub.content.map((p: string, spi: number) => (
+                  <p key={spi} className="text-base text-foreground/70 leading-relaxed mb-4">{p}</p>
+                ))}
+
+                {sub.list && Array.isArray(sub.list) && (
+                  <ul className="list-disc list-inside space-y-2 mb-6 pl-4">
+                    {sub.list.map((item: string, sli: number) => (
+                      <li key={sli} className="text-base text-foreground/70">{item}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {sub.table && renderTable(sub.table)}
+                
+                {(sub.strengths || sub.weaknesses) && renderComparison(sub)}
+
+                {sub.note && (
+                  <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-foreground">
+                    {renderNote(sub.note)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -272,16 +334,20 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                       </div>
                     )}
 
-                    {article.conclusion && Array.isArray(article.conclusion) && (
+                    {article.conclusion && (
                       <div className="mt-16 pt-8 border-t border-brand/20">
                         <div className="flex items-center gap-3 mb-6">
                           <Info className="h-6 w-6 text-brand" />
                           <h3 className="text-2xl font-black uppercase m-0">Le mot de la fin</h3>
                         </div>
                         <div className="space-y-4">
-                          {article.conclusion.map((line: string, i: number) => (
-                            <p key={i} className="text-lg text-foreground/80 leading-relaxed">{line}</p>
-                          ))}
+                          {Array.isArray(article.conclusion) ? (
+                            article.conclusion.map((line: string, i: number) => (
+                              <p key={i} className="text-lg text-foreground/80 leading-relaxed">{line}</p>
+                            ))
+                          ) : (
+                            <p className="text-lg text-foreground/80 leading-relaxed">{article.conclusion}</p>
+                          )}
                         </div>
                         <div className="flex justify-end items-center mt-8">
                           <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
