@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText } from 'lucide-react';
+import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 import Header from '@/components/app/header';
@@ -93,92 +93,84 @@ export default function EntretienPage() {
     router.push(`/map?filter=${filter}`);
   };
 
-  const renderArticleContent = () => {
-    if (!article) return null;
+  const renderTable = (tableData: any) => {
+    if (!tableData || !tableData.headers || !tableData.rows) return null;
+    
+    return (
+      <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
+        <Table>
+          <TableHeader className="bg-muted/50">
+            <TableRow>
+              {tableData.headers.map((h: string, i: number) => (
+                <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tableData.rows.map((row: any, ri: number) => (
+              <TableRow key={ri} className="hover:bg-muted/30">
+                {Object.values(row).map((cell: any, ci: number) => (
+                  <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{String(cell)}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
 
-    const contentBlocks: any[] = [];
+  const renderSection = (section: any, idx: number) => (
+    <div key={idx} className="mb-12">
+      {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+      
+      {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
+        <p key={pi} className="text-lg text-foreground/80 leading-relaxed mb-6">{p}</p>
+      ))}
 
-    // 1. Récupération du corps principal
-    const rawContent = article.content || article.sections || article.body || article.text;
-    if (Array.isArray(rawContent)) {
-      contentBlocks.push(...rawContent);
-    } else if (typeof rawContent === 'string' && rawContent.length > 0) {
-      contentBlocks.push({ type: 'paragraph', text: rawContent });
-    }
+      {section.list && Array.isArray(section.list) && (
+        <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
+          {section.list.map((item: string, li: number) => (
+            <li key={li} className="text-lg text-foreground/80">{item}</li>
+          ))}
+        </ul>
+      )}
 
-    // 2. Gestion de la conclusion (tableau de chaînes vu dans la capture Firestore)
-    if (article.conclusion && Array.isArray(article.conclusion)) {
-      contentBlocks.push({ type: 'heading', text: 'Conclusion & Recommandations' });
-      article.conclusion.forEach((line: string) => {
-        if (line) contentBlocks.push({ type: 'paragraph', text: line });
-      });
-    }
-
-    if (contentBlocks.length === 0) {
-      return (
-        <div className="bg-muted/30 p-6 rounded-xl border border-dashed border-border text-center">
-          <p className="text-muted-foreground italic">Le contenu détaillé de cet article est en cours de mise à jour dans la base de données.</p>
+      {section.table && renderTable(section.table)}
+      
+      {section.note && (
+        <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-brand-foreground/80 rounded-r-lg">
+          {section.note}
         </div>
-      );
-    }
+      )}
 
-    return contentBlocks.map((block: any, index: number) => {
-      switch (block.type) {
-        case 'heading':
-          return <h2 key={index} className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{block.text}</h2>;
-        case 'paragraph':
-          return <p key={index} className="text-lg text-foreground/80 leading-relaxed mb-6" dangerouslySetInnerHTML={block.html ? { __html: block.html } : undefined}>{block.text}</p>;
-        case 'list':
-          return (
-            <ul key={index} className="list-disc list-inside space-y-3 mb-8 pl-4">
-              {block.items?.map((item: string, i: number) => (
-                <li key={i} className="text-lg text-foreground/80" dangerouslySetInnerHTML={{ __html: item }} />
+      {section.subsections && Array.isArray(section.subsections) && section.subsections.map((sub: any, si: number) => (
+        <div key={si} className="ml-0 md:ml-6 mt-8 p-6 bg-muted/20 rounded-2xl border border-border/50">
+          {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground/90">{sub.title}</h3>}
+          
+          {sub.content && Array.isArray(sub.content) && sub.content.map((p: string, spi: number) => (
+            <p key={spi} className="text-base text-foreground/70 leading-relaxed mb-4">{p}</p>
+          ))}
+
+          {sub.list && Array.isArray(sub.list) && (
+            <ul className="list-disc list-inside space-y-2 mb-6 pl-4">
+              {sub.list.map((item: string, sli: number) => (
+                <li key={sli} className="text-base text-foreground/70">{item}</li>
               ))}
             </ul>
-          );
-        case 'table':
-          return (
-            <div key={index} className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    {block.headers?.map((h: string, i: number) => (
-                      <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {block.rows?.map((row: any[], ri: number) => (
-                    <TableRow key={ri} className="hover:bg-muted/30">
-                      {row.map((cell: string, ci: number) => (
-                        <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{cell}</TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+          )}
+
+          {sub.table && renderTable(sub.table)}
+
+          {sub.note && (
+            <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-muted-foreground">
+              {sub.note}
             </div>
-          );
-        case 'signature':
-          return (
-            <div key={index} className="flex justify-end items-center mt-8">
-              <p className="text-lg font-bold text-foreground/90 relative z-10">{block.text}</p>
-              {block.imageUrl && (
-                <Image 
-                  src={block.imageUrl} 
-                  alt="Signature" 
-                  width={120} 
-                  height={120}
-                  className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
-                />
-              )}
-            </div>
-          );
-        default:
-          return typeof block === 'string' ? <p key={index} className="text-lg text-foreground/80 leading-relaxed mb-6">{block}</p> : null;
-      }
-    });
-  };
+          )}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="bg-background min-h-screen">
@@ -257,26 +249,69 @@ export default function EntretienPage() {
                   </div>
                 ) : article ? (
                   <article className="prose prose-neutral dark:prose-invert max-w-none">
-                    <div className="flex items-center gap-3 mb-6">
-                      <FileText className="h-8 w-8 text-brand" />
-                      <h2 className="text-3xl font-black uppercase tracking-tight m-0">
-                        {article.display_title || article.title || "Conseils d'entretien"}
+                    <div className="flex items-center gap-3 mb-8">
+                      <FileText className="h-10 w-10 text-brand" />
+                      <h2 className="text-4xl font-black uppercase tracking-tight m-0">
+                        {article.display_title || article.title}
                       </h2>
                     </div>
-                    {(article.description || article.introduction) && (
-                      <p className="text-lg leading-relaxed text-muted-foreground mb-12 italic border-l-4 border-brand pl-6">
-                        {article.description || article.introduction}
-                      </p>
-                    )}
-                    <div className="space-y-4">
-                      {renderArticleContent()}
+
+                    {/* Rendu de l'introduction */}
+                    <div className="mb-12">
+                      {article.intro && Array.isArray(article.intro) && article.intro.map((p: string, i: number) => (
+                        <p key={i} className="text-xl leading-relaxed text-foreground/90 font-medium mb-4">{p}</p>
+                      ))}
+                      
+                      {article.intro_points && Array.isArray(article.intro_points) && (
+                        <ul className="list-none space-y-3 my-6 pl-0">
+                          {article.intro_points.map((pt: string, i: number) => (
+                            <li key={i} className="flex items-center gap-3 text-lg text-foreground/80 font-bold">
+                              <CheckCircle2 className="h-5 w-5 text-brand shrink-0" />
+                              {pt}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {article.intro_conclusion && (
+                        <p className="text-lg leading-relaxed text-muted-foreground italic border-l-4 border-brand pl-6 my-8">
+                          {article.intro_conclusion}
+                        </p>
+                      )}
                     </div>
+
+                    {/* Rendu des sections */}
+                    <div className="space-y-4">
+                      {article.sections && Array.isArray(article.sections) && article.sections.map((section: any, idx: number) => renderSection(section, idx))}
+                    </div>
+
+                    {/* Rendu de la conclusion */}
+                    {article.conclusion && Array.isArray(article.conclusion) && (
+                      <div className="mt-16 pt-8 border-t border-brand/20">
+                        <div className="flex items-center gap-3 mb-6">
+                          <Info className="h-6 w-6 text-brand" />
+                          <h3 className="text-2xl font-black uppercase m-0">Le mot de la fin</h3>
+                        </div>
+                        {article.conclusion.map((line: string, i: number) => (
+                          <p key={i} className="text-lg text-foreground/80 leading-relaxed mb-4">{line}</p>
+                        ))}
+                        <div className="flex justify-end items-center mt-8">
+                          <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
+                          <Image 
+                            src="/images/Stamp-LM.png?v=2" 
+                            alt="Signature" 
+                            width={120} 
+                            height={120}
+                            className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </article>
                 ) : (
                   <div className="py-20 text-center border-2 border-dashed rounded-3xl bg-muted/10">
                     <Info className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
                     <p className="text-muted-foreground font-medium">L'article conseils est introuvable ou n'est pas encore publié.</p>
-                    <p className="text-[10px] text-muted-foreground/50 mt-2 uppercase tracking-widest">ID Recherché: {articleId}</p>
                   </div>
                 )}
               </div>
