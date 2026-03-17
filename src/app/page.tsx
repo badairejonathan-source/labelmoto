@@ -158,7 +158,7 @@ export default function LandingPage() {
                                         href={`/info/${article.id}`} 
                                         className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1"
                                     >
-                                        <div className="relative aspect-video overflow-hidden">
+                                        <div className="relative aspect-video overflow-hidden bg-muted">
                                             <Image
                                                 src={article.imageUrl || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"}
                                                 alt={article.display_title || article.title}
@@ -175,7 +175,7 @@ export default function LandingPage() {
                                             <h3 className="text-xl font-black text-foreground leading-tight group-hover:text-brand transition-colors line-clamp-2 mb-3 uppercase tracking-tight">
                                                 {article.display_title || article.title}
                                             </h3>
-                                            <p className="text-sm text-muted-foreground line-clamp-3 mb-4 flex-grow leading-relaxed">
+                                            <p className="text-sm text-muted-foreground line-clamp-3 mb-4 flex-grow leading-relaxed font-medium">
                                                 {article.description || article.intro_conclusion || ""}
                                             </p>
                                             <div className="flex items-center gap-2 text-brand text-xs font-black uppercase tracking-widest mt-auto group-hover:gap-4 transition-all">

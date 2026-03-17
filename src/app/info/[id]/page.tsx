@@ -15,15 +15,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+} from "@/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/ui/card';
+import { Button } from '@/ui/button';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@/ui/accordion";
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -117,7 +117,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              // Protection robuste contre l'ordre aléatoire des clés Firestore via mappage sur les titres
               const rowValues = Array.isArray(row) ? row : headers.map((header: string) => {
                 const slug = header.toLowerCase()
                   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -198,7 +197,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const renderSection = (section: any, idx: number) => {
-    // Détection automatique des comparatifs (Particulier vs Pro)
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
 
     return (
@@ -290,7 +288,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-8">
               <article>
-                <div className="relative w-full aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
+                <div className="relative w-full aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted">
                   <Image
                     src={imageUrl}
                     alt={article.display_title || article.title}

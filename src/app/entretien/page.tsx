@@ -184,7 +184,6 @@ export default function EntretienPage() {
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              // Mappage robuste basé sur le titre de la colonne (gère l'ordre aléatoire des clés Firestore)
               const rowValues = Array.isArray(row) ? row : headers.map((header: string) => {
                 const slug = header.toLowerCase()
                   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -422,6 +421,17 @@ export default function EntretienPage() {
                         {article.display_title || article.title}
                       </h2>
                     </div>
+
+                    {article.imageUrl && (
+                      <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-12 shadow-xl border-4 border-white bg-muted">
+                        <Image
+                          src={article.imageUrl}
+                          alt={article.display_title || article.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
 
                     <div className="mb-12">
                       {article.intro && Array.isArray(article.intro) && article.intro.map((p: string, i: number) => (

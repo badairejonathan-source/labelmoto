@@ -14,6 +14,7 @@ import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 
 const ArticleCard = ({ article }: { article: any }) => {
+    // Utilisation de l'image de l'article ou d'un fallback élégant
     const imageUrl = article.imageUrl || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     const title = article.display_title || article.title || "Sans titre";
 
@@ -25,7 +26,7 @@ const ArticleCard = ({ article }: { article: any }) => {
                     <h2 className="text-2xl md:text-3xl font-black text-foreground leading-tight group-hover:text-brand transition-colors uppercase tracking-tighter">
                         {title}
                     </h2>
-                    <p className="mt-3 text-base text-muted-foreground line-clamp-3 leading-relaxed">
+                    <p className="mt-3 text-base text-muted-foreground line-clamp-3 leading-relaxed font-medium">
                         {article.description || article.intro_conclusion || article.intro?.[0] || ""}
                     </p>
                     <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground font-black uppercase tracking-widest">
@@ -35,7 +36,7 @@ const ArticleCard = ({ article }: { article: any }) => {
                         <span>{article.readingTime || "10 min de lecture"}</span>
                     </div>
                 </div>
-                <div className="relative aspect-video rounded-2xl overflow-hidden order-first md:order-last border-2 border-white shadow-lg">
+                <div className="relative aspect-video rounded-2xl overflow-hidden order-first md:order-last border-2 border-white shadow-lg bg-muted">
                     <Image 
                         src={imageUrl}
                         alt={title}
