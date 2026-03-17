@@ -93,7 +93,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     }
 
     return (
-      <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-medium">
+      <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
         {content}
       </div>
     );
@@ -116,60 +116,37 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row: any, ri: number) => (
-              <TableRow key={ri} className="hover:bg-muted/30">
-                {Object.values(row).map((cell: any, ci: number) => (
-                  <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold text-foreground' : 'text-foreground font-medium')}>
-                    {String(cell)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {rows.map((row: any, ri: number) => {
+              // Protection contre l'ordre aléatoire des clés Firestore
+              const rowValues = Array.isArray(row) ? row : headers.map((header: string) => {
+                const slug = header.toLowerCase()
+                  .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                  .replace(/[^a-z0-9]/g, '_')
+                  .replace(/^_+|_+$/g, '');
+                
+                if (row[header] !== undefined) return row[header];
+                if (row[slug] !== undefined) return row[slug];
+                
+                const foundKey = Object.keys(row).find(k => 
+                  k.toLowerCase() === header.toLowerCase() || 
+                  k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '_') === slug
+                );
+                return foundKey ? row[foundKey] : '';
+              });
+
+              return (
+                <TableRow key={ri} className="hover:bg-muted/30">
+                  {rowValues.map((cell: any, ci: number) => (
+                    <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold text-foreground' : 'text-foreground font-black')}>
+                      {String(cell)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
-    );
-  };
-
-  const renderComparisonCard = (item: any, idx: number) => {
-    return (
-      <Card key={idx} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm">
-        <CardHeader className="bg-muted/30 py-4 border-b">
-          <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground text-center">
-            {item.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-6 flex-grow">
-          {item.strengths && Array.isArray(item.strengths) && (
-            <div className="space-y-3">
-              <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
-                <CheckCircle2 className="h-3 w-3" /> Avantages
-              </div>
-              <ul className="list-none space-y-2">
-                {item.strengths.map((s: string, j: number) => (
-                  <li key={j} className="text-sm font-bold flex items-start gap-2 text-foreground">
-                    <span className="text-green-500 font-black shrink-0">•</span> {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {item.weaknesses && Array.isArray(item.weaknesses) && (
-            <div className="space-y-3">
-              <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
-                <AlertTriangle className="h-3 w-3" /> Inconvénients
-              </div>
-              <ul className="list-none space-y-2">
-                {item.weaknesses.map((w: string, j: number) => (
-                  <li key={j} className="text-sm font-bold flex items-start gap-2 text-foreground">
-                    <span className="text-red-400 font-black shrink-0">•</span> {w}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     );
   };
 
@@ -177,36 +154,64 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (!items || items.length === 0) return null;
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-        {items.map((item, idx) => renderComparisonCard(item, idx))}
+        {items.map((item, idx) => (
+          <Card key={idx} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm">
+            <CardHeader className="bg-muted/30 py-4 border-b">
+              <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground text-center">
+                {item.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6 flex-grow">
+              {item.strengths && Array.isArray(item.strengths) && (
+                <div className="space-y-3">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
+                    <CheckCircle2 className="h-3 w-3" /> Avantages
+                  </div>
+                  <ul className="list-none space-y-2">
+                    {item.strengths.map((s: string, j: number) => (
+                      <li key={j} className="text-sm font-black flex items-start gap-2 text-foreground">
+                        <span className="text-green-500 font-black shrink-0">•</span> {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {item.weaknesses && Array.isArray(item.weaknesses) && (
+                <div className="space-y-3">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
+                    <AlertTriangle className="h-3 w-3" /> Inconvénients
+                  </div>
+                  <ul className="list-none space-y-2">
+                    {item.weaknesses.map((w: string, j: number) => (
+                      <li key={j} className="text-sm font-black flex items-start gap-2 text-foreground">
+                        <span className="text-red-400 font-black shrink-0">•</span> {w}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   };
 
   const renderSection = (section: any, idx: number) => {
-    // Check if this section has subsections that are comparison items
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
-
-    if (section.items && Array.isArray(section.items)) {
-      return (
-        <div key={idx} className="mb-12">
-          {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-          {renderComparisonGrid(section.items)}
-        </div>
-      );
-    }
 
     return (
       <div key={idx} className="mb-12">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         
         {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
-          <p key={pi} className="text-lg text-foreground font-medium leading-relaxed mb-6">{p}</p>
+          <p key={pi} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>
         ))}
 
         {section.list && Array.isArray(section.list) && (
           <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
             {section.list.map((item: string, li: number) => (
-              <li key={li} className="text-lg text-foreground font-bold">{item}</li>
+              <li key={li} className="text-lg text-foreground font-black">{item}</li>
             ))}
           </ul>
         )}
@@ -227,7 +232,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             )
         )}
 
-        {section.conclusion && <p className="text-lg text-foreground font-medium mt-6 italic border-l-4 border-muted pl-4">{section.conclusion}</p>}
+        {section.conclusion && <p className="text-lg text-foreground font-black mt-6 italic border-l-4 border-muted pl-4">{section.conclusion}</p>}
       </div>
     );
   };
@@ -323,7 +328,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                       )}
 
                       {article.intro_conclusion && (
-                        <p className="text-lg leading-relaxed text-foreground font-bold italic border-l-4 border-brand pl-6 my-8">
+                        <p className="text-lg leading-relaxed text-foreground font-black italic border-l-4 border-brand pl-6 my-8">
                           {article.intro_conclusion}
                         </p>
                       )}
@@ -333,7 +338,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                       {article.sections && Array.isArray(article.sections) && article.sections.map((section: any, idx: number) => renderSection(section, idx))}
                     </div>
 
-                    {/* FAQ Section */}
                     {article.faq && article.faq.length > 0 && (
                       <div className="pt-12 space-y-6">
                         <div className="flex items-center gap-3">
@@ -346,7 +350,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                               <AccordionTrigger className="text-left font-black text-foreground py-4 hover:text-brand transition-colors">
                                 {item.question}
                               </AccordionTrigger>
-                              <AccordionContent className="text-foreground font-medium leading-relaxed pb-4">
+                              <AccordionContent className="text-foreground font-black leading-relaxed pb-4">
                                 {item.answer}
                               </AccordionContent>
                             </AccordionItem>
@@ -364,10 +368,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         <div className="space-y-4">
                           {Array.isArray(article.conclusion) ? (
                             article.conclusion.map((line: string, i: number) => (
-                              <p key={i} className="text-lg text-foreground font-bold leading-relaxed">{line}</p>
+                              <p key={i} className="text-lg text-foreground font-black leading-relaxed">{line}</p>
                             ))
                           ) : (
-                            <p className="text-lg text-foreground font-bold leading-relaxed">{article.conclusion}</p>
+                            <p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>
                           )}
                         </div>
                         <div className="flex justify-end items-center mt-8">
