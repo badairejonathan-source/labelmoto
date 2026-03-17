@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -114,10 +113,10 @@ export default function EntretienPage() {
     router.push(`/map?filter=${filter}`);
   };
 
-  // Correction : Mapping de l'image locale si manquante dans Firestore
+  // Robust image resolution logic for articles
   const imageUrl = useMemo(() => {
-    if (article?.imageUrl) return article.imageUrl;
-    return "/images/achat-occasion.jpg"; // Placeholder pour l'entretien
+    if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    return "/images/achat-occasion.jpg"; // Default fallback
   }, [article]);
 
   const renderNote = (note: string) => {

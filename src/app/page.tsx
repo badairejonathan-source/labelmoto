@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -35,13 +34,16 @@ export default function LandingPage() {
         }
     };
 
-    // Helper correction : Mapping de l'image locale si manquante dans Firestore
+    // Helper correction : Mapping de l'image avec fallback robuste
     const getArticleImage = (article: any) => {
-        if (article.imageUrl) return article.imageUrl;
-        const id = article.id?.toLowerCase() || '';
-        if (id.includes('pieges') || id.includes('occasion')) return "/images/evitelespieges.jpg";
-        if (id.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-        if (id.includes('a2')) return "/images/achat-occasion.jpg";
+        if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+        const id = (article.id || '').toLowerCase();
+        const title = (article.display_title || article.title || "").toLowerCase();
+        
+        if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
+        if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
+        
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     };
 

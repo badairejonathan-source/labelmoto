@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -263,13 +262,16 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  // Correction : Mapping de l'image locale si manquante dans Firestore
+  // Robust image resolution logic
   const imageUrl = useMemo(() => {
-    if (article.imageUrl) return article.imageUrl;
-    const articleId = article.id || id;
-    if (articleId.includes('pieges') || articleId.includes('occasion')) return "/images/evitelespieges.jpg";
-    if (articleId.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-    if (articleId.includes('a2')) return "/images/achat-occasion.jpg";
+    if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    const articleId = (article.id || id).toLowerCase();
+    const title = (article.display_title || article.title || "").toLowerCase();
+    
+    if (articleId.includes('pieges') || articleId.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
+    if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+    if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
+    
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
 

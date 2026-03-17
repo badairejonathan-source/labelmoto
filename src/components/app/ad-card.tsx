@@ -12,13 +12,29 @@ interface AdCardProps {
     id: string;
     title: string;
     description: string;
-    imageUrl: string;
-    imageHint: string;
+    imageUrl?: string;
+    imageHint?: string;
   };
 }
 
 const AdCard: React.FC<AdCardProps> = ({ article }) => {
   if (!article) return null;
+
+  // Robust image resolution logic to prevent empty string errors
+  const imageUrl = React.useMemo(() => {
+    if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    
+    const id = article.id?.toLowerCase() || '';
+    const title = (article.title || '').toLowerCase();
+    
+    // Local image mapping based on content keywords
+    if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
+    if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+    if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
+    
+    // Default placeholder
+    return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
+  }, [article]);
 
   return (
     <Link href={`/info/${article.id}`} className="group block w-full">
@@ -30,13 +46,13 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
 
         <div className="flex w-full h-full items-stretch z-10">
           {/* Section Image */}
-          <div className="relative w-24 sm:w-32 md:w-40 flex-shrink-0 overflow-hidden self-stretch shadow-inner">
+          <div className="relative w-24 sm:w-32 md:w-40 flex-shrink-0 overflow-hidden self-stretch shadow-inner bg-muted">
             <Image
-              src={article.imageUrl}
+              src={imageUrl}
               alt={article.title}
               fill
               className="object-cover transition-transform duration-1000 group-hover:scale-110"
-              data-ai-hint={article.imageHint}
+              data-ai-hint={article.imageHint || "motorcycle"}
               sizes="(max-width: 768px) 96px, 160px"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-transparent" />
@@ -60,7 +76,7 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
             </p>
           </div>
 
-          {/* Zone Action (Desktop) */}
+          {/* Zone Action */}
           <div className="hidden md:flex flex-shrink-0 w-32 flex-col justify-center items-center p-4 bg-brand/[0.01] border-l border-brand/5">
              <div className="flex flex-col items-center gap-2">
                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand transition-colors">Découvrir</span>
@@ -71,7 +87,6 @@ const AdCard: React.FC<AdCardProps> = ({ article }) => {
              </div>
           </div>
           
-          {/* Version mobile de la zone action */}
           <div className="md:hidden flex items-center pr-4 bg-brand/[0.01]">
              <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-all shadow-sm">
                 <ArrowRight className="w-4 h-4" />
