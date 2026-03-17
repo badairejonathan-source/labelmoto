@@ -117,7 +117,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              // Protection contre l'ordre aléatoire des clés Firestore
+              // Protection robuste contre l'ordre aléatoire des clés Firestore via mappage sur les titres
               const rowValues = Array.isArray(row) ? row : headers.map((header: string) => {
                 const slug = header.toLowerCase()
                   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -198,6 +198,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const renderSection = (section: any, idx: number) => {
+    // Détection automatique des comparatifs (Particulier vs Pro)
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
 
     return (

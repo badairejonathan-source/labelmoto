@@ -84,10 +84,14 @@ function InfoPageComponent() {
 
     const filteredArticles = React.useMemo(() => {
         if (!allArticles) return [];
-        let results = allArticles;
+        
+        // Exclure l'article guide d'entretien de la liste générale car il a sa propre section
+        const EXCLUDED_ARTICLE_ID = 'entretien-moto-intervalles-prix-conseils-par-modele';
+        let results = allArticles.filter(a => a.id !== EXCLUDED_ARTICLE_ID);
+
         if (submittedSearchTerm && submittedSearchTerm.trim() !== '') {
             const lowerCaseSearch = submittedSearchTerm.toLowerCase();
-            results = allArticles.filter(article => 
+            results = results.filter(article => 
                 (article.display_title || article.title || "").toLowerCase().includes(lowerCaseSearch) ||
                 (article.description || "").toLowerCase().includes(lowerCaseSearch) ||
                 (article.author || "").toLowerCase().includes(lowerCaseSearch)
