@@ -1,14 +1,13 @@
 
 'use client';
 
-import React, { useState, use } from 'react';
+import React, { useState, use, useMemo } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle } from 'lucide-react';
 
 import Header from '@/components/app/header';
-import articlesData from '@/data/articles.json';
 import {
   Table,
   TableBody,
@@ -19,42 +18,24 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
-
-type ArticleContent = {
-  type: 'paragraph' | 'heading' | 'list' | 'table' | 'signature';
-  text?: string;
-  html?: string;
-  items?: string[];
-  headers?: string[];
-  rows?: string[][];
-  imageUrl?: string;
-  alt?: string;
-};
-
-type Article = {
-  id: string;
-  title: string;
-  description: string;
-  author: string;
-  readingTime: string;
-  imageUrl: string;
-  imageHint: string;
-  content?: ArticleContent[];
-};
-
-const articles: Article[] = articlesData as unknown as Article[];
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const article = articles.find((a) => a.id === id);
-
-  if (!article) {
-    notFound();
-  }
+  const firestore = useFirestore();
+  const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
+  const { data: article, isLoading } = useDoc(articleRef);
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -66,74 +47,130 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     router.push(`/map?filter=${filter}`);
   };
 
-  const { imageUrl, imageHint } = article;
-  const firstParagraphIndex = article.content?.findIndex(b => b.type === 'paragraph') ?? -1;
-
-  const renderContent = () => {
-    if (!article.content || article.content.length === 0) {
-      return <p className="text-lg text-muted-foreground">Contenu de l'article à venir...</p>;
+  const renderNote = (note: string) => {
+    if (!note) return null;
+    const trigger = "notre guide sur le coût réel d’une moto par mois";
+    if (note.includes(trigger)) {
+      const parts = note.split(trigger);
+      return (
+        <>
+          {parts[0]}
+          <Link href="/info/combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant" className="text-brand font-black underline hover:text-foreground transition-colors">
+            {trigger}
+          </Link>
+          {parts[1]}
+        </>
+      );
     }
-
-    return article.content.map((block, index) => {
-      if (block.type === 'heading') {
-        return <h2 key={index} className="text-3xl font-bold mt-12 mb-6 text-foreground text-center border-y border-foreground/20 py-2">{block.text}</h2>;
-      }
-      if (block.type === 'list' && block.items) {
-        return (
-          <ul key={index} className="list-disc list-inside space-y-3 pl-2">
-            {block.items.map((item, i) => <li key={i} className="text-lg text-foreground/90 leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: item }} />)}
-          </ul>
-        );
-      }
-      if (block.type === 'paragraph' && block.html) {
-          const isFirst = index === firstParagraphIndex;
-          const dropCapClass = isFirst ? "first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:float-left" : "";
-          return <p key={index} className={cn("text-lg text-foreground/90 leading-relaxed text-justify", dropCapClass)} dangerouslySetInnerHTML={{ __html: block.html }} />;
-      }
-      if (block.type === 'table' && block.headers && block.rows) {
-        return (
-          <div key={index} className="my-8 overflow-x-auto rounded-lg border">
-            <Table className="min-w-full text-sm">
-              <TableHeader className="bg-muted/50">
-                <TableRow>
-                  {block.headers.map((header: string, hIndex: number) => (
-                    <TableHead key={hIndex} className="font-semibold">{header}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {block.rows.map((row: string[], rIndex: number) => (
-                  <TableRow key={rIndex}>
-                    {row.map((cell: string, cIndex: number) => (
-                      <TableCell key={cIndex} className={cIndex === 0 ? 'font-medium' : ''}>{cell}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        );
-      }
-      if (block.type === 'signature' && block.imageUrl) {
-        return (
-          <div key={index} className="flex justify-end items-center mt-[-3rem] sm:mt-[-4rem] mr-0 sm:mr-4">
-            <p className="text-lg font-semibold text-foreground/90 relative z-10">{block.text}</p>
-            <Image 
-              src={block.imageUrl} 
-              alt={block.alt || "Signature"} 
-              width={140} 
-              height={140}
-              className="object-contain opacity-70 -rotate-[15deg] pointer-events-none -ml-16"
-            />
-          </div>
-        )
-      }
-      
-      const isFirst = index === firstParagraphIndex;
-      const dropCapClass = isFirst && block.type === 'paragraph' ? "first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:float-left" : "";
-      return <p key={index} className={cn("text-lg text-foreground/90 leading-relaxed text-justify", dropCapClass)}>{block.text}</p>;
-    });
+    return note;
   };
+
+  const renderTable = (tableData: any) => {
+    if (!tableData) return null;
+    
+    const headers = tableData.headers || [];
+    const rows = tableData.rows || [];
+
+    return (
+      <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
+        <Table>
+          <TableHeader className="bg-muted/50">
+            <TableRow>
+              {headers.map((h: string, i: number) => (
+                <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row: any, ri: number) => (
+              <TableRow key={ri} className="hover:bg-muted/30">
+                {Object.values(row).map((cell: any, ci: number) => (
+                  <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>
+                    {String(cell)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
+
+  const renderSection = (section: any, idx: number) => (
+    <div key={idx} className="mb-12">
+      {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+      
+      {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
+        <p key={pi} className="text-lg text-foreground/80 leading-relaxed mb-6">{p}</p>
+      ))}
+
+      {section.list && Array.isArray(section.list) && (
+        <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
+          {section.list.map((item: string, li: number) => (
+            <li key={li} className="text-lg text-foreground/80">{item}</li>
+          ))}
+        </ul>
+      )}
+
+      {section.table && renderTable(section.table)}
+      
+      {section.note && (
+        <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic text-foreground rounded-r-lg">
+          {renderNote(section.note)}
+        </div>
+      )}
+
+      {section.subsections && Array.isArray(section.subsections) && section.subsections.map((sub: any, si: number) => (
+        <div key={si} className="ml-0 md:ml-6 mt-8 p-6 bg-muted/20 rounded-2xl border border-border/50">
+          {sub.title && <h3 className="text-xl font-black uppercase mb-4 text-foreground/90">{sub.title}</h3>}
+          
+          {sub.content && Array.isArray(sub.content) && sub.content.map((p: string, spi: number) => (
+            <p key={spi} className="text-base text-foreground/70 leading-relaxed mb-4">{p}</p>
+          ))}
+
+          {sub.list && Array.isArray(sub.list) && (
+            <ul className="list-disc list-inside space-y-2 mb-6 pl-4">
+              {sub.list.map((item: string, sli: number) => (
+                <li key={sli} className="text-base text-foreground/70">{item}</li>
+              ))}
+            </ul>
+          )}
+
+          {sub.table && renderTable(sub.table)}
+
+          {sub.note && (
+            <div className="bg-white/50 dark:bg-black/20 border-l-4 border-brand/40 p-3 mb-4 text-sm italic text-foreground">
+              {renderNote(sub.note)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />
+        <p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement de l'article...</p>
+      </div>
+    );
+  }
+
+  if (!article) {
+    return (
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
+            <h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1>
+            <p className="text-muted-foreground mb-8">Nous n'avons pas trouvé l'article demandé.</p>
+            <Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs">
+                <Link href="/info">Retour aux articles</Link>
+            </Button>
+        </div>
+    );
+  }
+
+  const imageUrl = article.imageUrl || "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
 
   return (
     <div className="bg-background min-h-screen">
@@ -151,12 +188,12 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           alt="Label Moto Watermark"
           width={800}
           height={256}
-          className="opacity-[0.10] rotate-[-15deg] scale-150"
+          className="opacity-[0.08] rotate-[-15deg] scale-150"
         />
       </div>
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <Link href="/info" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
+          <Link href="/info" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand font-black uppercase text-xs tracking-widest transition-colors mb-8">
             <ArrowLeft className="h-4 w-4" />
             Retour aux articles
           </Link>
@@ -164,56 +201,129 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-8">
               <article>
-                <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden mb-8 shadow-lg">
+                <div className="relative w-full aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
                   <Image
                     src={imageUrl}
-                    alt={article.title}
+                    alt={article.display_title || article.title}
                     fill
                     className="object-cover"
-                    data-ai-hint={imageHint}
                     priority
                   />
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-4">
-                  {article.title}
-                </h1>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium mb-8 border-b pb-4">
-                  <span>Par {article.author}</span>
-                  <span className="text-muted-foreground/50">•</span>
-                  <span>{article.readingTime}</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-8 text-white">
+                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-2">
+                        {article.display_title || article.title}
+                    </h1>
+                    <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest opacity-90">
+                      <span>Par {article.author || "L'équipe Label Moto"}</span>
+                      <span className="opacity-50">•</span>
+                      <span>{article.readingTime || "10 min de lecture"}</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-6">
-                  {renderContent()}
+                    <div className="mb-12">
+                      {article.intro && Array.isArray(article.intro) && article.intro.map((p: string, i: number) => (
+                        <p key={i} className="text-xl leading-relaxed text-foreground/90 font-medium mb-4">{p}</p>
+                      ))}
+                      
+                      {article.intro_points && Array.isArray(article.intro_points) && (
+                        <ul className="list-none space-y-3 my-6 pl-0">
+                          {article.intro_points.map((pt: string, i: number) => (
+                            <li key={i} className="flex items-center gap-3 text-lg text-foreground/80 font-bold">
+                              <CheckCircle2 className="h-5 w-5 text-brand shrink-0" />
+                              {pt}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {article.intro_conclusion && (
+                        <p className="text-lg leading-relaxed text-muted-foreground italic border-l-4 border-brand pl-6 my-8">
+                          {article.intro_conclusion}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      {article.sections && Array.isArray(article.sections) && article.sections.map((section: any, idx: number) => renderSection(section, idx))}
+                    </div>
+
+                    {/* FAQ Section */}
+                    {article.faq && article.faq.length > 0 && (
+                      <div className="pt-12 space-y-6">
+                        <div className="flex items-center gap-3">
+                          <HelpCircle className="h-6 w-6 text-brand" />
+                          <h3 className="text-2xl font-black uppercase tracking-tight">Questions fréquentes</h3>
+                        </div>
+                        <Accordion type="single" collapsible className="w-full">
+                          {article.faq.map((item: any, idx: number) => (
+                            <AccordionItem key={idx} value={`item-${idx}`} className="border-b-brand/10">
+                              <AccordionTrigger className="text-left font-bold text-foreground py-4 hover:text-brand transition-colors">
+                                {item.question}
+                              </AccordionTrigger>
+                              <AccordionContent className="text-muted-foreground leading-relaxed pb-4">
+                                {item.answer}
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </div>
+                    )}
+
+                    {article.conclusion && Array.isArray(article.conclusion) && (
+                      <div className="mt-16 pt-8 border-t border-brand/20">
+                        <div className="flex items-center gap-3 mb-6">
+                          <Info className="h-6 w-6 text-brand" />
+                          <h3 className="text-2xl font-black uppercase m-0">Le mot de la fin</h3>
+                        </div>
+                        <div className="space-y-4">
+                          {article.conclusion.map((line: string, i: number) => (
+                            <p key={i} className="text-lg text-foreground/80 leading-relaxed">{line}</p>
+                          ))}
+                        </div>
+                        <div className="flex justify-end items-center mt-8">
+                          <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
+                          <Image 
+                            src="/images/Stamp-LM.png?v=2" 
+                            alt="Signature" 
+                            width={120} 
+                            height={120}
+                            className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12"
+                          />
+                        </div>
+                      </div>
+                    )}
                 </div>
               </article>
             </div>
 
             <aside className="md:col-span-4 relative">
                 <div className="md:sticky md:top-28 space-y-6">
-                    <Card className="overflow-hidden shadow-lg border-2 border-primary/20 max-w-sm mx-auto md:max-w-none">
-                        <CardHeader className="p-4 lg:p-6">
-                            <CardTitle className="flex items-center gap-2 text-primary text-base lg:text-xl">
-                                <Map className="h-4 w-4 lg:h-5 w-5"/>
-                                Trouver une concession
+                    <Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20">
+                        <CardHeader className="p-6 bg-brand text-brand-foreground">
+                            <CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest">
+                                <Map className="h-6 w-6"/>
+                                Trouver un pro
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
-                            <Link href="/map" className="block group rounded-lg overflow-hidden border">
+                        <CardContent className="p-6">
+                            <Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl">
                               <Image 
                                   src="/images/apercucartezoom.png"
                                   alt="Aperçu de la carte"
                                   width={400}
                                   height={300}
-                                  className="object-cover w-full h-40 lg:h-auto transition-transform duration-300 group-hover:scale-105"
+                                  className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110"
                               />
                             </Link>
-                            <p className="text-muted-foreground text-sm mt-4 hidden md:block">
+                            <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">
                                 Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
                             </p>
                         </CardContent>
-                        <CardFooter className="p-4 pt-0 lg:p-6 lg:pt-0">
-                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-xs lg:text-base py-3 lg:py-5 rounded-full shadow-lg">
+                        <CardFooter className="px-6 pb-8">
+                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
                                 <Link href="/map">Voir la carte interactive</Link>
                             </Button>
                         </CardFooter>

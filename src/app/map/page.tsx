@@ -11,12 +11,11 @@ import Header from '@/components/app/header';
 import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, MapPin, AlertCircle } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
-import { useFirebase } from '@/firebase';
+import { useFirebase, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
 import { useToast } from '@/hooks/use-toast';
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
-import articlesData from '@/app/data/articles.json';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -116,6 +115,10 @@ function MapPageComponent() {
   const { toast } = useToast();
   const [ratingFilter, setRatingFilter] = useState<number>(0);
   const { firestore } = useFirebase();
+
+  // Articles pour les publicités dans la liste
+  const articlesRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
+  const { data: articlesForAds } = useCollection(articlesRef);
   
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'expanded'>('half');
   const [isExpanding, setIsExpanding] = useState(true);
@@ -178,7 +181,6 @@ function MapPageComponent() {
             } as Dealership;
         });
 
-        // Suppression des doublons : on favorise les fiches avec photo
         const sortedForDeduplication = [...results].sort((a, b) => {
             const aHasPhoto = !!a.imgUrl && a.imgUrl.trim() !== '';
             const bHasPhoto = !!b.imgUrl && b.imgUrl.trim() !== '';
@@ -398,7 +400,7 @@ function MapPageComponent() {
   const listContent = (
     <div className="space-y-3 pb-20">
       {isLoading ? (
-        <div className="text-center text-muted-foreground pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /><p className="mt-2">Chargement...</p></div>
+        <div className="text-center text-muted-foreground pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /><p className="mt-2 text-[10px] font-black uppercase tracking-widest">Chargement...</p></div>
       ) : (
         <>
           {searchStatus === 'fallback_brand' && (
@@ -423,7 +425,7 @@ function MapPageComponent() {
 
           {dealershipsToDisplay.map((dealer, index) => {
             const adIndex = Math.floor((index + 1) / 4) - 1;
-            const article = articlesData[adIndex % articlesData.length];
+            const article = articlesForAds ? articlesForAds[adIndex % articlesForAds.length] : null;
 
             return (
               <React.Fragment key={dealer.id}>
@@ -448,9 +450,9 @@ function MapPageComponent() {
             );
           })}
           
-          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && articlesData[0] && (
+          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && articlesForAds && articlesForAds[0] && (
             <div className="py-1 w-full">
-              <AdCard article={articlesData[0]} />
+              <AdCard article={articlesForAds[0]} />
             </div>
           )}
 
@@ -472,7 +474,7 @@ function MapPageComponent() {
 
   return (
     <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
-      <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Recherche par nom, ville, departement" />
+      <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Rechercher un pro, un article..." />
       
       <div className="flex-1 flex overflow-hidden relative">
         {!isMobile && (
