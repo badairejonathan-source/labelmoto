@@ -89,6 +89,11 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    match /articles/{articleId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
     match /roles_admin/{uid} {
       allow read, write: if isAdmin();
     }

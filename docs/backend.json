@@ -94,6 +94,19 @@
           }
         }
       }
+    },
+    "Article": {
+      "title": "Article",
+      "type": "object",
+      "description": "Article de blog ou conseil pratique.",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "author": { "type": "string" },
+        "readingTime": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "object" } }
+      }
     }
   },
   "auth": {
@@ -109,6 +122,10 @@
     "/motorcycle_sheets/{modelId}": {
       "schema": { "$ref": "#/backend/entities/TechnicalSheet" },
       "description": "Fiches techniques et guides d'entretien."
+    },
+    "/articles/{articleId}": {
+      "schema": { "$ref": "#/backend/entities/Article" },
+      "description": "Articles et guides pratiques."
     }
   }
 }

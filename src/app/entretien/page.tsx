@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Map, Wrench, Info, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
+import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 import Header from '@/components/app/header';
@@ -78,7 +78,10 @@ export default function EntretienPage() {
   const [searchTerm, setSearchTerm] = useState('');
   
   const firestore = useFirestore();
-  const articleRef = useMemoFirebase(() => doc(firestore, 'advicePosts', 'entretien-moto-intervalles-prix-conseils-par-modele'), [firestore]);
+  const articleId = 'entretien-moto-intervalles-prix-conseils-par-modele';
+  
+  // On tente de récupérer l'article dans la collection 'articles' comme spécifié
+  const articleRef = useMemoFirebase(() => doc(firestore, 'articles', articleId), [firestore, articleId]);
   const { data: article, isLoading: isArticleLoading } = useDoc(articleRef);
 
   const handleSearch = () => {
@@ -92,7 +95,7 @@ export default function EntretienPage() {
   };
 
   const renderArticleContent = () => {
-    if (!article || !article.content) return null;
+    if (!article || !article.content || !Array.isArray(article.content)) return null;
 
     return article.content.map((block: any, index: number) => {
       switch (block.type) {
@@ -120,7 +123,7 @@ export default function EntretienPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {block.rows?.map((row: string[], ri: number) => (
+                  {block.rows?.map((row: any[], ri: number) => (
                     <TableRow key={ri} className="hover:bg-muted/30">
                       {row.map((cell: string, ci: number) => (
                         <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{cell}</TableCell>
@@ -185,7 +188,7 @@ export default function EntretienPage() {
               Catalogue des Fiches Techniques
             </h1>
             <p className="text-xl text-muted-foreground font-medium max-w-3xl">
-              Accédez aux guides d'entretien complets et aux spécifications techniques officielles pour plus de 20 modèles phares.
+              Accédez aux guides d'entretien complets et aux spécifications techniques officielles pour les modèles phares.
             </p>
           </div>
 
@@ -230,8 +233,8 @@ export default function EntretienPage() {
                 ) : article ? (
                   <article className="prose prose-neutral dark:prose-invert max-w-none">
                     <div className="flex items-center gap-3 mb-6">
-                      <Info className="h-8 w-8 text-brand" />
-                      <h2 className="text-3xl font-black uppercase tracking-tight m-0">{article.title}</h2>
+                      <FileText className="h-8 w-8 text-brand" />
+                      <h2 className="text-3xl font-black uppercase tracking-tight m-0">{article.title || "Conseils d'entretien"}</h2>
                     </div>
                     {article.description && (
                       <p className="text-lg leading-relaxed text-muted-foreground mb-12 italic border-l-4 border-brand pl-6">
@@ -242,7 +245,13 @@ export default function EntretienPage() {
                       {renderArticleContent()}
                     </div>
                   </article>
-                ) : null}
+                ) : (
+                  <div className="py-20 text-center border-2 border-dashed rounded-3xl bg-muted/10">
+                    <Info className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                    <p className="text-muted-foreground font-medium">L'article conseils est en cours de préparation ou introuvable.</p>
+                    <p className="text-[10px] text-muted-foreground/50 mt-2 uppercase tracking-widest">ID: {articleId}</p>
+                  </div>
+                )}
               </div>
             </div>
 
