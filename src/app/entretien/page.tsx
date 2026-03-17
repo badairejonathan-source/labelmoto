@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, ChevronDown, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
 
 import Header from '@/components/app/header';
@@ -48,9 +48,9 @@ const brandsData = [
     name: "Kawasaki",
     models: [
       { id: "kawasaki-z900-2020-plus", label: "Z900", tags: ["A2 / Full"] },
-      { id: "kawasaki-z650-2020-plus", label: "Z650", tags: ["A2"] },
+      { id: "kawasaki-z650-2020-plus", label: "Z650", tags: ["A2 / Full"] },
       { id: "kawasaki-er6n-2012-plus", label: "ER-6n (2012+)" },
-      { id: "kawasaki-versys-650-2022-plus", label: "Versys 650 (2022+)" },
+      { id: "kawasaki-versys-650-2022-plus", label: "Versys 650 (2022+)", tags: ["A2 / Full"] },
     ]
   },
   {
@@ -58,7 +58,7 @@ const brandsData = [
     models: [
       { id: "suzuki-gsx-8s-2023-plus", label: "GSX-8S", tags: ["A2 / Full"] },
       { id: "suzuki-sv650-2016-plus", label: "SV650", tags: ["A2 / Full"] },
-      { id: "suzuki-v-strom-650-2017-plus", label: "V-Strom 650 (2017+)" },
+      { id: "suzuki-v-strom-650-2017-plus", label: "V-Strom 650 (2017+)", tags: ["A2 / Full"] },
     ]
   },
   {
@@ -76,12 +76,21 @@ const brandsData = [
 export default function EntretienPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [expandedBrands, setExpandedBrands] = useState<string[]>([]);
   
   const firestore = useFirestore();
   const articleId = 'entretien-moto-intervalles-prix-conseils-par-modele';
   
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', articleId), [firestore, articleId]);
   const { data: article, isLoading: isArticleLoading } = useDoc(articleRef);
+
+  const toggleBrand = (brandName: string) => {
+    setExpandedBrands(prev => 
+      prev.includes(brandName) 
+        ? prev.filter(b => b !== brandName) 
+        : [...prev, brandName]
+    );
+  };
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -94,23 +103,29 @@ export default function EntretienPage() {
   };
 
   const renderTable = (tableData: any) => {
-    if (!tableData || !tableData.headers || !tableData.rows) return null;
+    if (!tableData) return null;
     
+    // Support standard structure (headers/rows) or custom budget structure
+    const headers = tableData.headers || [];
+    const rows = tableData.rows || [];
+
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              {tableData.headers.map((h: string, i: number) => (
+              {headers.map((h: string, i: number) => (
                 <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tableData.rows.map((row: any, ri: number) => (
+            {rows.map((row: any, ri: number) => (
               <TableRow key={ri} className="hover:bg-muted/30">
                 {Object.values(row).map((cell: any, ci: number) => (
-                  <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>{String(cell)}</TableCell>
+                  <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold' : 'text-muted-foreground')}>
+                    {String(cell)}
+                  </TableCell>
                 ))}
               </TableRow>
             ))}
@@ -205,43 +220,78 @@ export default function EntretienPage() {
               Catalogue des Fiches Techniques
             </h1>
             <p className="text-xl text-muted-foreground font-medium max-w-3xl">
-              Accédez aux guides d'entretien complets et aux spécifications techniques officielles pour les modèles phares.
+              Sélectionnez une marque pour accéder aux guides d'entretien officiels et aux spécifications techniques.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-8 space-y-12">
-              {brandsData.map((brand) => (
-                <section key={brand.name}>
-                  <div className="flex items-center gap-4 mb-6">
-                    <h2 className="text-2xl font-black text-brand uppercase tracking-tighter">{brand.name}</h2>
-                    <div className="h-[2px] flex-1 bg-brand/10" />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {brand.models.map((model) => (
-                      <Link 
-                        key={model.id} 
-                        href={`/fiches/${model.id}`}
-                        className="group flex items-center justify-between p-4 bg-card hover:bg-brand/5 border border-border/50 hover:border-brand/30 rounded-xl transition-all shadow-sm"
-                      >
-                        <div className="flex flex-col gap-1">
-                          <span className="font-bold text-foreground group-hover:text-brand transition-colors">{model.label}</span>
-                          {model.tags && (
-                            <div className="flex gap-1">
-                              {model.tags.map(tag => (
-                                <span key={tag} className="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">{tag}</span>
-                              ))}
-                            </div>
-                          )}
+            <div className="lg:col-span-8 space-y-4">
+              {brandsData.map((brand) => {
+                const isExpanded = expandedBrands.includes(brand.name);
+                return (
+                  <section key={brand.name} className="border border-border/50 rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm shadow-sm transition-all">
+                    <button 
+                      onClick={() => toggleBrand(brand.name)}
+                      className={cn(
+                        "w-full flex items-center justify-between p-6 transition-colors",
+                        isExpanded ? "bg-brand/10" : "hover:bg-muted/50"
+                      )}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all",
+                          isExpanded ? "bg-brand text-brand-foreground rotate-0" : "bg-muted text-muted-foreground"
+                        )}>
+                          {brand.name.charAt(0)}
                         </div>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-brand group-hover:translate-x-1 transition-all" />
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              ))}
+                        <h2 className={cn(
+                          "text-2xl font-black uppercase tracking-tighter",
+                          isExpanded ? "text-brand" : "text-foreground"
+                        )}>
+                          {brand.name}
+                        </h2>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                          {brand.models.length} modèles
+                        </span>
+                        {isExpanded ? <Minus className="h-5 w-5 text-brand" /> : <Plus className="h-5 w-5 text-muted-foreground" />}
+                      </div>
+                    </button>
 
-              <div className="pt-16 border-t border-border/50">
+                    <div className={cn(
+                      "grid transition-all duration-300 ease-in-out",
+                      isExpanded ? "grid-rows-[1fr] opacity-100 p-6 pt-0" : "grid-rows-[0fr] opacity-0"
+                    )}>
+                      <div className="overflow-hidden">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                          {brand.models.map((model) => (
+                            <Link 
+                              key={model.id} 
+                              href={`/fiches/${model.id}`}
+                              className="group flex items-center justify-between p-4 bg-background/50 hover:bg-brand/5 border border-border/50 hover:border-brand/30 rounded-xl transition-all shadow-sm"
+                            >
+                              <div className="flex flex-col gap-1">
+                                <span className="font-bold text-sm text-foreground group-hover:text-brand transition-colors">{model.label}</span>
+                                {model.tags && (
+                                  <div className="flex gap-1">
+                                    {model.tags.map(tag => (
+                                      <span key={tag} className="text-[8px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">{tag}</span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand group-hover:translate-x-1 transition-all" />
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                );
+              })}
+
+              <div className="pt-24 border-t border-border/50">
                 {isArticleLoading ? (
                   <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
                     <Loader2 className="h-10 w-10 animate-spin mb-4" />
@@ -256,7 +306,6 @@ export default function EntretienPage() {
                       </h2>
                     </div>
 
-                    {/* Rendu de l'introduction */}
                     <div className="mb-12">
                       {article.intro && Array.isArray(article.intro) && article.intro.map((p: string, i: number) => (
                         <p key={i} className="text-xl leading-relaxed text-foreground/90 font-medium mb-4">{p}</p>
@@ -280,12 +329,10 @@ export default function EntretienPage() {
                       )}
                     </div>
 
-                    {/* Rendu des sections */}
                     <div className="space-y-4">
                       {article.sections && Array.isArray(article.sections) && article.sections.map((section: any, idx: number) => renderSection(section, idx))}
                     </div>
 
-                    {/* Rendu de la conclusion */}
                     {article.conclusion && Array.isArray(article.conclusion) && (
                       <div className="mt-16 pt-8 border-t border-brand/20">
                         <div className="flex items-center gap-3 mb-6">
