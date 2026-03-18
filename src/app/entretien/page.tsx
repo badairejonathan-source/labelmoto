@@ -113,7 +113,7 @@ export default function EntretienPage() {
     router.push(`/map?filter=${filter}`);
   };
 
-  // Robust image resolution logic for articles
+  // Logique de résolution d'image
   const imageUrl = useMemo(() => {
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "/images/achat-occasion.jpg"; // Default fallback
@@ -189,19 +189,28 @@ export default function EntretienPage() {
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              const rowValues = headers.map((header: string) => {
-                const slug = header.toLowerCase()
+              const rowValues = headers.map((header: string, hi: number) => {
+                // 1. Gérer les lignes de type Tableau (Array)
+                if (Array.isArray(row)) {
+                  return row[hi] !== undefined ? row[hi] : '';
+                }
+
+                // 2. Gérer les lignes de type Objet avec mappage intelligent
+                const normalizedHeader = header.toLowerCase()
                   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                  .replace(/[^a-z0-9]/g, '_')
-                  .replace(/^_+|_+$/g, '');
+                  .replace(/[^a-z0-9]/g, '');
                 
+                // Correspondance directe
                 if (row[header] !== undefined) return row[header];
-                if (row[slug] !== undefined) return row[slug];
                 
-                const foundKey = Object.keys(row).find(k => 
-                  k.toLowerCase() === header.toLowerCase() || 
-                  k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '_') === slug
-                );
+                // Recherche de clé par normalisation (ex: "Type d'usage" -> "type")
+                const foundKey = Object.keys(row).find(k => {
+                  const normalizedKey = k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+                  return normalizedKey === normalizedHeader || 
+                         normalizedHeader.startsWith(normalizedKey) || 
+                         normalizedKey.startsWith(normalizedHeader);
+                });
+                
                 return foundKey ? row[foundKey] : '';
               });
 
@@ -321,7 +330,7 @@ export default function EntretienPage() {
         onSearch={handleSearch}
         activeFilter={null}
         onFilterChange={handleFilterChange}
-        placeholderText="Recherche par marque, modèle..."
+        placeholderText="Trouver une concession, une ville, une marque..."
       />
       
       <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
