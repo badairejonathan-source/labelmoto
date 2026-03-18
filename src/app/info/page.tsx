@@ -43,8 +43,6 @@ const ArticleCard = ({ article }: { article: any }) => {
                     <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground font-black uppercase tracking-widest">
                         <FileText className="h-3.5 w-3.5 text-brand" />
                         <span>Par {article.author || "L'équipe Label Moto"}</span>
-                        <span className="text-muted-foreground/50">•</span>
-                        <span>{article.readingTime || "10 min de lecture"}</span>
                     </div>
                 </div>
                 <div className="relative aspect-video rounded-2xl overflow-hidden order-first md:order-last border-2 border-white shadow-lg bg-muted">

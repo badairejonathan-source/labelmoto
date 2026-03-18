@@ -182,7 +182,7 @@ export default function LandingPage() {
                                         <div className="p-6 flex flex-col flex-grow">
                                             <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3 font-black uppercase tracking-widest">
                                                 <FileText className="h-3.5 w-3.5 text-brand" />
-                                                <span>{article.readingTime || "10 min de lecture"}</span>
+                                                <span>Par {article.author || "L'équipe Label Moto"}</span>
                                             </div>
                                             <h3 className="text-xl font-black text-foreground leading-tight group-hover:text-brand transition-colors line-clamp-2 mb-3 uppercase tracking-tight">
                                                 {article.display_title || article.title}
@@ -263,7 +263,7 @@ export default function LandingPage() {
                             Professionnels, rejoignez le réseau Label Moto.
                           </h2>
                           <p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">
-                            Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
+                            Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
                           <div className="relative inline-block group/cta">
                             <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest">

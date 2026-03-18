@@ -311,8 +311,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                     </h1>
                     <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest opacity-90">
                       <span>Par {article.author || "L'équipe Label Moto"}</span>
-                      <span className="opacity-50">•</span>
-                      <span>{article.readingTime || "10 min de lecture"}</span>
                     </div>
                   </div>
                 </div>
