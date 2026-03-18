@@ -116,21 +116,28 @@ export default function EntretienPage() {
   // Logique de résolution d'image
   const imageUrl = useMemo(() => {
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-    return "/images/achat-occasion.jpg"; // Default fallback
+    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
   const renderNote = (note: string) => {
     if (!note) return null;
-    const budgetId = "4";
+    
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    const budgetTrigger = "notre guide sur le coût réel d’une moto par mois";
-    const budgetTrigger2 = "notre guide sur le coût moyen d’une moto par mois";
-    const preventionTrigger = "Vérifie AVANT l’achat pour éviter les mauvaises surprises";
+    const budgetId = "4";
+    
+    const triggers = [
+        "notre guide sur le coût réel d’une moto par mois",
+        "notre guide sur le coût moyen d’une moto par mois",
+        "Vérifie AVANT l’achat pour éviter les mauvaises surprises",
+        "consulte aussi Combien coûte vraiment une moto par mois",
+        "consulte aussi notre guide"
+    ];
     
     let content: React.ReactNode = note;
+    let foundTrigger = triggers.find(t => note.includes(t));
 
-    if (note.includes(budgetTrigger)) {
-      const parts = note.split(budgetTrigger);
+    if (foundTrigger) {
+      const parts = note.split(foundTrigger);
       content = (
         <>
           {parts[0]}
@@ -140,28 +147,6 @@ export default function EntretienPage() {
           {parts[1]}
         </>
       );
-    } else if (note.includes(budgetTrigger2)) {
-      const parts = note.split(budgetTrigger2);
-      content = (
-        <>
-          {parts[0]}
-          <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
-            {budgetArticleTitle}
-          </Link>
-          {parts[1]}
-        </>
-      );
-    } else if (note.includes(preventionTrigger)) {
-        const parts = note.split(preventionTrigger);
-        content = (
-            <>
-                👉 {preventionTrigger}.{" "}
-                <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
-                    {budgetArticleTitle}
-                </Link>
-                {parts[1]}
-            </>
-        );
     }
 
     return (
@@ -190,28 +175,21 @@ export default function EntretienPage() {
           <TableBody>
             {rows.map((row: any, ri: number) => {
               const rowValues = headers.map((header: string, hi: number) => {
-                // 1. Gérer les lignes de type Tableau (Array)
-                if (Array.isArray(row)) {
-                  return row[hi] !== undefined ? row[hi] : '';
-                }
-
-                // 2. Gérer les lignes de type Objet avec mappage intelligent
-                const normalizedHeader = header.toLowerCase()
-                  .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                  .replace(/[^a-z0-9]/g, '');
-                
-                // Correspondance directe
+                if (Array.isArray(row)) return row[hi] !== undefined ? row[hi] : '';
                 if (row[header] !== undefined) return row[header];
+
+                const normalizedHeader = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
                 
-                // Recherche de clé par normalisation (ex: "Type d'usage" -> "type")
                 const foundKey = Object.keys(row).find(k => {
                   const normalizedKey = k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
-                  return normalizedKey === normalizedHeader || 
-                         normalizedHeader.startsWith(normalizedKey) || 
-                         normalizedKey.startsWith(normalizedHeader);
+                  return normalizedKey.length > 2 && (normalizedHeader.includes(normalizedKey) || normalizedKey.includes(normalizedHeader));
                 });
                 
-                return foundKey ? row[foundKey] : '';
+                if (foundKey) return row[foundKey];
+                if (row[hi] !== undefined) return row[hi];
+                if (row[String(hi)] !== undefined) return row[String(hi)];
+
+                return '';
               });
 
               return (
