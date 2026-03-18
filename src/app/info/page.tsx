@@ -23,6 +23,7 @@ const ArticleCard = ({ article }: { article: any }) => {
         if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
         if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
+        if (id.includes('zfe') || title.includes('zfe')) return "https://images.unsplash.com/photo-1519608487913-d9d9b970ef9b?q=80&w=2070&auto=format&fit=crop";
         
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     }, [article]);

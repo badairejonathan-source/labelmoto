@@ -116,7 +116,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                   if (keyWords.length === 0 || headerWords.length === 0) return false;
                   // Si tous les mots du header sont dans la clé (ou vice versa)
                   return headerWords.every(hw => keyWords.some(kw => kw.includes(hw) || hw.includes(kw))) ||
-                         keyWords.every(kw => headerWords.some(hw => hw.includes(kw) || kw.includes(hw)));
+                         keyWords.every(kw => headerWords.some(hw => hw.includes(kw) || hw.includes(kw)));
                 });
                 
                 if (foundKey) return row[foundKey];
@@ -263,6 +263,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (articleId.includes('pieges') || articleId.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
     if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
+    if (articleId.includes('zfe') || title.includes('zfe')) return "https://images.unsplash.com/photo-1519608487913-d9d9b970ef9b?q=80&w=2070&auto=format&fit=crop";
     
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
