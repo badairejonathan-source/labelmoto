@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -113,7 +114,6 @@ export default function EntretienPage() {
     router.push(`/map?filter=${filter}`);
   };
 
-  // Logique de résolution d'image
   const imageUrl = useMemo(() => {
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
@@ -162,6 +162,9 @@ export default function EntretienPage() {
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
 
+    const getWords = (s: string) => 
+        String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z0-9]+/).filter(w => w.length > 1);
+
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
         <Table>
@@ -178,11 +181,12 @@ export default function EntretienPage() {
                 if (Array.isArray(row)) return row[hi] !== undefined ? row[hi] : '';
                 if (row[header] !== undefined) return row[header];
 
-                const normalizedHeader = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
-                
+                const headerWords = getWords(header);
                 const foundKey = Object.keys(row).find(k => {
-                  const normalizedKey = k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
-                  return normalizedKey.length > 2 && (normalizedHeader.includes(normalizedKey) || normalizedKey.includes(normalizedHeader));
+                  const keyWords = getWords(k);
+                  if (keyWords.length === 0 || headerWords.length === 0) return false;
+                  return headerWords.every(hw => keyWords.some(kw => kw.includes(hw) || hw.includes(kw))) ||
+                         keyWords.every(kw => headerWords.some(hw => hw.includes(kw) || kw.includes(hw)));
                 });
                 
                 if (foundKey) return row[foundKey];

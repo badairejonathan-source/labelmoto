@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -52,7 +53,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
     const budgetId = "4";
     
-    // Détection flexible des liens vers l'article budget
     const triggers = [
         "notre guide sur le coût réel d’une moto par mois",
         "notre guide sur le coût moyen d’une moto par mois",
@@ -90,6 +90,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
 
+    // Helper pour extraire les mots significatifs pour le matching
+    const getWords = (s: string) => 
+        String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z0-9]+/).filter(w => w.length > 1);
+
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
         <Table>
@@ -103,24 +107,19 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <TableBody>
             {rows.map((row: any, ri: number) => {
               const rowValues = headers.map((header: string, hi: number) => {
-                // 1. Lignes de type Tableau (Array)
                 if (Array.isArray(row)) return row[hi] !== undefined ? row[hi] : '';
-
-                // 2. Correspondance directe
                 if (row[header] !== undefined) return row[header];
 
-                // 3. Mappage intelligent (insensible aux accents/espaces)
-                const normalizedHeader = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
-                
+                const headerWords = getWords(header);
                 const foundKey = Object.keys(row).find(k => {
-                  const normalizedKey = k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
-                  // Correspondance si une clé est incluse dans l'autre (ex: "usage" dans "typedusage")
-                  return normalizedKey.length > 2 && (normalizedHeader.includes(normalizedKey) || normalizedKey.includes(normalizedHeader));
+                  const keyWords = getWords(k);
+                  if (keyWords.length === 0 || headerWords.length === 0) return false;
+                  // Si tous les mots du header sont dans la clé (ou vice versa)
+                  return headerWords.every(hw => keyWords.some(kw => kw.includes(hw) || hw.includes(kw))) ||
+                         keyWords.every(kw => headerWords.some(hw => hw.includes(kw) || kw.includes(hw)));
                 });
                 
                 if (foundKey) return row[foundKey];
-
-                // 4. Secours par index numérique (si les clés sont "0", "1", etc.)
                 if (row[hi] !== undefined) return row[hi];
                 if (row[String(hi)] !== undefined) return row[String(hi)];
 
@@ -417,7 +416,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                                   className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110"
                               />
                             </Link>
-                            <p className="text-muted-foreground text-sm mt-6 font-bold leading-relaxed">
+                            <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">
                                 Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
                             </p>
                         </CardContent>
