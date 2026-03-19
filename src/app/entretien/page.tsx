@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -100,7 +101,7 @@ export default function EntretienPage() {
 
   const imageUrl = useMemo(() => {
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
+    return "https://images.unsplash.com/photo-151577315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
   const activeSections = useMemo(() => {
@@ -190,7 +191,7 @@ export default function EntretienPage() {
         String(s).toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]/g, "");
+            .replace(/[^a-z0-9]+/g, "");
 
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
@@ -204,21 +205,38 @@ export default function EntretienPage() {
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              const rowValues = headers.map((header: string) => {
+              const rowValues = headers.map((header: string, hi: number) => {
                 const normHeader = normalize(header);
+                
+                // 1. Handling Array Data
                 if (Array.isArray(row)) {
-                    const idx = headers.indexOf(header);
-                    return row[idx] !== undefined ? row[idx] : '';
+                    return row[hi] !== undefined ? row[hi] : '';
                 }
                 
+                // 2. Handling Object Data
+                if (row[header] !== undefined) return row[header];
+                
+                const foundCase = Object.keys(row).find(k => k.toLowerCase() === header.toLowerCase());
+                if (foundCase) return row[foundCase];
+
+                const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
+                if (foundExact) return row[foundExact];
+
                 const foundKey = Object.keys(row).find(k => {
-                    const normK = normalize(k);
-                    const kKeywords = normK.split('_');
-                    const hKeywords = normHeader.split(/[\s'’]/);
-                    return kKeywords.some(kw => hKeywords.some(hw => hw.includes(kw) || kw.includes(hw)));
+                    const nk = normalize(k);
+                    const nh = normHeader;
+                    if (nk === nh) return true;
+                    if (nk.length > 2 && nh.includes(nk)) return true;
+                    if (nh.length > 2 && nk.includes(nh)) return true;
+                    const sharedWords = ["usage", "budget", "prix", "entretien", "frequence", "revision"];
+                    return sharedWords.some(word => nk.includes(word) && nh.includes(word));
                 });
                 
                 if (foundKey) return row[foundKey];
+                
+                const keys = Object.keys(row);
+                if (keys[hi] !== undefined) return row[keys[hi]];
+
                 return '';
               });
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -71,17 +72,17 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     
     activeSections.forEach((s: any) => {
       if (s.title) {
-        // We include all main section titles
         points.push({ title: s.title, id: slugify(s.title) });
       }
       
       if (s.subsections) {
         s.subsections.forEach((sub: any) => {
           const lowerTitle = (sub.title || "").toLowerCase();
-          // Filter to only include categories (roadster, trail, sportive)
           const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
+          // We exclude sub-points 1, 2, 3, 4
+          const isSubPoint = /^[1-4]\./.test(lowerTitle);
           
-          if (sub.title && isCategory) {
+          if (sub.title && isCategory && !isSubPoint) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
@@ -147,7 +148,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         String(s).toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]/g, "");
+            .replace(/[^a-z0-9]+/g, "");
 
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
@@ -161,22 +162,43 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              const rowValues = headers.map((header: string) => {
+              const rowValues = headers.map((header: string, hi: number) => {
                 const normHeader = normalize(header);
                 
+                // 1. Handling Array Data
                 if (Array.isArray(row)) {
-                    const idx = headers.indexOf(header);
-                    return row[idx] !== undefined ? row[idx] : '';
+                    return row[hi] !== undefined ? row[hi] : '';
                 }
                 
+                // 2. Handling Object Data
+                // Attempt exact match
+                if (row[header] !== undefined) return row[header];
+                
+                // Attempt case insensitive match
+                const foundCase = Object.keys(row).find(k => k.toLowerCase() === header.toLowerCase());
+                if (foundCase) return row[foundCase];
+
+                // Attempt exact normalized match
+                const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
+                if (foundExact) return row[foundExact];
+
+                // Keyword fuzzy match (handling type_usage vs Type d'usage)
                 const foundKey = Object.keys(row).find(k => {
-                    const normK = normalize(k);
-                    const kKeywords = normK.split('_');
-                    const hKeywords = normHeader.split(/[\s'’]/);
-                    return kKeywords.some(kw => hKeywords.some(hw => hw.includes(kw) || kw.includes(hw)));
+                    const nk = normalize(k);
+                    const nh = normHeader;
+                    if (nk === nh) return true;
+                    if (nk.length > 2 && nh.includes(nk)) return true;
+                    if (nh.length > 2 && nk.includes(nh)) return true;
+                    const sharedWords = ["usage", "budget", "prix", "entretien", "frequence", "revision"];
+                    return sharedWords.some(word => nk.includes(word) && nh.includes(word));
                 });
                 
                 if (foundKey) return row[foundKey];
+                
+                // Last resort: Fallback to index
+                const keys = Object.keys(row);
+                if (keys[hi] !== undefined) return row[keys[hi]];
+
                 return '';
               });
 
