@@ -43,7 +43,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // --- MOVED HOOKS TO THE TOP TO PREVENT HOOK ORDER ERRORS ---
+  // --- HOOKS AT THE TOP (Strict order) ---
   
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
@@ -66,14 +66,24 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   }, [article]);
   
   const allSummaryPoints = useMemo(() => {
+    if (!activeSections) return [];
     const points: { title: string; id: string }[] = [];
+    
     activeSections.forEach((s: any) => {
       if (s.title) {
+        // We include all main section titles
         points.push({ title: s.title, id: slugify(s.title) });
       }
+      
       if (s.subsections) {
         s.subsections.forEach((sub: any) => {
-          if (sub.title) {
+          const lowerTitle = (sub.title || "").toLowerCase();
+          // Filter to only include categories (roadster, trail, sportive)
+          const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
+          // Or the 4 main points if they were headings (gabarit, usage, budget, mental)
+          const isKeyPoint = ["gabarit", "usage", "budget", "mental"].some(point => lowerTitle.includes(point));
+          
+          if (sub.title && (isCategory || isKeyPoint)) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
