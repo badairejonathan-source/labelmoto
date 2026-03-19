@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -36,7 +37,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // Correction : Calcul de l'image au début pour respecter l'ordre des hooks
+  // Correction Hook Order : Calcul de l'image toujours en haut
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -66,7 +67,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (!note) return null;
     
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    const budgetId = "4";
+    const budgetId = "4"; // Identifiant de l'article budget
     
     const triggers = [
         "notre guide sur le coût réel d’une moto par mois",
@@ -84,7 +85,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       content = (
         <>
           {parts[0]}
-          <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
+          <Link href={`/info/${budgetId}`} className="text-foreground font-black underline hover:text-brand transition-colors">
             {budgetArticleTitle}
           </Link>
           {parts[1]}

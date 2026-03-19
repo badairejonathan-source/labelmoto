@@ -123,7 +123,7 @@ export default function EntretienPage() {
     if (!note) return null;
     
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    const budgetId = "4";
+    const budgetId = "4"; // Identifiant de l'article budget
     
     const triggers = [
         "notre guide sur le coût réel d’une moto par mois",
@@ -141,7 +141,7 @@ export default function EntretienPage() {
       content = (
         <>
           {parts[0]}
-          <Link href={`/info/${budgetId}`} className="text-brand font-black underline hover:text-foreground transition-colors">
+          <Link href={`/info/${budgetId}`} className="text-foreground font-black underline hover:text-brand transition-colors">
             {budgetArticleTitle}
           </Link>
           {parts[1]}
@@ -186,7 +186,7 @@ export default function EntretienPage() {
                   const keyWords = getWords(k);
                   if (keyWords.length === 0 || headerWords.length === 0) return false;
                   return headerWords.every(hw => keyWords.some(kw => kw.includes(hw) || hw.includes(kw))) ||
-                         keyWords.every(kw => headerWords.some(hw => hw.includes(kw) || kw.includes(hw)));
+                         keyWords.every(kw => headerWords.some(hw => hw.includes(kw) || hw.includes(kw)));
                 });
                 
                 if (foundKey) return row[foundKey];
@@ -224,7 +224,7 @@ export default function EntretienPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6 flex-grow">
-              {item.strengths && Array.isArray(item.strengths) && (
+              {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (
                 <div className="space-y-3">
                   <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
                     <CheckCircle2 className="h-3 w-3" /> Avantages
@@ -238,7 +238,7 @@ export default function EntretienPage() {
                   </ul>
                 </div>
               )}
-              {item.weaknesses && Array.isArray(item.weaknesses) && (
+              {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (
                 <div className="space-y-3">
                   <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
                     <AlertTriangle className="h-3 w-3" /> Inconvénients
