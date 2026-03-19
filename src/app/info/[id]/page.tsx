@@ -80,10 +80,8 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           const lowerTitle = (sub.title || "").toLowerCase();
           // Filter to only include categories (roadster, trail, sportive)
           const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
-          // Or the 4 main points if they were headings (gabarit, usage, budget, mental)
-          const isKeyPoint = ["gabarit", "usage", "budget", "mental"].some(point => lowerTitle.includes(point));
           
-          if (sub.title && (isCategory || isKeyPoint)) {
+          if (sub.title && isCategory) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
