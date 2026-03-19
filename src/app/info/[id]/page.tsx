@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -37,7 +36,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // Correction Hook Order : Calcul de l'image toujours en haut
+  // Hook order optimization: Compute derived state after all hooks but before conditional returns
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -67,7 +66,8 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (!note) return null;
     
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    const budgetId = "4"; // Identifiant de l'article budget
+    // Using slug ID for better consistency with modern record-keeping in Firestore
+    const budgetId = "combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant"; 
     
     const triggers = [
         "notre guide sur le coût réel d’une moto par mois",
@@ -106,8 +106,11 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
 
-    const getWords = (s: string) => 
-        String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z0-9]+/).filter(w => w.length > 1);
+    const normalize = (s: string) => 
+        String(s).toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]/g, "");
 
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
@@ -121,29 +124,28 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </TableHeader>
           <TableBody>
             {rows.map((row: any, ri: number) => {
-              const rowValues = headers.map((header: string, hi: number) => {
-                if (Array.isArray(row)) return row[hi] !== undefined ? row[hi] : '';
+              const rowValues = headers.map((header: string) => {
+                if (Array.isArray(row)) {
+                    const idx = headers.indexOf(header);
+                    return row[idx] !== undefined ? row[idx] : '';
+                }
+                
                 if (row[header] !== undefined) return row[header];
-
-                const headerWords = getWords(header);
+                
+                const normHeader = normalize(header);
                 const foundKey = Object.keys(row).find(k => {
-                  const keyWords = getWords(k);
-                  if (keyWords.length === 0 || headerWords.length === 0) return false;
-                  return headerWords.every(hw => keyWords.some(kw => kw.includes(hw) || hw.includes(kw))) ||
-                         keyWords.every(kw => headerWords.some(hw => hw.includes(kw) || hw.includes(kw)));
+                    const normK = normalize(k);
+                    return normK === normHeader || normHeader.includes(normK) || normK.includes(normHeader);
                 });
                 
                 if (foundKey) return row[foundKey];
-                if (row[hi] !== undefined) return row[hi];
-                if (row[String(hi)] !== undefined) return row[String(hi)];
-
                 return '';
               });
 
               return (
                 <TableRow key={ri} className="hover:bg-muted/30">
                   {rowValues.map((cell: any, ci: number) => (
-                    <TableCell key={ci} className={cn("py-4", ci === 0 ? 'font-bold text-foreground' : 'text-foreground font-black')}>
+                    <TableCell key={ci} className={cn("py-4 text-foreground font-bold", ci === 0 && "font-black")}>
                       {String(cell)}
                     </TableCell>
                   ))}
