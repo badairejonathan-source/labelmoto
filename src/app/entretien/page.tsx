@@ -262,6 +262,9 @@ export default function EntretienPage() {
   };
 
   const renderSection = (section: any, idx: number) => {
+    // Filter out restricted sections
+    if (section.title === "Moto vs voiture : le vrai comparatif") return null;
+
     const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
@@ -306,6 +309,9 @@ export default function EntretienPage() {
       </div>
     );
   };
+
+  const activeSections = article?.sections?.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif") || [];
+  const activeIntroPoints = article?.intro_points?.filter((p: string) => !p.toLowerCase().includes("moto vs voiture")) || [];
 
   return (
     <div className="bg-background min-h-screen">
@@ -440,12 +446,12 @@ export default function EntretienPage() {
                         <p key={i} className="text-xl leading-relaxed text-foreground font-black mb-4">{p}</p>
                       ))}
                       
-                      {article.intro_points && Array.isArray(article.intro_points) && (
+                      {activeIntroPoints.length > 0 && (
                         <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
                           <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
                           <ul className="list-none space-y-3 pl-0">
-                            {article.intro_points.map((pt: string, i: number) => {
-                              const matchingSection = article.sections?.find((s: any) => 
+                            {activeIntroPoints.map((pt: string, i: number) => {
+                              const matchingSection = activeSections.find((s: any) => 
                                 s.title && (
                                   s.title.toLowerCase().includes(pt.toLowerCase()) || 
                                   pt.toLowerCase().includes(s.title.toLowerCase().replace(/^(le |l’|la |les )/i, ''))
@@ -474,7 +480,7 @@ export default function EntretienPage() {
                     </div>
 
                     <div className="space-y-4">
-                      {article.sections && Array.isArray(article.sections) && article.sections.map((section: any, idx: number) => renderSection(section, idx))}
+                      {activeSections.map((section: any, idx: number) => renderSection(section, idx))}
                     </div>
 
                     {article.conclusion && (
