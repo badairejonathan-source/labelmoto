@@ -329,7 +329,24 @@ export default function EntretienPage() {
   };
 
   const activeSections = article?.sections?.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif") || [];
-  const activeIntroPoints = article?.intro_points?.filter((p: string) => !p.toLowerCase().includes("moto vs voiture")) || [];
+  
+  // Build dynamic summary points
+  const allSummaryPoints = useMemo(() => {
+    const points: { title: string; id: string }[] = [];
+    activeSections.forEach((s: any) => {
+      if (s.title) {
+        points.push({ title: s.title, id: slugify(s.title) });
+      }
+      if (s.subsections) {
+        s.subsections.forEach((sub: any) => {
+          if (sub.title) {
+            points.push({ title: sub.title, id: slugify(sub.title) });
+          }
+        });
+      }
+    });
+    return points;
+  }, [activeSections]);
 
   return (
     <div className="bg-background min-h-screen">
@@ -469,28 +486,18 @@ export default function EntretienPage() {
                         <p key={i} className="text-xl leading-relaxed text-foreground font-black mb-4">{p}</p>
                       ))}
                       
-                      {activeIntroPoints.length > 0 && (
+                      {allSummaryPoints.length > 0 && (
                         <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
                           <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
                           <ul className="list-none space-y-3 pl-0">
-                            {activeIntroPoints.map((pt: string, i: number) => {
-                              const matchingSection = activeSections.find((s: any) => 
-                                s.title && (
-                                  s.title.toLowerCase().includes(pt.toLowerCase()) || 
-                                  pt.toLowerCase().includes(s.title.toLowerCase().replace(/^(le |l’|la |les )/i, ''))
-                                )
-                              );
-                              const targetId = matchingSection ? slugify(matchingSection.title) : slugify(pt);
-                              
-                              return (
+                            {allSummaryPoints.map((pt, i) => (
                                 <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
                                   <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
-                                  <a href={`#${targetId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
-                                    {pt}
+                                  <a href={`#${pt.id}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
+                                    {pt.title}
                                   </a>
                                 </li>
-                              );
-                            })}
+                            ))}
                           </ul>
                         </div>
                       )}
