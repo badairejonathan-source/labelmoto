@@ -167,7 +167,7 @@ export default function EntretienPage() {
           <TableHeader className="bg-muted/50">
             <TableRow>
               {headers.map((h: string, i: number) => (
-                <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
+                <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px] whitespace-nowrap">{h}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -276,7 +276,7 @@ export default function EntretienPage() {
 
         {section.table && renderTable(section.table)}
         
-        {section.note && renderNote(section.note)}
+        {section.note && renderNote(note)}
 
         {hasComparisonSubsections ? (
             <div className="mt-8">
@@ -328,7 +328,7 @@ export default function EntretienPage() {
           </Link>
           
           <div className="mb-12">
-            <h1 className="text-4xl md:text-6xl font-black leading-none tracking-tighter text-foreground mb-4 uppercase">
+            <h1 className="text-4xl md:text-6xl font-black leading-[1.1] tracking-tighter text-foreground mb-4 uppercase">
               Catalogue des Fiches Techniques
             </h1>
             <p className="text-xl text-muted-foreground font-bold max-w-3xl">
@@ -418,7 +418,7 @@ export default function EntretienPage() {
                       </h2>
                     </div>
 
-                    <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-12 shadow-xl border-4 border-white bg-muted">
+                    <div className="relative w-full aspect-[4/3] md:aspect-[2.5/1] rounded-3xl overflow-hidden mb-12 shadow-xl border-4 border-white bg-muted">
                       <Image
                         src={imageUrl}
                         alt={article.display_title || article.title}

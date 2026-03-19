@@ -36,6 +36,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
+  // Robust image resolution logic
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -116,7 +117,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <TableHeader className="bg-muted/50">
             <TableRow>
               {headers.map((h: string, i: number) => (
-                <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px]">{h}</TableHead>
+                <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px] whitespace-nowrap">{h}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -133,7 +134,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 const normHeader = normalize(header);
                 const foundKey = Object.keys(row).find(k => {
                     const normK = normalize(k);
-                    // Match by includes to handle keys like "type_usage" for "Type d'usage"
                     return normK === normHeader || normHeader.includes(normK) || normK.includes(normHeader);
                 });
                 
@@ -296,10 +296,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             Retour aux articles
           </Link>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div className="md:col-span-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div className="lg:col-span-8">
               <article>
-                <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
+                <div className="relative w-full aspect-[4/3] md:aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
                   <Image
                     src={imageUrl}
                     alt={article.display_title || article.title}
@@ -307,12 +307,12 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     priority
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 p-8 text-white">
-                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-6 md:p-10 text-white w-full">
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-[1.1] mb-2 drop-shadow-lg">
                         {article.display_title || article.title}
                     </h1>
-                    <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest opacity-90">
+                    <div className="flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-widest opacity-90">
                       <span>Par {article.author || "L'équipe Label Moto"}</span>
                     </div>
                   </div>
@@ -355,10 +355,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         <Accordion type="single" collapsible className="w-full">
                           {article.faq.map((item: any, idx: number) => (
                             <AccordionItem key={idx} value={`item-${idx}`} className="border-b-brand/10">
-                              <AccordionTrigger className="text-left font-black text-foreground py-4 hover:text-brand transition-colors">
+                              <AccordionTrigger className="text-left font-black text-foreground py-4 hover:text-brand transition-colors leading-tight">
                                 {item.question}
                               </AccordionTrigger>
-                              <AccordionContent className="text-foreground font-black leading-relaxed pb-4">
+                              <AccordionContent className="text-foreground font-bold leading-relaxed pb-4">
                                 {item.answer}
                               </AccordionContent>
                             </AccordionItem>
@@ -398,7 +398,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               </article>
             </div>
 
-            <aside className="md:col-span-4 relative">
+            <aside className="lg:col-span-4 relative">
                 <div className="md:sticky md:top-28 space-y-6">
                     <Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20">
                         <CardHeader className="p-6 bg-brand text-brand-foreground">
@@ -417,7 +417,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                                   className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110"
                               />
                             </Link>
-                            <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">
+                            <p className="text-muted-foreground text-sm mt-6 font-bold leading-relaxed">
                                 Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.
                             </p>
                         </CardContent>
