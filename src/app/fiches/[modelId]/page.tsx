@@ -188,11 +188,11 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-8 text-white">
-                <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-2">
+              <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
+                <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 max-w-[95%]">
                     {displayData.modelName}
                 </h1>
-                <p className="text-xl md:text-2xl font-bold text-brand">{displayData.year}</p>
+                <p className="text-lg md:text-xl font-bold text-brand">{displayData.year}</p>
               </div>
             </div>
 

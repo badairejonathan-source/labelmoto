@@ -36,7 +36,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // Robust image resolution logic
+  // Hook Order safety: calculate image logic at the top
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -308,8 +308,8 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                     priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                  <div className="absolute bottom-0 left-0 p-6 md:p-10 text-white w-full">
-                    <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-[1.1] mb-2 drop-shadow-lg">
+                  <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
+                    <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 drop-shadow-lg max-w-[95%]">
                         {article.display_title || article.title}
                     </h1>
                     <div className="flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-widest opacity-90">
