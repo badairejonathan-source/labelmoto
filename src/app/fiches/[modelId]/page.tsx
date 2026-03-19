@@ -4,7 +4,7 @@ import React, { useState, use, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid, Home, ChevronRight } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -40,7 +40,6 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
-  // Reset selected variant when changing model
   useEffect(() => {
     setSelectedVariantIndex(0);
   }, [modelId]);
@@ -48,21 +47,12 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const displayData = useMemo(() => {
     if (!fiche) return null;
 
-    // Récupération des variantes (priorité racine, puis technical_sheet)
     const variants = fiche.variants || (fiche.technical_sheet?.variants) || [];
-    
-    // Données de base
     const ts = fiche.technical_sheet || {};
-    
-    // Sélection de la variante active
     const activeVariant = variants[selectedVariantIndex] || {};
-    
-    // Cycle parts merge logic
     const baseCp = ts.cycle_parts || fiche.cycle_parts || {};
     const variantCp = activeVariant.cycle_parts || {};
     const cp = { ...baseCp, ...variantCp };
-
-    // Service guide logic
     const sg = fiche.service_guide || {};
 
     return {
@@ -172,10 +162,17 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <Link href="/entretien" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 font-bold transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            Retour à l'entretien
-          </Link>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
+            <Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0">
+              <Home className="h-3 w-3" />
+              <span>Accueil</span>
+            </Link>
+            <ChevronRight className="h-3 w-3 shrink-0" />
+            <Link href="/entretien" className="hover:text-brand transition-colors shrink-0">Entretien</Link>
+            <ChevronRight className="h-3 w-3 shrink-0" />
+            <span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{displayData.modelName}</span>
+          </nav>
 
           <div className="space-y-8">
             {/* Hero Section */}

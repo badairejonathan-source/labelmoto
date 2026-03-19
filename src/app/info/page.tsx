@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -7,7 +6,7 @@ import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/app/header';
-import { Loader2, Map, ArrowLeft, FileText } from 'lucide-react';
+import { Loader2, Map, ArrowLeft, FileText, ChevronRight, Home } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -117,10 +116,16 @@ function InfoPageComponent() {
             </div>
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
                 <div className="max-w-6xl mx-auto">
-                    <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand font-black uppercase text-xs tracking-widest transition-colors mb-8">
-                        <ArrowLeft className="h-4 w-4" />
-                        Retour à l'accueil
-                    </Link>
+                    {/* Breadcrumb */}
+                    <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8">
+                        <Link href="/" className="hover:text-brand transition-colors flex items-center gap-1">
+                            <Home className="h-3 w-3" />
+                            <span>Accueil</span>
+                        </Link>
+                        <ChevronRight className="h-3 w-3" />
+                        <span className="text-foreground">Conseils</span>
+                    </nav>
+
                     <div className="text-center mb-12">
                         <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">
                             Conseils pratiques

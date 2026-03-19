@@ -4,7 +4,7 @@ import React, { useState, use, useMemo } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle, AlertTriangle, ChevronRight, Home } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -43,7 +43,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // Hook placed at the top level to avoid order issues
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -131,17 +130,18 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <TableBody>
             {rows.map((row: any, ri: number) => {
               const rowValues = headers.map((header: string) => {
+                const normHeader = normalize(header);
+                
                 if (Array.isArray(row)) {
                     const idx = headers.indexOf(header);
                     return row[idx] !== undefined ? row[idx] : '';
                 }
                 
-                if (row[header] !== undefined) return row[header];
-                
-                const normHeader = normalize(header);
                 const foundKey = Object.keys(row).find(k => {
                     const normK = normalize(k);
-                    return normK === normHeader || normHeader.includes(normK) || normK.includes(normHeader);
+                    const kKeywords = normK.split('_');
+                    const hKeywords = normHeader.split(/[\s'’]/);
+                    return kKeywords.some(kw => hKeywords.some(hw => hw.includes(kw) || kw.includes(hw)));
                 });
                 
                 if (foundKey) return row[foundKey];
@@ -151,7 +151,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               return (
                 <TableRow key={ri} className="hover:bg-muted/30">
                   {rowValues.map((cell: any, ci: number) => (
-                    <TableCell key={ci} className={cn("py-4 text-foreground font-bold", ci === 0 && "font-black")}>
+                    <TableCell key={ci} className={cn("py-4 text-foreground font-black", ci === 0 && "font-black")}>
                       {String(cell)}
                     </TableCell>
                   ))}
@@ -212,7 +212,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const renderSection = (section: any, idx: number) => {
-    // Filter out restricted sections
     if (section.title === "Moto vs voiture : le vrai comparatif") return null;
 
     const hasComparisonData = section.strengths || section.weaknesses;
@@ -281,7 +280,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  // Filter sections and intro points
   const activeSections = article.sections?.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif") || [];
   const activeIntroPoints = article.intro_points?.filter((p: string) => !p.toLowerCase().includes("moto vs voiture")) || [];
 
@@ -306,10 +304,17 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       </div>
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <Link href="/info" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand font-black uppercase text-xs tracking-widest transition-colors mb-8">
-            <ArrowLeft className="h-4 w-4" />
-            Retour aux articles
-          </Link>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
+            <Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0">
+              <Home className="h-3 w-3" />
+              <span>Accueil</span>
+            </Link>
+            <ChevronRight className="h-3 w-3 shrink-0" />
+            <Link href="/info" className="hover:text-brand transition-colors shrink-0">Conseils</Link>
+            <ChevronRight className="h-3 w-3 shrink-0" />
+            <span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
+          </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">

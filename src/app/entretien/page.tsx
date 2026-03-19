@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, Plus, Minus, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, Plus, Minus, AlertTriangle, Home } from 'lucide-react';
 import Link from 'next/link';
 
 import Header from '@/components/app/header';
@@ -181,17 +181,17 @@ export default function EntretienPage() {
           <TableBody>
             {rows.map((row: any, ri: number) => {
               const rowValues = headers.map((header: string) => {
+                const normHeader = normalize(header);
                 if (Array.isArray(row)) {
                     const idx = headers.indexOf(header);
                     return row[idx] !== undefined ? row[idx] : '';
                 }
                 
-                if (row[header] !== undefined) return row[header];
-                
-                const normHeader = normalize(header);
                 const foundKey = Object.keys(row).find(k => {
                     const normK = normalize(k);
-                    return normK === normHeader || normHeader.includes(normK) || normK.includes(normHeader);
+                    const kKeywords = normK.split('_');
+                    const hKeywords = normHeader.split(/[\s'’]/);
+                    return kKeywords.some(kw => hKeywords.some(hw => hw.includes(kw) || kw.includes(hw)));
                 });
                 
                 if (foundKey) return row[foundKey];
@@ -201,7 +201,7 @@ export default function EntretienPage() {
               return (
                 <TableRow key={ri} className="hover:bg-muted/30">
                   {rowValues.map((cell: any, ci: number) => (
-                    <TableCell key={ci} className={cn("py-4 text-foreground font-bold", ci === 0 && "font-black")}>
+                    <TableCell key={ci} className={cn("py-4 text-foreground font-black", ci === 0 && "font-black")}>
                       {String(cell)}
                     </TableCell>
                   ))}
@@ -262,7 +262,6 @@ export default function EntretienPage() {
   };
 
   const renderSection = (section: any, idx: number) => {
-    // Filter out restricted sections
     if (section.title === "Moto vs voiture : le vrai comparatif") return null;
 
     const hasComparisonData = section.strengths || section.weaknesses;
@@ -336,10 +335,15 @@ export default function EntretienPage() {
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand font-black uppercase text-xs tracking-widest transition-colors mb-8">
-            <ArrowLeft className="h-4 w-4" />
-            Retour à l'accueil
-          </Link>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8">
+            <Link href="/" className="hover:text-brand transition-colors flex items-center gap-1">
+              <Home className="h-3 w-3" />
+              <span>Accueil</span>
+            </Link>
+            <ChevronRight className="h-3 w-3" />
+            <span className="text-foreground">Entretien & Révisions</span>
+          </nav>
           
           <div className="mb-12">
             <h1 className="text-4xl md:text-6xl font-black leading-[1.1] tracking-tighter text-foreground mb-4 uppercase">
