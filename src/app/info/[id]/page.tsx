@@ -36,7 +36,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // Hook order optimization: Compute derived state after all hooks but before conditional returns
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -66,8 +65,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (!note) return null;
     
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    // Using slug ID for better consistency with modern record-keeping in Firestore
-    const budgetId = "combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant"; 
+    const budgetId = "combien-coute-vraiment-une-moto-par-mois"; 
     
     const triggers = [
         "notre guide sur le coût réel d’une moto par mois",
@@ -135,6 +133,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 const normHeader = normalize(header);
                 const foundKey = Object.keys(row).find(k => {
                     const normK = normalize(k);
+                    // Match by includes to handle keys like "type_usage" for "Type d'usage"
                     return normK === normHeader || normHeader.includes(normK) || normK.includes(normHeader);
                 });
                 
@@ -300,7 +299,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-8">
               <article>
-                <div className="relative w-full aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
+                <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
                   <Image
                     src={imageUrl}
                     alt={article.display_title || article.title}

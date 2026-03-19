@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, Plus, Minus, HelpCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Map, Info, ChevronRight, Loader2, FileText, CheckCircle2, Plus, Minus, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 import Header from '@/components/app/header';
@@ -17,12 +17,6 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -122,8 +116,7 @@ export default function EntretienPage() {
     if (!note) return null;
     
     const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    // Consistent slug ID for internal references
-    const budgetId = "combien-coute-vraiment-une-moto-par-mois-le-budget-reel-dun-motard-debutant"; 
+    const budgetId = "combien-coute-vraiment-une-moto-par-mois"; 
     
     const triggers = [
         "notre guide sur le coût réel d’une moto par mois",
