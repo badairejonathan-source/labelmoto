@@ -50,6 +50,7 @@
 @layer base {
   html {
     font-size: 13px; /* Échelle réduite de 14px à 13px pour un rendu plus dense */
+    scroll-behavior: smooth;
   }
 
   :root {

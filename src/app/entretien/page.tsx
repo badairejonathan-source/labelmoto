@@ -21,6 +21,13 @@ import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
+const slugify = (text: string) => 
+  text.toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+
 const brandsData = [
   {
     name: "BMW",
@@ -257,9 +264,10 @@ export default function EntretienPage() {
   const renderSection = (section: any, idx: number) => {
     const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
+    const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
 
     return (
-      <div key={idx} className="mb-12">
+      <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         
         {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
@@ -276,7 +284,7 @@ export default function EntretienPage() {
 
         {section.table && renderTable(section.table)}
         
-        {section.note && renderNote(note)}
+        {section.note && renderNote(section.note)}
 
         {hasComparisonSubsections ? (
             <div className="mt-8">
@@ -433,14 +441,29 @@ export default function EntretienPage() {
                       ))}
                       
                       {article.intro_points && Array.isArray(article.intro_points) && (
-                        <ul className="list-none space-y-3 my-6 pl-0">
-                          {article.intro_points.map((pt: string, i: number) => (
-                            <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black">
-                              <CheckCircle2 className="h-5 w-5 text-brand shrink-0" />
-                              {pt}
-                            </li>
-                          ))}
-                        </ul>
+                        <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
+                          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
+                          <ul className="list-none space-y-3 pl-0">
+                            {article.intro_points.map((pt: string, i: number) => {
+                              const matchingSection = article.sections?.find((s: any) => 
+                                s.title && (
+                                  s.title.toLowerCase().includes(pt.toLowerCase()) || 
+                                  pt.toLowerCase().includes(s.title.toLowerCase().replace(/^(le |l’|la |les )/i, ''))
+                                )
+                              );
+                              const targetId = matchingSection ? slugify(matchingSection.title) : slugify(pt);
+                              
+                              return (
+                                <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
+                                  <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
+                                  <a href={`#${targetId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
+                                    {pt}
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
                       )}
 
                       {article.intro_conclusion && (

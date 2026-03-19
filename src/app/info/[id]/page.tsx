@@ -27,6 +27,13 @@ import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
+const slugify = (text: string) => 
+  text.toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -36,7 +43,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // Hook Order safety: calculate image logic at the top
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -207,9 +213,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const renderSection = (section: any, idx: number) => {
     const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
+    const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
 
     return (
-      <div key={idx} className="mb-12">
+      <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         
         {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
@@ -309,7 +316,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                   <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
-                    <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 drop-shadow-lg max-w-[95%]">
+                    <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 drop-shadow-lg max-w-[95%]">
                         {article.display_title || article.title}
                     </h1>
                     <div className="flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-widest opacity-90">
@@ -325,14 +332,29 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                       ))}
                       
                       {article.intro_points && Array.isArray(article.intro_points) && (
-                        <ul className="list-none space-y-3 my-6 pl-0">
-                          {article.intro_points.map((pt: string, i: number) => (
-                            <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black">
-                              <CheckCircle2 className="h-5 w-5 text-brand shrink-0" />
-                              {pt}
-                            </li>
-                          ))}
-                        </ul>
+                        <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
+                          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
+                          <ul className="list-none space-y-3 pl-0">
+                            {article.intro_points.map((pt: string, i: number) => {
+                              const matchingSection = article.sections?.find((s: any) => 
+                                s.title && (
+                                  s.title.toLowerCase().includes(pt.toLowerCase()) || 
+                                  pt.toLowerCase().includes(s.title.toLowerCase().replace(/^(le |l’|la |les )/i, ''))
+                                )
+                              );
+                              const targetId = matchingSection ? slugify(matchingSection.title) : slugify(pt);
+                              
+                              return (
+                                <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
+                                  <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
+                                  <a href={`#${targetId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
+                                    {pt}
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
                       )}
 
                       {article.intro_conclusion && (
@@ -347,7 +369,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                     </div>
 
                     {article.faq && article.faq.length > 0 && (
-                      <div className="pt-12 space-y-6">
+                      <div className="pt-12 space-y-6" id="faq">
                         <div className="flex items-center gap-3">
                           <HelpCircle className="h-6 w-6 text-brand" />
                           <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">Questions fréquentes</h3>
