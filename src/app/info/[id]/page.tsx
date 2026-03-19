@@ -43,6 +43,8 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
+  // --- MOVED HOOKS TO THE TOP TO PREVENT HOOK ORDER ERRORS ---
+  
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     
@@ -57,6 +59,28 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
+
+  const activeSections = useMemo(() => {
+    if (!article?.sections) return [];
+    return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
+  }, [article]);
+  
+  const allSummaryPoints = useMemo(() => {
+    const points: { title: string; id: string }[] = [];
+    activeSections.forEach((s: any) => {
+      if (s.title) {
+        points.push({ title: s.title, id: slugify(s.title) });
+      }
+      if (s.subsections) {
+        s.subsections.forEach((sub: any) => {
+          if (sub.title) {
+            points.push({ title: sub.title, id: slugify(sub.title) });
+          }
+        });
+      }
+    });
+    return points;
+  }, [activeSections]);
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -299,27 +323,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         </div>
     );
   }
-
-  const activeSections = article.sections?.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif") || [];
-  
-  // Extract all points for the summary (section titles + logic for points/categories)
-  const allSummaryPoints = useMemo(() => {
-    const points: { title: string; id: string }[] = [];
-    activeSections.forEach((s: any) => {
-      if (s.title) {
-        points.push({ title: s.title, id: slugify(s.title) });
-      }
-      // Also look into subsections if needed (for points/categories)
-      if (s.subsections) {
-        s.subsections.forEach((sub: any) => {
-          if (sub.title) {
-            points.push({ title: sub.title, id: slugify(sub.title) });
-          }
-        });
-      }
-    });
-    return points;
-  }, [activeSections]);
 
   return (
     <div className="bg-background min-h-screen">

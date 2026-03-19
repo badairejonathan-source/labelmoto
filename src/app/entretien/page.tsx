@@ -96,6 +96,35 @@ export default function EntretienPage() {
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', articleId), [firestore, articleId]);
   const { data: article, isLoading: isArticleLoading } = useDoc(articleRef);
 
+  // --- HOOKS AT THE TOP ---
+
+  const imageUrl = useMemo(() => {
+    if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
+  }, [article]);
+
+  const activeSections = useMemo(() => {
+    if (!article?.sections) return [];
+    return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
+  }, [article]);
+  
+  const allSummaryPoints = useMemo(() => {
+    const points: { title: string; id: string }[] = [];
+    activeSections.forEach((s: any) => {
+      if (s.title) {
+        points.push({ title: s.title, id: slugify(s.title) });
+      }
+      if (s.subsections) {
+        s.subsections.forEach((sub: any) => {
+          if (sub.title) {
+            points.push({ title: sub.title, id: slugify(sub.title) });
+          }
+        });
+      }
+    });
+    return points;
+  }, [activeSections]);
+
   const toggleBrand = (brandName: string) => {
     setExpandedBrands(prev => 
       prev.includes(brandName) 
@@ -113,11 +142,6 @@ export default function EntretienPage() {
   const handleFilterChange = (filter: 'shopping' | 'service') => {
     router.push(`/map?filter=${filter}`);
   };
-
-  const imageUrl = useMemo(() => {
-    if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
-  }, [article]);
 
   const renderNote = (note: string) => {
     if (!note) return null;
@@ -327,26 +351,6 @@ export default function EntretienPage() {
       </div>
     );
   };
-
-  const activeSections = article?.sections?.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif") || [];
-  
-  // Build dynamic summary points
-  const allSummaryPoints = useMemo(() => {
-    const points: { title: string; id: string }[] = [];
-    activeSections.forEach((s: any) => {
-      if (s.title) {
-        points.push({ title: s.title, id: slugify(s.title) });
-      }
-      if (s.subsections) {
-        s.subsections.forEach((sub: any) => {
-          if (sub.title) {
-            points.push({ title: sub.title, id: slugify(sub.title) });
-          }
-        });
-      }
-    });
-    return points;
-  }, [activeSections]);
 
   return (
     <div className="bg-background min-h-screen">
