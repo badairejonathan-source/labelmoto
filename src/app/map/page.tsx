@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -111,7 +110,7 @@ function MapPageComponent() {
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLocating, setIsLocating] = useState(false);
+  const [isLocating, setIsLoadingLocating] = useState(false);
   const { toast } = useToast();
   const [ratingFilter, setRatingFilter] = useState<number>(0);
   const { firestore } = useFirebase();
@@ -440,9 +439,21 @@ function MapPageComponent() {
                     className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand", dealer.id === hoveredDealershipId && "shadow-md")} 
                   />
                 </div>
-                {(index + 1) % 4 === 0 && article && (
+                {(index + 1) % 4 === 0 && (
                   <div className="py-1 w-full">
-                    <AdCard article={article} />
+                    {adIndex === 1 ? (
+                      <AdCard 
+                        isPublicity={true}
+                        article={{
+                          id: 'promo-concession-heritage',
+                          title: 'BMW Motorrad : Journées Héritage',
+                          description: 'Profitez de conditions exceptionnelles sur la gamme R18 et découvrez nos nouveaux accessoires. Essai offert ce mois-ci.',
+                          imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1080'
+                        }} 
+                      />
+                    ) : (
+                      article && <AdCard article={article} />
+                    )}
                   </div>
                 )}
               </React.Fragment>
@@ -499,12 +510,12 @@ function MapPageComponent() {
                 onMapChange={handleMapChange} 
                 onMapClick={() => {}} 
                 isLocating={isLocating} 
-                onLocateEnd={() => setIsLocating(false)} 
+                onLocateEnd={() => setIsLoadingLocating(false)} 
                 onLocationFound={setUserCoords}
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
               <div className="absolute top-3 right-3 z-[1000] p-1 overflow-visible">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
               </div>
             </main>
           </>
@@ -528,12 +539,12 @@ function MapPageComponent() {
                   setIsExpanding(true);
                 }} 
                 isLocating={isLocating} 
-                onLocateEnd={() => setIsLocating(false)} 
+                onLocateEnd={() => setIsLoadingLocating(false)} 
                 onLocationFound={setUserCoords}
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
               <div className="absolute top-2 right-2 z-[1000] p-1 overflow-visible">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0" onClick={() => setIsLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
               </div>
             </main>
             <div className={cn(
