@@ -101,7 +101,7 @@ export default function EntretienPage() {
 
   const imageUrl = useMemo(() => {
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-    return "https://images.unsplash.com/photo-151577315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
+    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
   const activeSections = useMemo(() => {
@@ -213,12 +213,9 @@ export default function EntretienPage() {
                     return row[hi] !== undefined ? row[hi] : '';
                 }
                 
-                // 2. Handling Object Data
+                // 2. Handling Object Data with smart matching
                 if (row[header] !== undefined) return row[header];
                 
-                const foundCase = Object.keys(row).find(k => k.toLowerCase() === header.toLowerCase());
-                if (foundCase) return row[foundCase];
-
                 const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
                 if (foundExact) return row[foundExact];
 

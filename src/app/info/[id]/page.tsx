@@ -63,6 +63,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   const activeSections = useMemo(() => {
     if (!article?.sections) return [];
+    // Filter out comparison section as requested
     return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
   }, [article]);
   
@@ -71,17 +72,21 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     const points: { title: string; id: string }[] = [];
     
     activeSections.forEach((s: any) => {
+      // Add main section titles
       if (s.title) {
         points.push({ title: s.title, id: slugify(s.title) });
       }
       
+      // Add only categories (Roadster, Trail, Sportive) from subsections
       if (s.subsections) {
         s.subsections.forEach((sub: any) => {
           const lowerTitle = (sub.title || "").toLowerCase();
           const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
-          const isBudgetSection = lowerTitle.includes("budget");
           
-          if (sub.title && (isCategory || isBudgetSection)) {
+          // Exclude numbered points 1, 2, 3, 4
+          const isNumberedPoint = /^[1-4]\./.test(lowerTitle);
+          
+          if (sub.title && isCategory && !isNumberedPoint) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
@@ -164,15 +169,14 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               const rowValues = headers.map((header: string, hi: number) => {
                 const normHeader = normalize(header);
                 
+                // 1. Handling Array Data
                 if (Array.isArray(row)) {
                     return row[hi] !== undefined ? row[hi] : '';
                 }
                 
+                // 2. Handling Object Data with smart matching
                 if (row[header] !== undefined) return row[header];
                 
-                const foundCase = Object.keys(row).find(k => k.toLowerCase() === header.toLowerCase());
-                if (foundCase) return row[foundCase];
-
                 const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
                 if (foundExact) return row[foundExact];
 
@@ -188,6 +192,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 
                 if (foundKey) return row[foundKey];
                 
+                // 3. Fallback to index if keys don't match
                 const keys = Object.keys(row);
                 if (keys[hi] !== undefined) return row[keys[hi]];
 
@@ -258,8 +263,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   };
 
   const renderSection = (section: any, idx: number) => {
-    if (section.title === "Moto vs voiture : le vrai comparatif") return null;
-
     const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
@@ -300,6 +303,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             )
         )}
 
+        {/* Specific CTA for budget sections */}
         {section.title && 
          (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && 
          id !== 'combien-coute-vraiment-une-moto-par-mois' && (
@@ -355,6 +359,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         onFilterChange={handleFilterChange}
         placeholderText="Trouver une concession, une ville, une marque..."
       />
+      
       <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
         <Image
           src="/images/logo-moto.png?v=6"
@@ -364,8 +369,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           className="opacity-[0.08] rotate-[-15deg] scale-150"
         />
       </div>
+
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
+          {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
             <Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0">
               <Home className="h-3 w-3" />
