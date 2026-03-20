@@ -79,10 +79,9 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         s.subsections.forEach((sub: any) => {
           const lowerTitle = (sub.title || "").toLowerCase();
           const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
-          // We exclude sub-points 1, 2, 3, 4
-          const isSubPoint = /^[1-4]\./.test(lowerTitle);
+          const isBudgetSection = lowerTitle.includes("budget");
           
-          if (sub.title && isCategory && !isSubPoint) {
+          if (sub.title && (isCategory || isBudgetSection)) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
@@ -165,24 +164,18 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               const rowValues = headers.map((header: string, hi: number) => {
                 const normHeader = normalize(header);
                 
-                // 1. Handling Array Data
                 if (Array.isArray(row)) {
                     return row[hi] !== undefined ? row[hi] : '';
                 }
                 
-                // 2. Handling Object Data
-                // Attempt exact match
                 if (row[header] !== undefined) return row[header];
                 
-                // Attempt case insensitive match
                 const foundCase = Object.keys(row).find(k => k.toLowerCase() === header.toLowerCase());
                 if (foundCase) return row[foundCase];
 
-                // Attempt exact normalized match
                 const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
                 if (foundExact) return row[foundExact];
 
-                // Keyword fuzzy match (handling type_usage vs Type d'usage)
                 const foundKey = Object.keys(row).find(k => {
                     const nk = normalize(k);
                     const nh = normHeader;
@@ -195,7 +188,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 
                 if (foundKey) return row[foundKey];
                 
-                // Last resort: Fallback to index
                 const keys = Object.keys(row);
                 if (keys[hi] !== undefined) return row[keys[hi]];
 
@@ -308,7 +300,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             )
         )}
 
-        {/* Specific CTA for budget sections */}
         {section.title && 
          (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && 
          id !== 'combien-coute-vraiment-une-moto-par-mois' && (
@@ -375,7 +366,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       </div>
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
             <Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0">
               <Home className="h-3 w-3" />
