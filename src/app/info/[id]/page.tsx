@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -81,10 +82,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           const lowerTitle = (sub.title || "").toLowerCase();
           const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
           
-          // Exclude numbered steps (1, 2, 3, 4) from TOC as per instructions
-          const isNumberedStep = /^[1-4]\./.test(lowerTitle);
-          
-          if (sub.title && isCategory && !isNumberedStep) {
+          if (sub.title && isCategory) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
@@ -382,7 +380,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
               <article>
-                <div className="relative w-full aspect-[4/3] md:aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
+                <div className="relative w-full aspect-[4/3] md:aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
                   <Image
                     src={imageUrl}
                     alt={article.display_title || article.title}

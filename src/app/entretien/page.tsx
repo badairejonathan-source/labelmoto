@@ -491,7 +491,7 @@ export default function EntretienPage() {
                       </h2>
                     </div>
 
-                    <div className="relative w-full aspect-[4/3] md:aspect-[2.5/1] rounded-3xl overflow-hidden mb-12 shadow-xl border-4 border-white bg-muted">
+                    <div className="relative w-full aspect-[4/3] md:aspect-[2/1] rounded-3xl overflow-hidden mb-12 shadow-xl border-4 border-white bg-muted">
                       <Image
                         src={imageUrl}
                         alt={article.display_title || article.title}

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use, useMemo, useEffect } from 'react';
@@ -175,8 +176,8 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           </nav>
 
           <div className="space-y-8">
-            {/* Hero Section */}
-            <div className="relative w-full aspect-[2.5/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
+            {/* Hero Section - XL Format */}
+            <div className="relative w-full aspect-[4/3] md:aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
               <Image
                 src={displayData.imageUrl}
                 alt={displayData.modelName}
