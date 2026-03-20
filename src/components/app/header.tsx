@@ -423,9 +423,9 @@ const Header: React.FC<HeaderProps> = ({
 
                 <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
                   {prediction && searchTerm && (
-                    <div className="absolute inset-0 px-4 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
-                        <span className="text-sm text-transparent select-none">{searchTerm}</span>
-                        <span className="text-sm text-muted-foreground/40 select-none">
+                    <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
+                        <span className="text-base text-transparent select-none">{searchTerm}</span>
+                        <span className="text-base text-muted-foreground/40 select-none">
                             {prediction.substring(searchTerm.length)}
                         </span>
                     </div>
@@ -433,7 +433,7 @@ const Header: React.FC<HeaderProps> = ({
                   <Input
                     type="search"
                     placeholder={placeholderText}
-                    className="pr-10 h-10 text-sm rounded-full shadow-sm bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-none relative z-10"
+                    className="pr-16 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 border-2 border-transparent focus:border-brand/30 px-6 relative z-10 transition-all duration-300"
                     value={searchTerm}
                     onChange={(e) => {
                         onSearchTermChange(e.target.value);
@@ -446,29 +446,29 @@ const Header: React.FC<HeaderProps> = ({
                   <Button 
                       type="submit" 
                       size="icon" 
-                      className="absolute top-1/2 right-1 -translate-y-1/2 h-8 w-8 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow z-20"
+                      className="absolute top-1/2 right-1.5 -translate-y-1/2 h-11 w-11 bg-brand hover:bg-brand/90 text-brand-foreground rounded-full shadow-lg z-20 transition-transform active:scale-95"
                       onClick={executeSearch}
                   >
-                    <Search className="h-4 w-4" />
+                    <Search className="h-5 w-5" />
                   </Button>
 
                   {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                         {suggestions.map((s, idx) => (
                             <button
                                 key={`${s.type}-${idx}`}
-                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors group"
+                                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left transition-colors group"
                                 onClick={() => handleSuggestionClick(s)}
                             >
-                                <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
-                                    {s.type === 'dealer' || s.type === 'brand-location' || s.type === 'brand-only' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                                <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
+                                    {s.type === 'dealer' || s.type === 'brand-location' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
                                 </div>
                                 <div className="flex flex-col min-w-0">
-                                    <span className="text-sm font-bold text-foreground truncate">{s.label}</span>
-                                    {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-bold tracking-tight">{s.subLabel}</span>}
+                                    <span className="text-base font-bold text-foreground truncate">{s.label}</span>
+                                    {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}
                                 </div>
                                 <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Search className="w-3 h-3 text-muted-foreground" />
+                                    <Search className="w-4 h-4 text-muted-foreground" />
                                 </div>
                             </button>
                         ))}
