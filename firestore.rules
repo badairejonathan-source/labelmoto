@@ -1,6 +1,7 @@
 
 /**
  * Moto Trust Firestore Security Rules
+ * Configuration sécurisée : Lecture publique pour le contenu, Modifications réservées à l'Admin.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -15,85 +16,88 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // Accès strictement réservé à votre UID
+      // Ton UID Admin unique
       return isSignedIn() && request.auth.uid == "A36FqeWBHjQBLKQMaMSiFVBzGV22";
     }
 
     function isOwner(userId) {
-      return request.auth.uid == userId;
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    function isExistingOwner(userId) {
-      return resource != null && isOwner(userId);
-    }
+    // ----------------------------------------
+    // Collections Publiques (Contenu du site)
+    // ----------------------------------------
 
-    function isCreatingOwnDoc(userId) {
-      return request.resource.data.id == userId;
-    }
-
-    function idIsImmutable() {
-      return request.resource.data.id == resource.data.id;
-    }
-
-    match /professionalProfiles/{professionalId} {
-      allow get: if isOwner(professionalId) || isAdmin();
-      allow list: if isAdmin();
-      allow create: if isSignedIn() && isOwner(professionalId) && isCreatingOwnDoc(professionalId);
-      allow update: if isExistingOwner(professionalId) && idIsImmutable();
-      allow delete: if isAdmin();
-    }
-    
-    match /standardProfiles/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin();
-      allow create: if isSignedIn() && isOwner(userId) && isCreatingOwnDoc(userId);
-      allow update: if isExistingOwner(userId) && idIsImmutable();
-      allow delete: if isAdmin();
-    }
-
+    // Concessions et Ateliers
     match /concessions/{dealershipId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true; // Tout le monde peut voir les pros
+      allow write: if isAdmin(); // Seul toi peux ajouter/modifier/supprimer
       
+      // Commentaires approuvés sous chaque concession
       match /comments/{commentId} {
         allow read: if true;
         allow write: if isAdmin();
       }
     }
 
+    // Fiches techniques
     match /motorcycle_sheets/{modelId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-    
-    match /pending_concessions/{submissionId} {
-      allow get, list: if isAdmin();
-      allow create: if isSignedIn();
-      allow update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
-    match /a_verifier/{submissionId} {
-      allow get, list: if isAdmin();
-      allow create: if isSignedIn();
-      allow update, delete: if isAdmin();
-    }
-
-    match /pending_comments/{commentId} {
-      allow get, list: if isAdmin();
-      allow create: if isSignedIn();
-      allow update, delete: if isAdmin();
-    }
-
-    match /advicePosts/{advicePostId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
+    // Articles et Guides
     match /articles/{articleId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
+    // Posts de conseils
+    match /advicePosts/{advicePostId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ----------------------------------------
+    // Collections Privées et Modération
+    // ----------------------------------------
+
+    // Profils utilisateurs (Seul le proprio ou l'admin peut voir)
+    match /standardProfiles/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isAdmin();
+    }
+
+    match /professionalProfiles/{professionalId} {
+      allow get: if isOwner(professionalId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(professionalId);
+      allow update: if isOwner(professionalId);
+      allow delete: if isAdmin();
+    }
+
+    // Soumissions de nouveaux établissements (Public peut créer, Admin peut tout faire)
+    match /pending_concessions/{submissionId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Quarantaine automatique
+    match /a_verifier/{submissionId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Commentaires en attente de modération
+    match /pending_comments/{commentId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Rôles Admin (Stricte confidentialité)
     match /roles_admin/{uid} {
       allow read, write: if isAdmin();
     }
