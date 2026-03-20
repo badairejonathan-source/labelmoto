@@ -446,7 +446,7 @@ function MapPageComponent() {
                         isPublicity={true}
                         article={{
                           id: 'promo-concession-heritage',
-                          title: 'BMW Motorrad : Journées Héritage',
+                          title: 'BMW MOTORRAD 78 : journee heritage',
                           description: 'Profitez de conditions exceptionnelles sur la gamme R18 et découvrez nos nouveaux accessoires. Essai offert ce mois-ci.',
                           imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1080'
                         }} 
