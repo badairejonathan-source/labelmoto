@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,23 +15,37 @@ import Header from '@/components/app/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, LogOut, ArrowLeft } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, LogOut, ArrowLeft, User, Bike, Palette, Save, X } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { cn } from '@/lib/utils';
 
+// Badge color options
+const badgeColors = [
+  { id: 'brand', label: 'Orange Moto', class: 'bg-brand' },
+  { id: 'blue', label: 'Bleu Vitesse', class: 'bg-blue-600' },
+  { id: 'green', label: 'Vert Kawa', class: 'bg-green-600' },
+  { id: 'red', label: 'Rouge Ducati', class: 'bg-red-600' },
+  { id: 'purple', label: 'Violet Custom', class: 'bg-purple-600' },
+  { id: 'black', label: 'Noir Outlaw', class: 'bg-black' },
+];
 
-const proProfileSchema = z.object({
-  firstName: z.string().min(1, 'Le prénom est requis.'),
-  lastName: z.string().min(1, 'Le nom de famille est requis.'),
+const profileSchema = z.object({
+  pseudo: z.string().min(2, 'Le pseudo doit faire au moins 2 caractères.'),
+  motorcycleModel: z.string().optional(),
+  badgeColor: z.string().default('brand'),
+  // Fields for pro profile
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
   companyName: z.string().optional(),
 });
 
-type ProProfileFormValues = z.infer<typeof proProfileSchema>;
-
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function AccountPage() {
   const router = useRouter();
@@ -40,40 +54,51 @@ export default function AccountPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [view, setView] = useState<'loading' | 'choice' | 'pro_form' | 'pro_account' | 'standard_account'>('loading');
-  
-  const professionalProfileRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
-  const { data: professionalProfile, isLoading: isProLoading } = useDoc(professionalProfileRef);
-
-  const standardProfileRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
-  const { data: standardProfile, isLoading: isStandardLoading } = useDoc(standardProfileRef);
-
+  const [view, setView] = useState<'loading' | 'choice' | 'pro_form' | 'account'>('loading');
+  const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const form = useForm<ProProfileFormValues>({
-    resolver: zodResolver(proProfileSchema),
+  const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
+  const { data: proProfile, isLoading: isProLoading } = useDoc(proRef);
+
+  const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
+  const { data: stdProfile, isLoading: isStdLoading } = useDoc(stdRef);
+
+  const activeProfile = proProfile || stdProfile;
+  const isPro = !!proProfile;
+
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
+      pseudo: '',
+      motorcycleModel: '',
+      badgeColor: 'brand',
       firstName: '',
       lastName: '',
       companyName: '',
     },
-    mode: 'onChange',
   });
 
   useEffect(() => {
-    if (isAuthLoading || isProLoading || isStandardLoading) {
+    if (isAuthLoading || isProLoading || isStdLoading) {
       setView('loading');
     } else if (!user) {
       router.push('/login');
-    } else if (professionalProfile) {
-      setView('pro_account');
-    } else if (standardProfile) {
-      setView('standard_account');
+    } else if (proProfile || stdProfile) {
+      setView('account');
+      // Initialize form with existing data
+      form.reset({
+        pseudo: activeProfile?.pseudo || activeProfile?.displayName || user.displayName || user.email?.split('@')[0] || '',
+        motorcycleModel: activeProfile?.motorcycleModel || '',
+        badgeColor: activeProfile?.badgeColor || 'brand',
+        firstName: proProfile?.firstName || '',
+        lastName: proProfile?.lastName || '',
+        companyName: proProfile?.companyName || '',
+      });
     } else {
       setView('choice');
     }
-  }, [user, isAuthLoading, isProLoading, isStandardLoading, professionalProfile, standardProfile, router]);
-
+  }, [user, isAuthLoading, isProLoading, isStdLoading, proProfile, stdProfile, router, form, activeProfile]);
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -83,214 +108,294 @@ export default function AccountPage() {
 
   const handleChooseStandard = () => {
     if (!user || !firestore) return;
-    const standardProfileDoc = {
+    const initialStd = {
       id: user.uid,
       email: user.email,
-      displayName: user.displayName || user.email,
+      displayName: user.displayName || user.email?.split('@')[0] || 'Motard',
+      pseudo: user.displayName || user.email?.split('@')[0] || 'Motard',
+      badgeColor: 'brand',
+      motorcycleModel: '',
     };
-    setDocumentNonBlocking(doc(firestore, 'standardProfiles', user.uid), standardProfileDoc, {});
+    setDocumentNonBlocking(doc(firestore, 'standardProfiles', user.uid), initialStd, {});
     toast({ title: 'Compte Standard créé !', description: 'Bienvenue sur Label Moto.' });
   };
 
-  const handleChoosePro = () => {
-    setView('pro_form');
+  const onUpdateProfile: SubmitHandler<ProfileFormValues> = async (values) => {
+    if (!user || !firestore) return;
+    
+    const collectionName = isPro ? 'professionalProfiles' : 'standardProfiles';
+    const profileData = {
+      ...activeProfile,
+      ...values,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setDocumentNonBlocking(doc(firestore, collectionName, user.uid), profileData, { merge: true });
+    toast({ title: 'Profil mis à jour !', description: 'Vos modifications ont été enregistrées.' });
+    setIsEditing(false);
   };
 
-  const onProFormSubmit: SubmitHandler<ProProfileFormValues> = async (values) => {
-    if (!user || !firestore) return;
-    const profileDoc = {
-      id: user.uid,
-      email: user.email,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      companyName: values.companyName || '',
-      phone: user.phoneNumber || '',
-    };
-    setDocumentNonBlocking(doc(firestore, 'professionalProfiles', user.uid), profileDoc, {});
-    toast({ title: 'Profil Professionnel créé !', description: 'Vous pouvez maintenant gérer vos fiches.' });
-  };
-  
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
       router.push(`/map?search=${encodeURIComponent(searchTerm)}`);
     }
   };
 
-  const handleFilterChange = (filter: 'shopping' | 'service') => {
-    router.push(`/map?filter=${filter}`);
-  };
+  if (view === 'loading') {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
+  }
 
-  const renderContent = () => {
-    switch (view) {
-      case 'loading':
-        return (
-          <div className="flex h-screen w-full items-center justify-center bg-background">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        );
-      case 'choice':
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Quel type de compte souhaitez-vous ?</CardTitle>
-              <CardDescription>Ce choix nous aidera à personnaliser votre expérience.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid md:grid-cols-2 gap-6">
-              <Card className="flex flex-col">
+  const selectedColor = badgeColors.find(c => c.id === (isEditing ? form.watch('badgeColor') : activeProfile?.badgeColor)) || badgeColors[0];
+
+  return (
+    <div className="min-h-screen bg-muted/20">
+      <Header
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        onSearch={handleSearch}
+        placeholderText="Recherche par nom, ville, departement"
+      />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 text-xs font-black uppercase tracking-widest">
+            <ArrowLeft className="h-4 w-4" />
+            Retour à l'accueil
+          </Link>
+
+          {view === 'choice' && (
+            <Card className="border-2">
+              <CardHeader>
+                <CardTitle className="text-2xl font-black uppercase tracking-tighter">Bienvenue parmi nous !</CardTitle>
+                <CardDescription>Choisissez votre profil pour continuer sur Label Moto.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid md:grid-cols-2 gap-6 pt-4">
+                <Card className="flex flex-col border-2 hover:border-brand transition-colors cursor-pointer" onClick={() => setView('pro_form')}>
+                  <CardHeader>
+                    <div className="w-12 h-12 bg-brand/10 rounded-full flex items-center justify-center mb-2">
+                        <Palette className="text-brand h-6 w-6" />
+                    </div>
+                    <CardTitle className="text-lg font-bold">Professionnel</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-xs text-muted-foreground">Inscrivez votre établissement, gérez vos fiches et gagnez en visibilité.</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button variant="outline" className="w-full font-bold">Choisir Pro</Button>
+                  </CardFooter>
+                </Card>
+                <Card className="flex flex-col border-2 hover:border-brand transition-colors cursor-pointer" onClick={handleChooseStandard}>
+                  <CardHeader>
+                    <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-2">
+                        <Bike className="text-blue-500 h-6 w-6" />
+                    </div>
+                    <CardTitle className="text-lg font-bold">Motard (Standard)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-xs text-muted-foreground">Donnez votre avis, gérez vos favoris et personnalisez votre profil de pilote.</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button variant="outline" className="w-full font-bold">Choisir Motard</Button>
+                  </CardFooter>
+                </Card>
+              </CardContent>
+            </Card>
+          )}
+
+          {view === 'pro_form' && (
+            <Card className="border-2 border-brand">
                 <CardHeader>
-                  <CardTitle>Compte Professionnel</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p className="text-sm text-muted-foreground">Inscrivez votre établissement, gérez vos fiches et gagnez en visibilité auprès de la communauté.</p>
-                </CardContent>
-                <CardFooter>
-                  <Button onClick={handleChoosePro}>Devenir Professionnel</Button>
-                </CardFooter>
-              </Card>
-              <Card className="flex flex-col">
-                <CardHeader>
-                  <CardTitle>Compte Standard</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p className="text-sm text-muted-foreground">Accédez à toutes les fonctionnalités pour les motards : avis, favoris, et plus encore.</p>
-                </CardContent>
-                <CardFooter>
-                  <Button onClick={handleChooseStandard}>Choisir ce compte</Button>
-                </CardFooter>
-              </Card>
-            </CardContent>
-          </Card>
-        );
-      case 'pro_form':
-        return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Complétez votre profil professionnel</CardTitle>
-                    <CardDescription>Ces informations apparaîtront sur vos fiches.</CardDescription>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tighter">Profil Professionnel</CardTitle>
+                    <CardDescription>Ces informations sont nécessaires pour identifier votre entreprise.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onProFormSubmit)} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="firstName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Prénom</FormLabel>
-                                            <FormControl><Input placeholder="Jean" {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="lastName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nom de famille</FormLabel>
-                                            <FormControl><Input placeholder="Dupont" {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                        <form onSubmit={form.handleSubmit(onUpdateProfile)} className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <FormField control={form.control} name="firstName" render={({ field }) => (
+                                    <FormItem><FormLabel>Prénom</FormLabel><FormControl><Input placeholder="Jean" {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={form.control} name="lastName" render={({ field }) => (
+                                    <FormItem><FormLabel>Nom</FormLabel><FormControl><Input placeholder="Dupont" {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
                             </div>
-                            <FormField
-                                control={form.control}
-                                name="companyName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Nom de l'entreprise (optionnel)</FormLabel>
-                                        <FormControl><Input placeholder="Moto Passion 75" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="flex justify-end gap-2">
-                                <Button variant="ghost" onClick={() => setView('choice')}>Retour</Button>
-                                <Button type="submit" disabled={form.formState.isSubmitting}>
-                                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Enregistrer le profil
-                                </Button>
+                            <FormField control={form.control} name="companyName" render={({ field }) => (
+                                <FormItem><FormLabel>Entreprise</FormLabel><FormControl><Input placeholder="Moto Passion 75" {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField control={form.control} name="pseudo" render={({ field }) => (
+                                <FormItem><FormLabel>Pseudo (Nom d'affichage)</FormLabel><FormControl><Input placeholder="Jean_Moto" {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <div className="flex justify-end gap-3 pt-4">
+                                <Button variant="ghost" onClick={() => setView('choice')}>Annuler</Button>
+                                <Button type="submit" className="bg-brand hover:bg-brand/90 font-bold uppercase tracking-widest text-xs px-8">Finaliser mon compte Pro</Button>
                             </div>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
-        );
-      case 'pro_account':
-      case 'standard_account':
-        const profileData = view === 'pro_account' ? professionalProfile : standardProfile;
-        const displayName = view === 'pro_account' 
-            ? `${professionalProfile?.firstName} ${professionalProfile?.lastName}`
-            : (profileData?.displayName || user?.displayName || 'Utilisateur');
+          )}
 
-        return (
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-2xl">Mon Compte</CardTitle>
-                    <CardDescription>Gérez vos informations personnelles et vos préférences.</CardDescription>
+          {view === 'account' && (
+            <Card className="border-2 shadow-xl overflow-hidden">
+              <div className={cn("h-24 transition-colors duration-500", selectedColor.class)} />
+              <CardHeader className="relative pt-0 px-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-12">
+                  <div className="flex items-end gap-4">
+                    <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                      <AvatarImage src={user?.photoURL || undefined} />
+                      <AvatarFallback className="text-3xl font-black bg-muted">{form.getValues('pseudo')?.[0]?.toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <div className="pb-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h2 className="text-2xl font-black uppercase tracking-tight leading-none">
+                          {isEditing ? "Édition du profil" : (activeProfile?.pseudo || "Motard anonyme")}
+                        </h2>
+                        {!isEditing && (
+                          <Badge className={cn("font-black uppercase text-[8px] tracking-widest text-white border-none", selectedColor.class)}>
+                            {isPro ? 'PRO' : 'PILOTE'}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground font-bold">{user?.email}</p>
+                    </div>
                   </div>
-                  <Badge variant={view === 'pro_account' ? "default" : "secondary"}>
-                    {view === 'pro_account' ? 'Professionnel' : 'Standard'}
-                  </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={user?.photoURL || undefined} alt="User avatar" />
-                  <AvatarFallback className="text-2xl">{user?.email?.[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-semibold text-lg">{displayName}</p>
-                  <p className="text-muted-foreground">{user?.email}</p>
-                   {view === 'pro_account' && professionalProfile?.companyName && (
-                       <p className="text-sm text-muted-foreground">{professionalProfile.companyName}</p>
-                   )}
+                  {!isEditing && (
+                    <div className="flex gap-2 pb-2">
+                      <Button variant="outline" size="sm" className="font-black uppercase text-[10px] tracking-widest" onClick={() => setIsEditing(true)}>
+                        Modifier mon profil
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 font-black uppercase text-[10px] tracking-widest" onClick={handleLogout}>
+                        <LogOut className="h-3 w-3 mr-2" /> Déconnexion
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="border-t pt-6">
-                 <Button variant="outline" onClick={handleLogout}>
-                   <LogOut className="mr-2 h-4 w-4" />
-                   Déconnexion
-                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      default:
-        return null;
-    }
-  };
+              </CardHeader>
 
-  if (view === 'loading') {
-     return (
-        <div className="flex h-screen w-full items-center justify-center bg-background">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      );
-  }
+              <CardContent className="pt-6">
+                {isEditing ? (
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onUpdateProfile)} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="pseudo"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <User className="h-3.5 w-3.5" /> Pseudo
+                              </FormLabel>
+                              <FormControl><Input placeholder="Votre pseudo" className="font-bold" {...field} /></FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="motorcycleModel"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <Bike className="h-3.5 w-3.5" /> Ma Moto actuelle
+                              </FormLabel>
+                              <FormControl><Input placeholder="Ex: Yamaha MT-07" className="font-bold" {...field} /></FormControl>
+                              <FormDescription className="text-[9px]">Ce modèle apparaîtra à côté de vos avis.</FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="badgeColor"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <Palette className="h-3.5 w-3.5" /> Couleur du badge
+                              </FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="font-bold">
+                                    <SelectValue placeholder="Choisir une couleur" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {badgeColors.map(color => (
+                                    <SelectItem key={color.id} value={color.id}>
+                                      <div className="flex items-center gap-2">
+                                        <div className={cn("w-3 h-3 rounded-full", color.class)} />
+                                        {color.label}
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
-  return (
-    <div className="min-h-screen">
-       <Header
-        searchTerm={searchTerm}
-        onSearchTermChange={setSearchTerm}
-        onSearch={handleSearch}
-        activeFilter={null}
-        onFilterChange={handleFilterChange}
-        placeholderText="Recherche par nom, ville, departement"
-      />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-2xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
-            <ArrowLeft className="h-4 w-4" />
-            Retour à l'accueil
-          </Link>
-          {renderContent()}
+                      {isPro && (
+                        <div className="space-y-4 pt-4 border-t border-dashed">
+                           <p className="text-[10px] font-black uppercase tracking-widest text-brand">Infos Professionnelles</p>
+                           <div className="grid grid-cols-2 gap-4">
+                              <FormField control={form.control} name="firstName" render={({ field }) => (
+                                  <FormItem><FormLabel>Prénom</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                              )} />
+                              <FormField control={form.control} name="lastName" render={({ field }) => (
+                                  <FormItem><FormLabel>Nom</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                              )} />
+                           </div>
+                           <FormField control={form.control} name="companyName" render={({ field }) => (
+                               <FormItem><FormLabel>Entreprise</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                           )} />
+                        </div>
+                      )}
+
+                      <div className="flex justify-end gap-3 pt-6 border-t">
+                        <Button variant="ghost" type="button" onClick={() => setIsEditing(false)} className="font-bold">
+                          <X className="h-4 w-4 mr-2" /> Annuler
+                        </Button>
+                        <Button type="submit" className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs px-8">
+                          <Save className="h-4 w-4 mr-2" /> Enregistrer
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                ) : (
+                  <div className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                          <User className="h-3.5 w-3.5" /> Pseudo
+                        </p>
+                        <p className="text-lg font-black uppercase tracking-tight">{activeProfile?.pseudo || activeProfile?.displayName || "Non renseigné"}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                          <Bike className="h-3.5 w-3.5" /> Ma Moto
+                        </p>
+                        <p className="text-lg font-black uppercase tracking-tight">{activeProfile?.motorcycleModel || "Non renseignée"}</p>
+                      </div>
+                    </div>
+
+                    {isPro && (
+                      <div className="space-y-4 pt-6 border-t border-dashed">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-brand">Entreprise</p>
+                        <div className="bg-muted/30 p-4 rounded-xl">
+                          <p className="text-lg font-black uppercase tracking-tight">{proProfile?.companyName || "Nom de l'entreprise"}</p>
+                          <p className="text-sm font-bold text-muted-foreground mt-1">{proProfile?.firstName} {proProfile?.lastName}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>
