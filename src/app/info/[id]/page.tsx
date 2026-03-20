@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -66,23 +65,26 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
   }, [article]);
   
+  // Extract all points for the summary (section titles + logic for points/categories)
   const allSummaryPoints = useMemo(() => {
     if (!activeSections) return [];
     const points: { title: string; id: string }[] = [];
     
     activeSections.forEach((s: any) => {
-      // Main sections
+      // Always include main sections
       if (s.title) {
         points.push({ title: s.title, id: slugify(s.title) });
       }
       
-      // Select only key categories from subsections (Roadster, Trail, Sportive)
+      // Select only specific categories from subsections (Roadster, Trail, Sportive)
+      // Exclude points 1, 2, 3, 4 from summary as requested
       if (s.subsections) {
         s.subsections.forEach((sub: any) => {
           const lowerTitle = (sub.title || "").toLowerCase();
           const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
+          const isNumberPoint = /^[1-4]\./.test(lowerTitle);
           
-          if (sub.title && isCategory) {
+          if (sub.title && isCategory && !isNumberPoint) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
@@ -165,10 +167,12 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               const rowValues = headers.map((header: string, hi: number) => {
                 const normHeader = normalize(header);
                 
+                // 1. Handling Array Data
                 if (Array.isArray(row)) {
                     return row[hi] !== undefined ? row[hi] : '';
                 }
                 
+                // 2. Handling Object Data with smart matching
                 if (row[header] !== undefined) return row[header];
                 
                 const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
@@ -380,7 +384,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
               <article>
-                <div className="relative w-full aspect-[4/3] md:aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
+                <div className="relative w-full aspect-video md:aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group">
                   <Image
                     src={imageUrl}
                     alt={article.display_title || article.title}
@@ -390,7 +394,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                   <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
-                    {/* Fixed H1 Design for responsiveness */}
+                    {/* Imposing H1 Title */}
                     <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 drop-shadow-lg max-w-[95%]">
                         {article.display_title || article.title}
                     </h1>
@@ -406,7 +410,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         <p key={i} className="text-xl leading-relaxed text-foreground font-black mb-4">{p}</p>
                       ))}
                       
-                      {/* Selective Table of Contents */}
+                      {/* Interactive Table of Contents */}
                       {allSummaryPoints.length > 0 && (
                         <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
                           <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
