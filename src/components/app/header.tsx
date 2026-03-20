@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
-import { useUser, useAuth, useFirestore } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import {
@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
-import { collection, query, getDocs, limit } from 'firebase/firestore';
+import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
 
 const brandsList = Object.keys(brandLogos);
 
@@ -51,6 +51,18 @@ interface Suggestion {
 const UserMenu = () => {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
+
+  // Fetch user profile to get the chosen pseudo
+  const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
+  const { data: stdProfile } = useDoc(stdRef);
+
+  const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
+  const { data: proProfile } = useDoc(proRef);
+
+  const activeProfile = proProfile || stdProfile;
+  const pseudo = activeProfile?.pseudo || user?.displayName || user?.email?.split('@')[0] || '';
+  const initial = pseudo?.[0]?.toUpperCase() || '?';
 
   const handleLogout = async () => {
     if (auth) {
@@ -72,7 +84,9 @@ const UserMenu = () => {
         {user ? (
           <Avatar className="h-9 w-9 border-2 border-brand">
             <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-xs">{user.email?.[0].toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
+              {initial}
+            </AvatarFallback>
           </Avatar>
         ) : (
           <div className="h-9 w-9 rounded-full flex items-center justify-center p-1">
@@ -118,7 +132,8 @@ const UserMenu = () => {
         {user ? (
           <>
             <div className="px-2 py-1.5">
-                <p className="text-sm font-medium leading-none truncate">{user.email}</p>
+                <p className="text-sm font-black text-brand leading-none truncate mb-1">{pseudo}</p>
+                <p className="text-[10px] font-bold text-muted-foreground truncate">{user.email}</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand font-bold py-2">

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -25,7 +24,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 const slugify = (text: string) => 
@@ -44,7 +43,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // --- HOOKS AT THE TOP (Strict order) ---
+  // --- LOGIC HOOKS AT THE TOP ---
   
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
@@ -63,7 +62,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   const activeSections = useMemo(() => {
     if (!article?.sections) return [];
-    // Filter out comparison section as requested
     return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
   }, [article]);
   
@@ -72,21 +70,21 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     const points: { title: string; id: string }[] = [];
     
     activeSections.forEach((s: any) => {
-      // Add main section titles
+      // Main sections
       if (s.title) {
         points.push({ title: s.title, id: slugify(s.title) });
       }
       
-      // Add only categories (Roadster, Trail, Sportive) from subsections
+      // Select only key categories from subsections (Roadster, Trail, Sportive)
       if (s.subsections) {
         s.subsections.forEach((sub: any) => {
           const lowerTitle = (sub.title || "").toLowerCase();
           const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
           
-          // Exclude numbered points 1, 2, 3, 4
-          const isNumberedPoint = /^[1-4]\./.test(lowerTitle);
+          // Exclude numbered steps (1, 2, 3, 4) from TOC as per instructions
+          const isNumberedStep = /^[1-4]\./.test(lowerTitle);
           
-          if (sub.title && isCategory && !isNumberedPoint) {
+          if (sub.title && isCategory && !isNumberedStep) {
             points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
@@ -169,12 +167,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               const rowValues = headers.map((header: string, hi: number) => {
                 const normHeader = normalize(header);
                 
-                // 1. Handling Array Data
                 if (Array.isArray(row)) {
                     return row[hi] !== undefined ? row[hi] : '';
                 }
                 
-                // 2. Handling Object Data with smart matching
                 if (row[header] !== undefined) return row[header];
                 
                 const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
@@ -192,7 +188,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 
                 if (foundKey) return row[foundKey];
                 
-                // 3. Fallback to index if keys don't match
                 const keys = Object.keys(row);
                 if (keys[hi] !== undefined) return row[keys[hi]];
 
@@ -303,7 +298,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             )
         )}
 
-        {/* Specific CTA for budget sections */}
+        {/* Link to budget article for budget-related sections */}
         {section.title && 
          (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && 
          id !== 'combien-coute-vraiment-une-moto-par-mois' && (
@@ -372,7 +367,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Breadcrumb */}
+          {/* Breadcrumb Navigation */}
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
             <Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0">
               <Home className="h-3 w-3" />
@@ -397,6 +392,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                   <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
+                    {/* Fixed H1 Design for responsiveness */}
                     <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 drop-shadow-lg max-w-[95%]">
                         {article.display_title || article.title}
                     </h1>
@@ -412,6 +408,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         <p key={i} className="text-xl leading-relaxed text-foreground font-black mb-4">{p}</p>
                       ))}
                       
+                      {/* Selective Table of Contents */}
                       {allSummaryPoints.length > 0 && (
                         <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
                           <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
