@@ -12,6 +12,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  sendEmailVerification,
 } from 'firebase/auth';
 
 import { Button } from '@/components/ui/button';
@@ -114,14 +115,18 @@ function LoginContent() {
   const onRegisterSubmit = async (values: z.infer<typeof registerSchema>) => {
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         values.email,
         values.password
       );
+      
+      // Envoi de l'e-mail de vérification (seul mail automatisable côté client)
+      await sendEmailVerification(userCredential.user);
+      
       toast({
         title: 'Inscription réussie !',
-        description: 'Bienvenue sur Label Moto.',
+        description: 'Bienvenue ! Un e-mail de vérification vous a été envoyé.',
       });
       router.push(callbackUrl);
     } catch (error: any) {
