@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react'; // Ajout de Suspense ici
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -52,8 +52,8 @@ const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
-
-export default function LoginPage() {
+// --- COMPOSANT INTERNE (Logique du formulaire) ---
+function LoginContent() {
   const [activeTab, setActiveTab] = useState('login');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -105,7 +105,6 @@ export default function LoginPage() {
         title: 'Inscription réussie !',
         description: 'Bienvenue sur Label Moto.',
       });
-      // On success registration, Firebase automatically signs in. Redirect.
       router.push(callbackUrl);
     } catch (error: any) {
       toast({
@@ -256,5 +255,18 @@ export default function LoginPage() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+// --- EXPORT PAR DÉFAUT (La Page) ---
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
