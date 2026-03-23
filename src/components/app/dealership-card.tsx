@@ -14,7 +14,8 @@ import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useUser, useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { collection, serverTimestamp, doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -58,6 +59,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+
+  // Fetch current user's profiles to get their chosen pseudo
+  const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
+  const { data: stdProfile } = useDoc(stdRef);
+
+  const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
+  const { data: proProfile } = useDoc(proRef);
+
+  const activeUserProfile = proProfile || stdProfile;
+  const currentPseudo = activeUserProfile?.pseudo || activeUserProfile?.displayName || user?.displayName || user?.email?.split('@')[0] || 'Anonyme';
 
   const title = dealership.title || '';
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
@@ -136,7 +147,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     setIsSubmitting(true);
     const commentData = {
         userId: user.uid,
-        userName: user.displayName || user.email?.split('@')[0] || 'Anonyme',
+        userName: currentPseudo, // Uses the pseudo from profile
         dealershipId: dealership.id,
         dealershipName: title,
         content: newComment,
@@ -236,7 +247,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       >
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
           
-          {/* Main Content Area */}
           <div className="flex flex-1 flex-row items-stretch bg-card min-w-0 pr-8 md:pr-10">
             <div
               onClick={handleImageClick}
@@ -259,20 +269,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   <LabelMotoLogo className="w-full opacity-20 grayscale" />
                 </div>
               )}
-              {isSelectedLabel && (
-                <div className="absolute top-2 left-2 z-10">
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <div className="bg-brand text-white p-1 rounded-full shadow-lg border border-white">
-                                    <Award className="h-4 w-4" />
-                                </div>
-                            </TooltipTrigger>
-                            <TooltipContent><p>Sélection Label Moto</p></TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                </div>
-              )}
             </div>
 
             <div 
@@ -283,11 +279,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                 <h3 className="font-black text-sm md:text-xl text-foreground leading-[1.1] uppercase break-words mb-1 flex-1">
                     {title}
                 </h3>
-                {isSelectedLabel && (
-                    <Badge variant="outline" className="hidden md:flex border-brand text-brand font-black text-[8px] uppercase tracking-tighter shrink-0 bg-brand/5">
-                        Sélection Label Moto
-                    </Badge>
-                )}
                 {!hasValidGPS && (
                     <Badge variant="secondary" className="flex gap-1 items-center bg-gray-100 text-gray-500 font-bold text-[8px] uppercase tracking-tight border-none h-5">
                         <AlertCircle className="h-2.5 w-2.5" />
@@ -356,7 +347,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             </div>
           </div>
 
-          {/* Sliding Panels (Behind Buttons) */}
           <div className={cn(
             "absolute inset-y-0 left-0 right-8 md:right-10 z-30 transition-transform duration-500 ease-in-out bg-background border-r border-border/50 shadow-[-10px_0_30px_rgba(0,0,0,0.1)]",
             (showHours || showReviews) ? "translate-x-0" : "translate-x-[105%]"
@@ -422,7 +412,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
             )}
           </div>
 
-          {/* Action Buttons Strip (Fixed at Right) */}
           <div className="absolute inset-y-0 right-0 w-8 md:w-10 z-40 flex flex-col h-full bg-card border-l border-border/50 shadow-[-4px_0_10px_rgba(0,0,0,0.05)]">
               <button 
                   onClick={handleToggleHours}

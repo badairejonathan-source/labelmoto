@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -184,16 +185,8 @@ function MapPageComponent() {
             } as Dealership;
         });
 
-        const sortedForDeduplication = [...results].sort((a, b) => {
-            const aHasPhoto = !!a.imgUrl && a.imgUrl.trim() !== '';
-            const bHasPhoto = !!b.imgUrl && b.imgUrl.trim() !== '';
-            if (aHasPhoto && !bHasPhoto) return -1;
-            if (!aHasPhoto && bHasPhoto) return 1;
-            return 0;
-        });
-
         const seen = new Set();
-        const uniqueResults = sortedForDeduplication.filter(item => {
+        const uniqueResults = results.filter(item => {
             const cleanTitle = item.title?.toLowerCase().trim() || '';
             const cleanAddress = item.address?.toLowerCase().trim().replace(/\s\s+/g, ' ') || '';
             const identifier = `${cleanTitle}|${cleanAddress}`;
@@ -242,60 +235,16 @@ function MapPageComponent() {
             }
         }
 
-        const normalizedBrandName = detectedBrand ? detectedBrand.toLowerCase().replace(/[\s-]/g, '') : '';
-        const searchRemainder = detectedBrand ? normalizedSearch.replace(normalizedBrandName, "").trim() : normalizedSearch;
-
-        let detectedLoc = null;
-        if (searchRemainder.length > 0) {
-            for (const [dept, info] of Object.entries(locationsData)) {
-                const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
-                if (normalizedDept.includes(searchRemainder) || info.cities.some(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchRemainder))) {
-                    detectedLoc = info;
-                    break;
-                }
-            }
-        }
-
         if (detectedBrand) {
             const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
             results = results.filter(d => 
                 (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
                 d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
             );
-
-            if (detectedLoc) {
-                const brandMatchesInLoc = results.filter(d => getDistanceSq(detectedLoc.center, d) < 0.8);
-                if (brandMatchesInLoc.length > 0) {
-                    setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-                    setMapZoom(9);
-                } else {
-                    status = 'fallback_brand';
-                    setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-                    setMapZoom(8);
-                }
-            } else {
-                if (!latParam && results.length > 0) {
-                    if (userCoords) {
-                        setMapCenter(userCoords);
-                        setMapZoom(10);
-                    } else {
-                        setMapCenter([46.603354, 1.888334]);
-                        setMapZoom(6);
-                    }
-                }
-            }
-        } else if (detectedLoc) {
-            setMapCenter([detectedLoc.center[0], detectedLoc.center[1]]);
-            setMapZoom(10);
-            results = results.filter(d => 
-                d.address?.toLowerCase().includes(searchRemainder) || 
-                d.title?.toLowerCase().includes(searchRemainder)
-            );
         } else {
             results = results.filter(d => 
                 d.title?.toLowerCase().includes(lower) || 
-                d.address?.toLowerCase().includes(lower) || 
-                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().includes(lower)))
+                d.address?.toLowerCase().includes(lower)
             );
             if (results.length === 0) {
                 status = 'fallback_nearby';
@@ -315,7 +264,7 @@ function MapPageComponent() {
     
     setSearchStatus(status);
     setFilteredDealerships(results);
-  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter, latParam, userCoords]);
+  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     const bStr = bounds.toBBoxString();
@@ -388,34 +337,12 @@ function MapPageComponent() {
     }
   };
 
-  const handleSearchTermChange = useCallback((term: string) => {
-    setSearchTerm(term);
-    if (term.trim() === '') {
-      setSubmittedSearchTerm('');
-      setMapCenter([46.603354, 1.888334]);
-      setMapZoom(6);
-      setSelectedDealershipId(null);
-      setSearchStatus('none');
-      router.push('/map', { scroll: false });
-    }
-  }, [router]);
-
   const listContent = (
     <div className="space-y-3 pb-20">
       {isLoading ? (
         <div className="text-center text-muted-foreground pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /><p className="mt-2 text-[10px] font-black uppercase tracking-widest">Chargement...</p></div>
       ) : (
         <>
-          {searchStatus === 'fallback_brand' && (
-            <div className="bg-orange-50 border-l-4 border-orange-400 p-4 mb-4 rounded-r-lg">
-                <div className="flex items-center gap-2 text-orange-800 font-bold text-sm mb-1 uppercase tracking-tight">
-                    <AlertCircle className="h-4 w-4" />
-                    Aucun résultat direct
-                </div>
-                <p className="text-xs text-orange-700">La marque n'est pas présente dans cette zone. Voici les professionnels les plus proches.</p>
-            </div>
-          )}
-          
           {searchStatus === 'fallback_nearby' && (
             <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg">
                 <div className="flex items-center gap-2 text-blue-800 font-bold text-sm mb-1 uppercase tracking-tight">
@@ -450,7 +377,7 @@ function MapPageComponent() {
                       <AdCard 
                         isPublicity={true}
                         article={{
-                          id: 'promo-concession-heritage',
+                          id: 'promo-bmw-78',
                           title: 'BMW MOTORRAD 78 : journee heritage',
                           description: 'BMW 78 vous propose une journee heritiage le 18 AVRIL 2026 Profiter de 10% sur toute leur boutique accessoires.',
                           imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1080'
@@ -465,19 +392,10 @@ function MapPageComponent() {
             );
           })}
           
-          {dealershipsToDisplay.length > 0 && dealershipsToDisplay.length < 4 && articlesForAds && articlesForAds[0] && (
-            <div className="py-1 w-full">
-              <AdCard article={articlesForAds[0]} />
-            </div>
-          )}
-
           {dealershipsToDisplay.length === 0 && (
             <div className="text-center text-muted-foreground py-10 px-4">
                 <p className="font-bold text-foreground">Aucun établissement trouvé.</p>
                 <p className="text-sm mt-2">Explorez la carte ou modifiez vos filtres pour voir plus de résultats.</p>
-                <Button variant="outline" className="mt-4 rounded-full" onClick={() => handleSearchTermChange('')}>
-                    Réinitialiser la recherche
-                </Button>
             </div>
           )}
         </>
@@ -489,7 +407,7 @@ function MapPageComponent() {
 
   return (
     <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
-      <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Trouver une concession, une ville, une marque..." />
+      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Trouver une concession, un atelier..." />
       
       <div className="flex-1 flex overflow-hidden relative">
         {!isMobile && (
@@ -557,15 +475,7 @@ function MapPageComponent() {
               drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[95vh]'
             )}>
               <div className="relative w-full flex flex-col items-center pt-2 pb-1 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-                <div 
-                  className="w-10 h-1 bg-muted rounded-full" 
-                  onClick={() => {
-                    const next = drawerHeight === 'collapsed' ? 'half' : drawerHeight === 'half' ? 'expanded' : 'half';
-                    setDrawerHeight(next);
-                    if (next === 'expanded') setIsExpanding(true);
-                    if (next === 'collapsed') setIsExpanding(true);
-                  }}
-                />
+                <div className="w-10 h-1 bg-muted rounded-full" />
               </div>
               <div className="px-3 h-full flex flex-col overflow-hidden">
                 <div className="flex items-center justify-between border-b pb-1">

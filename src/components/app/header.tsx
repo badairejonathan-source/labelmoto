@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -171,7 +172,7 @@ const Header: React.FC<HeaderProps> = ({
     className, 
     activeFilter = null, 
     onFilterChange, 
-    placeholderText = "Trouver une concession, une ville, une marque..." 
+    placeholderText = "Trouver une concession, un atelier..." 
 }) => {
   const router = useRouter();
   const firestore = useFirestore();
