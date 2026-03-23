@@ -1,7 +1,28 @@
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
+# Configuration finale pour LabelMoto
+kind: "AppStack"
+schemaVersion: "v1"
 
 runConfig:
-  # Increase this value if you'd like to automatically spin up
-  # more instances in response to increased traffic.
   maxInstances: 1
+  nodeVersion: "20"
+
+# On remet les clés ici pour qu'elles soient "cuites" dans le site
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyDsZ_E60Nrrpr0qEaU4JY_-Dw1Cc0JD34o"
+    availability: ["BUILD", "RUNTIME"]
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "studio-4801889514-40ebd.firebaseapp.com"
+    availability: ["BUILD", "RUNTIME"]
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "studio-4801889514-40ebd"
+    availability: ["BUILD", "RUNTIME"]
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "studio-4801889514-40ebd.firebasestorage.app"
+    availability: ["BUILD", "RUNTIME"]
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "1030946691328"
+    availability: ["BUILD", "RUNTIME"]
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:1030946691328:web:1cf467b71905b8fea6fbe5"
+    availability: ["BUILD", "RUNTIME"]
