@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/app/footer";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
+// 1. AJOUT DE L'IMPORT
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -40,6 +42,9 @@ export default function RootLayout({
           <Footer />
           <Toaster />
         </FirebaseClientProvider>
+        
+        {/* 2. AJOUT DU COMPOSANT ANALYTICS ICI */}
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
       </body>
     </html>
   );

@@ -26,3 +26,6 @@ env:
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
     value: "1:1030946691328:web:1cf467b71905b8fea6fbe5"
     availability: ["BUILD", "RUNTIME"]
+    - variable: NEXT_PUBLIC_GA_ID
+    value: "G-3YLES1XL71"
+    availability: ["BUILD", "RUNTIME"]
