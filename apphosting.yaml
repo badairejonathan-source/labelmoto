@@ -1,4 +1,3 @@
-# Configuration finale pour LabelMoto
 kind: "AppStack"
 schemaVersion: "v1"
 
@@ -6,7 +5,6 @@ runConfig:
   maxInstances: 1
   nodeVersion: "20"
 
-# On remet les clés ici pour qu'elles soient "cuites" dans le site
 env:
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     value: "AIzaSyDsZ_E60Nrrpr0qEaU4JY_-Dw1Cc0JD34o"
@@ -18,7 +16,7 @@ env:
     value: "studio-4801889514-40ebd"
     availability: ["BUILD", "RUNTIME"]
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: "studio-4801889514-40ebd.firebasestorage.app"
+    value: "votre-projet.firebasestorage.app"
     availability: ["BUILD", "RUNTIME"]
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
     value: "1030946691328"
@@ -26,6 +24,6 @@ env:
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
     value: "1:1030946691328:web:1cf467b71905b8fea6fbe5"
     availability: ["BUILD", "RUNTIME"]
-    - variable: NEXT_PUBLIC_GA_ID
+  - variable: NEXT_PUBLIC_GA_ID
     value: "G-3YLES1XL71"
     availability: ["BUILD", "RUNTIME"]
