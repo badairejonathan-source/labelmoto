@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -521,7 +520,7 @@ function MapPageComponent() {
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
               <div className="absolute top-3 right-3 z-[1000] p-1 overflow-visible">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0 text-white" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
               </div>
             </main>
           </>
@@ -550,7 +549,7 @@ function MapPageComponent() {
                 onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
               />
               <div className="absolute top-2 right-2 z-[1000] p-1 overflow-visible">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
+                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0 text-white" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
               </div>
             </main>
             <div className={cn(

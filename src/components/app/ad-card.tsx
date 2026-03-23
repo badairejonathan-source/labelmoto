@@ -21,19 +21,13 @@ interface AdCardProps {
 const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
   if (!article) return null;
 
-  // Robust image resolution logic to prevent empty string errors
   const imageUrl = React.useMemo(() => {
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-    
     const id = article.id?.toLowerCase() || '';
     const title = (article.title || '').toLowerCase();
-    
-    // Local image mapping based on content keywords
     if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
     if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
-    
-    // Default placeholder
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
@@ -45,12 +39,10 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
           ? "border-blue-500 border-blue-500/20 bg-gradient-to-r from-blue-500/[0.03] to-background" 
           : "border-brand border-brand/20 bg-gradient-to-r from-brand/[0.02] to-background"
       )}>
-        {/* Background Decorative Element */}
         <div className="absolute -top-2 -right-2 opacity-[0.02] pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
             {isPublicity ? <Store className="w-24 h-24 text-blue-500" /> : <FileText className="w-24 h-24 text-brand" />}
         </div>
 
-        {/* Section Image - 100% Height */}
         <div className="relative w-32 sm:w-48 md:w-64 flex-shrink-0 overflow-hidden bg-muted">
           <Image
             src={imageUrl}
@@ -70,7 +62,6 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
           </div>
         </div>
 
-        {/* Section Contenu Principal */}
         <div className="flex flex-col justify-center flex-grow p-4 md:p-6 min-w-0 z-10">
           <div className="flex items-center gap-1.5 mb-1.5">
               <div className={cn("h-[1.5px] w-6", isPublicity ? "bg-blue-500/40" : "bg-brand/40")} />
@@ -86,7 +77,6 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
           </p>
         </div>
 
-        {/* Zone Action */}
         <div className="hidden md:flex flex-shrink-0 w-32 flex-col justify-center items-center p-4 bg-muted/[0.01] border-l border-border/5 z-10">
            <div className="flex flex-col items-center gap-2">
               <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand transition-colors">

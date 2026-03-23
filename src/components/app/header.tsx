@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -66,7 +65,7 @@ const UserMenu = () => {
   const { data: proProfile } = useDoc(proRef);
 
   const activeProfile = proProfile || stdProfile;
-  const pseudo = activeProfile?.pseudo || user?.displayName || user?.email?.split('@')[0] || '';
+  const pseudo = activeProfile?.pseudo || activeProfile?.displayName || user?.displayName || user?.email?.split('@')[0] || '';
   const initial = pseudo?.[0]?.toUpperCase() || '?';
 
   const handleLogout = async () => {
