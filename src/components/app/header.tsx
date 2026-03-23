@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -52,8 +53,12 @@ const UserMenu = () => {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
+  const [mounted, setMounted] = useState(false);
 
-  // Fetch user profile to get the chosen pseudo
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
 
@@ -70,7 +75,7 @@ const UserMenu = () => {
     }
   };
 
-  if (isUserLoading) {
+  if (!mounted || isUserLoading) {
     return (
       <div className="h-10 w-10 flex items-center justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-brand" />
@@ -175,7 +180,12 @@ const Header: React.FC<HeaderProps> = ({
   const [prediction, setPrediction] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<Suggestion[]>([]);
+  const [mounted, setMounted] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchDealers = async () => {
@@ -198,8 +208,8 @@ const Header: React.FC<HeaderProps> = ({
             console.error("Erreur chargement suggestions dealers:", e);
         }
     };
-    fetchDealers();
-  }, [firestore]);
+    if (mounted) fetchDealers();
+  }, [firestore, mounted]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -386,6 +396,8 @@ const Header: React.FC<HeaderProps> = ({
       router.push(`/map${query}`);
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-40 relative", className)}>

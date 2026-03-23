@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -106,6 +107,7 @@ function MapPageComponent() {
   const [mapZoom, setMapZoom] = useState(6);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [userCoords, setUserCoords] = useState<[number, number] | null>(null);
+  const [mounted, setMounted] = useState(false);
   
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
@@ -131,6 +133,10 @@ function MapPageComponent() {
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
   const { width } = useWindowSize();
   const isMobile = (width || 1024) < 768;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   useEffect(() => {
     if (latParam && lngParam) {
@@ -157,7 +163,7 @@ function MapPageComponent() {
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
   useEffect(() => {
-    if (!firestore) return;
+    if (!firestore || !mounted) return;
     const dealershipsRef = collection(firestore, 'concessions');
 
     const unsubscribe = onSnapshot(dealershipsRef, 
@@ -211,7 +217,7 @@ function MapPageComponent() {
     );
 
     return () => unsubscribe();
-  }, [firestore]);
+  }, [firestore, mounted]);
 
   useEffect(() => {
     let results = [...allDealerships];
@@ -447,7 +453,7 @@ function MapPageComponent() {
                         article={{
                           id: 'promo-concession-heritage',
                           title: 'BMW MOTORRAD 78 : journee heritage',
-                          description: 'Profitez de conditions exceptionnelles sur la gamme R18 et découvrez nos nouveaux accessoires. Essai offert ce mois-ci.',
+                          description: 'BMW 78 vous propose une journee heritiage le 18 AVRIL 2026 Profiter de 10% sur toute leur boutique accessoires.',
                           imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1080'
                         }} 
                       />
@@ -480,7 +486,7 @@ function MapPageComponent() {
     </div>
   );
 
-  if (width === undefined) return <div className="flex h-[100svh] w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
+  if (!mounted || width === undefined) return <div className="flex h-[100svh] w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
   return (
     <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
