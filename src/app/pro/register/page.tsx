@@ -122,8 +122,12 @@ export default function RegisterProPage() {
 
   const checkQuarantine = (data: SubmissionFormValues) => {
     const textToScan = `${data.name} ${data.description || ''} ${data.address}`.toLowerCase();
-    const hasAuto = textToScan.includes('automobile') || textToScan.includes('automobiles');
-    const hasMoto = textToScan.includes('moto') || textToScan.includes('motos');
+    // On met en quarantaine si le mot "auto" ou "automobile" est présent
+    // Mais on autorise si "moto" est aussi présent (ex: "Auto Moto Passion")
+    const hasAuto = textToScan.includes('auto') || textToScan.includes('automobile');
+    const hasMoto = textToScan.includes('moto');
+    
+    // Si contient auto mais PAS moto -> Quarantaine directe
     return hasAuto && !hasMoto;
   };
 

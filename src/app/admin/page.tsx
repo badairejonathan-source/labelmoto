@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -70,7 +69,7 @@ export default function AdminPage() {
   useEffect(() => {
     if (!firestore || !user || user.uid !== ADMIN_UID) return;
 
-    // Submissions Pro
+    // Submissions Pro standards
     const submissionsRef = collection(firestore, 'pending_concessions');
     const unsubSubmissions = onSnapshot(submissionsRef, 
       (snapshot) => {
@@ -82,7 +81,7 @@ export default function AdminPage() {
       }
     );
 
-    // Quarantaine
+    // Submissions en Quarantaine (contient "auto")
     const quarantineRef = collection(firestore, 'a_verifier');
     const unsubQuarantine = onSnapshot(quarantineRef, 
       (snapshot) => {
@@ -93,7 +92,7 @@ export default function AdminPage() {
       }
     );
 
-    // Commentaires
+    // Commentaires en attente
     const commentsRef = collection(firestore, 'pending_comments');
     const unsubComments = onSnapshot(commentsRef, 
       (snapshot) => {
