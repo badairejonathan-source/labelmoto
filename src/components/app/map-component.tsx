@@ -20,6 +20,8 @@ interface MapComponentProps {
   onMarkerMouseOut: () => void;
   onMapClick: () => void;
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
+  onUserInteraction?: () => void;
+  bottomPadding?: number;
   isLocating?: boolean;
   onLocateEnd?: () => void;
   onLocationFound?: (coords: [number, number]) => void;
@@ -73,6 +75,8 @@ export default function MapComponent({
   onMarkerMouseOut,
   onMapClick,
   onMapChange,
+  onUserInteraction,
+  bottomPadding = 0,
   isLocating = false,
   onLocateEnd = () => {},
   onLocationFound = () => {},
@@ -131,26 +135,41 @@ export default function MapComponent({
       map.on('moveend', handleMoveEnd);
       map.on('zoomend', handleMoveEnd);
       map.on('click', stableOnMapClick);
+      map.on('dragstart', () => {
+        if (onUserInteraction) onUserInteraction();
+      });
 
       map.whenReady(() => {
         setTimeout(handleMoveEnd, 100);
       });
     }
-  }, [stableOnMapChange, stableOnMapClick]);
+  }, [stableOnMapChange, stableOnMapClick, onUserInteraction]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (map && (map as any)._loaded) {
       try {
         const currentCenter = map.getCenter();
-        if (Math.abs(currentCenter.lat - center[0]) > 0.0001 || Math.abs(currentCenter.lng - center[1]) > 0.0001 || map.getZoom() !== zoom) {
+        const latDiff = Math.abs(currentCenter.lat - center[0]);
+        const lngDiff = Math.abs(currentCenter.lng - center[1]);
+        
+        if (latDiff > 0.0001 || lngDiff > 0.0001 || map.getZoom() !== zoom) {
           isUpdatingFromProps.current = true;
-          map.setView(center, zoom);
-          setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
+          
+          // Calcul du centrage avec padding si sélectionné
+          if (bottomPadding > 0) {
+            map.setView(center, zoom, { animate: true });
+            // On décale la carte vers le haut pour compenser le tiroir
+            map.panBy([0, bottomPadding / 2], { animate: true });
+          } else {
+            map.setView(center, zoom, { animate: true });
+          }
+          
+          setTimeout(() => { isUpdatingFromProps.current = false; }, 300);
         }
       } catch (e) {}
     }
-  }, [center, zoom]);
+  }, [center, zoom, bottomPadding]);
 
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
@@ -160,7 +179,6 @@ export default function MapComponent({
     markersRef.current.clear();
 
     dealerships.forEach((dealership) => {
-      // Ignorer proprement les établissements sans coordonnées valides
       if (dealership.latitude == null || dealership.longitude == null || isNaN(dealership.latitude) || isNaN(dealership.longitude)) {
           return;
       }
@@ -202,7 +220,7 @@ export default function MapComponent({
     const map = mapRef.current;
     if (!map || !isLocating) return;
 
-    const onLocationFound = (e: L.LocationEvent) => {
+    const onLocationFoundCallback = (e: L.LocationEvent) => {
         if (userLocationMarkerRef.current) userLocationMarkerRef.current.remove();
         
         const userMarkerIcon = L.divIcon({
@@ -229,7 +247,7 @@ export default function MapComponent({
         onLocateEnd();
     };
 
-    map.once('locationfound', onLocationFound);
+    map.once('locationfound', onLocationFoundCallback);
     map.once('locationerror', onErr);
     map.locate({ setView: true, maxZoom: 14 });
   }, [isLocating, onLocateEnd, onLocationFound, onLocationError]);

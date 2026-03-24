@@ -131,8 +131,17 @@ function MapPageComponent() {
   });
 
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
-  const { width } = useWindowSize();
+  const { width, height } = useWindowSize();
   const isMobile = (width || 1024) < 768;
+
+  // Calcul du padding pour le centrage intelligent
+  const bottomPadding = useMemo(() => {
+    if (!isMobile || !height) return 0;
+    if (drawerHeight === 'half') return height / 2;
+    if (drawerHeight === 'expanded') return height * 0.95;
+    if (drawerHeight === 'collapsed') return 70;
+    return 0;
+  }, [isMobile, height, drawerHeight]);
 
   useEffect(() => {
     setMounted(true);
@@ -295,9 +304,20 @@ function MapPageComponent() {
   }, [isMobile]);
   
   const handleMarkerClick = useCallback((id: string) => {
+    const isAlreadySelected = selectedDealershipId === id;
     setSelectedDealershipId(current => current === id ? null : id);
-    if (isMobile && id) setDrawerHeight('half');
-  }, [isMobile]);
+    if (isMobile && id && !isAlreadySelected) {
+      setDrawerHeight('half');
+      setIsExpanding(false);
+    }
+  }, [isMobile, selectedDealershipId]);
+
+  const handleUserMapInteraction = useCallback(() => {
+    if (isMobile && drawerHeight !== 'collapsed') {
+      setDrawerHeight('collapsed');
+      setIsExpanding(true);
+    }
+  }, [isMobile, drawerHeight]);
 
   useEffect(() => {
     if (selectedDealershipId) {
@@ -457,10 +477,9 @@ function MapPageComponent() {
                 onMarkerMouseOver={setHoveredDealershipId} 
                 onMarkerMouseOut={() => setHoveredDealershipId(null)} 
                 onMapChange={handleMapChange} 
-                onMapClick={() => {
-                  setDrawerHeight('collapsed');
-                  setIsExpanding(true);
-                }} 
+                onMapClick={handleUserMapInteraction}
+                onUserInteraction={handleUserMapInteraction}
+                bottomPadding={bottomPadding}
                 isLocating={isLocating} 
                 onLocateEnd={() => setIsLoadingLocating(false)} 
                 onLocationFound={setUserCoords}
