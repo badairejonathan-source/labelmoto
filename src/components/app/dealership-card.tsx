@@ -62,7 +62,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const isAdmin = user?.uid === ADMIN_UID;
+  const isAdmin = !!user && user.uid === ADMIN_UID;
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
@@ -141,16 +141,23 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     e.stopPropagation();
     if (!isAdmin || !firestore) return;
 
-    if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${title}" ?\nElle ne sera plus visible publiquement.`)) {
+    if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${title}" ?\nElle ne sera plus visible par le public.`)) {
       return;
     }
 
     const docId = dealership.id;
-    const { id, ...dataToMove } = dealership;
+    // On prépare un objet de données sans l'ID pour Firestore
+    const dataToMove: any = {};
+    Object.keys(dealership).forEach(key => {
+      if (key !== 'id' && dealership[key] !== undefined) {
+        dataToMove[key] = dealership[key];
+      }
+    });
 
     const quarantineRef = doc(firestore, 'a_verifier', docId);
     const publicRef = doc(firestore, 'concessions', docId);
 
+    // Étape 1 : On crée la fiche dans la collection de quarantaine
     setDocumentNonBlocking(quarantineRef, {
       ...dataToMove,
       quarantinedAt: serverTimestamp(),
@@ -159,11 +166,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
       quarantineSource: 'manual_admin_action'
     }, { merge: true });
 
+    // Étape 2 : On supprime la fiche de la collection publique
     deleteDocumentNonBlocking(publicRef);
 
     toast({ 
-      title: "Fiche modérée", 
-      description: `"${title}" a été déplacée en quarantaine.`,
+      title: "Action réussie", 
+      description: `"${title}" est maintenant en quarantaine.`,
     });
   };
 
