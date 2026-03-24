@@ -26,10 +26,10 @@ const MapComponent = dynamic(() => import('@/components/app/map-component'), {
   loading: () => (<div className="w-full h-full flex items-center justify-center bg-muted/20"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>)
 });
 
-const getDistanceSq = (center: [number, number], dealer: Dealership) => {
+const getDistanceSq = (anchor: [number, number], dealer: Dealership) => {
     if (dealer.latitude == null || dealer.longitude == null || isNaN(dealer.latitude) || isNaN(dealer.longitude)) return Infinity;
-    const dx = center[1] - dealer.longitude;
-    const dy = center[0] - dealer.latitude;
+    const dx = anchor[1] - dealer.longitude;
+    const dy = anchor[0] - dealer.latitude;
     return dx * dx + dy * dy;
 };
 
@@ -134,7 +134,6 @@ function MapPageComponent() {
   const { width, height } = useWindowSize();
   const isMobile = (width || 1024) < 768;
 
-  // Calcul du padding pour le centrage intelligent
   const bottomPadding = useMemo(() => {
     if (!isMobile || !height) return 0;
     if (drawerHeight === 'half') return height / 2;
@@ -283,7 +282,9 @@ function MapPageComponent() {
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
-    let results = filteredDealerships;
+    let results = [...filteredDealerships];
+    
+    // 1. Filtrage par visibilité sur la carte
     if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => {
@@ -291,8 +292,21 @@ function MapPageComponent() {
             return d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng;
         });
     }
+
+    // 2. Logique de tri dynamique
+    const selectedDealer = selectedDealershipId ? results.find(d => d.id === selectedDealershipId) : null;
+
+    if (selectedDealer && selectedDealer.latitude && selectedDealer.longitude) {
+        // Un pointeur est sélectionné : il va en haut, les autres sont triés par proximité avec lui
+        const anchor: [number, number] = [selectedDealer.latitude, selectedDealer.longitude];
+        const others = results.filter(d => d.id !== selectedDealershipId);
+        const sortedOthers = [...others].sort((a, b) => getDistanceSq(anchor, a) - getDistanceSq(anchor, b));
+        return [selectedDealer, ...sortedOthers].slice(0, 30);
+    }
+
+    // Aucun pointeur sélectionné (ou carte déplacée) : tri par proximité avec le centre de la carte
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
-  }, [filteredDealerships, mapBoundsStr, mapCenter, submittedSearchTerm]);
+  }, [filteredDealerships, mapBoundsStr, mapCenter, submittedSearchTerm, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
@@ -305,18 +319,20 @@ function MapPageComponent() {
   
   const handleMarkerClick = useCallback((id: string) => {
     const isAlreadySelected = selectedDealershipId === id;
-    setSelectedDealershipId(current => current === id ? null : id);
+    setSelectedDealershipId(id); // On force la sélection même si déjà sélectionné pour remonter en haut
     if (isMobile && id && !isAlreadySelected) {
       setDrawerHeight('half');
       setIsExpanding(false);
     }
-  }, [isMobile, selectedDealershipId]);
+  }, [isMobile]);
 
   const handleUserMapInteraction = useCallback(() => {
     if (isMobile && drawerHeight !== 'collapsed') {
       setDrawerHeight('collapsed');
       setIsExpanding(true);
     }
+    // Si l'utilisateur déplace la carte manuellement, on perd l'ancre de sélection pour trier par centre
+    setSelectedDealershipId(null);
   }, [isMobile, drawerHeight]);
 
   useEffect(() => {
