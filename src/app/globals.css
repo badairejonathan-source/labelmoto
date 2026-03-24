@@ -125,23 +125,23 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Style personnalisé pour les info-bulles de la carte */
+  /* Style personnalisé pour les info-bulles de la carte avec accent Orange */
   .custom-map-tooltip {
     background-color: hsl(var(--card)) !important;
-    color: hsl(var(--card-foreground)) !important;
-    border: 1px solid hsl(var(--border)) !important;
+    color: hsl(var(--brand)) !important; /* Orange text */
+    border: 2px solid hsl(var(--brand)) !important; /* Orange border */
     border-radius: 0.5rem !important;
     padding: 6px 10px !important;
-    font-weight: 800 !important;
+    font-weight: 900 !important;
     font-size: 11px !important;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
     text-transform: uppercase !important;
     letter-spacing: 0.05em !important;
     white-space: nowrap !important;
   }
 
   .custom-map-tooltip:before {
-    border-top-color: hsl(var(--border)) !important;
+    border-top-color: hsl(var(--brand)) !important; /* Arrow matches the border */
   }
 
   .custom-leaflet-tooltip .leaflet-popup-content-wrapper {
