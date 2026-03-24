@@ -171,6 +171,18 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
+  // Reset the map automatically when the search bar is cleared
+  useEffect(() => {
+    if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
+      setSubmittedSearchTerm('');
+      setMapCenter([46.603354, 1.888334]);
+      setMapZoom(6);
+      setSelectedDealershipId(null);
+      // Clean up URL
+      router.replace('/map', { scroll: false });
+    }
+  }, [searchTerm, submittedSearchTerm, mounted, router]);
+
   useEffect(() => {
     if (!firestore || !mounted) return;
     const dealershipsRef = collection(firestore, 'concessions');
@@ -420,8 +432,8 @@ function MapPageComponent() {
                         isPublicity={true}
                         article={{
                           id: 'promo-bmw-78',
-                          title: 'BMW MOTORRAD 78 : journee heritage',
-                          description: 'BMW 78 vous propose une journee heritiage le 18 AVRIL 2026 Profiter de 10% sur toute leur boutique accessoires.',
+                          title: 'BMW MOTORRAD 78 : journée héritage',
+                          description: 'BMW 78 vous propose une journée héritage le 18 AVRIL 2026. Profitez de 10% sur toute leur boutique accessoires.',
                           imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1080'
                         }} 
                       />
