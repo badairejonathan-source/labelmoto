@@ -156,10 +156,8 @@ export default function MapComponent({
         if (latDiff > 0.0001 || lngDiff > 0.0001 || map.getZoom() !== zoom) {
           isUpdatingFromProps.current = true;
           
-          // Calcul du centrage avec padding si sélectionné
           if (bottomPadding > 0) {
             map.setView(center, zoom, { animate: true });
-            // On décale la carte vers le haut pour compenser le tiroir
             map.panBy([0, bottomPadding / 2], { animate: true });
           } else {
             map.setView(center, zoom, { animate: true });
@@ -190,6 +188,14 @@ export default function MapComponent({
       const marker = L.marker([dealership.latitude, dealership.longitude], { 
         icon, 
         zIndexOffset: isSelected ? 1000 : 0 
+      });
+      
+      // Ajout de la bulle d'info au survol
+      marker.bindTooltip(dealership.title, {
+        permanent: false,
+        direction: 'top',
+        className: 'custom-map-tooltip',
+        offset: [0, -35]
       });
       
       marker.on('click', (e) => {
