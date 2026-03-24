@@ -141,37 +141,33 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     e.stopPropagation();
     if (!isAdmin || !firestore) return;
 
-    if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${title}" ?\nElle ne sera plus visible par le public.`)) {
+    if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${title}" ?\nL'établissement ne sera plus visible par le public.`)) {
       return;
     }
 
     const docId = dealership.id;
-    // On prépare un objet de données sans l'ID pour Firestore
-    const dataToMove: any = {};
-    Object.keys(dealership).forEach(key => {
-      if (key !== 'id' && dealership[key] !== undefined) {
-        dataToMove[key] = dealership[key];
-      }
-    });
+    // On extrait les données proprement (sans l'ID)
+    const { id, ...dealershipData } = dealership;
+    
+    const dataToMove = {
+      ...dealershipData,
+      quarantinedAt: serverTimestamp(),
+      isQuarantined: true,
+      quarantineSource: 'manual_admin_action'
+    };
 
     const quarantineRef = doc(firestore, 'a_verifier', docId);
     const publicRef = doc(firestore, 'concessions', docId);
 
     // Étape 1 : On crée la fiche dans la collection de quarantaine
-    setDocumentNonBlocking(quarantineRef, {
-      ...dataToMove,
-      quarantinedAt: serverTimestamp(),
-      submittedAt: dealership.submittedAt || serverTimestamp(),
-      isQuarantined: true,
-      quarantineSource: 'manual_admin_action'
-    }, { merge: true });
+    setDocumentNonBlocking(quarantineRef, dataToMove, { merge: true });
 
     // Étape 2 : On supprime la fiche de la collection publique
     deleteDocumentNonBlocking(publicRef);
 
     toast({ 
       title: "Action réussie", 
-      description: `"${title}" est maintenant en quarantaine.`,
+      description: `"${title}" a été déplacé en quarantaine.`,
     });
   };
 
@@ -368,10 +364,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   {isAdmin && (
                       <button 
                         onClick={handleQuarantine} 
-                        className="flex flex-col items-center gap-1 text-destructive hover:bg-destructive/10 rounded-lg transition-colors text-center p-1"
+                        className="flex flex-col items-center gap-1 text-destructive hover:bg-destructive/10 rounded-lg transition-colors text-center p-1 group/moder"
                         title="Mettre en quarantaine"
                       >
-                          <ShieldAlert className="w-4 h-4 md:w-5 md:h-5" />
+                          <ShieldAlert className="w-4 h-4 md:w-5 md:h-5 group-hover/moder:scale-110 transition-transform" />
                           <span>Modérer</span>
                       </button>
                   )}
