@@ -140,28 +140,39 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const handleQuarantine = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm(`Mettre "${title}" en quarantaine ?\nCette fiche ne sera plus visible publiquement.`)) return;
+    if (!isAdmin) return;
 
-    if (!firestore) return;
+    if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${title}" ?\nElle ne sera plus visible publiquement.`)) {
+      return;
+    }
 
-    // Data cleanup for quarantine
-    const { id, ...dataToMove } = dealership;
-    const quarantinePayload = {
+    if (!firestore) {
+      toast({ title: "Erreur", description: "Base de données indisponible.", variant: "destructive" });
+      return;
+    }
+
+    // Préparation des données propres pour le transfert
+    const dataToMove = { ...dealership };
+    const docId = dataToMove.id;
+    delete dataToMove.id;
+
+    const quarantineRef = doc(firestore, 'a_verifier', docId);
+    const publicRef = doc(firestore, 'concessions', docId);
+
+    // 1. Déplacer vers la collection de quarantaine
+    setDocumentNonBlocking(quarantineRef, {
       ...dataToMove,
       quarantinedAt: serverTimestamp(),
       isQuarantined: true,
       quarantineSource: 'manual_admin_action'
-    };
+    }, { merge: true });
 
-    // Move to quarantine collection
-    setDocumentNonBlocking(doc(firestore, 'a_verifier', dealership.id), quarantinePayload, {});
-    // Delete from public collection
-    deleteDocumentNonBlocking(doc(firestore, 'concessions', dealership.id));
+    // 2. Supprimer de la collection publique
+    deleteDocumentNonBlocking(publicRef);
 
     toast({ 
       title: "Fiche modérée", 
-      description: "L'établissement a été déplacé en quarantaine.",
-      variant: "default"
+      description: `"${title}" a été déplacée en quarantaine.`,
     });
   };
 
