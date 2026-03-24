@@ -70,7 +70,7 @@ export default function LandingPage() {
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12 md:pb-20">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
                             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-4 uppercase leading-[0.95]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                                Du A2 au motard expérimenté : trouver les professionnels les plus proches en quelques clics
+                                Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics
                             </h1>
                             <p className="text-sm md:text-lg max-w-3xl mx-auto md:mx-0 mb-4 md:mb-6 text-gray-200 font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit pour vous laisser plus de temps sur la route.
@@ -152,10 +152,10 @@ export default function LandingPage() {
                     <div className="bg-muted/50 rounded-3xl p-8 border-2 border-brand shadow-xl">
                         <div className="text-center mb-10">
                             <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter leading-none">
-                                Objectif A2 : Roule bien accompagné.
+                                Objectif A2 : Roulez bien accompagnés.
                             </h2>
                             <p className="text-base text-muted-foreground max-w-3xl mx-auto font-medium">
-                                De l’achat de ta première bécane au choix du bon garage, nos dossiers spéciaux t’aident à éviter les pièges et à tracer ta route sereinement.
+                                De l’achat de votre première bécane au choix du bon garage, nos dossiers spéciaux vous aident à éviter les pièges et à tracer votre route sereinement.
                             </p>
                         </div>
                         
@@ -206,10 +206,10 @@ export default function LandingPage() {
                 <section className="mt-16 md:mt-24">
                   <div className="bg-muted/50 rounded-3xl p-10 text-center border border-border/50 backdrop-blur-sm">
                     <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter">
-                      Maîtrise ton budget entretien.
+                      Maîtrisez votre budget entretien.
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8 font-medium">
-                      <span className="font-black text-foreground">Anticipe tes dépenses en quelques clics.</span> Accède au budget moyen et aux points de contrôle de ton modèle pour arriver au garage en toute confiance.
+                      <span className="font-black text-foreground">Anticipez vos dépenses en quelques clics.</span> Accédez au budget moyen et aux points de contrôle de votre modèle pour arriver au garage en toute confiance.
                     </p>
                     <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase tracking-widest text-xs px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
                       <Link href="/entretien">
@@ -264,7 +264,7 @@ export default function LandingPage() {
                             Professionnels, rejoignez le réseau Label Moto.
                           </h2>
                           <p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">
-                            Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
+                            Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
                           <div className="relative inline-block group/cta">
                             <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest">
