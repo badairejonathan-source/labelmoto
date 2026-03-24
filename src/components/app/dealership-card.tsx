@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send, PlusCircle, AlertCircle } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send, PlusCircle, AlertCircle, ShieldAlert } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useUser, useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -27,6 +27,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
+
+const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
 interface DealershipCardProps {
   dealership: Dealership;
@@ -59,6 +61,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+
+  const isAdmin = user?.uid === ADMIN_UID;
 
   // Fetch current user's profiles to get their chosen pseudo
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
@@ -134,6 +138,33 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     setIsReviewDialogOpen(true);
   };
 
+  const handleQuarantine = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm(`Mettre "${title}" en quarantaine ?\nCette fiche ne sera plus visible publiquement.`)) return;
+
+    if (!firestore) return;
+
+    // Data cleanup for quarantine
+    const { id, ...dataToMove } = dealership;
+    const quarantinePayload = {
+      ...dataToMove,
+      quarantinedAt: serverTimestamp(),
+      isQuarantined: true,
+      quarantineSource: 'manual_admin_action'
+    };
+
+    // Move to quarantine collection
+    setDocumentNonBlocking(doc(firestore, 'a_verifier', dealership.id), quarantinePayload, {});
+    // Delete from public collection
+    deleteDocumentNonBlocking(doc(firestore, 'concessions', dealership.id));
+
+    toast({ 
+      title: "Fiche modérée", 
+      description: "L'établissement a été déplacé en quarantaine.",
+      variant: "default"
+    });
+  };
+
   const handleRatingSubmit = () => {
     if (!user || !firestore) {
         toast({ title: "Connexion requise", description: "Veuillez vous connecter pour laisser un avis.", variant: "destructive" });
@@ -147,7 +178,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     setIsSubmitting(true);
     const commentData = {
         userId: user.uid,
-        userName: currentPseudo, // Uses the pseudo from profile
+        userName: currentPseudo,
         dealershipId: dealership.id,
         dealershipName: title,
         content: newComment,
@@ -168,7 +199,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const street = addressParts[0] || '';
   const cityZip = addressParts.slice(1).join(', ') || '';
 
-  const isSelectedLabel = false;
   const loginCallbackUrl = `/map?selectedId=${dealership.id}&view=reviews`;
 
   return (
@@ -325,6 +355,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                       <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-brand"/>
                       <span>Avis</span>
                   </button>
+                  {isAdmin && (
+                      <button 
+                        onClick={handleQuarantine} 
+                        className="flex flex-col items-center gap-1 text-destructive hover:opacity-70 transition-opacity text-center"
+                        title="Mettre en quarantaine"
+                      >
+                          <ShieldAlert className="w-4 h-4 md:w-5 md:h-5" />
+                          <span>Modérer</span>
+                      </button>
+                  )}
               </div>
 
               {dealership.address && 
