@@ -131,6 +131,7 @@ function MapPageComponent() {
   });
 
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+  const listContainerRef = useRef<HTMLDivElement>(null);
   const { width, height } = useWindowSize();
   const isMobile = (width || 1024) < 768;
 
@@ -324,7 +325,7 @@ function MapPageComponent() {
       setDrawerHeight('half');
       setIsExpanding(false);
     }
-  }, [isMobile]);
+  }, [isMobile, selectedDealershipId]);
 
   const handleUserMapInteraction = useCallback(() => {
     if (isMobile && drawerHeight !== 'collapsed') {
@@ -337,10 +338,15 @@ function MapPageComponent() {
 
   useEffect(() => {
     if (selectedDealershipId) {
-      const card = cardRefs.current.get(selectedDealershipId);
-      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Sur mobile, on remonte le conteneur de liste tout en haut car l'élément sélectionné est à l'index 0
+      if (isMobile && listContainerRef.current) {
+        listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const card = cardRefs.current.get(selectedDealershipId);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
-  }, [selectedDealershipId]);
+  }, [selectedDealershipId, isMobile]);
 
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
   const onTouchEnd = (e: React.TouchEvent) => {
@@ -452,7 +458,7 @@ function MapPageComponent() {
               <div className="p-3 border-b bg-muted/20 flex justify-between items-center">
                 <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none p-0 flex-1" />
               </div>
-              <div className="flex-1 overflow-y-auto pr-2">
+              <div className="flex-1 overflow-y-auto pr-2" ref={listContainerRef}>
                 <div className="py-3 pl-3 space-y-3">{listContent}</div>
               </div>
             </aside>
@@ -528,7 +534,7 @@ function MapPageComponent() {
                     )}
                   </Button>
                 </div>
-                <div className="flex-1 overflow-y-auto mt-2">{listContent}</div>
+                <div className="flex-1 overflow-y-auto mt-2" ref={listContainerRef}>{listContent}</div>
               </div>
             </div>
           </>
