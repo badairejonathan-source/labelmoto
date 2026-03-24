@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { collection, onSnapshot, doc, getDocs, serverTimestamp } from 'firebase/
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, XCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import { Dealership } from '@/lib/types';
@@ -34,6 +35,8 @@ interface Submission {
   brands?: string[];
   description?: string;
   submittedAt?: any;
+  quarantinedAt?: any;
+  quarantineSource?: string;
 }
 
 interface UserComment {
@@ -52,7 +55,6 @@ export default function AdminPage() {
   const [pendingComments, setPendingComments] = useState<UserComment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [isCleaningUp, setIsCleaningUp] = useState(false);
   
   const { firestore, user, isUserLoading } = useFirebase();
   const { toast } = useToast();
@@ -81,7 +83,7 @@ export default function AdminPage() {
       }
     );
 
-    // Submissions en Quarantaine (contient "auto")
+    // Submissions en Quarantaine
     const quarantineRef = collection(firestore, 'a_verifier');
     const unsubQuarantine = onSnapshot(quarantineRef, 
       (snapshot) => {
@@ -114,17 +116,14 @@ export default function AdminPage() {
     if (!firestore) return;
     setProcessingId(submission.id);
     
+    // On nettoie l'objet pour l'insertion
+    const { id, quarantinedAt, quarantineSource, ...data } = submission as any;
+
     const newConcession = {
-      title: submission.title,
-      address: submission.address,
-      website: submission.website || '',
-      phoneNumber: submission.phoneNumber || '',
-      email: submission.email || '',
-      brands: submission.brands || [],
-      category: submission.category,
-      appSection: 'both',
-      rating: '0',
-      imgUrl: '',
+      ...data,
+      appSection: submission.category?.includes('concession') ? 'both' : 'service',
+      rating: data.rating || '0',
+      imgUrl: data.imgUrl || '',
     };
 
     setDocumentNonBlocking(doc(firestore, 'concessions', submission.id), newConcession, {});
@@ -153,8 +152,12 @@ export default function AdminPage() {
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'Date inconnue';
-    const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date();
-    return formatDistanceToNow(date, { addSuffix: true, locale: fr });
+    const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+    try {
+        return formatDistanceToNow(date, { addSuffix: true, locale: fr });
+    } catch (e) {
+        return 'Date invalide';
+    }
   };
 
   if (isUserLoading || !user || user.uid !== ADMIN_UID) {
@@ -183,7 +186,7 @@ export default function AdminPage() {
                 Demandes Pros {submissions.length > 0 && <Badge className="ml-2 bg-brand">{submissions.length}</Badge>}
             </TabsTrigger>
             <TabsTrigger value="comments" className="rounded-full font-bold">
-                Commentaires {pendingComments.length > 0 && <Badge className="ml-2 bg-blue-500">{pendingComments.length}</Badge>}
+                Commentaires {pendingComments.length > 0 && <Badge className="ml-2 bg-blue-50">{pendingComments.length}</Badge>}
             </TabsTrigger>
             <TabsTrigger value="quarantine" className="rounded-full font-bold text-destructive">
                 Quarantaine {quarantineSubmissions.length > 0 && <Badge variant="destructive" className="ml-2">{quarantineSubmissions.length}</Badge>}
@@ -276,21 +279,26 @@ export default function AdminPage() {
                 {quarantineSubmissions.map(sub => (
                   <Card key={sub.id} className="flex flex-col border-l-4 border-l-destructive">
                     <CardHeader>
-                      <CardTitle className="text-lg flex justify-between">
+                      <CardTitle className="text-lg flex justify-between items-center">
                         {sub.title}
-                        <AlertTriangle className="h-5 w-5 text-destructive" />
+                        {sub.quarantineSource === 'manual_admin_action' ? <ShieldAlert className="h-5 w-5 text-destructive" /> : <AlertTriangle className="h-5 w-5 text-orange-500" />}
                       </CardTitle>
-                      <CardDescription>Détecté auto - {formatDate(sub.submittedAt)}</CardDescription>
+                      <CardDescription>
+                        {sub.quarantineSource === 'manual_admin_action' ? 'Mis en quarantaine par Admin' : 'Détecté auto (contient "auto")'} - {formatDate(sub.quarantinedAt || sub.submittedAt)}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-grow space-y-2 text-sm italic text-muted-foreground">
-                      "{sub.description || 'Pas de description'}"
+                      {sub.description ? `"${sub.description}"` : 'Pas de description fournie.'}
+                      <div className="pt-2 text-[10px] not-italic uppercase font-black tracking-widest text-foreground">
+                        Adresse: {sub.address}
+                      </div>
                     </CardContent>
                     <CardFooter className="flex gap-2 justify-end bg-muted/20 p-4 border-t">
                       <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'a_verifier')} disabled={processingId === sub.id} className="text-destructive">
                         Supprimer
                       </Button>
                       <Button size="sm" onClick={() => handleApproveSubmission(sub, 'a_verifier')} disabled={processingId === sub.id} className="bg-brand">
-                        Approuver (Exception)
+                        <ShieldCheck className="mr-2 h-4 w-4" /> Approuver
                       </Button>
                     </CardFooter>
                   </Card>

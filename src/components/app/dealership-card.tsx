@@ -64,7 +64,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const isAdmin = user?.uid === ADMIN_UID;
 
-  // Fetch current user's profiles to get their chosen pseudo
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
 
@@ -140,34 +139,26 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const handleQuarantine = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isAdmin) return;
+    if (!isAdmin || !firestore) return;
 
     if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${title}" ?\nElle ne sera plus visible publiquement.`)) {
       return;
     }
 
-    if (!firestore) {
-      toast({ title: "Erreur", description: "Base de données indisponible.", variant: "destructive" });
-      return;
-    }
-
-    // Préparation des données propres pour le transfert
-    const dataToMove = { ...dealership };
-    const docId = dataToMove.id;
-    delete dataToMove.id;
+    const docId = dealership.id;
+    const { id, ...dataToMove } = dealership;
 
     const quarantineRef = doc(firestore, 'a_verifier', docId);
     const publicRef = doc(firestore, 'concessions', docId);
 
-    // 1. Déplacer vers la collection de quarantaine
     setDocumentNonBlocking(quarantineRef, {
       ...dataToMove,
       quarantinedAt: serverTimestamp(),
+      submittedAt: dealership.submittedAt || serverTimestamp(),
       isQuarantined: true,
       quarantineSource: 'manual_admin_action'
     }, { merge: true });
 
-    // 2. Supprimer de la collection publique
     deleteDocumentNonBlocking(publicRef);
 
     toast({ 
@@ -369,7 +360,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   {isAdmin && (
                       <button 
                         onClick={handleQuarantine} 
-                        className="flex flex-col items-center gap-1 text-destructive hover:opacity-70 transition-opacity text-center"
+                        className="flex flex-col items-center gap-1 text-destructive hover:bg-destructive/10 rounded-lg transition-colors text-center p-1"
                         title="Mettre en quarantaine"
                       >
                           <ShieldAlert className="w-4 h-4 md:w-5 md:h-5" />
@@ -386,7 +377,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                         <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-left text-muted-foreground hover:text-brand group font-medium" onClick={(e) => e.stopPropagation()}>
                             <MapPin className="h-4 w-4 md:h-5 md:h-5 shrink-0 text-brand"/>
                             <div className="flex flex-col leading-tight">
-                                <span className="group-hover:underline line-clamp-1 text-xs md:text-sm font-bold text-foreground">{street} {cityZip}</span>
+                                <span className="group-hover:underline line-clamp-1 text-xs md:sm font-bold text-foreground">{street} {cityZip}</span>
                             </div>
                         </a>
                       </TooltipTrigger>
