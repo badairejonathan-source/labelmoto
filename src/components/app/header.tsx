@@ -7,7 +7,7 @@ import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, St
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
-import { cn } from '@/lib/utils';
+import { cn, levenshteinDistance } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -230,37 +230,57 @@ const Header: React.FC<HeaderProps> = ({
 
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
+    const termWords = lowerTerm.split(/\s+/).filter(w => w.length > 1);
     
     const results: Suggestion[] = [];
 
-    // Priorité 1: Les Concessions (Dealer) + Code Postal
+    // --- LOGIQUE DE SCORING DES CONCESSIONS ---
     allDealers.forEach(d => {
-        const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
-        const normalizedSub = d.subLabel?.toLowerCase().replace(/[\s-]/g, '') || '';
-        const address = d.subLabel || '';
+        const title = d.label.toLowerCase();
+        const address = d.subLabel?.toLowerCase() || '';
+        const normalizedTitle = title.replace(/[\s-]/g, '');
         
         let score = 0;
         
-        // Match Code Postal (Priorité absolue)
+        // 1. Match Code Postal (Priorité Absolue)
         const isNumeric = /^\d+$/.test(lowerTerm);
         if (isNumeric && lowerTerm.length >= 2) {
-            const zipMatch = address.match(/\b\d{5}\b/g);
-            if (zipMatch && zipMatch.some(zip => zip.startsWith(lowerTerm))) {
-                score = 1100; // Plus haut que tout le reste
+            const zipMatch = address.match(/\b\d{5}\b/);
+            if (zipMatch && zipMatch[0].startsWith(lowerTerm)) {
+                score = 1300;
             }
         }
 
-        if (normalizedLabel === normalizedTerm) score = Math.max(score, 1000); 
-        else if (normalizedLabel.startsWith(normalizedTerm)) score = Math.max(score, 800);
-        else if (normalizedLabel.includes(normalizedTerm)) score = Math.max(score, 600);
-        else if (normalizedSub.includes(normalizedTerm)) score = Math.max(score, 400);
+        // 2. Match Exact Nom (Normalized)
+        if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
+        
+        // 3. Typo Tolerance (Distance de Levenshtein)
+        if (lowerTerm.length > 3) {
+            const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
+            if (dist === 1) score = Math.max(score, 1100);
+            else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
+        }
+
+        // 4. Prefix Match
+        if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
+        
+        // 5. Keyword Overlap (Pertinence par mots)
+        const titleWords = title.split(/\s+/).filter(w => w.length > 1);
+        const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
+        if (matches.length > 0) {
+            const keywordScore = 500 + (matches.length * 100);
+            score = Math.max(score, keywordScore);
+        }
+
+        // 6. Contains Match
+        if (normalizedTitle.includes(normalizedTerm)) score = Math.max(score, 800);
         
         if (score > 0) {
             results.push({ ...d, score });
         }
     });
 
-    // Priorité 2: Les Marques (Brand)
+    // --- LOGIQUE DES MARQUES ---
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
     let bestBrandMatch: string | null = null;
 
@@ -268,25 +288,27 @@ const Header: React.FC<HeaderProps> = ({
         const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
         let score = 0;
         if (normalizedBrand === normalizedTerm) {
-            score = 900;
+            score = 1150;
             bestBrandMatch = brand;
         } else if (normalizedBrand.startsWith(normalizedTerm)) {
-            score = 700;
+            score = 900;
             if (!bestBrandMatch) bestBrandMatch = brand;
+        } else if (lowerTerm.length > 3 && levenshteinDistance(normalizedTerm, normalizedBrand) === 1) {
+            score = 850;
         }
         
         if (score > 0) {
             results.push({
                 type: 'brand-only',
                 label: brand,
-                subLabel: "Filtrer par cette marque",
+                subLabel: "Voir les concessionnaires",
                 brand: brand,
                 score
             });
         }
     });
 
-    // Priorité 3: Marque + Localisation
+    // --- MARQUE + LOCALISATION (ex: Honda 75) ---
     if (bestBrandMatch) {
         const normalizedBrandMatch = bestBrandMatch.toLowerCase().replace(/[\s-]/g, '');
         const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
@@ -298,12 +320,12 @@ const Header: React.FC<HeaderProps> = ({
                     results.push({
                         type: 'brand-location',
                         label: `${bestBrandMatch} à ${dept}`,
-                        subLabel: `Voir les pros ${bestBrandMatch} dans cette zone`,
+                        subLabel: `Voir les pros ${bestBrandMatch} dans le secteur`,
                         lat: info.center[0],
                         lng: info.center[1],
                         zoom: 9,
                         brand: bestBrandMatch,
-                        score: 950
+                        score: 1250 // Très pertinent
                     });
                     break;
                 }
@@ -311,7 +333,7 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
-    // Priorité 4: Villes et Départements
+    // --- VILLES ET DÉPARTEMENTS ---
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (normalizedDept.includes(normalizedTerm)) {
@@ -321,7 +343,7 @@ const Header: React.FC<HeaderProps> = ({
                 lat: info.center[0],
                 lng: info.center[1],
                 zoom: 9,
-                score: 500
+                score: 700
             });
         }
         info.cities.forEach(city => {
@@ -334,25 +356,23 @@ const Header: React.FC<HeaderProps> = ({
                     lat: info.center[0],
                     lng: info.center[1],
                     zoom: 10,
-                    score: 450
+                    score: 650
                 });
             }
         });
     });
 
-    const uniqueResults = results
+    // Tri par score et unicité
+    const finalSuggestions = results
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
-    setSuggestions(uniqueResults.slice(0, 10));
+    setSuggestions(finalSuggestions.slice(0, 10));
 
+    // Prédiction (Auto-complete)
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
         const matchLabel = bestBrandMatch;
-        if (matchLabel.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
-            setPrediction(searchTerm + matchLabel.substring(searchTerm.length));
-        } else {
-            setPrediction('');
-        }
+        setPrediction(searchTerm + matchLabel.substring(searchTerm.length));
     } else {
         setPrediction('');
     }

@@ -31,6 +31,7 @@ import brandLogos from '@/data/brand-logos';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
+import { levenshteinDistance } from '@/lib/utils';
 
 const brands = Object.keys(brandLogos);
 
@@ -65,16 +66,6 @@ const submissionSchema = z.object({
 });
 
 type SubmissionFormValues = z.infer<typeof submissionSchema>;
-
-const timeOptions: string[] = ['Fermé'];
-for (let h = 7; h <= 20; h++) {
-  for (let m = 0; m < 60; m += 30) {
-    const hour = String(h).padStart(2, '0');
-    const minute = String(m).padStart(2, '0');
-    timeOptions.push(`${hour}:${minute}`);
-  }
-}
-timeOptions.push('21:00');
 
 function RegisterProContent() {
   const router = useRouter();
@@ -123,32 +114,55 @@ function RegisterProContent() {
 
   const suggestions = useMemo(() => {
     if (!proSearchTerm.trim() || !allDealers) return [];
+    
     const lower = proSearchTerm.toLowerCase().trim();
     const normalizedTerm = lower.replace(/[\s-]/g, '');
+    const termWords = lower.split(/\s+/).filter(w => w.length > 1);
 
     return allDealers
         .map(d => {
-            const normalizedLabel = (d.title || '').toLowerCase().replace(/[\s-]/g, '');
-            const normalizedAddress = (d.address || '').toLowerCase().replace(/[\s-]/g, '');
+            const label = (d.title || '').toLowerCase();
+            const address = (d.address || '').toLowerCase();
+            const normalizedLabel = label.replace(/[\s-]/g, '');
             let score = 0;
 
-            // Match Code Postal
+            // 1. Match Code Postal (Priorité Absolue)
             const isNumeric = /^\d+$/.test(lower);
             if (isNumeric && lower.length >= 2) {
-                const zipMatch = (d.address || '').match(/\b\d{5}\b/);
-                if (zipMatch && zipMatch[0].startsWith(lower)) score = 1100;
+                const zipMatch = address.match(/\b\d{5}\b/);
+                if (zipMatch && zipMatch[0].startsWith(lower)) {
+                    score = 1300;
+                }
             }
 
-            if (normalizedLabel === normalizedTerm) score = Math.max(score, 1000);
-            else if (normalizedLabel.startsWith(normalizedTerm)) score = Math.max(score, 800);
-            else if (normalizedLabel.includes(normalizedTerm)) score = Math.max(score, 600);
-            else if (normalizedAddress.includes(normalizedTerm)) score = Math.max(score, 400);
+            // 2. Match Exact Nom
+            if (normalizedLabel === normalizedTerm) score = Math.max(score, 1200);
+            
+            // 3. Typo Tolerance (Distance de Levenshtein)
+            if (normalizedTerm.length > 3) {
+                const dist = levenshteinDistance(normalizedTerm, normalizedLabel);
+                if (dist === 1) score = Math.max(score, 1100);
+                else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
+            }
+
+            // 4. Prefix Match
+            if (normalizedLabel.startsWith(normalizedTerm)) score = Math.max(score, 1000);
+            
+            // 5. Keyword Overlap
+            const titleWords = label.split(/\s+/).filter(w => w.length > 1);
+            const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
+            if (matches.length > 0) {
+                score = Math.max(score, 500 + (matches.length * 100));
+            }
+
+            // 6. Address Includes
+            if (address.includes(lower)) score = Math.max(score, 400);
 
             return { ...d, score };
         })
         .filter(d => d.score > 0)
         .sort((a, b) => b.score - a.score)
-        .slice(0, 8);
+        .slice(0, 10);
   }, [proSearchTerm, allDealers]);
 
   const handleModSubmit = async () => {
@@ -175,20 +189,6 @@ function RegisterProContent() {
   const onSubmit = async (data: SubmissionFormValues) => {
     if (!firestore) return;
     
-    const formattedHoraires: { [key: string]: string } = {};
-    Object.keys(data.horaires).forEach(day => {
-      const schedule = data.horaires[day as keyof typeof data.horaires];
-      const morningOpen = schedule.morningOpen !== 'Fermé';
-      const afternoonOpen = schedule.afternoonOpen !== 'Fermé';
-      let dayString = '';
-      if (morningOpen) dayString += `${schedule.morningOpen} - ${schedule.morningClose}`;
-      if (afternoonOpen) dayString += morningOpen ? `, ${schedule.afternoonOpen} - ${schedule.afternoonClose}` : `${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
-      if (!morningOpen && !afternoonOpen) dayString = 'Fermé';
-      formattedHoraires[day] = dayString;
-    });
-
-    const combinedBrands = [data.primaryBrand, ...(data.secondaryBrands || [])].filter(Boolean);
-
     addDocumentNonBlocking(collection(firestore, 'pending_concessions'), {
       title: data.name,
       category: data.category,
@@ -197,9 +197,7 @@ function RegisterProContent() {
       email: data.email,
       website: data.website || '',
       placeUrl: data.placeUrl || '',
-      brands: combinedBrands,
       description: data.description || '',
-      ...formattedHoraires,
       submittedAt: serverTimestamp(),
       requestType: 'CREATION'
     });
@@ -240,7 +238,7 @@ function RegisterProContent() {
                 <Card className="border-2 border-brand shadow-xl">
                     <CardHeader>
                         <CardTitle className="text-2xl font-black uppercase tracking-tighter">Modifier mon établissement</CardTitle>
-                        <CardDescription>Recherchez votre établissement sur Label Moto pour nous envoyer vos mises à jour.</CardDescription>
+                        <CardDescription>Recherchez votre établissement pour nous envoyer vos mises à jour.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {!selectedDealer ? (
