@@ -47,6 +47,7 @@ interface Suggestion {
     zoom?: number;
     id?: string;
     brand?: string;
+    score?: number; // Added for prioritization
 }
 
 const UserMenu = () => {
@@ -191,7 +192,7 @@ const Header: React.FC<HeaderProps> = ({
     const fetchDealers = async () => {
         if (!firestore) return;
         try {
-            const q = query(collection(firestore, 'concessions'), limit(200));
+            const q = query(collection(firestore, 'concessions'), limit(250));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => ({
                 type: 'dealer',
@@ -222,7 +223,8 @@ const Header: React.FC<HeaderProps> = ({
   }, []);
 
   useEffect(() => {
-    if (searchTerm.trim().length < 2) {
+    // REACTION A CHAQUE NOUVELLE LETTRE (length >= 1)
+    if (searchTerm.trim().length < 1) {
         setSuggestions([]);
         setPrediction('');
         return;
@@ -231,29 +233,51 @@ const Header: React.FC<HeaderProps> = ({
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
     
-    const isStrictBrand = brandsList.some(b => {
-        const normalizedBrand = b.toLowerCase().replace(/[\s-]/g, '');
-        return normalizedBrand === normalizedTerm;
-    });
-
     const results: Suggestion[] = [];
 
+    // Priorité 1: Les Concessions (Dealer)
+    allDealers.forEach(d => {
+        const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
+        const normalizedSub = d.subLabel?.toLowerCase().replace(/[\s-]/g, '') || '';
+        
+        let score = 0;
+        if (normalizedLabel === normalizedTerm) score = 1000; // Match exact
+        else if (normalizedLabel.startsWith(normalizedTerm)) score = 800; // Commence par
+        else if (normalizedLabel.includes(normalizedTerm)) score = 600; // Contient
+        else if (normalizedSub.includes(normalizedTerm)) score = 400; // Adresse contient
+        
+        if (score > 0) {
+            results.push({ ...d, score });
+        }
+    });
+
+    // Priorité 2: Les Marques (Brand)
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
     let bestBrandMatch: string | null = null;
 
     sortedBrands.forEach(brand => {
         const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-        if (normalizedBrand.startsWith(normalizedTerm)) {
+        let score = 0;
+        if (normalizedBrand === normalizedTerm) {
+            score = 900;
+            bestBrandMatch = brand;
+        } else if (normalizedBrand.startsWith(normalizedTerm)) {
+            score = 700;
             if (!bestBrandMatch) bestBrandMatch = brand;
+        }
+        
+        if (score > 0) {
             results.push({
                 type: 'brand-only',
                 label: brand,
                 subLabel: "Filtrer par cette marque",
-                brand: brand
+                brand: brand,
+                score
             });
         }
     });
 
+    // Priorité 3: Marque + Localisation (ex: "Honda 75")
     if (bestBrandMatch) {
         const normalizedBrandMatch = bestBrandMatch.toLowerCase().replace(/[\s-]/g, '');
         const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
@@ -262,14 +286,15 @@ const Header: React.FC<HeaderProps> = ({
             for (const [dept, info] of Object.entries(locationsData)) {
                 const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
                 if (normalizedDept.includes(searchWithoutBrand)) {
-                    results.unshift({
+                    results.push({
                         type: 'brand-location',
                         label: `${bestBrandMatch} à ${dept}`,
                         subLabel: `Voir les pros ${bestBrandMatch} dans cette zone`,
                         lat: info.center[0],
                         lng: info.center[1],
                         zoom: 9,
-                        brand: bestBrandMatch
+                        brand: bestBrandMatch,
+                        score: 950 // Très haute priorité pour les recherches ciblées
                     });
                     break;
                 }
@@ -277,6 +302,7 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
+    // Priorité 4: Villes et Départements
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (normalizedDept.includes(normalizedTerm)) {
@@ -285,7 +311,8 @@ const Header: React.FC<HeaderProps> = ({
                 label: dept,
                 lat: info.center[0],
                 lng: info.center[1],
-                zoom: 9
+                zoom: 9,
+                score: 500
             });
         }
         info.cities.forEach(city => {
@@ -297,25 +324,23 @@ const Header: React.FC<HeaderProps> = ({
                     subLabel: dept.split(' - ')[0],
                     lat: info.center[0],
                     lng: info.center[1],
-                    zoom: 10
+                    zoom: 10,
+                    score: 450
                 });
             }
         });
     });
 
-    const filteredDealers = allDealers.filter(d => {
-        const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
-        const normalizedSubLabel = d.subLabel?.toLowerCase().replace(/[\s-]/g, '') || '';
-        return normalizedLabel.includes(normalizedTerm) || normalizedSubLabel.includes(normalizedTerm);
-    });
-    results.push(...filteredDealers);
+    // Tri final par score et unicité
+    const uniqueResults = results
+        .sort((a, b) => (b.score || 0) - (a.score || 0))
+        .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
+    
+    setSuggestions(uniqueResults.slice(0, 10));
 
-    const uniqueResults = results.filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
-    setSuggestions(uniqueResults.slice(0, 8));
-
+    // Prédiction (Inline Suggestion)
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
-        const brandMatch = bestBrandMatch;
-        const matchLabel = brandMatch;
+        const matchLabel = bestBrandMatch;
         if (matchLabel.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
             setPrediction(searchTerm + matchLabel.substring(searchTerm.length));
         } else {
@@ -323,10 +348,6 @@ const Header: React.FC<HeaderProps> = ({
         }
     } else {
         setPrediction('');
-    }
-
-    if (isStrictBrand) {
-        setSuggestions([]);
     }
 
   }, [searchTerm, allDealers]);
@@ -366,12 +387,8 @@ const Header: React.FC<HeaderProps> = ({
         setPrediction('');
         setTimeout(() => onSearch(), 10);
     } else if (suggestions.length > 0) {
-        const firstBrandOnly = suggestions.find(s => s.type === 'brand-only');
-        if (firstBrandOnly) {
-            handleSuggestionClick(firstBrandOnly);
-        } else {
-            handleSuggestionClick(suggestions[0]);
-        }
+        // Si on a des suggestions, on prend la plus pertinente (la première car triée par score)
+        handleSuggestionClick(suggestions[0]);
     } else {
         onSearch();
     }
