@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -13,10 +12,10 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useUser, useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, serverTimestamp, doc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -27,6 +26,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
@@ -146,11 +147,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
-    // On extrait les données proprement (sans l'ID)
-    const { id, ...dealershipData } = dealership;
+    
+    // Nettoyage et clonage robuste des données pour éviter les erreurs Firestore
+    const cleanedData = JSON.parse(JSON.stringify(dealership));
+    delete cleanedData.id;
     
     const dataToMove = {
-      ...dealershipData,
+      ...cleanedData,
       quarantinedAt: serverTimestamp(),
       isQuarantined: true,
       quarantineSource: 'manual_admin_action'
@@ -159,16 +162,23 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     const quarantineRef = doc(firestore, 'a_verifier', docId);
     const publicRef = doc(firestore, 'concessions', docId);
 
-    // Étape 1 : On crée la fiche dans la collection de quarantaine
-    setDocumentNonBlocking(quarantineRef, dataToMove, { merge: true });
-
-    // Étape 2 : On supprime la fiche de la collection publique
-    deleteDocumentNonBlocking(publicRef);
-
-    toast({ 
-      title: "Action réussie", 
-      description: `"${title}" a été déplacé en quarantaine.`,
-    });
+    // On effectue d'abord la création sécurisée, puis la suppression
+    setDoc(quarantineRef, dataToMove, { merge: true })
+      .then(() => {
+        deleteDocumentNonBlocking(publicRef);
+        toast({ 
+          title: "Action réussie", 
+          description: `"${title}" a été déplacé en quarantaine.`,
+        });
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: quarantineRef.path,
+          operation: 'write',
+          requestResourceData: dataToMove,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
   };
 
   const handleRatingSubmit = () => {

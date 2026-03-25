@@ -265,14 +265,12 @@ export default function LandingPage() {
                           <p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">
                             Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.
                           </p>
-                          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                            <div className="relative inline-block group/cta">
-                              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto">
-                                <Link href={proRegisterLink}>
-                                  🔘 Créer la fiche de mon établissement
-                                </Link>
-                              </Button>
-                            </div>
+                          <div className="flex flex-col gap-4 items-center lg:items-start">
+                            <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto">
+                              <Link href={proRegisterLink}>
+                                🔘 Créer la fiche de mon établissement
+                              </Link>
+                            </Button>
                             <Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto">
                               <Link href={proRegisterLink}>
                                 🔘 Modifier une fiche existante
