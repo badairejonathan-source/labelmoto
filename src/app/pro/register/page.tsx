@@ -1,19 +1,19 @@
 'use client';
 
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useFirebase, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { collection, serverTimestamp, doc } from "firebase/firestore";
-import { useEffect, Suspense } from 'react';
 import Image from 'next/image';
+import { useFirebase, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { collection, serverTimestamp, doc, query, limit, getDocs } from "firebase/firestore";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import {
   Select,
@@ -22,13 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, CheckCircle, Store, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle, Store, AlertCircle, Search, Send, MapPin } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import brandLogos from '@/data/brand-logos';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Label } from '@/components/ui/label';
 
 const brands = Object.keys(brandLogos);
 
@@ -78,27 +80,34 @@ function RegisterProContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dealershipId = searchParams.get('dealershipId');
-  const isEditMode = searchParams.get('mode') === 'edit' || !!dealershipId;
+  const initialMode = searchParams.get('mode') === 'edit' || !!dealershipId ? 'edit' : 'create';
   
+  const [activeTab, setActiveTab] = useState(initialMode);
+  const [proSearchTerm, setProSearchTerm] = useState('');
+  const [selectedDealer, setSelectedDealer] = useState<any>(null);
+  const [modMessage, setModMessage] = useState('');
+  const [isSubmittingMod, setIsSubmittingMod] = useState(false);
+
   const { toast } = useToast();
   const { firestore } = useFirebase();
 
+  const dealersRef = useMemoFirebase(() => collection(firestore, 'concessions'), [firestore]);
+  const { data: allDealers } = useCollection(dealersRef);
+
   const dealershipRef = useMemoFirebase(() => dealershipId ? doc(firestore, 'concessions', dealershipId) : null, [firestore, dealershipId]);
-  const { data: selectedDealership, isLoading: isFetchingDealership } = useDoc(dealershipRef);
+  const { data: dealershipFromUrl } = useDoc(dealershipRef);
+
+  useEffect(() => {
+    if (dealershipFromUrl) {
+        setSelectedDealer(dealershipFromUrl);
+        setActiveTab('edit');
+    }
+  }, [dealershipFromUrl]);
 
   const form = useForm<SubmissionFormValues>({
     resolver: zodResolver(submissionSchema),
     defaultValues: {
-      name: '',
-      address: '',
-      phone: '',
-      email: '',
-      website: '',
-      placeUrl: '',
-      imgUrl: null,
-      primaryBrand: '',
-      secondaryBrands: [],
-      description: '',
+      name: '', address: '', phone: '', email: '', website: '', placeUrl: '', imgUrl: null, primaryBrand: '', secondaryBrands: [], description: '',
       horaires: {
         lundi: { morningOpen: 'Fermé', morningClose: 'Fermé', afternoonOpen: 'Fermé', afternoonClose: 'Fermé' },
         mardi: { morningOpen: '09:00', morningClose: '12:00', afternoonOpen: '14:00', afternoonClose: '19:00' },
@@ -112,98 +121,90 @@ function RegisterProContent() {
     mode: 'onChange',
   });
 
-  const { watch, setValue } = form;
-  const watchedHoraires = watch('horaires');
-  const weekDays = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+  const suggestions = useMemo(() => {
+    if (!proSearchTerm.trim() || !allDealers) return [];
+    const lower = proSearchTerm.toLowerCase().trim();
+    const normalizedTerm = lower.replace(/[\s-]/g, '');
 
-  useEffect(() => {
-    weekDays.forEach(day => {
-      const schedule = watchedHoraires[day];
-      if (schedule?.morningOpen === 'Fermé' && schedule?.morningClose !== 'Fermé') {
-        setValue(`horaires.${day}.morningClose`, 'Fermé');
-      }
-      if (schedule?.afternoonOpen === 'Fermé' && schedule?.afternoonClose !== 'Fermé') {
-        setValue(`horaires.${day}.afternoonClose`, 'Fermé');
-      }
+    return allDealers
+        .map(d => {
+            const normalizedLabel = (d.title || '').toLowerCase().replace(/[\s-]/g, '');
+            const normalizedAddress = (d.address || '').toLowerCase().replace(/[\s-]/g, '');
+            let score = 0;
+
+            // Match Code Postal
+            const isNumeric = /^\d+$/.test(lower);
+            if (isNumeric && lower.length >= 2) {
+                const zipMatch = (d.address || '').match(/\b\d{5}\b/);
+                if (zipMatch && zipMatch[0].startsWith(lower)) score = 1100;
+            }
+
+            if (normalizedLabel === normalizedTerm) score = Math.max(score, 1000);
+            else if (normalizedLabel.startsWith(normalizedTerm)) score = Math.max(score, 800);
+            else if (normalizedLabel.includes(normalizedTerm)) score = Math.max(score, 600);
+            else if (normalizedAddress.includes(normalizedTerm)) score = Math.max(score, 400);
+
+            return { ...d, score };
+        })
+        .filter(d => d.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 8);
+  }, [proSearchTerm, allDealers]);
+
+  const handleModSubmit = async () => {
+    if (!selectedDealer || !modMessage.trim() || !firestore) return;
+    setIsSubmittingMod(true);
+    
+    addDocumentNonBlocking(collection(firestore, 'pending_concessions'), {
+        title: selectedDealer.title,
+        originalDealershipId: selectedDealer.id,
+        description: modMessage,
+        requestType: 'MODIFICATION',
+        submittedAt: serverTimestamp(),
+        status: 'PENDING'
     });
-  }, [watchedHoraires, setValue, weekDays]);
 
-  const checkQuarantine = (data: SubmissionFormValues) => {
-    const textToScan = `${data.name} ${data.description || ''} ${data.address}`.toLowerCase();
-    const hasAuto = textToScan.includes('auto') || textToScan.includes('automobile');
-    const hasMoto = textToScan.includes('moto');
-    return hasAuto && !hasMoto;
+    toast({ title: 'Demande envoyée !', description: 'Notre équipe va examiner vos modifications.' });
+    setModMessage('');
+    setSelectedDealer(null);
+    setProSearchTerm('');
+    setIsSubmittingMod(false);
+    router.push('/');
   };
 
   const onSubmit = async (data: SubmissionFormValues) => {
     if (!firestore) return;
     
     const formattedHoraires: { [key: string]: string } = {};
-    weekDays.forEach(day => {
-      const schedule = data.horaires[day];
+    Object.keys(data.horaires).forEach(day => {
+      const schedule = data.horaires[day as keyof typeof data.horaires];
       const morningOpen = schedule.morningOpen !== 'Fermé';
       const afternoonOpen = schedule.afternoonOpen !== 'Fermé';
-
       let dayString = '';
-      if (morningOpen) {
-        dayString += `${schedule.morningOpen} - ${schedule.morningClose}`;
-      }
-
-      if (afternoonOpen) {
-        if (morningOpen) {
-          dayString += `, ${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
-        } else {
-          dayString += `${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
-        }
-      }
-      
-      if (!morningOpen && !afternoonOpen) {
-          dayString = 'Fermé';
-      }
-      
+      if (morningOpen) dayString += `${schedule.morningOpen} - ${schedule.morningClose}`;
+      if (afternoonOpen) dayString += morningOpen ? `, ${schedule.afternoonOpen} - ${schedule.afternoonClose}` : `${schedule.afternoonOpen} - ${schedule.afternoonClose}`;
+      if (!morningOpen && !afternoonOpen) dayString = 'Fermé';
       formattedHoraires[day] = dayString;
     });
 
-    const { imgUrl, primaryBrand, secondaryBrands, ...submissionData } = data;
+    const combinedBrands = [data.primaryBrand, ...(data.secondaryBrands || [])].filter(Boolean);
 
-    const combinedBrands = [];
-    if (primaryBrand) {
-        combinedBrands.push(primaryBrand);
-    }
-    if (secondaryBrands && secondaryBrands.length > 0) {
-        secondaryBrands.forEach(brand => {
-            if (!combinedBrands.includes(brand)) {
-                combinedBrands.push(brand);
-            }
-        });
-    }
-
-    const isQuarantined = checkQuarantine(data);
-    const targetCollection = isQuarantined ? "a_verifier" : "pending_concessions";
-
-    addDocumentNonBlocking(collection(firestore, targetCollection), {
-      title: submissionData.name,
-      category: submissionData.category,
-      address: submissionData.address,
-      phoneNumber: submissionData.phone,
-      email: submissionData.email || '',
-      website: submissionData.website || '',
-      placeUrl: submissionData.placeUrl || '',
+    addDocumentNonBlocking(collection(firestore, 'pending_concessions'), {
+      title: data.name,
+      category: data.category,
+      address: data.address,
+      phoneNumber: data.phone,
+      email: data.email,
+      website: data.website || '',
+      placeUrl: data.placeUrl || '',
       brands: combinedBrands,
-      description: submissionData.description || '',
+      description: data.description || '',
       ...formattedHoraires,
       submittedAt: serverTimestamp(),
-      isQuarantined: isQuarantined,
-      originalDealershipId: dealershipId || null,
-      requestType: isEditMode ? 'MODIFICATION' : 'CREATION'
+      requestType: 'CREATION'
     });
 
-    toast({
-      title: isQuarantined ? 'Demande reçue (À vérifier)' : 'Demande envoyée !',
-      description: isQuarantined 
-          ? 'Votre fiche contient des termes nécessitant une vérification manuelle par notre équipe.'
-          : 'Votre fiche sera examinée par notre équipe. Vous serez contacté par e-mail.',
-    });
+    toast({ title: 'Demande envoyée !', description: 'Votre fiche sera examinée sous 48h.' });
     form.reset();
     router.push('/');
   };
@@ -212,368 +213,147 @@ function RegisterProContent() {
     <div className="min-h-screen bg-muted/20">
         <header className="bg-background border-b p-4 sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
-                 <div className="w-60">
-                    <Link href="/">
-                        <LabelMotoLogo />
-                    </Link>
-                </div>
-                 <Button asChild variant="outline">
-                    <Link href="/">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Retour à l'accueil
-                    </Link>
-                </Button>
+                 <div className="w-60"><Link href="/"><LabelMotoLogo /></Link></div>
+                 <Button asChild variant="outline"><Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Link></Button>
             </div>
         </header>
 
       <main className="container mx-auto p-4 sm:p-8">
-        <div className="max-w-4xl mx-auto space-y-12">
-        
+        <div className="max-w-4xl mx-auto space-y-8">
           <section className="text-center bg-card p-8 rounded-xl shadow-lg border">
-            <Image src="/images/Stamp-LM.png?v=3" alt="Label Moto" width={128} height={128} className="mx-auto mb-4 opacity-80" />
-            <h1 className="text-4xl font-bold text-foreground mb-4">
-                {isEditMode ? "Modifiez votre établissement" : "Attirez plus de motards dans votre région"}
-            </h1>
-            <p className="text-xl text-muted-foreground mb-2">
-                {isEditMode ? "Mettez à jour vos informations pour garantir la meilleure visibilité possible." : "Soyez visible au moment où ils cherchent à acheter, entretenir ou réparer leur moto."}
-            </p>
-            {!isEditMode && (
-                <div className="mt-6">
-                  <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                    <Link href="#formulaire">Créer ma fiche gratuitement</Link>
-                  </Button>
-                  <p className="text-xs text-muted-foreground mt-2">✔ Gratuit • ✔ Sans engagement • ✔ Validation sous 48h</p>
-                </div>
-            )}
+            <Image src="/images/Stamp-LM.png?v=3" alt="Label Moto" width={100} height={100} className="mx-auto mb-4 opacity-80" />
+            <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground mb-2">Espace Professionnel</h1>
+            <p className="text-lg text-muted-foreground">Rejoignez le réseau des meilleurs ateliers et concessions de France.</p>
           </section>
 
-          {isEditMode && selectedDealership && (
-            <Alert className="bg-blue-50 border-blue-200">
-                <Store className="h-5 w-5 text-blue-600" />
-                <AlertTitle className="text-blue-800 font-black uppercase tracking-tighter">Établissement lié à la demande</AlertTitle>
-                <AlertDescription className="text-blue-700">
-                    Vous demandez la modification de : <span className="font-bold">{selectedDealership.title}</span><br/>
-                    <span className="text-xs opacity-80">{selectedDealership.address}</span>
-                </AlertDescription>
-            </Alert>
-          )}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 h-14 p-1 bg-muted rounded-xl mb-8">
+                <TabsTrigger value="create" className="rounded-lg font-black uppercase tracking-widest text-[10px]">
+                    🔘 Créer une nouvelle fiche
+                </TabsTrigger>
+                <TabsTrigger value="edit" className="rounded-lg font-black uppercase tracking-widest text-[10px]">
+                    🔘 Modifier ma fiche existante
+                </TabsTrigger>
+            </TabsList>
 
-          {!isEditMode && (
-              <section>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-brand">🟢 POURQUOI REJOINDRE LABEL MOTO ?</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-4 text-lg">
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                        <span><span className="font-semibold">Visibilité locale ciblée :</span> Atteignez les motards passionnés de votre région.</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                        <span><span className="font-semibold">Clients déjà intéressés :</span> Atteignez des clients qui recherchent activement vos services ou produits.</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                        <span><span className="font-semibold">Plateforme spécialisée moto :</span> Profitez d'un environnement 100% dédié à l'univers de la moto.</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                        <span><span className="font-semibold">Valorisez votre expertise :</span> Mettez en avant vos savoir-faire et vos marques partenaires.</span>
-                      </li>
-                    </ul>
-                  </CardContent>
-                </Card>
-              </section>
-          )}
-
-          <section id="formulaire">
-            <Card className="border-brand border-2 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-brand text-3xl">
-                    {isEditMode ? "🔘 FORMULAIRE DE MODIFICATION" : "🔘 DEMANDEZ LA CRÉATION DE VOTRE FICHE"}
-                </CardTitle>
-                <CardDescription>
-                  {isEditMode 
-                    ? "Indiquez les nouvelles informations de votre établissement. Notre équipe vérifiera les changements avant publication."
-                    : "Remplissez ce formulaire pour soumettre votre établissement. Nous l'examinerons avant de le publier."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    
-                    <div className="space-y-4 p-4 border rounded-lg">
-                      <h4 className="font-semibold text-lg">Informations principales</h4>
-                       <div className="grid md:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Nom de l'établissement</FormLabel>
-                                <FormControl><Input placeholder="Ex: Moto Passion 75" {...field} /></FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="category"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Catégorie principale</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger><SelectValue placeholder="Sélectionnez une catégorie" /></SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="concession">Concession (Vente)</SelectItem>
-                                    <SelectItem value="atelier">Atelier (Réparation)</SelectItem>
-                                    <SelectItem value="concession-atelier">Concession + Atelier</SelectItem>
-                                    <SelectItem value="accessoiriste">Accessoiriste</SelectItem>
-                                    <SelectItem value="autre">Autre</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                       </div>
-                        <FormField
-                            control={form.control}
-                            name="address"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Adresse complète</FormLabel>
-                                <FormControl><Textarea placeholder="123 Rue de la Moto, 75001 Paris" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    <div className="space-y-4 p-4 border rounded-lg">
-                        <h4 className="font-semibold text-lg">Coordonnées & Liens</h4>
-                        <div className="grid md:grid-cols-2 gap-4">
-                           <FormField
-                                control={form.control}
-                                name="phone"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Téléphone</FormLabel>
-                                    <FormControl><Input placeholder="01 23 45 67 89" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email (obligatoire)</FormLabel>
-                                    <FormControl><Input placeholder="contact@etablissement.com" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="website"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Site web (optionnel)</FormLabel>
-                                    <FormControl><Input placeholder="https://www.votresite.com" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="placeUrl"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Lien fiche Google (optionnel)</FormLabel>
-                                    <FormControl><Input placeholder="https://maps.app.goo.gl/..." {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="imgUrl"
-                                render={({ field: { value, onChange, ...fieldProps } }) => (
-                                  <FormItem>
-                                    <FormLabel>Télécharger votre photo de présentation</FormLabel>
-                                    <FormControl>
-                                      <Input 
-                                        {...fieldProps}
-                                        type="file" 
-                                        accept="image/*"
-                                        onChange={(event) => {
-                                          onChange(event.target.files && event.target.files[0]);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormDescription>
-                                      Le texte du bouton (ex: "Choisir un fichier") dépend de votre navigateur et de sa langue.
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-4 p-4 border rounded-lg">
-                      <h4 className="font-semibold text-lg">Marques distribuées</h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <FormField
-                            control={form.control}
-                            name="primaryBrand"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Marque principale (optionnel)</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionnez une marque" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {brands.map((brand) => (
-                                        <SelectItem key={`primary-${brand}`} value={brand}>{brand}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="secondaryBrands"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                              <FormLabel>Marques secondaires (optionnel)</FormLabel>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <FormControl>
-                                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                                        {field.value && field.value.length > 0
-                                          ? field.value.join(', ')
-                                          : "Sélectionnez les autres marques"}
-                                      </Button>
-                                    </FormControl>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]" align="start">
-                                    {brands
-                                      .filter(brand => brand !== form.watch('primaryBrand'))
-                                      .map((brand) => (
-                                      <DropdownMenuCheckboxItem
-                                        key={brand}
-                                        checked={field.value?.includes(brand)}
-                                        onCheckedChange={(checked) => {
-                                          const currentBrands = field.value || [];
-                                          if (checked) {
-                                            field.onChange([...currentBrands, brand]);
-                                          } else {
-                                            field.onChange(currentBrands.filter((value) => value !== brand));
-                                          }
-                                        }}
-                                        onSelect={(e) => e.preventDefault()}
-                                      >
-                                        {brand}
-                                      </DropdownMenuCheckboxItem>
-                                    ))}
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                     <div className="space-y-4 p-4 border rounded-lg">
-                        <h4 className="font-semibold text-lg">Description</h4>
-                         <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    {isEditMode 
-                                        ? "Décrivez les changements à apporter ou présentez votre établissement."
-                                        : "Présentez votre établissement en quelques mots."}
-                                </FormLabel>
-                                <FormControl><Textarea rows={4} placeholder={isEditMode ? "Veuillez mettre à jour les horaires du samedi..." : "Spécialiste de la marque X, nous proposons des services d'entretien et de réparation..."} {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                    </div>
-                    
-                    <div className="space-y-4 p-4 border rounded-lg">
-                      <h4 className="font-semibold text-lg">Horaires d'ouverture</h4>
-                        <p className="text-sm text-muted-foreground">Sélectionnez les horaires pour chaque jour.</p>
-                        <div className="space-y-2">
-                            {weekDays.map((day) => (
-                            <div key={day} className="grid grid-cols-[90px_1fr] items-center gap-x-4">
-                                <FormLabel className="capitalize font-semibold">{day}</FormLabel>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                    <FormField
-                                    control={form.control}
-                                    name={`horaires.${day}.morningOpen`}
-                                    render={({ field }) => (
-                                        <FormItem><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`m-open-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-                                    )}
-                                    />
-                                    <FormField
-                                    control={form.control}
-                                    name={`horaires.${day}.morningClose`}
-                                    render={({ field }) => (
-                                        <FormItem><Select onValueChange={field.onChange} value={field.value} disabled={form.watch(`horaires.${day}.morningOpen`) === 'Fermé'}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`m-close-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-                                    )}
-                                    />
-                                    <FormField
-                                    control={form.control}
-                                    name={`horaires.${day}.afternoonOpen`}
-                                    render={({ field }) => (
-                                        <FormItem><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`a-open-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-                                    )}
-                                    />
-                                    <FormField
-                                    control={form.control}
-                                    name={`horaires.${day}.afternoonClose`}
-                                    render={({ field }) => (
-                                        <FormItem><Select onValueChange={field.onChange} value={field.value} disabled={form.watch(`horaires.${day}.afternoonOpen`) === 'Fermé'}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{timeOptions.map(option => <SelectItem key={`a-close-${day}-${option}`} value={option}>{option}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-                                    )}
+            <TabsContent value="edit" className="space-y-6">
+                <Card className="border-2 border-brand shadow-xl">
+                    <CardHeader>
+                        <CardTitle className="text-2xl font-black uppercase tracking-tighter">Modifier mon établissement</CardTitle>
+                        <CardDescription>Recherchez votre établissement sur Label Moto pour nous envoyer vos mises à jour.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {!selectedDealer ? (
+                            <div className="relative">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Trouver votre établissement</Label>
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                    <Input 
+                                        placeholder="Tapez le nom ou le code postal..." 
+                                        className="pl-10 h-12 text-lg font-bold"
+                                        value={proSearchTerm}
+                                        onChange={(e) => setProSearchTerm(e.target.value)}
                                     />
                                 </div>
+                                {suggestions.length > 0 && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border-2 rounded-xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        {suggestions.map(s => (
+                                            <button 
+                                                key={s.id} 
+                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors group"
+                                                onClick={() => { setSelectedDealer(s); setProSearchTerm(''); }}
+                                            >
+                                                <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
+                                                    <Store className="w-4 h-4" />
+                                                </div>
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="text-sm font-black uppercase truncate">{s.title}</span>
+                                                    <span className="text-[9px] text-muted-foreground truncate uppercase font-bold">{s.address}</span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            ))}
-                        </div>
-                    </div>
+                        ) : (
+                            <div className="space-y-6 animate-in fade-in duration-500">
+                                <Alert className="bg-brand/5 border-brand">
+                                    <Store className="h-5 w-5 text-brand" />
+                                    <AlertTitle className="font-black uppercase tracking-tighter">Établissement sélectionné</AlertTitle>
+                                    <AlertDescription className="font-bold">
+                                        {selectedDealer.title} <br/>
+                                        <span className="text-xs opacity-70 font-medium">{selectedDealer.address}</span>
+                                    </AlertDescription>
+                                    <Button variant="ghost" size="sm" className="absolute top-2 right-2 text-[10px] font-black" onClick={() => setSelectedDealer(null)}>Changer</Button>
+                                </Alert>
 
-                    <div className="flex justify-end pt-4">
-                      <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Envoi en cours...
-                            </>
-                        ) : isEditMode ? 'Envoyer ma demande de modification' : 'Soumettre ma fiche'}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </section>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Décrivez vos changements</Label>
+                                    <Textarea 
+                                        rows={6} 
+                                        placeholder="Indiquez ici les nouvelles informations (horaires, marques, téléphone...) ou tout changement à apporter sur votre fiche."
+                                        className="font-bold bg-muted/20"
+                                        value={modMessage}
+                                        onChange={(e) => setModMessage(e.target.value)}
+                                    />
+                                </div>
+                                <Button className="w-full bg-brand h-12 font-black uppercase tracking-widest text-xs" onClick={handleModSubmit} disabled={isSubmittingMod || !modMessage.trim()}>
+                                    {isSubmittingMod ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                    Envoyer ma demande de modification
+                                </Button>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </TabsContent>
 
+            <TabsContent value="create">
+                <Card className="border-2 border-brand shadow-xl">
+                    <CardHeader>
+                        <CardTitle className="text-2xl font-black uppercase tracking-tighter">Demande de création de fiche</CardTitle>
+                        <CardDescription>Remplissez le formulaire ci-dessous pour soumettre votre établissement.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                                <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+                                    <h4 className="font-black uppercase tracking-tight text-sm flex items-center gap-2"><Store className="h-4 w-4 text-brand"/> Informations principales</h4>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <FormField control={form.control} name="name" render={({ field }) => (
+                                            <FormItem><FormLabel>Nom de l'établissement</FormLabel><FormControl><Input placeholder="Moto Passion 75" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="category" render={({ field }) => (
+                                            <FormItem><FormLabel>Catégorie principale</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="font-bold"><SelectValue placeholder="Catégorie" /></SelectTrigger></FormControl><SelectContent><SelectItem value="concession">Concession</SelectItem><SelectItem value="atelier">Atelier</SelectItem><SelectItem value="concession-atelier">Concession + Atelier</SelectItem><SelectItem value="accessoiriste">Accessoiriste</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                        )} />
+                                    </div>
+                                    <FormField control={form.control} name="address" render={({ field }) => (
+                                        <FormItem><FormLabel>Adresse complète</FormLabel><FormControl><Textarea placeholder="123 Rue de la Moto, 75001 Paris" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                    )} />
+                                </div>
+
+                                <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+                                    <h4 className="font-black uppercase tracking-tight text-sm flex items-center gap-2">📱 Coordonnées</h4>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <FormField control={form.control} name="phone" render={({ field }) => (
+                                            <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input placeholder="01 23 45 67 89" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="email" render={({ field }) => (
+                                            <FormItem><FormLabel>Email (obligatoire)</FormLabel><FormControl><Input placeholder="contact@etablissement.com" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end pt-4">
+                                    <Button type="submit" size="lg" className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs px-10 h-12" disabled={form.formState.isSubmitting}>
+                                        {form.formState.isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Envoi...</> : 'Soumettre ma fiche'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>
@@ -581,13 +361,5 @@ function RegisterProContent() {
 }
 
 export default function RegisterProPage() {
-  return (
-    <Suspense fallback={
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
-      </div>
-    }>
-      <RegisterProContent />
-    </Suspense>
-  );
+  return <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><RegisterProContent /></Suspense>;
 }

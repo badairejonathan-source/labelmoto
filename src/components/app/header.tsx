@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -47,7 +46,7 @@ interface Suggestion {
     zoom?: number;
     id?: string;
     brand?: string;
-    score?: number; // Added for prioritization
+    score?: number;
 }
 
 const UserMenu = () => {
@@ -223,7 +222,6 @@ const Header: React.FC<HeaderProps> = ({
   }, []);
 
   useEffect(() => {
-    // REACTION A CHAQUE NOUVELLE LETTRE (length >= 1)
     if (searchTerm.trim().length < 1) {
         setSuggestions([]);
         setPrediction('');
@@ -235,16 +233,27 @@ const Header: React.FC<HeaderProps> = ({
     
     const results: Suggestion[] = [];
 
-    // Priorité 1: Les Concessions (Dealer)
+    // Priorité 1: Les Concessions (Dealer) + Code Postal
     allDealers.forEach(d => {
         const normalizedLabel = d.label.toLowerCase().replace(/[\s-]/g, '');
         const normalizedSub = d.subLabel?.toLowerCase().replace(/[\s-]/g, '') || '';
+        const address = d.subLabel || '';
         
         let score = 0;
-        if (normalizedLabel === normalizedTerm) score = 1000; // Match exact
-        else if (normalizedLabel.startsWith(normalizedTerm)) score = 800; // Commence par
-        else if (normalizedLabel.includes(normalizedTerm)) score = 600; // Contient
-        else if (normalizedSub.includes(normalizedTerm)) score = 400; // Adresse contient
+        
+        // Match Code Postal (Priorité absolue)
+        const isNumeric = /^\d+$/.test(lowerTerm);
+        if (isNumeric && lowerTerm.length >= 2) {
+            const zipMatch = address.match(/\b\d{5}\b/g);
+            if (zipMatch && zipMatch.some(zip => zip.startsWith(lowerTerm))) {
+                score = 1100; // Plus haut que tout le reste
+            }
+        }
+
+        if (normalizedLabel === normalizedTerm) score = Math.max(score, 1000); 
+        else if (normalizedLabel.startsWith(normalizedTerm)) score = Math.max(score, 800);
+        else if (normalizedLabel.includes(normalizedTerm)) score = Math.max(score, 600);
+        else if (normalizedSub.includes(normalizedTerm)) score = Math.max(score, 400);
         
         if (score > 0) {
             results.push({ ...d, score });
@@ -277,7 +286,7 @@ const Header: React.FC<HeaderProps> = ({
         }
     });
 
-    // Priorité 3: Marque + Localisation (ex: "Honda 75")
+    // Priorité 3: Marque + Localisation
     if (bestBrandMatch) {
         const normalizedBrandMatch = bestBrandMatch.toLowerCase().replace(/[\s-]/g, '');
         const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
@@ -294,7 +303,7 @@ const Header: React.FC<HeaderProps> = ({
                         lng: info.center[1],
                         zoom: 9,
                         brand: bestBrandMatch,
-                        score: 950 // Très haute priorité pour les recherches ciblées
+                        score: 950
                     });
                     break;
                 }
@@ -331,14 +340,12 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // Tri final par score et unicité
     const uniqueResults = results
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
     setSuggestions(uniqueResults.slice(0, 10));
 
-    // Prédiction (Inline Suggestion)
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
         const matchLabel = bestBrandMatch;
         if (matchLabel.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
@@ -387,7 +394,6 @@ const Header: React.FC<HeaderProps> = ({
         setPrediction('');
         setTimeout(() => onSearch(), 10);
     } else if (suggestions.length > 0) {
-        // Si on a des suggestions, on prend la plus pertinente (la première car triée par score)
         handleSuggestionClick(suggestions[0]);
     } else {
         onSearch();

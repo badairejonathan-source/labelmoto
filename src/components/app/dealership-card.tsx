@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -149,11 +149,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
-    const cleanedData = JSON.parse(JSON.stringify(dealership));
-    delete cleanedData.id;
+    // On retire l'ID et on garde le reste pour le nouveau document
+    const { id, ...dataToClone } = dealership;
     
     const dataToMove = {
-      ...cleanedData,
+      ...dataToClone,
       quarantinedAt: serverTimestamp(),
       isQuarantined: true,
       quarantineSource: 'manual_admin_action'
@@ -170,13 +170,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
           description: `"${title}" a été déplacé en quarantaine.`,
         });
       })
-      .catch(async (serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: quarantineRef.path,
-          operation: 'write',
-          requestResourceData: dataToMove,
-        });
-        errorEmitter.emit('permission-error', permissionError);
+      .catch((error) => {
+        console.error("Erreur quarantaine:", error);
+        toast({ variant: "destructive", title: "Erreur", description: "Impossible de modérer la fiche." });
       });
   };
 
