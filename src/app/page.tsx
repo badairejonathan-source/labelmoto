@@ -103,7 +103,7 @@ export default function LandingPage() {
 
                 <section className="mt-20 md:mt-32">
                     <div className="bg-muted/50 rounded-3xl p-8 border border-border/50 backdrop-blur-sm">
-                        <h2 className="text-2xl md:text-4xl font-black text-foreground mb-8 text-center uppercase tracking-tighter">
+                        <h2 className="text-3xl md:text-5xl font-black text-foreground mb-8 text-center uppercase tracking-tighter">
                             Pourquoi choisir LABEL MOTO
                         </h2>
                         <ul className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
