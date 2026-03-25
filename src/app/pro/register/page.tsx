@@ -272,7 +272,7 @@ function RegisterProContent() {
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                        <span><span className="font-semibold">Clients déjà intéressés :</span> Attirez des clients qui recherchent activement vos services ou produits.</span>
+                        <span><span className="font-semibold">Clients déjà intéressés :</span> Atteignez des clients qui recherchent activement vos services ou produits.</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
