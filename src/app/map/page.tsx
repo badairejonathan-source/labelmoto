@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -8,7 +7,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, MapPin, AlertCircle } from 'lucide-react';
+import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, MapPin, AlertCircle, Info } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -96,6 +95,7 @@ function MapPageComponent() {
   const lngParam = searchParams.get('lng');
   const zoomParam = searchParams.get('zoom');
   const selectedIdParam = searchParams.get('selectedId');
+  const proEditMode = searchParams.get('mode') === 'pro_edit';
   
   const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
@@ -171,17 +171,15 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  // Reset the map automatically when the search bar is cleared
   useEffect(() => {
     if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
       setSubmittedSearchTerm('');
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(6);
       setSelectedDealershipId(null);
-      // Clean up URL
-      router.replace('/map', { scroll: false });
+      router.replace('/map' + (proEditMode ? '?mode=pro_edit' : ''), { scroll: false });
     }
-  }, [searchTerm, submittedSearchTerm, mounted, router]);
+  }, [searchTerm, submittedSearchTerm, mounted, router, proEditMode]);
 
   useEffect(() => {
     if (!firestore || !mounted) return;
@@ -297,7 +295,6 @@ function MapPageComponent() {
   const dealershipsToDisplay = useMemo(() => {
     let results = [...filteredDealerships];
     
-    // 1. Filtrage par visibilité sur la carte
     if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => {
@@ -306,18 +303,15 @@ function MapPageComponent() {
         });
     }
 
-    // 2. Logique de tri dynamique
     const selectedDealer = selectedDealershipId ? results.find(d => d.id === selectedDealershipId) : null;
 
     if (selectedDealer && selectedDealer.latitude && selectedDealer.longitude) {
-        // Un pointeur est sélectionné : il va en haut, les autres sont triés par proximité avec lui
         const anchor: [number, number] = [selectedDealer.latitude, selectedDealer.longitude];
         const others = results.filter(d => d.id !== selectedDealershipId);
         const sortedOthers = [...others].sort((a, b) => getDistanceSq(anchor, a) - getDistanceSq(anchor, b));
         return [selectedDealer, ...sortedOthers].slice(0, 30);
     }
 
-    // Aucun pointeur sélectionné (ou carte déplacée) : tri par proximité avec le centre de la carte
     return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
   }, [filteredDealerships, mapBoundsStr, mapCenter, submittedSearchTerm, selectedDealershipId]);
 
@@ -332,7 +326,7 @@ function MapPageComponent() {
   
   const handleMarkerClick = useCallback((id: string) => {
     const isAlreadySelected = selectedDealershipId === id;
-    setSelectedDealershipId(id); // On force la sélection même si déjà sélectionné pour remonter en haut
+    setSelectedDealershipId(id);
     if (isMobile && id && !isAlreadySelected) {
       setDrawerHeight('half');
       setIsExpanding(false);
@@ -344,13 +338,11 @@ function MapPageComponent() {
       setDrawerHeight('collapsed');
       setIsExpanding(true);
     }
-    // Si l'utilisateur déplace la carte manuellement, on perd l'ancre de sélection pour trier par centre
     setSelectedDealershipId(null);
   }, [isMobile, drawerHeight]);
 
   useEffect(() => {
     if (selectedDealershipId) {
-      // Sur mobile, on remonte le conteneur de liste tout en haut car l'élément sélectionné est à l'index 0
       if (isMobile && listContainerRef.current) {
         listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
@@ -393,6 +385,18 @@ function MapPageComponent() {
 
   const listContent = (
     <div className="space-y-3 pb-20">
+      {proEditMode && (
+        <div className="bg-blue-600 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg shadow-md animate-in fade-in slide-in-from-top-2 duration-500">
+            <div className="flex items-center gap-2 text-white font-black text-sm mb-1 uppercase tracking-tighter">
+                <Info className="h-5 w-5" />
+                Mode Sélection Pro
+            </div>
+            <p className="text-xs text-blue-50 font-bold leading-relaxed">
+                Recherchez et sélectionnez votre établissement sur la carte pour nous envoyer vos modifications.
+            </p>
+        </div>
+      )}
+
       {isLoading ? (
         <div className="text-center text-muted-foreground pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /><p className="mt-2 text-[10px] font-black uppercase tracking-widest">Chargement...</p></div>
       ) : (

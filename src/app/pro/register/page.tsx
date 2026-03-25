@@ -3,11 +3,11 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useFirebase } from '@/firebase';
-import { collection, serverTimestamp } from "firebase/firestore";
-import { useEffect } from 'react';
+import { useFirebase, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { collection, serverTimestamp, doc } from "firebase/firestore";
+import { useEffect, Suspense } from 'react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -23,11 +23,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle, Store, AlertCircle } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import brandLogos from '@/data/brand-logos';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const brands = Object.keys(brandLogos);
 
@@ -73,11 +74,18 @@ for (let h = 7; h <= 20; h++) {
 }
 timeOptions.push('21:00');
 
-
-export default function RegisterProPage() {
+function RegisterProContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const dealershipId = searchParams.get('dealershipId');
+  const isEditMode = searchParams.get('mode') === 'edit' || !!dealershipId;
+  
   const { toast } = useToast();
   const { firestore } = useFirebase();
+
+  const dealershipRef = useMemoFirebase(() => dealershipId ? doc(firestore, 'concessions', dealershipId) : null, [firestore, dealershipId]);
+  const { data: selectedDealership, isLoading: isFetchingDealership } = useDoc(dealershipRef);
+
   const form = useForm<SubmissionFormValues>({
     resolver: zodResolver(submissionSchema),
     defaultValues: {
@@ -122,12 +130,8 @@ export default function RegisterProPage() {
 
   const checkQuarantine = (data: SubmissionFormValues) => {
     const textToScan = `${data.name} ${data.description || ''} ${data.address}`.toLowerCase();
-    // On met en quarantaine si le mot "auto" ou "automobile" est présent
-    // Mais on autorise si "moto" est aussi présent (ex: "Auto Moto Passion")
     const hasAuto = textToScan.includes('auto') || textToScan.includes('automobile');
     const hasMoto = textToScan.includes('moto');
-    
-    // Si contient auto mais PAS moto -> Quarantaine directe
     return hasAuto && !hasMoto;
   };
 
@@ -189,7 +193,9 @@ export default function RegisterProPage() {
       description: submissionData.description || '',
       ...formattedHoraires,
       submittedAt: serverTimestamp(),
-      isQuarantined: isQuarantined
+      isQuarantined: isQuarantined,
+      originalDealershipId: dealershipId || null,
+      requestType: isEditMode ? 'MODIFICATION' : 'CREATION'
     });
 
     toast({
@@ -199,6 +205,7 @@ export default function RegisterProPage() {
           : 'Votre fiche sera examinée par notre équipe. Vous serez contacté par e-mail.',
     });
     form.reset();
+    router.push('/');
   };
 
   return (
@@ -224,50 +231,73 @@ export default function RegisterProPage() {
         
           <section className="text-center bg-card p-8 rounded-xl shadow-lg border">
             <Image src="/images/Stamp-LM.png?v=3" alt="Label Moto" width={128} height={128} className="mx-auto mb-4 opacity-80" />
-            <h1 className="text-4xl font-bold text-foreground mb-4">Attirez plus de motards dans votre région</h1>
-            <p className="text-xl text-muted-foreground mb-2">Soyez visible au moment où ils cherchent à acheter, entretenir ou réparer leur moto.</p>
-            <div className="mt-6">
-              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
-                <Link href="#formulaire">Créer ma fiche gratuitement</Link>
-              </Button>
-              <p className="text-xs text-muted-foreground mt-2">✔ Gratuit • ✔ Sans engagement • ✔ Validation sous 48h</p>
-            </div>
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+                {isEditMode ? "Modifiez votre établissement" : "Attirez plus de motards dans votre région"}
+            </h1>
+            <p className="text-xl text-muted-foreground mb-2">
+                {isEditMode ? "Mettez à jour vos informations pour garantir la meilleure visibilité possible." : "Soyez visible au moment où ils cherchent à acheter, entretenir ou réparer leur moto."}
+            </p>
+            {!isEditMode && (
+                <div className="mt-6">
+                  <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-bold text-lg px-8 py-6 rounded-full shadow-lg">
+                    <Link href="#formulaire">Créer ma fiche gratuitement</Link>
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">✔ Gratuit • ✔ Sans engagement • ✔ Validation sous 48h</p>
+                </div>
+            )}
           </section>
 
-          <section>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-brand">🟢 POURQUOI REJOINDRE LABEL MOTO ?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4 text-lg">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                    <span><span className="font-semibold">Visibilité locale ciblée :</span> Atteignez les motards passionnés de votre région.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                    <span><span className="font-semibold">Clients déjà intéressés :</span> Attirez des clients qui recherchent activement vos services ou produits.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                    <span><span className="font-semibold">Plateforme spécialisée moto :</span> Profitez d'un environnement 100% dédié à l'univers de la moto.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
-                    <span><span className="font-semibold">Valorisez votre expertise :</span> Mettez en avant vos savoir-faire et vos marques partenaires.</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-          </section>
+          {isEditMode && selectedDealership && (
+            <Alert className="bg-blue-50 border-blue-200">
+                <Store className="h-5 w-5 text-blue-600" />
+                <AlertTitle className="text-blue-800 font-black uppercase tracking-tighter">Établissement lié à la demande</AlertTitle>
+                <AlertDescription className="text-blue-700">
+                    Vous demandez la modification de : <span className="font-bold">{selectedDealership.title}</span><br/>
+                    <span className="text-xs opacity-80">{selectedDealership.address}</span>
+                </AlertDescription>
+            </Alert>
+          )}
+
+          {!isEditMode && (
+              <section>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-brand">🟢 POURQUOI REJOINDRE LABEL MOTO ?</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-4 text-lg">
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
+                        <span><span className="font-semibold">Visibilité locale ciblée :</span> Atteignez les motards passionnés de votre région.</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
+                        <span><span className="font-semibold">Clients déjà intéressés :</span> Attirez des clients qui recherchent activement vos services ou produits.</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
+                        <span><span className="font-semibold">Plateforme spécialisée moto :</span> Profitez d'un environnement 100% dédié à l'univers de la moto.</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-6 w-6 text-brand mt-1 flex-shrink-0" />
+                        <span><span className="font-semibold">Valorisez votre expertise :</span> Mettez en avant vos savoir-faire et vos marques partenaires.</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </section>
+          )}
 
           <section id="formulaire">
             <Card className="border-brand border-2 shadow-xl">
               <CardHeader>
-                <CardTitle className="text-brand text-3xl">🔘 DEMANDEZ LA CRÉATION DE VOTRE FICHE</CardTitle>
+                <CardTitle className="text-brand text-3xl">
+                    {isEditMode ? "🔘 FORMULAIRE DE MODIFICATION" : "🔘 DEMANDEZ LA CRÉATION DE VOTRE FICHE"}
+                </CardTitle>
                 <CardDescription>
-                  Remplissez ce formulaire pour soumettre votre établissement. Nous l'examinerons avant de le publier.
+                  {isEditMode 
+                    ? "Indiquez les nouvelles informations de votre établissement. Notre équipe vérifiera les changements avant publication."
+                    : "Remplissez ce formulaire pour soumettre votre établissement. Nous l'examinerons avant de le publier."}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -474,8 +504,12 @@ export default function RegisterProPage() {
                             name="description"
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Présentez votre établissement en quelques mots.</FormLabel>
-                                <FormControl><Textarea rows={4} placeholder="Spécialiste de la marque X, nous proposons des services d'entretien et de réparation..." {...field} /></FormControl>
+                                <FormLabel>
+                                    {isEditMode 
+                                        ? "Décrivez les changements à apporter ou présentez votre établissement."
+                                        : "Présentez votre établissement en quelques mots."}
+                                </FormLabel>
+                                <FormControl><Textarea rows={4} placeholder={isEditMode ? "Veuillez mettre à jour les horaires du samedi..." : "Spécialiste de la marque X, nous proposons des services d'entretien et de réparation..."} {...field} /></FormControl>
                                 <FormMessage />
                             </FormItem>
                             )}
@@ -531,7 +565,7 @@ export default function RegisterProPage() {
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Envoi en cours...
                             </>
-                        ) : 'Soumettre ma fiche'}
+                        ) : isEditMode ? 'Envoyer ma demande de modification' : 'Soumettre ma fiche'}
                       </Button>
                     </div>
                   </form>
@@ -543,5 +577,17 @@ export default function RegisterProPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function RegisterProPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    }>
+      <RegisterProContent />
+    </Suspense>
   );
 }

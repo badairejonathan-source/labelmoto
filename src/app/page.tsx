@@ -272,7 +272,7 @@ export default function LandingPage() {
                               </Link>
                             </Button>
                             <Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto">
-                              <Link href={proRegisterLink}>
+                              <Link href="/map?mode=pro_edit">
                                 🔘 Modifier une fiche existante
                               </Link>
                             </Button>

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send, PlusCircle, AlertCircle, ShieldAlert } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, Award, Loader2, Send, PlusCircle, AlertCircle, ShieldAlert, Edit3 } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -51,6 +51,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   className,
 }) => {
   const searchParams = useSearchParams();
+  const proEditMode = searchParams.get('mode') === 'pro_edit';
+  
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
@@ -147,8 +149,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
-    
-    // Nettoyage et clonage robuste des données pour éviter les erreurs Firestore
     const cleanedData = JSON.parse(JSON.stringify(dealership));
     delete cleanedData.id;
     
@@ -162,7 +162,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     const quarantineRef = doc(firestore, 'a_verifier', docId);
     const publicRef = doc(firestore, 'concessions', docId);
 
-    // On effectue d'abord la création sécurisée, puis la suppression
     setDoc(quarantineRef, dataToMove, { merge: true })
       .then(() => {
         deleteDocumentNonBlocking(publicRef);
@@ -215,7 +214,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
   const street = addressParts[0] || '';
   const cityZip = addressParts.slice(1).join(', ') || '';
 
-  const loginCallbackUrl = `/map?selectedId=${dealership.id}&view=reviews`;
+  const loginCallbackUrl = proEditMode 
+    ? `/pro/register?dealershipId=${dealership.id}&mode=edit`
+    : `/map?selectedId=${dealership.id}&view=reviews`;
+
+  const modificationUrl = user 
+    ? `/pro/register?dealershipId=${dealership.id}&mode=edit`
+    : `/login?callbackUrl=${encodeURIComponent(`/pro/register?dealershipId=${dealership.id}&mode=edit`)}`;
 
   return (
     <>
@@ -400,6 +405,17 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
                   </TooltipProvider>
                 </div>
               }
+
+              {proEditMode && (
+                <div className="mt-4 pt-3 border-t border-dashed">
+                    <Button asChild size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest py-5 rounded-xl shadow-lg transition-transform active:scale-95">
+                        <Link href={modificationUrl} onClick={(e) => e.stopPropagation()}>
+                            <Edit3 className="mr-2 h-4 w-4" />
+                            🔘 Demander la modification de cette fiche
+                        </Link>
+                    </Button>
+                </div>
+              )}
             </div>
           </div>
 
