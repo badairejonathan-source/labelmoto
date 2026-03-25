@@ -43,7 +43,7 @@ const submissionSchema = z.object({
   category: z.enum(['concession', 'atelier', 'accessoiriste', 'concession-atelier', 'autre'], { required_error: 'La catégorie est requise.' }),
   address: z.string().min(10, { message: "Une adresse complète est requise (numéro, rue, code postal, ville)." }),
   phone: z.string().min(10, { message: "Un numéro de téléphone valide est requis." }),
-  email: z.string().email({ message: "Veuillez entrer une adresse e-mail valide." }).optional().or(z.literal('')),
+  email: z.string().min(1, { message: "L'adresse e-mail est obligatoire." }).email({ message: "Veuillez entrer une adresse e-mail valide." }),
   website: z.string().url({ message: "Veuillez entrer une URL valide (ex: https://...)" }).optional().or(z.literal('')),
   placeUrl: z.string().url({ message: "Veuillez entrer une URL Google Maps valide." }).optional().or(z.literal('')),
   imgUrl: z.any().optional(),
@@ -343,7 +343,7 @@ export default function RegisterProPage() {
                                 name="email"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email (optionnel)</FormLabel>
+                                    <FormLabel>Email (obligatoire)</FormLabel>
                                     <FormControl><Input placeholder="contact@etablissement.com" {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
