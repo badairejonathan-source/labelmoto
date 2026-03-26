@@ -204,7 +204,6 @@ function MapPageComponent() {
     if (searchParam) {
         setSearchTerm(searchParam);
         setSubmittedSearchTerm(searchParam);
-        // On marque comme initialisé si on a une recherche initiale pour éviter le reset si on l'efface
         hasInitializedMap.current = true;
     } else {
         setSearchTerm('');
@@ -247,7 +246,7 @@ function MapPageComponent() {
         const seen = new Set();
         const uniqueResults = results.filter(item => {
             const cleanTitle = item.title?.toLowerCase().trim() || '';
-            const cleanAddress = item.address?.toLowerCase().trim().replace(/\\s\\s+/g, ' ') || '';
+            const cleanAddress = item.address?.toLowerCase().trim().replace(/\s\s+/g, ' ') || '';
             const identifier = `${cleanTitle}|${cleanAddress}`;
             if (seen.has(identifier)) return false;
             seen.add(identifier);
@@ -324,7 +323,6 @@ function MapPageComponent() {
             // 3. Recherche textuelle (Marque, Ville, Nom)
             else {
                 let detectedBrand = '';
-                const brandsList = Object.keys(brandLogos);
                 const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
 
                 for (const brand of sortedBrands) {
