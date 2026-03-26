@@ -148,22 +148,28 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
-    const { id, ...dealershipData } = dealership;
     
-    const dataToMove = {
-      ...dealershipData,
-      quarantinedAt: serverTimestamp(),
-      isQuarantined: true,
-      quarantineSource: 'manual_admin_action',
-      status: 'QUARANTINED'
-    };
+    // Nettoyage rigoureux des données pour éviter les erreurs Firestore
+    const dataToMove: any = {};
+    Object.keys(dealership).forEach(key => {
+        const val = dealership[key];
+        if (val !== undefined && key !== 'id' && typeof val !== 'function') {
+            dataToMove[key] = val;
+        }
+    });
+    
+    dataToMove.quarantinedAt = serverTimestamp();
+    dataToMove.isQuarantined = true;
+    dataToMove.quarantineSource = 'manual_admin_action';
+    dataToMove.status = 'QUARANTINED';
 
-    // Déplacement vers a_verifier puis suppression de concessions
+    // Déplacement vers a_verifier
     setDocumentNonBlocking(doc(firestore, 'a_verifier', docId), dataToMove, {});
+    // Suppression de concessions
     deleteDocumentNonBlocking(doc(firestore, 'concessions', docId));
     
     toast({ 
-      title: "Mise en quarantaine", 
+      title: "Mise en quarantaine réussie", 
       description: `"${title}" a été déplacé dans l'onglet Quarantaine.`,
     });
   };

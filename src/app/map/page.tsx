@@ -166,6 +166,9 @@ function MapPageComponent() {
   const { width, height } = useWindowSize();
   const isMobile = (width || 1024) < 768;
 
+  // Use a ref to track if we've already done the initial map setup
+  const hasInitializedMap = useRef(false);
+
   const bottomPadding = useMemo(() => {
     if (!isMobile || !height) return 0;
     if (drawerHeight === 'half') return height / 2;
@@ -179,12 +182,17 @@ function MapPageComponent() {
   }, []);
   
   useEffect(() => {
+    // Si on a des coordonnées dans l'URL (ex: clic sur une suggestion), on centre
     if (latParam && lngParam) {
         setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
         setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
-    } else if (!searchParam && !submittedSearchTerm) {
+        hasInitializedMap.current = true;
+    } 
+    // Sinon, si c'est le PREMIER chargement et qu'il n'y a pas de recherche en cours dans l'URL, on met la France
+    else if (!hasInitializedMap.current && !searchParam) {
         setMapCenter([46.603354, 1.888334]);
         setMapZoom(6);
+        hasInitializedMap.current = true;
     }
 
     if (selectedIdParam) {
@@ -196,6 +204,8 @@ function MapPageComponent() {
     if (searchParam) {
         setSearchTerm(searchParam);
         setSubmittedSearchTerm(searchParam);
+        // On marque comme initialisé si on a une recherche initiale pour éviter le reset si on l'efface
+        hasInitializedMap.current = true;
     } else {
         setSearchTerm('');
         setSubmittedSearchTerm('');
@@ -205,7 +215,7 @@ function MapPageComponent() {
   useEffect(() => {
     if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
       setSubmittedSearchTerm('');
-      // On ne réinitialise plus mapCenter et mapZoom pour garder la position actuelle de la carte
+      // IMPORTANT: On ne touche plus à mapCenter/mapZoom ici pour garder la vue actuelle
       setSelectedDealershipId(null);
       router.replace('/map' + (proEditMode ? '?mode=pro_edit' : ''), { scroll: false });
     }
