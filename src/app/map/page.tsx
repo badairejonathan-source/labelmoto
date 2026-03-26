@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -153,8 +152,7 @@ function MapPageComponent() {
   const articlesRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
   const { data: articlesForAds } = useCollection(articlesRef);
   
-  const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'expanded'>('half');
-  const [isExpanding, setIsExpanding] = useState(true);
+  const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half'>('half');
   const touchStartY = useRef<number>(0);
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
@@ -173,7 +171,6 @@ function MapPageComponent() {
   const bottomPadding = useMemo(() => {
     if (!isMobile || !height) return 0;
     if (drawerHeight === 'half') return height / 2;
-    if (drawerHeight === 'expanded') return height * 0.95;
     if (drawerHeight === 'collapsed') return 70;
     return 0;
   }, [isMobile, height, drawerHeight]);
@@ -408,7 +405,7 @@ function MapPageComponent() {
     if (mapBoundsStr && submittedSearchTerm.trim() === '') {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => {
-            if (d.latitude == null || d.longitude == null || isNaN(d.latitude) || isNaN(d.longitude)) return true;
+            if (d.latitude == null || d.longitude == null || isNaN(d.latitude) || isNaN(d.longitude)) return false;
             return d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng;
         });
     }
@@ -431,8 +428,7 @@ function MapPageComponent() {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
       if (isMobile) {
-          setDrawerHeight('expanded');
-          setIsExpanding(true);
+          setDrawerHeight('half');
       }
     }
   }, [isMobile]);
@@ -441,15 +437,13 @@ function MapPageComponent() {
     const isAlreadySelected = selectedDealershipId === id;
     setSelectedDealershipId(id);
     if (isMobile && id && !isAlreadySelected) {
-      setDrawerHeight('expanded');
-      setIsExpanding(true);
+      setDrawerHeight('half');
     }
   }, [isMobile, selectedDealershipId]);
 
   const handleUserMapInteraction = useCallback(() => {
     if (isMobile && drawerHeight !== 'collapsed') {
       setDrawerHeight('collapsed');
-      setIsExpanding(true);
     }
     setSelectedDealershipId(null);
   }, [isMobile, drawerHeight]);
@@ -470,11 +464,9 @@ function MapPageComponent() {
     const diff = touchStartY.current - e.changedTouches[0].clientY;
     if (Math.abs(diff) > 50) {
       if (diff > 0) {
-        setDrawerHeight(c => c === 'collapsed' ? 'half' : 'expanded');
-        setIsExpanding(true);
+        setDrawerHeight('half');
       } else {
-        setDrawerHeight(c => c === 'expanded' ? 'half' : 'collapsed');
-        setIsExpanding(false);
+        setDrawerHeight('collapsed');
       }
     }
   };
@@ -483,16 +475,8 @@ function MapPageComponent() {
     e.stopPropagation();
     if (drawerHeight === 'collapsed') {
       setDrawerHeight('half');
-      setIsExpanding(true);
-    } else if (drawerHeight === 'expanded') {
-      setDrawerHeight('half');
-      setIsExpanding(false);
     } else {
-      if (isExpanding) {
-        setDrawerHeight('expanded');
-      } else {
-        setDrawerHeight('collapsed');
-      }
+      setDrawerHeight('collapsed');
     }
   };
 
@@ -642,7 +626,7 @@ function MapPageComponent() {
             </main>
             <div className={cn(
               "fixed left-0 right-0 bg-background rounded-t-2xl shadow-[0_-8px_30px_rgb(0,0,0,0.1)] z-50 transition-all duration-300 ease-in-out border-t",
-              drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[95vh]'
+              drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]'
             )}>
               <div className="relative w-full flex flex-col items-center pt-2 pb-1 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
                 <div className="w-10 h-1 bg-muted rounded-full" />
@@ -656,7 +640,7 @@ function MapPageComponent() {
                     className="h-8 w-8 rounded-full shrink-0" 
                     onClick={handleChevronClick}
                   >
-                    {(drawerHeight === 'collapsed' || (drawerHeight === 'half' && isExpanding)) ? (
+                    {drawerHeight === 'collapsed' ? (
                       <ChevronUp className="h-6 w-6 text-muted-foreground" />
                     ) : (
                       <ChevronDown className="h-6 w-6 text-muted-foreground" />
@@ -674,5 +658,9 @@ function MapPageComponent() {
 }
 
 export default function MapPage() {
-  return <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
+  return <Suspense fallback={
+    <div className="flex h-screen w-full items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 animate-spin text-brand" />
+    </div>
+  }><MapPageComponent /></Suspense>;
 }

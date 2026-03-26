@@ -149,7 +149,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
     const docId = dealership.id;
     
-    // Nettoyage rigoureux des données pour éviter les erreurs Firestore
     const dataToMove: any = {};
     Object.keys(dealership).forEach(key => {
         const val = dealership[key];
@@ -163,9 +162,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     dataToMove.quarantineSource = 'manual_admin_action';
     dataToMove.status = 'QUARANTINED';
 
-    // Déplacement vers a_verifier
     setDocumentNonBlocking(doc(firestore, 'a_verifier', docId), dataToMove, {});
-    // Suppression de concessions
     deleteDocumentNonBlocking(doc(firestore, 'concessions', docId));
     
     toast({ 
