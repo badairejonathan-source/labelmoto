@@ -147,30 +147,20 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
-    const { id, ...dataToClone } = dealership;
-    
-    // Nettoyage rigoureux des données pour Firestore (exclusion des undefined)
-    const cleanedData: Record<string, any> = {};
-    Object.entries(dataToClone).forEach(([key, value]) => {
-      if (value !== undefined) {
-        cleanedData[key] = value;
-      }
-    });
-
     const dataToMove = {
-      ...cleanedData,
+      ...dealership,
       quarantinedAt: serverTimestamp(),
       isQuarantined: true,
       quarantineSource: 'manual_admin_action',
       status: 'QUARANTINED'
     };
 
-    const publicRef = doc(firestore, 'concessions', docId);
-    const quarantineRef = doc(firestore, 'a_verifier', docId);
+    // Suppression de l'ID pour l'objet de données
+    delete dataToMove.id;
 
-    // Déplacement : Création dans quarantaine puis suppression de la vue publique
-    setDocumentNonBlocking(quarantineRef, dataToMove, {});
-    deleteDocumentNonBlocking(publicRef);
+    // Déplacement vers a_verifier puis suppression de concessions
+    setDocumentNonBlocking(doc(firestore, 'a_verifier', docId), dataToMove, {});
+    deleteDocumentNonBlocking(doc(firestore, 'concessions', docId));
     
     toast({ 
       title: "Mise en quarantaine", 
