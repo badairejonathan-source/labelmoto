@@ -82,8 +82,12 @@ function RegisterProContent() {
   const { toast } = useToast();
   const { firestore } = useFirebase();
 
-  const dealersRef = useMemoFirebase(() => collection(firestore, 'concessions'), [firestore]);
-  const { data: allDealers } = useCollection(dealersRef);
+  // Augmenté à 3000 pour la cohérence avec le Header
+  const dealersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'concessions'), limit(3000));
+  }, [firestore]);
+  const { data: allDealers } = useCollection(dealersQuery);
 
   const dealershipRef = useMemoFirebase(() => dealershipId ? doc(firestore, 'concessions', dealershipId) : null, [firestore, dealershipId]);
   const { data: dealershipFromUrl } = useDoc(dealershipRef);
@@ -139,9 +143,9 @@ function RegisterProContent() {
             // 2. Match Exact Nom
             if (normalizedLabel === normalizedTerm) score = Math.max(score, 1200);
             
-            // 3. Match Adresse / Ville Direct (ESSENTIEL)
+            // 3. Match Ville & Adresse : ESSENTIEL pour trouver tous les dealers d'une ville
             if (address.includes(lower) || normalizedAddress.includes(normalizedTerm)) {
-                score = Math.max(score, 1100);
+                score = Math.max(score, 1150);
             }
 
             // 4. Typo Tolerance (Distance de Levenshtein)
@@ -165,7 +169,7 @@ function RegisterProContent() {
         })
         .filter(d => d.score > 0)
         .sort((a, b) => b.score - a.score)
-        .slice(0, 15);
+        .slice(0, 30); // Augmenté à 30 pour la cohérence
   }, [proSearchTerm, allDealers]);
 
   const handleModSubmit = async () => {
@@ -257,7 +261,7 @@ function RegisterProContent() {
                                     />
                                 </div>
                                 {suggestions.length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border-2 rounded-xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border-2 rounded-xl shadow-2xl z-50 max-h-[50vh] overflow-y-auto custom-scrollbar py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                                         {suggestions.map(s => (
                                             <button 
                                                 key={s.id} 

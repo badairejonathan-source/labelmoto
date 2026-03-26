@@ -191,8 +191,8 @@ const Header: React.FC<HeaderProps> = ({
     const fetchDealers = async () => {
         if (!firestore) return;
         try {
-            // On augmente la limite pour avoir plus de données locales disponibles pour les suggestions
-            const q = query(collection(firestore, 'concessions'), limit(500));
+            // Augmenté à 3000 pour garantir l'exhaustivité dans les villes denses
+            const q = query(collection(firestore, 'concessions'), limit(3000));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => ({
                 type: 'dealer',
@@ -409,7 +409,8 @@ const Header: React.FC<HeaderProps> = ({
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
-    setSuggestions(finalSuggestions.slice(0, 15));
+    // Augmenté à 30 pour satisfaire la demande d'au moins 20 suggestions
+    setSuggestions(finalSuggestions.slice(0, 30));
 
     // Prédiction (Auto-complete)
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
@@ -543,7 +544,7 @@ const Header: React.FC<HeaderProps> = ({
                   </Button>
 
                   {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto custom-scrollbar py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                         {suggestions.map((s, idx) => (
                             <button
                                 key={`${s.type}-${idx}`}
