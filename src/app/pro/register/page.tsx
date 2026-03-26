@@ -124,6 +124,7 @@ function RegisterProContent() {
             const label = (d.title || '').toLowerCase();
             const address = (d.address || '').toLowerCase();
             const normalizedLabel = label.replace(/[\s-]/g, '');
+            const normalizedAddress = address.replace(/[\s-]/g, '');
             let score = 0;
 
             // 1. Match Code Postal (Priorité Absolue)
@@ -138,31 +139,33 @@ function RegisterProContent() {
             // 2. Match Exact Nom
             if (normalizedLabel === normalizedTerm) score = Math.max(score, 1200);
             
-            // 3. Typo Tolerance (Distance de Levenshtein)
+            // 3. Match Adresse / Ville Direct (ESSENTIEL)
+            if (address.includes(lower) || normalizedAddress.includes(normalizedTerm)) {
+                score = Math.max(score, 1100);
+            }
+
+            // 4. Typo Tolerance (Distance de Levenshtein)
             if (normalizedTerm.length > 3) {
                 const dist = levenshteinDistance(normalizedTerm, normalizedLabel);
-                if (dist === 1) score = Math.max(score, 1100);
+                if (dist === 1) score = Math.max(score, 1050);
                 else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
             }
 
-            // 4. Prefix Match
+            // 5. Prefix Match
             if (normalizedLabel.startsWith(normalizedTerm)) score = Math.max(score, 1000);
             
-            // 5. Keyword Overlap
+            // 6. Keyword Overlap
             const titleWords = label.split(/\s+/).filter(w => w.length > 1);
             const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
             if (matches.length > 0) {
                 score = Math.max(score, 500 + (matches.length * 100));
             }
 
-            // 6. Address Includes
-            if (address.includes(lower)) score = Math.max(score, 400);
-
             return { ...d, score };
         })
         .filter(d => d.score > 0)
         .sort((a, b) => b.score - a.score)
-        .slice(0, 10);
+        .slice(0, 15);
   }, [proSearchTerm, allDealers]);
 
   const handleModSubmit = async () => {
@@ -247,7 +250,7 @@ function RegisterProContent() {
                                 <div className="relative">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                     <Input 
-                                        placeholder="Tapez le nom ou le code postal..." 
+                                        placeholder="Tapez le nom, la ville ou le code postal..." 
                                         className="pl-10 h-12 text-lg font-bold"
                                         value={proSearchTerm}
                                         onChange={(e) => setProSearchTerm(e.target.value)}

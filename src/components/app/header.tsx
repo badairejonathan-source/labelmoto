@@ -191,7 +191,8 @@ const Header: React.FC<HeaderProps> = ({
     const fetchDealers = async () => {
         if (!firestore) return;
         try {
-            const q = query(collection(firestore, 'concessions'), limit(250));
+            // On augmente la limite pour avoir plus de données locales disponibles pour les suggestions
+            const q = query(collection(firestore, 'concessions'), limit(500));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => ({
                 type: 'dealer',
@@ -250,6 +251,7 @@ const Header: React.FC<HeaderProps> = ({
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
         const normalizedTitle = title.replace(/[\s-]/g, '');
+        const normalizedAddress = address.replace(/[\s-]/g, '');
         
         let score = 0;
         
@@ -265,12 +267,17 @@ const Header: React.FC<HeaderProps> = ({
         // 2. Match Exact Nom (Normalized)
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
         
-        // 3. Match Ville : Si la recherche correspond à une ville dans laquelle se trouve la fiche
+        // 3. Match Ville & Adresse : ESSENTIEL pour trouver tous les dealers d'une ville
         const belongsToMatchingCity = matchingCities.some(city => 
             address.includes(city.name.toLowerCase()) || 
             address.replace(/[\s-]/g, '').includes(city.name.toLowerCase().replace(/[\s-]/g, ''))
         );
-        if (belongsToMatchingCity) score = Math.max(score, 1100);
+        if (belongsToMatchingCity) score = Math.max(score, 1150);
+
+        // Scan direct de l'adresse (indispensable si locationsData est incomplet)
+        if (address.includes(lowerTerm) || normalizedAddress.includes(normalizedTerm)) {
+            score = Math.max(score, 1100);
+        }
 
         // 4. Typo Tolerance (Distance de Levenshtein)
         if (lowerTerm.length > 3) {
@@ -402,7 +409,7 @@ const Header: React.FC<HeaderProps> = ({
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
-    setSuggestions(finalSuggestions.slice(0, 12));
+    setSuggestions(finalSuggestions.slice(0, 15));
 
     // Prédiction (Auto-complete)
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
