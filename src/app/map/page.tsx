@@ -40,9 +40,7 @@ const getCityCoordinates = async (postalCode: string): Promise<[number, number] 
       return [coordinates[1], coordinates[0]];
     }
     return null;
-  } catch (error) {
-    return null;
-  }
+  } catch (error) { return null; }
 };
 
 const getCityCoordinatesByName = async (cityName: string): Promise<[number, number] | null> => {
@@ -55,50 +53,19 @@ const getCityCoordinatesByName = async (cityName: string): Promise<[number, numb
       return [coordinates[1], coordinates[0]];
     }
     return null;
-  } catch (error) {
-    return null;
-  }
+  } catch (error) { return null; }
 };
 
-const RatingFilter = ({
-    value,
-    onChange,
-    className,
-}: {
-    value: number;
-    onChange: (value: number) => void;
-    className?: string;
-}) => {
+const RatingFilter = ({ value, onChange, className }: { value: number; onChange: (value: number) => void; className?: string; }) => {
     const ratings = [4, 3, 2, 1];
     return (
         <div className={cn("p-1 bg-background sticky top-0 z-10", className)}>
             <div className="flex items-center justify-center space-x-1.5">
                 <span className="text-[10px] font-bold text-muted-foreground mr-1 hidden md:inline uppercase tracking-wider">Note :</span>
-                <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    onClick={() => onChange(0)} 
-                    className={cn(
-                        "rounded-full px-3 text-[10px] font-bold h-7 transition-all duration-200",
-                        value === 0 ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted"
-                    )}
-                >
-                    TOUS
-                </Button>
+                <Button size="sm" variant="ghost" onClick={() => onChange(0)} className={cn("rounded-full px-3 text-[10px] font-bold h-7 transition-all duration-200", value === 0 ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted")}>TOUS</Button>
                 {ratings.map((rating) => (
-                    <Button 
-                        key={rating} 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={() => onChange(value === rating ? 0 : rating)} 
-                        className={cn(
-                            "flex gap-1 rounded-full px-2.5 text-[10px] font-bold h-7 transition-all duration-200",
-                            value === rating ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted"
-                        )}
-                    >
-                        <span>{rating}</span>
-                        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                        <span className="hidden sm:inline-block">+</span>
+                    <Button key={rating} size="sm" variant="ghost" onClick={() => onChange(value === rating ? 0 : rating)} className={cn("flex gap-1 rounded-full px-2.5 text-[10px] font-bold h-7 transition-all duration-200", value === rating ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted")}>
+                        <span>{rating}</span><Star className="w-3 h-3 text-yellow-400 fill-yellow-400" /><span className="hidden sm:inline-block">+</span>
                     </Button>
                 ))}
             </div>
@@ -174,14 +141,6 @@ function MapPageComponent() {
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
   useEffect(() => {
-    if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
-      setSubmittedSearchTerm('');
-      setSelectedDealershipId(null);
-      // On ne réinitialise plus mapCenter ici pour rester au même endroit
-    }
-  }, [searchTerm, submittedSearchTerm, mounted]);
-
-  useEffect(() => {
     if (!firestore || !mounted) return;
     const dealershipsRef = collection(firestore, 'concessions');
     return onSnapshot(dealershipsRef, (snapshot) => {
@@ -199,49 +158,35 @@ function MapPageComponent() {
   useEffect(() => {
     const processSearch = async () => {
         let results = [...allDealerships];
-
         if (activeFilter) {
             results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both'));
         }
-
         if (submittedSearchTerm.trim() !== '') {
             const lower = submittedSearchTerm.toLowerCase().trim();
             const normalizedSearch = lower.replace(/[\s-]/g, '');
-            
             if (/^\d{2}$/.test(normalizedSearch)) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
                 if (deptKey) { setMapCenter((locationsData as any)[deptKey].center); setMapZoom(9); }
                 results = results.filter(d => d.address?.match(/\b\d{5}\b/)?.[0].startsWith(normalizedSearch));
-            } 
-            else if (/^\d{5}$/.test(normalizedSearch)) {
+            } else if (/^\d{5}$/.test(normalizedSearch)) {
                 const coords = await getCityCoordinates(normalizedSearch);
                 if (coords) { setMapCenter(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(normalizedSearch)); }
-            } 
-            else {
+            } else {
                 let detectedBrand = '';
                 const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
                 for (const brand of sortedBrands) {
                     if (normalizedSearch.includes(brand.toLowerCase().replace(/[\s-]/g, ''))) { detectedBrand = brand; break; }
                 }
-
                 if (detectedBrand) {
                     results = results.filter(d => d.brands?.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase())) || d.title?.toLowerCase().includes(detectedBrand.toLowerCase()));
                 } else {
                     const cityCoords = await getCityCoordinatesByName(lower);
-                    if (cityCoords) {
-                        setMapCenter(cityCoords); setMapZoom(12);
-                        results = results.filter(d => d.address?.toLowerCase().includes(lower));
-                    } else {
-                        results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
-                    }
+                    if (cityCoords) { setMapCenter(cityCoords); setMapZoom(12); results = results.filter(d => d.address?.toLowerCase().includes(lower)); }
+                    else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
                 }
             }
         }
-
-        if (ratingFilter > 0) {
-            results = results.filter(d => (parseFloat(String(d.rating).replace(',', '.')) || 0) >= ratingFilter);
-        }
-        
+        if (ratingFilter > 0) results = results.filter(d => (parseFloat(String(d.rating).replace(',', '.')) || 0) >= ratingFilter);
         setFilteredDealerships(results);
     };
     processSearch();
@@ -255,7 +200,6 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = [...filteredDealerships];
-    // On synchronise toujours la liste avec ce qui est visible à l'écran
     if (mapBoundsStr) {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
@@ -290,9 +234,7 @@ function MapPageComponent() {
 
   const listContent = (
     <div className="space-y-3 pb-20">
-      {isLoading ? (
-        <div className="text-center pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /></div>
-      ) : (
+      {isLoading ? (<div className="text-center pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /></div>) : (
         <>
           {dealershipsToDisplay.map((dealer) => (
             <div key={dealer.id} onMouseEnter={() => setHoveredDealershipId(dealer.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
@@ -313,34 +255,15 @@ function MapPageComponent() {
       <div className="flex-1 flex overflow-hidden relative">
         {!isMobile ? (
           <>
-            <aside className="w-3/4 flex flex-col border-r h-full bg-muted/5">
-              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
-              <div className="flex-1 overflow-y-auto p-3" ref={listContainerRef}>{listContent}</div>
-            </aside>
-            <main className="w-1/4 relative">
-              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={() => {}} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} />
-              <Button size="icon" className="absolute top-3 right-3 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button>
-            </main>
+            <aside className="w-3/4 flex flex-col border-r h-full bg-muted/5"><RatingFilter value={ratingFilter} onChange={setRatingFilter} /><div className="flex-1 overflow-y-auto p-3" ref={listContainerRef}>{listContent}</div></aside>
+            <main className="w-1/4 relative"><MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={() => {}} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} /><Button size="icon" className="absolute top-3 right-3 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button></main>
           </>
         ) : (
           <>
-            <main className="absolute inset-0 h-full w-full">
-              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} bottomPadding={bottomPadding} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} />
-              <Button size="icon" className="absolute top-2 right-2 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button>
-            </main>
+            <main className="absolute inset-0 h-full w-full"><MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} bottomPadding={bottomPadding} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} /><Button size="icon" className="absolute top-2 right-2 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button></main>
             <div className={cn("fixed left-0 right-0 bg-background rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.15)] z-50 transition-all duration-500 ease-out border-t", drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]')}>
-              <div className="relative w-full flex flex-col items-center pt-3 pb-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-                <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
-              </div>
-              <div className="px-3 h-full flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between border-b pb-2">
-                  <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="flex-1" />
-                  <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>
-                    {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-                  </Button>
-                </div>
-                <div className="flex-1 overflow-y-auto mt-3" ref={listContainerRef}>{listContent}</div>
-              </div>
+              <div className="relative w-full flex flex-col items-center pt-3 pb-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}><div className="w-12 h-1.5 bg-muted rounded-full mb-2" /></div>
+              <div className="px-3 h-full flex flex-col overflow-hidden"><div className="flex items-center justify-between border-b pb-2"><RatingFilter value={ratingFilter} onChange={setRatingFilter} className="flex-1" /><Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>{drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}</Button></div><div className="flex-1 overflow-y-auto mt-3" ref={listContainerRef}>{listContent}</div></div>
             </div>
           </>
         )}

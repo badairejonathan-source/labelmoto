@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, ArrowUpRight } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -69,11 +69,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     if (!isAdmin || !firestore) return;
     if (!window.confirm(`Mettre "${dealership.title}" en quarantaine ?`)) return;
 
-    // Copie profonde et nettoyage pour Firestore
     const dataToMove = JSON.parse(JSON.stringify(dealership));
-    delete dataToMove.id; // Firestore utilisera l'ID du document
+    delete dataToMove.id;
     
-    // Ajout des métadonnées de modération
     const cleanData = {
       ...dataToMove,
       quarantinedAt: new Date().toISOString(),
@@ -83,8 +81,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
     setDocumentNonBlocking(doc(firestore, 'a_verifier', dealership.id), cleanData, { merge: true });
     deleteDocumentNonBlocking(doc(firestore, 'concessions', dealership.id));
-    
-    toast({ title: "Fiche envoyée en quarantaine" });
+    toast({ title: "Fiche mise en quarantaine" });
   };
 
   const handleRatingSubmit = () => {
@@ -145,37 +142,42 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-[9px] uppercase font-bold mt-3">
                 {dealership.phoneNumber && (
                   <a href={`tel:${dealership.phoneNumber}`} className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Phone className="h-4 w-4 text-brand" />
-                    Appel
+                    <Phone className="h-4 w-4 text-brand" /> Appel
                   </a>
                 )}
                 {dealership.website && (
                   <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Globe className="h-4 w-4 text-brand" />
-                    Web
+                    <Globe className="h-4 w-4 text-brand" /> Web
                   </a>
                 )}
-                <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                  <MapPin className="h-4 w-4 text-brand" />
-                  Y aller
-                </a>
                 <button onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} className="hover:text-brand flex flex-col items-center gap-1">
-                  <MessageSquare className="h-4 w-4 text-brand" />
-                  Avis
+                  <MessageSquare className="h-4 w-4 text-brand" /> Avis
                 </button>
                 {isAdmin && <button onClick={handleQuarantine} className="text-destructive flex flex-col items-center gap-1"><ShieldAlert className="h-4 w-4" />Modérer</button>}
               </div>
               
-              <a 
-                href={navigationUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="mt-3 text-[10px] md:text-xs text-muted-foreground hover:text-brand flex items-center gap-1 group/addr transition-colors border-t border-dashed pt-2"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MapPin className="h-3.5 w-3.5 text-brand group-hover/addr:scale-110 transition-transform" />
-                <span className="line-clamp-1 underline-offset-2 group-hover/addr:underline font-bold">{dealership.address}</span>
-              </a>
+              <div className="mt-3 flex items-center gap-2 border-t border-dashed pt-2">
+                <a 
+                  href={navigationUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex-1 text-[10px] md:text-xs text-muted-foreground hover:text-brand flex items-center gap-1 group/addr transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MapPin className="h-3.5 w-3.5 text-brand group-hover/addr:scale-110 transition-transform" />
+                  <span className="line-clamp-1 underline-offset-2 group-hover/addr:underline font-bold">{dealership.address}</span>
+                </a>
+                <a 
+                  href={navigationUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="shrink-0 bg-brand/10 hover:bg-brand text-brand hover:text-white px-2.5 py-1 rounded-full text-[9px] font-black uppercase flex items-center gap-1 transition-all"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span>Y ALLER</span>
+                  <ArrowUpRight className="h-3 w-3" />
+                </a>
+              </div>
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 w-8 md:w-10 z-40 flex flex-col bg-card border-l">
