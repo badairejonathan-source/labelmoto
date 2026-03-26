@@ -41,7 +41,7 @@ const getCityCoordinates = async (postalCode: string): Promise<[number, number] 
     const data = await response.json();
     if (data.length > 0) {
       const { coordinates } = data[0].centre;
-      return [coordinates[1], coordinates[0]]; // latitude, longitude
+      return [coordinates[1], coordinates[0]];
     }
     return null;
   } catch (error) {
@@ -56,7 +56,7 @@ const getCityCoordinatesByName = async (cityName: string): Promise<[number, numb
     const data = await response.json();
     if (data.length > 0) {
       const { coordinates } = data[0].centre;
-      return [coordinates[1], coordinates[0]]; // latitude, longitude
+      return [coordinates[1], coordinates[0]];
     }
     return null;
   } catch (error) {
@@ -74,10 +74,6 @@ const RatingFilter = ({
     className?: string;
 }) => {
     const ratings = [4, 3, 2, 1];
-    const handleRatingClick = (rating: number) => {
-        onChange(value === rating ? 0 : rating);
-    };
-
     return (
         <div className={cn("p-1 bg-background sticky top-0 z-10", className)}>
             <div className="flex items-center justify-center space-x-1.5">
@@ -88,9 +84,7 @@ const RatingFilter = ({
                     onClick={() => onChange(0)} 
                     className={cn(
                         "rounded-full px-3 text-[10px] font-bold h-7 transition-all duration-200",
-                        value === 0 
-                            ? "bg-brand text-brand-foreground shadow-sm ring-1 ring-brand" 
-                            : "hover:bg-muted"
+                        value === 0 ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted"
                     )}
                 >
                     TOUS
@@ -100,12 +94,10 @@ const RatingFilter = ({
                         key={rating} 
                         size="sm" 
                         variant="ghost" 
-                        onClick={() => handleRatingClick(rating)} 
+                        onClick={() => onChange(value === rating ? 0 : rating)} 
                         className={cn(
                             "flex gap-1 rounded-full px-2.5 text-[10px] font-bold h-7 transition-all duration-200",
-                            value === rating 
-                                ? "bg-brand text-brand-foreground shadow-sm ring-1 ring-brand" 
-                                : "hover:bg-muted"
+                            value === rating ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted"
                         )}
                     >
                         <span>{rating}</span>
@@ -170,40 +162,26 @@ function MapPageComponent() {
 
   const bottomPadding = useMemo(() => {
     if (!isMobile || !height) return 0;
-    if (drawerHeight === 'half') return height / 2;
-    if (drawerHeight === 'collapsed') return 70;
-    return 0;
+    return drawerHeight === 'half' ? height / 2 : 70;
   }, [isMobile, height, drawerHeight]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
   
   useEffect(() => {
     if (latParam && lngParam) {
         setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
         setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
         hasInitializedMap.current = true;
-    } 
-    else if (!hasInitializedMap.current && !searchParam) {
+    } else if (!hasInitializedMap.current && !searchParam) {
         setMapCenter([46.603354, 1.888334]);
         setMapZoom(6);
         hasInitializedMap.current = true;
     }
-
-    if (selectedIdParam) {
-        setSelectedDealershipId(selectedIdParam);
-    } else {
-        setSelectedDealershipId(null);
-    }
-
+    if (selectedIdParam) setSelectedDealershipId(selectedIdParam);
     if (searchParam) {
         setSearchTerm(searchParam);
         setSubmittedSearchTerm(searchParam);
         hasInitializedMap.current = true;
-    } else {
-        setSearchTerm('');
-        setSubmittedSearchTerm('');
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
@@ -211,57 +189,23 @@ function MapPageComponent() {
     if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
       setSubmittedSearchTerm('');
       setSelectedDealershipId(null);
-      router.replace('/map' + (proEditMode ? '?mode=pro_edit' : ''), { scroll: false });
+      // On ne réinitialise pas mapCenter ici pour que la carte reste en place
     }
-  }, [searchTerm, submittedSearchTerm, mounted, router, proEditMode]);
+  }, [searchTerm, submittedSearchTerm, mounted]);
 
   useEffect(() => {
     if (!firestore || !mounted) return;
     const dealershipsRef = collection(firestore, 'concessions');
-
-    const unsubscribe = onSnapshot(dealershipsRef, 
-      (querySnapshot) => {
-        const results = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            const lat = data.latitude !== undefined && data.latitude !== null 
-                ? parseFloat(String(data.latitude).replace(',', '.')) 
-                : undefined;
-            const lng = data.longitude !== undefined && data.longitude !== null 
-                ? parseFloat(String(data.longitude).replace(',', '.')) 
-                : undefined;
-
-            return {
-                id: doc.id,
-                ...data,
-                latitude: lat,
-                longitude: lng,
-            } as Dealership;
-        });
-
-        const seen = new Set();
-        const uniqueResults = results.filter(item => {
-            const cleanTitle = item.title?.toLowerCase().trim() || '';
-            const cleanAddress = item.address?.toLowerCase().trim().replace(/\s\s+/g, ' ') || '';
-            const identifier = `${cleanTitle}|${cleanAddress}`;
-            if (seen.has(identifier)) return false;
-            seen.add(identifier);
-            return true;
-        });
-
-        setAllDealerships(uniqueResults);
+    return onSnapshot(dealershipsRef, (snapshot) => {
+        const results = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
+            longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+        } as Dealership));
+        setAllDealerships(results);
         setIsLoading(false);
-      }, 
-      async (error) => {
-        const permissionError = new FirestorePermissionError({
-          path: dealershipsRef.path,
-          operation: 'list',
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setIsLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
+    }, () => setIsLoading(false));
   }, [firestore, mounted]);
 
   useEffect(() => {
@@ -279,98 +223,30 @@ function MapPageComponent() {
             
             if (/^\d{2}$/.test(normalizedSearch)) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
-                if (deptKey) {
-                    const info = (locationsData as any)[deptKey];
-                    setMapCenter(info.center);
-                    setMapZoom(9);
-                }
-                results = results.filter(d => {
-                    const postalCodeMatch = d.address?.match(/\b\d{5}\b/);
-                    if (postalCodeMatch) {
-                        return postalCodeMatch[0].startsWith(normalizedSearch);
-                    }
-                    return false;
-                });
+                if (deptKey) { setMapCenter((locationsData as any)[deptKey].center); setMapZoom(9); }
+                results = results.filter(d => d.address?.match(/\b\d{5}\b/)?.[0].startsWith(normalizedSearch));
             } 
             else if (/^\d{5}$/.test(normalizedSearch)) {
                 const coords = await getCityCoordinates(normalizedSearch);
-                if (coords) {
-                    setMapCenter(coords);
-                    setMapZoom(13);
-                    const cityDealers = results.filter(d => {
-                        const postalCodeMatch = d.address?.match(/\b\d{5}\b/);
-                        return postalCodeMatch ? postalCodeMatch[0] === normalizedSearch : false;
-                    });
-                    const otherDealers = results.filter(d => {
-                        const postalCodeMatch = d.address?.match(/\b\d{5}\b/);
-                        return postalCodeMatch ? postalCodeMatch[0] !== normalizedSearch : true;
-                    });
-                    
-                    const sortedDealers = otherDealers.sort((a, b) => getDistanceSq(coords, a) - getDistanceSq(coords, b));
-                    results = [...cityDealers, ...sortedDealers.slice(0, 20)];
-                } else {
-                    status = 'fallback_nearby';
-                    results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : [...allDealerships];
-                }
+                if (coords) { setMapCenter(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(normalizedSearch)); }
             } 
             else {
                 let detectedBrand = '';
                 const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
-
                 for (const brand of sortedBrands) {
-                    const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-                    if (normalizedSearch.includes(normalizedBrand) || (normalizedBrand.includes(normalizedSearch) && normalizedSearch.length >= 3)) {
-                        detectedBrand = brand;
-                        break;
-                    }
+                    if (normalizedSearch.includes(brand.toLowerCase().replace(/[\s-]/g, ''))) { detectedBrand = brand; break; }
                 }
 
                 if (detectedBrand) {
-                    const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
-                    const remaining = lower.replace(detectedBrand.toLowerCase(), '').trim();
-                    
-                    if (remaining.length >= 2) {
-                        if (/^\d{2}$/.test(remaining.replace(/[\s-]/g, ''))) {
-                            const deptKey = Object.keys(locationsData).find(k => k.startsWith(remaining.replace(/[\s-]/g, '')));
-                            if (deptKey) {
-                                const info = (locationsData as any)[deptKey];
-                                setMapCenter(info.center);
-                                setMapZoom(10);
-                            }
-                        } else {
-                            const cityCoords = await getCityCoordinatesByName(remaining);
-                            if (cityCoords) {
-                                setMapCenter(cityCoords);
-                                setMapZoom(12);
-                            }
-                        }
-                    }
-
-                    results = results.filter(d => 
-                        (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
-                        d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
-                    );
+                    results = results.filter(d => d.brands?.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase())) || d.title?.toLowerCase().includes(detectedBrand.toLowerCase()));
                 } else {
                     const cityCoords = await getCityCoordinatesByName(lower);
                     if (cityCoords) {
-                        setMapCenter(cityCoords);
-                        setMapZoom(12);
-                        
-                        const cityResults = results.filter(d => d.address?.toLowerCase().includes(lower));
-                        if (cityResults.length > 0) {
-                            results = cityResults;
-                        } else {
-                            results = [...results].sort((a, b) => getDistanceSq(cityCoords, a) - getDistanceSq(cityCoords, b)).slice(0, 30);
-                        }
+                        setMapCenter(cityCoords); setMapZoom(12);
+                        results = results.filter(d => d.address?.toLowerCase().includes(lower));
                     } else {
-                        results = results.filter(d => 
-                            d.title?.toLowerCase().includes(lower) || 
-                            d.address?.toLowerCase().includes(lower)
-                        );
-                        if (results.length === 0) {
-                            status = 'fallback_nearby';
-                            results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : [...allDealerships];
-                        }
+                        results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
+                        if (results.length === 0) { status = 'fallback_nearby'; results = [...allDealerships]; }
                     }
                 }
             }
@@ -379,272 +255,104 @@ function MapPageComponent() {
         }
 
         if (ratingFilter > 0) {
-            results = results.filter(d => {
-                const r = d.rating ? parseFloat(String(d.rating).replace(',', '.')) : 0;
-                return !isNaN(r) && r >= ratingFilter;
-            });
+            results = results.filter(d => (parseFloat(String(d.rating).replace(',', '.')) || 0) >= ratingFilter);
         }
         
         setSearchStatus(status);
         setFilteredDealerships(results);
     };
-
     processSearch();
 }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
-    const bStr = bounds.toBBoxString();
-    setMapBoundsStr(current => current !== bStr ? bStr : current);
-    setMapCenter(current => (Math.abs(current[0] - newCenter[0]) > 0.0001 || Math.abs(current[1] - newCenter[1]) > 0.0001) ? newCenter : current);
-    setMapZoom(current => current !== newZoom ? newZoom : current);
+    setMapBoundsStr(bounds.toBBoxString());
+    setMapCenter(newCenter);
+    setMapZoom(newZoom);
   }, []);
   
   const dealershipsToDisplay = useMemo(() => {
     let results = [...filteredDealerships];
-    
-    if (mapBoundsStr && submittedSearchTerm.trim() === '') {
+    if (mapBoundsStr) {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
-        results = results.filter(d => {
-            if (d.latitude == null || d.longitude == null || isNaN(d.latitude) || isNaN(d.longitude)) return false;
-            return d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng;
-        });
+        results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
-
-    const selectedDealer = selectedDealershipId ? results.find(d => d.id === selectedDealershipId) : null;
-
-    if (selectedDealer && selectedDealer.latitude && selectedDealer.longitude) {
-        const anchor: [number, number] = [selectedDealer.latitude, selectedDealer.longitude];
-        const others = results.filter(d => d.id !== selectedDealershipId);
-        const sortedOthers = [...others].sort((a, b) => getDistanceSq(anchor, a) - getDistanceSq(anchor, b));
-        return [selectedDealer, ...sortedOthers].slice(0, 30);
-    }
-
-    return [...results].sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
-  }, [filteredDealerships, mapBoundsStr, mapCenter, submittedSearchTerm, selectedDealershipId]);
+    return results.sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
+  }, [filteredDealerships, mapBoundsStr, mapCenter]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
-    if (dealership.latitude && dealership.longitude && !isNaN(dealership.latitude) && !isNaN(dealership.longitude)) {
+    if (dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
-      if (isMobile) {
-          setDrawerHeight('half');
-      }
+      if (isMobile) setDrawerHeight('half');
     }
   }, [isMobile]);
   
   const handleMarkerClick = useCallback((id: string) => {
-    const isAlreadySelected = selectedDealershipId === id;
     setSelectedDealershipId(id);
-    if (isMobile && id && !isAlreadySelected) {
-      setDrawerHeight('half');
-    }
-  }, [isMobile, selectedDealershipId]);
+    if (isMobile) setDrawerHeight('half');
+  }, [isMobile]);
 
   const handleUserMapInteraction = useCallback(() => {
-    if (isMobile && drawerHeight !== 'collapsed') {
-      setDrawerHeight('collapsed');
-    }
+    if (isMobile) setDrawerHeight('collapsed');
     setSelectedDealershipId(null);
-  }, [isMobile, drawerHeight]);
-
-  useEffect(() => {
-    if (selectedDealershipId) {
-      if (isMobile && listContainerRef.current) {
-        listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        const card = cardRefs.current.get(selectedDealershipId);
-        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, [selectedDealershipId, isMobile]);
+  }, [isMobile]);
 
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
   const onTouchEnd = (e: React.TouchEvent) => {
     const diff = touchStartY.current - e.changedTouches[0].clientY;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        setDrawerHeight('half');
-      } else {
-        setDrawerHeight('collapsed');
-      }
-    }
-  };
-
-  const handleChevronClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (drawerHeight === 'collapsed') {
-      setDrawerHeight('half');
-    } else {
-      setDrawerHeight('collapsed');
-    }
+    if (Math.abs(diff) > 50) setDrawerHeight(diff > 0 ? 'half' : 'collapsed');
   };
 
   const listContent = (
     <div className="space-y-3 pb-20">
-      {proEditMode && (
-        <div className="bg-blue-600 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg shadow-md animate-in fade-in slide-in-from-top-2 duration-500">
-            <div className="flex items-center gap-2 text-white font-black text-sm mb-1 uppercase tracking-tighter">
-                <Info className="h-5 w-5" />
-                Mode Sélection Pro
-            </div>
-            <p className="text-xs text-blue-50 font-bold leading-relaxed">
-                Recherchez et sélectionnez votre établissement sur la carte pour nous envoyer vos modifications.
-            </p>
-        </div>
-      )}
-
       {isLoading ? (
-        <div className="text-center text-muted-foreground pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /><p className="mt-2 text-[10px] font-black uppercase tracking-widest">Chargement...</p></div>
+        <div className="text-center pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /></div>
       ) : (
         <>
-          {searchStatus === 'fallback_nearby' && (
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg">
-                <div className="flex items-center gap-2 text-blue-800 font-bold text-sm mb-1 uppercase tracking-tight">
-                    <MapPin className="h-4 w-4" />
-                    Pas de correspondance exacte
-                </div>
-                <p className="text-xs text-blue-700">Aucun établissement ne correspond exactement. Voici les professionnels à proximité.</p>
+          {dealershipsToDisplay.map((dealer, index) => (
+            <div key={dealer.id} ref={node => cardRefs.current.set(dealer.id, node)} onMouseEnter={() => setHoveredDealershipId(dealer.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
+              <DealershipCard dealership={dealer} onClick={() => handleCardClick(dealer)} className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand")} />
             </div>
-          )}
-
-          {dealershipsToDisplay.map((dealer, index) => {
-            const adIndex = Math.floor((index + 1) / 4) - 1;
-            const article = articlesForAds ? articlesForAds[adIndex % articlesForAds.length] : null;
-
-            return (
-              <React.Fragment key={dealer.id}>
-                <div 
-                  ref={node => cardRefs.current.set(dealer.id, node)} 
-                  onMouseEnter={() => setHoveredDealershipId(dealer.id)} 
-                  onMouseLeave={() => setHoveredDealershipId(null)}
-                  className="w-full"
-                >
-                  <DealershipCard 
-                    dealership={dealer} 
-                    onClick={() => handleCardClick(dealer)} 
-                    className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand", dealer.id === hoveredDealershipId && "shadow-md")} 
-                  />
-                </div>
-                {(index + 1) % 4 === 0 && (
-                  <div className="py-1 w-full">
-                    {adIndex === 1 ? (
-                      <AdCard 
-                        isPublicity={true}
-                        article={{
-                          id: 'promo-bmw-78',
-                          title: 'BMW MOTORRAD 78 : journée héritage',
-                          description: 'BMW 78 vous propose une journée héritage le 18 AVRIL 2026. Profitez de 10% sur toute leur boutique accessoires.',
-                          imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1080'
-                        }} 
-                      />
-                    ) : (
-                      article && <AdCard article={article} />
-                    )}
-                  </div>
-                )}
-              </React.Fragment>
-            );
-          })}
-          
-          {dealershipsToDisplay.length === 0 && (
-            <div className="text-center text-muted-foreground py-10 px-4">
-                <p className="font-bold text-foreground">Aucun établissement trouvé.</p>
-                <p className="text-sm mt-2">Explorez la carte ou modifiez vos filtres pour voir plus de résultats.</p>
-            </div>
-          )}
+          ))}
+          {dealershipsToDisplay.length === 0 && <div className="text-center py-10"><p>Aucun établissement visible dans cette zone.</p></div>}
         </>
       )}
     </div>
   );
 
-  if (!mounted || width === undefined) return <div className="flex h-[100svh] w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
+  if (!mounted || width === undefined) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
   return (
-    <div className="flex flex-col w-full bg-background h-screen overflow-hidden">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} placeholderText="Trouver une concession, un atelier..." />
-      
+    <div className="flex flex-col w-full h-screen overflow-hidden bg-background">
+      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} />
       <div className="flex-1 flex overflow-hidden relative">
-        {!isMobile && (
+        {!isMobile ? (
           <>
-            <aside className="w-3/4 flex flex-col bg-background border-r z-10 shadow-md h-full">
-              <div className="p-3 border-b bg-muted/20 flex justify-between items-center">
-                <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none p-0 flex-1" />
-              </div>
-              <div className="flex-1 overflow-y-auto pr-2" ref={listContainerRef}>
-                <div className="py-3 pl-3 space-y-3">{listContent}</div>
-              </div>
+            <aside className="w-3/4 flex flex-col border-r h-full">
+              <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
+              <div className="flex-1 overflow-y-auto p-3" ref={listContainerRef}>{listContent}</div>
             </aside>
-            <main className="w-1/4 relative bg-muted/5">
-              <MapComponent 
-                dealerships={filteredDealerships} 
-                center={mapCenter} 
-                zoom={mapZoom} 
-                hoveredDealershipId={hoveredDealershipId} 
-                selectedDealershipId={selectedDealershipId} 
-                onMarkerClick={handleMarkerClick} 
-                onMarkerMouseOver={setHoveredDealershipId} 
-                onMarkerMouseOut={() => setHoveredDealershipId(null)} 
-                onMapChange={handleMapChange} 
-                onMapClick={() => {}} 
-                isLocating={isLocating} 
-                onLocateEnd={() => setIsLoadingLocating(false)} 
-                onLocationFound={setUserCoords}
-                onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
-              />
-              <div className="absolute top-3 right-3 z-[1000] p-1 overflow-visible">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0 text-white" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
-              </div>
+            <main className="w-1/4 relative">
+              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={() => {}} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={setUserCoords} />
+              <Button size="icon" className="absolute top-3 right-3 z-[1000] rounded-full bg-brand text-white" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button>
             </main>
           </>
-        )}
-
-        {isMobile && (
+        ) : (
           <>
-            <main className="absolute inset-0 z-0 h-full w-full">
-              <MapComponent 
-                dealerships={filteredDealerships} 
-                center={mapCenter} 
-                zoom={mapZoom} 
-                hoveredDealershipId={hoveredDealershipId} 
-                selectedDealershipId={selectedDealershipId} 
-                onMarkerClick={handleMarkerClick} 
-                onMarkerMouseOver={setHoveredDealershipId} 
-                onMarkerMouseOut={() => setHoveredDealershipId(null)} 
-                onMapChange={handleMapChange} 
-                onMapClick={handleUserMapInteraction}
-                onUserInteraction={handleUserMapInteraction}
-                bottomPadding={bottomPadding}
-                isLocating={isLocating} 
-                onLocateEnd={() => setIsLoadingLocating(false)} 
-                onLocationFound={setUserCoords}
-                onLocationError={() => toast({ variant: "destructive", title: "Géolocalisation impossible" })} 
-              />
-              <div className="absolute top-2 right-2 z-[1000] p-1 overflow-visible">
-                <Button size="icon" className="rounded-full shadow-lg h-9 w-9 bg-brand text-brand-foreground p-0 text-white" onClick={() => setIsLoadingLocating(true)} disabled={isLocating}><Crosshair className="h-4.5 w-4.5" /></Button>
-              </div>
+            <main className="absolute inset-0 h-full w-full">
+              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} bottomPadding={bottomPadding} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={setUserCoords} />
+              <Button size="icon" className="absolute top-2 right-2 z-[1000] rounded-full bg-brand text-white" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button>
             </main>
-            <div className={cn(
-              "fixed left-0 right-0 bg-background rounded-t-2xl shadow-[0_-8px_30px_rgb(0,0,0,0.1)] z-50 transition-all duration-300 ease-in-out border-t",
-              drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]'
-            )}>
-              <div className="relative w-full flex flex-col items-center pt-2 pb-1 cursor-grab touch-none" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+            <div className={cn("fixed left-0 right-0 bg-background rounded-t-2xl shadow-2xl z-50 transition-all duration-300 border-t", drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]')}>
+              <div className="relative w-full flex flex-col items-center pt-2 pb-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
                 <div className="w-10 h-1 bg-muted rounded-full" />
               </div>
               <div className="px-3 h-full flex flex-col overflow-hidden">
                 <div className="flex items-center justify-between border-b pb-1">
-                  <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="border-none px-0 flex-1" />
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 rounded-full shrink-0" 
-                    onClick={handleChevronClick}
-                  >
-                    {drawerHeight === 'collapsed' ? (
-                      <ChevronUp className="h-6 w-6 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-6 w-6 text-muted-foreground" />
-                    )}
+                  <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="flex-1" />
+                  <Button variant="ghost" size="icon" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>
+                    {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
                   </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto mt-2" ref={listContainerRef}>{listContent}</div>
@@ -658,9 +366,5 @@ function MapPageComponent() {
 }
 
 export default function MapPage() {
-  return <Suspense fallback={
-    <div className="flex h-screen w-full items-center justify-center bg-background">
-      <Loader2 className="h-8 w-8 animate-spin text-brand" />
-    </div>
-  }><MapPageComponent /></Suspense>;
+  return <Suspense fallback={<div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
 }

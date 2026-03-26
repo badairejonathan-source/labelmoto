@@ -234,6 +234,7 @@ const Header: React.FC<HeaderProps> = ({
     
     const results: Suggestion[] = [];
 
+    // --- RECHERCHE PAR VILLE DANS LES ADRESSES ---
     const matchingCities: { name: string; dept: string; lat: number; lng: number }[] = [];
     Object.entries(locationsData).forEach(([dept, info]) => {
         info.cities.forEach(city => {
@@ -244,6 +245,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
+    // --- SCAN DES ÉTABLISSEMENTS ---
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -252,6 +254,7 @@ const Header: React.FC<HeaderProps> = ({
         
         let score = 0;
         
+        // 1. Code Postal
         const isNumeric = /^\d+$/.test(lowerTerm);
         if (isNumeric && lowerTerm.length >= 2) {
             const zipMatch = address.match(/\b\d{5}\b/);
@@ -260,130 +263,68 @@ const Header: React.FC<HeaderProps> = ({
             }
         }
 
+        // 2. Match Exact Nom
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
         
+        // 3. Match Ville (si la saisie correspond à une ville de l'adresse)
         const belongsToMatchingCity = matchingCities.some(city => 
             address.includes(city.name.toLowerCase()) || 
             address.replace(/[\s-]/g, '').includes(city.name.toLowerCase().replace(/[\s-]/g, ''))
         );
         if (belongsToMatchingCity) score = Math.max(score, 1150);
 
+        // 4. Contenu de l'adresse
         if (address.includes(lowerTerm) || normalizedAddress.includes(normalizedTerm)) {
             score = Math.max(score, 1100);
         }
 
+        // 5. Typo tolerance
         if (lowerTerm.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
             if (dist === 1) score = Math.max(score, 1050);
             else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
         }
 
+        // 6. Prefix
         if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
         
+        // 7. Keyword overlap
         const titleWords = title.split(/\s+/).filter(w => w.length > 1);
         const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
         if (matches.length > 0) {
-            const keywordScore = 500 + (matches.length * 100);
-            score = Math.max(score, keywordScore);
+            score = Math.max(score, 500 + (matches.length * 100));
         }
 
-        if (normalizedTitle.includes(normalizedTerm)) score = Math.max(score, 800);
-        
         if (score > 0) {
             results.push({ ...d, score });
         }
     });
 
+    // --- MARQUES ---
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
     let bestBrandMatch: string | null = null;
 
     sortedBrands.forEach(brand => {
         const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-        let score = 0;
         if (normalizedBrand === normalizedTerm) {
-            score = 1150;
+            results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1150 });
             bestBrandMatch = brand;
         } else if (normalizedBrand.startsWith(normalizedTerm)) {
-            score = 900;
+            results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 900 });
             if (!bestBrandMatch) bestBrandMatch = brand;
-        } else if (lowerTerm.length > 3 && levenshteinDistance(normalizedTerm, normalizedBrand) === 1) {
-            score = 850;
-        }
-        
-        if (score > 0) {
-            results.push({
-                type: 'brand-only',
-                label: brand,
-                subLabel: "Voir les concessionnaires",
-                brand: brand,
-                score
-            });
         }
     });
 
-    if (bestBrandMatch) {
-        const normalizedBrandMatch = bestBrandMatch.toLowerCase().replace(/[\s-]/g, '');
-        const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
-        
-        if (searchWithoutBrand.length > 0) {
-            for (const [dept, info] of Object.entries(locationsData)) {
-                const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
-                if (normalizedDept.includes(searchWithoutBrand)) {
-                    results.push({
-                        type: 'brand-location',
-                        label: `${bestBrandMatch} à ${dept}`,
-                        subLabel: `Voir les pros ${bestBrandMatch} dans le secteur`,
-                        lat: info.center[0],
-                        lng: info.center[1],
-                        zoom: 9,
-                        brand: bestBrandMatch,
-                        score: 1250
-                    });
-                    break;
-                }
-                
-                const foundCity = info.cities.find(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchWithoutBrand));
-                if (foundCity) {
-                    results.push({
-                        type: 'brand-location',
-                        label: `${bestBrandMatch} à ${foundCity}`,
-                        subLabel: `Voir les pros ${bestBrandMatch} à ${foundCity}`,
-                        lat: info.center[0],
-                        lng: info.center[1],
-                        zoom: 11,
-                        brand: bestBrandMatch,
-                        score: 1240
-                    });
-                    break;
-                }
-            }
-        }
-    }
-
+    // --- VILLES ET DÉPARTEMENTS ---
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (normalizedDept.includes(normalizedTerm)) {
-            results.push({
-                type: 'dept',
-                label: dept,
-                lat: info.center[0],
-                lng: info.center[1],
-                zoom: 9,
-                score: 700
-            });
+            results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 700 });
         }
         info.cities.forEach(city => {
             const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
             if (normalizedCity.includes(normalizedTerm)) {
-                results.push({
-                    type: 'city',
-                    label: city,
-                    subLabel: dept.split(' - ')[0],
-                    lat: info.center[0],
-                    lng: info.center[1],
-                    zoom: 12,
-                    score: 650
-                });
+                results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1], zoom: 12, score: 650 });
             }
         });
     });
@@ -395,8 +336,7 @@ const Header: React.FC<HeaderProps> = ({
     setSuggestions(finalSuggestions.slice(0, 30));
 
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
-        const matchLabel = bestBrandMatch;
-        setPrediction(searchTerm + matchLabel.substring(searchTerm.length));
+        setPrediction(searchTerm + bestBrandMatch.substring(searchTerm.length));
     } else {
         setPrediction('');
     }
