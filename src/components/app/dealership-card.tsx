@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -149,6 +148,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
     const docId = dealership.id;
     
+    // Clean data for displacement
     const dataToMove: any = {};
     Object.keys(dealership).forEach(key => {
         const val = dealership[key];
@@ -162,7 +162,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     dataToMove.quarantineSource = 'manual_admin_action';
     dataToMove.status = 'QUARANTINED';
 
-    setDocumentNonBlocking(doc(firestore, 'a_verifier', docId), dataToMove, {});
+    // Atomic-like displacement
+    setDocumentNonBlocking(doc(firestore, 'a_verifier', docId), dataToMove, { merge: true });
     deleteDocumentNonBlocking(doc(firestore, 'concessions', docId));
     
     toast({ 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -170,7 +169,7 @@ function RegisterProContent() {
         })
         .filter(d => d.score > 0)
         .sort((a, b) => b.score - a.score)
-        .slice(0, 30); // Augmenté à 30 pour la cohérence
+        .slice(0, 30); 
   }, [proSearchTerm, allDealers]);
 
   const handleModSubmit = async () => {
