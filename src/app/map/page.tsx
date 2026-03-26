@@ -177,6 +177,7 @@ function MapPageComponent() {
     if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
       setSubmittedSearchTerm('');
       setSelectedDealershipId(null);
+      // On ne réinitialise plus mapCenter ici pour rester au même endroit
     }
   }, [searchTerm, submittedSearchTerm, mounted]);
 
@@ -254,6 +255,7 @@ function MapPageComponent() {
   
   const dealershipsToDisplay = useMemo(() => {
     let results = [...filteredDealerships];
+    // On synchronise toujours la liste avec ce qui est visible à l'écran
     if (mapBoundsStr) {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);

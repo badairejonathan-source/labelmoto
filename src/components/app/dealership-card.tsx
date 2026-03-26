@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, ShieldAlert, Loader2, Send } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -34,7 +34,6 @@ const categoryDisplay: { [key: string]: string } = {
 };
 
 const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, className }) => {
-  const searchParams = useSearchParams();
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
@@ -70,16 +69,21 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     if (!isAdmin || !firestore) return;
     if (!window.confirm(`Mettre "${dealership.title}" en quarantaine ?`)) return;
 
-    const { id, ...data } = dealership;
-    const cleanData: any = {};
-    Object.keys(data).forEach(k => { if (data[k] !== undefined) cleanData[k] = data[k]; });
+    // Copie profonde et nettoyage pour Firestore
+    const dataToMove = JSON.parse(JSON.stringify(dealership));
+    delete dataToMove.id; // Firestore utilisera l'ID du document
     
-    cleanData.quarantinedAt = serverTimestamp();
-    cleanData.quarantineSource = 'manual_admin_action';
-    cleanData.status = 'QUARANTINED';
+    // Ajout des métadonnées de modération
+    const cleanData = {
+      ...dataToMove,
+      quarantinedAt: new Date().toISOString(),
+      quarantineSource: 'manual_admin_action',
+      status: 'QUARANTINED'
+    };
 
-    setDocumentNonBlocking(doc(firestore, 'a_verifier', id), cleanData, { merge: true });
-    deleteDocumentNonBlocking(doc(firestore, 'concessions', id));
+    setDocumentNonBlocking(doc(firestore, 'a_verifier', dealership.id), cleanData, { merge: true });
+    deleteDocumentNonBlocking(doc(firestore, 'concessions', dealership.id));
+    
     toast({ title: "Fiche envoyée en quarantaine" });
   };
 
@@ -138,7 +142,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 </div>
               </div>
               
-              <div className="flex items-center gap-4 text-muted-foreground text-[9px] uppercase font-bold mt-3">
+              <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-[9px] uppercase font-bold mt-3">
                 {dealership.phoneNumber && (
                   <a href={`tel:${dealership.phoneNumber}`} className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     <Phone className="h-4 w-4 text-brand" />
@@ -151,6 +155,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     Web
                   </a>
                 )}
+                <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                  <MapPin className="h-4 w-4 text-brand" />
+                  Y aller
+                </a>
                 <button onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} className="hover:text-brand flex flex-col items-center gap-1">
                   <MessageSquare className="h-4 w-4 text-brand" />
                   Avis
@@ -162,7 +170,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 href={navigationUrl} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="mt-2 text-[10px] md:text-xs text-muted-foreground hover:text-brand flex items-center gap-1 group/addr transition-colors"
+                className="mt-3 text-[10px] md:text-xs text-muted-foreground hover:text-brand flex items-center gap-1 group/addr transition-colors border-t border-dashed pt-2"
                 onClick={(e) => e.stopPropagation()}
               >
                 <MapPin className="h-3.5 w-3.5 text-brand group-hover/addr:scale-110 transition-transform" />
@@ -187,6 +195,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 <div className="h-full flex flex-col">
                   <div className="flex-1 overflow-y-auto space-y-2 mb-4">
                     {approvedComments?.map(c => <div key={c.id} className="bg-muted/30 p-2 rounded text-[10px]"><div className="flex justify-between font-bold"><span>{c.userName}</span><span>{c.rating}/5</span></div><p className="italic">"{c.content}"</p></div>)}
+                    {(!approvedComments || approvedComments.length === 0) && <p className="text-[10px] text-muted-foreground text-center py-4">Soyez le premier à donner votre avis !</p>}
                   </div>
                   <Button size="sm" className="w-full bg-blue-600 text-[9px] uppercase font-black" onClick={(e) => { e.stopPropagation(); setIsReviewDialogOpen(true); }}>Donner mon avis</Button>
                 </div>

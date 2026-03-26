@@ -191,6 +191,7 @@ const Header: React.FC<HeaderProps> = ({
     const fetchDealers = async () => {
         if (!firestore) return;
         try {
+            // Augmentation à 3000 pour couvrir la majorité des points en France en un scan
             const q = query(collection(firestore, 'concessions'), limit(3000));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => ({
@@ -234,16 +235,23 @@ const Header: React.FC<HeaderProps> = ({
     
     const results: Suggestion[] = [];
 
+    // --- VILLES ET DÉPARTEMENTS ---
     const matchingCities: { name: string; dept: string; lat: number; lng: number }[] = [];
     Object.entries(locationsData).forEach(([dept, info]) => {
+        const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
+        if (normalizedDept.includes(normalizedTerm)) {
+            results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 700 });
+        }
         info.cities.forEach(city => {
             const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
             if (normalizedCity.includes(normalizedTerm)) {
                 matchingCities.push({ name: city, dept: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1] });
+                results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1], zoom: 12, score: 650 });
             }
         });
     });
 
+    // --- CONCESSIONNAIRES (SCAN COMPLET) ---
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -252,6 +260,7 @@ const Header: React.FC<HeaderProps> = ({
         
         let score = 0;
         
+        // 1. Match Code Postal
         const isNumeric = /^\d+$/.test(lowerTerm);
         if (isNumeric && lowerTerm.length >= 2) {
             const zipMatch = address.match(/\b\d{5}\b/);
@@ -260,26 +269,32 @@ const Header: React.FC<HeaderProps> = ({
             }
         }
 
+        // 2. Match Exact Nom
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
         
+        // 3. Match Ville (Si le dealer est dans la ville cherchée)
         const belongsToMatchingCity = matchingCities.some(city => 
             address.includes(city.name.toLowerCase()) || 
             address.replace(/[\s-]/g, '').includes(city.name.toLowerCase().replace(/[\s-]/g, ''))
         );
         if (belongsToMatchingCity) score = Math.max(score, 1150);
 
+        // 4. Match Adresse partielle
         if (address.includes(lowerTerm) || normalizedAddress.includes(normalizedTerm)) {
             score = Math.max(score, 1100);
         }
 
+        // 5. Typo Tolerance
         if (lowerTerm.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
             if (dist === 1) score = Math.max(score, 1050);
             else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
         }
 
+        // 6. Prefix Match
         if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
         
+        // 7. Keyword Overlap
         const titleWords = title.split(/\s+/).filter(w => w.length > 1);
         const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
         if (matches.length > 0) {
@@ -291,6 +306,7 @@ const Header: React.FC<HeaderProps> = ({
         }
     });
 
+    // --- MARQUES ---
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
     let bestBrandMatch: string | null = null;
 
@@ -305,23 +321,11 @@ const Header: React.FC<HeaderProps> = ({
         }
     });
 
-    Object.entries(locationsData).forEach(([dept, info]) => {
-        const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
-        if (normalizedDept.includes(normalizedTerm)) {
-            results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 700 });
-        }
-        info.cities.forEach(city => {
-            const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
-            if (normalizedCity.includes(normalizedTerm)) {
-                results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1], zoom: 12, score: 650 });
-            }
-        });
-    });
-
     const finalSuggestions = results
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
+    // Augmenté à 30 pour l'exhaustivité
     setSuggestions(finalSuggestions.slice(0, 30));
 
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
