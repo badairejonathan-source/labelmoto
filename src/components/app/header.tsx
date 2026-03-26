@@ -234,6 +234,17 @@ const Header: React.FC<HeaderProps> = ({
     
     const results: Suggestion[] = [];
 
+    // --- IDENTIFIER LES VILLES CORRESPONDANTES ---
+    const matchingCities: { name: string; dept: string; lat: number; lng: number }[] = [];
+    Object.entries(locationsData).forEach(([dept, info]) => {
+        info.cities.forEach(city => {
+            const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
+            if (normalizedCity.includes(normalizedTerm)) {
+                matchingCities.push({ name: city, dept: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1] });
+            }
+        });
+    });
+
     // --- LOGIQUE DE SCORING DES CONCESSIONS ---
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
@@ -254,17 +265,24 @@ const Header: React.FC<HeaderProps> = ({
         // 2. Match Exact Nom (Normalized)
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
         
-        // 3. Typo Tolerance (Distance de Levenshtein)
+        // 3. Match Ville : Si la recherche correspond à une ville dans laquelle se trouve la fiche
+        const belongsToMatchingCity = matchingCities.some(city => 
+            address.includes(city.name.toLowerCase()) || 
+            address.replace(/[\s-]/g, '').includes(city.name.toLowerCase().replace(/[\s-]/g, ''))
+        );
+        if (belongsToMatchingCity) score = Math.max(score, 1100);
+
+        // 4. Typo Tolerance (Distance de Levenshtein)
         if (lowerTerm.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
-            if (dist === 1) score = Math.max(score, 1100);
+            if (dist === 1) score = Math.max(score, 1050);
             else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
         }
 
-        // 4. Prefix Match
+        // 5. Prefix Match
         if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
         
-        // 5. Keyword Overlap (Pertinence par mots)
+        // 6. Keyword Overlap (Pertinence par mots)
         const titleWords = title.split(/\s+/).filter(w => w.length > 1);
         const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
         if (matches.length > 0) {
@@ -272,7 +290,7 @@ const Header: React.FC<HeaderProps> = ({
             score = Math.max(score, keywordScore);
         }
 
-        // 6. Contains Match
+        // 7. Contains Match
         if (normalizedTitle.includes(normalizedTerm)) score = Math.max(score, 800);
         
         if (score > 0) {
@@ -384,7 +402,7 @@ const Header: React.FC<HeaderProps> = ({
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
-    setSuggestions(finalSuggestions.slice(0, 10));
+    setSuggestions(finalSuggestions.slice(0, 12));
 
     // Prédiction (Auto-complete)
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
@@ -426,9 +444,6 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const executeSearch = () => {
-    // We no longer automatically pick the first suggestion if the user presses Enter.
-    // They can still click a suggestion to trigger handleSuggestionClick.
-    // This allows searching for a city freely without being forced onto a dealer.
     onSearch();
     setShowSuggestions(false);
     setPrediction('');
