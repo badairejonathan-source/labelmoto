@@ -230,7 +230,6 @@ const Header: React.FC<HeaderProps> = ({
 
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
-    const termWords = lowerTerm.split(/\s+/).filter(w => w.length > 1);
     
     const results: Suggestion[] = [];
 
@@ -255,7 +254,6 @@ const Header: React.FC<HeaderProps> = ({
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
         const normalizedTitle = title.replace(/[\s-]/g, '');
-        const normalizedAddress = address.replace(/[\s-]/g, '');
         
         let score = 0;
         const isNumeric = /^\d+$/.test(lowerTerm);

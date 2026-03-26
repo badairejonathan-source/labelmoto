@@ -69,8 +69,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     if (!isAdmin || !firestore) return;
     if (!window.confirm(`Mettre "${dealership.title}" en quarantaine ?`)) return;
 
-    const dataToMove = JSON.parse(JSON.stringify(dealership));
-    delete dataToMove.id;
+    const { id, ...dataToMove } = dealership;
     
     const cleanData = {
       ...dataToMove,
@@ -79,8 +78,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
       status: 'QUARANTINED'
     };
 
-    setDocumentNonBlocking(doc(firestore, 'a_verifier', dealership.id), cleanData, { merge: true });
-    deleteDocumentNonBlocking(doc(firestore, 'concessions', dealership.id));
+    setDocumentNonBlocking(doc(firestore, 'a_verifier', id), cleanData, { merge: true });
+    deleteDocumentNonBlocking(doc(firestore, 'concessions', id));
     toast({ title: "Fiche mise en quarantaine" });
   };
 

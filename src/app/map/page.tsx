@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } fr
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import DealershipCard from '@/components/app/dealership-card';
+import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import { Crosshair, Loader2, Star, ChevronUp, ChevronDown } from 'lucide-react';
@@ -17,6 +18,12 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 
 const brandsList = Object.keys(brandLogos);
+
+const ads = [
+  { id: 'ad1', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto et négocier le meilleur prix.', imageUrl: '/images/evitelespieges.jpg' },
+  { id: 'ad2', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant décortiqué.', imageUrl: 'https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080' },
+  { id: 'ad3', title: 'Le Repaire des Motards : actu & essais', description: 'Toute l\'actualité de la moto en temps réel.', imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop' },
+];
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
@@ -236,10 +243,17 @@ function MapPageComponent() {
     <div className="space-y-3 pb-20">
       {isLoading ? (<div className="text-center pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /></div>) : (
         <>
-          {dealershipsToDisplay.map((dealer) => (
-            <div key={dealer.id} onMouseEnter={() => setHoveredDealershipId(dealer.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
-              <DealershipCard dealership={dealer} onClick={() => handleCardClick(dealer)} className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand")} />
-            </div>
+          {dealershipsToDisplay.map((dealer, index) => (
+            <React.Fragment key={dealer.id}>
+              <div onMouseEnter={() => setHoveredDealershipId(dealer.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
+                <DealershipCard dealership={dealer} onClick={() => handleCardClick(dealer)} className={cn(dealer.id === selectedDealershipId && "ring-2 ring-brand")} />
+              </div>
+              {(index + 1) % 4 === 0 && (
+                <div className="my-3">
+                  <AdCard article={ads[Math.floor(index / 4) % ads.length]} />
+                </div>
+              )}
+            </React.Fragment>
           ))}
           {dealershipsToDisplay.length === 0 && <div className="text-center py-10 text-muted-foreground"><p className="font-bold uppercase text-[10px]">Aucun établissement visible ici.</p></div>}
         </>
