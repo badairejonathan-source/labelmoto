@@ -140,38 +140,44 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
 
   const handleQuarantine = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isAdmin || !firestore) return;
+    if (!isAdmin || !firestore || !dealership.id) return;
 
     if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${title}" ?\nL'établissement ne sera plus visible par le public.`)) {
       return;
     }
 
     const docId = dealership.id;
-    // We strip the ID and ensure we don't have undefined fields
+    // On extrait l'ID pour ne pas l'inclure dans les données du document lui-même
     const { id, ...dataToClone } = dealership;
     
-    // Clean up undefined properties which Firestore rejects
-    const cleanData = Object.fromEntries(
-      Object.entries(dataToClone).filter(([_, v]) => v !== undefined)
-    );
+    // Nettoyage rigoureux des données pour Firestore (exclusion des undefined)
+    const cleanedData: Record<string, any> = {};
+    Object.entries(dataToClone).forEach(([key, value]) => {
+      if (value !== undefined) {
+        cleanedData[key] = value;
+      }
+    });
 
     const dataToMove = {
-      ...cleanData,
+      ...cleanedData,
       quarantinedAt: serverTimestamp(),
       isQuarantined: true,
-      quarantineSource: 'manual_admin_action'
+      quarantineSource: 'manual_admin_action',
+      status: 'QUARANTINED'
     };
 
-    const quarantineRef = doc(firestore, 'a_verifier', docId);
     const publicRef = doc(firestore, 'concessions', docId);
+    const quarantineRef = doc(firestore, 'a_verifier', docId);
 
-    // Non-blocking move sequence
+    // Séquence de déplacement non-bloquante
+    // 1. Création dans la collection de quarantaine
     setDocumentNonBlocking(quarantineRef, dataToMove, { merge: true });
+    // 2. Suppression de la collection publique
     deleteDocumentNonBlocking(publicRef);
     
     toast({ 
-      title: "Action réussie", 
-      description: `"${title}" a été déplacé en quarantaine.`,
+      title: "Action effectuée", 
+      description: `"${title}" a été déplacé en quarantaine pour vérification.`,
     });
   };
 
