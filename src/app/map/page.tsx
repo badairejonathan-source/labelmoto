@@ -182,7 +182,7 @@ function MapPageComponent() {
     if (latParam && lngParam) {
         setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
         setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
-    } else if (!searchParam) {
+    } else if (!searchParam && !submittedSearchTerm) {
         setMapCenter([46.603354, 1.888334]);
         setMapZoom(6);
     }
@@ -205,8 +205,7 @@ function MapPageComponent() {
   useEffect(() => {
     if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
       setSubmittedSearchTerm('');
-      setMapCenter([46.603354, 1.888334]);
-      setMapZoom(6);
+      // On ne réinitialise plus mapCenter et mapZoom pour garder la position actuelle de la carte
       setSelectedDealershipId(null);
       router.replace('/map' + (proEditMode ? '?mode=pro_edit' : ''), { scroll: false });
     }
@@ -330,7 +329,6 @@ function MapPageComponent() {
                     const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
                     const remaining = lower.replace(detectedBrand.toLowerCase(), '').trim();
                     
-                    // Si on a "Marque + Autre chose" (ex: "Honda Paris")
                     if (remaining.length >= 2) {
                         if (/^\d{2}$/.test(remaining.replace(/[\s-]/g, ''))) {
                             const deptKey = Object.keys(locationsData).find(k => k.startsWith(remaining.replace(/[\s-]/g, '')));
@@ -353,7 +351,6 @@ function MapPageComponent() {
                         d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
                     );
                 } else {
-                    // Pas de marque, est-ce une ville ?
                     const cityCoords = await getCityCoordinatesByName(lower);
                     if (cityCoords) {
                         setMapCenter(cityCoords);
@@ -366,7 +363,6 @@ function MapPageComponent() {
                             results = [...results].sort((a, b) => getDistanceSq(cityCoords, a) - getDistanceSq(cityCoords, b)).slice(0, 30);
                         }
                     } else {
-                        // Recherche par mots-clés classique
                         results = results.filter(d => 
                             d.title?.toLowerCase().includes(lower) || 
                             d.address?.toLowerCase().includes(lower)

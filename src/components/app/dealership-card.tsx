@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -147,16 +148,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
+    const { id, ...dealershipData } = dealership;
+    
     const dataToMove = {
-      ...dealership,
+      ...dealershipData,
       quarantinedAt: serverTimestamp(),
       isQuarantined: true,
       quarantineSource: 'manual_admin_action',
       status: 'QUARANTINED'
     };
-
-    // Suppression de l'ID pour l'objet de données
-    delete dataToMove.id;
 
     // Déplacement vers a_verifier puis suppression de concessions
     setDocumentNonBlocking(doc(firestore, 'a_verifier', docId), dataToMove, {});
