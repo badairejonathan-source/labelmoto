@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -314,6 +315,7 @@ const Header: React.FC<HeaderProps> = ({
         const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
         
         if (searchWithoutBrand.length > 0) {
+            // Check for dept
             for (const [dept, info] of Object.entries(locationsData)) {
                 const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
                 if (normalizedDept.includes(searchWithoutBrand)) {
@@ -325,7 +327,23 @@ const Header: React.FC<HeaderProps> = ({
                         lng: info.center[1],
                         zoom: 9,
                         brand: bestBrandMatch,
-                        score: 1250 // Très pertinent
+                        score: 1250
+                    });
+                    break;
+                }
+                
+                // Check if search matches a city within this dept
+                const foundCity = info.cities.find(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchWithoutBrand));
+                if (foundCity) {
+                    results.push({
+                        type: 'brand-location',
+                        label: `${bestBrandMatch} à ${foundCity}`,
+                        subLabel: `Voir les pros ${bestBrandMatch} à ${foundCity}`,
+                        lat: info.center[0],
+                        lng: info.center[1],
+                        zoom: 11,
+                        brand: bestBrandMatch,
+                        score: 1240
                     });
                     break;
                 }
@@ -355,7 +373,7 @@ const Header: React.FC<HeaderProps> = ({
                     subLabel: dept.split(' - ')[0],
                     lat: info.center[0],
                     lng: info.center[1],
-                    zoom: 10,
+                    zoom: 12,
                     score: 650
                 });
             }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -30,6 +31,36 @@ const getDistanceSq = (anchor: [number, number], dealer: Dealership) => {
     const dx = anchor[1] - dealer.longitude;
     const dy = anchor[0] - dealer.latitude;
     return dx * dx + dy * dy;
+};
+
+const getCityCoordinates = async (postalCode: string): Promise<[number, number] | null> => {
+  try {
+    const response = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (data.length > 0) {
+      const { coordinates } = data[0].centre;
+      return [coordinates[1], coordinates[0]]; // latitude, longitude
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
+const getCityCoordinatesByName = async (cityName: string): Promise<[number, number] | null> => {
+  try {
+    const response = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(cityName)}&fields=centre&boost=population&limit=1`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (data.length > 0) {
+      const { coordinates } = data[0].centre;
+      return [coordinates[1], coordinates[0]]; // latitude, longitude
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
 };
 
 const RatingFilter = ({
@@ -207,7 +238,7 @@ function MapPageComponent() {
         const seen = new Set();
         const uniqueResults = results.filter(item => {
             const cleanTitle = item.title?.toLowerCase().trim() || '';
-            const cleanAddress = item.address?.toLowerCase().trim().replace(/\s\s+/g, ' ') || '';
+            const cleanAddress = item.address?.toLowerCase().trim().replace(/\\s\\s+/g, ' ') || '';
             const identifier = `${cleanTitle}|${cleanAddress}`;
             if (seen.has(identifier)) return false;
             seen.add(identifier);
@@ -231,59 +262,139 @@ function MapPageComponent() {
   }, [firestore, mounted]);
 
   useEffect(() => {
-    let results = [...allDealerships];
-    let status: 'exact' | 'fallback_brand' | 'fallback_nearby' | 'none' = 'exact';
+    const processSearch = async () => {
+        let results = [...allDealerships];
+        let status: 'exact' | 'fallback_brand' | 'fallback_nearby' | 'none' = 'exact';
 
-    if (activeFilter) {
-      results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both'));
-    }
-
-    if (submittedSearchTerm.trim() !== '') {
-        const lower = submittedSearchTerm.toLowerCase().trim();
-        const normalizedSearch = lower.replace(/[\s-]/g, '');
-        
-        let detectedBrand = '';
-        const brandsList = Object.keys(brandLogos);
-        const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
-
-        for (const brand of sortedBrands) {
-            const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-            if (normalizedSearch.includes(normalizedBrand) || (normalizedBrand.includes(normalizedSearch) && normalizedSearch.length >= 3)) {
-                detectedBrand = brand;
-                break;
-            }
+        if (activeFilter) {
+            results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both'));
         }
 
-        if (detectedBrand) {
-            const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
-            results = results.filter(d => 
-                (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
-                d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
-            );
+        if (submittedSearchTerm.trim() !== '') {
+            const lower = submittedSearchTerm.toLowerCase().trim();
+            const normalizedSearch = lower.replace(/[\s-]/g, '');
+            
+            // 1. Recherche par département (2 chiffres)
+            if (/^\d{2}$/.test(normalizedSearch)) {
+                const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
+                if (deptKey) {
+                    const info = (locationsData as any)[deptKey];
+                    setMapCenter(info.center);
+                    setMapZoom(9);
+                }
+                results = results.filter(d => {
+                    const postalCodeMatch = d.address?.match(/\b\d{5}\b/);
+                    if (postalCodeMatch) {
+                        return postalCodeMatch[0].startsWith(normalizedSearch);
+                    }
+                    return false;
+                });
+            } 
+            // 2. Recherche par code postal (5 chiffres)
+            else if (/^\d{5}$/.test(normalizedSearch)) {
+                const coords = await getCityCoordinates(normalizedSearch);
+                if (coords) {
+                    setMapCenter(coords);
+                    setMapZoom(13);
+                    const cityDealers = results.filter(d => {
+                        const postalCodeMatch = d.address?.match(/\b\d{5}\b/);
+                        return postalCodeMatch ? postalCodeMatch[0] === normalizedSearch : false;
+                    });
+                    const otherDealers = results.filter(d => {
+                        const postalCodeMatch = d.address?.match(/\b\d{5}\b/);
+                        return postalCodeMatch ? postalCodeMatch[0] !== normalizedSearch : true;
+                    });
+                    
+                    const sortedDealers = otherDealers.sort((a, b) => getDistanceSq(coords, a) - getDistanceSq(coords, b));
+                    results = [...cityDealers, ...sortedDealers.slice(0, 20)];
+                } else {
+                    status = 'fallback_nearby';
+                    results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : [...allDealerships];
+                }
+            } 
+            // 3. Recherche textuelle (Marque, Ville, Nom)
+            else {
+                let detectedBrand = '';
+                const brandsList = Object.keys(brandLogos);
+                const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
+
+                for (const brand of sortedBrands) {
+                    const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
+                    if (normalizedSearch.includes(normalizedBrand) || (normalizedBrand.includes(normalizedSearch) && normalizedSearch.length >= 3)) {
+                        detectedBrand = brand;
+                        break;
+                    }
+                }
+
+                if (detectedBrand) {
+                    const normalizedBrandRef = detectedBrand.toLowerCase().replace(/[\s-]/g, '');
+                    const remaining = lower.replace(detectedBrand.toLowerCase(), '').trim();
+                    
+                    // Si on a "Marque + Autre chose" (ex: "Honda Paris")
+                    if (remaining.length >= 2) {
+                        if (/^\d{2}$/.test(remaining.replace(/[\s-]/g, ''))) {
+                            const deptKey = Object.keys(locationsData).find(k => k.startsWith(remaining.replace(/[\s-]/g, '')));
+                            if (deptKey) {
+                                const info = (locationsData as any)[deptKey];
+                                setMapCenter(info.center);
+                                setMapZoom(10);
+                            }
+                        } else {
+                            const cityCoords = await getCityCoordinatesByName(remaining);
+                            if (cityCoords) {
+                                setMapCenter(cityCoords);
+                                setMapZoom(12);
+                            }
+                        }
+                    }
+
+                    results = results.filter(d => 
+                        (Array.isArray(d.brands) && d.brands.some(b => String(b).toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef))) ||
+                        d.title?.toLowerCase().replace(/[\s-]/g, '').includes(normalizedBrandRef)
+                    );
+                } else {
+                    // Pas de marque, est-ce une ville ?
+                    const cityCoords = await getCityCoordinatesByName(lower);
+                    if (cityCoords) {
+                        setMapCenter(cityCoords);
+                        setMapZoom(12);
+                        
+                        const cityResults = results.filter(d => d.address?.toLowerCase().includes(lower));
+                        if (cityResults.length > 0) {
+                            results = cityResults;
+                        } else {
+                            results = [...results].sort((a, b) => getDistanceSq(cityCoords, a) - getDistanceSq(cityCoords, b)).slice(0, 30);
+                        }
+                    } else {
+                        // Recherche par mots-clés classique
+                        results = results.filter(d => 
+                            d.title?.toLowerCase().includes(lower) || 
+                            d.address?.toLowerCase().includes(lower)
+                        );
+                        if (results.length === 0) {
+                            status = 'fallback_nearby';
+                            results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : [...allDealerships];
+                        }
+                    }
+                }
+            }
         } else {
-            results = results.filter(d => 
-                d.title?.toLowerCase().includes(lower) || 
-                d.address?.toLowerCase().includes(lower)
-            );
-            if (results.length === 0) {
-                status = 'fallback_nearby';
-                results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : [...allDealerships];
-            }
+            status = 'none';
         }
-    } else {
-        status = 'none';
-    }
 
-    if (ratingFilter > 0) {
-        results = results.filter(d => {
-            const r = d.rating ? parseFloat(String(d.rating).replace(',', '.')) : 0;
-            return !isNaN(r) && r >= ratingFilter;
-        });
-    }
-    
-    setSearchStatus(status);
-    setFilteredDealerships(results);
-  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
+        if (ratingFilter > 0) {
+            results = results.filter(d => {
+                const r = d.rating ? parseFloat(String(d.rating).replace(',', '.')) : 0;
+                return !isNaN(r) && r >= ratingFilter;
+            });
+        }
+        
+        setSearchStatus(status);
+        setFilteredDealerships(results);
+    };
+
+    processSearch();
+}, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     const bStr = bounds.toBBoxString();
@@ -320,7 +431,10 @@ function MapPageComponent() {
     if (dealership.latitude && dealership.longitude && !isNaN(dealership.latitude) && !isNaN(dealership.longitude)) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
-      if (isMobile) setDrawerHeight('half');
+      if (isMobile) {
+          setDrawerHeight('expanded');
+          setIsExpanding(true);
+      }
     }
   }, [isMobile]);
   
@@ -328,8 +442,8 @@ function MapPageComponent() {
     const isAlreadySelected = selectedDealershipId === id;
     setSelectedDealershipId(id);
     if (isMobile && id && !isAlreadySelected) {
-      setDrawerHeight('half');
-      setIsExpanding(false);
+      setDrawerHeight('expanded');
+      setIsExpanding(true);
     }
   }, [isMobile, selectedDealershipId]);
 
