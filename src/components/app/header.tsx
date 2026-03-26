@@ -191,7 +191,6 @@ const Header: React.FC<HeaderProps> = ({
     const fetchDealers = async () => {
         if (!firestore) return;
         try {
-            // Augmenté à 3000 pour garantir l'exhaustivité dans les villes denses
             const q = query(collection(firestore, 'concessions'), limit(3000));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => ({
@@ -274,7 +273,6 @@ const Header: React.FC<HeaderProps> = ({
         );
         if (belongsToMatchingCity) score = Math.max(score, 1150);
 
-        // Scan direct de l'adresse (indispensable si locationsData est incomplet)
         if (address.includes(lowerTerm) || normalizedAddress.includes(normalizedTerm)) {
             score = Math.max(score, 1100);
         }
@@ -339,7 +337,6 @@ const Header: React.FC<HeaderProps> = ({
         const searchWithoutBrand = normalizedTerm.replace(normalizedBrandMatch, "").trim();
         
         if (searchWithoutBrand.length > 0) {
-            // Check for dept
             for (const [dept, info] of Object.entries(locationsData)) {
                 const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
                 if (normalizedDept.includes(searchWithoutBrand)) {
@@ -356,7 +353,6 @@ const Header: React.FC<HeaderProps> = ({
                     break;
                 }
                 
-                // Check if search matches a city within this dept
                 const foundCity = info.cities.find(c => c.toLowerCase().replace(/[\s-]/g, '').includes(searchWithoutBrand));
                 if (foundCity) {
                     results.push({
@@ -404,15 +400,12 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // Tri par score et unicité
     const finalSuggestions = results
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
-    // Augmenté à 30 pour satisfaire la demande d'au moins 20 suggestions
     setSuggestions(finalSuggestions.slice(0, 30));
 
-    // Prédiction (Auto-complete)
     if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
         const matchLabel = bestBrandMatch;
         setPrediction(searchTerm + matchLabel.substring(searchTerm.length));

@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
@@ -26,8 +26,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
@@ -149,11 +147,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
-    // On retire l'ID et on garde le reste pour le nouveau document
+    // We strip the ID and ensure we don't have undefined fields
     const { id, ...dataToClone } = dealership;
     
+    // Clean up undefined properties which Firestore rejects
+    const cleanData = Object.fromEntries(
+      Object.entries(dataToClone).filter(([_, v]) => v !== undefined)
+    );
+
     const dataToMove = {
-      ...dataToClone,
+      ...cleanData,
       quarantinedAt: serverTimestamp(),
       isQuarantined: true,
       quarantineSource: 'manual_admin_action'
@@ -162,18 +165,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     const quarantineRef = doc(firestore, 'a_verifier', docId);
     const publicRef = doc(firestore, 'concessions', docId);
 
-    setDoc(quarantineRef, dataToMove, { merge: true })
-      .then(() => {
-        deleteDocumentNonBlocking(publicRef);
-        toast({ 
-          title: "Action réussie", 
-          description: `"${title}" a été déplacé en quarantaine.`,
-        });
-      })
-      .catch((error) => {
-        console.error("Erreur quarantaine:", error);
-        toast({ variant: "destructive", title: "Erreur", description: "Impossible de modérer la fiche." });
-      });
+    // Non-blocking move sequence
+    setDocumentNonBlocking(quarantineRef, dataToMove, { merge: true });
+    deleteDocumentNonBlocking(publicRef);
+    
+    toast({ 
+      title: "Action réussie", 
+      description: `"${title}" a été déplacé en quarantaine.`,
+    });
   };
 
   const handleRatingSubmit = () => {
