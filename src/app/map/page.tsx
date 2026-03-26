@@ -21,6 +21,8 @@ import brandLogos from '@/data/brand-logos';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
+const brandsList = Object.keys(brandLogos);
+
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
   ssr: false,
   loading: () => (<div className="w-full h-full flex items-center justify-center bg-muted/20"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>)
@@ -166,7 +168,6 @@ function MapPageComponent() {
   const { width, height } = useWindowSize();
   const isMobile = (width || 1024) < 768;
 
-  // Use a ref to track if we've already done the initial map setup
   const hasInitializedMap = useRef(false);
 
   const bottomPadding = useMemo(() => {
@@ -182,13 +183,11 @@ function MapPageComponent() {
   }, []);
   
   useEffect(() => {
-    // Si on a des coordonnées dans l'URL (ex: clic sur une suggestion), on centre
     if (latParam && lngParam) {
         setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
         setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
         hasInitializedMap.current = true;
     } 
-    // Sinon, si c'est le PREMIER chargement et qu'il n'y a pas de recherche en cours dans l'URL, on met la France
     else if (!hasInitializedMap.current && !searchParam) {
         setMapCenter([46.603354, 1.888334]);
         setMapZoom(6);
@@ -214,7 +213,6 @@ function MapPageComponent() {
   useEffect(() => {
     if (mounted && searchTerm.trim() === '' && submittedSearchTerm !== '') {
       setSubmittedSearchTerm('');
-      // IMPORTANT: On ne touche plus à mapCenter/mapZoom ici pour garder la vue actuelle
       setSelectedDealershipId(null);
       router.replace('/map' + (proEditMode ? '?mode=pro_edit' : ''), { scroll: false });
     }
@@ -282,7 +280,6 @@ function MapPageComponent() {
             const lower = submittedSearchTerm.toLowerCase().trim();
             const normalizedSearch = lower.replace(/[\s-]/g, '');
             
-            // 1. Recherche par département (2 chiffres)
             if (/^\d{2}$/.test(normalizedSearch)) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
                 if (deptKey) {
@@ -298,7 +295,6 @@ function MapPageComponent() {
                     return false;
                 });
             } 
-            // 2. Recherche par code postal (5 chiffres)
             else if (/^\d{5}$/.test(normalizedSearch)) {
                 const coords = await getCityCoordinates(normalizedSearch);
                 if (coords) {
@@ -320,7 +316,6 @@ function MapPageComponent() {
                     results = activeFilter ? allDealerships.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')) : [...allDealerships];
                 }
             } 
-            // 3. Recherche textuelle (Marque, Ville, Nom)
             else {
                 let detectedBrand = '';
                 const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
