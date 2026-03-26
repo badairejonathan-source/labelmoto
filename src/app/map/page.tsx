@@ -20,9 +20,10 @@ import brandLogos from '@/data/brand-logos';
 const brandsList = Object.keys(brandLogos);
 
 const ads = [
-  { id: 'ad1', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto et négocier le meilleur prix.', imageUrl: '/images/evitelespieges.jpg' },
-  { id: 'ad2', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant décortiqué.', imageUrl: 'https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080' },
-  { id: 'ad3', title: 'Le Repaire des Motards : actu & essais', description: 'Toute l\'actualité de la moto en temps réel.', imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop' },
+  { id: '5', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.jpg' },
+  { id: '4', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: 'https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080' },
+  { id: '6', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.jpg' },
+  { id: 'entretien-moto-intervalles-prix-conseils-par-modele', title: 'Guide d\'entretien & révisions', description: 'Tous les intervalles et prix estimés pour votre modèle de moto.', imageUrl: 'https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop' },
 ];
 
 const MapComponent = dynamic(() => import('@/components/app/map-component'), { 
