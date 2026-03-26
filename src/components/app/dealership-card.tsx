@@ -2,30 +2,20 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, ShieldAlert, Edit3, Loader2, Send, PlusCircle, AlertCircle } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, Mail, ChevronLeft, MessageSquare, ShieldAlert, Loader2, Send } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { deleteDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import { Badge } from '@/components/ui/badge';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
@@ -45,9 +35,6 @@ const categoryDisplay: { [key: string]: string } = {
 
 const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, className }) => {
   const searchParams = useSearchParams();
-  const proEditMode = searchParams.get('mode') === 'pro_edit';
-  
-  const [isImageOpen, setIsImageOpen] = useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
@@ -76,12 +63,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     if (!firestore) return null;
     return collection(firestore, 'concessions', dealership.id, 'comments');
   }, [firestore, dealership.id]);
-  const { data: approvedComments, isLoading: isCommentsLoading } = useCollection(commentsQuery);
+  const { data: approvedComments } = useCollection(commentsQuery);
 
   const handleQuarantine = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isAdmin || !firestore) return;
-    if (!window.confirm(`Confirmez-vous la mise en quarantaine de "${dealership.title}" ?`)) return;
+    if (!window.confirm(`Mettre "${dealership.title}" en quarantaine ?`)) return;
 
     const { id, ...data } = dealership;
     const cleanData: any = {};
@@ -93,7 +80,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
     setDocumentNonBlocking(doc(firestore, 'a_verifier', id), cleanData, { merge: true });
     deleteDocumentNonBlocking(doc(firestore, 'concessions', id));
-    toast({ title: "Mise en quarantaine réussie" });
+    toast({ title: "Fiche envoyée en quarantaine" });
   };
 
   const handleRatingSubmit = () => {
@@ -116,6 +103,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     setIsReviewDialogOpen(false);
   };
 
+  const navigationUrl = dealership.placeUrl || `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dealership.address)}`;
+
   return (
     <>
       <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
@@ -136,7 +125,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
       <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all", className)}>
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
           <div className="flex flex-1 flex-row items-stretch pr-8 md:pr-10">
-            <div className="relative w-24 sm:w-32 md:w-44 overflow-hidden border-r bg-muted/30" onClick={() => dealership.imgUrl && setIsImageOpen(true)}>
+            <div className="relative w-24 sm:w-32 md:w-44 overflow-hidden border-r bg-muted/30">
               {dealership.imgUrl ? <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover" /> : <div className="flex h-full items-center justify-center opacity-20 p-2"><LabelMotoLogo /></div>}
             </div>
             <div className="flex flex-col justify-center flex-1 p-3 md:p-5 cursor-pointer" onClick={onClick}>
@@ -148,15 +137,37 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   <span>{rating > 0 ? rating.toFixed(1) : "Nouveau"}</span>
                 </div>
               </div>
+              
               <div className="flex items-center gap-4 text-muted-foreground text-[9px] uppercase font-bold mt-3">
-                {dealership.phoneNumber && <a href={`tel:${dealership.phoneNumber}`} className="hover:text-brand flex flex-col items-center gap-1"><Phone className="h-4 w-4 text-brand" />Appel</a>}
-                <button onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} className="hover:text-brand flex flex-col items-center gap-1"><MessageSquare className="h-4 w-4 text-brand" />Avis</button>
+                {dealership.phoneNumber && (
+                  <a href={`tel:${dealership.phoneNumber}`} className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    <Phone className="h-4 w-4 text-brand" />
+                    Appel
+                  </a>
+                )}
+                {dealership.website && (
+                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    <Globe className="h-4 w-4 text-brand" />
+                    Web
+                  </a>
+                )}
+                <button onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} className="hover:text-brand flex flex-col items-center gap-1">
+                  <MessageSquare className="h-4 w-4 text-brand" />
+                  Avis
+                </button>
                 {isAdmin && <button onClick={handleQuarantine} className="text-destructive flex flex-col items-center gap-1"><ShieldAlert className="h-4 w-4" />Modérer</button>}
               </div>
-              <div className="mt-2 text-[10px] md:text-xs text-muted-foreground flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5 text-brand" />
-                <span className="line-clamp-1">{dealership.address}</span>
-              </div>
+              
+              <a 
+                href={navigationUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="mt-2 text-[10px] md:text-xs text-muted-foreground hover:text-brand flex items-center gap-1 group/addr transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MapPin className="h-3.5 w-3.5 text-brand group-hover/addr:scale-110 transition-transform" />
+                <span className="line-clamp-1 underline-offset-2 group-hover/addr:underline font-bold">{dealership.address}</span>
+              </a>
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 w-8 md:w-10 z-40 flex flex-col bg-card border-l">

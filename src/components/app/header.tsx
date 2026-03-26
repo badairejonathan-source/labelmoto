@@ -234,7 +234,6 @@ const Header: React.FC<HeaderProps> = ({
     
     const results: Suggestion[] = [];
 
-    // --- RECHERCHE PAR VILLE DANS LES ADRESSES ---
     const matchingCities: { name: string; dept: string; lat: number; lng: number }[] = [];
     Object.entries(locationsData).forEach(([dept, info]) => {
         info.cities.forEach(city => {
@@ -245,7 +244,6 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // --- SCAN DES ÉTABLISSEMENTS ---
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -254,7 +252,6 @@ const Header: React.FC<HeaderProps> = ({
         
         let score = 0;
         
-        // 1. Code Postal
         const isNumeric = /^\d+$/.test(lowerTerm);
         if (isNumeric && lowerTerm.length >= 2) {
             const zipMatch = address.match(/\b\d{5}\b/);
@@ -263,32 +260,26 @@ const Header: React.FC<HeaderProps> = ({
             }
         }
 
-        // 2. Match Exact Nom
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
         
-        // 3. Match Ville (si la saisie correspond à une ville de l'adresse)
         const belongsToMatchingCity = matchingCities.some(city => 
             address.includes(city.name.toLowerCase()) || 
             address.replace(/[\s-]/g, '').includes(city.name.toLowerCase().replace(/[\s-]/g, ''))
         );
         if (belongsToMatchingCity) score = Math.max(score, 1150);
 
-        // 4. Contenu de l'adresse
         if (address.includes(lowerTerm) || normalizedAddress.includes(normalizedTerm)) {
             score = Math.max(score, 1100);
         }
 
-        // 5. Typo tolerance
         if (lowerTerm.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
             if (dist === 1) score = Math.max(score, 1050);
             else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
         }
 
-        // 6. Prefix
         if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
         
-        // 7. Keyword overlap
         const titleWords = title.split(/\s+/).filter(w => w.length > 1);
         const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
         if (matches.length > 0) {
@@ -300,7 +291,6 @@ const Header: React.FC<HeaderProps> = ({
         }
     });
 
-    // --- MARQUES ---
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
     let bestBrandMatch: string | null = null;
 
@@ -315,7 +305,6 @@ const Header: React.FC<HeaderProps> = ({
         }
     });
 
-    // --- VILLES ET DÉPARTEMENTS ---
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (normalizedDept.includes(normalizedTerm)) {
@@ -345,9 +334,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
     let searchTermToUse = suggestion.label;
-    if (suggestion.type === 'brand-location') {
-        searchTermToUse = `${suggestion.brand} ${searchTerm.split(' ').pop()}`;
-    } else if (suggestion.type === 'brand-only') {
+    if (suggestion.type === 'brand-only') {
         searchTermToUse = suggestion.brand || suggestion.label;
     }
     
@@ -411,12 +398,7 @@ const Header: React.FC<HeaderProps> = ({
           
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none relative overflow-hidden rounded-xl py-2">
             <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
-                <Image 
-                    src="/images/apercucarte.png" 
-                    alt="" 
-                    fill 
-                    className="object-cover grayscale"
-                />
+                <Image src="/images/apercucarte.png" alt="" fill className="object-cover grayscale" />
             </div>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight relative z-10">
               <span className="block lg:inline">Trouver une concession, un atelier ou un réparateur ?</span>{" "}
@@ -473,7 +455,7 @@ const Header: React.FC<HeaderProps> = ({
                                 onClick={() => handleSuggestionClick(s)}
                             >
                                 <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
-                                    {s.type === 'dealer' || s.type === 'brand-location' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
+                                    {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
                                 </div>
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-base font-bold text-foreground truncate">{s.label}</span>
@@ -519,39 +501,18 @@ const Header: React.FC<HeaderProps> = ({
             </div>
 
             <nav className="flex items-center justify-center gap-6 sm:gap-10 mt-1">
-                <Button
-                    variant="ghost"
-                    onClick={() => handleTabClick(null)}
-                    className={cn(
-                      "relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10",
-                      activeFilter === null ? 'text-brand' : 'text-muted-foreground'
-                    )}
-                  >
+                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10", activeFilter === null ? 'text-brand' : 'text-muted-foreground')}>
                     <Home className="h-5 w-5" />
                     <span>Tout</span>
-                  </Button>
-                <Button
-                    variant="ghost"
-                    onClick={() => handleTabClick('shopping')}
-                    className={cn(
-                      "relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10",
-                      activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground'
-                    )}
-                  >
+                </Button>
+                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10", activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground')}>
                     <Bike className="h-5 w-5" />
                     <span>Concession</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleTabClick('service')}
-                    className={cn(
-                      "relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10",
-                      activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground'
-                    )}
-                  >
+                </Button>
+                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("relative px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold transition-all rounded-lg hover:bg-brand/10", activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground')}>
                     <Wrench className="h-5 w-5" />
                     <span>Atelier</span>
-                  </Button>
+                </Button>
             </nav>
         </div>
       </div>
