@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -427,16 +426,12 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const executeSearch = () => {
-    if (prediction && prediction !== searchTerm) {
-        onSearchTermChange(prediction);
-        setPrediction('');
-        setTimeout(() => onSearch(), 10);
-    } else if (suggestions.length > 0) {
-        handleSuggestionClick(suggestions[0]);
-    } else {
-        onSearch();
-    }
+    // We no longer automatically pick the first suggestion if the user presses Enter.
+    // They can still click a suggestion to trigger handleSuggestionClick.
+    // This allows searching for a city freely without being forced onto a dealer.
+    onSearch();
     setShowSuggestions(false);
+    setPrediction('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
