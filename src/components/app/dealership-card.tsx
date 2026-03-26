@@ -147,7 +147,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     }
 
     const docId = dealership.id;
-    // On extrait l'ID pour ne pas l'inclure dans les données du document lui-même
     const { id, ...dataToClone } = dealership;
     
     // Nettoyage rigoureux des données pour Firestore (exclusion des undefined)
@@ -169,15 +168,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({
     const publicRef = doc(firestore, 'concessions', docId);
     const quarantineRef = doc(firestore, 'a_verifier', docId);
 
-    // Séquence de déplacement non-bloquante
-    // 1. Création dans la collection de quarantaine
-    setDocumentNonBlocking(quarantineRef, dataToMove, { merge: true });
-    // 2. Suppression de la collection publique
+    // Déplacement : Création dans quarantaine puis suppression de la vue publique
+    setDocumentNonBlocking(quarantineRef, dataToMove, {});
     deleteDocumentNonBlocking(publicRef);
     
     toast({ 
-      title: "Action effectuée", 
-      description: `"${title}" a été déplacé en quarantaine pour vérification.`,
+      title: "Mise en quarantaine", 
+      description: `"${title}" a été déplacé dans l'onglet Quarantaine.`,
     });
   };
 
