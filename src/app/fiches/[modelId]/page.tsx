@@ -43,12 +43,25 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: firestoreFiche, isLoading } = useDoc(ficheRef);
 
-  // Use local data if firestore document is not found or empty
+  // Intelligent merge: Use Firestore data if available, but fallback to local for missing images or structure
   const fiche = useMemo(() => {
-    if (firestoreFiche && Object.keys(firestoreFiche).length > 1) return firestoreFiche;
-    if (!isLoading) {
-      return (localFiches as any[]).find(f => f.id === modelId) || null;
+    const local = (localFiches as any[]).find(f => f.id === modelId) || null;
+    
+    if (firestoreFiche && Object.keys(firestoreFiche).length > 1) {
+      return {
+        ...local,
+        ...firestoreFiche,
+        imageUrl: firestoreFiche.imageUrl || local?.imageUrl || "",
+        service_guide: { ...local?.service_guide, ...firestoreFiche.service_guide },
+        technical_sheet: { ...local?.technical_sheet, ...firestoreFiche.technical_sheet },
+        variants: firestoreFiche.variants || local?.variants || []
+      };
     }
+    
+    if (!isLoading) {
+      return local;
+    }
+    
     return null;
   }, [firestoreFiche, modelId, isLoading]);
 
