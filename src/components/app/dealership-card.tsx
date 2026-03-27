@@ -153,25 +153,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 {isAdmin && <button onClick={handleQuarantine} className="text-destructive flex flex-col items-center gap-1"><ShieldAlert className="h-4 w-4" />Modérer</button>}
               </div>
               
-              <div className="mt-3 flex items-center gap-2 border-t border-dashed pt-2">
+              <div className="mt-3 border-t border-dashed pt-2">
                 <a 
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="shrink-0 flex items-center gap-1 bg-brand text-white px-2 py-1 rounded text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all"
+                  className="flex items-center gap-2 bg-brand text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all w-full overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <MapPin className="h-3 w-3" />
-                  <span>Y ALLER</span>
-                </a>
-                <a 
-                  href={navigationUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex-1 text-[10px] md:text-xs text-muted-foreground hover:text-brand transition-colors overflow-hidden"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <span className="line-clamp-1 underline-offset-2 hover:underline font-bold uppercase tracking-tight">{dealership.address}</span>
+                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate flex-1 text-left">{dealership.address}</span>
                 </a>
               </div>
             </div>
