@@ -158,7 +158,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="shrink-0 flex items-center gap-1.5 bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all"
+                  className="shrink-0 flex items-center gap-1 bg-brand text-white px-2 py-1 rounded text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MapPin className="h-3 w-3" />
@@ -189,10 +189,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
           {(showHours || showReviews) && (
             <div className="absolute inset-y-0 left-0 right-8 md:right-10 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden">
               {showHours && (
-                <div className="space-y-0.5">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 border-b pb-1">Horaires</p>
+                <div className="space-y-1 w-full">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
-                    <div key={d} className="flex justify-between items-center text-[10px] font-bold">
+                    <div key={d} className="flex justify-between items-center text-[10px] font-bold border-b border-dashed border-muted last:border-0 pb-0.5">
                       <span className="capitalize text-muted-foreground">{d}</span>
                       <span className="text-brand text-right">{dealership[d] || 'Fermé'}</span>
                     </div>
