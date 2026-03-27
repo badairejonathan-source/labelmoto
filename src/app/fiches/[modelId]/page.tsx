@@ -209,7 +209,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent pointer-events-none" />
               <div className="absolute bottom-0 left-0 p-6 md:p-10 text-white w-full">
                 <div className="flex flex-col gap-1">
-                    <span className="text-xs font-black uppercase tracking-[0.3em] text-brand/90 mb-1">Fiche Technique Officielle</span>
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-brand/90 mb-1">Fiche technique</span>
                     <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none drop-shadow-xl">
                         {displayData.modelName}
                     </h1>
