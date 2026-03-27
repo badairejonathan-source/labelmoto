@@ -1,1 +1,59 @@
-[]
+[
+  {
+    "id": "yamaha-mt-07-2021-plus",
+    "display_title": "YAMAHA MT-07",
+    "brand": "YAMAHA",
+    "model": "MT-07",
+    "year_range": "2021 - PRÉSENT",
+    "imageUrl": "/images/yamaha-mt07",
+    "category": "Roadster",
+    "technical_sheet": {
+      "engine_type": "Bicylindre en ligne, CP2, 4 temps, refroidissement liquide",
+      "power": "73,4 ch (54,0 kW) à 8 750 tr/min",
+      "torque": "67,0 Nm à 6 500 tr/min",
+      "license_bridging": "✔ Permis A2 / A",
+      "displacement_cc": 689,
+      "fuel_system": "Injection électronique",
+      "seat_height_mm": 805,
+      "weight_tpf_kg": 184,
+      "tank_l": 14,
+      "wheelbase_mm": 1400,
+      "cycle_parts": {
+        "frame": "Diamant, en acier",
+        "front_brake": "Double disque, Ø 298 mm",
+        "front_suspension": "Fourche télescopique, Ø 41 mm",
+        "front_tire": "120/70 ZR 17",
+        "rear_brake": "Simple disque, Ø 245 mm",
+        "rear_suspension": "Bras oscillant, (suspension à biellettes)",
+        "rear_tire": "180/55 ZR 17"
+      }
+    },
+    "service_guide": {
+      "intro": "La Yamaha MT-07 est la référence incontestée des roadsters de moyenne cylindrée. Son moteur CP2 offre un couple généreux dès les bas régimes, idéal pour débuter ou s'amuser au quotidien.",
+      "service_schedule": [
+        { "km": 1000, "service_label": "Révision de rodage", "price_estimate": "160 €" },
+        { "km": 10000, "service_label": "Vidange + Filtre à huile", "price_estimate": "190 €" },
+        { "km": 20000, "service_label": "Révision intermédiaire + Bougies", "price_estimate": "320 €" },
+        { "km": 40000, "service_label": "Grosse révision + Jeu aux soupapes", "price_estimate": "650 €" }
+      ],
+      "consumables": [
+        { "part": "Pneu avant", "average_lifetime": "10 000 km" },
+        { "part": "Pneu arrière", "average_lifetime": "8 000 km" },
+        { "part": "Kit chaîne", "average_lifetime": "25 000 km" },
+        { "part": "Plaquettes avant", "average_lifetime": "12 000 km" }
+      ],
+      "known_issues": [
+        "Finition de la peinture sur le cadre sensible aux impacts",
+        "Amortisseur arrière un peu souple en usage intensif"
+      ],
+      "longevity_tips": [
+        "Nettoyer régulièrement le collecteur d'échappement",
+        "Graisser la chaîne tous les 500 km ou après chaque pluie"
+      ],
+      "faq": [
+        { "question": "Peut-on la brider en A2 ?", "answer": "Oui, elle est disponible en version 35 kW et peut être débridée après 2 ans." }
+      ],
+      "conclusion": "Une machine fiable et économique à l'entretien, parfaite pour garder le sourire sous le casque."
+    }
+  }
+]

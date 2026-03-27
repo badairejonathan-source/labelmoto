@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, use, useMemo, useEffect } from 'react';
@@ -30,6 +29,9 @@ import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+// Import local data as fallback
+import localFiches from '@/app/data/fiches-techniques.json';
+
 export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
   const { modelId } = use(params);
   const router = useRouter();
@@ -39,7 +41,16 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
-  const { data: fiche, isLoading } = useDoc(ficheRef);
+  const { data: firestoreFiche, isLoading } = useDoc(ficheRef);
+
+  // Use local data if firestore document is not found or empty
+  const fiche = useMemo(() => {
+    if (firestoreFiche && Object.keys(firestoreFiche).length > 1) return firestoreFiche;
+    if (!isLoading) {
+      return (localFiches as any[]).find(f => f.id === modelId) || null;
+    }
+    return null;
+  }, [firestoreFiche, modelId, isLoading]);
 
   useEffect(() => {
     setSelectedVariantIndex(0);
