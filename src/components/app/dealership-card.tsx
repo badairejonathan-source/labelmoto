@@ -158,21 +158,20 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="flex-1 text-[10px] md:text-xs text-muted-foreground hover:text-brand flex items-center gap-1 group/addr transition-colors"
+                  className="shrink-0 flex items-center gap-1.5 bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <MapPin className="h-3.5 w-3.5 text-brand group-hover/addr:scale-110 transition-transform" />
-                  <span className="line-clamp-1 underline-offset-2 group-hover/addr:underline font-bold">{dealership.address}</span>
+                  <MapPin className="h-3 w-3" />
+                  <span>Y ALLER</span>
                 </a>
                 <a 
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="shrink-0 bg-brand/10 hover:bg-brand text-brand hover:text-white px-2.5 py-1 rounded-full text-[9px] font-black uppercase flex items-center gap-1 transition-all"
+                  className="flex-1 text-[10px] md:text-xs text-muted-foreground hover:text-brand transition-colors overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span>Y ALLER</span>
-                  <ArrowUpRight className="h-3 w-3" />
+                  <span className="line-clamp-1 underline-offset-2 hover:underline font-bold uppercase tracking-tight">{dealership.address}</span>
                 </a>
               </div>
             </div>
@@ -188,8 +187,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             </button>
           </div>
           {(showHours || showReviews) && (
-            <div className="absolute inset-y-0 left-0 right-8 md:right-10 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4">
-              {showHours && <div className="space-y-1 text-xs">{['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => <div key={d} className="flex justify-between font-bold"><span className="capitalize">{d}</span><span className="text-brand">{dealership[d] || 'Fermé'}</span></div>)}</div>}
+            <div className="absolute inset-y-0 left-0 right-8 md:right-10 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden">
+              {showHours && (
+                <div className="space-y-0.5">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 border-b pb-1">Horaires</p>
+                  {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
+                    <div key={d} className="flex justify-between items-center text-[10px] font-bold">
+                      <span className="capitalize text-muted-foreground">{d}</span>
+                      <span className="text-brand text-right">{dealership[d] || 'Fermé'}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
               {showReviews && (
                 <div className="h-full flex flex-col">
                   <div className="flex-1 overflow-y-auto space-y-2 mb-4">
