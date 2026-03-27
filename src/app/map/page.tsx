@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -97,6 +98,7 @@ function MapPageComponent() {
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
+  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -133,11 +135,14 @@ function MapPageComponent() {
   
   useEffect(() => {
     if (latParam && lngParam) {
-        setMapCenter([parseFloat(latParam), parseFloat(lngParam)]);
+        const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
+        setMapCenter(pos);
+        setSortingAnchor(pos);
         setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
         hasInitializedMap.current = true;
     } else if (!hasInitializedMap.current && !searchParam) {
         setMapCenter([46.603354, 1.888334]);
+        setSortingAnchor([46.603354, 1.888334]);
         setMapZoom(6);
         hasInitializedMap.current = true;
     }
@@ -175,11 +180,21 @@ function MapPageComponent() {
             const normalizedSearch = lower.replace(/[\s-]/g, '');
             if (/^\d{2}$/.test(normalizedSearch)) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
-                if (deptKey) { setMapCenter((locationsData as any)[deptKey].center); setMapZoom(9); }
+                if (deptKey) { 
+                    const center = (locationsData as any)[deptKey].center;
+                    setMapCenter(center); 
+                    setSortingAnchor(center);
+                    setMapZoom(9); 
+                }
                 results = results.filter(d => d.address?.match(/\b\d{5}\b/)?.[0].startsWith(normalizedSearch));
             } else if (/^\d{5}$/.test(normalizedSearch)) {
                 const coords = await getCityCoordinates(normalizedSearch);
-                if (coords) { setMapCenter(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(normalizedSearch)); }
+                if (coords) { 
+                    setMapCenter(coords); 
+                    setSortingAnchor(coords);
+                    setMapZoom(13); 
+                    results = results.filter(d => d.address?.includes(normalizedSearch)); 
+                }
             } else {
                 let detectedBrand = '';
                 const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
@@ -191,7 +206,12 @@ function MapPageComponent() {
                     results = results.filter(d => d.brands?.some(b => String(b).toLowerCase().includes(detectedBrand.toLowerCase())) || d.title?.toLowerCase().includes(detectedBrand.toLowerCase()));
                 } else {
                     const cityCoords = await getCityCoordinatesByName(lower);
-                    if (cityCoords) { setMapCenter(cityCoords); setMapZoom(12); results = results.filter(d => d.address?.toLowerCase().includes(lower)); }
+                    if (cityCoords) { 
+                        setMapCenter(cityCoords); 
+                        setSortingAnchor(cityCoords);
+                        setMapZoom(12); 
+                        results = results.filter(d => d.address?.toLowerCase().includes(lower)); 
+                    }
                     else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
                 }
             }
@@ -206,7 +226,13 @@ function MapPageComponent() {
     setMapBoundsStr(bounds.toBBoxString());
     setMapCenter(newCenter);
     setMapZoom(newZoom);
-  }, []);
+    
+    // Si l'utilisateur déplace la carte manuellement (pas de source de sélection active),
+    // on met à jour l'ancre de tri pour que la liste s'actualise.
+    if (!selectionSource) {
+        setSortingAnchor(newCenter);
+    }
+  }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
     let results = [...filteredDealerships];
@@ -219,22 +245,23 @@ function MapPageComponent() {
     if (selectionSource === 'marker' && selectedDealershipId) {
         const selected = results.find(d => d.id === selectedDealershipId);
         if (selected && selected.latitude && selected.longitude) {
-            const anchor: [number, number] = [selected.latitude, selected.longitude];
             const others = results.filter(d => d.id !== selectedDealershipId);
-            others.sort((a, b) => getDistanceSq(anchor, a) - getDistanceSq(anchor, b));
+            others.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
             return [selected, ...others].slice(0, 30);
         }
     }
 
-    // Tri par défaut par rapport au centre de la carte
-    return results.sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
-  }, [filteredDealerships, mapBoundsStr, mapCenter, selectionSource, selectedDealershipId]);
+    // Tri par rapport à l'ancre (centre de la dernière vue manuelle ou recherche)
+    // Cela permet au clic sur une fiche de ne pas changer l'ordre (car l'ancre ne change pas)
+    return results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b)).slice(0, 30);
+  }, [filteredDealerships, mapBoundsStr, sortingAnchor, selectionSource, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
     setSelectionSource('card'); // On enregistre que le clic vient de la liste
     if (dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
+      // On ne met PAS à jour sortingAnchor ici pour garder l'ordre actuel de la liste
       setMapZoom(14);
       if (isMobile) setDrawerHeight('half');
     }
@@ -245,7 +272,9 @@ function MapPageComponent() {
     setSelectionSource('marker'); // On enregistre que le clic vient de la carte
     const dealer = allDealerships.find(d => d.id === id);
     if (dealer && dealer.latitude && dealer.longitude) {
-        setMapCenter([dealer.latitude, dealer.longitude]);
+        const pos: [number, number] = [dealer.latitude, dealer.longitude];
+        setMapCenter(pos);
+        setSortingAnchor(pos); // Pour un marqueur, il devient la nouvelle ancre de proximité
         setMapZoom(14);
     }
     if (isMobile) setDrawerHeight('half');
