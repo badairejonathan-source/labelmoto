@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid, Home, ChevronRight } from 'lucide-react';
 
 import Header from '@/components/app/header';
+import LabelMotoLogo from '@/components/app/logo';
 import {
   Table,
   TableBody,
@@ -200,21 +201,20 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           </nav>
 
           <div className="space-y-8">
-            {/* Hero Section - XL Format */}
-            <div className="relative w-full aspect-[4/3] md:aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white">
-              <Image
-                src={displayData.imageUrl}
-                alt={displayData.modelName}
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
-                <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 max-w-[95%]">
-                    {displayData.modelName}
-                </h1>
-                <p className="text-lg md:text-xl font-bold text-brand">{displayData.year}</p>
+            {/* Hero Section - Branding Format */}
+            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-white flex flex-col items-center justify-center p-12">
+              <div className="w-full max-w-md transform -translate-y-4">
+                <LabelMotoLogo />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 left-0 p-6 md:p-10 text-white w-full">
+                <div className="flex flex-col gap-1">
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-brand/90 mb-1">Fiche Technique Officielle</span>
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none drop-shadow-xl">
+                        {displayData.modelName}
+                    </h1>
+                    <p className="text-lg md:text-2xl font-bold text-brand/90 drop-shadow-md">{displayData.year}</p>
+                </div>
               </div>
             </div>
 
