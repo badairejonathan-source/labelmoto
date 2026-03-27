@@ -158,11 +158,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="flex items-center gap-2 bg-brand text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all w-full overflow-hidden"
+                  className="inline-flex items-center gap-2 bg-brand text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MapPin className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate flex-1 text-left">{dealership.address}</span>
+                  <span className="truncate">{dealership.address}</span>
                 </a>
               </div>
             </div>
