@@ -89,8 +89,16 @@ export default function MapComponent({
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
 
-  const stableOnMapChange = useCallback(onMapChange, [onMapChange]);
-  const stableOnMapClick = useCallback(onMapClick, [onMapClick]);
+  // Utilisation de refs pour éviter les closures périmées dans les événements Leaflet
+  const callbacksRef = useRef({
+    onMapChange,
+    onMapClick,
+    onUserInteraction
+  });
+
+  useEffect(() => {
+    callbacksRef.current = { onMapChange, onMapClick, onUserInteraction };
+  }, [onMapChange, onMapClick, onUserInteraction]);
 
   useEffect(() => {
     if (mapRef.current === null && containerRef.current) {
@@ -126,7 +134,7 @@ export default function MapComponent({
             const centerObj = currentMap.getCenter();
             const boundsObj = currentMap.getBounds();
             if (centerObj && boundsObj) {
-              stableOnMapChange([centerObj.lat, centerObj.lng], currentMap.getZoom(), boundsObj);
+              callbacksRef.current.onMapChange([centerObj.lat, centerObj.lng], currentMap.getZoom(), boundsObj);
             }
           }
         } catch (e) {}
@@ -134,16 +142,18 @@ export default function MapComponent({
       
       map.on('moveend', handleMoveEnd);
       map.on('zoomend', handleMoveEnd);
-      map.on('click', stableOnMapClick);
+      map.on('click', () => callbacksRef.current.onMapClick());
       map.on('dragstart', () => {
-        if (onUserInteraction) onUserInteraction();
+        if (callbacksRef.current.onUserInteraction) {
+            callbacksRef.current.onUserInteraction();
+        }
       });
 
       map.whenReady(() => {
         setTimeout(handleMoveEnd, 100);
       });
     }
-  }, [stableOnMapChange, stableOnMapClick, onUserInteraction]);
+  }, []); // Initialisation unique
 
   useEffect(() => {
     const map = mapRef.current;
@@ -163,7 +173,8 @@ export default function MapComponent({
             map.setView(center, zoom, { animate: true });
           }
           
-          setTimeout(() => { isUpdatingFromProps.current = false; }, 300);
+          // On garde le lock un peu plus longtemps pour couvrir la fin de l'animation
+          setTimeout(() => { isUpdatingFromProps.current = false; }, 500);
         }
       } catch (e) {}
     }
@@ -190,7 +201,6 @@ export default function MapComponent({
         zIndexOffset: isSelected ? 1000 : 0 
       });
       
-      // Ajout de la bulle d'info au survol
       marker.bindTooltip(dealership.title, {
         permanent: false,
         direction: 'top',

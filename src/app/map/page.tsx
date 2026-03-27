@@ -220,28 +220,31 @@ function MapPageComponent() {
         setFilteredDealerships(results);
     };
     processSearch();
-}, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
+  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => {
     setMapBoundsStr(bounds.toBBoxString());
     setMapCenter(newCenter);
     setMapZoom(newZoom);
     
-    // Si l'utilisateur déplace la carte manuellement (pas de source de sélection active),
-    // on met à jour l'ancre de tri pour que la liste s'actualise.
-    if (!selectionSource) {
+    // Si l'utilisateur déplace la carte manuellement (pas de source de sélection 'card'),
+    // on met à jour l'ancre de tri pour que la liste s'actualise dynamiquement.
+    if (selectionSource !== 'card') {
         setSortingAnchor(newCenter);
     }
   }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
     let results = [...filteredDealerships];
+    
+    // Filtrage par bornes géographiques si disponibles
     if (mapBoundsStr) {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
 
-    // Si on a cliqué sur un marqueur, on force l'élément sélectionné en haut et on trie le reste par rapport à lui
+    // SCÉNARIO 1 : Clic sur un marqueur (Map)
+    // On force l'élément sélectionné en haut et on trie le reste par proximité avec lui
     if (selectionSource === 'marker' && selectedDealershipId) {
         const selected = results.find(d => d.id === selectedDealershipId);
         if (selected && selected.latitude && selected.longitude) {
@@ -251,14 +254,16 @@ function MapPageComponent() {
         }
     }
 
-    // Tri par rapport à l'ancre (centre de la dernière vue manuelle ou recherche)
-    // Cela permet au clic sur une fiche de ne pas changer l'ordre (car l'ancre ne change pas)
+    // SCÉNARIO 2 & 3 : Tri standard ou Clic Fiche (Liste)
+    // On trie par rapport à l'ancre (centre de la dernière vue manuelle ou recherche)
+    // Cela permet au clic sur une fiche de ne pas changer l'ordre car selectionSource === 'card'
+    // bloque la mise à jour de sortingAnchor dans handleMapChange.
     return results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b)).slice(0, 30);
   }, [filteredDealerships, mapBoundsStr, sortingAnchor, selectionSource, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
-    setSelectionSource('card'); // On enregistre que le clic vient de la liste
+    setSelectionSource('card'); // On verrouille l'ordre actuel de la liste
     if (dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       // On ne met PAS à jour sortingAnchor ici pour garder l'ordre actuel de la liste
@@ -269,12 +274,12 @@ function MapPageComponent() {
   
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(id);
-    setSelectionSource('marker'); // On enregistre que le clic vient de la carte
+    setSelectionSource('marker'); // On indique qu'on veut remonter cet élément en haut
     const dealer = allDealerships.find(d => d.id === id);
     if (dealer && dealer.latitude && dealer.longitude) {
         const pos: [number, number] = [dealer.latitude, dealer.longitude];
         setMapCenter(pos);
-        setSortingAnchor(pos); // Pour un marqueur, il devient la nouvelle ancre de proximité
+        setSortingAnchor(pos); // Le marqueur cliqué devient la nouvelle ancre de proximité
         setMapZoom(14);
     }
     if (isMobile) setDrawerHeight('half');
@@ -284,7 +289,8 @@ function MapPageComponent() {
     if (isMobile) {
       setDrawerHeight('collapsed');
     }
-    setSelectionSource(null); // On reset la source lors d'une interaction manuelle
+    // L'utilisateur reprend le contrôle manuel : on déverrouille l'ancre de tri
+    setSelectionSource(null);
   }, [isMobile]);
 
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
