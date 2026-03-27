@@ -101,7 +101,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
       dimensions: {
         seatHeight: (activeVariant.seat_height_mm || ts.seat_height_mm) ? `${activeVariant.seat_height_mm || ts.seat_height_mm} mm` : "Donnée non renseignée",
         wetWeight: (activeVariant.weight_tpf_kg || ts.weight_tpf_kg) ? `${activeVariant.weight_tpf_kg || ts.weight_tpf_kg} kg` : "Donnée non renseignée",
-        fuelCapacity: (activeVariant.tank_l || ts.tank_l) ? `${activeVariant.tank_l || ts.tank_l} L` : "Donnée non renseignée",
+        fuelCapacity: (activeVariant.tank_l || ts.weight_tpf_kg) ? `${activeVariant.tank_l || ts.tank_l} L` : "Donnée non renseignée",
         wheelbase: (activeVariant.wheelbase_mm || ts.wheelbase_mm) ? `${activeVariant.wheelbase_mm || ts.wheelbase_mm} mm` : "Donnée non renseignée",
       },
       chassis: {
@@ -203,10 +203,10 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
 
           <div className="space-y-8">
             {/* Hero Section - Branding Format */}
-            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-white">
-              {/* Logo Area - Moved Higher */}
-              <div className="relative z-10 flex justify-center pt-8 md:pt-12">
-                <div className="w-full max-w-[180px] sm:max-w-xs md:max-w-sm lg:max-w-md transition-all">
+            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-brand bg-white">
+              {/* Logo Area - Top Right */}
+              <div className="absolute top-4 right-4 md:top-8 md:right-8 z-30">
+                <div className="w-32 sm:w-40 md:w-48 lg:w-56 transition-all">
                   <LabelMotoLogo />
                 </div>
               </div>
