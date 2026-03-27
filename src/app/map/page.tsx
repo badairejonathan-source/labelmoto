@@ -103,6 +103,7 @@ function MapPageComponent() {
   
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
+  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
   const [ratingFilter, setRatingFilter] = useState<number>(0);
@@ -213,11 +214,25 @@ function MapPageComponent() {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
+
+    // Si on a cliqué sur un marqueur, on force l'élément sélectionné en haut et on trie le reste par rapport à lui
+    if (selectionSource === 'marker' && selectedDealershipId) {
+        const selected = results.find(d => d.id === selectedDealershipId);
+        if (selected && selected.latitude && selected.longitude) {
+            const anchor: [number, number] = [selected.latitude, selected.longitude];
+            const others = results.filter(d => d.id !== selectedDealershipId);
+            others.sort((a, b) => getDistanceSq(anchor, a) - getDistanceSq(anchor, b));
+            return [selected, ...others].slice(0, 30);
+        }
+    }
+
+    // Tri par défaut par rapport au centre de la carte
     return results.sort((a, b) => getDistanceSq(mapCenter, a) - getDistanceSq(mapCenter, b)).slice(0, 30);
-  }, [filteredDealerships, mapBoundsStr, mapCenter]);
+  }, [filteredDealerships, mapBoundsStr, mapCenter, selectionSource, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
+    setSelectionSource('card'); // On enregistre que le clic vient de la liste
     if (dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
       setMapZoom(14);
@@ -227,13 +242,20 @@ function MapPageComponent() {
   
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(id);
+    setSelectionSource('marker'); // On enregistre que le clic vient de la carte
+    const dealer = allDealerships.find(d => d.id === id);
+    if (dealer && dealer.latitude && dealer.longitude) {
+        setMapCenter([dealer.latitude, dealer.longitude]);
+        setMapZoom(14);
+    }
     if (isMobile) setDrawerHeight('half');
-  }, [isMobile]);
+  }, [isMobile, allDealerships]);
 
   const handleUserMapInteraction = useCallback(() => {
     if (isMobile) {
       setDrawerHeight('collapsed');
     }
+    setSelectionSource(null); // On reset la source lors d'une interaction manuelle
   }, [isMobile]);
 
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
