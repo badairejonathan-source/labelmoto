@@ -203,9 +203,9 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           <div className="space-y-8">
             {/* Hero Section - Branding Format */}
             <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-brand bg-white">
-              {/* Logo Area - Top Right */}
+              {/* Logo Area - Top Right - Double size x2 */}
               <div className="absolute top-4 right-4 md:top-8 md:right-8 z-30">
-                <div className="w-32 sm:w-40 md:w-48 lg:w-56 transition-all">
+                <div className="w-64 sm:w-80 md:w-96 lg:w-[450px] transition-all">
                   <LabelMotoLogo />
                 </div>
               </div>
