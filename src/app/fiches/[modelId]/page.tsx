@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use, useMemo, useEffect } from 'react';
@@ -202,18 +203,25 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
 
           <div className="space-y-8">
             {/* Hero Section - Branding Format */}
-            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-white flex flex-col items-center justify-center p-12">
-              <div className="w-full max-w-md transform -translate-y-4">
-                <LabelMotoLogo />
+            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-white">
+              {/* Logo Area - Moved Higher */}
+              <div className="relative z-10 flex justify-center pt-8 md:pt-12">
+                <div className="w-full max-w-[180px] sm:max-w-xs md:max-w-sm lg:max-w-md transition-all">
+                  <LabelMotoLogo />
+                </div>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent pointer-events-none" />
-              <div className="absolute bottom-0 left-0 p-6 md:p-10 text-white w-full">
+
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent pointer-events-none" />
+              
+              {/* Text Area */}
+              <div className="absolute bottom-0 left-0 p-6 md:p-10 text-white w-full z-20">
                 <div className="flex flex-col gap-1">
-                    <span className="text-xs font-black uppercase tracking-[0.3em] text-brand/90 mb-1">Fiche technique</span>
-                    <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none drop-shadow-xl">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-brand/90 mb-1">Fiche technique</span>
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none drop-shadow-2xl">
                         {displayData.modelName}
                     </h1>
-                    <p className="text-lg md:text-2xl font-bold text-brand/90 drop-shadow-md">{displayData.year}</p>
+                    <p className="text-base sm:text-lg md:text-2xl font-bold text-brand/90 drop-shadow-lg">{displayData.year}</p>
                 </div>
               </div>
             </div>
