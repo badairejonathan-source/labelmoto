@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowUpRight } from 'lucide-react';
+import { Sparkles, ArrowUp } from 'lucide-react';
 
 interface LocationPromptProps {
   onLocate: () => void;
@@ -28,7 +28,7 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
       <div className="bg-brand text-white px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 relative border-2 border-white ring-4 ring-black/5">
         <Sparkles className="h-3 w-3 animate-pulse shrink-0" />
         <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Localisez-vous</span>
-        <ArrowUpRight className="h-4 w-4 animate-bounce shrink-0" />
+        <ArrowUp className="h-4 w-4 animate-bounce shrink-0" />
         
         {/* Petit triangle pointant vers le bouton de localisation au-dessus */}
         <div className="absolute -top-1.5 right-4 w-3 h-3 bg-brand rotate-45 border-l-2 border-t-2 border-white" />

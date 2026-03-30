@@ -28,16 +28,44 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
+const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean, currentZoom: number) => {
     const scale = isHovered || isSelected ? 1.2 : 1;
     const color = isSelected || isHovered ? '#f97316' : '#ea580c'; 
+    
+    // Affichage du nom à partir du zoom 14 (style Google Maps)
+    const showLabel = currentZoom >= 14;
+    
+    const labelStyle = `
+        position: absolute;
+        left: 36px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 10px;
+        font-weight: 900;
+        color: #1a237e;
+        white-space: nowrap;
+        pointer-events: none;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-shadow: 
+            -1.5px -1.5px 0 #fff,  
+             1.5px -1.5px 0 #fff,
+            -1.5px  1.5px 0 #fff,
+             1.5px  1.5px 0 #fff,
+             0px 2px 4px rgba(0,0,0,0.3);
+        opacity: ${showLabel ? 1 : 0};
+        transition: opacity 0.3s ease;
+    `;
 
     const iconHtml = `
-      <div style="transform: scale(${scale}); transition: transform 0.2s ease-out; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
-        <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M16 0C7.16 0 0 7.16 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.16 24.84 0 16 0Z" fill="${color}"/>
-          <circle cx="16" cy="16" r="6" fill="white"/>
-        </svg>
+      <div style="display: flex; align-items: center; position: relative;">
+        <div style="transform: scale(${scale}); transition: transform 0.2s ease-out; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+          <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 0C7.16 0 0 7.16 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.16 24.84 0 16 0Z" fill="${color}"/>
+            <circle cx="16" cy="16" r="6" fill="white"/>
+          </svg>
+        </div>
+        ${showLabel ? `<div class="marker-label" style="${labelStyle}">${dealership.title}</div>` : ''}
       </div>
     `;
 
@@ -105,15 +133,13 @@ export default function MapComponent({
         maxZoom: 20
       }).addTo(map);
       
-      // Configuration du clustering intelligent et progressif (Région > Département > Ville)
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            if (zoomLevel <= 6) return 150; // Régions
-            if (zoomLevel <= 9) return 100; // Départements
-            if (zoomLevel <= 12) return 80;  // Villes & Agglomérations (Lyon, Paris, Lille, Marseille...)
-            return 40; // Défaut
+            if (zoomLevel <= 6) return 150; 
+            if (zoomLevel <= 9) return 100; 
+            if (zoomLevel <= 12) return 80;  
+            return 40; 
         },
-        // Désactive le clustering à partir du zoom 13 pour voir les points individuels
         disableClusteringAtZoom: 13,
         chunkedLoading: true,
         showCoverageOnHover: false,
@@ -190,7 +216,7 @@ export default function MapComponent({
 
       const isHovered = dealership.id === hoveredDealershipId;
       const isSelected = dealership.id === selectedDealershipId;
-      const icon = createIcon(dealership, isHovered, isSelected);
+      const icon = createIcon(dealership, isHovered, isSelected, zoom);
 
       const marker = L.marker([dealership.latitude, dealership.longitude], { 
         icon, 
@@ -207,7 +233,7 @@ export default function MapComponent({
       clusterGroup.addLayer(marker);
       markersRef.current.set(dealership.id, marker);
     });
-  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, hoveredDealershipId, selectedDealershipId]);
+  }, [dealerships, onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, hoveredDealershipId, selectedDealershipId, zoom]);
   
   useEffect(() => {
     markersRef.current.forEach((marker, id) => {
@@ -215,11 +241,11 @@ export default function MapComponent({
         if (dealership) {
             const isHovered = id === hoveredDealershipId;
             const isSelected = id === selectedDealershipId;
-            marker.setIcon(createIcon(dealership, isHovered, isSelected));
+            marker.setIcon(createIcon(dealership, isHovered, isSelected, zoom));
             marker.setZIndexOffset(isSelected ? 1000 : 0);
         }
     });
-  }, [hoveredDealershipId, selectedDealershipId, dealerships]);
+  }, [hoveredDealershipId, selectedDealershipId, dealerships, zoom]);
 
   useEffect(() => {
     const map = mapRef.current;
