@@ -321,24 +321,6 @@ function MapPageComponent() {
                     ))}
                 </div>
             </div>
-            
-            <div className="flex flex-col items-center justify-center py-10 text-center px-6 border-t border-dashed">
-                <div className="w-12 h-12 bg-muted/50 rounded-full flex items-center justify-center mb-3">
-                    <MapIcon className="h-6 w-6 text-muted-foreground/40" />
-                </div>
-                <h3 className="text-base font-black uppercase tracking-tight mb-1">Afficher les pros</h3>
-                <p className="text-[10px] text-muted-foreground font-bold leading-relaxed max-w-[200px]">
-                    Activez la localisation ou déplacez la carte pour voir les établissements autour de vous.
-                </p>
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="mt-4 font-black uppercase text-[9px] tracking-widest rounded-full px-6"
-                    onClick={() => setIsLoadingLocating(true)}
-                >
-                    <Crosshair className="h-3 w-3 mr-2 text-brand" /> Me localiser
-                </Button>
-            </div>
         </div>
       ) : isLoading ? (
         <div className="text-center pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /></div>

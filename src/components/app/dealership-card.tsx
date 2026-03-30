@@ -174,7 +174,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             >
               {dealership.imgUrl ? (
                 <>
-                  <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:scale-105 duration-700" />
+                  <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:brightness-110 duration-700" />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
                     <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
                   </div>
