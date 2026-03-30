@@ -2,9 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Crosshair, X, Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Sparkles, ArrowUpRight } from 'lucide-react';
 
 interface LocationPromptProps {
   onLocate: () => void;
@@ -16,9 +14,9 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const consent = localStorage.getItem('label-moto-consent');
-    // On affiche cette petite bulle seulement si l'utilisateur n'a pas accepté la localisation globalement
+    // On affiche cet indicateur seulement si l'utilisateur n'a pas accepté la localisation globalement
     if (consent !== 'accepted') {
-      const timer = setTimeout(() => setShow(true), 2500);
+      const timer = setTimeout(() => setShow(true), 3500);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -26,34 +24,14 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
   if (!show) return null;
 
   return (
-    <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[1001] w-[90%] max-w-[280px] animate-in fade-in zoom-in duration-500">
-      <div className="bg-white dark:bg-zinc-900 border-2 border-brand rounded-2xl shadow-2xl p-4 relative ring-4 ring-black/5">
-        <button 
-          onClick={() => setShow(false)} 
-          className="absolute -top-2 -right-2 bg-brand text-white rounded-full p-1 shadow-lg hover:scale-110 transition-transform"
-        >
-          <X className="h-3 w-3" />
-        </button>
-
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="bg-brand/10 p-2 rounded-full">
-            <Sparkles className="h-5 w-5 text-brand animate-pulse" />
-          </div>
-          <p className="text-[11px] font-black uppercase leading-tight">
-            Voulez-vous voir les pros <span className="text-brand">autour de vous ?</span>
-          </p>
-          <p className="text-[9px] text-muted-foreground font-bold">
-            Cliquez sur le bouton cible pour centrer la carte sur votre position.
-          </p>
-          <Button 
-            onClick={() => { onLocate(); setShow(false); }} 
-            size="sm"
-            className="w-full bg-brand hover:bg-brand/90 text-[10px] font-black uppercase tracking-widest rounded-xl h-9"
-          >
-            <Crosshair className="mr-2 h-3.5 w-3.5" />
-            Me localiser maintenant
-          </Button>
-        </div>
+    <div className="absolute top-16 right-2 md:right-3 z-[1001] animate-in fade-in slide-in-from-top-2 duration-700 pointer-events-none">
+      <div className="bg-brand text-white px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 relative border-2 border-white ring-4 ring-black/5">
+        <Sparkles className="h-3 w-3 animate-pulse shrink-0" />
+        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Pros autour de vous ?</span>
+        <ArrowUpRight className="h-4 w-4 animate-bounce shrink-0" />
+        
+        {/* Petit triangle pointant vers le bouton de localisation au-dessus */}
+        <div className="absolute -top-1.5 right-4 w-3 h-3 bg-brand rotate-45 border-l-2 border-t-2 border-white" />
       </div>
     </div>
   );

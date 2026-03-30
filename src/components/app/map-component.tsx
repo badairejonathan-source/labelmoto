@@ -28,10 +28,9 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-// Rétablissement du design classique des pointeurs (Épingle Orange)
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
     const scale = isHovered || isSelected ? 1.2 : 1;
-    const color = isSelected || isHovered ? '#f97316' : '#ea580c'; // Orange vif pour sélection, plus sombre sinon
+    const color = isSelected || isHovered ? '#f97316' : '#ea580c'; 
 
     const iconHtml = `
       <div style="transform: scale(${scale}); transition: transform 0.2s ease-out; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
@@ -106,8 +105,17 @@ export default function MapComponent({
         maxZoom: 20
       }).addTo(map);
       
+      // Configuration du clustering intelligent et progressif
       clusterGroupRef.current = L.markerClusterGroup({ 
-        maxClusterRadius: 40,
+        // Rayon dynamique basé sur le zoom pour simuler Région > Département > Ville
+        maxClusterRadius: (zoomLevel) => {
+            if (zoomLevel <= 6) return 150; // Régions
+            if (zoomLevel <= 9) return 100; // Départements
+            if (zoomLevel <= 12) return 60; // Agglomérations
+            return 40; // Défaut
+        },
+        // Désactive le clustering à partir du zoom 13 pour voir les points individuels
+        disableClusteringAtZoom: 13,
         chunkedLoading: true,
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true
