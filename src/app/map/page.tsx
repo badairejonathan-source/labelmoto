@@ -325,7 +325,19 @@ function MapPageComponent() {
 
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden bg-background">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSubmittedSearchTerm(searchTerm)} activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+      <Header 
+        searchTerm={searchTerm} 
+        onSearchTermChange={(val) => {
+          setSearchTerm(val);
+          // Remise à zéro automatique si le champ est vidé
+          if (val.trim() === '') {
+            setSubmittedSearchTerm('');
+          }
+        }} 
+        onSearch={() => setSubmittedSearchTerm(searchTerm)} 
+        activeFilter={activeFilter} 
+        onFilterChange={setActiveFilter} 
+      />
       <div className="flex-1 flex overflow-hidden relative">
         {!isMobile ? (
           <>
