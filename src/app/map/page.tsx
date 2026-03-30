@@ -8,7 +8,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, Map as MapIcon, Search as SearchIcon, Sparkles } from 'lucide-react';
+import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, Search as SearchIcon, Sparkles } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -17,10 +17,10 @@ import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
+import LocationPrompt from '@/components/app/location-prompt';
 
 const brandsList = Object.keys(brandLogos);
 
-// Publicités affichées au démarrage
 const ads = [
   { id: '5', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.jpg' },
   { id: '4', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: 'https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080' },
@@ -115,7 +115,6 @@ function MapPageComponent() {
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half'>('half');
   const touchStartY = useRef<number>(0);
 
-  // État pour savoir si l'utilisateur a initié une action (recherche, localisation ou mouvement carte)
   const [hasUserInitiatedAction, setHasUserInitiatedAction] = useState(false);
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
@@ -375,11 +374,11 @@ function MapPageComponent() {
         {!isMobile ? (
           <>
             <aside className="w-3/4 flex flex-col border-r h-full bg-muted/5"><RatingFilter value={ratingFilter} onChange={setRatingFilter} /><div className="flex-1 overflow-y-auto p-3" ref={listContainerRef}>{listContent}</div></aside>
-            <main className="w-1/4 relative"><MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={handleUserMapInteraction} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={handleLocationFound} /><Button size="icon" className="absolute top-3 right-3 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button></main>
+            <main className="w-1/4 relative"><LocationPrompt onLocate={() => setIsLoadingLocating(true)} /><MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={handleUserMapInteraction} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={handleLocationFound} /><Button size="icon" className="absolute top-3 right-3 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button></main>
           </>
         ) : (
           <>
-            <main className="absolute inset-0 h-full w-full"><MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={handleUserMapInteraction} bottomPadding={bottomPadding} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={handleLocationFound} /><Button size="icon" className="absolute top-2 right-2 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button></main>
+            <main className="absolute inset-0 h-full w-full"><LocationPrompt onLocate={() => setIsLoadingLocating(true)} /><MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={handleUserMapInteraction} bottomPadding={bottomPadding} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={handleLocationFound} /><Button size="icon" className="absolute top-2 right-2 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)}><Crosshair className="h-4 w-4" /></Button></main>
             <div className={cn("fixed left-0 right-0 bg-background rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.15)] z-50 transition-all duration-500 ease-out border-t", drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]')}>
               <div className="relative w-full flex flex-col items-center pt-3 pb-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}><div className="w-12 h-1.5 bg-muted rounded-full mb-2" /></div>
               <div className="px-3 h-full flex flex-col overflow-hidden"><div className="flex items-center justify-between border-b pb-2"><RatingFilter value={ratingFilter} onChange={setRatingFilter} className="flex-1" /><Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>{drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}</Button></div><div className="flex-1 overflow-y-auto mt-3" ref={listContainerRef}>{listContent}</div></div>
