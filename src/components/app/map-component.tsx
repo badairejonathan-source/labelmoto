@@ -89,7 +89,6 @@ export default function MapComponent({
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
 
-  // Utilisation de refs pour éviter les closures périmées dans les événements Leaflet
   const callbacksRef = useRef({
     onMapChange,
     onMapClick,
@@ -108,11 +107,18 @@ export default function MapComponent({
         minZoom: 6,
         maxBounds: franceBounds,
         maxBoundsViscosity: 1.0,
+        // Optimisations pour la réactivité du zoom
+        zoomSnap: 0.1,
+        zoomDelta: 0.5,
+        wheelPxPerZoomLevel: 60, // Zoom plus rapide à la molette
+        fadeAnimation: true,
+        zoomAnimation: true,
+        markerZoomAnimation: true
       }).setView(center, zoom);
       
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
+      // Utilisation du serveur de tuiles OSM France pour un affichage intégralement en français
+      L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributeurs, tuiles par <a href="https://www.openstreetmap.fr/">OSM France</a>',
         maxZoom: 20
       }).addTo(map);
       
@@ -153,7 +159,7 @@ export default function MapComponent({
         setTimeout(handleMoveEnd, 100);
       });
     }
-  }, []); // Initialisation unique
+  }, []);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -163,18 +169,18 @@ export default function MapComponent({
         const latDiff = Math.abs(currentCenter.lat - center[0]);
         const lngDiff = Math.abs(currentCenter.lng - center[1]);
         
-        if (latDiff > 0.0001 || lngDiff > 0.0001 || map.getZoom() !== zoom) {
+        // Seuil de détection de changement significatif
+        if (latDiff > 0.0001 || lngDiff > 0.0001 || Math.abs(map.getZoom() - zoom) > 0.05) {
           isUpdatingFromProps.current = true;
           
           if (bottomPadding > 0) {
-            map.setView(center, zoom, { animate: true });
-            map.panBy([0, bottomPadding / 2], { animate: true });
+            map.setView(center, zoom, { animate: false }); // Désactivé pour plus de réactivité immédiate
+            map.panBy([0, bottomPadding / 2], { animate: false });
           } else {
-            map.setView(center, zoom, { animate: true });
+            map.setView(center, zoom, { animate: false });
           }
           
-          // On garde le lock un peu plus longtemps pour couvrir la fin de l'animation
-          setTimeout(() => { isUpdatingFromProps.current = false; }, 500);
+          setTimeout(() => { isUpdatingFromProps.current = false; }, 100);
         }
       } catch (e) {}
     }
