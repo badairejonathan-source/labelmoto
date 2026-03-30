@@ -4,7 +4,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -35,6 +35,7 @@ const categoryDisplay: { [key: string]: string } = {
 
 const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, className }) => {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -62,11 +63,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
-  const commentsQuery = useMemoFirebase(() => {
+  const approvedComments = useCollection(useMemoFirebase(() => {
     if (!firestore) return null;
     return collection(firestore, 'concessions', dealership.id, 'comments');
-  }, [firestore, dealership.id]);
-  const { data: approvedComments } = useCollection(commentsQuery);
+  }, [firestore, dealership.id])).data;
 
   const handleQuarantine = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -105,7 +105,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     setIsReviewDialogOpen(false);
   };
 
-  // Modification : Forcer le mode guidage (directions)
   const navigationUrl = (dealership.latitude && dealership.longitude)
     ? `https://www.google.com/maps/dir/?api=1&destination=${dealership.latitude},${dealership.longitude}`
     : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dealership.title + ' ' + dealership.address)}`;
@@ -127,12 +126,42 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         </DialogContent>
       </Dialog>
 
+      {/* Zoom Dialog - High Quality Resolution */}
+      <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
+        <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Zoom sur {dealership.title}</DialogTitle>
+          </DialogHeader>
+          <div className="relative w-full h-full flex items-center justify-center">
+            <button 
+              onClick={() => setIsZoomDialogOpen(false)}
+              className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white transition-colors"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <div className="relative w-full h-full">
+              {dealership.imgUrl && (
+                <Image 
+                  src={dealership.imgUrl} 
+                  alt={dealership.title}
+                  fill
+                  className="object-contain"
+                  quality={100}
+                  priority
+                  sizes="95vw"
+                />
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all group", className)}>
         {isAdmin && (
           <button 
             onClick={handleQuarantine} 
-            className="absolute top-2 right-10 z-50 p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive hover:text-white transition-colors"
-            title="Modérer cette fiche"
+            className="absolute top-2 right-10 z-50 p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive hover:text-white transition-colors shadow-sm"
+            title="Mettre en quarantaine"
           >
             <ShieldAlert className="h-4 w-4" />
           </button>
@@ -140,9 +169,17 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
           <div className="flex flex-1 flex-row items-stretch pr-8 md:pr-10">
-            <div className="relative w-24 sm:w-32 md:w-44 overflow-hidden border-r bg-muted/30">
+            <div 
+              className="relative w-24 sm:w-32 md:w-44 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
+              onClick={(e) => { e.stopPropagation(); setIsZoomDialogOpen(true); }}
+            >
               {dealership.imgUrl ? (
-                <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:scale-105 duration-500" />
+                <>
+                  <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:scale-105 duration-700" />
+                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
+                    <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
+                  </div>
+                </>
               ) : (
                 <div className="flex h-full items-center justify-center opacity-20 p-4"><LabelMotoLogo /></div>
               )}

@@ -125,24 +125,9 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Filtre pour une carte lumineuse et épurée type Airbnb */
+  /* Filtre pour une carte lumineuse et épurée type Airbnb/TripAdvisor */
   .leaflet-container .leaflet-tile-pane {
     filter: saturate(0.7) brightness(1.06) contrast(0.95);
-  }
-
-  /* Style personnalisé pour les info-bulles de la carte avec accent Orange */
-  .custom-map-tooltip {
-    background-color: hsl(var(--card)) !important;
-    color: hsl(var(--brand)) !important; 
-    border: 2px solid hsl(var(--brand)) !important;
-    border-radius: 0.5rem !important;
-    padding: 6px 10px !important;
-    font-weight: 900 !important;
-    font-size: 11px !important;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    white-space: nowrap !important;
   }
 
   .custom-marker {

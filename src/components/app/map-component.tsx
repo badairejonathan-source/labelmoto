@@ -28,39 +28,46 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-const helmetIconPath = `
-  <g transform="translate(6, 6) scale(1.0)">
-    <path d="M12 2C7.03 2 3 6.03 3 11c0 3.48 1.94 6.5 4.8 8.05l-.8 2.95h10l-.8-2.95C19.06 17.5 21 14.48 21 11c0-4.97-4.03-9-9-9z" fill="white"/>
-    <path d="M12 4c-3.87 0-7 3.13-7 7 0 2.17.99 4.11 2.54 5.39l.46-1.69c-1.2-.9-2-2.32-2-3.7 0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.38-.8 2.8-2 3.7l.46 1.69C18.01 15.11 19 13.17 19 11c0-3.87-3.13-7-7-7z" fill="currentColor"/>
-    <path d="M7 11h10v1H7z" fill="white" opacity="0.5"/>
-  </g>
-`;
-
+// Design moderne type "Pill" Marker comme sur Airbnb
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
-    const scale = isHovered || isSelected ? 1.25 : 1;
-    const shadowOpacity = isHovered || isSelected ? 0.6 : 0.3;
-    const strokeWidth = isHovered || isSelected ? 2.5 : 0.5;
-    const fillColor = isSelected ? 'hsl(var(--brand))' : 'hsl(var(--primary))';
+    const scale = isHovered || isSelected ? 1.15 : 1;
+    const bgColor = isSelected ? 'hsl(var(--brand))' : isHovered ? 'hsl(var(--brand))' : 'white';
+    const textColor = isSelected || isHovered ? 'white' : 'black';
+    const borderColor = isSelected ? 'white' : 'hsl(var(--border))';
+    const shadow = isSelected || isHovered ? '0 10px 15px -3px rgb(0 0 0 / 0.2)' : '0 4px 6px -1px rgb(0 0 0 / 0.1)';
 
     const iconHtml = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 72 78" width="${36 * scale}" height="${44 * scale}" style="transition: transform 0.2s ease-out; transform-origin: bottom center; color: ${fillColor}">
-        <defs>
-          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="${shadowOpacity}"/>
-          </filter>
-        </defs>
-        <g filter="url(#shadow)">
-          <path d="M18 0 C8.05 0 0 8.05 0 18 C0 28.5 18 40 18 40 C18 40 36 28.5 36 18 C36 8.05 27.95 0 18 0" fill="currentColor" stroke="white" stroke-width="${strokeWidth}" />
-        </g>
-        ${helmetIconPath}
-      </svg>
+      <div style="
+        transform: scale(${scale});
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: ${bgColor};
+        color: ${textColor};
+        border: 2px solid ${borderColor};
+        padding: 6px 12px;
+        border-radius: 9999px;
+        font-family: sans-serif;
+        font-weight: 900;
+        font-size: 11px;
+        box-shadow: ${shadow};
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      ">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;">
+          <path d="M12 2C7.03 2 3 6.03 3 11c0 3.48 1.94 6.5 4.8 8.05l-.8 2.95h10l-.8-2.95C19.06 17.5 21 14.48 21 11c0-4.97-4.03-9-9-9z"/>
+        </svg>
+        <span>${dealership.title.split(' ')[0]}</span>
+      </div>
     `;
 
     return L.divIcon({
         html: iconHtml,
         className: 'custom-marker',
-        iconSize: [36 * scale, 44 * scale],
-        iconAnchor: [18 * scale, 44 * scale]
+        iconSize: [100, 32],
+        iconAnchor: [50, 16]
     });
 };
 
@@ -203,13 +210,6 @@ export default function MapComponent({
       const marker = L.marker([dealership.latitude, dealership.longitude], { 
         icon, 
         zIndexOffset: isSelected ? 1000 : 0 
-      });
-      
-      marker.bindTooltip(dealership.title, {
-        permanent: false,
-        direction: 'top',
-        className: 'custom-map-tooltip',
-        offset: [0, -35]
       });
       
       marker.on('click', (e) => {
