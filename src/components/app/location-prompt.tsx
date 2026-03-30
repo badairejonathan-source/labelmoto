@@ -27,7 +27,7 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
     <div className="absolute top-16 right-2 md:right-3 z-[1001] animate-in fade-in slide-in-from-top-2 duration-700 pointer-events-none">
       <div className="bg-brand text-white px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 relative border-2 border-white ring-4 ring-black/5">
         <Sparkles className="h-3 w-3 animate-pulse shrink-0" />
-        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Pros autour de vous ?</span>
+        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Localisez-vous</span>
         <ArrowUpRight className="h-4 w-4 animate-bounce shrink-0" />
         
         {/* Petit triangle pointant vers le bouton de localisation au-dessus */}

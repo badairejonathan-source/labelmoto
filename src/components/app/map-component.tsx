@@ -105,14 +105,12 @@ export default function MapComponent({
         maxZoom: 20
       }).addTo(map);
       
-      // Configuration du clustering intelligent et progressif
+      // Configuration du clustering intelligent et progressif (Région > Département > Ville)
       clusterGroupRef.current = L.markerClusterGroup({ 
-        // Rayon dynamique basé sur le zoom pour simuler Région > Département > Ville
-        // Le rayon 80-100 aux zooms 10-12 permet de bien isoler les agglomérations citées
         maxClusterRadius: (zoomLevel) => {
             if (zoomLevel <= 6) return 150; // Régions
             if (zoomLevel <= 9) return 100; // Départements
-            if (zoomLevel <= 12) return 80;  // Villes & Agglomérations (Lyon, Paris, Lille, etc.)
+            if (zoomLevel <= 12) return 80;  // Villes & Agglomérations (Lyon, Paris, Lille, Marseille...)
             return 40; // Défaut
         },
         // Désactive le clustering à partir du zoom 13 pour voir les points individuels
