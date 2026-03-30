@@ -8,7 +8,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, Map as MapIcon, Search as SearchIcon } from 'lucide-react';
+import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, Map as MapIcon, Search as SearchIcon, Sparkles } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -20,6 +20,7 @@ import brandLogos from '@/data/brand-logos';
 
 const brandsList = Object.keys(brandLogos);
 
+// Publicités affichées au démarrage
 const ads = [
   { id: '5', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.jpg' },
   { id: '4', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: 'https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080' },
@@ -162,17 +163,6 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  // Tentative de localisation automatique si la permission a déjà été donnée
-  useEffect(() => {
-    if (typeof window !== 'undefined' && navigator.permissions && !searchParam) {
-        navigator.permissions.query({ name: 'geolocation' as PermissionName }).then(result => {
-            if (result.state === 'granted') {
-                setIsLoadingLocating(true);
-            }
-        });
-    }
-  }, [searchParam]);
-
   useEffect(() => {
     if (!firestore || !mounted) return;
     const dealershipsRef = collection(firestore, 'concessions');
@@ -252,7 +242,6 @@ function MapPageComponent() {
   }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
-    // SI AUCUNE ACTION USER -> LISTE VIDE
     if (!hasUserInitiatedAction) return [];
 
     let results = [...filteredDealerships];
@@ -287,7 +276,7 @@ function MapPageComponent() {
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(id);
     setSelectionSource('marker');
-    setHasUserInitiatedAction(true); // Clic sur un marqueur = action initiée
+    setHasUserInitiatedAction(true);
     const dealer = allDealerships.find(d => d.id === id);
     if (dealer && dealer.latitude && dealer.longitude) {
         const pos: [number, number] = [dealer.latitude, dealer.longitude];
@@ -301,7 +290,7 @@ function MapPageComponent() {
   const handleUserMapInteraction = useCallback(() => {
     if (isMobile) setDrawerHeight('collapsed');
     setSelectionSource(null); 
-    setHasUserInitiatedAction(true); // Interaction manuelle = action initiée
+    setHasUserInitiatedAction(true);
   }, [isMobile]);
 
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
@@ -314,28 +303,42 @@ function MapPageComponent() {
     setMapCenter(coords);
     setSortingAnchor(coords);
     setMapZoom(14);
-    setHasUserInitiatedAction(true); // Localisation trouvée = action initiée
+    setHasUserInitiatedAction(true);
   };
 
   const listContent = (
     <div className="space-y-3 pb-20">
       {!hasUserInitiatedAction ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center px-6">
-            <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mb-4">
-                <MapIcon className="h-8 w-8 text-muted-foreground/40" />
+        <div className="space-y-6">
+            <div className="bg-brand/5 border-2 border-brand/20 p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="h-5 w-5 text-brand animate-pulse" />
+                    <h3 className="text-sm font-black uppercase tracking-widest text-foreground">À la une pour vous</h3>
+                </div>
+                <div className="space-y-4">
+                    {ads.map((ad, idx) => (
+                        <AdCard key={ad.id} article={ad} isPublicity={idx === 0} />
+                    ))}
+                </div>
             </div>
-            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Prêt à rouler ?</h3>
-            <p className="text-xs text-muted-foreground font-bold leading-relaxed max-w-[250px]">
-                Activez la localisation ou déplacez la carte pour découvrir les concessions autour de vous.
-            </p>
-            <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-6 font-black uppercase text-[10px] tracking-widest rounded-full px-6"
-                onClick={() => setIsLoadingLocating(true)}
-            >
-                <Crosshair className="h-3 w-3 mr-2 text-brand" /> Me localiser
-            </Button>
+            
+            <div className="flex flex-col items-center justify-center py-10 text-center px-6 border-t border-dashed">
+                <div className="w-12 h-12 bg-muted/50 rounded-full flex items-center justify-center mb-3">
+                    <MapIcon className="h-6 w-6 text-muted-foreground/40" />
+                </div>
+                <h3 className="text-base font-black uppercase tracking-tight mb-1">Afficher les pros</h3>
+                <p className="text-[10px] text-muted-foreground font-bold leading-relaxed max-w-[200px]">
+                    Activez la localisation ou déplacez la carte pour voir les établissements autour de vous.
+                </p>
+                <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-4 font-black uppercase text-[9px] tracking-widest rounded-full px-6"
+                    onClick={() => setIsLoadingLocating(true)}
+                >
+                    <Crosshair className="h-3 w-3 mr-2 text-brand" /> Me localiser
+                </Button>
+            </div>
         </div>
       ) : isLoading ? (
         <div className="text-center pt-10"><Loader2 className="mx-auto h-8 w-8 animate-spin text-brand" /></div>

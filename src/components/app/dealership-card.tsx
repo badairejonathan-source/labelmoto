@@ -126,7 +126,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         </DialogContent>
       </Dialog>
 
-      {/* Zoom Dialog Haute Résolution */}
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none">
           <DialogHeader className="sr-only">
