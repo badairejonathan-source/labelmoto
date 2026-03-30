@@ -107,16 +107,15 @@ export default function MapComponent({
         minZoom: 6,
         maxBounds: franceBounds,
         maxBoundsViscosity: 1.0,
-        // Optimisations pour la réactivité du zoom
         zoomSnap: 0.1,
         zoomDelta: 0.5,
-        wheelPxPerZoomLevel: 60, // Zoom plus rapide à la molette
+        wheelPxPerZoomLevel: 60,
         fadeAnimation: true,
         zoomAnimation: true,
         markerZoomAnimation: true
       }).setView(center, zoom);
       
-      // Utilisation du serveur de tuiles OSM France pour un affichage intégralement en français
+      // Serveur de tuiles OSM France pour un affichage intégralement en français
       L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributeurs, tuiles par <a href="https://www.openstreetmap.fr/">OSM France</a>',
         maxZoom: 20
@@ -169,12 +168,11 @@ export default function MapComponent({
         const latDiff = Math.abs(currentCenter.lat - center[0]);
         const lngDiff = Math.abs(currentCenter.lng - center[1]);
         
-        // Seuil de détection de changement significatif
         if (latDiff > 0.0001 || lngDiff > 0.0001 || Math.abs(map.getZoom() - zoom) > 0.05) {
           isUpdatingFromProps.current = true;
           
           if (bottomPadding > 0) {
-            map.setView(center, zoom, { animate: false }); // Désactivé pour plus de réactivité immédiate
+            map.setView(center, zoom, { animate: false }); 
             map.panBy([0, bottomPadding / 2], { animate: false });
           } else {
             map.setView(center, zoom, { animate: false });

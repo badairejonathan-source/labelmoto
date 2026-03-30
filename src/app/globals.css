@@ -125,6 +125,11 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
+  /* Filtre pour une carte lumineuse et épurée type Airbnb */
+  .leaflet-container .leaflet-tile-pane {
+    filter: saturate(0.7) brightness(1.06) contrast(0.95);
+  }
+
   /* Style personnalisé pour les info-bulles de la carte avec accent Orange */
   .custom-map-tooltip {
     background-color: hsl(var(--card)) !important;
