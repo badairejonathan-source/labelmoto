@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store } from 'lucide-react';
+import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -181,6 +181,7 @@ const Header: React.FC<HeaderProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<Suggestion[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [showSearchHint, setShowSearchHint] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -220,6 +221,15 @@ const Header: React.FC<HeaderProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      const timer = setTimeout(() => setShowSearchHint(true), 3500);
+      return () => clearTimeout(timer);
+    } else {
+      setShowSearchHint(false);
+    }
+  }, [searchTerm]);
 
   useEffect(() => {
     if (searchTerm.trim().length < 1) {
@@ -361,6 +371,15 @@ const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
                 <div className="hidden md:block w-24 shrink-0" />
                 <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
+                  {showSearchHint && (
+                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-brand text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-2xl animate-bounce z-[60] whitespace-nowrap border-2 border-white pointer-events-none">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-3 w-3 animate-pulse" />
+                        Lancer une recherche ici
+                      </div>
+                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-brand rotate-45 border-r-2 border-b-2 border-white" />
+                    </div>
+                  )}
                   {prediction && searchTerm && (
                     <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
                         <span className="text-base text-transparent select-none">{searchTerm}</span>
@@ -373,7 +392,7 @@ const Header: React.FC<HeaderProps> = ({
                     className="pr-16 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10"
                     value={searchTerm}
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }}
-                    onFocus={() => setShowSuggestions(true)}
+                    onFocus={() => { setShowSuggestions(true); setShowSearchHint(false); }}
                     onKeyDown={handleKeyDown}
                     autoComplete="off"
                   />
