@@ -227,8 +227,7 @@ function MapPageComponent() {
     setMapCenter(newCenter);
     setMapZoom(newZoom);
     
-    // Si l'utilisateur déplace la carte manuellement (pas de source de sélection 'card'),
-    // on met à jour l'ancre de tri pour que la liste s'actualise dynamiquement.
+    // On met à jour l'ancre de tri seulement si l'utilisateur déplace la carte manuellement
     if (selectionSource !== 'card') {
         setSortingAnchor(newCenter);
     }
@@ -237,13 +236,12 @@ function MapPageComponent() {
   const dealershipsToDisplay = useMemo(() => {
     let results = [...filteredDealerships];
     
-    // Filtrage par bornes géographiques si disponibles
     if (mapBoundsStr) {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number);
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng);
     }
 
-    // SCÉNARIO 1 : Clic sur un marqueur (Map)
+    // SCÉNARIO : Clic sur un marqueur
     // On force l'élément sélectionné en haut et on trie le reste par proximité avec lui
     if (selectionSource === 'marker' && selectedDealershipId) {
         const selected = results.find(d => d.id === selectedDealershipId);
@@ -254,19 +252,15 @@ function MapPageComponent() {
         }
     }
 
-    // SCÉNARIO 2 & 3 : Tri standard ou Clic Fiche (Liste)
-    // On trie par rapport à l'ancre (centre de la dernière vue manuelle ou recherche)
-    // Cela permet au clic sur une fiche de ne pas changer l'ordre car selectionSource === 'card'
-    // bloque la mise à jour de sortingAnchor dans handleMapChange.
+    // SCÉNARIO : Tri standard ou Clic Fiche (on maintient l'ancre précédente)
     return results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b)).slice(0, 30);
   }, [filteredDealerships, mapBoundsStr, sortingAnchor, selectionSource, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => {
     setSelectedDealershipId(dealership.id);
-    setSelectionSource('card'); // On verrouille l'ordre actuel de la liste
+    setSelectionSource('card'); // On verrouille l'ordre de la liste
     if (dealership.latitude && dealership.longitude) {
       setMapCenter([dealership.latitude, dealership.longitude]);
-      // On ne met PAS à jour sortingAnchor ici pour garder l'ordre actuel de la liste
       setMapZoom(14);
       if (isMobile) setDrawerHeight('half');
     }
@@ -274,23 +268,20 @@ function MapPageComponent() {
   
   const handleMarkerClick = useCallback((id: string) => {
     setSelectedDealershipId(id);
-    setSelectionSource('marker'); // On indique qu'on veut remonter cet élément en haut
+    setSelectionSource('marker'); // On fait remonter l'élément
     const dealer = allDealerships.find(d => d.id === id);
     if (dealer && dealer.latitude && dealer.longitude) {
         const pos: [number, number] = [dealer.latitude, dealer.longitude];
         setMapCenter(pos);
-        setSortingAnchor(pos); // Le marqueur cliqué devient la nouvelle ancre de proximité
+        setSortingAnchor(pos);
         setMapZoom(14);
     }
     if (isMobile) setDrawerHeight('half');
   }, [isMobile, allDealerships]);
 
   const handleUserMapInteraction = useCallback(() => {
-    if (isMobile) {
-      setDrawerHeight('collapsed');
-    }
-    // L'utilisateur reprend le contrôle manuel : on déverrouille l'ancre de tri
-    setSelectionSource(null);
+    if (isMobile) setDrawerHeight('collapsed');
+    setSelectionSource(null); // L'utilisateur reprend le contrôle, on déverrouille le tri
   }, [isMobile]);
 
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
@@ -315,7 +306,7 @@ function MapPageComponent() {
               )}
             </React.Fragment>
           ))}
-          {dealershipsToDisplay.length === 0 && <div className="text-center py-10 text-muted-foreground"><p className="font-bold uppercase text-[10px]">Aucun établissement visible ici.</p></div>}
+          {dealershipsToDisplay.length === 0 && <div className="text-center py-10 text-muted-foreground"><p className="font-bold uppercase text-[10px]">Aucun établissement dans cette zone.</p></div>}
         </>
       )}
     </div>
@@ -329,7 +320,7 @@ function MapPageComponent() {
         searchTerm={searchTerm} 
         onSearchTermChange={(val) => {
           setSearchTerm(val);
-          // Remise à zéro automatique si le champ est vidé
+          // Réinitialisation automatique si le champ est vidé
           if (val.trim() === '') {
             setSubmittedSearchTerm('');
           }

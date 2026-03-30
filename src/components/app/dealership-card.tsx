@@ -1,10 +1,10 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, ArrowUpRight } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
@@ -40,11 +40,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const isAdmin = !!user && user.uid === ADMIN_UID;
+
+  useEffect(() => { setMounted(true); }, []);
+
+  const isAdmin = mounted && !!user && user.uid === ADMIN_UID;
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
@@ -101,7 +105,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     setIsReviewDialogOpen(false);
   };
 
-  const navigationUrl = dealership.placeUrl || `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dealership.address)}`;
+  // Modification : Forcer le mode guidage (directions)
+  const navigationUrl = (dealership.latitude && dealership.longitude)
+    ? `https://www.google.com/maps/dir/?api=1&destination=${dealership.latitude},${dealership.longitude}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dealership.title + ' ' + dealership.address)}`;
 
   return (
     <>
@@ -120,23 +127,39 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         </DialogContent>
       </Dialog>
 
-      <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all", className)}>
+      <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all group", className)}>
+        {isAdmin && (
+          <button 
+            onClick={handleQuarantine} 
+            className="absolute top-2 right-10 z-50 p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive hover:text-white transition-colors"
+            title="Modérer cette fiche"
+          >
+            <ShieldAlert className="h-4 w-4" />
+          </button>
+        )}
+        
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
           <div className="flex flex-1 flex-row items-stretch pr-8 md:pr-10">
             <div className="relative w-24 sm:w-32 md:w-44 overflow-hidden border-r bg-muted/30">
-              {dealership.imgUrl ? <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover" /> : <div className="flex h-full items-center justify-center opacity-20 p-2"><LabelMotoLogo /></div>}
+              {dealership.imgUrl ? (
+                <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:scale-105 duration-500" />
+              ) : (
+                <div className="flex h-full items-center justify-center opacity-20 p-4"><LabelMotoLogo /></div>
+              )}
             </div>
             <div className="flex flex-col justify-center flex-1 p-3 md:p-5 cursor-pointer" onClick={onClick}>
-              <h3 className="font-black text-sm md:text-xl uppercase leading-tight mb-1">{dealership.title}</h3>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-black text-sm md:text-xl uppercase leading-tight truncate">{dealership.title}</h3>
+              </div>
               <div className="flex items-center gap-3">
-                <span className="text-brand text-[9px] md:text-xs font-black uppercase">{categoryLabel}</span>
+                <span className="text-brand text-[9px] md:text-xs font-black uppercase tracking-widest">{categoryLabel}</span>
                 <div className="flex items-center gap-1 text-[10px] md:text-xs text-yellow-400 font-bold">
                   <Star className="h-3 w-3 fill-yellow-400" />
                   <span>{rating > 0 ? rating.toFixed(1) : "Nouveau"}</span>
                 </div>
               </div>
               
-              <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-[9px] uppercase font-bold mt-3">
+              <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-[9px] uppercase font-black mt-3">
                 {dealership.phoneNumber && (
                   <a href={`tel:${dealership.phoneNumber}`} className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     <Phone className="h-4 w-4 text-brand" /> Appel
@@ -150,7 +173,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 <button onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} className="hover:text-brand flex flex-col items-center gap-1">
                   <MessageSquare className="h-4 w-4 text-brand" /> Avis
                 </button>
-                {isAdmin && <button onClick={handleQuarantine} className="text-destructive flex flex-col items-center gap-1"><ShieldAlert className="h-4 w-4" />Modérer</button>}
               </div>
               
               <div className="mt-3 border-t border-dashed pt-2">
@@ -158,7 +180,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="inline-flex items-center gap-2 bg-brand text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full overflow-hidden"
+                  className="inline-flex items-center gap-2 bg-brand text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MapPin className="h-3.5 w-3.5 shrink-0" />
@@ -178,7 +200,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             </button>
           </div>
           {(showHours || showReviews) && (
-            <div className="absolute inset-y-0 left-0 right-8 md:right-10 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden">
+            <div className="absolute inset-y-0 left-0 right-8 md:right-10 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
               {showHours && (
                 <div className="space-y-1 w-full">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
@@ -191,9 +213,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               )}
               {showReviews && (
                 <div className="h-full flex flex-col">
-                  <div className="flex-1 overflow-y-auto space-y-2 mb-4">
+                  <div className="flex-1 overflow-y-auto space-y-2 mb-4 pr-1 scrollbar-thin">
                     {approvedComments?.map(c => <div key={c.id} className="bg-muted/30 p-2 rounded text-[10px]"><div className="flex justify-between font-bold"><span>{c.userName}</span><span>{c.rating}/5</span></div><p className="italic">"{c.content}"</p></div>)}
-                    {(!approvedComments || approvedComments.length === 0) && <p className="text-[10px] text-muted-foreground text-center py-4">Soyez le premier à donner votre avis !</p>}
+                    {(!approvedComments || approvedComments.length === 0) && <p className="text-[10px] text-muted-foreground text-center py-4">Aucun avis publié pour le moment.</p>}
                   </div>
                   <Button size="sm" className="w-full bg-blue-600 text-[9px] uppercase font-black" onClick={(e) => { e.stopPropagation(); setIsReviewDialogOpen(true); }}>Donner mon avis</Button>
                 </div>
