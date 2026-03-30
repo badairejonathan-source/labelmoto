@@ -28,46 +28,25 @@ interface MapComponentProps {
   onLocationError?: (error: L.ErrorEvent) => void;
 }
 
-// Design moderne type "Pill" Marker comme sur Airbnb
+// Rétablissement du design classique des pointeurs (Épingle Orange)
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean) => {
-    const scale = isHovered || isSelected ? 1.15 : 1;
-    const bgColor = isSelected ? 'hsl(var(--brand))' : isHovered ? 'hsl(var(--brand))' : 'white';
-    const textColor = isSelected || isHovered ? 'white' : 'black';
-    const borderColor = isSelected ? 'white' : 'hsl(var(--border))';
-    const shadow = isSelected || isHovered ? '0 10px 15px -3px rgb(0 0 0 / 0.2)' : '0 4px 6px -1px rgb(0 0 0 / 0.1)';
+    const scale = isHovered || isSelected ? 1.2 : 1;
+    const color = isSelected || isHovered ? '#f97316' : '#ea580c'; // Orange vif pour sélection, plus sombre sinon
 
     const iconHtml = `
-      <div style="
-        transform: scale(${scale});
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: ${bgColor};
-        color: ${textColor};
-        border: 2px solid ${borderColor};
-        padding: 6px 12px;
-        border-radius: 9999px;
-        font-family: sans-serif;
-        font-weight: 900;
-        font-size: 11px;
-        box-shadow: ${shadow};
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        text-transform: uppercase;
-        letter-spacing: 0.02em;
-      ">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;">
-          <path d="M12 2C7.03 2 3 6.03 3 11c0 3.48 1.94 6.5 4.8 8.05l-.8 2.95h10l-.8-2.95C19.06 17.5 21 14.48 21 11c0-4.97-4.03-9-9-9z"/>
+      <div style="transform: scale(${scale}); transition: transform 0.2s ease-out; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+        <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 0C7.16 0 0 7.16 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.16 24.84 0 16 0Z" fill="${color}"/>
+          <circle cx="16" cy="16" r="6" fill="white"/>
         </svg>
-        <span>${dealership.title.split(' ')[0]}</span>
       </div>
     `;
 
     return L.divIcon({
         html: iconHtml,
         className: 'custom-marker',
-        iconSize: [100, 32],
-        iconAnchor: [50, 16]
+        iconSize: [32, 40],
+        iconAnchor: [16, 40]
     });
 };
 
@@ -122,7 +101,6 @@ export default function MapComponent({
         markerZoomAnimation: true
       }).setView(center, zoom);
       
-      // Serveur de tuiles OSM France pour un affichage intégralement en français
       L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributeurs, tuiles par <a href="https://www.openstreetmap.fr/">OSM France</a>',
         maxZoom: 20
