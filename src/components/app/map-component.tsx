@@ -135,12 +135,13 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            if (zoomLevel <= 6) return 150; 
-            if (zoomLevel <= 9) return 100; 
-            if (zoomLevel <= 12) return 80;  
-            return 40; 
+            // Clustering progressif : Régions > Départements > Villes (Lyon, Paris, Lille, etc.)
+            if (zoomLevel <= 6) return 150; // Vue nationale (Régions)
+            if (zoomLevel <= 9) return 100; // Vue intermédiaire (Départements)
+            if (zoomLevel <= 12) return 60;  // Vue urbaine (Agglomérations)
+            return 40; // Par défaut
         },
-        disableClusteringAtZoom: 13,
+        disableClusteringAtZoom: 13, // Libère les pointeurs individuels à partir du zoom 13
         chunkedLoading: true,
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true
