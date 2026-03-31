@@ -28,7 +28,7 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
         {/* Softer, more educational design to look like a tooltip hint rather than a button */}
         <div className="bg-white/95 backdrop-blur-sm border-2 border-brand/40 text-brand px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 ring-4 ring-black/5 animate-bounce-subtle">
           <Sparkles className="h-3.5 w-3.5 animate-pulse shrink-0 opacity-70" />
-          <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap text-muted-foreground/80">Activez la proximité</span>
+          <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap text-muted-foreground/80">localisez vous</span>
           <ArrowRight className="h-4 w-4 animate-pointing-right shrink-0 opacity-60" />
         </div>
         
