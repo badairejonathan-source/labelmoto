@@ -13,6 +13,7 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const consent = localStorage.getItem('label-moto-consent');
+    // Show prompt if user hasn't explicitly clicked localise or given consent
     if (consent !== 'accepted') {
       const timer = setTimeout(() => setShow(true), 3500);
       return () => clearTimeout(timer);
@@ -24,20 +25,20 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
   return (
     <div className="absolute top-2 right-14 md:top-3 md:right-16 z-[1001] animate-in fade-in slide-in-from-right-2 duration-700 pointer-events-none">
       <div className="flex items-center gap-2 relative">
-        {/* Design de type étiquette d'aide élégante - Évite la confusion avec un bouton direct */}
-        <div className="bg-background/95 backdrop-blur-sm border-2 border-brand text-brand px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 ring-4 ring-black/5 animate-bounce-subtle">
-          <Sparkles className="h-3.5 w-3.5 animate-pulse shrink-0" />
-          <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Localisez-vous</span>
-          <ArrowRight className="h-4 w-4 animate-pointing-right shrink-0" />
+        {/* Softer, more educational design to look like a tooltip hint rather than a button */}
+        <div className="bg-white/95 backdrop-blur-sm border-2 border-brand/40 text-brand px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 ring-4 ring-black/5 animate-bounce-subtle">
+          <Sparkles className="h-3.5 w-3.5 animate-pulse shrink-0 opacity-70" />
+          <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap text-muted-foreground/80">Activez la proximité</span>
+          <ArrowRight className="h-4 w-4 animate-pointing-right shrink-0 opacity-60" />
         </div>
         
-        {/* Petit triangle pointant vers le bouton de localisation à droite */}
-        <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-brand rotate-45 border-r-2 border-t-2 border-white" />
+        {/* Subtle arrow pointing to the location button on the right */}
+        <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white rotate-45 border-r-2 border-t-2 border-brand/40" />
       </div>
       
       <style jsx global>{`
         @keyframes pointing-right {
-          0%, 100% { transform: translateX(0); opacity: 0.5; }
+          0%, 100% { transform: translateX(0); opacity: 0.4; }
           50% { transform: translateX(4px); opacity: 1; }
         }
         @keyframes bounce-subtle {

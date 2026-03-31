@@ -31,7 +31,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     const scale = isHovered || isSelected ? 1.2 : 1;
     const color = isSelected || isHovered ? '#f97316' : '#ea580c'; 
     
-    // Les noms apparaissent à partir du zoom 13.5 (style Google Maps)
+    // Labels appear at high zoom levels (Google Maps style)
     const showLabel = currentZoom >= 13.5;
     
     const labelStyle = `
@@ -128,20 +128,20 @@ export default function MapComponent({
       }).setView(center, zoom);
       
       L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributeurs, tuiles par <a href="https://www.openstreetmap.fr/">OSM France</a>',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 20
       }).addTo(map);
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // Configuration agressive pour séparer les villes et éviter le vide au centre de la France
-            if (zoomLevel <= 6) return 80;  // Vue nationale : sépare les grands pôles régionaux
-            if (zoomLevel <= 8) return 50;  // Vue départements : isole Nantes, Tours, Caen, etc.
-            if (zoomLevel <= 10) return 30; // Vue agglomérations : sépare Annecy, Grenoble, etc.
-            if (zoomLevel <= 12) return 15; // Vue locale précise
+            // Highly granular clustering to ensure cities like Lille, Orleans, Lyon etc. stay separate early
+            if (zoomLevel <= 6) return 60;  // National view: separate major regional hubs
+            if (zoomLevel <= 8) return 40;  // Regional: separate prefecture cities
+            if (zoomLevel <= 10) return 25; // Urban: separate sub-districts
+            if (zoomLevel <= 12) return 15; // Local
             return 10; 
         },
-        disableClusteringAtZoom: 13, // Libère les pins individuels au zoom 13
+        disableClusteringAtZoom: 13, // Break clusters at zoom 13
         chunkedLoading: true,
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true
@@ -275,14 +275,14 @@ export default function MapComponent({
     };
 
     const onErr = (e: L.ErrorEvent) => {
-        onLocationError(e);
+        console.warn("Location error:", e.message);
         onLocateEnd();
     };
 
     map.once('locationfound', onLocationFoundCallback);
     map.once('locationerror', onErr);
     map.locate({ setView: true, maxZoom: 14 });
-  }, [isLocating, onLocateEnd, onLocationFound, onLocationError]);
+  }, [isLocating, onLocateEnd, onLocationFound]);
 
   useEffect(() => {
     return () => {

@@ -31,8 +31,9 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
+  // All promoted ads now redirect to the main "Conseils" page as requested
   return (
-    <Link href={isPublicity ? `/map?search=${encodeURIComponent(article.title.split(' : ')[0])}` : `/info/${article.id}`} className="group block w-full">
+    <Link href="/info" className="group block w-full">
       <Card className={cn(
         "w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border-l-4 hover:shadow-lg shadow-sm min-h-[120px] md:min-h-[160px] flex items-stretch relative",
         isPublicity 
@@ -72,7 +73,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
           <h3 className="font-black text-base md:text-xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors line-clamp-2">
             {article.title}
           </h3>
-          <p className="text-[11px] md:text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed font-medium">
+          <p className="text-[11px] md:sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed font-medium">
             {article.description}
           </p>
         </div>
