@@ -70,7 +70,7 @@ export default function LegalPage() {
                         1. Présentation du site
                     </h2>
                     <p>Le site <strong>Label Moto</strong> est une plateforme d'information et de mise en relation à <strong>but non lucratif</strong>. Son objectif est de recenser les professionnels du deux-roues en France pour faciliter les recherches de la communauté motarde.</p>
-                    <p className="mt-2">À ce jour, le site ne génère aucun revenu, ne vend aucun produit et ne propose aucun service payant.</p>
+                    <p className="mt-2">À ce jour, le site ne génère aucun revenu, ne vend aucun produit et ne propose aucun service payant. Il s'agit d'un projet communautaire porté par des passionnés.</p>
                 </section>
 
                 <section>
@@ -82,7 +82,7 @@ export default function LegalPage() {
                         <li><strong>Responsable de publication :</strong> L'équipe Label Moto</li>
                         <li><strong>Contact :</strong> <a href="mailto:contact@labelmoto.fr" className="text-brand underline underline-offset-4">contact@labelmoto.fr</a></li>
                     </ul>
-                    <p className="mt-4 text-sm text-muted-foreground italic">En vertu de l'article 6 de la LCEN, l'éditeur a choisi de conserver son anonymat. Les coordonnées de l'éditeur ont été transmises à l'hébergeur du site, qui est tenu au secret professionnel.</p>
+                    <p className="mt-4 text-sm text-muted-foreground italic">En vertu de l'article 6 de la LCEN, l'éditeur a choisi de conserver son anonymat pour ce projet non lucratif. Les coordonnées de l'éditeur ont été transmises à l'hébergeur du site, qui est tenu au secret professionnel.</p>
                 </section>
 
                 <section>
@@ -100,8 +100,8 @@ export default function LegalPage() {
                     <h2 className="text-xl font-black uppercase tracking-tight text-brand mb-4">
                         4. Propriété intellectuelle
                     </h2>
-                    <p>L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.</p>
-                    <p className="mt-4">Les marques citées (Yamaha, Honda, BMW, etc.) ainsi que leurs logos sont la propriété exclusive de leurs détenteurs respectifs et ne sont utilisés ici qu'à des fins d'identification des établissements.</p>
+                    <p>L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés.</p>
+                    <p className="mt-4">Les marques citées (Yamaha, Honda, BMW, etc.) ainsi que leurs logos sont la propriété exclusive de leurs détenteurs respectifs et ne sont utilisés ici qu'à des fins d'identification des établissements et des modèles de moto.</p>
                 </section>
 
                 <section>

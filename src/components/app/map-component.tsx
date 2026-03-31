@@ -31,8 +31,8 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     const scale = isHovered || isSelected ? 1.2 : 1;
     const color = isSelected || isHovered ? '#f97316' : '#ea580c'; 
     
-    // Labels appear at high zoom levels (Google Maps style)
-    const showLabel = currentZoom >= 13.5;
+    // Les noms apparaissent au zoom 14 pour ne pas surcharger la carte
+    const showLabel = currentZoom >= 14;
     
     const labelStyle = `
         position: absolute;
@@ -121,7 +121,6 @@ export default function MapComponent({
         maxBoundsViscosity: 1.0,
         zoomSnap: 0.1,
         zoomDelta: 0.5,
-        wheelPxPerZoomLevel: 60,
         fadeAnimation: true,
         zoomAnimation: true,
         markerZoomAnimation: true
@@ -134,11 +133,10 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // Highly granular clustering to ensure all major cities stay separate and visible
-            if (zoomLevel <= 7) return 40;  // View from far: separate main hubs
-            if (zoomLevel <= 9) return 30;  // Mid view: separate smaller prefectures
-            if (zoomLevel <= 11) return 20; // Urban view: separate districts
-            return 10; // Local view: almost no clustering
+            // Clustering très granulaire pour bien séparer les grandes villes (Lille, Paris, Orléans, etc.)
+            if (zoomLevel <= 7) return 30; 
+            if (zoomLevel <= 9) return 20; 
+            return 10; 
         },
         disableClusteringAtZoom: 13,
         chunkedLoading: true,
