@@ -173,7 +173,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         onSearch={handleSearch}
         activeFilter={null}
         onFilterChange={handleFilterChange}
-        placeholderText="Rechercher un pro, un article..."
+        placeholderText="Recherche par departement , ville , marque, nom ... "
       />
       
       <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">

@@ -103,7 +103,7 @@ function InfoPageComponent() {
                 onSearch={handleSearch}
                 activeFilter={null}
                 onFilterChange={handleFilterChange}
-                placeholderText="Trouver une concession, une ville, une marque..."
+                placeholderText="Recherche par departement , ville , marque, nom ... "
             />
             <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
                 <Image

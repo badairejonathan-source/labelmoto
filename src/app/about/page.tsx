@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react';
@@ -30,7 +29,7 @@ export default function AboutPage() {
         onSearch={handleSearch}
         activeFilter={null}
         onFilterChange={handleFilterChange}
-        placeholderText="Recherche par nom, ville, departement"
+        placeholderText="Recherche par departement , ville , marque, nom ... "
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-4xl mx-auto relative overflow-hidden">

@@ -172,7 +172,7 @@ const Header: React.FC<HeaderProps> = ({
     className, 
     activeFilter = null, 
     onFilterChange, 
-    placeholderText = "Trouver une concession, un atelier..." 
+    placeholderText = "Recherche par departement , ville , marque, nom ... " 
 }) => {
   const router = useRouter();
   const firestore = useFirestore();
@@ -181,7 +181,6 @@ const Header: React.FC<HeaderProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<Suggestion[]>([]);
   const [mounted, setMounted] = useState(false);
-  const [showSearchHint, setShowSearchHint] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -221,15 +220,6 @@ const Header: React.FC<HeaderProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      const timer = setTimeout(() => setShowSearchHint(true), 3500);
-      return () => clearTimeout(timer);
-    } else {
-      setShowSearchHint(false);
-    }
-  }, [searchTerm]);
 
   useEffect(() => {
     if (searchTerm.trim().length < 1) {
@@ -371,15 +361,6 @@ const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
                 <div className="hidden md:block w-24 shrink-0" />
                 <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
-                  {showSearchHint && (
-                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-brand text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-2xl animate-bounce z-[60] whitespace-nowrap border-2 border-white pointer-events-none">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="h-3 w-3 animate-pulse" />
-                        Lancer une recherche ici
-                      </div>
-                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-brand rotate-45 border-r-2 border-b-2 border-white" />
-                    </div>
-                  )}
                   {prediction && searchTerm && (
                     <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
                         <span className="text-base text-transparent select-none">{searchTerm}</span>
@@ -392,7 +373,7 @@ const Header: React.FC<HeaderProps> = ({
                     className="pr-24 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10"
                     value={searchTerm}
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }}
-                    onFocus={() => { setShowSuggestions(true); setShowSearchHint(false); }}
+                    onFocus={() => { setShowSuggestions(true); }}
                     onKeyDown={handleKeyDown}
                     autoComplete="off"
                   />
@@ -411,7 +392,7 @@ const Header: React.FC<HeaderProps> = ({
                         {suggestions.map((s, idx) => (
                             <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
                                 <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">{s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}</div>
-                                <div className="flex flex-col min-w-0"><span className="text-base font-bold text-foreground truncate">{s.label}</span>{s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}</div>
+                                <div className="flex flex-col min-0"><span className="text-base font-bold text-foreground truncate">{s.label}</span>{s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}</div>
                             </button>
                         ))}
                     </div>

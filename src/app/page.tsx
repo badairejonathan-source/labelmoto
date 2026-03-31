@@ -53,7 +53,7 @@ export default function LandingPage() {
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
                 onSearch={handleSearch}
-                placeholderText="Trouver une concession, une ville, une marque..."
+                placeholderText="Recherche par departement , ville , marque, nom ... "
             />
             <main className="py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">

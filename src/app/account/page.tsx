@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -157,7 +156,7 @@ export default function AccountPage() {
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
         onSearch={handleSearch}
-        placeholderText="Recherche par nom, ville, departement"
+        placeholderText="Recherche par departement , ville , marque, nom ... "
       />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
