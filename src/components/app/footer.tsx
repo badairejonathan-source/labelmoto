@@ -26,7 +26,7 @@ const Footer = () => {
   return (
     <footer className="bg-muted/30 border-t border-border/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-sm">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-12">
           <div>
             <h3 className="font-semibold text-foreground mb-4">À propos de Label Moto</h3>
             <ul className="space-y-3">
@@ -51,14 +51,6 @@ const Footer = () => {
                 <li><Link href="/admin" className="text-muted-foreground hover:text-accent font-bold text-brand">Espace Admin</Link></li>
               )}
               <li><Link href="#" className="text-muted-foreground hover:text-accent">Faire de la publicité</Link></li>
-            </ul>
-          </div>
-           <div>
-            <h3 className="font-semibold text-foreground mb-4">Sites Partenaires</h3>
-            <ul className="space-y-3">
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">Le Repaire des Motards</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">Moto-Station</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">Motoservices</Link></li>
             </ul>
           </div>
         </div>

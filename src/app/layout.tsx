@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -11,8 +12,8 @@ import CookieConsent from "@/components/app/cookie-consent";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Label Moto - Trouvez les meilleurs pros du deux-roues",
-  description: "Trouvez les meilleures concessions et ateliers moto en France. Guides d'entretien, conseils pratiques et carte interactive pour motards A2 et confirmés. Votre compagnon de route digital.",
+  title: "LabelMoto.fr - Tout l'univers moto en quelques clic! ",
+  description: "Trouvez les meilleures concessions et ateliers moto en France parmis plus de 4000 fiches. Guides d'entretien, conseils pratiques et carte interactive pour motards A2 et confirmés. Votre compagnon de route digital.",
   icons: {
     icon: [
       { url: "/favicon.png", type: "image/png" },
