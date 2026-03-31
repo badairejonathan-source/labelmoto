@@ -11,11 +11,12 @@ import CookieConsent from "@/components/app/cookie-consent";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Label Moto",
-  description: "Trouvez les meilleures concessions et ateliers moto en France. Guides d'entretien, conseils pratiques et carte interactive pour motards A2 et confirmés.",
+  title: "Label Moto - Trouvez les meilleurs pros du deux-roues",
+  description: "Trouvez les meilleures concessions et ateliers moto en France. Guides d'entretien, conseils pratiques et carte interactive pour motards A2 et confirmés. Votre compagnon de route digital.",
   icons: {
     icon: [
-      { url: "/favicon.png", type: "image/png" }
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" }
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
