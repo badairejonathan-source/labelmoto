@@ -77,7 +77,7 @@ const Footer = () => {
                 <Link href="/terms" className="text-muted-foreground hover:text-accent">Conditions d'utilisation</Link>
                 <Link href="/privacy" className="text-muted-foreground hover:text-accent">Confidentialité et utilisation des cookies</Link>
                 <Link href="/legal" className="text-muted-foreground hover:text-accent">Mentions Légales</Link>
-                <Link href="#" className="text-muted-foreground hover:text-accent">Politique d'accessibilité</Link>
+                <Link href="/accessibility" className="text-muted-foreground hover:text-accent">Politique d'accessibilité</Link>
                 <Link href="/contact" className="text-muted-foreground hover:text-accent">Contactez-nous</Link>
             </div>
         </div>

@@ -31,7 +31,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
-  // Redirection spécifique : guides d'entretien -> /entretien, le reste -> /info
+  // Redirection spécifique demandée : guides d'entretien -> /entretien, le reste -> /info
   const isMaintenance = article.id === 'entretien-moto-intervalles-prix-conseils-par-modele' || 
                         article.title?.toLowerCase().includes('entretien') || 
                         article.title?.toLowerCase().includes('révision');
