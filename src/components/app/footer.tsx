@@ -31,7 +31,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li><Link href="/about" className="text-muted-foreground hover:text-accent">À propos</Link></li>
               <li><Link href="/selection" className="text-muted-foreground hover:text-accent">Sélection Label Moto</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">Contactez-nous</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-accent">Contactez-nous</Link></li>
             </ul>
           </div>
           <div>
@@ -49,7 +49,7 @@ const Footer = () => {
               {isAdmin && (
                 <li><Link href="/admin" className="text-muted-foreground hover:text-accent font-bold text-brand">Espace Admin</Link></li>
               )}
-              <li><Link href="#" className="text-muted-foreground hover:text-accent">Faire de la publicité</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-accent">Faire de la publicité</Link></li>
             </ul>
           </div>
         </div>
@@ -78,7 +78,7 @@ const Footer = () => {
                 <Link href="/privacy" className="text-muted-foreground hover:text-accent">Confidentialité et utilisation des cookies</Link>
                 <Link href="/legal" className="text-muted-foreground hover:text-accent">Mentions Légales</Link>
                 <Link href="#" className="text-muted-foreground hover:text-accent">Politique d'accessibilité</Link>
-                <Link href="#" className="text-muted-foreground hover:text-accent">Contactez-nous</Link>
+                <Link href="/contact" className="text-muted-foreground hover:text-accent">Contactez-nous</Link>
             </div>
         </div>
       </div>
