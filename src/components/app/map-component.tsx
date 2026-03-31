@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -32,7 +31,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     const scale = isHovered || isSelected ? 1.2 : 1;
     const color = isSelected || isHovered ? '#f97316' : '#ea580c'; 
     
-    // Affichage du nom à partir du zoom 14 (style Google Maps)
+    // Names appear from zoom 14 (Google Maps style)
     const showLabel = currentZoom >= 14;
     
     const labelStyle = `
@@ -135,13 +134,13 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // Clustering progressif : Régions > Départements > Villes (Lyon, Paris, Lille, etc.)
-            if (zoomLevel <= 6) return 150; // Vue nationale (Régions)
-            if (zoomLevel <= 9) return 100; // Vue intermédiaire (Départements)
-            if (zoomLevel <= 12) return 60;  // Vue urbaine (Agglomérations)
-            return 40; // Par défaut
+            // Progressive clustering: Regions > Departments > Cities (Paris, Lille, Orleans distinct)
+            if (zoomLevel <= 6) return 150; 
+            if (zoomLevel <= 9) return 80;  // Smaller radius for departments
+            if (zoomLevel <= 12) return 40; // Even smaller for cities to ensure Paris/Lille/Orleans split
+            return 30; 
         },
-        disableClusteringAtZoom: 13, // Libère les pointeurs individuels à partir du zoom 13
+        disableClusteringAtZoom: 13, // Release pins at zoom 13
         chunkedLoading: true,
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true

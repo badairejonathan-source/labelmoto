@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store, Sparkles } from 'lucide-react';
+import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -389,13 +389,22 @@ const Header: React.FC<HeaderProps> = ({
                   <Input
                     type="search"
                     placeholder={placeholderText}
-                    className="pr-16 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10"
+                    className="pr-24 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10"
                     value={searchTerm}
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }}
                     onFocus={() => { setShowSuggestions(true); setShowSearchHint(false); }}
                     onKeyDown={handleKeyDown}
                     autoComplete="off"
                   />
+                  {searchTerm && (
+                    <button 
+                      onClick={() => { onSearchTermChange(''); setPrediction(''); }}
+                      className="absolute top-1/2 right-14 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors"
+                      type="button"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  )}
                   <Button type="submit" size="icon" className="absolute top-1/2 right-1.5 -translate-y-1/2 h-11 w-11 bg-brand rounded-full z-20" onClick={executeSearch}><Search className="h-5 w-5" /></Button>
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">
