@@ -31,9 +31,15 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
-  // All promoted ads now redirect to the main "Conseils" page as requested
+  // Special logic: maintenance ad goes to /entretien, others to /info (Conseils)
+  const isMaintenance = article.id === 'entretien-moto-intervalles-prix-conseils-par-modele' || 
+                        article.title?.toLowerCase().includes('entretien') || 
+                        article.title?.toLowerCase().includes('révision');
+  
+  const href = isMaintenance ? '/entretien' : '/info';
+
   return (
-    <Link href="/info" className="group block w-full">
+    <Link href={href} className="group block w-full">
       <Card className={cn(
         "w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border-l-4 hover:shadow-lg shadow-sm min-h-[120px] md:min-h-[160px] flex items-stretch relative",
         isPublicity 
@@ -78,7 +84,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
           </p>
         </div>
 
-        <div className="hidden md:flex flex-shrink-0 w-32 flex-col justify-center items-center p-4 bg-muted/[0.01] border-l border-border/5 z-10">
+        <div className="hidden md:flex flex-shrink-0 w-32 flex-col justify-center items-center p-4 bg-muted/[0.01] border-l border-border/50 z-10">
            <div className="flex flex-col items-center gap-2">
               <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand transition-colors">
                 {isPublicity ? "En profiter" : "Découvrir"}
