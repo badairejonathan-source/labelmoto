@@ -134,12 +134,12 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // Configuration agressive pour séparer les villes et éviter le vide
-            if (zoomLevel <= 6) return 120; // Régions
-            if (zoomLevel <= 8) return 70;  // Pôles départementaux (Tours, Orléans, Caen)
-            if (zoomLevel <= 10) return 45; // Agglomérations (Séparation Paris / Lille / Orléans)
-            if (zoomLevel <= 12) return 25; // Zones urbaines précises
-            return 15; 
+            // Configuration agressive pour séparer les villes et éviter le vide au centre de la France
+            if (zoomLevel <= 6) return 80;  // Vue nationale : sépare les grands pôles régionaux
+            if (zoomLevel <= 8) return 50;  // Vue départements : isole Nantes, Tours, Caen, etc.
+            if (zoomLevel <= 10) return 30; // Vue agglomérations : sépare Annecy, Grenoble, etc.
+            if (zoomLevel <= 12) return 15; // Vue locale précise
+            return 10; 
         },
         disableClusteringAtZoom: 13, // Libère les pins individuels au zoom 13
         chunkedLoading: true,
