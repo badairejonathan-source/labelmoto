@@ -15,11 +15,10 @@ export const metadata: Metadata = {
   description: "Trouvez les meilleures concessions et ateliers moto en France parmis plus de 4000 fiches. Guides d'entretien, conseils pratiques et carte interactive pour motards A2 et confirmés. Votre compagnon de route digital.",
   icons: {
     icon: [
-      { url: "/favicon.png", type: "image/png" },
-      { url: "/favicon.ico", sizes: "any" }
+      { url: "/favicon.png", type: "image/png" }
     ],
     apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+      { url: "/favicon.png", sizes: "180x180", type: "image/png" }
     ],
   },
 };
