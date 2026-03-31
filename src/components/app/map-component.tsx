@@ -31,8 +31,8 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     const scale = isHovered || isSelected ? 1.2 : 1;
     const color = isSelected || isHovered ? '#f97316' : '#ea580c'; 
     
-    // Names appear from zoom 14 (Google Maps style)
-    const showLabel = currentZoom >= 14;
+    // Names appear from zoom 13.5 (Google Maps style)
+    const showLabel = currentZoom >= 13.5;
     
     const labelStyle = `
         position: absolute;
@@ -134,13 +134,14 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // Progressive clustering: Regions > Departments > Cities (Paris, Lille, Orleans distinct)
-            if (zoomLevel <= 6) return 150; 
-            if (zoomLevel <= 9) return 80;  // Smaller radius for departments
-            if (zoomLevel <= 12) return 40; // Even smaller for cities to ensure Paris/Lille/Orleans split
-            return 30; 
+            // Refined clustering to separate Paris, Lille, Orleans, Lyon, etc.
+            if (zoomLevel <= 6) return 120; // Regional split
+            if (zoomLevel <= 8) return 70;  // Departmental hubs
+            if (zoomLevel <= 10) return 45; // Individual cities (Clermont, Orleans, Lille split)
+            if (zoomLevel <= 12) return 25; // suburban areas
+            return 15; 
         },
-        disableClusteringAtZoom: 13, // Release pins at zoom 13
+        disableClusteringAtZoom: 13, // Force individual pins at zoom 13
         chunkedLoading: true,
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true
