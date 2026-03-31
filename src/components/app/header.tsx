@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -401,8 +400,8 @@ const Header: React.FC<HeaderProps> = ({
                   )}
                 </div>
                 <div className="hidden md:flex items-center gap-2 shrink-0 w-24 justify-end">
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/entretien"><Image src="/images/icon-entretienrevision.png" alt="" width={32} height={32} className="h-8 w-8 object-contain" /><span className="sr-only">Entretien</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Entretien</p></TooltipContent></Tooltip></TooltipProvider>
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/info"><Image src="/images/icon-conseils.png" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="sr-only">Conseils</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Conseils</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/entretien" className="flex items-center justify-center"><Image src="/images/icon-entretienrevision.png" alt="" width={32} height={32} className="h-8 w-8 object-contain" /><span className="sr-only">Entretien</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Entretien</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/info" className="flex items-center justify-center"><Image src="/images/icon-conseils.png" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="sr-only">Conseils</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Conseils</p></TooltipContent></Tooltip></TooltipProvider>
                 </div>
             </div>
             <nav className="flex items-center justify-center gap-6 sm:gap-10 mt-1">

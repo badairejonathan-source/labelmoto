@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -32,7 +31,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
-  // Special logic: maintenance ad goes to /entretien, others to /info (Conseils)
+  // Specific redirect logic: maintenance guides to /entretien, others to /info (general conseils page)
   const isMaintenance = article.id === 'entretien-moto-intervalles-prix-conseils-par-modele' || 
                         article.title?.toLowerCase().includes('entretien') || 
                         article.title?.toLowerCase().includes('révision');

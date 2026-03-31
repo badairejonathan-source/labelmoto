@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -12,7 +11,7 @@ import CookieConsent from "@/components/app/cookie-consent";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "LabelMoto.fr - Tout l'univers moto en quelques clic! ",
+  title: "LabelMoto.fr - Tout l'univers moto en quelques clic!",
   description: "Trouvez les meilleures concessions et ateliers moto en France parmis plus de 4000 fiches. Guides d'entretien, conseils pratiques et carte interactive pour motards A2 et confirmés. Votre compagnon de route digital.",
   icons: {
     icon: [
