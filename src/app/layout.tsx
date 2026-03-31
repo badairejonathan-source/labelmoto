@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Label Moto",
-  description: "Label Moto : Trouvez les meilleures concessions, ateliers et guides d'entretien pour votre moto en France. La plateforme indispensable pour les motards A2 et expérimentés.",
+  description: "Trouvez les meilleures concessions et ateliers moto en France. Guides d'entretien, conseils pratiques et carte interactive pour motards A2 et confirmés.",
   icons: {
     icon: [
       { url: "/favicon.png", type: "image/png" }

@@ -135,7 +135,7 @@ export default function MapComponent({
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
             // Highly granular clustering to ensure all major cities stay separate and visible
-            if (zoomLevel <= 7) return 40;  // View from far: separate main hubs (Lille, Nantes, Lyon)
+            if (zoomLevel <= 7) return 40;  // View from far: separate main hubs
             if (zoomLevel <= 9) return 30;  // Mid view: separate smaller prefectures
             if (zoomLevel <= 11) return 20; // Urban view: separate districts
             return 10; // Local view: almost no clustering
