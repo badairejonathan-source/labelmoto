@@ -186,6 +186,33 @@ function MapPageComponent() {
         if (submittedSearchTerm.trim() !== '') {
             const lower = submittedSearchTerm.toLowerCase().trim();
             const normalizedSearch = lower.replace(/[\s-]/g, '');
+
+            // --- REQUÊTE UTILISATEUR : ARRONDISSEMENTS (Paris, Lyon, Marseille) ---
+            const arrondissementRegex = /^(paris|lyon|marseille)\s*(\d{1,2})(?:er|e|eme|ieme|nd|rd|th)?$/i;
+            const match = lower.match(arrondissementRegex);
+            
+            if (match) {
+                const city = match[1].toLowerCase();
+                let num = parseInt(match[2]);
+                let zipPrefix = "";
+                if (city === 'paris') zipPrefix = "750";
+                if (city === 'marseille') zipPrefix = "130";
+                if (city === 'lyon') zipPrefix = "690";
+                
+                if (zipPrefix) {
+                    const zipCode = zipPrefix + (num < 10 ? "0" + num : num);
+                    const coords = await getCityCoordinates(zipCode);
+                    if (coords) {
+                        setMapCenter(coords);
+                        setSortingAnchor(coords);
+                        setMapZoom(14);
+                        // Pas de filtrage ("sans effectuer de triage")
+                        setFilteredDealerships(results);
+                        return;
+                    }
+                }
+            }
+
             if (/^\d{2}$/.test(normalizedSearch)) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
                 if (deptKey) { 
@@ -215,11 +242,10 @@ function MapPageComponent() {
                 } else {
                     const cityCoords = await getCityCoordinatesByName(lower);
                     if (cityCoords) { 
-                        // REQUÊTE UTILISATEUR : Centrage seulement sur la ville sans triage (filtrage)
                         setMapCenter(cityCoords); 
                         setSortingAnchor(cityCoords);
                         setMapZoom(12); 
-                        // On ne filtre plus les résultats par le nom de la ville pour proposer tout aux alentours
+                        // REQUÊTE UTILISATEUR : Centrage seulement sur la ville sans triage
                     }
                     else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
                 }

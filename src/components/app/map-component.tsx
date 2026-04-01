@@ -134,8 +134,7 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // REQUÊTE UTILISATEUR : Optimisation pour environ 15 clusters au départ (zoom national)
-            // On augmente le rayon pour rendre la carte plus aérée
+            // REQUÊTE UTILISATEUR : Optimisation pour environ 15 clusters au départ (vue nationale)
             if (zoomLevel <= 6.5) return 120; 
             if (zoomLevel <= 8) return 90;
             if (zoomLevel <= 10) return 70;
