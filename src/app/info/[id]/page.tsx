@@ -55,7 +55,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (articleId.includes('pieges') || articleId.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
     if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
-    if (articleId.includes('zfe') || title.includes('zfe')) return "https://images.unsplash.com/photo-1519608487913-d9d9b970ef9b?q=80&w=2070&auto=format&fit=crop";
+    if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
     
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
