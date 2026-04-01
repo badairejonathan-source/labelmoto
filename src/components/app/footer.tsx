@@ -69,7 +69,7 @@ const Footer = () => {
                 <div className="flex items-center space-x-4">
                     <Link href="#" aria-label="Facebook" className="text-muted-foreground hover:text-accent"><Facebook className="h-5 w-5" /></Link>
                     <Link href="#" aria-label="Twitter" className="text-muted-foreground hover:text-accent"><Twitter className="h-5 w-5" /></Link>
-                    <Link href="#" aria-label="Instagram" className="text-muted-foreground hover:text-accent"><Instagram className="h-5 w-5" /></Link>
+                    <Link href="https://www.instagram.com/labelmoto.fr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-accent"><Instagram className="h-5 w-5" /></Link>
                     <Link href="#" aria-label="Youtube" className="text-muted-foreground hover:text-accent"><Youtube className="h-5 w-5" /></Link>
                 </div>
             </div>
