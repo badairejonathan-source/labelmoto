@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -12,10 +13,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "LabelMoto.fr - L'annuaire intelligent des motards",
-  description: "Trouvez les meilleures concessions et ateliers moto en France...",
+  description: "Trouvez les meilleures concessions et ateliers moto en France. Conseils A2, guides d'entretien, fiches techniques et carte interactive pour tous les motards.",
   icons: {
     icon: [
-      // On ajoute "/images" devant le nom du fichier
       { url: "/images/favicon.png", type: "image/png" } 
     ],
     apple: [

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -60,7 +61,7 @@ export default function LandingPage() {
                 <div className="relative rounded-2xl border-2 border-brand bg-black mb-24 md:mb-32 overflow-visible shadow-2xl">
                      <Image
                         src={hero.src}
-                        alt="Motorcycle"
+                        alt="Motorcycle Urban"
                         fill
                         className="object-cover z-0 opacity-40 rounded-2xl"
                         priority
