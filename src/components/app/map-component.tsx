@@ -133,10 +133,11 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // Clustering extrêmement granulaire pour forcer l'affichage des pôles urbains dès la vue nationale
-            if (zoomLevel <= 7) return 20; 
-            if (zoomLevel <= 9) return 15; 
-            return 10; 
+            // Optimisation pour environ 15 clusters au départ (zoom 6)
+            if (zoomLevel <= 6.5) return 100; // Rayon large pour agréger plus de points
+            if (zoomLevel <= 8) return 80;
+            if (zoomLevel <= 10) return 60;
+            return 40; // Plus détaillé quand on zoome
         },
         disableClusteringAtZoom: 13,
         chunkedLoading: true,
