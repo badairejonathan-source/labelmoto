@@ -215,10 +215,11 @@ function MapPageComponent() {
                 } else {
                     const cityCoords = await getCityCoordinatesByName(lower);
                     if (cityCoords) { 
+                        // REQUÊTE UTILISATEUR : Centrage seulement sur la ville sans triage (filtrage)
                         setMapCenter(cityCoords); 
                         setSortingAnchor(cityCoords);
                         setMapZoom(12); 
-                        results = results.filter(d => d.address?.toLowerCase().includes(lower)); 
+                        // On ne filtre plus les résultats par le nom de la ville pour proposer tout aux alentours
                     }
                     else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
                 }

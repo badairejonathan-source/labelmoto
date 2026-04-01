@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -133,11 +134,12 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // Optimisation pour environ 15 clusters au départ (zoom 6)
-            if (zoomLevel <= 6.5) return 100; // Rayon large pour agréger plus de points
-            if (zoomLevel <= 8) return 80;
-            if (zoomLevel <= 10) return 60;
-            return 40; // Plus détaillé quand on zoome
+            // REQUÊTE UTILISATEUR : Optimisation pour environ 15 clusters au départ (zoom national)
+            // On augmente le rayon pour rendre la carte plus aérée
+            if (zoomLevel <= 6.5) return 120; 
+            if (zoomLevel <= 8) return 90;
+            if (zoomLevel <= 10) return 70;
+            return 45; 
         },
         disableClusteringAtZoom: 13,
         chunkedLoading: true,
