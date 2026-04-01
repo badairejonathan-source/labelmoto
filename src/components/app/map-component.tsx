@@ -112,12 +112,9 @@ export default function MapComponent({
 
   useEffect(() => {
     if (mapRef.current === null && containerRef.current) {
-      const franceBounds = L.latLngBounds(L.latLng(41, -5.5), L.latLng(51.5, 10));
-
+      // Déverrouillage pour les DOM-TOM : suppression des maxBounds restrictifs
       const map = L.map(containerRef.current, {
-        minZoom: 5,
-        maxBounds: franceBounds,
-        maxBoundsViscosity: 1.0,
+        minZoom: 2, // Permet de voir le monde entier pour les DOM-TOM
         zoomSnap: 0.1,
         zoomDelta: 0.5,
         fadeAnimation: true,
@@ -132,7 +129,7 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            if (zoomLevel <= 6.5) return 120; // Plus aéré à l'ouverture (environ 15 clusters)
+            if (zoomLevel <= 6.5) return 120; // Aération optimale à l'ouverture
             if (zoomLevel <= 8) return 90;
             if (zoomLevel <= 10) return 70;
             return 45; 

@@ -163,7 +163,8 @@ function MapPageComponent() {
                     if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); setFilteredDealerships(results); return; }
                 }
             }
-            if (/^\d{2}$/.test(normalizedSearch)) {
+            // Support 2 ou 3 chiffres pour les départements (Métropole + DOM-TOM)
+            if (/^\d{2,3}$/.test(normalizedSearch)) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
                 if (deptKey) { const center = (locationsData as any)[deptKey].center; setMapCenter(center); setSortingAnchor(center); setMapZoom(9); }
                 results = results.filter(d => d.address?.match(/\b\d{5}\b/)?.[0].startsWith(normalizedSearch));
