@@ -32,7 +32,6 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
     const scale = isHovered || isSelected ? 1.2 : 1;
     const color = isSelected || isHovered ? '#f97316' : '#ea580c'; 
     
-    // Les noms apparaissent au zoom 13.5 pour ne pas surcharger la carte
     const showLabel = currentZoom >= 13.5;
     
     const labelStyle = `
@@ -134,7 +133,6 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            // REQUÊTE UTILISATEUR : Optimisation pour environ 15 clusters au départ (vue nationale)
             if (zoomLevel <= 6.5) return 120; 
             if (zoomLevel <= 8) return 90;
             if (zoomLevel <= 10) return 70;

@@ -187,7 +187,6 @@ function MapPageComponent() {
             const lower = submittedSearchTerm.toLowerCase().trim();
             const normalizedSearch = lower.replace(/[\s-]/g, '');
 
-            // --- REQUÊTE UTILISATEUR : ARRONDISSEMENTS (Paris, Lyon, Marseille) ---
             const arrondissementRegex = /^(paris|lyon|marseille)\s*(\d{1,2})(?:er|e|eme|ieme|nd|rd|th)?$/i;
             const match = lower.match(arrondissementRegex);
             
@@ -206,7 +205,6 @@ function MapPageComponent() {
                         setMapCenter(coords);
                         setSortingAnchor(coords);
                         setMapZoom(14);
-                        // Pas de filtrage ("sans effectuer de triage")
                         setFilteredDealerships(results);
                         return;
                     }
@@ -245,7 +243,8 @@ function MapPageComponent() {
                         setMapCenter(cityCoords); 
                         setSortingAnchor(cityCoords);
                         setMapZoom(12); 
-                        // REQUÊTE UTILISATEUR : Centrage seulement sur la ville sans triage
+                        setFilteredDealerships(results);
+                        return;
                     }
                     else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
                 }

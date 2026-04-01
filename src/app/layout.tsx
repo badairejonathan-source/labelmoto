@@ -13,11 +13,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "LabelMoto.fr - L'annuaire intelligent des motards",
-  description: "Trouvez les meilleures concessions et ateliers moto en France. Conseils A2, guides d'entretien, fiches techniques et carte interactive pour tous les motards.",
+  description: "Trouvez les meilleures concessions et ateliers moto en France. Conseils A2, guides d'entretien, fiches techniques et carte interactive pour tous les motards. Un service gratuit par des passionnés.",
   icons: {
     icon: [
       { url: "/favicon.png", type: "image/png" } 
     ],
+    shortcut: "/favicon.png",
     apple: [
       { url: "/favicon.png", sizes: "180x180", type: "image/png" }
     ],

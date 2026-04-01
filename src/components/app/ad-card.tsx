@@ -32,12 +32,11 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
   }, [article]);
 
-  // REQUÊTE UTILISATEUR : Entretien -> /entretien, autres -> /info
   const isMaintenance = article.id === 'entretien-moto-intervalles-prix-conseils-par-modele' || 
                         article.title?.toLowerCase().includes('entretien') || 
                         article.title?.toLowerCase().includes('révision');
   
-  const href = isMaintenance ? '/entretien' : '/info';
+  const href = isMaintenance ? '/entretien' : `/info/${article.id}`;
 
   return (
     <Link href={href} className="group block w-full">
