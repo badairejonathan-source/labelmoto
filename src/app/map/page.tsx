@@ -97,7 +97,7 @@ function MapPageComponent() {
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
-  const [mapZoom, setMapZoom] = useState(6);
+  const [mapZoom, setMapZoom] = useState(5.5);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
@@ -126,7 +126,7 @@ function MapPageComponent() {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); setSortingAnchor(pos); setMapZoom(zoomParam ? parseInt(zoomParam) : 12); setHasUserInitiatedAction(true); hasInitializedMap.current = true;
     } else if (!hasInitializedMap.current && !searchParam) {
-        setMapCenter([46.603354, 1.888334]); setSortingAnchor([46.603354, 1.888334]); setMapZoom(6); hasInitializedMap.current = true;
+        setMapCenter([46.603354, 1.888334]); setSortingAnchor([46.603354, 1.888334]); setMapZoom(5.5); hasInitializedMap.current = true;
     }
     if (selectedIdParam) { setSelectedDealershipId(selectedIdParam); setHasUserInitiatedAction(true); }
     if (searchParam) { setSearchTerm(searchParam); setSubmittedSearchTerm(searchParam); setHasUserInitiatedAction(true); hasInitializedMap.current = true; }

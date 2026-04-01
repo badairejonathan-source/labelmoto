@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -116,7 +115,7 @@ export default function MapComponent({
       const franceBounds = L.latLngBounds(L.latLng(41, -5.5), L.latLng(51.5, 10));
 
       const map = L.map(containerRef.current, {
-        minZoom: 6,
+        minZoom: 5,
         maxBounds: franceBounds,
         maxBoundsViscosity: 1.0,
         zoomSnap: 0.1,
