@@ -129,9 +129,10 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            if (zoomLevel <= 6.5) return 120; // Aération optimale à l'ouverture (environ 15 clusters)
-            if (zoomLevel <= 8) return 90;
-            if (zoomLevel <= 10) return 70;
+            // Optimisé pour avoir au moins 10 clusters sur la France au dézoom max (zoom 5)
+            if (zoomLevel <= 6.5) return 100; 
+            if (zoomLevel <= 8) return 80;
+            if (zoomLevel <= 10) return 60;
             return 45; 
         },
         disableClusteringAtZoom: 13,
