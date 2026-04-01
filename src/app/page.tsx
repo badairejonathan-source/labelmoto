@@ -222,8 +222,8 @@ export default function LandingPage() {
                 <section className="mt-16 md:mt-24">
                     <div className="relative rounded-3xl overflow-hidden bg-black shadow-2xl">
                         <Image
-                            src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"
-                            alt="Rejoignez la communauté"
+                            src="/images/motardcotesudlandingpage2.png"
+                            alt="Ne perdez plus votre temps"
                             fill
                             className="object-cover z-0 opacity-30"
                             data-ai-hint="motorcycle ride"

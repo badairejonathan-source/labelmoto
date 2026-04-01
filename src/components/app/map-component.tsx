@@ -133,7 +133,7 @@ export default function MapComponent({
       
       clusterGroupRef.current = L.markerClusterGroup({ 
         maxClusterRadius: (zoomLevel) => {
-            if (zoomLevel <= 6.5) return 120; 
+            if (zoomLevel <= 6.5) return 120; // Plus aéré à l'ouverture (environ 15 clusters)
             if (zoomLevel <= 8) return 90;
             if (zoomLevel <= 10) return 70;
             return 45; 

@@ -205,7 +205,7 @@ function MapPageComponent() {
                         setMapCenter(coords);
                         setSortingAnchor(coords);
                         setMapZoom(14);
-                        setFilteredDealerships(results);
+                        setFilteredDealerships(results); // Pas de triage restrictif
                         return;
                     }
                 }
@@ -243,7 +243,7 @@ function MapPageComponent() {
                         setMapCenter(cityCoords); 
                         setSortingAnchor(cityCoords);
                         setMapZoom(12); 
-                        setFilteredDealerships(results);
+                        setFilteredDealerships(results); // Pas de triage restrictif pour les villes
                         return;
                     }
                     else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
