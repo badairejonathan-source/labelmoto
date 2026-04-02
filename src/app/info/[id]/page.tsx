@@ -48,6 +48,9 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
   if (t.includes('trident 660')) return 'triumph-trident-660-2021-plus';
   if (t.includes('xsr700')) return 'yamaha-xsr700-2021-plus';
+  if (t.includes('forza 350')) return 'honda-forza-350';
+  if (t.includes('xmax 125')) return 'yamaha-xmax-125';
+  if (t.includes('cb125r')) return 'honda-cb125r-2021-plus';
   return null;
 };
 
@@ -80,6 +83,17 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (!article) return [];
     return article.sections || article.content || [];
   }, [article]);
+
+  const allSummaryPoints = useMemo(() => {
+    const points: { title: string; id: string }[] = [];
+    if (!activeSections) return points;
+    activeSections.forEach((s: any) => {
+      if (s.title) {
+        points.push({ title: s.title, id: slugify(s.title) });
+      }
+    });
+    return points;
+  }, [activeSections]);
   
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
@@ -284,7 +298,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
         {hasComparisonSubsections || hasComparisonData ? (
           <div className="mt-8">
-            {/* Fallback rendering for old comparison format */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {(section.subsections || [section]).map((item: any, i: number) => {
                     const ficheId = getFicheIdFromTitle(item.title || '');
@@ -356,6 +369,22 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         {article.intro.map((p: string, i: number) => (
                             <p key={i} className="text-xl leading-relaxed text-foreground font-black">{p}</p>
                         ))}
+                    </div>
+                )}
+
+                {allSummaryPoints.length > 0 && (
+                    <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
+                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
+                        <ul className="list-none space-y-3 pl-0">
+                            {allSummaryPoints.map((pt, i) => (
+                                <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
+                                    <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
+                                    <a href={`#${pt.id}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
+                                        {pt.title}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 )}
 

@@ -101,22 +101,10 @@
             ],
             "profile": "Jeune motard ou première vraie moto A2",
             "linked_models": [
-              {
-                "label": "Yamaha MT-07 A2",
-                "slug": "yamaha-mt-07-2021-plus"
-              },
-              {
-                "label": "Kawasaki Z650",
-                "slug": "kawasaki-z650-2020-plus"
-              },
-              {
-                "label": "Honda CB500 Hornet",
-                "slug": "honda-cb500f-2022-plus"
-              },
-              {
-                "label": "Suzuki SV650",
-                "slug": "suzuki-sv650-2016-plus"
-              }
+              { "label": "Yamaha MT-07 A2", "slug": "yamaha-mt-07-2021-plus" },
+              { "label": "Kawasaki Z650", "slug": "kawasaki-z650-2020-plus" },
+              { "label": "Honda CB500 Hornet", "slug": "honda-cb500f-2022-plus" },
+              { "label": "Suzuki SV650", "slug": "suzuki-sv650-2016-plus" }
             ],
             "cta": {
               "label": "Voir les motos A2 recommandées",
@@ -141,29 +129,11 @@
               "Conditions de stationnement",
               "Exclusions sur les accessoires ou bagages"
             ],
-            "useful_guarantees": [
-              "Assistance 0 km",
-              "Véhicule de remplacement",
-              "Protection bagages / accessoires",
-              "Garantie conducteur renforcée"
-            ],
             "linked_models": [
-              {
-                "label": "Yamaha Tracer 7",
-                "slug": "yamaha-tracer-7-2021-plus"
-              },
-              {
-                "label": "BMW R1250 GS / R1300 GS",
-                "slug": "bmw-r1250-gs-r1300-gs-2019-plus"
-              },
-              {
-                "label": "Honda XL750 Transalp",
-                "slug": "honda-xl750-transalp-2023-plus"
-              },
-              {
-                "label": "Suzuki V-Strom 650",
-                "slug": "suzuki-v-strom-650-2017-plus"
-              }
+              { "label": "Yamaha Tracer 7", "slug": "yamaha-tracer-7-2021-plus" },
+              { "label": "BMW R1250 GS / R1300 GS", "slug": "bmw-r1250-gs-r1300-gs-2019-plus" },
+              { "label": "Honda XL750 Transalp", "slug": "honda-xl750-transalp-2023-plus" },
+              { "label": "Suzuki V-Strom 650", "slug": "suzuki-v-strom-650-2017-plus" }
             ],
             "cta": {
               "label": "Comparer les trails et GT adaptés",
@@ -189,22 +159,10 @@
               "Limites de durée pour l’assurance temporaire"
             ],
             "linked_models": [
-              {
-                "label": "Triumph Trident 660",
-                "slug": "triumph-trident-660-2021-plus"
-              },
-              {
-                "label": "Yamaha XSR700",
-                "slug": "yamaha-xsr700-2021-plus"
-              },
-              {
-                "label": "Kawasaki Z900",
-                "slug": "kawasaki-z900-2020-plus"
-              },
-              {
-                "label": "Royal Enfield Himalayan 450",
-                "slug": "royal-enfield-himalayan-450"
-              }
+              { "label": "Triumph Trident 660", "slug": "triumph-trident-660-2021-plus" },
+              { "label": "Yamaha XSR700", "slug": "yamaha-xsr700-2021-plus" },
+              { "label": "Kawasaki Z900", "slug": "kawasaki-z900-2020-plus" },
+              { "label": "Royal Enfield Himalayan 450", "slug": "royal-enfield-himalayan-450" }
             ],
             "cta": {
               "label": "Voir les motos plaisir / loisir",
@@ -229,25 +187,11 @@
               "Franchise trop élevée",
               "Absence de garantie équipement"
             ],
-            "useful_guarantees": [
-              "Vol / vandalisme",
-              "Garantie équipement",
-              "Assistance",
-              "Protection conducteur"
-            ],
             "linked_models": [
-              {
-                "label": "Honda CB500 Hornet",
-                "slug": "honda-cb500f-2022-plus"
-              },
-              {
-                "label": "Yamaha MT-07",
-                "slug": "yamaha-mt-07-2021-plus"
-              },
-              {
-                "label": "Kawasaki Z650",
-                "slug": "kawasaki-z650-2020-plus"
-              }
+              { "label": "Honda Forza 350", "slug": "honda-forza-350" },
+              { "label": "Yamaha XMAX 125", "slug": "yamaha-xmax-125" },
+              { "label": "BMW CE 04", "slug": "bmw-ce-04" },
+              { "label": "Honda CB125R", "slug": "honda-cb125r-2021-plus" }
             ],
             "cta": {
               "label": "Voir les modèles les plus adaptés à la ville",
