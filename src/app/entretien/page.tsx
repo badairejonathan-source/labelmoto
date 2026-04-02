@@ -347,7 +347,7 @@ export default function EntretienPage() {
   };
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen relative">
       <Header
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
@@ -356,9 +356,12 @@ export default function EntretienPage() {
         onFilterChange={handleFilterChange}
         placeholderText="Recherche par departement , ville , marque, nom ... "
       />
-      <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
-        <Image src="/images/logo-moto.png?v=6" alt="Label Moto Watermark" width={800} height={256} className="opacity-[0.08] rotate-[-15deg] scale-150" />
+      
+      {/* Filigrane Logo */}
+      <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
+        <Image src="/images/logo-moto.png?v=6" alt="" width={1000} height={320} className="opacity-[0.03] rotate-[-15deg] scale-150" priority />
       </div>
+
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8">

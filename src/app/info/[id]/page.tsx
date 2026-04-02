@@ -35,7 +35,7 @@ const slugify = (text: string) =>
       .replace(/(^-|-$)+/g, "");
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id } = React.use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -178,7 +178,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (<p key={pi} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>))}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         {section.table && renderTable(section.table)}
-        {section.note && renderNote(section.note)}
+        {section.note && renderNote(note)}
         {hasComparisonSubsections ? (<div className="mt-8">{renderComparisonGrid(section.subsections)}</div>) : hasComparisonData ? (<div className="mt-8">{renderComparisonGrid([section])}</div>) : (section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>))}
         {section.title && (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && id !== 'combien-coute-vraiment-une-moto-par-mois' && (<div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl"><Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="group flex items-center justify-between gap-4"><div className="flex-1"><p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dossier Spécial</p><h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">Calculer mon budget réel →</h4><p className="text-xs text-muted-foreground mt-1 font-medium">Assurance, entretien, équipement : ne laissez rien au hasard.</p></div><div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0"><FileText className="h-5 w-5" /></div></Link></div>)}
         {section.conclusion && <p className="text-lg text-foreground font-black mt-6 italic border-l-4 border-muted pl-4">{section.conclusion}</p>}
@@ -190,16 +190,18 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><p className="text-muted-foreground mb-8">Nous n'avons pas trouvé l'article demandé.</p><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen relative">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
       
-      <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
+      {/* Filigrane Logo - Positionné en fixe pour être visible partout */}
+      <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
         <Image
           src="/images/logo-moto.png?v=6"
-          alt="Label Moto Watermark"
-          width={800}
-          height={256}
-          className="opacity-[0.08] rotate-[-15deg] scale-150"
+          alt=""
+          width={1000}
+          height={320}
+          className="opacity-[0.03] rotate-[-15deg] scale-150"
+          priority
         />
       </div>
 
@@ -221,7 +223,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 </div>
               </article>
             </div>
-            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-bold leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
+            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
           </div>
         </div>
       </main>

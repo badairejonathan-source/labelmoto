@@ -34,7 +34,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import localFiches from '@/app/data/fiches-techniques.json';
 
 export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
-  const { modelId } = use(params);
+  const { modelId } = React.use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [isPartieCycleOpen, setIsPartieCycleOpen] = useState(false);
@@ -166,7 +166,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
   }
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen relative">
       <Header
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
@@ -176,14 +176,9 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         placeholderText="Recherche par departement , ville , marque, nom ... "
       />
       
-      <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
-        <Image
-          src="/images/logo-moto.png?v=6"
-          alt="Label Moto Watermark"
-          width={800}
-          height={256}
-          className="opacity-[0.08] rotate-[-15deg] scale-150"
-        />
+      {/* Filigrane Logo */}
+      <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
+        <Image src="/images/logo-moto.png?v=6" alt="" width={1000} height={320} className="opacity-[0.03] rotate-[-15deg] scale-150" priority />
       </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
@@ -203,7 +198,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
           <div className="space-y-8">
             {/* Hero Section - Branding Format */}
             <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-brand bg-white">
-              {/* Logo Area - Top Right - Sized at 70% of previous X2 enlargement */}
+              {/* Logo Area - Top Right */}
               <div className="absolute top-4 right-4 md:top-8 md:right-8 z-30">
                 <div className="w-44 sm:w-56 md:w-64 lg:w-[315px] transition-all">
                   <LabelMotoLogo />
