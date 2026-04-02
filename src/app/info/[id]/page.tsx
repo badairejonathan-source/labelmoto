@@ -4,7 +4,7 @@ import React, { useState, use, useMemo } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle, AlertTriangle, ChevronRight, Home } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle, AlertTriangle, ChevronRight, Home, ExternalLink } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -33,6 +33,22 @@ const slugify = (text: string) =>
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
+
+// Helper to find technical sheet ID from model title
+const getFicheIdFromTitle = (title: string): string | null => {
+  const t = title.toLowerCase();
+  if (t.includes('mt-07')) return 'yamaha-mt-07-2021-plus';
+  if (t.includes('z650')) return 'kawasaki-z650-2020-plus';
+  if (t.includes('cb500 hornet') || t.includes('cb500f')) return 'honda-cb500f-2022-plus';
+  if (t.includes('tracer 7')) return 'yamaha-tracer-7-2021-plus';
+  if (t.includes('nx500') || t.includes('cb500x')) return 'honda-nx500-2024-plus';
+  if (t.includes('r7')) return 'yamaha-r7-2022-plus';
+  if (t.includes('cbr500r')) return 'honda-cbr500r-2022-plus';
+  if (t.includes('himalayan')) return 'bmw-g310r-2021-plus'; // Placeholder logic if specific not found
+  if (t.includes('390 duke')) return 'bmw-g310r-2021-plus';
+  if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
+  return null;
+};
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -155,15 +171,36 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (!items || items.length === 0) return null;
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-        {items.map((item, idx) => (
-          <Card key={idx} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm">
-            <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase tracking-tight text-foreground text-center">{item.title}</CardTitle></CardHeader>
-            <CardContent className="p-6 space-y-6 flex-grow">
-              {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Avantages</div><ul className="list-none space-y-2">{item.strengths.map((s: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-green-500 font-black shrink-0">•</span> {s}</li>))}</ul></div>)}
-              {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2"><AlertTriangle className="h-3 w-3" /> Inconvénients</div><ul className="list-none space-y-2">{item.weaknesses.map((w: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-red-400 font-black shrink-0">•</span> {w}</li>))}</ul></div>)}
-            </CardContent>
-          </Card>
-        ))}
+        {items.map((item, idx) => {
+          const ficheId = getFicheIdFromTitle(item.title);
+          const content = (
+            <Card className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm group/card hover:border-brand/50 transition-all">
+              <CardHeader className="bg-muted/30 py-4 border-b flex flex-row items-center justify-between">
+                <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
+                  {item.title}
+                </CardTitle>
+                {ficheId && <ExternalLink className="h-4 w-4 text-muted-foreground group-hover/card:text-brand transition-colors" />}
+              </CardHeader>
+              <CardContent className="p-6 space-y-6 flex-grow">
+                {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Avantages</div><ul className="list-none space-y-2">{item.strengths.map((s: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-green-500 font-black shrink-0">•</span> {s}</li>))}</ul></div>)}
+                {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2"><AlertTriangle className="h-3 w-3" /> Inconvénients</div><ul className="list-none space-y-2">{item.weaknesses.map((w: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-red-400 font-black shrink-0">•</span> {w}</li>))}</ul></div>)}
+              </CardContent>
+              {ficheId && (
+                <CardFooter className="bg-brand/5 p-3 border-t">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-brand mx-auto">Voir la fiche technique →</span>
+                </CardFooter>
+              )}
+            </Card>
+          );
+
+          return ficheId ? (
+            <Link key={idx} href={`/fiches/${ficheId}`} className="block h-full transition-transform hover:-translate-y-1">
+              {content}
+            </Link>
+          ) : (
+            <div key={idx}>{content}</div>
+          );
+        })}
       </div>
     );
   };
@@ -178,7 +215,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (<p key={pi} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>))}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         {section.table && renderTable(section.table)}
-        {section.note && renderNote(note)}
+        {section.note && renderNote(section.note)}
         {hasComparisonSubsections ? (<div className="mt-8">{renderComparisonGrid(section.subsections)}</div>) : hasComparisonData ? (<div className="mt-8">{renderComparisonGrid([section])}</div>) : (section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>))}
         {section.title && (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && id !== 'combien-coute-vraiment-une-moto-par-mois' && (<div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl"><Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="group flex items-center justify-between gap-4"><div className="flex-1"><p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dossier Spécial</p><h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">Calculer mon budget réel →</h4><p className="text-xs text-muted-foreground mt-1 font-medium">Assurance, entretien, équipement : ne laissez rien au hasard.</p></div><div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0"><FileText className="h-5 w-5" /></div></Link></div>)}
         {section.conclusion && <p className="text-lg text-foreground font-black mt-6 italic border-l-4 border-muted pl-4">{section.conclusion}</p>}
