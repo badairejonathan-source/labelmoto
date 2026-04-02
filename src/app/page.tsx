@@ -101,7 +101,7 @@ export default function LandingPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {isArticlesLoading ? (Array.from({ length: 3 }).map((_, i) => (<div key={i} className="bg-card rounded-2xl overflow-hidden shadow-md animate-pulse h-[350px]" />))) : (
                                 featuredArticles?.map((article) => (
-                                    <Link key={article.id} href={`/info/${article.id}`} className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1">
+                                    <Link key={article.id} href="/info" className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1">
                                         <div className="relative aspect-video overflow-hidden bg-muted"><Image src={getArticleImage(article)} alt={article.display_title || article.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 100vw, 33vw" /></div>
                                         <div className="p-6 flex flex-col flex-grow">
                                             <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3 font-black uppercase tracking-widest"><FileText className="h-3.5 w-3.5 text-brand" /><span>Par {article.author || "L'équipe Label Moto"}</span></div>
@@ -143,3 +143,5 @@ export default function LandingPage() {
         </div>
     );
 }
+    
+    

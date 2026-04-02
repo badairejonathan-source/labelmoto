@@ -7,15 +7,15 @@ import { FileText } from 'lucide-react';
 
 const AdBanner: React.FC = () => {
   const article = {
-    id: 'achat-moto-occasion-eviter-les-pieges',
-    imageUrl: '/images/evitelespieges.jpg',
-    imageHint: 'motorcycle road trip',
-    title: 'Achat moto d’occasion : le guide pour éviter les pièges',
+    id: 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil',
+    imageUrl: '/images/motard-article-assurance2026.png',
+    imageHint: 'motorcycle insurance',
+    title: 'Assurance moto : bien choisir sa formule',
   };
 
   return (
     <Card className="w-full overflow-hidden shadow-lg">
-      <Link href={`/info/${article.id}`} className="block relative w-full h-32 group">
+      <Link href="/info" className="block relative w-full h-32 group">
         <Image
           src={article.imageUrl}
           alt={article.title}
@@ -38,3 +38,5 @@ const AdBanner: React.FC = () => {
 };
 
 export default AdBanner;
+    
+    

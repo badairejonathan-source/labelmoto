@@ -58,7 +58,8 @@ const getFicheIdFromTitle = (title: string): string | null => {
 };
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const resolvedParams = use(params);
+  const { id } = resolvedParams;
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -68,23 +69,13 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   const article = useMemo(() => {
     if (firestoreArticle && Object.keys(firestoreArticle).length > 5) return firestoreArticle;
-    return (localArticles as any[]).find(a => a.id === id) || null;
+    return (localArticles as any[]).find(a => a.id === id || a.slug === id) || null;
   }, [firestoreArticle, id]);
 
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     if (id.includes('assurance') || article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-    
-    const articleId = (article.id || id).toLowerCase();
-    const title = (article.display_title || article.title || "").toLowerCase();
-    
-    if (articleId.includes('pieges') || articleId.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
-    if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-    if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
-    if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
-    if (articleId.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
-    
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
 
@@ -253,7 +244,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               </CardContent>
               {card.cta && (
                 <CardFooter className="bg-brand/5 p-3 border-t">
-                  <Link href={card.cta.target_type === 'article' ? `/info/${card.cta.target_slug}` : (card.cta.target_type === 'service_page' ? `/${card.cta.target_slug}` : card.cta.target_slug)} className="text-[9px] font-black uppercase tracking-widest text-brand mx-auto hover:underline">
+                  <Link href="/info" className="text-[9px] font-black uppercase tracking-widest text-brand mx-auto hover:underline">
                     {card.cta.label} →
                   </Link>
                 </CardFooter>
@@ -278,7 +269,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {section.title && 
          (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && (
           <div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl mb-8">
-            <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="group flex items-center justify-between gap-4">
+            <Link href="/info" className="group flex items-center justify-between gap-4">
               <div className="flex-1">
                 <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dossier Spécial</p>
                 <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">
@@ -297,7 +288,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
          (section.title.toLowerCase().includes('assurance')) && 
          id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
           <div className="mt-6 p-5 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-2xl mb-8">
-            <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="group flex items-center justify-between gap-4">
+            <Link href="/info" className="group flex items-center justify-between gap-4">
               <div className="flex-1">
                 <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">Dossier Spécial Assurance</p>
                 <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors">
@@ -444,7 +435,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
                 {id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
                   <div className="mt-16 p-8 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-3xl shadow-sm group">
-                    <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex flex-col md:flex-row items-center gap-6">
+                    <Link href="/info" className="flex flex-col md:flex-row items-center gap-6">
                       <div className="flex-1 text-center md:text-left">
                         <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">Dossier Spécial Assurance</p>
                         <h3 className="text-2xl font-black uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors">
@@ -468,7 +459,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                                         <h3 className="text-2xl font-black uppercase tracking-tight mb-2">{block.title}</h3>
                                         <p className="text-muted-foreground font-medium mb-6 leading-relaxed">{block.text}</p>
                                         <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] tracking-widest px-8 py-6 h-auto rounded-full shadow-lg transition-transform hover:scale-105">
-                                            <Link href={block.target_type === 'article' ? `/info/${block.target_slug}` : (block.target_type === 'service_page' ? `/${block.target_slug}` : block.target_slug)}>
+                                            <Link href={block.target_type === 'article' ? '/info' : (block.target_slug === 'entretien' ? '/entretien' : `/${block.target_slug}`)}>
                                                 🔘 {block.label}
                                             </Link>
                                         </Button>
@@ -532,5 +523,5 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     </div>
   );
 }
-
+    
     
