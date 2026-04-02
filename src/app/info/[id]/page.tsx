@@ -5,7 +5,7 @@ import React, { useState, use, useMemo } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle, AlertTriangle, ChevronRight, Home, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, HelpCircle, AlertTriangle, ChevronRight, Home, ExternalLink, ShieldCheck } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -410,6 +410,24 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 <div className="space-y-12">
                     {activeSections && activeSections.map((section: any, idx: number) => renderSection(section, idx))}
                 </div>
+
+                {/* Lien vers l'article Assurance si on n'y est pas déjà */}
+                {id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
+                  <div className="mt-16 p-8 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-3xl shadow-sm group">
+                    <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex flex-col md:flex-row items-center gap-6">
+                      <div className="flex-1 text-center md:text-left">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">Dossier Spécial Assurance</p>
+                        <h3 className="text-2xl font-black uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors">
+                          Bien choisir son assurance moto →
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-2 font-medium">Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale selon votre profil de motard.</p>
+                      </div>
+                      <div className="bg-blue-600 text-white p-5 rounded-2xl shadow-lg group-hover:scale-110 transition-transform shrink-0">
+                        <ShieldCheck className="h-8 w-8" />
+                      </div>
+                    </Link>
+                  </div>
+                )}
 
                 {article.cta_blocks && (
                     <div className="mt-16 space-y-8">
