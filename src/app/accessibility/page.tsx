@@ -22,7 +22,7 @@ export default function AccessibilityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       <Header
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
@@ -31,18 +31,20 @@ export default function AccessibilityPage() {
         onFilterChange={handleFilterChange}
         placeholderText="Recherche par departement , ville , marque, nom ... "
       />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
-        <div className="max-w-4xl mx-auto relative z-10">
-          <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
-            <Image
-              src="/images/logo-moto.png?v=6"
-              alt="Label Moto Watermark"
-              width={600}
-              height={192}
-              className="opacity-[0.03] rotate-[-15deg] scale-150"
-            />
-          </div>
-          
+      
+      {/* Filigrane Logo */}
+      <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
+        <Image
+          src="/images/logo-moto.png?v=6"
+          alt="Label Moto Watermark"
+          width={600}
+          height={192}
+          className="opacity-[0.03] rotate-[-15deg]"
+        />
+      </div>
+
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        <div className="max-w-4xl mx-auto">
           <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-brand mb-12 text-xs font-black uppercase tracking-widest transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil

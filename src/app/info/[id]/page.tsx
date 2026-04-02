@@ -193,14 +193,14 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     <div className="min-h-screen relative">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
       
-      {/* Filigrane Logo - Positionné en fixe pour être visible partout */}
+      {/* Filigrane Logo */}
       <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
         <Image
           src="/images/logo-moto.png?v=6"
           alt=""
-          width={1000}
-          height={320}
-          className="opacity-[0.03] rotate-[-15deg] scale-150"
+          width={600}
+          height={192}
+          className="opacity-[0.03] rotate-[-15deg]"
           priority
         />
       </div>
@@ -217,7 +217,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                       {allSummaryPoints.length > 0 && (<div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10"><p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p><ul className="list-none space-y-3 pl-0">{allSummaryPoints.map((pt, i) => (<li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item"><CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" /><a href={`#${pt.id}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">{pt.title}</a></li>))}</ul></div>)}
                       {article.intro_conclusion && (<p className="text-lg leading-relaxed text-foreground font-black italic border-l-4 border-brand pl-6 my-8">{article.intro_conclusion}</p>)}
                     </div>
-                    <div className="space-y-4">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
+                    <div className="space-y-4">{article.sections && article.sections.map((section: any, idx: number) => renderSection(section, idx))}</div>
                     {article.faq && article.faq.length > 0 && (<div className="pt-12 space-y-6" id="faq"><div className="flex items-center gap-3"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase tracking-tight text-foreground">Questions fréquentes</h3></div><Accordion type="single" collapsible className="w-full">{article.faq.map((item: any, idx: number) => (<AccordionItem key={idx} value={`item-${idx}`} className="border-b-brand/10"><AccordionTrigger className="text-left font-black text-foreground py-4 hover:text-brand transition-colors leading-tight">{item.question}</AccordionTrigger><AccordionContent className="text-foreground font-bold leading-relaxed pb-4">{item.answer}</AccordionContent></AccordionItem>))}</Accordion></div>)}
                     {article.conclusion && (<div className="mt-16 pt-8 border-t border-brand/20"><div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div><div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={i} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div><div className="flex justify-end items-center mt-8"><p className="text-lg font-black text-foreground relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div></div>)}
                 </div>

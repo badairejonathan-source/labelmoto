@@ -178,7 +178,7 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
       
       {/* Filigrane Logo */}
       <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
-        <Image src="/images/logo-moto.png?v=6" alt="" width={1000} height={320} className="opacity-[0.03] rotate-[-15deg] scale-150" priority />
+        <Image src="/images/logo-moto.png?v=6" alt="" width={600} height={192} className="opacity-[0.03] rotate-[-15deg]" priority />
       </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">

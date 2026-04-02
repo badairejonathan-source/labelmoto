@@ -22,7 +22,7 @@ export default function SelectionPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       <Header
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
@@ -31,17 +31,20 @@ export default function SelectionPage() {
         onFilterChange={handleFilterChange}
         placeholderText="Recherche par departement , ville , marque, nom ... "
       />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto relative overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
-            <Image
-              src="/images/logo-moto.png?v=6"
-              alt="Label Moto Watermark"
-              width={600}
-              height={192}
-              className="opacity-5 rotate-[-15deg]"
-            />
-          </div>
+      
+      {/* Filigrane Logo */}
+      <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
+        <Image
+          src="/images/logo-moto.png?v=6"
+          alt="Label Moto Watermark"
+          width={600}
+          height={192}
+          className="opacity-[0.05] rotate-[-15deg]"
+        />
+      </div>
+
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div className="max-w-4xl mx-auto">
           <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil

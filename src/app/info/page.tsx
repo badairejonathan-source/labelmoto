@@ -67,16 +67,16 @@ function InfoPageComponent() {
     }, [allArticles]);
 
     return (
-        <div className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen relative">
             <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
             
             <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
                 <Image
                     src="/images/logo-moto.png?v=6"
                     alt="Label Moto Watermark"
-                    width={800}
-                    height={256}
-                    className="opacity-[0.05] rotate-[-15deg] scale-150"
+                    width={600}
+                    height={192}
+                    className="opacity-[0.05] rotate-[-15deg]"
                 />
             </div>
 
