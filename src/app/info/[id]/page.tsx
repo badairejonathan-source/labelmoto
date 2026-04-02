@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, use, useMemo } from 'react';
@@ -37,6 +38,9 @@ const slugify = (text: string) =>
 // Helper to find technical sheet ID from model title
 const getFicheIdFromTitle = (title: string): string | null => {
   const t = title.toLowerCase();
+  // Ne pas créer de lien pour ces modèles qui n'ont pas de fiche
+  if (t.includes('himalayan 450') || t.includes('duke 390')) return null;
+  
   if (t.includes('mt-07')) return 'yamaha-mt-07-2021-plus';
   if (t.includes('z650')) return 'kawasaki-z650-2020-plus';
   if (t.includes('cb500 hornet') || t.includes('cb500f')) return 'honda-cb500f-2022-plus';
@@ -68,36 +72,17 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
     if (articleId.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
+    if (articleId.includes('assurance') || title.includes('assurance')) return "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?q=80&w=1080";
     
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
 
   const activeSections = useMemo(() => {
-    if (!article?.sections) return [];
+    if (!article?.sections && !article?.content) return [];
+    if (article?.content) return article.content;
     return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
   }, [article]);
   
-  const allSummaryPoints = useMemo(() => {
-    if (!activeSections) return [];
-    const points: { title: string; id: string }[] = [];
-    activeSections.forEach((s: any) => {
-      if (s.title) {
-        points.push({ title: s.title, id: slugify(s.title) });
-      }
-      if (s.subsections) {
-        s.subsections.forEach((sub: any) => {
-          const lowerTitle = (sub.title || "").toLowerCase();
-          const isCategory = ["roadster", "trail", "sportive"].some(cat => lowerTitle.includes(cat));
-          const isNumberPoint = /^[1-4]\./.test(lowerTitle);
-          if (sub.title && isCategory && !isNumberPoint) {
-            points.push({ title: sub.title, id: slugify(sub.title) });
-          }
-        });
-      }
-    });
-    return points;
-  }, [activeSections]);
-
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
       router.push(`/map?search=${encodeURIComponent(searchTerm)}`);
@@ -106,63 +91,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   const handleFilterChange = (filter: 'shopping' | 'service') => {
     router.push(`/map?filter=${filter}`);
-  };
-
-  const renderNote = (note: string) => {
-    if (!note) return null;
-    const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    const budgetId = "combien-coute-vraiment-une-moto-par-mois"; 
-    const triggers = [
-        "notre guide sur le coût réel d’une moto par mois",
-        "notre guide sur le coût moyen d’une moto par mois",
-        "Vérifie AVANT l’achat pour éviter les mauvaises surprises",
-        "consulte aussi Combien coûte vraiment une moto par mois",
-        "consulte aussi notre guide"
-    ];
-    let content: React.ReactNode = note;
-    let foundTrigger = triggers.find(t => note.includes(t));
-    if (foundTrigger) {
-      const parts = note.split(foundTrigger);
-      content = (<>{parts[0]}<Link href={`/info/${budgetId}`} className="text-foreground font-black underline hover:text-brand transition-colors">{budgetArticleTitle}</Link>{parts[1]}</>);
-    }
-    return (<div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">{content}</div>);
-  };
-
-  const renderTable = (tableData: any) => {
-    if (!tableData) return null;
-    const headers = tableData.headers || [];
-    const rows = tableData.rows || [];
-    const normalize = (s: string) => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "");
-    return (
-      <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
-        <Table>
-          <TableHeader className="bg-muted/50"><TableRow>{headers.map((h: string, i: number) => (<TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px] whitespace-nowrap">{h}</TableHead>))}</TableRow></TableHeader>
-          <TableBody>
-            {rows.map((row: any, ri: number) => {
-              const rowValues = headers.map((header: string, hi: number) => {
-                const normHeader = normalize(header);
-                if (Array.isArray(row)) return row[hi] !== undefined ? row[hi] : '';
-                if (row[header] !== undefined) return row[header];
-                const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
-                if (foundExact) return row[foundExact];
-                const foundKey = Object.keys(row).find(k => {
-                    const nk = normalize(k); const nh = normHeader;
-                    if (nk === nh) return true;
-                    if (nk.length > 2 && nh.includes(nk)) return true;
-                    if (nh.length > 2 && nk.includes(nh)) return true;
-                    const sharedWords = ["usage", "budget", "prix", "entretien", "frequence", "revision"];
-                    return sharedWords.some(word => nk.includes(word) && nh.includes(word));
-                });
-                if (foundKey) return row[foundKey];
-                const keys = Object.keys(row); if (keys[hi] !== undefined) return row[keys[hi]];
-                return '';
-              });
-              return (<TableRow key={ri} className="hover:bg-muted/30">{rowValues.map((cell: any, ci: number) => (<TableCell key={ci} className={cn("py-4 text-foreground font-black", ci === 0 && "font-black")}>{String(cell)}</TableCell>))}</TableRow>);
-            })}
-          </TableBody>
-        </Table>
-      </div>
-    );
   };
 
   const renderComparisonGrid = (items: any[]) => {
@@ -180,8 +108,8 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 {ficheId && <ExternalLink className="h-4 w-4 text-muted-foreground group-hover/card:text-brand transition-colors" />}
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
-                {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Avantages</div><ul className="list-none space-y-2">{item.strengths.map((s: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-green-500 font-black shrink-0">•</span> {s}</li>))}</ul></div>)}
-                {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2"><AlertTriangle className="h-3 w-3" /> Inconvénients</div><ul className="list-none space-y-2">{item.weaknesses.map((w: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-red-400 font-black shrink-0">•</span> {w}</li>))}</ul></div>)}
+                {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> {id.includes('assurance') ? 'Conseils clés' : 'Avantages'}</div><ul className="list-none space-y-2">{item.strengths.map((s: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-green-500 font-black shrink-0">•</span> {s}</li>))}</ul></div>)}
+                {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (<div className="space-y-3"><div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2"><AlertTriangle className="h-3 w-3" /> {id.includes('assurance') ? 'Vigilance' : 'Inconvénients'}</div><ul className="list-none space-y-2">{item.weaknesses.map((w: string, j: number) => (<li key={j} className="text-sm font-black flex items-start gap-2 text-foreground"><span className="text-red-400 font-black shrink-0">•</span> {w}</li>))}</ul></div>)}
               </CardContent>
               {ficheId && (
                 <CardFooter className="bg-brand/5 p-3 border-t">
@@ -196,7 +124,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               {content}
             </Link>
           ) : (
-            <div key={idx}>{content}</div>
+            <div key={idx} className="h-full">{content}</div>
           );
         })}
       </div>
@@ -210,13 +138,19 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (<p key={pi} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>))}
-        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
-        {section.table && renderTable(section.table)}
-        {section.note && renderNote(section.note)}
+        {section.text && <p className="text-lg text-foreground font-bold leading-relaxed mb-6">{section.text}</p>}
+        {section.type === 'paragraph' && section.text && <p className="text-lg text-foreground font-bold leading-relaxed mb-6">{section.text}</p>}
+        {section.type === 'paragraph' && section.html && <p className="text-lg text-foreground font-bold leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: section.html }} />}
+        {section.type === 'heading' && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.text}</h2>}
+        {section.type === 'list' && section.items && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.items.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
+        {section.type === 'comparison' && renderComparisonGrid(section.subsections || [])}
+        {section.type === 'signature' && (
+            <div className="flex justify-end items-center mt-12 pt-8 border-t border-brand/10">
+                <p className="text-lg font-bold text-foreground/90 relative z-10">{section.text}</p>
+                {section.imageUrl && <Image src={section.imageUrl} alt={section.alt || "Signature"} width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" />}
+            </div>
+        )}
         {hasComparisonSubsections ? (<div className="mt-8">{renderComparisonGrid(section.subsections)}</div>) : hasComparisonData ? (<div className="mt-8">{renderComparisonGrid([section])}</div>) : (section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>))}
-        {section.title && (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && id !== 'combien-coute-vraiment-une-moto-par-mois' && (<div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl"><Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="group flex items-center justify-between gap-4"><div className="flex-1"><p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dossier Spécial</p><h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">Calculer mon budget réel →</h4><p className="text-xs text-muted-foreground mt-1 font-medium">Assurance, entretien, équipement : ne laissez rien au hasard.</p></div><div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0"><FileText className="h-5 w-5" /></div></Link></div>)}
-        {section.conclusion && <p className="text-lg text-foreground font-black mt-6 italic border-l-4 border-muted pl-4">{section.conclusion}</p>}
       </div>
     );
   };
@@ -228,18 +162,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     <div className="min-h-screen relative">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
       
-      {/* Filigrane Logo */}
-      <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
-        <Image
-          src="/images/logo-moto.png?v=6"
-          alt=""
-          width={600}
-          height={192}
-          className="opacity-[0.03] rotate-[-15deg]"
-          priority
-        />
-      </div>
-
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand transition-colors shrink-0">Conseils</Link><ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span></nav>
@@ -248,13 +170,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               <article>
                 <div className="relative w-full aspect-video md:aspect-[2/1] rounded-3xl overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted group"><Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" priority /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" /><div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full"><h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 drop-shadow-lg max-w-[95%]">{article.display_title || article.title}</h1><div className="flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-widest opacity-90"><span>Par {article.author || "L'équipe Label Moto"}</span></div></div></div>
                 <div className="space-y-6">
-                    <div className="mb-12">{article.intro && Array.isArray(article.intro) && article.intro.map((p: string, i: number) => (<p key={i} className="text-xl leading-relaxed text-foreground font-black mb-4">{p}</p>))}
-                      {allSummaryPoints.length > 0 && (<div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10"><p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p><ul className="list-none space-y-3 pl-0">{allSummaryPoints.map((pt, i) => (<li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item"><CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" /><a href={`#${pt.id}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">{pt.title}</a></li>))}</ul></div>)}
-                      {article.intro_conclusion && (<p className="text-lg leading-relaxed text-foreground font-black italic border-l-4 border-brand pl-6 my-8">{article.intro_conclusion}</p>)}
-                    </div>
-                    <div className="space-y-4">{article.sections && article.sections.map((section: any, idx: number) => renderSection(section, idx))}</div>
-                    {article.faq && article.faq.length > 0 && (<div className="pt-12 space-y-6" id="faq"><div className="flex items-center gap-3"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase tracking-tight text-foreground">Questions fréquentes</h3></div><Accordion type="single" collapsible className="w-full">{article.faq.map((item: any, idx: number) => (<AccordionItem key={idx} value={`item-${idx}`} className="border-b-brand/10"><AccordionTrigger className="text-left font-black text-foreground py-4 hover:text-brand transition-colors leading-tight">{item.question}</AccordionTrigger><AccordionContent className="text-foreground font-bold leading-relaxed pb-4">{item.answer}</AccordionContent></AccordionItem>))}</Accordion></div>)}
-                    {article.conclusion && (<div className="mt-16 pt-8 border-t border-brand/20"><div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div><div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={i} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div><div className="flex justify-end items-center mt-8"><p className="text-lg font-black text-foreground relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div></div>)}
+                    <div className="space-y-4">{activeSections && activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
                 </div>
               </article>
             </div>

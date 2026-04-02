@@ -1,143 +1,110 @@
 
 [
   {
-    "id": "4",
-    "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
-    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu. Cet article détaille le coût réel d’une moto pour un débutant.",
+    "id": "assurance-moto-2026-le-guide-complet",
+    "title": "Assurance Moto 2026 : Le guide complet pour bien s'assurer",
+    "description": "Tarifs, nouvelles garanties et astuces pour 2026. Découvrez comment choisir le meilleur contrat selon votre profil de motard.",
     "author": "L'équipe Label Moto",
-    "readingTime": "8 min de lecture",
-    "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlfGVufDB8fHx8MTc3MTUxMDk3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
-    "imageHint": "motorcycle budget",
+    "readingTime": "10 min de lecture",
+    "imageUrl": "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhc3N1cmFuY2UlMjBtb3RvfGVufDB8fHx8MTc3MDk4ODQ4MHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "imageHint": "assurance moto",
     "content": [
         {
             "type": "paragraph",
-            "text": "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours."
-        },
-        {
-            "type": "paragraph",
-            "text": "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent."
-        },
-        {
-            "type": "paragraph",
-            "text": "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis."
-        },
-        {
-            "type": "paragraph",
-            "html": "Dans cet article, on va détailler <strong>le coût réel d’une moto pour un débutant</strong> :"
-        },
-        {
-            "type": "list",
-            "items": ["prix d’achat", "assurance", "carburant", "entretien", "équipement"]
-        },
-        {
-            "type": "paragraph",
-            "text": "À la fin, tu sauras exactement combien prévoir par mois avant d’acheter ta première moto."
+            "text": "S'assurer en 2026 n'est plus seulement une question de prix. Avec l'évolution des technologies embarquées (e-call, trackers GPS obligatoires pour certains contrats) et les nouvelles réglementations sur le contrôle technique, le paysage de l'assurance moto a profondément changé."
         },
         {
             "type": "heading",
-            "text": "Le prix d’achat : le budget de départ"
+            "text": "Les 3 formules incontournables"
         },
         {
             "type": "paragraph",
-            "text": "Avant même de penser à rouler, il faut acheter the moto. Et c’est souvent là que les futurs motards se trompent : ils regardent uniquement le prix affiché… sans anticiper le reste."
-        },
-        {
-            "type": "paragraph",
-            "html": "Pour un permis A2, le budget moyen en France se situe généralement entre <strong>3 000 € et 7 000 €</strong> :"
+            "text": "Bien que chaque assureur propose ses variantes, la structure reste basée sur trois piliers :"
         },
         {
             "type": "list",
             "items": [
-                "3 000 à 4 500 € → moto d’occasion raisonnable pour débuter",
-                "4 500 à 6 000 € → modèle récent bien équipé",
-                "6 000 à 7 000 € → moto quasi neuve ou concession"
+                "Au Tiers (Responsabilité Civile) : Le minimum légal, conseillé pour les motos de faible valeur ou de plus de 15 ans.",
+                "Tiers + (Vol & Incendie) : Le meilleur rapport qualité/prix pour les motos d'occasion de valeur moyenne.",
+                "Tous Risques : Indispensable pour les motos neuves, en LOA/LLD ou de forte valeur."
             ]
         },
         {
+            "type": "heading",
+            "text": "Quel profil êtes-vous ? (Conseils personnalisés)"
+        },
+        {
             "type": "paragraph",
-            "text": "Beaucoup de débutants veulent acheter neuf pour être rassurés. Mais en réalité, une première moto subit souvent :"
+            "text": "Selon votre expérience et votre usage, les garanties prioritaires ne sont pas les mêmes. Voici notre analyse par profil :"
+        },
+        {
+            "type": "comparison",
+            "subsections": [
+                {
+                    "title": "Le Jeune Permis A2",
+                    "strengths": [
+                        "Privilégier la garantie 'Individuelle Pilote' (indispensable quand on débute)",
+                        "Assistance 0 km recommandée",
+                        "Bonus écologique sur les petites cylindrées"
+                    ],
+                    "weaknesses": [
+                        "Tarifs élevés la première année",
+                        "Franchises souvent importantes sur le vol"
+                    ]
+                },
+                {
+                    "title": "Le Motard Urbain (Quotidien)",
+                    "strengths": [
+                        "Garantie équipements et accessoires (casque, gants, top-case)",
+                        "Protection contre le vol en stationnement voie publique",
+                        "Option véhicule de remplacement"
+                    ],
+                    "weaknesses": [
+                        "Risque de sinistre 'parking' élevé",
+                        "Attention aux exclusions sur le prêt de guidon"
+                    ]
+                },
+                {
+                    "title": "Le Grand Voyageur (Trail/GT)",
+                    "strengths": [
+                        "Assistance internationale premium",
+                        "Garantie bagagerie et effets personnels",
+                        "Protection juridique étendue"
+                    ],
+                    "weaknesses": [
+                        "Vérifier les plafonds de remboursement hors France",
+                        "Exclusions possibles sur le off-road (chemins)"
+                    ]
+                },
+                {
+                    "title": "Le Passionné (Sportive/Custom)",
+                    "strengths": [
+                        "Valeur à neuf prolongée (jusqu'à 3 ans)",
+                        "Garantie sur les pièces de personnalisation",
+                        "Expertise dédiée en cas de sinistre"
+                    ],
+                    "weaknesses": [
+                        "Exclusion totale sur circuit (hors roulage libre)",
+                        "Primes très sensibles au lieu de garage"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "heading",
+            "text": "Les facteurs qui font baisser la note en 2026"
+        },
+        {
+            "type": "paragraph",
+            "text": "Pour payer moins cher sans sacrifier vos garanties, jouez sur ces leviers :"
         },
         {
             "type": "list",
             "items": [
-                "petites chutes à l’arrêt",
-                "erreurs de manipulation",
-                "revente après la passerelle permis A"
-            ]
-        },
-        {
-            "type": "paragraph",
-            "text": "C’est pourquoi l’occasion reste souvent le choix le plus intelligent financièrement."
-        },
-        {
-            "type": "heading",
-            "text": "L’assurance : la plus grosse surprise pour un débutant"
-        },
-        {
-            "type": "paragraph",
-            "text": "C’est presque toujours le moment où le futur motard tombe de haut. On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double."
-        },
-        {
-            "type": "paragraph",
-            "text": "Pour un permis A2, l’assurance dépend surtout de 3 facteurs : ton âge et ton expérience, la région, et le modèle de moto."
-        },
-        {
-            "type": "table",
-            "headers": ["Profil", "Prix mensuel moyen"],
-            "rows": [
-                ["Jeune permis A2", "80 à 200 €"],
-                ["2 ans d’expérience", "50 à 120 €"],
-                ["Motard expérimenté", "30 à 70 €"]
-            ]
-        },
-        {
-            "type": "paragraph",
-            "html": "Certaines motos coûtent bien plus cher à assurer que d’autres. Par exemple, une sportive ou un modèle très volé peut coûter <strong>2 à 3 fois plus cher</strong> qu’une moto plus sage."
-        },
-        {
-            "type": "heading",
-            "text": "Le carburant : vraiment moins cher qu’une voiture ?"
-        },
-        {
-            "type": "paragraph",
-            "html": "Une moto A2 consomme en moyenne entre <strong>3,5 et 5 litres / 100 km</strong> selon le modèle et la conduite. En usage quotidien, on tourne plutôt autour de 4 L/100."
-        },
-        {
-            "type": "heading",
-            "text": "L’entretien : le coût invisible qui compte vraiment"
-        },
-        {
-            "type": "paragraph",
-            "text": "Une moto coûte rarement cher à l’achat… mais elle coûte régulièrement à entretenir. Et contrairement à une voiture, certaines pièces s’usent beaucoup plus vite."
-        },
-        {
-            "type": "table",
-            "headers": ["Élément", "Fréquence moyenne", "Prix"],
-            "rows": [
-                ["Pneus", "8 000 à 15 000 km", "250 à 350 €"],
-                ["Kit chaîne", "20 000 à 30 000 km", "150 à 300 €"],
-                ["Révision annuelle", "1 fois/an", "150 à 400 €"],
-                ["Plaquettes de frein", "10 000 à 20 000 km", "40 à 120 €"],
-                ["Batterie", "3 à 5 ans", "60 à 120 €"]
-            ]
-        },
-        {
-            "type": "paragraph",
-            "html": "En moyenne, un motard débutant dépense <strong>300 à 600 € par an</strong>, soit environ <strong>25 à 50 € par mois</strong>."
-        },
-        {
-            "type": "heading",
-            "text": "L’équipement du motard : un vrai investissement"
-        },
-        {
-            "type": "table",
-            "headers": ["Équipement", "Prix moyen"],
-            "rows": [
-                ["Casque homologué", "150 à 400 €"],
-                ["Gants homologués", "40 à 120 €"],
-                ["Blouson renforcé", "150 à 350 €"],
-                ["Chaussures ou bottes", "100 à 250 €"],
-                ["Antivol homologué", "80 à 200 €"]
+                "L'installation d'un Tracker GPS agréé SRA (souvent -10% sur la prime vol).",
+                "Le stationnement dans un parking clos et sécurisé.",
+                "Le regroupement de vos contrats (Auto + Moto + Habitation).",
+                "L'option 'Pay as you ride' (assurance au kilomètre) si vous roulez moins de 5000 km/an."
             ]
         },
         {
@@ -146,7 +113,7 @@
         },
         {
             "type": "paragraph",
-            "text": "Une moto coûte surtout cher quand on choisit mal son premier modèle. En anticipant le budget réel, tu évites les mauvaises surprises et tu profites vraiment de ta moto."
+            "text": "L'assurance parfaite n'existe pas, il existe seulement celle qui correspond à votre usage réel au prix le plus juste. N'hésitez pas à comparer chaque année, car la fidélité est rarement récompensée dans ce secteur."
         },
         {
             "type": "signature",
@@ -157,170 +124,55 @@
     ]
   },
   {
+    "id": "4",
+    "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu. Cet article détaille le coût réel d’une moto pour un débutant.",
+    "author": "L'équipe Label Moto",
+    "readingTime": "8 min de lecture",
+    "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlfGVufDB8fHx8MTc3MTUxMDk3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "imageHint": "motorcycle budget",
+    "content": [
+        { "type": "paragraph", "text": "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours." },
+        { "type": "heading", "text": "L’assurance : la plus grosse surprise pour un débutant" },
+        { "type": "paragraph", "text": "C’est presque toujours le moment où le futur motard tombe de haut. On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double." },
+        { "type": "note", "note": "Pour bien comprendre les enjeux, consultez notre guide : Assurance Moto 2026 : Le guide complet pour bien s'assurer." },
+        { "type": "table", "headers": ["Profil", "Prix mensuel moyen"], "rows": [["Jeune permis A2", "80 à 200 €"], ["2 ans d’expérience", "50 à 120 €"], ["Motard expérimenté", "30 à 70 €"]] },
+        { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
+    ]
+  },
+  {
     "id": "5",
     "title": "Achat moto d’occasion : le guide complet pour éviter les pièges",
-    "description": "Notre guide complet pour acheter une moto d'occasion en toute sécurité. Apprenez à inspecter une moto, vérifier les documents, et négocier le meilleur prix pour éviter les pièges.",
+    "description": "Notre guide complet pour acheter une moto d'occasion en toute sécurité. Apprenez à inspecter une moto, vérifier les documents, et négocier le meilleur prix.",
     "author": "L'équipe Label Moto",
     "readingTime": "8 min de lecture",
     "imageUrl": "/images/evitelespieges.jpg",
     "imageHint": "motorcycle road trip",
     "content": [
-      {
-        "type": "paragraph",
-        "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper."
-      },
-      {
-        "type": "heading",
-        "text": "1. Inspection visuelle : le premier diagnostic"
-      },
-      {
-        "type": "list",
-        "items": [
-          "Selle abîmée ou réservoir cabossé → chute probable",
-          "Embouts de guidon et repose-pieds rayés → chute/glissade",
-          "Pneus : regarde la date sur les flancs (DOT). Au-delà de 5 ans → remplacement obligatoire",
-          "Disques de frein ou plaquette trop creusés → entretien négligé",
-          "Chaîne rouillée ou détendue → mauvais suivi",
-          "Fuite sur la fourche → joints spi à remplacer"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "2. Les documents obligatoires"
-      },
-      {
-        "type": "list",
-        "items": [
-          "Carte grise au nom du vendeur",
-          "Numéro VIN identique (cadre / carte grise)",
-          "Certificat de non-gage de moins de 15 jours",
-          "Factures d’entretien ou carnet tamponné",
-          "Rapport Histovec"
-        ]
-      },
-      {
-        "type": "heading",
-        "text": "3. L'essai routier et la négociation"
-      },
-      {
-        "type": "paragraph",
-        "text": "Ne négligez jamais l'essai dynamique. Une moto qui démarre bien peut révéler des faiblesses une fois en route (boîte de vitesse dure, embrayage qui patine, freins spongieux). Enfin, utilisez chaque défaut constaté pour négocier le prix de manière rationnelle."
-      },
-      {
-        "type": "heading",
-        "text": "🏁 Conclusion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
+      { "type": "paragraph", "text": "Acheter une moto d’occasion est souvent le passage obligé pour un motard, surtout lors d’un premier achat. Mais entre les annonces trop belles pour être vraies, les vendeurs pressés et les motos mal entretenues, il est facile de se tromper." },
+      { "type": "heading", "text": "🏁 Conclusion" },
+      { "type": "paragraph", "text": "Acheter une moto d’occasion n’est pas risqué si tu sais quoi vérifier. Prends ton temps, compare, essaye… et surtout ne te précipite jamais." },
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   },
   {
     "id": "6",
     "title": "Achat moto A2 : le guide complet des meilleures motos pour débuter",
-    "description": "Choisir sa première moto A2 n'est pas simple. Ce guide complet vous aide à trouver la moto idéale selon votre gabarit, votre usage et votre budget, avec une sélection des meilleurs modèles.",
+    "description": "Choisir sa première moto A2 n'est pas simple. Ce guide complet vous aide à trouver la moto idéale selon votre gabarit, votre usage et votre budget.",
     "author": "L'équipe Label Moto",
     "readingTime": "9 min de lecture",
     "imageUrl": "/images/achat-occasion.jpg",
     "imageHint": "motorcycle dealership",
     "content": [
-      {
-        "type": "paragraph",
-        "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite."
-      },
-      {
-        "type": "paragraph",
-        "html": "Avec le permis A2, tu peux conduire une moto limitée à <strong>35 kW (47,5 chevaux)</strong> avec un rapport puissance/poids maximal de <strong>0,2 kW/kg</strong> (Service Public)."
-      },
-      {
-        "type": "paragraph",
-        "text": "Le but ? Apprendre progressivement sans être dépassé par la puissance."
-      },
-      {
-        "type": "paragraph",
-        "text": "Dans ce guide, on va voir : comment choisir ta moto A2, les erreurs à éviter, et les meilleures motos par catégorie."
-      },
-      {
-        "type": "heading",
-        "text": "Comment choisir sa moto A2 ?"
-      },
-      {
-        "type": "paragraph",
-        "html": "Avant de regarder un modèle précis, pose-toi ces 4 questions :<br/><br/><strong>1. Ton gabarit</strong><br/>Une moto trop haute = peur à l’arrêt. Privilégie une selle basse et un poids < 200 kg.<br/><br/><strong>2. Ton usage</strong><br/>Ville quotidien → roadster, Autoroute → trail, Plaisir weekend → sportive.<br/><br/><strong>3. Ton budget réel</strong><br/>L'assurance coûte souvent plus cher que la moto elle-même pour un jeune permis.<br/><br/><strong>4. Ton mental</strong><br/>La confiance compte plus que la puissance brute."
-      },
-      {
-        "type": "heading",
-        "text": "Meilleures motos roadster permis A2"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Yamaha MT-07 / XSR700 (A2)</strong> : La référence absolue. Moteur CP2 coupleux qui pardonne les erreurs.<br/><strong>Honda CB500 Hornet</strong> : La moto école parfaite. Simple, fiable, rassurante.<br/><strong>Kawasaki Z650</strong> : Plus mature et valorisante, idéale pour garder après la passerelle A."
-      },
-      {
-        "type": "heading",
-        "text": "Meilleurs trails permis A2"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Yamaha Tracer 7</strong> : La routière parfaite. Confort et protection.<br/><strong>Honda NX500 (CB500X)</strong> : La moto rationnelle par excellence. Polyvalente.<br/><strong>Royal Enfield Himalayan 450</strong> : Simple, robuste et accessible."
-      },
-      {
-        "type": "heading",
-        "text": "Meilleures sportives permis A2"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Yamaha R7</strong> : La sportive plaisir. Look et sensations.<br/><strong>Honda CBR500R</strong> : La sportive facile. Rassurante et fiable.<br/><strong>Kawasaki Ninja 650</strong> : Le compromis idéal entre sport et confort."
-      },
-      {
-        "type": "heading",
-        "text": "Tableau comparatif motos A2"
-      },
-      {
-        "type": "table",
-        "headers": ["Moto", "Type", "Facilité", "Budget", "Assurance", "Revente"],
-        "rows": [
-          ["MT-07", "Roadster", "🟩", "🟧", "🟥", "🟩"],
-          ["CB500 Hornet", "Roadster", "🟩", "🟩", "🟩", "🟧"],
-          ["Z650", "Roadster", "🟧", "🟧", "🟥", "🟩"],
-          ["390 Duke", "Roadster", "🟩", "🟩", "🟩", "🟧"],
-          ["Tracer 7", "Trail", "🟩", "🟧", "🟥", "🟩"],
-          ["NX500", "Trail", "🟩", "🟩", "🟩", "🟧"],
-          ["Himalayan", "Trail", "🟧", "🟩", "🟩", "🟧"],
-          ["R7", "Sportive", "🟧", "🟧", "🟥", "🟩"],
-          ["CBR500R", "Sportive", "🟩", "🟩", "🟩", "🟩"],
-          ["Ninja 650", "Sportive", "🟧", "🟧", "🟥", "🟩"]
+      { "type": "paragraph", "text": "Obtenir le permis A2, c’est le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop puissante, elle fait peur. Trop sage, on s’en lasse vite." },
+      { "type": "heading", "text": "Meilleures motos roadster permis A2" },
+      { "type": "comparison", "subsections": [
+          { "title": "Yamaha MT-07 / XSR700 (A2)", "strengths": ["moteur vivant", "très facile en ville", "forte revente"], "weaknesses": ["très volée", "assurance élevée"] },
+          { "title": "Honda CB500 Hornet", "strengths": ["ultra accessible", "faible coût d’entretien", "excellente fiabilité"], "weaknesses": ["manque de sensations"] },
+          { "title": "Kawasaki Z650", "strengths": ["polyvalente", "confortable", "belle finition"], "weaknesses": ["assurance élevée"] }
         ]
       },
-      {
-        "type": "heading",
-        "text": "FAQ – Permis A2"
-      },
-      {
-        "type": "paragraph",
-        "html": "<strong>Quelle puissance maximale ?</strong><br/>35 kW (47,5 ch).<br/><strong>Peut-on conduire une 600cc ?</strong><br/>Oui si elle est bridable.<br/><strong>Temps de conservation ?</strong><br/>Minimum 2 ans avant la passerelle."
-      },
-      {
-        "type": "heading",
-        "text": "Conclusion"
-      },
-      {
-        "type": "paragraph",
-        "text": "Choisir sa moto A2 n’est pas une question de performance mais de confiance. Une moto rassurante te fera progresser plus vite. Prends celle qui te donne envie de rouler — c’est toujours la bonne."
-      },
-      {
-        "type": "signature",
-        "text": "L'équipe Label Moto",
-        "imageUrl": "/images/Stamp-LM.png?v=2",
-        "alt": "Cachet Label Moto"
-      }
+      { "type": "signature", "text": "L'équipe Label Moto", "imageUrl": "/images/Stamp-LM.png?v=2", "alt": "Cachet Label Moto" }
     ]
   }
 ]
