@@ -69,7 +69,17 @@ function InfoPageComponent() {
     return (
         <div className="bg-background min-h-screen">
             <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
-            <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden"><Image src="/images/logo-moto.png?v=6" alt="Label Moto Watermark" width={800} height={256} className="opacity-[0.05] rotate-[-15deg] scale-150" /></div>
+            
+            <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
+                <Image
+                    src="/images/logo-moto.png?v=6"
+                    alt="Label Moto Watermark"
+                    width={800}
+                    height={256}
+                    className="opacity-[0.05] rotate-[-15deg] scale-150"
+                />
+            </div>
+
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
                 <div className="max-w-6xl mx-auto">
                     <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>

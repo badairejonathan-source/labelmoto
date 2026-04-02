@@ -192,7 +192,17 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   return (
     <div className="bg-background min-h-screen">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
-      <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden"><Image src="/images/logo-moto.png?v=6" alt="Label Moto Watermark" width={800} height={256} className="opacity-[0.08] rotate-[-15deg] scale-150" /></div>
+      
+      <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
+        <Image
+          src="/images/logo-moto.png?v=6"
+          alt="Label Moto Watermark"
+          width={800}
+          height={256}
+          className="opacity-[0.08] rotate-[-15deg] scale-150"
+        />
+      </div>
+
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand transition-colors shrink-0">Conseils</Link><ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span></nav>
