@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -35,7 +36,10 @@ export default function LandingPage() {
     };
 
     const getArticleImage = (article: any) => {
-        if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+        if (article.imageUrl && article.imageUrl.trim() !== '') {
+            if (article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
+            return article.imageUrl;
+        }
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
         
@@ -44,6 +48,7 @@ export default function LandingPage() {
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
         if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
+        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
         
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     };
@@ -127,7 +132,7 @@ export default function LandingPage() {
                     <div className="flex flex-col lg:flex-row min-h-[350px]">
                       <div className="hidden lg:flex w-20 bg-muted/30 border-r border-border/50 items-center justify-center py-8 shrink-0"><span className="text-2xl font-black text-brand/10 tracking-[0.4em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>Espace Pro</span></div>
                       <div className="flex-grow flex flex-col lg:flex-row items-center p-8 md:p-12 gap-8 lg:gap-16">
-                        <div className="flex-1 text-center lg:text-left"><h2 className="text-3xl md:text-5xl font-black text-foreground leading-[0.9] mb-6 uppercase tracking-tighter">Professionnels, rejoignez le réseau Label Moto.</h2><p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.</p><div className="flex flex-col gap-4 items-center lg:items-start"><Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href={proRegisterLink}>🔘 Créer la fiche de mon établissement</Link></Button><Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href="/map?mode=pro_edit">🔘 Modifier une fiche existante</Link></Button></div></div>
+                        <div className="flex-1 text-center lg:text-left"><h2 className="text-3xl md:text-5xl font-black text-foreground leading-[0.9] mb-6 uppercase tracking-tighter">Professionnels, rejoignez le réseau Label Moto.</h2><p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.</p><div className="flex flex-col gap-4 items-center lg:items-start"><Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href={proRegisterLink}>🔘 Créer la fiche de mon établissement</Link></Button><Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href="/map?mode=pro_edit">🔘 Modifier une fiche existante</Link></Button></div></div>
                         <div className="flex-1 relative w-full max-w-md lg:max-w-none"><div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white -rotate-2 group-hover:rotate-0 transition-all duration-1000 ease-out transform group-hover:scale-[1.05]"><Image src="/images/apercufiche.png" alt="Interface Pro Preview" fill className="object-cover" /></div><div className="absolute -bottom-4 right-4 bg-brand text-white px-5 py-2 rounded-2xl shadow-2xl font-black text-[10px] md:text-xs rotate-6 flex items-center gap-2 border-2 border-white"><div className="w-2 h-2 bg-white rounded-full animate-pulse" />100% GRATUIT</div></div>
                       </div>
                     </div>

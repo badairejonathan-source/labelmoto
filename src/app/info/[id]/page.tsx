@@ -65,7 +65,11 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
-    if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    if (article.imageUrl && article.imageUrl.trim() !== '') {
+        // Force the new image for the assurance article even if it's stored differently in Firestore for now
+        if (id.includes('assurance') || article.id?.includes('assurance')) return "/images/motard-article-assurance2026.png";
+        return article.imageUrl;
+    }
     const articleId = (article.id || id).toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
     
@@ -74,7 +78,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
     if (articleId.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
-    if (articleId.includes('assurance') || title.includes('assurance')) return "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?q=80&w=1080";
+    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
@@ -318,13 +322,17 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
         {section.list && Array.isArray(section.list) && (
           <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
-            {section.list.map((item: string, li: number) => <li key={li} className="text-lg text-foreground font-black">{item}</li>)}
+            {section.list.map((item: string, li: number) => (
+              <li key={li} className="text-lg text-foreground font-black">{item}</li>
+            ))}
           </ul>
         )}
 
         {section.ordered_list && Array.isArray(section.ordered_list) && (
           <ol className="list-decimal list-inside space-y-3 mb-8 pl-4">
-            {section.ordered_list.map((item: string, li: number) => <li key={li} className="text-lg text-foreground font-black">{item}</li>)}
+            {section.ordered_list.map((item: string, li: number) => (
+              <li key={li} className="text-lg text-foreground font-black">{item}</li>
+            ))}
           </ol>
         )}
 
