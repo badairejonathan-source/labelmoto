@@ -38,8 +38,6 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('nx500') || t.includes('cb500x')) return 'honda-nx500-2024-plus';
   if (t.includes('r7')) return 'yamaha-r7-2022-plus';
   if (t.includes('cbr500r')) return 'honda-cbr500r-2022-plus';
-  if (t.includes('himalayan')) return 'bmw-g310r-2021-plus';
-  if (t.includes('390 duke')) return 'bmw-g310r-2021-plus';
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
   return null;
 };
@@ -131,7 +129,7 @@ export default function EntretienPage() {
       if (s.subsections) {
         s.subsections.forEach((sub: any) => {
           if (sub.title) {
-            points.push({ title: sub.title, id: slugify(sub.title) });
+            points.push({ title: s.title, id: slugify(sub.title) });
           }
         });
       }

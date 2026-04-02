@@ -44,8 +44,6 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('nx500') || t.includes('cb500x')) return 'honda-nx500-2024-plus';
   if (t.includes('r7')) return 'yamaha-r7-2022-plus';
   if (t.includes('cbr500r')) return 'honda-cbr500r-2022-plus';
-  if (t.includes('himalayan')) return 'bmw-g310r-2021-plus'; // Placeholder logic if specific not found
-  if (t.includes('390 duke')) return 'bmw-g310r-2021-plus';
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
   return null;
 };
@@ -260,7 +258,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 </div>
               </article>
             </div>
-            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto près de chez vous.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
+            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto en France.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
           </div>
         </div>
       </main>
