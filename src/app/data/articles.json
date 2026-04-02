@@ -2,123 +2,122 @@
 [
   {
     "id": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
-    "title": "Assurance moto 2026 : bien choisir sa formule selon votre profil",
+    "title": "Assurance Moto 2026 : Bien choisir sa formule selon votre profil",
     "description": "Tarifs, nouvelles garanties et astuces pour 2026. Découvrez comment choisir le meilleur contrat selon votre profil de motard.",
     "author": "L'équipe Label Moto",
     "readingTime": "10 min de lecture",
     "imageUrl": "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhc3N1cmFuY2UlMjBtb3RvfGVufDB8fHx8MTc3MDk4ODQ4MHww&ixlib=rb-4.1.0&q=80&w=1080",
     "imageHint": "assurance moto",
     "content": [
-        {
-            "type": "paragraph",
-            "text": "S'assurer en 2026 n'est plus seulement une question de prix. Avec l'évolution des technologies embarquées (e-call, trackers GPS obligatoires pour certains contrats) et les nouvelles réglementations sur le contrôle technique, le paysage de l'assurance moto a profondément changé."
-        },
-        {
-            "type": "heading",
-            "text": "Les 3 formules incontournables"
-        },
-        {
-            "type": "paragraph",
-            "text": "Bien que chaque assureur propose ses variantes, la structure reste basée sur trois piliers :"
-        },
-        {
-            "type": "list",
-            "items": [
-                "Au Tiers (Responsabilité Civile) : Le minimum légal, conseillé pour les motos de faible valeur ou de plus de 15 ans.",
-                "Tiers + (Vol & Incendie) : Le meilleur rapport qualité/prix pour les motos d'occasion de valeur moyenne.",
-                "Tous Risques : Indispensable pour les motos neuves, en LOA/LLD ou de forte valeur."
+      {
+        "title": "Ce qui a changé depuis 2024",
+        "text": "Le paysage de l'assurance a fortement évolué. La généralisation du contrôle technique et l'essor des boîtiers GPS connectés ont transformé la tarification. Aujourd'hui, un motard qui équipe sa machine d'un tracker certifié peut espérer une réduction de 10 à 15% sur sa prime vol."
+      },
+      {
+        "title": "Les 3 grandes formules d’assurance moto",
+        "text": "Il existe trois niveaux de protection classiques, adaptés à la valeur de votre moto et à votre budget."
+      },
+      {
+        "title": "1. Assurance au Tiers",
+        "text": "C'est le minimum légal. Elle couvre les dommages que vous pourriez causer aux autres. Idéale pour une moto de plus de 15 ans ou de faible valeur marchande."
+      },
+      {
+        "title": "2. Assurance Tiers Plus",
+        "text": "Le compromis idéal. Elle ajoute les garanties Vol, Incendie et parfois Brise de glace. Recommandée pour les motos d'occasion de valeur moyenne (3000€ à 7000€)."
+      },
+      {
+        "title": "3. Assurance Tous Risques",
+        "text": "La protection maximale. Elle vous indemnise même si vous êtes responsable de l'accident. Indispensable pour le neuf ou les motos en LOA/LLD."
+      },
+      {
+        "title": "Quelle formule choisir selon votre profil ?",
+        "type": "comparison",
+        "subsections": [
+          {
+            "title": "Le Jeune Permis A2",
+            "strengths": [
+              "Focus sur la garantie 'Individuelle Pilote' (capitale)",
+              "Assistance 0 km recommandée pour les pannes bêtes",
+              "Bonus écologique sur les petites cylindrées"
+            ],
+            "weaknesses": [
+              "Primes élevées les 2 premières années",
+              "Franchises souvent dissuasives sur le vol"
             ]
-        },
-        {
-            "type": "heading",
-            "text": "Quel profil êtes-vous ? (Conseils personnalisés)"
-        },
-        {
-            "type": "paragraph",
-            "text": "Selon votre expérience et votre usage, les garanties prioritaires ne sont pas les mêmes. Voici notre analyse par profil :"
-        },
-        {
-            "type": "comparison",
-            "subsections": [
-                {
-                    "title": "Le Jeune Permis A2",
-                    "strengths": [
-                        "Privilégier la garantie 'Individuelle Pilote' (indispensable quand on débute)",
-                        "Assistance 0 km recommandée",
-                        "Bonus écologique sur les petites cylindrées"
-                    ],
-                    "weaknesses": [
-                        "Tarifs élevés la première année",
-                        "Franchises souvent importantes sur le vol"
-                    ]
-                },
-                {
-                    "title": "Le Motard Urbain (Quotidien)",
-                    "strengths": [
-                        "Garantie équipements et accessoires (casque, gants, top-case)",
-                        "Protection contre le vol en stationnement voie publique",
-                        "Option véhicule de remplacement"
-                    ],
-                    "weaknesses": [
-                        "Risque de sinistre 'parking' élevé",
-                        "Attention aux exclusions sur le prêt de guidon"
-                    ]
-                },
-                {
-                    "title": "Le Grand Voyageur (Trail/GT)",
-                    "strengths": [
-                        "Assistance internationale premium",
-                        "Garantie bagagerie et effets personnels",
-                        "Protection juridique étendue"
-                    ],
-                    "weaknesses": [
-                        "Vérifier les plafonds de remboursement hors France",
-                        "Exclusions possibles sur le off-road (chemins)"
-                    ]
-                },
-                {
-                    "title": "Le Passionné (Sportive/Custom)",
-                    "strengths": [
-                        "Valeur à neuf prolongée (jusqu'à 3 ans)",
-                        "Garantie sur les pièces de personnalisation",
-                        "Expertise dédiée en cas de sinistre"
-                    ],
-                    "weaknesses": [
-                        "Exclusion totale sur circuit (hors roulage libre)",
-                        "Primes très sensibles au lieu de garage"
-                    ]
-                }
+          },
+          {
+            "title": "Le Motard Urbain (Quotidien)",
+            "strengths": [
+              "Garantie équipements (casque, gants, airbag)",
+              "Option véhicule de remplacement en cas de pépin",
+              "Assurance au kilomètre si trajet court"
+            ],
+            "weaknesses": [
+              "Risque élevé de petits sinistres stationnement",
+              "Vigilance sur les lieux de garage déclarés"
             ]
-        },
-        {
-            "type": "heading",
-            "text": "Les facteurs qui font baisser la note en 2026"
-        },
-        {
-            "type": "paragraph",
-            "text": "Pour payer moins cher sans sacrifier vos garanties, jouez sur ces leviers :"
-        },
-        {
-            "type": "list",
-            "items": [
-                "L'installation d'un Tracker GPS agréé SRA (souvent -10% sur la prime vol).",
-                "Le stationnement dans un parking clos et sécurisé.",
-                "Le regroupement de vos contrats (Auto + Moto + Habitation).",
-                "L'option 'Pay as you ride' (assurance au kilomètre) si vous roulez moins de 5000 km/an."
+          },
+          {
+            "title": "Le Grand Voyageur (Trail/GT)",
+            "strengths": [
+              "Assistance internationale premium",
+              "Garantie bagagerie et effets personnels",
+              "Protection juridique étendue"
+            ],
+            "weaknesses": [
+              "Exclusions possibles hors bitume (off-road)",
+              "Plafonds de remboursement à vérifier"
             ]
-        },
-        {
-            "type": "signature",
-            "text": "L'équipe Label Moto",
-            "imageUrl": "/images/Stamp-LM.png?v=2",
-            "alt": "Cachet Label Moto"
-        }
+          },
+          {
+            "title": "Le Passionné (Sportive/Custom)",
+            "strengths": [
+              "Valeur à neuf prolongée (jusqu'à 3 ans)",
+              "Garantie sur les pièces de personnalisation",
+              "Expertise dédiée"
+            ],
+            "weaknesses": [
+              "Exclusion totale sur circuit (hors stage)",
+              "Tarifs très sensibles au zonage géographique"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Les garanties à regarder avant de signer",
+        "type": "list",
+        "items": [
+          "L'Individuelle Pilote : La plus importante, elle vous couvre physiquement.",
+          "L'Assistance 0 km : Pour être dépanné même devant chez vous.",
+          "La garantie Équipement : Remboursement du casque, blouson et airbag.",
+          "Le rachat de franchise : Pour ne rien payer en cas de sinistre."
+        ]
+      },
+      {
+        "title": "3 conseils Label Moto avant de choisir",
+        "type": "list",
+        "items": [
+          "Comparez les franchises, pas seulement les mensualités.",
+          "Vérifiez les antivols exigés (SRA, double verrouillage, etc.).",
+          "Regroupez vos contrats (Auto + Moto) pour négocier -15%."
+        ]
+      },
+      {
+        "title": "Quelle formule pour quelle moto ?",
+        "text": "En résumé : Moto neuve = Tous Risques. Moto d'occasion < 5 ans = Tiers Plus. Moto 'vétéran' ou petit budget = Tiers simple."
+      },
+      {
+        "type": "signature",
+        "text": "L'équipe Label Moto",
+        "imageUrl": "/images/Stamp-LM.png?v=2",
+        "alt": "Cachet Label Moto"
+      }
     ]
   },
   {
     "id": "combien-coute-vraiment-une-moto-par-mois",
     "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
-    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu. Cet article détaille le coût réel d’une moto pour un débutant.",
+    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu.",
     "author": "L'équipe Label Moto",
     "readingTime": "8 min de lecture",
     "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",

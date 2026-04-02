@@ -79,8 +79,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   const activeSections = useMemo(() => {
     if (!article?.sections && !article?.content) return [];
-    if (article?.content) return article.content;
-    return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
+    return article?.content || article?.sections || [];
   }, [article]);
   
   const handleSearch = () => {
@@ -135,22 +134,54 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     const hasComparisonData = section.strengths || section.weaknesses;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
+    
+    // On rend le composant plus permissif sur le nom du champ de texte
+    const bodyText = section.text || section.content || section.body || section.description;
+
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {section.text && <p className="text-lg text-foreground font-bold leading-relaxed mb-6">{section.text}</p>}
-        {section.type === 'paragraph' && section.text && <p className="text-lg text-foreground font-bold leading-relaxed mb-6">{section.text}</p>}
-        {section.type === 'paragraph' && section.html && <p className="text-lg text-foreground font-bold leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: section.html }} />}
-        {section.type === 'heading' && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.text}</h2>}
-        {section.type === 'list' && section.items && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.items.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
+        
+        {bodyText && typeof bodyText === 'string' && (
+          <p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>
+        )}
+
+        {section.type === 'paragraph' && section.html && (
+          <p className="text-lg text-foreground font-bold leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: section.html }} />
+        )}
+
+        {section.type === 'heading' && section.text && (
+          <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.text}</h2>
+        )}
+
+        {section.type === 'list' && section.items && (
+          <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
+            {section.items.map((item: string, li: number) => (
+              <li key={li} className="text-lg text-foreground font-black">{item}</li>
+            ))}
+          </ul>
+        )}
+
         {section.type === 'comparison' && renderComparisonGrid(section.subsections || [])}
+
         {section.type === 'signature' && (
             <div className="flex justify-end items-center mt-12 pt-8 border-t border-brand/10">
                 <p className="text-lg font-bold text-foreground/90 relative z-10">{section.text}</p>
                 {section.imageUrl && <Image src={section.imageUrl} alt={section.alt || "Signature"} width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" />}
             </div>
         )}
-        {hasComparisonSubsections ? (<div className="mt-8">{renderComparisonGrid(section.subsections)}</div>) : hasComparisonData ? (<div className="mt-8">{renderComparisonGrid([section])}</div>) : (section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>))}
+
+        {hasComparisonSubsections ? (
+          <div className="mt-8">{renderComparisonGrid(section.subsections)}</div>
+        ) : hasComparisonData ? (
+          <div className="mt-8">{renderComparisonGrid([section])}</div>
+        ) : (
+          section.subsections && Array.isArray(section.subsections) && (
+            <div className="space-y-6">
+              {section.subsections.map((sub: any, si: number) => renderSection(sub, si))}
+            </div>
+          )
+        )}
       </div>
     );
   };
