@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -23,6 +24,7 @@ const ArticleCard = ({ article }: { article: any }) => {
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
         if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
+        if (id.includes('assurance') || title.includes('assurance')) return "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?q=80&w=1080";
         
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     }, [article]);
