@@ -310,7 +310,7 @@ export default function EntretienPage() {
           );
 
           return ficheId ? (
-            <Link key={idx} href={`/fiches/${ficheId}`} className="block h-full transition-transform hover:-translate-y-1">
+            <Link key={idx} href={`/fiches/${ficheId}?from=entretien`} className="block h-full transition-transform hover:-translate-y-1">
               {content}
             </Link>
           ) : (
@@ -418,7 +418,7 @@ export default function EntretienPage() {
                       </div>
                       <div className="flex items-center gap-3"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{brand.models.length} modèles</span>{isExpanded ? <Minus className="h-5 w-5 text-brand" /> : <Plus className="h-5 w-5 text-muted-foreground" />}</div>
                     </button>
-                    <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100 p-6 pt-0" : "grid-rows-[0fr] opacity-0")}><div className="overflow-hidden"><div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">{brand.models.map((model) => (<Link key={model.id} href={`/fiches/${model.id}`} className="group flex items-center justify-between p-4 bg-background/50 hover:bg-brand/5 border border-border/50 hover:border-brand/30 rounded-xl transition-all shadow-sm"><div className="flex flex-col gap-1"><span className="font-black text-sm text-foreground group-hover:text-brand transition-colors">{model.label}</span>{model.tags && (<div className="flex gap-1">{model.tags.map(tag => (<span key={tag} className="text-[8px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">{tag}</span>))}</div>)}</div><ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand group-hover:translate-x-1 transition-all" /></Link>))}</div></div></div>
+                    <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100 p-6 pt-0" : "grid-rows-[0fr] opacity-0")}><div className="overflow-hidden"><div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">{brand.models.map((model) => (<Link key={model.id} href={`/fiches/${model.id}?from=entretien`} className="group flex items-center justify-between p-4 bg-background/50 hover:bg-brand/5 border border-border/50 hover:border-brand/30 rounded-xl transition-all shadow-sm"><div className="flex flex-col gap-1"><span className="font-black text-sm text-foreground group-hover:text-brand transition-colors">{model.label}</span>{model.tags && (<div className="flex gap-1">{model.tags.map(tag => (<span key={tag} className="text-[8px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">{tag}</span>))}</div>)}</div><ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand group-hover:translate-x-1 transition-all" /></Link>))}</div></div></div>
                   </section>
                 );
               })}

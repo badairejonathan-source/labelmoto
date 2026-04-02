@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, use, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, use, useMemo, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid, Home, ChevronRight } from 'lucide-react';
@@ -33,13 +33,26 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // Import local data as fallback
 import localFiches from '@/app/data/fiches-techniques.json';
 
-export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
-  const { modelId } = React.use(params);
+function FicheTechniqueContent({ modelId }: { modelId: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [isPartieCycleOpen, setIsPartieCycleOpen] = useState(false);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   
+  const from = searchParams.get('from');
+  
+  const returnUrl = useMemo(() => {
+    if (!from) return null;
+    if (from === 'entretien') return '/entretien';
+    return `/info/${from}`;
+  }, [from]);
+
+  const returnLabel = useMemo(() => {
+    if (from === 'entretien') return "Retour au catalogue d'entretien";
+    return "Continuer la lecture de l'article";
+  }, [from]);
+
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: firestoreFiche, isLoading } = useDoc(ficheRef);
@@ -194,6 +207,17 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
             <ChevronRight className="h-3 w-3 shrink-0" />
             <span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{displayData.modelName}</span>
           </nav>
+
+          {returnUrl && (
+            <div className="mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
+              <Button asChild variant="outline" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-[10px] tracking-widest px-6 h-10 rounded-full shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]">
+                <Link href={returnUrl} className="flex items-center gap-2">
+                  <ArrowLeft className="h-4 w-4" />
+                  {returnLabel}
+                </Link>
+              </Button>
+            </div>
+          )}
 
           <div className="space-y-8">
             {/* Hero Section - Branding Format */}
@@ -533,5 +557,20 @@ export default function FicheTechniquePage({ params }: { params: Promise<{ model
         </div>
       </main>
     </div>
+  );
+}
+
+export default function FicheTechniquePage({ params }: { params: Promise<{ modelId: string }> }) {
+  const { modelId } = React.use(params);
+  
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />
+        <p className="text-muted-foreground font-bold">Initialisation...</p>
+      </div>
+    }>
+      <FicheTechniqueContent modelId={modelId} />
+    </Suspense>
   );
 }

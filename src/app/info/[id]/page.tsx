@@ -194,7 +194,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           );
 
           return ficheId ? (
-            <Link key={idx} href={`/fiches/${ficheId}`} className="block h-full transition-transform hover:-translate-y-1">
+            <Link key={idx} href={`/fiches/${ficheId}?from=${id}`} className="block h-full transition-transform hover:-translate-y-1">
               {content}
             </Link>
           ) : (
