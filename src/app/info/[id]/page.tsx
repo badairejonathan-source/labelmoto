@@ -28,6 +28,9 @@ import { cn } from '@/lib/utils';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
+// Fallback data
+import localArticles from '@/app/data/articles.json';
+
 const slugify = (text: string) => 
   text.toLowerCase()
       .normalize("NFD")
@@ -61,15 +64,18 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   const firestore = useFirestore();
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
-  const { data: article, isLoading } = useDoc(articleRef);
+  const { data: firestoreArticle, isLoading: isDbLoading } = useDoc(articleRef);
+
+  const article = useMemo(() => {
+    if (firestoreArticle) return firestoreArticle;
+    return (localArticles as any[]).find(a => a.id === id) || null;
+  }, [firestoreArticle, id]);
 
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
-    if (article.imageUrl && article.imageUrl.trim() !== '') {
-        // Force the new image for the assurance article even if it's stored differently in Firestore for now
-        if (id.includes('assurance') || article.id?.includes('assurance')) return "/images/motard-article-assurance2026.png";
-        return article.imageUrl;
-    }
+    if (id.includes('assurance') || article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
+    if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    
     const articleId = (article.id || id).toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
     
@@ -78,7 +84,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
     if (articleId.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
-    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
@@ -270,7 +275,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         
-        {/* Intégration du CTA Budget Réel si le titre correspond */}
         {section.title && 
          (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && (
           <div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl mb-8">
@@ -289,7 +293,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </div>
         )}
 
-        {/* Intégration du CTA Assurance si le titre correspond (cas spécifique demandé pour la section assurance) */}
         {section.title && 
          (section.title.toLowerCase().includes('assurance')) && 
          id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
@@ -388,7 +391,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     );
   };
 
-  if (isLoading) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement de l'article...</p></div>);
+  if (isDbLoading && !article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement de l'article...</p></div>);
   if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><p className="text-muted-foreground mb-8">Nous n'avons pas trouvé l'article demandé.</p><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   return (
@@ -439,7 +442,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                     {activeSections && activeSections.map((section: any, idx: number) => renderSection(section, idx))}
                 </div>
 
-                {/* Lien vers l'article Assurance si on n'y est pas déjà et avant la conclusion */}
                 {id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
                   <div className="mt-16 p-8 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-3xl shadow-sm group">
                     <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex flex-col md:flex-row items-center gap-6">

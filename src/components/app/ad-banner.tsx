@@ -7,7 +7,7 @@ import { FileText } from 'lucide-react';
 
 const AdBanner: React.FC = () => {
   const article = {
-    id: '5',
+    id: 'achat-moto-occasion-eviter-les-pieges',
     imageUrl: '/images/evitelespieges.jpg',
     imageHint: 'motorcycle road trip',
     title: 'Achat moto d’occasion : le guide pour éviter les pièges',
@@ -38,5 +38,3 @@ const AdBanner: React.FC = () => {
 };
 
 export default AdBanner;
-
-    

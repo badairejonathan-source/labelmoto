@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -21,9 +22,9 @@ import LocationPrompt from '@/components/app/location-prompt';
 const brandsList = Object.keys(brandLogos);
 
 const ads = [
-  { id: '5', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.jpg' },
-  { id: '4', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: 'https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080' },
-  { id: '6', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.jpg' },
+  { id: 'achat-moto-occasion-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.jpg' },
+  { id: 'combien-coute-vraiment-une-moto-par-mois', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: 'https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080' },
+  { id: 'achat-moto-a2-guide-complet-meilleures-motos-pour-debuter', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.jpg' },
   { id: 'entretien-moto-intervalles-prix-conseils-par-modele', title: 'Guide d\'entretien & révisions', description: 'Tous les intervalles et prix estimés pour votre modèle de moto.', imageUrl: '/images/motard-entretien-page.png' },
 ];
 
@@ -163,7 +164,6 @@ function MapPageComponent() {
                     if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); setFilteredDealerships(results); return; }
                 }
             }
-            // Support 2 ou 3 chiffres pour les départements (Métropole + DOM-TOM)
             if (/^\d{2,3}$/.test(normalizedSearch)) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(normalizedSearch));
                 if (deptKey) { const center = (locationsData as any)[deptKey].center; setMapCenter(center); setSortingAnchor(center); setMapZoom(9); }
