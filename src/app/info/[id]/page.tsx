@@ -55,7 +55,7 @@ const getFicheIdFromTitle = (title: string): string | null => {
 };
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
+  const { id } = use(params);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -285,6 +285,26 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           </div>
         )}
 
+        {/* Intégration du CTA Assurance si le titre correspond (cas spécifique demandé pour la section assurance) */}
+        {section.title && 
+         (section.title.toLowerCase().includes('assurance')) && 
+         id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
+          <div className="mt-6 p-5 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-2xl mb-8">
+            <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="group flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">Dossier Spécial Assurance</p>
+                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors">
+                  Bien choisir son assurance moto →
+                </h4>
+                <p className="text-xs text-muted-foreground mt-1 font-medium">Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.</p>
+              </div>
+              <div className="bg-blue-600 text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+            </Link>
+          </div>
+        )}
+
         {bodyText && (
           Array.isArray(bodyText) ? (
             bodyText.map((p: string, i: number) => <p key={i} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)
@@ -411,7 +431,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                     {activeSections && activeSections.map((section: any, idx: number) => renderSection(section, idx))}
                 </div>
 
-                {/* Lien vers l'article Assurance si on n'y est pas déjà */}
+                {/* Lien vers l'article Assurance si on n'y est pas déjà et avant la conclusion */}
                 {id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
                   <div className="mt-16 p-8 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-3xl shadow-sm group">
                     <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex flex-col md:flex-row items-center gap-6">
