@@ -67,7 +67,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const { data: firestoreArticle, isLoading: isDbLoading } = useDoc(articleRef);
 
   const article = useMemo(() => {
-    if (firestoreArticle) return firestoreArticle;
+    if (firestoreArticle && Object.keys(firestoreArticle).length > 5) return firestoreArticle;
     return (localArticles as any[]).find(a => a.id === id) || null;
   }, [firestoreArticle, id]);
 
@@ -366,7 +366,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                                 {item.weaknesses && (
                                     <div className="space-y-1">
                                         <div className="text-[10px] font-black uppercase tracking-widest text-red-600">Inconvénients</div>
-                                        <ul className="list-none space-y-1">{item.weaknesses.map((w: string, j: number) => <li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-red-500">•</span> {w}</li>)}</ul>
+                                        <ul className="list-none space-y-1">{item.weaknesses.map((w: string, j: number) => <li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>)}</ul>
                                     </div>
                                 )}
                             </CardContent>
@@ -532,3 +532,5 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     </div>
   );
 }
+
+    
