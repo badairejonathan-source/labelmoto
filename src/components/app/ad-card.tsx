@@ -28,22 +28,21 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
 
   const imageUrl = React.useMemo(() => {
     if (article.imageUrl && article.imageUrl.trim() !== '') {
-        // Force the visuel correct for assurance
         if (article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
+        if (article.id?.includes('a2') || article.title?.toLowerCase().includes('a2')) return "/images/achat-occasion.png";
         return article.imageUrl;
     }
     const id = article.id?.toLowerCase() || '';
     const title = (article.title || '').toLowerCase();
     if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
     if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-    if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
+    if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
     if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
     if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (isMaintenance) return "/images/motard-entretien-page.png";
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
   }, [article, isMaintenance]);
 
-  // Tous les liens des articles renvoient désormais vers la page info directement
   const href = '/info';
 
   return (
@@ -80,5 +79,3 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
 };
 
 export default AdCard;
-
-    

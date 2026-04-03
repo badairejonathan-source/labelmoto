@@ -75,6 +75,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
     if (id.includes('assurance') || article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
+    if (id.includes('a2') || article.id?.includes('a2') || article.title?.toLowerCase().includes('a2')) return "/images/achat-occasion.png";
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
@@ -459,7 +460,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                                         <h3 className="text-2xl font-black uppercase tracking-tight mb-2">{block.title}</h3>
                                         <p className="text-muted-foreground font-medium mb-6 leading-relaxed">{block.text}</p>
                                         <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] tracking-widest px-8 py-6 h-auto rounded-full shadow-lg transition-transform hover:scale-105">
-                                            <Link href={block.target_type === 'article' ? '/info' : (block.target_slug === 'entretien' ? '/entretien' : `/${block.target_slug}`)}>
+                                            <Link href={block.target_type === 'article' ? '/info' : (block.target_slug === 'entretien' || block.target_slug === 'entretien-moto-intervalles-prix-conseils-par-modele' ? '/entretien' : `/${block.target_slug}`)}>
                                                 🔘 {block.label}
                                             </Link>
                                         </Button>
@@ -523,5 +524,3 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     </div>
   );
 }
-    
-    

@@ -6,9 +6,11 @@
     "slug": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
     "title": "Assurance moto : bien choisir sa formule selon votre profil",
     "display_title": "Assurance moto : bien choisir sa formule selon votre profil",
+    "status": "published",
+    "language": "fr",
+    "category": "assurance",
     "author": "L'équipe Label Moto",
     "readingTime": "10 min de lecture",
-    "category": "assurance",
     "imageUrl": "/images/motard-article-assurance2026.png",
     "intro": [
       "Choisir une assurance moto, ce n’est pas seulement comparer un prix mensuel.",
@@ -99,18 +101,12 @@
               "Prêt du guidon",
               "Assistance en cas de panne ou d’accident"
             ],
-            "profile": "Jeune motard ou première vraie moto A2",
             "linked_models": [
               { "label": "Yamaha MT-07 A2", "slug": "yamaha-mt-07-2021-plus" },
               { "label": "Kawasaki Z650", "slug": "kawasaki-z650-2020-plus" },
               { "label": "Honda CB500 Hornet", "slug": "honda-cb500f-2022-plus" },
               { "label": "Suzuki SV650", "slug": "suzuki-sv650-2016-plus" }
-            ],
-            "cta": {
-              "label": "Voir les motos A2 recommandées",
-              "target_type": "article",
-              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
-            }
+            ]
           },
           {
             "title": "Grand rouleur / GT / voyage",
@@ -134,12 +130,7 @@
               { "label": "BMW R1250 GS / R1300 GS", "slug": "bmw-r1250-gs-r1300-gs-2019-plus" },
               { "label": "Honda XL750 Transalp", "slug": "honda-xl750-transalp-2023-plus" },
               { "label": "Suzuki V-Strom 650", "slug": "suzuki-v-strom-650-2017-plus" }
-            ],
-            "cta": {
-              "label": "Comparer les trails et GT adaptés",
-              "target_type": "article",
-              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
-            }
+            ]
           },
           {
             "title": "Occasionnel / loisir",
@@ -163,12 +154,7 @@
               { "label": "Yamaha XSR700", "slug": "yamaha-xsr700-2021-plus" },
               { "label": "Kawasaki Z900", "slug": "kawasaki-z900-2020-plus" },
               { "label": "Royal Enfield Himalayan 450", "slug": "royal-enfield-himalayan-450" }
-            ],
-            "cta": {
-              "label": "Voir les motos plaisir / loisir",
-              "target_type": "article",
-              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
-            }
+            ]
           },
           {
             "title": "Citadin",
@@ -192,12 +178,7 @@
               { "label": "Yamaha XMAX 125", "slug": "yamaha-xmax-125" },
               { "label": "BMW CE 04", "slug": "bmw-ce-04" },
               { "label": "Honda CB125R", "slug": "honda-cb125r-2021-plus" }
-            ],
-            "cta": {
-              "label": "Voir les modèles les plus adaptés à la ville",
-              "target_type": "article",
-              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
-            }
+            ]
           }
         ]
       },
@@ -290,7 +271,20 @@
     "author": "L'équipe Label Moto",
     "readingTime": "8 min de lecture",
     "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",
-    "content": []
+    "content": [
+      {
+        "title": "1. L'achat et l'équipement",
+        "content": "Le premier poste de dépense, c'est bien sûr la moto elle-même et l'équipement de sécurité obligatoire (casque, gants) et recommandé (blouson, bottes, pantalon)."
+      },
+      {
+        "title": "2. L'assurance : la plus grosse surprise pour un débutant",
+        "content": "C’est presque toujours le moment où le futur motard tombe de haut. On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double."
+      },
+      {
+        "title": "3. Ton budget réel",
+        "content": "Pour anticiper, il faut calculer le coût total de possession qui inclut la décote, l'entretien et le carburant."
+      }
+    ]
   },
   {
     "id": "achat-moto-occasion-eviter-les-pieges",
@@ -307,7 +301,7 @@
     "description": "Le guide des débutants pour trouver sa première machine.",
     "author": "L'équipe Label Moto",
     "readingTime": "9 min de lecture",
-    "imageUrl": "/images/achat-occasion.jpg",
+    "imageUrl": "/images/achat-occasion.png",
     "content": [
         {
             "title": "Comment choisir sa moto A2 ?",
@@ -336,5 +330,3 @@
     ]
   }
 ]
-    
-    

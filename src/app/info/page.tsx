@@ -16,8 +16,8 @@ import { collection } from 'firebase/firestore';
 const ArticleCard = ({ article }: { article: any }) => {
     const imageUrl = React.useMemo(() => {
         if (article.imageUrl && article.imageUrl.trim() !== '') {
-            // Force the new image for the assurance article even if it's stored differently in Firestore for now
             if (article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
+            if (article.id?.includes('a2') || article.title?.toLowerCase().includes('a2')) return "/images/achat-occasion.png";
             return article.imageUrl;
         }
         const id = (article.id || '').toLowerCase();
@@ -25,7 +25,7 @@ const ArticleCard = ({ article }: { article: any }) => {
         
         if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
         if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.jpg";
+        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
         if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
