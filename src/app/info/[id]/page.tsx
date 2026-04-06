@@ -1,13 +1,10 @@
-
 import { Metadata } from 'next';
 import ArticleClient from '@/components/app/article-client';
 import localArticles from '@/app/data/articles.json';
+import Script from 'next/script';
 
-// Cette fonction s'exécute sur le SERVEUR pour générer le SEO avant l'affichage
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  
-  // On récupère l'article pour extraire ses infos SEO
   const article = (localArticles as any[]).find(a => a.id === id || a.slug === id);
   
   if (!article) {
@@ -24,29 +21,56 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: title,
     description: description,
+    alternates: {
+      canonical: `/info/${id}`,
+    },
     openGraph: {
       title: `${title} | Label Moto`,
       description: description,
       url: `https://labelmoto.fr/info/${id}`,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: title,
-        }
-      ],
+      images: [{ url: imageUrl, alt: title }],
     },
-    twitter: {
-      card: "summary_large_image",
-      title: title,
-      description: description,
-      images: [imageUrl],
-    }
   };
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return <ArticleClient id={id} />;
+  const article = (localArticles as any[]).find(a => a.id === id || a.slug === id);
+
+  const jsonLd = article ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": article.display_title || article.title,
+    "description": article.description || article.seo?.meta_description,
+    "image": article.imageUrl || "https://labelmoto.fr/images/logo-moto.png",
+    "author": {
+      "@type": "Organization",
+      "name": "Label Moto"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Label Moto",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://labelmoto.fr/images/logo-moto.png"
+      }
+    },
+    "datePublished": "2024-01-01",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://labelmoto.fr/info/${id}`
+    }
+  } : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <ArticleClient id={id} />
+    </>
+  );
 }

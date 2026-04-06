@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -11,35 +10,27 @@ import CookieConsent from "@/components/app/cookie-consent";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
-// Configuration globale pour le référencement (SEO)
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: "LabelMoto.fr - L'annuaire intelligent des motards",
     template: "%s | Label Moto"
   },
-  description: "Trouvez les meilleures concessions et ateliers moto en France. Conseils A2, guides d'entretien, fiches techniques et carte interactive pour tous les motards. Un service gratuit par des passionnés.",
-  keywords: ["moto", "concessionnaire moto", "atelier moto", "entretien moto", "permis A2", "fiche technique moto", "assurance moto"],
+  description: "Trouvez les meilleures concessions et ateliers moto en France. Conseils A2, guides d'entretien, fiches techniques et carte interactive pour tous les motards en Île-de-France et partout ailleurs.",
+  keywords: ["moto", "concessionnaire moto Paris", "atelier moto Île-de-France", "entretien moto", "permis A2", "fiche technique moto", "assurance moto"],
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
   publisher: "Label Moto",
-  formatDetection: {
-    email: false,
-    address: true,
-    telephone: true,
-  },
-  icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
-  },
   openGraph: {
     type: "website",
     locale: "fr_FR",
     url: "https://labelmoto.fr",
     siteName: "Label Moto",
     title: "Label Moto - L'annuaire intelligent des motards",
-    description: "Trouvez les meilleurs pros du 2 roues en France. Guides d'achat A2 et fiches techniques gratuites.",
+    description: "Le compagnon de route indispensable pour tout motard en France. Guides d'achat A2 et fiches techniques gratuites.",
     images: [
       {
         url: "/images/logo-moto.png?v=6",

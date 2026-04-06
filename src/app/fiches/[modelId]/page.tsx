@@ -1,13 +1,9 @@
-
 import { Metadata } from 'next';
 import FicheClient from '@/components/app/fiche-client';
 import localFiches from '@/app/data/fiches-techniques.json';
 
-// Cette fonction s'exécute sur le SERVEUR pour générer le SEO
 export async function generateMetadata({ params }: { params: Promise<{ modelId: string }> }): Promise<Metadata> {
   const { modelId } = await params;
-  
-  // On récupère la fiche pour extraire ses infos SEO
   const fiche = (localFiches as any[]).find(f => f.id === modelId);
   
   if (!fiche) {
@@ -17,36 +13,56 @@ export async function generateMetadata({ params }: { params: Promise<{ modelId: 
     };
   }
 
-  const title = fiche.display_title || fiche.model;
-  const description = `Fiche technique complète ${title} : moteur, dimensions, partie cycle et guide d'entretien officiel. Découvrez tout sur la ${title} sur Label Moto.`;
+  const title = `Fiche technique ${fiche.display_title || fiche.model} (${fiche.year_range})`;
+  const description = `Caractéristiques techniques complètes, entretien et prix révisions pour ${fiche.display_title || fiche.model}. Tout savoir sur votre moto avec Label Moto.`;
   const imageUrl = fiche.imageUrl || "/images/logo-moto.png?v=6";
 
   return {
-    title: `Fiche technique ${title}`,
+    title: title,
     description: description,
+    alternates: {
+      canonical: `/fiches/${modelId}`,
+    },
     openGraph: {
-      title: `Fiche technique ${title} | Label Moto`,
+      title: `${title} | Label Moto`,
       description: description,
       url: `https://labelmoto.fr/fiches/${modelId}`,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: `Fiche technique ${title}`,
-        }
-      ],
+      images: [{ url: imageUrl, alt: title }],
     },
-    twitter: {
-      card: "summary_large_image",
-      title: `Fiche technique ${title}`,
-      description: description,
-      images: [imageUrl],
-    }
   };
 }
 
 export default async function Page({ params }: { params: Promise<{ modelId: string }> }) {
   const { modelId } = await params;
-  return <FicheClient modelId={modelId} />;
+  const fiche = (localFiches as any[]).find(f => f.id === modelId);
+
+  const jsonLd = fiche ? {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": fiche.display_title || fiche.model,
+    "description": `Fiche technique et guide d'entretien pour ${fiche.display_title || fiche.model}`,
+    "image": fiche.imageUrl || "https://labelmoto.fr/images/logo-moto.png",
+    "brand": {
+      "@type": "Brand",
+      "name": fiche.brand
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "offerCount": "1",
+      "lowPrice": "0",
+      "priceCurrency": "EUR"
+    }
+  } : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <FicheClient modelId={modelId} />
+    </>
+  );
 }
