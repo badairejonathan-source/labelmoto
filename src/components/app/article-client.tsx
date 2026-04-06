@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, ShieldCheck, AlertTriangle } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
@@ -34,7 +34,6 @@ const slugify = (text: string) =>
 
 const getFicheIdFromTitle = (title: string): string | null => {
   const t = title.toLowerCase();
-  if (t.includes('himalayan 450') || t.includes('duke 390')) return null;
   if (t.includes('mt-07')) return 'yamaha-mt-07-2021-plus';
   if (t.includes('z650')) return 'kawasaki-z650-2020-plus';
   if (t.includes('cb500 hornet') || t.includes('cb500f')) return 'honda-cb500f-2022-plus';
@@ -45,9 +44,6 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
   if (t.includes('trident 660')) return 'triumph-trident-660-2021-plus';
   if (t.includes('xsr700')) return 'yamaha-xsr700-2021-plus';
-  if (t.includes('forza 350')) return 'honda-forza-350';
-  if (t.includes('xmax 125')) return 'yamaha-xmax-125';
-  if (t.includes('cb125r')) return 'honda-cb125r-2021-plus';
   return null;
 };
 
@@ -66,8 +62,8 @@ export default function ArticleClient({ id }: { id: string }) {
 
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
-    if (id.includes('assurance') || article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
-    if (id.includes('a2') || article.id?.includes('a2') || article.title?.toLowerCase().includes('a2')) return "/images/achat-occasion.png";
+    if (id.includes('assurance') || article.id?.includes('assurance')) return "/images/motard-article-assurance2026.png";
+    if (id.includes('a2') || article.id?.includes('a2')) return "/images/achat-occasion.png";
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
@@ -94,20 +90,10 @@ export default function ArticleClient({ id }: { id: string }) {
     }
   };
 
-  const handleFilterChange = (filter: 'shopping' | 'service' | null) => {
-    router.push(`/map?filter=${filter}`);
-  };
-
   const renderTable = (tableData: any) => {
     if (!tableData) return null;
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
-
-    const normalize = (s: string) => 
-        String(s).toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]+/g, "_");
 
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
@@ -123,15 +109,10 @@ export default function ArticleClient({ id }: { id: string }) {
             {rows.map((row: any, ri: number) => (
               <TableRow key={ri} className="hover:bg-muted/30">
                 {headers.map((header: string, hi: number) => {
-                  const normHeader = normalize(header);
-                  let value = row[header] || row[normHeader];
-                  if (value === undefined) {
-                      const key = Object.keys(row).find(k => normalize(k) === normHeader);
-                      value = key ? row[key] : '';
-                  }
+                  const val = row[header] || row[header.toLowerCase().replace(/ /g, '_')] || '';
                   return (
                     <TableCell key={hi} className="py-4 text-foreground font-black">
-                      {String(value)}
+                      {String(val)}
                     </TableCell>
                   );
                 })}
@@ -147,118 +128,113 @@ export default function ArticleClient({ id }: { id: string }) {
     if (!cards || cards.length === 0) return null;
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-        {cards.map((card, idx) => {
-          return (
-            <Card key={idx} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
-              <CardHeader className="bg-brand/5 py-4 border-b">
-                <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
-                  {card.title}
-                </CardTitle>
-                {card.subtitle && <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">{card.subtitle}</p>}
-              </CardHeader>
-              <CardContent className="p-6 space-y-6 flex-grow">
-                {card.recommended_formula && (
-                  <div className="bg-brand/10 p-3 rounded-lg border border-brand/20">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-brand mb-1">Formule recommandée</p>
-                    <p className="text-lg font-black uppercase text-foreground">{card.recommended_formula}</p>
+        {cards.map((card, idx) => (
+          <Card key={idx} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
+            <CardHeader className="bg-brand/5 py-4 border-b">
+              <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
+                {card.title}
+              </CardTitle>
+              {card.subtitle && <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">{card.subtitle}</p>}
+            </CardHeader>
+            <CardContent className="p-6 space-y-6 flex-grow">
+              {card.recommended_formula && (
+                <div className="bg-brand/10 p-3 rounded-lg border border-brand/20">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-brand mb-1">Formule recommandée</p>
+                  <p className="text-lg font-black uppercase text-foreground">{card.recommended_formula}</p>
+                </div>
+              )}
+              {card.content && (
+                <div className="text-sm font-bold text-muted-foreground leading-relaxed space-y-2">
+                  {Array.isArray(card.content) ? card.content.map((p: string, i: number) => <p key={i}>{p}</p>) : <p>{card.content}</p>}
+                </div>
+              )}
+              {card.advantages && (
+                <div className="space-y-2">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Avantages
                   </div>
-                )}
-                
-                {card.content && (
-                  <div className="text-sm font-bold text-muted-foreground leading-relaxed space-y-2">
-                    {Array.isArray(card.content) ? card.content.map((p: string, i: number) => <p key={i}>{p}</p>) : <p>{card.content}</p>}
-                  </div>
-                )}
-
-                {card.advantages && (
-                  <div className="space-y-2">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Avantages
-                    </div>
-                    <ul className="list-none space-y-1">
-                      {card.advantages.map((adv: string, i: number) => (
-                        <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-green-500">•</span> {adv}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {card.items && !card.advantages && (
-                  <ul className="list-none space-y-2">
-                    {card.items.map((item: string, j: number) => (
-                      <li key={j} className="text-sm font-black flex items-start gap-2 text-foreground">
-                        <span className="text-brand font-black shrink-0">•</span> {item}
-                      </li>
+                  <ul className="list-none space-y-1">
+                    {card.advantages.map((adv: string, i: number) => (
+                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-green-500">•</span> {adv}</li>
                     ))}
                   </ul>
-                )}
-
-                {card.linked_models && (
-                  <div className="pt-4 border-t border-dashed">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Modèles adaptés :</p>
-                    <div className="flex flex-wrap gap-2">
-                      {card.linked_models.map((m: any, i: number) => {
-                        const ficheId = getFicheIdFromTitle(m.label);
-                        return ficheId ? (
-                          <Link key={i} href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors">
-                            {m.label}
-                          </Link>
-                        ) : (
-                          <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded opacity-60">{m.label}</span>
-                        )
-                      })}
-                    </div>
+                </div>
+              )}
+              {card.watch_out && (
+                <div className="space-y-2">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Vigilance
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+                  <ul className="list-none space-y-1">
+                    {card.watch_out.map((item: string, i: number) => (
+                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-red-500">•</span> {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {card.items && !card.advantages && (
+                <ul className="list-none space-y-2">
+                  {card.items.map((item: string, j: number) => (
+                    <li key={j} className="text-sm font-black flex items-start gap-2 text-foreground">
+                      <span className="text-brand font-black shrink-0">•</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {card.linked_models && (
+                <div className="pt-4 border-t border-dashed">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Modèles recommandés :</p>
+                  <div className="flex flex-wrap gap-2">
+                    {card.linked_models.map((m: any, i: number) => {
+                      const ficheId = getFicheIdFromTitle(m.label);
+                      return ficheId ? (
+                        <Link key={i} href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors">
+                          {m.label}
+                        </Link>
+                      ) : (
+                        <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded opacity-60">{m.label}</span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   };
 
   const renderSection = (section: any, idx: number) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
-    const bodyText = section.text || section.content || section.body || section.description;
+    const bodyText = section.content || section.text || section.description;
 
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         
-        {section.title && 
-         (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && (
+        {section.title && (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget')) && (
           <div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl mb-8">
-            <Link href="/info" className="group flex items-center justify-between gap-4">
+            <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="group flex items-center justify-between gap-4">
               <div className="flex-1">
                 <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dossier Spécial</p>
-                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">
-                  Calculer mon budget réel →
-                </h4>
+                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">Calculer mon budget réel →</h4>
                 <p className="text-xs text-muted-foreground mt-1 font-medium">Assurance, entretien, équipement : ne laissez rien au hasard.</p>
               </div>
-              <div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0">
-                <FileText className="h-5 w-5" />
-              </div>
+              <div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0"><FileText className="h-5 w-5" /></div>
             </Link>
           </div>
         )}
 
-        {section.title && 
-         (section.title.toLowerCase().includes('assurance')) && 
-         id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
+        {section.title && section.title.toLowerCase().includes('assurance') && id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
           <div className="mt-6 p-5 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-2xl mb-8">
-            <Link href="/info" className="group flex items-center justify-between gap-4">
+            <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="group flex items-center justify-between gap-4">
               <div className="flex-1">
                 <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">Dossier Spécial Assurance</p>
-                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors">
-                  Bien choisir son assurance moto →
-                </h4>
+                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors">Bien choisir son assurance moto →</h4>
                 <p className="text-xs text-muted-foreground mt-1 font-medium">Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.</p>
               </div>
-              <div className="bg-blue-600 text-white p-5 rounded-2xl shadow-lg group-hover:scale-110 transition-transform shrink-0">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
+              <div className="bg-blue-600 text-white p-5 rounded-2xl shadow-lg group-hover:scale-110 transition-transform shrink-0"><ShieldCheck className="h-5 w-5" /></div>
             </Link>
           </div>
         )}
@@ -305,11 +281,17 @@ export default function ArticleClient({ id }: { id: string }) {
 
   return (
     <div className="min-h-screen relative">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
+      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} placeholderText="Recherche par departement , ville , marque, nom ... " />
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand transition-colors shrink-0">Conseils</Link><ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span></nav>
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
+            <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
+            <ChevronRight className="h-3 w-3 shrink-0" />
+            <Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
+            <ChevronRight className="h-3 w-3 shrink-0" />
+            <span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
+          </nav>
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
@@ -348,15 +330,12 @@ export default function ArticleClient({ id }: { id: string }) {
                 )}
 
                 <div className="space-y-12">
-                    {activeSections && activeSections.map((section: any, idx: number) => renderSection(section, idx))}
+                    {activeSections.map((section: any, idx: number) => renderSection(section, idx))}
                 </div>
 
                 {article.conclusion && (
                     <div className="mt-16 pt-8 border-t border-brand/20">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Info className="h-6 w-6 text-brand" />
-                            <h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3>
-                        </div>
+                        <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
                         <div className="space-y-4">
                             {Array.isArray(article.conclusion) ? (
                                 article.conclusion.map((line: string, i: number) => (

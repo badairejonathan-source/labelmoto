@@ -12,6 +12,18 @@
     "author": "L'équipe Label Moto",
     "readingTime": "10 min de lecture",
     "imageUrl": "/images/motard-article-assurance2026.png",
+    "seo": {
+      "meta_title": "Assurance moto : bien choisir sa formule selon votre profil",
+      "meta_description": "Découvrez quelle formule d’assurance moto choisir selon votre profil : permis A2, grand rouleur, occasionnel ou citadin, avec conseils et modèles adaptés.",
+      "keywords": [
+        "assurance moto",
+        "formule assurance moto",
+        "assurance moto a2",
+        "assurance moto tous risques",
+        "assurance moto tiers plus",
+        "assurance moto au kilometre"
+      ]
+    },
     "intro": [
       "Choisir une assurance moto, ce n’est pas seulement comparer un prix mensuel.",
       "La bonne formule dépend surtout de votre usage, de votre expérience, de la valeur de votre moto et du niveau de protection que vous attendez.",
@@ -106,7 +118,12 @@
               { "label": "Kawasaki Z650", "slug": "kawasaki-z650-2020-plus" },
               { "label": "Honda CB500 Hornet", "slug": "honda-cb500f-2022-plus" },
               { "label": "Suzuki SV650", "slug": "suzuki-sv650-2016-plus" }
-            ]
+            ],
+            "cta": {
+              "label": "Voir les motos A2 recommandées",
+              "target_type": "article",
+              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
+            }
           },
           {
             "title": "Grand rouleur / GT / voyage",
@@ -130,7 +147,12 @@
               { "label": "BMW R1250 GS / R1300 GS", "slug": "bmw-r1250-gs-r1300-gs-2019-plus" },
               { "label": "Honda XL750 Transalp", "slug": "honda-xl750-transalp-2023-plus" },
               { "label": "Suzuki V-Strom 650", "slug": "suzuki-v-strom-650-2017-plus" }
-            ]
+            ],
+            "cta": {
+              "label": "Comparer les trails et GT adaptés",
+              "target_type": "article",
+              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
+            }
           },
           {
             "title": "Occasionnel / loisir",
@@ -152,9 +174,14 @@
             "linked_models": [
               { "label": "Triumph Trident 660", "slug": "triumph-trident-660-2021-plus" },
               { "label": "Yamaha XSR700", "slug": "yamaha-xsr700-2021-plus" },
-              { "label": "Kawasaki Z900", "slug": "kawasaki-z900-2020-plus" },
+              { "label": "Kawasaki Z900RS", "slug": "kawasaki-z900rs-2020-plus" },
               { "label": "Royal Enfield Himalayan 450", "slug": "royal-enfield-himalayan-450" }
-            ]
+            ],
+            "cta": {
+              "label": "Voir les motos plaisir / loisir",
+              "target_type": "article",
+              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
+            }
           },
           {
             "title": "Citadin",
@@ -178,7 +205,12 @@
               { "label": "Yamaha XMAX 125", "slug": "yamaha-xmax-125" },
               { "label": "BMW CE 04", "slug": "bmw-ce-04" },
               { "label": "Honda CB125R", "slug": "honda-cb125r-2021-plus" }
-            ]
+            ],
+            "cta": {
+              "label": "Voir les modèles les plus adaptés à la ville",
+              "target_type": "article",
+              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
+            }
           }
         ]
       },
@@ -241,7 +273,7 @@
         "text": "Consultez nos fiches techniques moto pour comparer les coûts d’entretien, les profils d’usage et les modèles les plus cohérents selon votre budget.",
         "label": "Voir les fiches techniques moto",
         "target_type": "service_page",
-        "target_slug": "entretien"
+        "target_slug": "entretien-moto-intervalles-prix-conseils-par-modele"
       },
       {
         "title": "Vous débutez en permis A2 ?",
