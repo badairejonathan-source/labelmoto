@@ -13,8 +13,9 @@ export async function generateMetadata({ params }: { params: Promise<{ modelId: 
     };
   }
 
-  const title = `Fiche technique ${fiche.display_title || fiche.model} (${fiche.year_range})`;
-  const description = `Caractéristiques techniques complètes, entretien et prix révisions pour ${fiche.display_title || fiche.model}. Tout savoir sur votre moto avec Label Moto.`;
+  const modelName = fiche.display_title || fiche.model;
+  const title = `Fiche Technique ${modelName} (${fiche.year_range}) - Entretien & A2`;
+  const description = `Spécifications techniques, guide d'entretien et prix des révisions pour ${modelName}. Tout savoir sur votre ${fiche.brand} avec Label Moto.`;
   const imageUrl = fiche.imageUrl || "/images/logo-moto.png?v=6";
 
   return {
@@ -36,30 +37,45 @@ export default async function Page({ params }: { params: Promise<{ modelId: stri
   const { modelId } = await params;
   const fiche = (localFiches as any[]).find(f => f.id === modelId);
 
-  const jsonLd = fiche ? {
+  if (!fiche) return <FicheClient modelId={modelId} />;
+
+  // JSON-LD pour le produit (la moto)
+  const productLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": fiche.display_title || fiche.model,
     "description": `Fiche technique et guide d'entretien pour ${fiche.display_title || fiche.model}`,
     "image": fiche.imageUrl || "https://labelmoto.fr/images/logo-moto.png",
-    "brand": {
-      "@type": "Brand",
-      "name": fiche.brand
-    },
+    "brand": { "@type": "Brand", "name": fiche.brand },
     "offers": {
       "@type": "AggregateOffer",
       "offerCount": "1",
       "lowPrice": "0",
       "priceCurrency": "EUR"
     }
+  };
+
+  // JSON-LD pour les questions fréquentes (Entretien)
+  const faqLd = fiche.service_guide?.faq ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": fiche.service_guide.faq.map((f: any) => ({
+      "@type": "Question",
+      "name": f.question,
+      "acceptedAnswer": { "@type": "Answer", "text": f.answer }
+    }))
   } : null;
 
   return (
     <>
-      {jsonLd && (
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }}
+      />
+      {faqLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
         />
       )}
       <FicheClient modelId={modelId} />
