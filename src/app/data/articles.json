@@ -243,37 +243,45 @@
   {
     "id": "combien-coute-vraiment-une-moto-par-mois",
     "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+    "display_title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
     "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, beaucoup de nouveaux motards découvrent que le budget est plus élevé que prévu.",
     "author": "L'équipe Label Moto",
     "readingTime": "8 min de lecture",
     "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",
-    "content": [
+    "sections": [
       {
         "title": "1. L'achat et l'équipement",
-        "content": "Le premier poste de dépense, c'est bien sûr la moto elle-même et l'équipement de sécurité obligatoire."
+        "content": "Le premier poste de dépense, c'est bien sûr la moto elle-même et l'équipement de sécurité obligatoire (Casque, gants, veste, bottes)."
       },
       {
         "title": "2. L'assurance : la plus grosse surprise pour un débutant",
-        "content": "C’est presque toujours le moment où le futur motard tombe de haut. Le budget peut doubler."
+        "content": "C’est presque toujours le moment où le futur motard tombe de haut. Le budget peut doubler selon votre âge, votre région et le modèle choisi."
       },
       {
         "title": "3. Ton budget réel",
-        "content": "Pour anticiper, il faut calculer le coût total de possession incluant l'essence et l'entretien."
+        "content": "Pour anticiper, il faut calculer le coût total de possession incluant l'essence et l'entretien régulier (pneus, vidange, kit chaîne)."
       }
-    ]
+    ],
+    "conclusion": "Anticiper est la clé pour profiter de sa passion sans stress financier."
   },
   {
     "id": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
     "title": "Achat moto A2 : le guide complet des meilleures motos pour débuter",
+    "display_title": "Achat moto A2 : le guide complet des meilleures motos pour débuter",
     "description": "Le guide des débutants pour trouver sa première machine.",
     "author": "L'équipe Label Moto",
     "readingTime": "9 min de lecture",
     "imageUrl": "/images/achat-occasion.png",
-    "content": [
+    "sections": [
       {
         "title": "Comment choisir sa moto A2 ?",
-        "content": "Avant de regarder un modèle précis, pose-toi les bonnes questions."
+        "content": "Avant de regarder un modèle précis, pose-toi les bonnes questions sur ton usage (ville, balade, voyage)."
+      },
+      {
+        "title": "Top des modèles recommandés",
+        "content": "Yamaha MT-07, Kawasaki Z650, Honda CB500F... des valeurs sûres pour débuter en toute confiance."
       }
-    ]
+    ],
+    "conclusion": "Prends le temps d'essayer plusieurs modèles avant de craquer."
   }
 ]

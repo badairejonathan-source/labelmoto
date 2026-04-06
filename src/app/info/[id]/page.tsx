@@ -1,3 +1,4 @@
+
 import { Metadata } from 'next';
 import ArticleClient from '@/components/app/article-client';
 import localArticles from '@/app/data/articles.json';
