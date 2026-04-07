@@ -95,6 +95,12 @@ export default function ArticleClient({ id }: { id: string }) {
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
 
+    const normalize = (s: string) => 
+        String(s).toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "");
+
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
         <Table>
@@ -109,10 +115,26 @@ export default function ArticleClient({ id }: { id: string }) {
             {rows.map((row: any, ri: number) => (
               <TableRow key={ri} className="hover:bg-muted/30">
                 {headers.map((header: string, hi: number) => {
-                  const val = row[header] || row[header.toLowerCase().replace(/ /g, '_')] || '';
+                  const normHeader = normalize(header);
+                  let val = '';
+                  
+                  if (row[header] !== undefined) {
+                    val = row[header];
+                  } else {
+                    const foundKey = Object.keys(row).find(k => normalize(k) === normHeader);
+                    if (foundKey) {
+                      val = row[foundKey];
+                    } else if (Array.isArray(row)) {
+                      val = row[hi];
+                    } else {
+                      const keys = Object.keys(row);
+                      if (keys[hi]) val = row[keys[hi]];
+                    }
+                  }
+
                   return (
                     <TableCell key={hi} className="py-4 text-foreground font-black">
-                      {String(val)}
+                      {String(val || '')}
                     </TableCell>
                   );
                 })}

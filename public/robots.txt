@@ -1,8 +1,5 @@
 
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /account
-Disallow: /login
 
 Sitemap: https://labelmoto.fr/sitemap.xml
