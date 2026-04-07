@@ -153,7 +153,6 @@ export default function ArticleClient({ id }: { id: string }) {
   const renderCtaBlock = (cta: any) => {
     if (!cta) return null;
     
-    // Support simple string CTA as fallback
     if (typeof cta === 'string') {
       return (
         <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
@@ -163,8 +162,6 @@ export default function ArticleClient({ id }: { id: string }) {
     }
 
     const isInsurance = cta.target_slug?.includes('assurance');
-    const isBudget = cta.target_slug?.includes('budget') || cta.target_slug?.includes('combien-coute');
-    const isA2 = cta.target_slug?.includes('meilleure-moto-a2');
     
     return (
       <div className={cn(
@@ -197,7 +194,7 @@ export default function ArticleClient({ id }: { id: string }) {
             "text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0",
             isInsurance ? "bg-blue-600" : "bg-brand"
           )}>
-            {isInsurance ? <ShieldCheck className="h-5 w-5" /> : (isBudget || isA2) ? <Gauge className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+            {isInsurance ? <ShieldCheck className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
           </div>
         </Link>
       </div>
@@ -245,7 +242,7 @@ export default function ArticleClient({ id }: { id: string }) {
               </CardContent>
               {ficheId && (
                 <CardFooter className="bg-brand/5 p-3 border-t">
-                  <Link href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
+                  <Link href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
                 </CardFooter>
               )}
             </Card>
@@ -261,10 +258,7 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        
-        {/* Render CTA Block right after title if provided */}
         {section.cta && renderCtaBlock(section.cta)}
-
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={i} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         {section.table && renderTable(section.table)}
         {section.cards && renderCards(section.cards)}
