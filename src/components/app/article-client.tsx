@@ -1,11 +1,14 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, HelpCircle, Gauge, Scale, Settings2, ExternalLink, AlertTriangle } from 'lucide-react';
+import { 
+  ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, 
+  ChevronRight, Home, HelpCircle, Gauge, Scale, Settings2, 
+  ExternalLink, AlertTriangle, ShieldCheck 
+} from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -66,7 +69,6 @@ export default function ArticleClient({ id }: { id: string }) {
   }, [firestoreArticle, id]);
 
   const imageUrl = useMemo(() => {
-    // FIX : Forcer les chemins locaux pour éviter le scintillement (données Firestore potentiellement incomplètes)
     if (id.includes('taille') || (article && article.id?.includes('taille'))) return "/images/motard-articles-hauteurdeselle.png";
     if (id.includes('assurance') || (article && article.id?.includes('assurance'))) return "/images/motard-article-assurance2026.png";
     if (id.includes('a2') || (article && article.id?.includes('a2'))) return "/images/achat-occasion.png";
@@ -148,6 +150,60 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
+  const renderCtaBlock = (cta: any) => {
+    if (!cta) return null;
+    
+    // Support simple string CTA as fallback
+    if (typeof cta === 'string') {
+      return (
+        <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
+          {cta}
+        </div>
+      );
+    }
+
+    const isInsurance = cta.target_slug?.includes('assurance');
+    const isBudget = cta.target_slug?.includes('budget') || cta.target_slug?.includes('combien-coute');
+    const isA2 = cta.target_slug?.includes('meilleure-moto-a2');
+    
+    return (
+      <div className={cn(
+        "mt-4 mb-8 p-6 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg",
+        isInsurance ? "bg-blue-50/50 border-blue-200" : "bg-brand/5 border-brand/20"
+      )}>
+        <Link href={`/info/${cta.target_slug}`} className="group flex items-center justify-between gap-4">
+          <div className="flex-1">
+            {cta.header && (
+              <p className={cn(
+                "text-[10px] font-black uppercase tracking-widest mb-1.5",
+                isInsurance ? "text-blue-600" : "text-brand"
+              )}>
+                {cta.header}
+              </p>
+            )}
+            <h4 className={cn(
+              "text-lg font-black uppercase tracking-tight text-foreground transition-colors",
+              isInsurance ? "group-hover:text-blue-600" : "group-hover:text-brand"
+            )}>
+              {cta.label}
+            </h4>
+            {cta.description && (
+              <p className="text-xs text-muted-foreground mt-1.5 font-medium leading-relaxed">
+                {cta.description}
+              </p>
+            )}
+          </div>
+          <div className={cn(
+            "text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0",
+            isInsurance ? "bg-blue-600" : "bg-brand"
+          )}>
+            {isInsurance ? <ShieldCheck className="h-5 w-5" /> : (isBudget || isA2) ? <Gauge className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+          </div>
+        </Link>
+      </div>
+    );
+  };
+
   const renderCards = (cards: any[]) => {
     if (!cards || cards.length === 0) return null;
     return (
@@ -205,17 +261,10 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {section.cta && (
-          <div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl mb-8">
-            <Link href={`/info/${section.cta.target_slug}`} className="group flex items-center justify-between gap-4">
-              <div className="flex-1">
-                {section.cta.title && <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{section.cta.title}</h4>}
-                <p className="text-sm font-black text-brand mt-1">{section.cta.label} →</p>
-              </div>
-              <div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0"><FileText className="h-5 w-5" /></div>
-            </Link>
-          </div>
-        )}
+        
+        {/* Render CTA Block right after title if provided */}
+        {section.cta && renderCtaBlock(section.cta)}
+
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={i} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         {section.table && renderTable(section.table)}
         {section.cards && renderCards(section.cards)}
@@ -309,7 +358,26 @@ export default function ArticleClient({ id }: { id: string }) {
                 )}
               </article>
             </div>
-            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto en France.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
+            <aside className="lg:col-span-4 relative">
+              <div className="md:sticky md:top-28 space-y-6">
+                <Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20">
+                  <CardHeader className="p-6 bg-brand text-brand-foreground">
+                    <CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl">
+                      <Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" />
+                    </Link>
+                    <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto en France.</p>
+                  </CardContent>
+                  <CardFooter className="px-6 pb-8">
+                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
+                      <Link href="/map">Voir la carte interactive</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
+            </aside>
           </div>
         </div>
       </main>
