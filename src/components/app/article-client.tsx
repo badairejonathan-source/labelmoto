@@ -49,7 +49,13 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
   if (t.includes('trident 660')) return 'triumph-trident-660-2021-plus';
   if (t.includes('xsr700')) return 'yamaha-xsr700-2021-plus';
+  if (t.includes('g 310 r') || t.includes('g310r')) return 'bmw-g310r-2021-plus';
   if (t.includes('himalayan 450')) return 'royal-enfield-himalayan-450';
+  if (t.includes('ninja 500')) return 'kawasaki-ninja-500-2024-plus';
+  if (t.includes('hornet 750')) return 'honda-cb750-hornet-2023-plus';
+  if (t.includes('transalp')) return 'honda-xl750-transalp-2023-plus';
+  if (t.includes('gsx-8s')) return 'suzuki-gsx-8s-2023-plus';
+  if (t.includes('gsx-8r')) return 'suzuki-gsx-8r-2024-plus';
   return null;
 };
 
@@ -179,9 +185,16 @@ export default function ArticleClient({ id }: { id: string }) {
                 <div className="space-y-3">
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Modèles recommandés :</p>
                   <div className="flex flex-wrap gap-2">
-                    {card.recommended_models.map((m: string, i: number) => (
-                      <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>
-                    ))}
+                    {card.recommended_models.map((m: string, i: number) => {
+                      const ficheId = getFicheIdFromTitle(m);
+                      return ficheId ? (
+                        <Link key={i} href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors">
+                          {m}
+                        </Link>
+                      ) : (
+                        <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>
+                      )
+                    })}
                   </div>
                 </div>
               )}
