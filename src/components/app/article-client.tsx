@@ -1,10 +1,11 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, ShieldCheck, AlertTriangle, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, ShieldCheck, AlertTriangle, HelpCircle, Gauge, Scale, Settings2, ExternalLink } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -56,6 +57,9 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('transalp')) return 'honda-xl750-transalp-2023-plus';
   if (t.includes('gsx-8s')) return 'suzuki-gsx-8s-2023-plus';
   if (t.includes('gsx-8r')) return 'suzuki-gsx-8r-2024-plus';
+  if (t.includes('cmx500') || t.includes('rebel 500')) return 'honda-cmx500-rebel';
+  if (t.includes('vulcan s')) return 'kawasaki-vulcan-s';
+  if (t.includes('v-strom 650')) return 'suzuki-v-strom-650-2017-plus';
   return null;
 };
 
@@ -166,110 +170,121 @@ export default function ArticleClient({ id }: { id: string }) {
     if (!cards || cards.length === 0) return null;
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-        {cards.map((card, idx) => (
-          <Card key={idx} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
-            <CardHeader className="bg-brand/5 py-4 border-b">
-              <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
-                {card.title}
-              </CardTitle>
-              {(card.profile || card.subtitle) && (
-                <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">
-                  {card.profile || card.subtitle}
-                </p>
-              )}
-            </CardHeader>
-            <CardContent className="p-6 space-y-6 flex-grow">
-              {card.summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{card.summary}</p>}
-              
-              {card.recommended_models && (
-                <div className="space-y-3">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Modèles recommandés :</p>
-                  <div className="flex flex-wrap gap-2">
-                    {card.recommended_models.map((m: string, i: number) => {
-                      const ficheId = getFicheIdFromTitle(m);
-                      return ficheId ? (
-                        <Link key={i} href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors">
-                          {m}
-                        </Link>
-                      ) : (
-                        <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>
-                      )
-                    })}
+        {cards.map((card, idx) => {
+          const ficheId = getFicheIdFromTitle(card.title || card.recommended_models?.[0] || '');
+          return (
+            <Card key={idx} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
+              <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
+                    {card.title}
+                  </CardTitle>
+                  {(card.type || card.profile || card.subtitle) && (
+                    <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">
+                      {card.type || card.profile || card.subtitle}
+                    </p>
+                  )}
+                </div>
+                {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand transition-colors" />}
+              </CardHeader>
+              <CardContent className="p-6 space-y-6 flex-grow">
+                {card.summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{card.summary}</p>}
+                
+                {card.recommended_models && (
+                  <div className="space-y-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Modèles recommandés :</p>
+                    <div className="flex flex-wrap gap-2">
+                      {card.recommended_models.map((m: string, i: number) => {
+                        const mFicheId = getFicheIdFromTitle(m);
+                        return mFicheId ? (
+                          <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">
+                            {m} <ExternalLink className="h-2.5 w-2.5" />
+                          </Link>
+                        ) : (
+                          <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {card.recommended_formula && (
-                <div className="bg-brand/10 p-3 rounded-lg border border-brand/20">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-brand mb-1">Formule recommandée</p>
-                  <p className="text-lg font-black uppercase text-foreground">{card.recommended_formula}</p>
-                </div>
-              )}
-
-              {card.content && (
-                <div className="text-sm font-bold text-muted-foreground leading-relaxed space-y-2">
-                  {Array.isArray(card.content) ? card.content.map((p: string, i: number) => <p key={i}>{p}</p>) : <p>{card.content}</p>}
-                </div>
-              )}
-
-              {(card.strengths || card.advantages) && (
-                <div className="space-y-2">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> {card.strengths ? "Points forts" : "Avantages"}
+                {card.best_for && (
+                  <div className="bg-brand/5 p-3 rounded-lg border border-brand/10">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-brand mb-1">Idéal pour :</p>
+                    <p className="text-xs font-bold text-foreground leading-tight">{card.best_for}</p>
                   </div>
-                  <ul className="list-none space-y-1">
-                    {(card.strengths || card.advantages).map((s: string, i: number) => (
-                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                )}
 
-              {(card.weaknesses || card.watch_out) && (
-                <div className="space-y-2">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
-                    <AlertTriangle className="h-3.5 w-3.5" /> {card.weaknesses ? "Points faibles" : "Vigilance"}
+                <div className="grid grid-cols-2 gap-4">
+                  {card.seat_feel && (
+                    <div className="space-y-1">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Gauge className="h-2.5 w-2.5" /> Assise</p>
+                      <p className="text-[10px] font-black uppercase">{card.seat_feel}</p>
+                    </div>
+                  )}
+                  {card.weight_feel && (
+                    <div className="space-y-1">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Scale className="h-2.5 w-2.5" /> Poids</p>
+                      <p className="text-[10px] font-black uppercase">{card.weight_feel}</p>
+                    </div>
+                  )}
+                  {card.saddle_width && (
+                    <div className="space-y-1">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Settings2 className="h-2.5 w-2.5" /> Largeur</p>
+                      <p className="text-[10px] font-black uppercase">{card.saddle_width}</p>
+                    </div>
+                  )}
+                  {card.center_of_gravity && (
+                    <div className="space-y-1">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Gauge className="h-2.5 w-2.5" /> Gravité</p>
+                      <p className="text-[10px] font-black uppercase">{card.center_of_gravity}</p>
+                    </div>
+                  )}
+                </div>
+
+                {card.why_it_fits && <p className="text-xs font-medium text-muted-foreground leading-relaxed italic">"{card.why_it_fits}"</p>}
+
+                {(card.strengths || card.advantages) && (
+                  <div className="space-y-2 pt-2">
+                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Points forts
+                    </div>
+                    <ul className="list-none space-y-1">
+                      {(card.strengths || card.advantages).map((s: string, i: number) => (
+                        <li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="list-none space-y-1">
-                    {(card.weaknesses || card.watch_out).map((w: string, i: number) => (
-                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                )}
 
-              {card.our_opinion && (
-                <div className="bg-muted/30 p-3 rounded-lg border border-border/50">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">L'avis Label Moto</p>
-                  <p className="text-xs font-bold text-foreground italic">"{card.our_opinion}"</p>
-                </div>
-              )}
-
-              {card.linked_models && (
-                <div className="pt-4 border-t border-dashed">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Modèles recommandés :</p>
-                  <div className="flex flex-wrap gap-2">
-                    {card.linked_models.map((m: any, i: number) => {
-                      const ficheId = getFicheIdFromTitle(m.label);
-                      return ficheId ? (
-                        <Link key={i} href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors">
-                          {m.label}
-                        </Link>
-                      ) : (
-                        <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded opacity-60">{m.label}</span>
-                      )
-                    })}
+                {(card.weaknesses || card.watch_out) && (
+                  <div className="space-y-2">
+                    <div className="text-[9px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
+                      <AlertTriangle className="h-3.5 w-3.5" /> Points faibles
+                    </div>
+                    <ul className="list-none space-y-1">
+                      {(card.weaknesses || card.watch_out).map((w: string, i: number) => (
+                        <li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
+                )}
+
+                {card.our_opinion && (
+                  <div className="bg-muted/30 p-3 rounded-lg border border-border/50 mt-auto">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">L'avis Label Moto</p>
+                    <p className="text-[10px] font-bold text-foreground italic">"{card.our_opinion}"</p>
+                  </div>
+                )}
+              </CardContent>
+              {ficheId && (
+                <CardFooter className="bg-brand/5 p-3 border-t">
+                  <Link href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
+                </CardFooter>
               )}
-            </CardContent>
-            {card.cta && (
-              <CardFooter className="bg-brand/5 p-3 border-t">
-                <Link href={`/info/${card.cta.target_slug}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline">{card.cta.label} →</Link>
-              </CardFooter>
-            )}
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
     );
   };

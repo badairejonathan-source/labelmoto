@@ -1,3 +1,4 @@
+
 [
   {
     "id": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
@@ -319,115 +320,285 @@
     "language": "fr"
   },
   {
-    "id": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
-    "slug": "assurance-moto-2026-bien-choisir-sa-formule",
-    "title": "Assurance moto : bien choisir sa formule selon votre profil",
-    "display_title": "Assurance moto : bien choisir sa formule selon votre profil (Guide 2024)",
-    "category": "assurance",
+    "id": "quelle-moto-choisir-selon-sa-taille",
+    "slug": "quelle-moto-choisir-selon-sa-taille",
+    "title": "Quelle moto choisir selon sa taille ? Le guide complet par gabarit",
+    "display_title": "Quelle moto choisir selon sa taille ? Le guide complet par gabarit",
+    "category": "guides-gabarit",
     "status": "published",
+    "featured": true,
+    "imageUrl": "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop",
     "author": "L'équipe Label Moto",
-    "readingTime": "10 min de lecture",
-    "imageUrl": "/images/motard-article-assurance2026.png",
+    "readingTime": "12 min de lecture",
     "seo": {
-      "meta_title": "Assurance moto : bien choisir sa formule selon votre profil",
-      "meta_description": "Découvrez quelle formule d’assurance moto choisir selon votre profil : permis A2, grand rouleur, occasionnel ou citadin.",
-      "keywords": ["assurance moto", "formule assurance moto", "assurance moto a2", "prix assurance moto"]
+      "meta_title": "Quelle moto choisir selon sa taille ? Le guide complet par gabarit",
+      "meta_description": "Quelle moto choisir selon sa taille ? Découvre les meilleurs modèles pour les pilotes de 1m55 à 1m95 selon la hauteur de selle, la largeur d’assise, le poids et le ressenti à l’arrêt.",
+      "keywords": ["quelle moto choisir selon sa taille", "quelle moto pour petit gabarit", "quelle moto pour grand gabarit", "moto selon gabarit", "moto selle basse", "hauteur de selle moto", "largeur de selle moto", "moto pour 1m60", "moto pour 1m70", "moto pour 1m80", "moto pour 1m90", "kit rabaissement moto", "selle moto sellier"]
     },
     "intro": [
-      "Choisir une assurance moto, ce n’est pas seulement comparer un prix mensuel.",
-      "La bonne formule dépend surtout de votre usage, de votre expérience, de la valeur de votre moto et du niveau de protection que vous attendez.",
-      "Sur Label Moto, l’objectif est simple : vous aider à choisir une couverture cohérente avec votre profil de motard et votre machine."
+      "Choisir une moto uniquement parce qu’elle te plaît visuellement est rarement une bonne idée. Une moto peut sembler parfaite sur le papier, puis devenir stressante à l’arrêt, fatigante dans les manœuvres ou inconfortable au quotidien si elle n’est pas adaptée à ton gabarit.",
+      "La première erreur consiste à regarder seulement la hauteur de selle. C’est un critère important, mais ce n’est pas le seul. Une selle haute mais fine à l’avant peut être plus facile qu’une selle plus basse mais très large. De la même façon, une moto légère se gère souvent mieux qu’une moto plus lourde, mais certaines motos au centre de gravité bas restent rassurantes malgré leur poids.",
+      "L’idée de ce guide est simple : t’aider à choisir une moto non pas selon un fantasme, mais selon ce que tu vas vraiment vivre à l’arrêt, en ville, sur route et au quotidien."
+    ],
+    "intro_points": [
+      "pourquoi la hauteur de selle ne suffit pas",
+      "comment la largeur de selle change tout",
+      "l’importance du poids et du centre de gravité",
+      "les meilleures motos entre 1m55 et 1m70",
+      "les meilleures motos entre 1m70 et 1m80",
+      "les meilleures motos entre 1m80 et 1m95",
+      "sellerie et kits de rabaissement : ce qu’il faut savoir"
     ],
     "sections": [
       {
-        "title": "Les 3 grandes formules d’assurance moto",
-        "table": {
-          "headers": ["Formule", "Niveau de protection", "Niveau de prix", "Idéale pour"],
-          "rows": [
-            { "Formule": "Tiers", "Niveau de protection": "Faible", "Niveau de prix": "€", "Idéale pour": "Motos anciennes, petit budget, faible valeur" },
-            { "Formule": "Tiers plus", "Niveau de protection": "Intermédiaire", "Niveau de prix": "€€", "Idéale pour": "Jeunes permis, citadins, motos récentes mais budget encadré" },
-            { "Formule": "Tous risques", "Niveau de protection": "Élevé", "Niveau de prix": "€€€", "Idéale pour": "Motos récentes, gros rouleurs, machines à forte valeur" }
-          ]
-        }
+        "title": "Pourquoi la hauteur de selle ne suffit pas",
+        "content": [
+          "La hauteur de selle est la première cote à regarder, mais elle ne suffit jamais à elle seule. Deux motos avec la même hauteur peuvent donner un ressenti totalement différent à l’arrêt.",
+          "La largeur de selle, sa forme à l’avant, le poids total, la facilité à manœuvrer et le centre de gravité perçu changent énormément l’accessibilité réelle.",
+          "Autrement dit : une moto un peu plus haute mais fine peut être plus facile qu’une moto basse mais large et lourde."
+        ],
+        "subsections": [
+          {
+            "title": "La largeur de selle change le contact au sol",
+            "content": [
+              "Une selle large écarte les jambes et peut rendre la moto plus difficile à tenir à l’arrêt, même si la hauteur affichée semble raisonnable.",
+              "À l’inverse, une selle fine à l’avant permet aux jambes de descendre plus droit vers le sol et donne une meilleure sensation de contrôle."
+            ]
+          },
+          {
+            "title": "Le poids ne compte pas seulement en roulant",
+            "content": [
+              "Le poids compte surtout dans les manœuvres à l’arrêt, en pente, pour reculer la moto ou dans les demi-tours serrés.",
+              "Une moto plus légère pardonne souvent davantage, surtout si tu débutes ou si tu n’es pas très grand."
+            ]
+          },
+          {
+            "title": "Le centre de gravité change le poids ressenti",
+            "content": [
+              "Deux motos peuvent peser presque pareil sur la fiche technique et pourtant donner un ressenti totalement différent.",
+              "Une moto avec un centre de gravité bas paraît souvent plus rassurante à l’arrêt, alors qu’un trail haut perché peut sembler plus lourd à très basse vitesse."
+            ]
+          }
+        ]
       },
       {
-        "title": "Quelle formule choisir selon votre profil ?",
+        "title": "Peut-on adapter une moto à son gabarit ?",
+        "content": [
+          "Oui, dans certains cas. Une moto un peu trop haute sur le papier n’est pas forcément à écarter immédiatement.",
+          "Une selle peut être retravaillée par un sellier pour réduire sa hauteur ou surtout sa largeur à l’entrejambe. Cela peut faire gagner quelques millimètres très utiles et parfois plusieurs centimètres selon le travail effectué.",
+          "Il existe aussi, sur certains modèles, des kits de rabaissement ou des selles basses d’origine et accessoires.",
+          "En revanche, ces solutions doivent rester cohérentes et bien réalisées. Une moto trop modifiée peut perdre en confort, en garde au sol ou en équilibre."
+        ],
+        "list": [
+          "sellerie retravaillée pour creuser ou affiner la selle",
+          "selle basse d’origine ou accessoire",
+          "kit de rabaissement quand le modèle le permet",
+          "réglage cohérent de la suspension si applicable"
+        ]
+      },
+      {
+        "title": "Quelle moto pour une personne de 1m55 à 1m70 ?",
+        "content": [
+          "Dans cette zone, le vrai objectif est de poser les pieds facilement, de garder confiance à l’arrêt et de limiter les manœuvres stressantes.",
+          "Le meilleur choix n’est pas forcément la moto la plus impressionnante, mais celle qui te met en confiance immédiatement."
+        ],
+        "subsections": [
+          {
+            "title": "Ce qu’il faut privilégier",
+            "list": [
+              "selle basse ou raisonnable",
+              "assise fine à l’avant",
+              "poids contenu",
+              "moto facile à tenir et à reculer",
+              "centre de gravité rassurant"
+            ]
+          }
+        ],
         "cards": [
           {
-            "title": "Profil Jeune Permis A2",
-            "subtitle": "Première moto, apprentissage",
-            "recommended_formula": "Tiers Plus (Vol/Incendie)",
-            "content": "C’est souvent le meilleur équilibre : protection minimale insuffisante sur une moto de moins de 5 ans, mais le tous risques est souvent prohibitif au départ.",
-            "advantages": ["Garantie vol incluse", "Rapport protection/prix optimal"],
-            "watch_out": ["Franchises élevées pour les A2", "Garantie équipement souvent en option"],
-            "linked_models": [
-              { "label": "Yamaha MT-07" },
-              { "label": "Kawasaki Z650" },
-              { "label": "Honda CB500 Hornet" }
-            ]
+            "title": "Honda CMX500 Rebel",
+            "type": "custom / cruiser",
+            "best_for": "petits gabarits, débutants, recherche de confiance immédiate",
+            "seat_feel": "très basse",
+            "weight_feel": "rassurant à l’arrêt",
+            "saddle_width": "moyenne mais très accessible grâce à la position basse",
+            "center_of_gravity": "bas",
+            "why_it_fits": "La selle très basse change complètement le ressenti à l’arrêt et facilite les manœuvres.",
+            "our_opinion": "L’une des meilleures références si ta priorité absolue est de toucher facilement le sol.",
+            "strengths": ["très facile pour poser les pieds", "bonne confiance à l’arrêt", "position relax"],
+            "watch_out": ["position custom qui ne plaît pas à tout le monde", "moins polyvalente qu’un roadster pour certains usages"]
           },
           {
-            "title": "Profil Grand Rouleur / Urbain",
-            "subtitle": "Trajets quotidiens, travail",
-            "recommended_formula": "Tous risques + Assistance 0km",
-            "content": "Cette formule est indispensable pour une machine utilisée tous les jours, été comme hiver, car les risques de chute ou de collision augmentent avec le kilométrage.",
-            "advantages": ["Prise en charge même en tort", "Assistance panne devant chez soi", "Prêt de véhicule"],
-            "watch_out": ["Vérifier le montant de l'indemnisation à neuf"],
-            "linked_models": [
-              { "label": "BMW R1250 GS" },
-              { "label": "Yamaha Tracer 7" }
-            ]
+            "title": "Kawasaki Vulcan S",
+            "type": "custom / cruiser",
+            "best_for": "petits gabarits qui veulent une moto accessible avec plus de présence",
+            "seat_feel": "très basse",
+            "weight_feel": "facile pour sa catégorie",
+            "saddle_width": "accessible",
+            "center_of_gravity": "bas",
+            "why_it_fits": "Très bonne option si tu veux une selle basse sans choisir un petit roadster.",
+            "our_opinion": "Une excellente alternative si tu veux une moto basse mais plus imposante visuellement.",
+            "strengths": ["assise rassurante", "bonne accessibilité", "présence visuelle"],
+            "watch_out": ["gabarit plus long qu’un roadster", "style custom assumé"]
           },
           {
-            "title": "Profil Sorties Loisir / Week-end",
-            "subtitle": "Balades occasionnelles",
-            "recommended_formula": "Tiers Plus + Option Individuelle Pilote",
-            "content": "Si vous ne roulez que par beau temps, une protection intermédiaire suffit, mais ne négligez jamais votre propre sécurité corporelle.",
-            "advantages": ["Budget maîtrisé", "Couverture corporelle maximale"],
-            "watch_out": ["Attention aux exclusions de kilométrage (assurance au km)"],
-            "linked_models": [
-              { "label": "Triumph Trident 660" },
-              { "label": "Royal Enfield Himalayan 450" }
+            "title": "BMW G 310 R",
+            "type": "roadster léger",
+            "best_for": "petits gabarits qui veulent un vrai roadster léger",
+            "seat_feel": "basse à raisonnable",
+            "weight_feel": "très léger, rassurant pour débuter",
+            "saddle_width": "fine et favorable à l’entrejambe",
+            "center_of_gravity": "plutôt bas à neutre",
+            "why_it_fits": "Le faible poids et la selle fine en font une vraie référence pour petits gabarits.",
+            "our_opinion": "L’un des meilleurs choix pour apprendre vite et prendre confiance.",
+            "strengths": ["très maniable", "facile à tenir à l’arrêt", "bonne moto de confiance"],
+            "watch_out": ["moins adaptée si tu fais beaucoup d’autoroute", "moteur moins valorisant"]
+          }
+        ]
+      },
+      {
+        "title": "Quelle moto pour une personne de 1m70 à 1m80 ?",
+        "content": [
+          "C’est la zone la plus polyvalente. Dans cette tranche, on peut déjà piloter beaucoup de motos, à condition de choisir selon l’usage réel.",
+          "La vraie question devient moins « est-ce que je touche le sol ? » que « est-ce que la moto correspond à mon programme et reste confortable au quotidien ? »"
+        ],
+        "subsections": [
+          {
+            "title": "Ce qu’il faut privilégier",
+            "list": [
+              "polyvalence entre accessibilité et confort",
+              "bonne position naturelle",
+              "moto cohérente avec ton usage réel",
+              "selle ni trop compacte ni trop haute inutilement"
             ]
+          }
+        ],
+        "cards": [
+          {
+            "title": "Yamaha MT-07",
+            "type": "roadster",
+            "best_for": "usage mixte, motard qui veut une moto vivante",
+            "seat_feel": "moyenne",
+            "weight_feel": "facile une fois à l’aise",
+            "saddle_width": "moyenne",
+            "center_of_gravity": "neutre",
+            "why_it_fits": "Très cohérente entre 1m70 et 1m80 si tu veux une moto polyvalente et plus expressive.",
+            "our_opinion": "Une référence logique pour cette tranche de taille.",
+            "strengths": ["moto très polyvalente", "bonne sensation moteur", "usage mixte cohérent"],
+            "watch_out": ["assurance parfois élevée", "un peu moins évidente pour un vrai petit gabarit"]
+          },
+          {
+            "title": "Honda CB500 Hornet",
+            "type": "roadster",
+            "best_for": "usage quotidien, débutant, permis A2",
+            "seat_feel": "raisonnable",
+            "weight_feel": "facile",
+            "saddle_width": "accessible",
+            "center_of_gravity": "neutre à bas",
+            "why_it_fits": "Très bon compromis pour les gabarits moyens qui veulent une moto simple et complète.",
+            "our_opinion": "Toujours l’une des plus logiques dans cette tranche.",
+            "strengths": ["facile à vivre", "fiable", "bonne polyvalence"],
+            "watch_out": ["peut sembler sage pour ceux qui veulent plus de caractère"]
+          }
+        ]
+      },
+      {
+        "title": "Quelle moto pour une personne de 1m80 à 1m95 ?",
+        "content": [
+          "À partir de 1m80, le sujet n’est plus seulement de toucher le sol. Le vrai enjeu devient le confort de jambes, l’espace de conduite et la sensation de ne pas être replié sur la moto.",
+          "Pour les grands gabarits, il faut regarder l’espace global, la hauteur de selle, la place pour les jambes et le triangle selle-guidon-repose-pieds."
+        ],
+        "subsections": [
+          {
+            "title": "Ce qu’il faut privilégier",
+            "list": [
+              "plus d’espace pour les jambes",
+              "position naturelle et moins repliée",
+              "selle plus haute ou plus épaisse si besoin",
+              "moto cohérente pour rouler longtemps"
+            ]
+          }
+        ],
+        "cards": [
+          {
+            "title": "Honda XL750 Transalp",
+            "type": "trail",
+            "best_for": "grands gabarits qui veulent de la polyvalence et du voyage",
+            "seat_feel": "haute",
+            "weight_feel": "moto plus sérieuse mais cohérente",
+            "saddle_width": "moyenne",
+            "center_of_gravity": "plus haut que sur un roadster",
+            "why_it_fits": "Elle offre plus d’espace et une position qui convient très bien aux pilotes grands.",
+            "our_opinion": "Très bon choix pour un grand gabarit qui veut une moto de route et d’évasion.",
+            "strengths": ["bonne position de conduite", "confort", "vraie polyvalence"],
+            "watch_out": ["moins logique pour un débutant peu sûr de lui à l’arrêt"]
+          },
+          {
+            "title": "Yamaha Tracer 7",
+            "type": "trail routier / sport touring",
+            "best_for": "grands gabarits qui roulent souvent",
+            "seat_feel": "haute",
+            "weight_feel": "bonne logique routière",
+            "saddle_width": "moyenne",
+            "center_of_gravity": "neutre à un peu haut",
+            "why_it_fits": "Elle offre une position plus naturelle pour les grands et plus de confort sur la durée.",
+            "our_opinion": "Très cohérente si tu veux une moto de route sans passer à une très grosse cylindrée.",
+            "strengths": ["bonne protection", "confort", "vraie logique routière"],
+            "watch_out": ["un peu plus imposante à basse vitesse qu’un roadster"]
+          }
+        ]
+      },
+      {
+        "title": "Les 5 erreurs à éviter quand on choisit sa moto selon sa taille",
+        "ordered_list": [
+          "Regarder seulement la hauteur de selle alors que la largeur et la forme de l’assise changent énormément le ressenti réel.",
+          "Oublier le poids à l’arrêt, alors qu’il compte beaucoup dans les manœuvres et la confiance au quotidien.",
+          "Confondre accessibilité à l’arrêt et confort sur la durée.",
+          "Acheter volontairement trop haut pour “s’habituer”, alors qu’une moto adaptée fait progresser plus vite.",
+          "Croire qu’une moto est impossible sans envisager une selle retravaillée ou un kit de rabaissement quand c’est pertinent."
+        ]
+      },
+      {
+        "title": "En résumé : quelle moto choisir selon ta taille ?",
+        "cards": [
+          {
+            "title": "Entre 1m55 et 1m70",
+            "summary": "Vise surtout une moto basse, fine et rassurante à l’arrêt.",
+            "recommended_models": ["Honda CMX500 Rebel", "BMW G 310 R", "Honda CB500 Hornet", "Kawasaki Ninja 500 SE"],
+            "our_opinion": "La confiance à l’arrêt passe avant le prestige du modèle."
+          },
+          {
+            "title": "Entre 1m70 et 1m80",
+            "summary": "Tu peux presque tout envisager, à condition de choisir selon ton usage réel.",
+            "recommended_models": ["Yamaha MT-07", "Kawasaki Z650", "Honda CB750 Hornet", "Yamaha Tracer 7"],
+            "our_opinion": "C’est la zone la plus polyvalente, donc le programme compte plus que la taille seule."
+          },
+          {
+            "title": "Entre 1m80 et 1m95",
+            "summary": "Cherche surtout de l’espace, une position naturelle et du confort de jambes.",
+            "recommended_models": ["Honda XL750 Transalp", "Yamaha Tracer 7", "Suzuki V-Strom 650", "Suzuki GSX-8S"],
+            "our_opinion": "Le vrai sujet n’est plus seulement de toucher le sol, mais de ne pas te sentir tassé sur la moto."
           }
         ]
       }
     ],
-    "conclusion": "La meilleure assurance est celle qui vous permet de rouler sereinement. Prenez le temps de comparer les options d'assistance et les franchises, car c'est là que se fait la vraie différence en cas de pépin."
-  },
-  {
-    "id": "combien-coute-vraiment-une-moto-par-mois",
-    "slug": "combien-coute-vraiment-une-moto-par-mois",
-    "title": "Combien coûte vraiment une moto par mois ? Le budget réel",
-    "display_title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
-    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, calculez votre budget mensuel pour rouler serein.",
-    "author": "L'équipe Label Moto",
-    "readingTime": "8 min de lecture",
-    "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",
-    "seo": {
-      "meta_title": "Budget Moto 2024 : Calcul du coût réel par mois",
-      "meta_description": "Combien coûte l'entretien, l'assurance et l'essence d'une moto ? Découvrez le budget mensuel détaillé d'un motard débutant.",
-      "keywords": ["prix moto par mois", "budget motard", "entretien moto prix", "coût assurance moto"]
-    },
-    "intro": [
-      "Souvent, on ne voit que le prix affiché sur l'étiquette en concession.",
-      "Pourtant, rouler à moto implique des frais récurrents qu'il vaut mieux anticiper pour ne pas se retrouver bloqué au garage.",
-      "Voici le détail du budget moyen pour un motard roulant environ 6000 km par an."
+    "faq": [
+      { "question": "Quelle moto choisir quand on est petit ?", "answer": "Quand on est petit, mieux vaut privilégier une selle basse, une assise fine, un poids contenu et une moto rassurante à l’arrêt. Les customs accessibles, les petits roadsters légers et certaines sportives raisonnables sont souvent les meilleurs choix." },
+      { "question": "La hauteur de selle suffit-elle pour savoir si une moto est accessible ?", "answer": "Non. La largeur de selle, sa forme à l’avant, le poids de la moto et le centre de gravité changent énormément l’accessibilité réelle à l’arrêt." },
+      { "question": "Peut-on rabaisser une moto trop haute ?", "answer": "Oui, dans certains cas. Certains modèles acceptent des selles basses, un travail de sellerie ou un kit de rabaissement." },
+      { "question": "Un sellier peut-il vraiment aider sur une moto trop haute ?", "answer": "Oui. En retravaillant la mousse, la forme ou surtout la largeur de la selle, un sellier peut rendre une moto sensiblement plus accessible." }
     ],
-    "sections": [
-      {
-        "title": "Répartition des denses mensuelles",
-        "table": {
-          "headers": ["Poste de dépense", "Prix moyen mensuel", "Note"],
-          "rows": [
-            { "Poste de dépense": "Essence", "Prix moyen mensuel": "40€ - 70€", "Note": "Basé sur 5L/100km et SP95-E10" },
-            { "Poste de dépense": "Assurance", "Prix moyen mensuel": "50€ - 120€", "Note": "Selon profil A2 et ville (Paris plus cher)" },
-            { "Poste de dépense": "Entretien", "Prix moyen mensuel": "20€ - 40€", "Note": "Révisions + Pneus + Kit chaîne" },
-            { "Poste de dépense": "Équipement", "Prix moyen mensuel": "15€ - 30€", "Note": "Amortissement du casque et vêtements" }
-          ]
-        }
-      }
+    "conclusion": [
+      "Choisir une moto selon sa taille, ce n’est pas seulement une affaire de centimètres.",
+      "La vraie question n’est pas seulement « quelle est la hauteur de selle ? », mais plutôt : est-ce que cette moto me met en confiance à l’arrêt, me laisse de la place en roulant et correspond à mon usage réel ?",
+      "La meilleure moto n’est donc pas la plus connue ni la plus impressionnante. C’est celle dans laquelle ton corps se sent naturellement à sa place."
     ],
-    "conclusion": "Anticiper un budget d'environ 150€ à 250€ par mois (hors crédit d'achat) est une base saine pour profiter de sa passion sans stress financier."
+    "cta_blocks": [
+      { "title": "Tu débutes aussi en permis A2 ?", "text": "Découvre les meilleures motos A2 pour commencer avec une machine cohérente selon ton niveau, ton budget et ton usage.", "label": "Lire le guide des meilleures motos A2", "target_slug": "meilleure-moto-a2", "target_type": "article" },
+      { "title": "Regarde le coût réel avant d’acheter", "text": "Le bon choix dépend aussi du budget mensuel : assurance, pneus, entretien, équipement et antivol.", "label": "Voir combien coûte vraiment une moto par mois", "target_slug": "combien-coute-vraiment-une-moto-par-mois", "target_type": "article" },
+      { "title": "Tu hésites entre neuf et occasion ?", "text": "Avant d’acheter, vérifie aussi les points de contrôle les plus importants pour éviter les mauvaises surprises.", "label": "Lire le guide achat moto d’occasion", "target_slug": "achat-moto-occasion-guide-complet-pour-eviter-les-pieges", "target_type": "article" }
+    ],
+    "related_articles": ["meilleure-moto-a2", "combien-coute-vraiment-une-moto-par-mois", "achat-moto-occasion-guide-complet-pour-eviter-les-pieges", "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"],
+    "language": "fr"
   }
 ]
