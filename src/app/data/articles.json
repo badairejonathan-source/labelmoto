@@ -26,9 +26,9 @@
         "table": {
           "headers": ["Formule", "Protection", "Prix moyen", "Idéale pour"],
           "rows": [
-            { "Formule": "Tiers", "Protection": "Minimale", "Prix moyen": "15€ - 40€", "Idéale pour": "Motos anciennes, petit budget" },
-            { "Formule": "Tiers plus", "Protection": "Intermédiaire", "Prix moyen": "40€ - 80€", "Idéale pour": "Jeunes permis, motos récentes" },
-            { "Formule": "Tous risques", "Protection": "Maximale", "Prix moyen": "80€ - 150€+", "Idéale pour": "Motos neuves, gros rouleurs" }
+            { "Formule": "Tiers (Responsabilité Civile)", "Protection": "Minimale obligatoire", "Prix moyen": "15€ - 40€", "Idéale pour": "Motos anciennes, petit budget" },
+            { "Formule": "Tiers Plus (Vol/Incendie)", "Protection": "Intermédiaire", "Prix moyen": "40€ - 80€", "Idéale pour": "Jeunes permis, motos récentes" },
+            { "Formule": "Tous risques", "Protection": "Maximale (dommages tous accidents)", "Prix moyen": "80€ - 150€+", "Idéale pour": "Motos neuves, gros rouleurs" }
           ]
         }
       },
@@ -36,34 +36,46 @@
         "title": "Quelle formule choisir selon votre profil ?",
         "cards": [
           {
-            "title": "Profil Permis A2",
-            "subtitle": "Jeune permis, première moto",
+            "title": "Profil Jeune Permis A2",
+            "subtitle": "Première moto, apprentissage",
             "recommended_formula": "Tiers Plus (Vol/Incendie)",
-            "content": "C’est souvent le meilleur équilibre : protection minimale insuffisante sur une moto récente, mais tous risques parfois trop cher au départ.",
-            "advantages": ["Protège mieux contre le vol", "Évite les surprimes excessives"],
-            "watch_out": ["Montant des franchises élevé", "Garantie équipement limitée"],
+            "content": "C’est souvent le meilleur équilibre : protection minimale insuffisante sur une moto de moins de 5 ans, mais le tous risques est souvent prohibitif au départ.",
+            "advantages": ["Garantie vol incluse", "Rapport protection/prix optimal"],
+            "watch_out": ["Franchises élevées pour les A2", "Garantie équipement souvent en option"],
             "linked_models": [
-              { "label": "Yamaha MT-07 A2" },
+              { "label": "Yamaha MT-07" },
               { "label": "Kawasaki Z650" },
               { "label": "Honda CB500 Hornet" }
             ]
           },
           {
-            "title": "Profil Grand rouleur",
-            "subtitle": "Usage intensif, trajets fréquents",
+            "title": "Profil Grand Rouleur / Urbain",
+            "subtitle": "Trajets quotidiens, travail",
             "recommended_formula": "Tous risques + Assistance 0km",
-            "content": "Cette formule est la plus cohérente pour une machine de valeur utilisée quotidiennement, été comme hiver.",
-            "advantages": ["Protection maximale", "Prise en charge panne", "Option prêt de véhicule"],
-            "watch_out": ["Exclusions bagagerie", "Indemnisation valeur à neuf"],
+            "content": "Cette formule est indispensable pour une machine utilisée tous les jours, été comme hiver, car les risques de chute ou de collision augmentent avec le kilométrage.",
+            "advantages": ["Prise en charge même en tort", "Assistance panne devant chez soi", "Prêt de véhicule"],
+            "watch_out": ["Vérifier le montant de l'indemnisation à neuf"],
             "linked_models": [
               { "label": "BMW R1250 GS" },
               { "label": "Yamaha Tracer 7" }
+            ]
+          },
+          {
+            "title": "Profil Sorties Loisir / Week-end",
+            "subtitle": "Balades occasionnelles",
+            "recommended_formula": "Tiers Plus + Option Individuelle Pilote",
+            "content": "Si vous ne roulez que par beau temps, une protection intermédiaire suffit, mais ne négligez jamais votre propre sécurité corporelle.",
+            "advantages": ["Budget maîtrisé", "Couverture corporelle maximale"],
+            "watch_out": ["Attention aux exclusions de kilométrage (assurance au km)"],
+            "linked_models": [
+              { "label": "Triumph Trident 660" },
+              { "label": "Royal Enfield Himalayan 450" }
             ]
           }
         ]
       }
     ],
-    "conclusion": "La meilleure assurance est celle qui correspond à votre usage réel. Sur Label Moto, comparez avant de signer."
+    "conclusion": "La meilleure assurance est celle qui vous permet de rouler sereinement. Prenez le temps de comparer les options d'assistance et les franchises, car c'est là que se fait la vraie différence en cas de pépin."
   },
   {
     "id": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
@@ -77,7 +89,7 @@
     "imageUrl": "/images/achat-occasion.png",
     "seo": {
       "meta_title": "Meilleure moto A2 2024 : Guide d'achat et comparatif complet",
-      "meta_description": "Découvrez les meilleures motos permis A2 pour débuter en 2024. Comparatif Roadsters, Trails et conseils d'achat pour jeunes permis.",
+      "meta_description": "Découvrez les meilleures motos permis A2 pour débuter en 2024. Comparatif Roadsters, Trails, Sportives et Néo-rétros pour jeunes permis.",
       "keywords": ["moto a2", "meilleure moto a2", "moto débutant", "comparatif moto a2", "première moto"]
     },
     "intro": [
@@ -88,22 +100,22 @@
     "sections": [
       {
         "title": "Les Roadsters : Le choix du fun et de l'agilité",
-        "description": "C'est la catégorie reine en France. Légers, maniables et souvent très performants, les roadsters sont parfaits pour apprendre à pencher.",
+        "description": "C'est la catégorie reine en France. Légers, maniables et parfaits pour apprendre à pencher.",
         "cards": [
           {
             "title": "Yamaha MT-07",
             "subtitle": "La référence absolue",
             "content": "Le moteur CP2 est légendaire pour son couple et son caractère. C'est la moto école par excellence, mais aussi un jouet redoutable.",
-            "advantages": ["Moteur ultra-joueur", "Revente assurée", "Agilité incroyable"],
-            "watch_out": ["Suspensions un peu souples", "Peinture cadre fragile"],
-            "linked_models": [{ "label": "Yamaha MT-07 A2" }]
+            "advantages": ["Moteur ultra-joueur", "Revente très facile", "Agilité incroyable"],
+            "watch_out": ["Suspensions un peu souples", "Finition peinture fragile"],
+            "linked_models": [{ "label": "Yamaha MT-07" }]
           },
           {
             "title": "Kawasaki Z650",
             "subtitle": "La précision japonaise",
             "content": "Plus fine et plus basse que la MT-07, elle est idéale pour les petits gabarits qui cherchent une machine facile et rigoureuse.",
-            "advantages": ["Facilité de prise en main", "Embrayage assisté", "Look Sugomi"],
-            "watch_out": ["Moteur plus linéaire", "Confort de selle"],
+            "advantages": ["Facilité de prise en main", "Embrayage assisté ultra-souple", "Look agressif"],
+            "watch_out": ["Moteur plus linéaire que le CP2", "Confort de selle ferme"],
             "linked_models": [{ "label": "Kawasaki Z650" }]
           },
           {
@@ -113,6 +125,14 @@
             "advantages": ["Consommation record", "Fiabilité légendaire", "Écran TFT moderne"],
             "watch_out": ["Caractère moteur sage", "Freinage suffisant mais pas sportif"],
             "linked_models": [{ "label": "Honda CB500 Hornet" }]
+          },
+          {
+            "title": "Triumph Trident 660",
+            "subtitle": "Le 3 cylindres accessible",
+            "content": "Le charme et le son du 3 cylindres anglais enfin disponible en A2 avec une finition premium.",
+            "advantages": ["Mélodie du moteur", "Électronique complète", "Look néo-rétro moderne"],
+            "watch_out": ["Entretien un peu plus coûteux", "Poids supérieur aux japonaises"],
+            "linked_models": [{ "label": "Triumph Trident 660" }]
           }
         ]
       },
@@ -123,7 +143,7 @@
           {
             "title": "Yamaha Tracer 7",
             "subtitle": "La routière polyvalente",
-            "content": "C'est une MT-07 avec une bulle et une position droite. Elle permet de traverser la France sans fatigue tout en restant fun.",
+            "content": "C'est une MT-07 avec une bulle et une position droite. Elle permet de traverser la France sans fatigue.",
             "advantages": ["Position naturelle", "Protection efficace", "Moteur CP2 généreux"],
             "watch_out": ["Tarif plus élevé", "Bulle d'origine bruyante"],
             "linked_models": [{ "label": "Yamaha Tracer 7" }]
@@ -131,7 +151,7 @@
           {
             "title": "Honda NX500",
             "subtitle": "La rationnelle par excellence",
-            "content": "Héritière de la CB500X, elle fait tout bien. Idéale pour le quotidien et les petites escapades hors bitume.",
+            "content": "Héritière de la CB500X, elle fait tout bien. Idéale pour le quotidien et les escapades hors bitume.",
             "advantages": ["Autonomie (450km+)", "Confort royal", "Polyvalence totale"],
             "watch_out": ["Poids un peu haut placé", "Vitesse de pointe limitée"],
             "linked_models": [{ "label": "Honda NX500" }]
@@ -140,9 +160,31 @@
             "title": "Royal Enfield Himalayan 450",
             "subtitle": "L'aventure accessible",
             "content": "Un vrai baroudeur simple, robuste et capable de sortir des sentiers battus sans complexe.",
-            "advantages": ["Look baroudeur", "Capacités Off-road", "Prix imbattable"],
-            "watch_out": ["Vibrations monocylindre", "Poids à l'arrêt"],
+            "advantages": ["Look baroudeur", "Capacités Off-road réelles", "Prix imbattable"],
+            "watch_out": ["Vibrations du monocylindre", "Poids à l'arrêt"],
             "linked_models": [{ "label": "Royal Enfield Himalayan 450" }]
+          }
+        ]
+      },
+      {
+        "title": "Les Sportives : Pour le look et les sensations",
+        "description": "Même brisées à 47.5 ch, ces machines offrent une position engagée et un look de piste.",
+        "cards": [
+          {
+            "title": "Yamaha R7",
+            "subtitle": "La petite superbike",
+            "content": "Une position très typée sport avec le moteur de la MT-07. Parfait pour commencer la piste en douceur.",
+            "advantages": ["Position radicale", "Suspensions de qualité", "Look ravageur"],
+            "watch_out": ["Confort spartiate en ville", "Rayon de braquage limité"],
+            "linked_models": [{ "label": "Yamaha R7" }]
+          },
+          {
+            "title": "Honda CBR500R",
+            "subtitle": "La sportive polyvalente",
+            "content": "Le look d'une Fireblade mais avec le confort d'une routière. La plus équilibrée des sportives A2.",
+            "advantages": ["Position pas trop fatiguante", "Consommation basse", "Éclairage full LED"],
+            "watch_out": ["Manque de peps moteur comparé à une R7"],
+            "linked_models": [{ "label": "Honda CBR500R" }]
           }
         ]
       },
@@ -155,7 +197,7 @@
         "content": "Pour un jeune permis, l'assurance peut varier du simple au double selon le modèle choisi (Sportive vs Roadster)."
       }
     ],
-    "conclusion": "Prenez le temps d'essayer plusieurs modèles en concession. La meilleure moto est celle sur laquelle vous vous sentez en confiance dès les premiers mètres."
+    "conclusion": "Prenez le temps d'essayer plusieurs modèles en concession. La meilleure moto est celle sur laquelle vous vous sentez en confiance dès les premiers mètres. N'oubliez pas de garder du budget pour un équipement de qualité (casque, gants, veste, pantalon, bottes)."
   },
   {
     "id": "combien-coute-vraiment-une-moto-par-mois",
@@ -180,16 +222,16 @@
       {
         "title": "Répartition des dépenses mensuelles",
         "table": {
-          "headers": ["Poste de dépense", "Prix moyen", "Note"],
+          "headers": ["Poste de dépense", "Prix moyen mensuel", "Note"],
           "rows": [
-            { "Poste de dépense": "Essence", "Prix moyen": "40€ - 70€", "Note": "Basé sur 5L/100km" },
-            { "Poste de dépense": "Assurance", "Prix moyen": "50€ - 120€", "Note": "Selon profil et ville" },
-            { "Poste de dépense": "Entretien", "Prix moyen": "20€ - 40€", "Note": "Révisions + Pneus" },
-            { "Poste de dépense": "Équipement", "Prix moyen": "15€ - 30€", "Note": "Amortissement du casque/gants" }
+            { "Poste de dépense": "Essence", "Prix moyen mensuel": "40€ - 70€", "Note": "Basé sur 5L/100km et SP95-E10" },
+            { "Poste de dépense": "Assurance", "Prix moyen mensuel": "50€ - 120€", "Note": "Selon profil A2 et ville (Paris plus cher)" },
+            { "Poste de dépense": "Entretien", "Prix moyen mensuel": "20€ - 40€", "Note": "Révisions + Pneus + Kit chaîne" },
+            { "Poste de dépense": "Équipement", "Prix moyen mensuel": "15€ - 30€", "Note": "Amortissement du casque et vêtements" }
           ]
         }
       }
     ],
-    "conclusion": "Anticiper un budget d'environ 150€ à 250€ par mois (hors crédit) est une base saine pour profiter de sa passion sans stress financier."
+    "conclusion": "Anticiper un budget d'environ 150€ à 250€ par mois (hors crédit d'achat) est une base saine pour profiter de sa passion sans stress financier."
   }
 ]

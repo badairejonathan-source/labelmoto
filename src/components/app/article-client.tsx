@@ -44,6 +44,7 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
   if (t.includes('trident 660')) return 'triumph-trident-660-2021-plus';
   if (t.includes('xsr700')) return 'yamaha-xsr700-2021-plus';
+  if (t.includes('himalayan 450')) return 'royal-enfield-himalayan-450';
   return null;
 };
 
