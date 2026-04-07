@@ -1,4 +1,3 @@
-
 [
   {
     "id": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
@@ -77,7 +76,7 @@
             "title": "Ville quotidienne / usage urbain",
             "summary": "Tu roules surtout en circulation dense, avec beaucoup d’arrêts, de manœuvres et parfois du stationnement en voirie.",
             "recommended_models": ["BMW G 310 R", "Honda CB500 Hornet", "Kawasaki Z650"],
-            "our_opinion": "En ville, la maniabilité, la facilité à basse vitesse et le coût d’usage comptent souvent plus que le prestige du modèle."
+            "our_opinion": "En ville, la maniabilité, la facile à basse vitesse et le coût d’usage comptent souvent plus que le prestige du modèle."
           },
           {
             "title": "Usage mixte / moto unique pour tout faire",
@@ -343,11 +342,11 @@
       {
         "title": "Les 3 grandes formules d’assurance moto",
         "table": {
-          "headers": ["Formule", "Protection", "Prix moyen", "Idéale pour"],
+          "headers": ["Formule", "Niveau de protection", "Niveau de prix", "Idéale pour"],
           "rows": [
-            { "Formule": "Tiers (Responsabilité Civile)", "Protection": "Minimale obligatoire", "Prix moyen": "15€ - 40€", "Idéale pour": "Motos anciennes, petit budget" },
-            { "Formule": "Tiers Plus (Vol/Incendie)", "Protection": "Intermédiaire", "Prix moyen": "40€ - 80€", "Idéale pour": "Jeunes permis, motos récentes" },
-            { "Formule": "Tous risques", "Protection": "Maximale (dommages tous accidents)", "Prix moyen": "80€ - 150€+", "Idéale pour": "Motos neuves, gros rouleurs" }
+            { "Formule": "Tiers", "Niveau de protection": "Faible", "Niveau de prix": "€", "Idéale pour": "Motos anciennes, petit budget, faible valeur" },
+            { "Formule": "Tiers plus", "Niveau de protection": "Intermédiaire", "Niveau de prix": "€€", "Idéale pour": "Jeunes permis, citadins, motos récentes mais budget encadré" },
+            { "Formule": "Tous risques", "Niveau de protection": "Élevé", "Niveau de prix": "€€€", "Idéale pour": "Motos récentes, gros rouleurs, machines à forte valeur" }
           ]
         }
       },

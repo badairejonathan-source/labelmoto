@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -109,46 +108,50 @@ export default function ArticleClient({ id }: { id: string }) {
             .replace(/[^a-z0-9]+/g, "");
 
     return (
-      <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              {headers.map((h: string, i: number) => (
-                <TableHead key={i} className="font-black text-foreground py-4 uppercase tracking-widest text-[10px] whitespace-nowrap">{h}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row: any, ri: number) => (
-              <TableRow key={ri} className="hover:bg-muted/30">
-                {headers.map((header: string, hi: number) => {
-                  const normHeader = normalize(header);
-                  let val = '';
-                  
-                  if (row[header] !== undefined) {
-                    val = row[header];
-                  } else {
-                    const foundKey = Object.keys(row).find(k => normalize(k) === normHeader);
-                    if (foundKey) {
-                      val = row[foundKey];
-                    } else if (Array.isArray(row)) {
-                      val = row[hi];
-                    } else {
-                      const keys = Object.keys(row);
-                      if (keys[hi]) val = row[keys[hi]];
-                    }
-                  }
-
-                  return (
-                    <TableCell key={hi} className="py-4 text-foreground font-black">
-                      {String(val || '')}
-                    </TableCell>
-                  );
-                })}
+      <div className="my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted shadow-sm">
+        <div className="overflow-x-auto">
+          <Table className="w-full">
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                {headers.map((h: string, i: number) => (
+                  <TableHead key={i} className="font-black text-foreground py-3 px-3 md:py-4 md:px-4 uppercase tracking-widest text-[8px] md:text-[10px] whitespace-nowrap">
+                    {h}
+                  </TableHead>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row: any, ri: number) => (
+                <TableRow key={ri} className="hover:bg-muted/30">
+                  {headers.map((header: string, hi: number) => {
+                    const normHeader = normalize(header);
+                    let val = '';
+                    
+                    if (row[header] !== undefined) {
+                      val = row[header];
+                    } else {
+                      const foundKey = Object.keys(row).find(k => normalize(k) === normHeader);
+                      if (foundKey) {
+                        val = row[foundKey];
+                      } else if (Array.isArray(row)) {
+                        val = row[hi];
+                      } else {
+                        const keys = Object.keys(row);
+                        if (keys[hi]) val = row[keys[hi]];
+                      }
+                    }
+
+                    return (
+                      <TableCell key={hi} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
+                        {String(val || '')}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     );
   };
