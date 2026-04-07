@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, ShieldCheck, AlertTriangle, HelpCircle } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -21,6 +21,12 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // Fallback data
 import localArticles from '@/app/data/articles.json';
@@ -157,53 +163,72 @@ export default function ArticleClient({ id }: { id: string }) {
               <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
                 {card.title}
               </CardTitle>
-              {card.subtitle && <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">{card.subtitle}</p>}
+              {(card.profile || card.subtitle) && (
+                <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">
+                  {card.profile || card.subtitle}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="p-6 space-y-6 flex-grow">
+              {card.summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{card.summary}</p>}
+              
+              {card.recommended_models && (
+                <div className="space-y-3">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Modèles recommandés :</p>
+                  <div className="flex flex-wrap gap-2">
+                    {card.recommended_models.map((m: string, i: number) => (
+                      <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {card.recommended_formula && (
                 <div className="bg-brand/10 p-3 rounded-lg border border-brand/20">
                   <p className="text-[9px] font-black uppercase tracking-widest text-brand mb-1">Formule recommandée</p>
                   <p className="text-lg font-black uppercase text-foreground">{card.recommended_formula}</p>
                 </div>
               )}
+
               {card.content && (
                 <div className="text-sm font-bold text-muted-foreground leading-relaxed space-y-2">
                   {Array.isArray(card.content) ? card.content.map((p: string, i: number) => <p key={i}>{p}</p>) : <p>{card.content}</p>}
                 </div>
               )}
-              {card.advantages && (
+
+              {(card.strengths || card.advantages) && (
                 <div className="space-y-2">
                   <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Avantages
+                    <CheckCircle2 className="h-3.5 w-3.5" /> {card.strengths ? "Points forts" : "Avantages"}
                   </div>
                   <ul className="list-none space-y-1">
-                    {card.advantages.map((adv: string, i: number) => (
-                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-green-500">•</span> {adv}</li>
+                    {(card.strengths || card.advantages).map((s: string, i: number) => (
+                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
                     ))}
                   </ul>
                 </div>
               )}
-              {card.watch_out && (
+
+              {(card.weaknesses || card.watch_out) && (
                 <div className="space-y-2">
                   <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
-                    <AlertTriangle className="h-3.5 w-3.5" /> Vigilance
+                    <AlertTriangle className="h-3.5 w-3.5" /> {card.weaknesses ? "Points faibles" : "Vigilance"}
                   </div>
                   <ul className="list-none space-y-1">
-                    {card.watch_out.map((item: string, i: number) => (
-                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-red-500">•</span> {item}</li>
+                    {(card.weaknesses || card.watch_out).map((w: string, i: number) => (
+                      <li key={i} className="text-xs font-black flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
                     ))}
                   </ul>
                 </div>
               )}
-              {card.items && !card.advantages && (
-                <ul className="list-none space-y-2">
-                  {card.items.map((item: string, j: number) => (
-                    <li key={j} className="text-sm font-black flex items-start gap-2 text-foreground">
-                      <span className="text-brand font-black shrink-0">•</span> {item}
-                    </li>
-                  ))}
-                </ul>
+
+              {card.our_opinion && (
+                <div className="bg-muted/30 p-3 rounded-lg border border-border/50">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">L'avis Label Moto</p>
+                  <p className="text-xs font-bold text-foreground italic">"{card.our_opinion}"</p>
+                </div>
               )}
+
               {card.linked_models && (
                 <div className="pt-4 border-t border-dashed">
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Modèles recommandés :</p>
@@ -222,6 +247,11 @@ export default function ArticleClient({ id }: { id: string }) {
                 </div>
               )}
             </CardContent>
+            {card.cta && (
+              <CardFooter className="bg-brand/5 p-3 border-t">
+                <Link href={`/info/${card.cta.target_slug}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline">{card.cta.label} →</Link>
+              </CardFooter>
+            )}
           </Card>
         ))}
       </div>
@@ -236,28 +266,14 @@ export default function ArticleClient({ id }: { id: string }) {
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         
-        {section.title && (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget')) && (
+        {section.cta && (
           <div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl mb-8">
-            <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="group flex items-center justify-between gap-4">
+            <Link href={`/info/${section.cta.target_slug}`} className="group flex items-center justify-between gap-4">
               <div className="flex-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dossier Spécial</p>
-                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">Calculer mon budget réel →</h4>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">Assurance, entretien, équipement : ne laissez rien au hasard.</p>
+                {section.cta.title && <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{section.cta.title}</h4>}
+                <p className="text-sm font-black text-brand mt-1">{section.cta.label} →</p>
               </div>
               <div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0"><FileText className="h-5 w-5" /></div>
-            </Link>
-          </div>
-        )}
-
-        {section.title && section.title.toLowerCase().includes('assurance') && id !== 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil' && (
-          <div className="mt-6 p-5 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-500/30 rounded-2xl mb-8">
-            <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="group flex items-center justify-between gap-4">
-              <div className="flex-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">Dossier Spécial Assurance</p>
-                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors">Bien choisir son assurance moto →</h4>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.</p>
-              </div>
-              <div className="bg-blue-600 text-white p-5 rounded-2xl shadow-lg group-hover:scale-110 transition-transform shrink-0"><ShieldCheck className="h-5 w-5" /></div>
             </Link>
           </div>
         )}
@@ -336,7 +352,21 @@ export default function ArticleClient({ id }: { id: string }) {
                     </div>
                 )}
 
-                {allSummaryPoints.length > 0 && (
+                {article.intro_points && (
+                    <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4">Ce que vous allez apprendre :</p>
+                        <ul className="list-none space-y-3 pl-0">
+                            {article.intro_points.map((pt: string, i: number) => (
+                                <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black">
+                                    <CheckCircle2 className="h-5 w-5 text-brand shrink-0" />
+                                    <span>{pt}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {allSummaryPoints.length > 0 && !article.intro_points && (
                     <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
                         <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
                         <ul className="list-none space-y-3 pl-0">
@@ -355,6 +385,40 @@ export default function ArticleClient({ id }: { id: string }) {
                 <div className="space-y-12">
                     {activeSections.map((section: any, idx: number) => renderSection(section, idx))}
                 </div>
+
+                {article.faq && (
+                  <div className="mt-16 pt-8 border-t border-brand/20">
+                    <div className="flex items-center gap-3 mb-6"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Questions fréquentes</h3></div>
+                    <Accordion type="single" collapsible className="w-full">
+                      {article.faq.map((item: any, idx: number) => (
+                        <AccordionItem key={idx} value={`faq-${idx}`} className="border-b-brand/10">
+                          <AccordionTrigger className="text-left font-bold text-foreground py-4 hover:text-brand transition-colors">{item.question}</AccordionTrigger>
+                          <AccordionContent className="text-muted-foreground leading-relaxed pb-4 font-medium">{item.answer}</AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </div>
+                )}
+
+                {article.cta_blocks && (
+                  <div className="mt-16 space-y-6">
+                    {article.cta_blocks.map((block: any, i: number) => (
+                      <Card key={i} className="border-2 border-brand shadow-xl overflow-hidden group hover:scale-[1.01] transition-transform">
+                        <div className="flex flex-col md:flex-row items-stretch">
+                          <div className="bg-brand text-white p-6 md:w-1/3 flex flex-col justify-center">
+                            <h4 className="text-xl font-black uppercase tracking-tighter leading-tight">{block.title}</h4>
+                          </div>
+                          <div className="p-6 md:flex-1 flex flex-col justify-between">
+                            <p className="text-sm font-bold text-muted-foreground mb-4">{block.text}</p>
+                            <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] tracking-widest w-fit">
+                              <Link href={`/info/${block.target_slug}`}>{block.label} →</Link>
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
 
                 {article.conclusion && (
                     <div className="mt-16 pt-8 border-t border-brand/20">
