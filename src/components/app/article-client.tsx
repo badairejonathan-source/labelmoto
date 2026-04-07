@@ -1,11 +1,11 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, ShieldCheck, AlertTriangle, HelpCircle, Gauge, Scale, Settings2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, ChevronRight, Home, HelpCircle, Gauge, Scale, Settings2, ExternalLink, AlertTriangle } from 'lucide-react';
 
 import Header from '@/components/app/header';
 import {
@@ -48,18 +48,7 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('r7')) return 'yamaha-r7-2022-plus';
   if (t.includes('cbr500r')) return 'honda-cbr500r-2022-plus';
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
-  if (t.includes('trident 660')) return 'triumph-trident-660-2021-plus';
-  if (t.includes('xsr700')) return 'yamaha-xsr700-2021-plus';
-  if (t.includes('g 310 r') || t.includes('g310r')) return 'bmw-g310r-2021-plus';
-  if (t.includes('himalayan 450')) return 'royal-enfield-himalayan-450';
-  if (t.includes('ninja 500')) return 'kawasaki-ninja-500-2024-plus';
-  if (t.includes('hornet 750')) return 'honda-cb750-hornet-2023-plus';
-  if (t.includes('transalp')) return 'honda-xl750-transalp-2023-plus';
-  if (t.includes('gsx-8s')) return 'suzuki-gsx-8s-2023-plus';
-  if (t.includes('gsx-8r')) return 'suzuki-gsx-8r-2024-plus';
   if (t.includes('cmx500') || t.includes('rebel 500')) return 'honda-cmx500-rebel';
-  if (t.includes('vulcan s')) return 'kawasaki-vulcan-s';
-  if (t.includes('v-strom 650')) return 'suzuki-v-strom-650-2017-plus';
   return null;
 };
 
@@ -77,10 +66,12 @@ export default function ArticleClient({ id }: { id: string }) {
   }, [firestoreArticle, id]);
 
   const imageUrl = useMemo(() => {
-    if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
-    if (id.includes('assurance') || article.id?.includes('assurance')) return "/images/motard-article-assurance2026.png";
-    if (id.includes('a2') || article.id?.includes('a2')) return "/images/achat-occasion.png";
-    if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    // FIX : Forcer les chemins locaux pour éviter le scintillement (données Firestore potentiellement incomplètes)
+    if (id.includes('taille') || (article && article.id?.includes('taille'))) return "/images/motard-articles-hauteurdeselle.png";
+    if (id.includes('assurance') || (article && article.id?.includes('assurance'))) return "/images/motard-article-assurance2026.png";
+    if (id.includes('a2') || (article && article.id?.includes('a2'))) return "/images/achat-occasion.png";
+    
+    if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
   }, [article, id]);
 
@@ -136,21 +127,12 @@ export default function ArticleClient({ id }: { id: string }) {
                   {headers.map((header: string, hi: number) => {
                     const normHeader = normalize(header);
                     let val = '';
-                    
-                    if (row[header] !== undefined) {
-                      val = row[header];
-                    } else {
+                    if (row[header] !== undefined) val = row[header];
+                    else {
                       const foundKey = Object.keys(row).find(k => normalize(k) === normHeader);
-                      if (foundKey) {
-                        val = row[foundKey];
-                      } else if (Array.isArray(row)) {
-                        val = row[hi];
-                      } else {
-                        const keys = Object.keys(row);
-                        if (keys[hi]) val = row[keys[hi]];
-                      }
+                      if (foundKey) val = row[foundKey];
+                      else if (Array.isArray(row)) val = row[hi];
                     }
-
                     return (
                       <TableCell key={hi} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
                         {String(val || '')}
@@ -176,106 +158,34 @@ export default function ArticleClient({ id }: { id: string }) {
             <Card key={idx} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
-                    {card.title}
-                  </CardTitle>
-                  {(card.type || card.profile || card.subtitle) && (
-                    <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">
-                      {card.type || card.profile || card.subtitle}
-                    </p>
-                  )}
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">{card.title}</CardTitle>
+                  {(card.type || card.profile) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile}</p>}
                 </div>
-                {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand transition-colors" />}
+                {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
                 {card.summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{card.summary}</p>}
-                
                 {card.recommended_models && (
-                  <div className="space-y-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Modèles recommandés :</p>
-                    <div className="flex flex-wrap gap-2">
-                      {card.recommended_models.map((m: string, i: number) => {
-                        const mFicheId = getFicheIdFromTitle(m);
-                        return mFicheId ? (
-                          <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">
-                            {m} <ExternalLink className="h-2.5 w-2.5" />
-                          </Link>
-                        ) : (
-                          <span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>
-                        )
-                      })}
-                    </div>
+                  <div className="flex flex-wrap gap-2">
+                    {card.recommended_models.map((m: string, i: number) => {
+                      const mFicheId = getFicheIdFromTitle(m);
+                      return mFicheId ? (
+                        <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>)
+                    })}
                   </div>
                 )}
-
-                {card.best_for && (
-                  <div className="bg-brand/5 p-3 rounded-lg border border-brand/10">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-brand mb-1">Idéal pour :</p>
-                    <p className="text-xs font-bold text-foreground leading-tight">{card.best_for}</p>
-                  </div>
-                )}
-
                 <div className="grid grid-cols-2 gap-4">
-                  {card.seat_feel && (
-                    <div className="space-y-1">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Gauge className="h-2.5 w-2.5" /> Assise</p>
-                      <p className="text-[10px] font-black uppercase">{card.seat_feel}</p>
-                    </div>
-                  )}
-                  {card.weight_feel && (
-                    <div className="space-y-1">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Scale className="h-2.5 w-2.5" /> Poids</p>
-                      <p className="text-[10px] font-black uppercase">{card.weight_feel}</p>
-                    </div>
-                  )}
-                  {card.saddle_width && (
-                    <div className="space-y-1">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Settings2 className="h-2.5 w-2.5" /> Largeur</p>
-                      <p className="text-[10px] font-black uppercase">{card.saddle_width}</p>
-                    </div>
-                  )}
-                  {card.center_of_gravity && (
-                    <div className="space-y-1">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1"><Gauge className="h-2.5 w-2.5" /> Gravité</p>
-                      <p className="text-[10px] font-black uppercase">{card.center_of_gravity}</p>
-                    </div>
-                  )}
+                  {card.seat_feel && <div className="space-y-1"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Assise</p><p className="text-[10px] font-black uppercase">{card.seat_feel}</p></div>}
+                  {card.weight_feel && <div className="space-y-1"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Poids</p><p className="text-[10px] font-black uppercase">{card.weight_feel}</p></div>}
                 </div>
-
-                {card.why_it_fits && <p className="text-xs font-medium text-muted-foreground leading-relaxed italic">"{card.why_it_fits}"</p>}
-
                 {(card.strengths || card.advantages) && (
                   <div className="space-y-2 pt-2">
-                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Points forts
-                    </div>
-                    <ul className="list-none space-y-1">
-                      {(card.strengths || card.advantages).map((s: string, i: number) => (
-                        <li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
-                      ))}
-                    </ul>
+                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
+                    <ul className="list-none space-y-1">{(card.strengths || card.advantages).map((s: string, i: number) => (<li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
-
-                {(card.weaknesses || card.watch_out) && (
-                  <div className="space-y-2">
-                    <div className="text-[9px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
-                      <AlertTriangle className="h-3.5 w-3.5" /> Points faibles
-                    </div>
-                    <ul className="list-none space-y-1">
-                      {(card.weaknesses || card.watch_out).map((w: string, i: number) => (
-                        <li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {card.our_opinion && (
-                  <div className="bg-muted/30 p-3 rounded-lg border border-border/50 mt-auto">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">L'avis Label Moto</p>
-                    <p className="text-[10px] font-bold text-foreground italic">"{card.our_opinion}"</p>
-                  </div>
-                )}
+                {card.our_opinion && <div className="bg-muted/30 p-3 rounded-lg border border-border/50 mt-auto"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">L'avis Label Moto</p><p className="text-[10px] font-bold text-foreground italic">"{card.our_opinion}"</p></div>}
               </CardContent>
               {ficheId && (
                 <CardFooter className="bg-brand/5 p-3 border-t">
@@ -292,11 +202,9 @@ export default function ArticleClient({ id }: { id: string }) {
   const renderSection = (section: any, idx: number) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     const bodyText = section.content || section.text || section.description;
-
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        
         {section.cta && (
           <div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl mb-8">
             <Link href={`/info/${section.cta.target_slug}`} className="group flex items-center justify-between gap-4">
@@ -308,51 +216,22 @@ export default function ArticleClient({ id }: { id: string }) {
             </Link>
           </div>
         )}
-
-        {bodyText && (
-          Array.isArray(bodyText) ? (
-            bodyText.map((p: string, i: number) => <p key={i} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)
-          ) : typeof bodyText === 'string' && (
-            <p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>
-          )
-        )}
-
+        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={i} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         {section.table && renderTable(section.table)}
         {section.cards && renderCards(section.cards)}
-
-        {section.list && Array.isArray(section.list) && (
-          <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
-            {section.list.map((item: string, li: number) => (
-              <li key={li} className="text-lg text-foreground font-black">{item}</li>
-            ))}
-          </ul>
-        )}
-
-        {section.ordered_list && Array.isArray(section.ordered_list) && (
-          <ol className="list-decimal list-inside space-y-3 mb-8 pl-4">
-            {section.ordered_list.map((item: string, li: number) => (
-              <li key={li} className="text-lg text-foreground font-black">{item}</li>
-            ))}
-          </ol>
-        )}
-
-        {section.subsections && Array.isArray(section.subsections) && (
-          <div className="space-y-6">
-            {section.subsections.map((sub: any, si: number) => renderSection(sub, si))}
-          </div>
-        )}
+        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
+        {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-3 mb-8 pl-4">{section.ordered_list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ol>)}
+        {section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>)}
       </div>
     );
   };
 
   if (isDbLoading && !article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement de l'article...</p></div>);
-  
   if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><p className="text-muted-foreground mb-8">Nous n'avons pas trouvé l'article demandé.</p><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   return (
     <div className="min-h-screen relative">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} placeholderText="Recherche par departement , ville , marque, nom ... " />
-      
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
@@ -362,7 +241,6 @@ export default function ArticleClient({ id }: { id: string }) {
             <ChevronRight className="h-3 w-3 shrink-0" />
             <span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
           </nav>
-          
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
               <article>
@@ -374,66 +252,26 @@ export default function ArticleClient({ id }: { id: string }) {
                         <div className="flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-widest opacity-90"><span>Par {article.author || "L'équipe Label Moto"}</span></div>
                     </div>
                 </div>
-
-                {article.intro && Array.isArray(article.intro) && (
-                    <div className="mb-12 space-y-4">
-                        {article.intro.map((p: string, i: number) => (
-                            <p key={i} className="text-xl leading-relaxed text-foreground font-black">{p}</p>
-                        ))}
-                    </div>
-                )}
-
+                {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={i} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
                 {article.intro_points && (
                     <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
                         <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4">Ce que vous allez apprendre :</p>
                         <ul className="list-none space-y-3 pl-0">
                             {article.intro_points.map((pt: string, i: number) => {
                                 const ptLower = pt.toLowerCase();
-                                const bestSection = activeSections.find((s: any) => 
-                                    s.title && (
-                                        ptLower.includes(s.title.toLowerCase().substring(0, 15)) ||
-                                        s.title.toLowerCase().includes(ptLower.substring(0, 15))
-                                    )
-                                );
+                                const bestSection = activeSections.find((s: any) => s.title && (ptLower.includes(s.title.toLowerCase().substring(0, 15)) || s.title.toLowerCase().includes(ptLower.substring(0, 15))));
                                 const sectionId = bestSection ? slugify(bestSection.title) : null;
-
                                 return (
                                     <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
                                         <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
-                                        {sectionId ? (
-                                            <a href={`#${sectionId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
-                                                {pt}
-                                            </a>
-                                        ) : (
-                                            <span className="text-foreground">{pt}</span>
-                                        )}
+                                        {sectionId ? (<a href={`#${sectionId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">{pt}</a>) : (<span className="text-foreground">{pt}</span>)}
                                     </li>
                                 );
                             })}
                         </ul>
                     </div>
                 )}
-
-                {allSummaryPoints.length > 0 && !article.intro_points && (
-                    <div className="my-8 p-6 bg-muted/30 rounded-2xl border border-brand/10">
-                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Au sommaire de ce guide :</p>
-                        <ul className="list-none space-y-3 pl-0">
-                            {allSummaryPoints.map((pt, i) => (
-                                <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
-                                    <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
-                                    <a href={`#${pt.id}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
-                                        {pt.title}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-
-                <div className="space-y-12">
-                    {activeSections.map((section: any, idx: number) => renderSection(section, idx))}
-                </div>
-
+                <div className="space-y-12">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
                 {article.faq && (
                   <div className="mt-16 pt-8 border-t border-brand/20">
                     <div className="flex items-center gap-3 mb-6"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Questions fréquentes</h3></div>
@@ -447,68 +285,31 @@ export default function ArticleClient({ id }: { id: string }) {
                     </Accordion>
                   </div>
                 )}
-
                 {article.cta_blocks && (
                   <div className="mt-16 space-y-6">
                     {article.cta_blocks.map((block: any, i: number) => (
                       <Card key={i} className="border-2 border-brand shadow-xl overflow-hidden group hover:scale-[1.01] transition-transform">
                         <div className="flex flex-col md:flex-row items-stretch">
-                          <div className="bg-brand text-white p-6 md:w-1/3 flex flex-col justify-center">
-                            <h4 className="text-xl font-black uppercase tracking-tighter leading-tight">{block.title}</h4>
-                          </div>
+                          <div className="bg-brand text-white p-6 md:w-1/3 flex flex-col justify-center"><h4 className="text-xl font-black uppercase tracking-tighter leading-tight">{block.title}</h4></div>
                           <div className="p-6 md:flex-1 flex flex-col justify-between">
                             <p className="text-sm font-bold text-muted-foreground mb-4">{block.text}</p>
-                            <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] tracking-widest w-fit">
-                              <Link href={`/info/${block.target_slug}`}>{block.label} →</Link>
-                            </Button>
+                            <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] tracking-widest w-fit"><Link href={`/info/${block.target_slug}`}>{block.label} →</Link></Button>
                           </div>
                         </div>
                       </Card>
                     ))}
                   </div>
                 )}
-
                 {article.conclusion && (
                     <div className="mt-16 pt-8 border-t border-brand/20">
                         <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                        <div className="space-y-4">
-                            {Array.isArray(article.conclusion) ? (
-                                article.conclusion.map((line: string, i: number) => (
-                                    <p key={i} className="text-lg text-foreground font-black leading-relaxed">{line}</p>
-                                ))
-                            ) : (
-                                <p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>
-                            )}
-                        </div>
-                        <div className="flex justify-end items-center mt-12">
-                            <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
-                            <Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" />
-                        </div>
+                        <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={i} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
+                        <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
                     </div>
                 )}
               </article>
             </div>
-            
-            <aside className="lg:col-span-4 relative">
-                <div className="md:sticky md:top-28 space-y-6">
-                    <Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20">
-                        <CardHeader className="p-6 bg-brand text-brand-foreground">
-                            <CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            <Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl">
-                                <Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" />
-                            </Link>
-                            <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto en France.</p>
-                        </CardContent>
-                        <CardFooter className="px-6 pb-8">
-                            <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
-                                <Link href="/map">Voir la carte interactive</Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                </div>
-            </aside>
+            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Accédez à notre carte interactive pour trouver les meilleures concessions et ateliers moto en France.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
           </div>
         </div>
       </main>

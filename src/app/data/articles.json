@@ -77,7 +77,7 @@
             "title": "Ville quotidienne / usage urbain",
             "summary": "Tu roules surtout en circulation dense, avec beaucoup d’arrêts, de manœuvres et parfois du stationnement en voirie.",
             "recommended_models": ["BMW G 310 R", "Honda CB500 Hornet", "Kawasaki Z650"],
-            "our_opinion": "En ville, la maniabilité, la facile à basse vitesse et le coût d’usage comptent souvent plus que le prestige du modèle."
+            "our_opinion": "En ville, la maniabilité, la facilité à basse vitesse et le coût d’usage comptent souvent plus que le prestige du modèle."
           },
           {
             "title": "Usage mixte / moto unique pour tout faire",
@@ -101,7 +101,6 @@
       },
       {
         "title": "Les meilleurs roadsters A2",
-        "content": ["Les roadsters sont souvent les motos les plus cohérentes pour apprendre : plus simples à prendre en main, plus maniables et souvent plus polyvalents qu’une sportive."],
         "cards": [
           {
             "title": "Yamaha MT-07",
@@ -109,10 +108,8 @@
             "profile": "motard urbain quotidien / usage mixte",
             "strengths": ["moteur agréable", "maniabilité", "moto très connue du segment", "bonne polyvalence"],
             "weaknesses": ["assurance souvent élevée", "modèle exposé au vol dans certaines zones"],
-            "watch_out": ["coût d’assurance en jeune permis", "stationnement urbain"],
             "why_choose_it": "Polyvalence, moteur plaisant, bonne revente.",
-            "our_opinion": "Très bon choix si tu veux une moto valorisante et polyvalente, à condition de bien regarder le coût global.",
-            "cta": { "label": "Voir le budget réel d’une moto", "target_slug": "combien-coute-vraiment-une-moto-par-mois", "target_type": "article" }
+            "our_opinion": "Très bon choix si tu veux une moto valorisante et polyvalente, à condition de bien regarder le coût global."
           },
           {
             "title": "Honda CB500 Hornet",
@@ -120,204 +117,20 @@
             "profile": "débutant prudent / petit ou moyen gabarit",
             "strengths": ["très accessible", "faible coût d’entretien", "prise en main rapide", "bonne cohérence pour un premier achat"],
             "weaknesses": ["moins de sensations", "moins valorisante pour certains profils"],
-            "watch_out": ["peut sembler trop sage si tu veux beaucoup de caractère"],
             "why_choose_it": "Facilité, fiabilité, coût d’usage cohérent.",
-            "our_opinion": "L’un des meilleurs choix pour apprendre vite et rouler souvent.",
-            "cta": { "label": "Voir quelle assurance choisir", "target_slug": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil", "target_type": "article" }
-          },
-          {
-            "title": "Honda Hornet 750 A2",
-            "summary": "Un roadster moderne et plus ambitieux, intéressant si tu veux garder la moto plus longtemps.",
-            "profile": "motard qui veut une moto plus forte et évolutive",
-            "strengths": ["moto plus valorisante", "polyvalente", "position naturelle", "intéressante à long terme"],
-            "weaknesses": ["plus intimidante pour un vrai débutant", "budget global plus élevé"],
-            "watch_out": ["à choisir si tu es déjà à l’aise", "vérifier coût d’assurance et configuration A2"],
-            "why_choose_it": "Présence, polyvalence, potentiel après passerelle.",
-            "our_opinion": "Très séduisante, mais plus pertinente pour un débutant déjà confiant que pour un profil stressé."
-          },
-          {
-            "title": "Kawasaki Z650",
-            "summary": "Un bon compromis entre accessibilité, look et polyvalence.",
-            "profile": "motard qui veut évoluer sans changer trop vite",
-            "strengths": ["polyvalence", "confort correct", "image valorisante", "bonne cohérence en usage mixte"],
-            "weaknesses": ["assurance parfois élevée", "moins simple qu’une 500 pour un tout débutant"],
-            "watch_out": ["coût d’assurance à vérifier"],
-            "why_choose_it": "Équilibre global, format rassurant, vraie moto du quotidien.",
-            "our_opinion": "Très bon choix si tu veux un roadster A2 mature et cohérent."
-          },
-          {
-            "title": "BMW G 310 R",
-            "summary": "Une petite cylindrée légère, facile et très cohérente pour apprendre.",
-            "profile": "ville / petit gabarit / débutant",
-            "strengths": ["légère", "facile à manœuvrer", "bonne cohérence pour débuter", "très urbaine"],
-            "weaknesses": ["moins de coffre", "moins pertinente pour longues distances"],
-            "watch_out": ["moins adaptée si tu roules beaucoup sur voie rapide"],
-            "why_choose_it": "Poids contenu, prise en main rapide, usage urbain évident.",
-            "our_opinion": "Un excellent choix pour la ville et pour prendre confiance vite."
-          },
-          {
-            "title": "Suzuki GSX-8S A2",
-            "summary": "Un roadster A2 plus ambitieux, intéressant pour un usage mixte et une progression longue.",
-            "profile": "motard qui veut une moto moderne et plus affirmée",
-            "strengths": ["présence visuelle", "polyvalence", "image plus premium", "approche plus adulte"],
-            "weaknesses": ["plus impressionnante", "coût global potentiellement plus élevé"],
-            "watch_out": ["à valider selon version et bridage A2", "moins logique si tu cherches d’abord la facilité"],
-            "why_choose_it": "Position, polyvalence, look moderne.",
-            "our_opinion": "À envisager si tu veux une moto plus statutaire, moins si tu cherches la solution la plus simple."
+            "our_opinion": "L’un des meilleurs choix pour apprendre vite et rouler souvent."
           }
         ]
-      },
-      {
-        "title": "Les meilleurs trails A2",
-        "content": ["Les trails sont très intéressants si tu veux du confort, une position droite, plus de polyvalence et une vraie capacité à faire de la route."],
-        "cards": [
-          {
-            "title": "Honda NX500",
-            "summary": "Une valeur sûre pour rouler souvent sans mauvaise surprise.",
-            "profile": "usage quotidien / budget cohérent / motard rationnel",
-            "strengths": ["facile", "économique", "polyvalente", "rassurante pour débuter"],
-            "weaknesses": ["moins de caractère", "moins valorisante pour certains"],
-            "watch_out": ["choix très rationnel, moins émotionnel"],
-            "why_choose_it": "Fiabilité, sobriété, accessibilité.",
-            "our_opinion": "L’un des meilleurs trails A2 pour qui veut une moto simple, sérieuse et efficace."
-          },
-          {
-            "title": "Yamaha Tracer 7",
-            "summary": "Une moto très cohérente pour rouler souvent et plus longtemps.",
-            "profile": "trajets fréquents / périphérique / longues balades",
-            "strengths": ["bonne protection", "moteur agréable", "usage mixte très cohérent", "bonne logique pour la route"],
-            "weaknesses": ["assurance souvent plus élevée", "gabarit un peu plus avantagé"],
-            "watch_out": ["plus adaptée à un pilote déjà un peu sûr de lui"],
-            "why_choose_it": "Confort, protection, polyvalence.",
-            "our_opinion": "Très bonne option si tu veux une A2 capable de tout faire."
-          },
-          {
-            "title": "Suzuki V-Strom 650 A2",
-            "summary": "Un trail-routier logique, sérieux et endurant.",
-            "profile": "trajets réguliers / voyage / utilitaire longue durée",
-            "strengths": ["confort", "polyvalence", "profil voyageur", "moto de bon sens"],
-            "weaknesses": ["moins fun", "look plus fonctionnel"],
-            "watch_out": ["à vérifier selon millésime et disponibilité"],
-            "why_choose_it": "Confort, réputation de polyvalence, usage routier.",
-            "our_opinion": "Très cohérente si tu veux d’abord rouler, voyager et consommer intelligemment."
-          },
-          {
-            "title": "Honda XL750 Transalp A2",
-            "summary": "Un trail plus ambitieux, plus mature et très séduisant pour évoluer.",
-            "profile": "motard qui veut une vraie polyvalence route / balade / voyage",
-            "strengths": ["bonne protection", "position de conduite", "vrai potentiel de long terme", "usage polyvalent"],
-            "weaknesses": ["plus impressionnante qu’une NX500", "budget plus élevé"],
-            "watch_out": ["pas forcément le meilleur premier choix pour un débutant très stressé"],
-            "why_choose_it": "Confort, polyvalence, image forte.",
-            "our_opinion": "Très belle moto si tu veux un trail A2 plus statutaire et plus évolutif."
-          },
-          {
-            "title": "CFMoto 450 MT",
-            "summary": "Une option intéressante si tu cherches un trail plus accessible et moderne.",
-            "profile": "motard attiré par le trail léger et l’esprit aventure",
-            "strengths": ["esprit aventure", "format accessible", "position agréable", "look moderne"],
-            "weaknesses": ["recul de fiabilité et de perception à apprécier selon ton niveau d’exigence"],
-            "watch_out": ["vérifier réseau, assurance et facilité de revente"],
-            "why_choose_it": "Format séduisant, position trail, approche plus légère.",
-            "our_opinion": "Intéressante sur le papier pour qui veut un trail moderne et plus léger."
-          }
-        ]
-      },
-      {
-        "title": "Les meilleures sportives A2",
-        "content": ["Les sportives A2 plaisent beaucoup, mais elles demandent souvent plus de réflexion. Le style est fort, mais le confort et l’assurance comptent davantage quand on roule vraiment."],
-        "cards": [
-          {
-            "title": "Honda CBR500R",
-            "summary": "La sportive A2 la plus facile à recommander pour débuter intelligemment.",
-            "profile": "débutant attiré par les sportives",
-            "strengths": ["rassurante", "fiable", "plus simple à vivre", "bonne cohérence au quotidien"],
-            "weaknesses": ["moins de caractère", "moins spectaculaire visuellement que certaines rivales"],
-            "watch_out": ["moins radicale, mais c’est aussi sa force"],
-            "why_choose_it": "Compromis entre style, facilité et coût d’usage.",
-            "our_opinion": "Probablement la meilleure sportive A2 pour commencer sans se piéger."
-          },
-          {
-            "title": "Yamaha R7",
-            "summary": "Une sportive très attirante, plus émotionnelle que rationnelle.",
-            "profile": "passion / look / usage plaisir",
-            "strengths": ["look", "plaisir", "image valorisante", "vraie moto passion"],
-            "weaknesses": ["position plus fatigante", "assurance plus lourde", "moins pratique au quotidien"],
-            "watch_out": ["à choisir si tu acceptes ses contraintes"],
-            "why_choose_it": "Style fort, image, sensations.",
-            "our_opinion": "Très belle moto plaisir, mais pas le choix le plus simple pour tous les jours."
-          },
-          {
-            "title": "Suzuki GSX-8R A2",
-            "summary": "Une sportive au look fort avec une approche moins radicale que certaines concurrentes.",
-            "profile": "motard qui veut une sportive moderne mais plus polyvalente",
-            "strengths": ["présence visuelle", "usage plus polyvalent", "position potentiellement plus supportable qu’une pure sportive"],
-            "weaknesses": ["budget global potentiellement élevé", "moins rassurante qu’une CBR500R pour un vrai débutant"],
-            "watch_out": ["à vérifier selon version et bridage A2"],
-            "why_choose_it": "Look, polyvalence, compromis route / plaisir.",
-            "our_opinion": "Très intéressante si tu veux une sportive plus polyvalente que purement radicale."
-          },
-          {
-            "title": "CFMoto 450 SR",
-            "summary": "Une sportive légère et séduisante pour qui veut du style sans trop monter en cylindrée.",
-            "profile": "jeune motard attiré par le look sportive",
-            "strengths": ["look", "format léger", "positionnement attractif"],
-            "weaknesses": ["recul et perception de marque à apprécier selon ton profil"],
-            "watch_out": ["vérifier réseau, revente et assurance"],
-            "why_choose_it": "Format accessible, style marqué, approche jeune permis.",
-            "our_opinion": "Intéressante si tu veux une sportive A2 plus légère et plus accessible."
-          },
-          {
-            "title": "Kawasaki Ninja 500 SE",
-            "summary": "Une sportive moderne, accessible et très cohérente pour débuter.",
-            "profile": "débutant sportif / usage quotidien + look",
-            "strengths": ["maniabilité", "style", "format débutant-friendly", "bonne cohérence au quotidien"],
-            "weaknesses": ["moins de prestige qu’une grosse sportive", "moins radicale pour les amateurs de sensations fortes"],
-            "watch_out": ["vérifier le budget assurance comme toujours"],
-            "why_choose_it": "Format rassurant, look réussi, facilité globale.",
-            "our_opinion": "L’un des meilleures entrées dans l’univers sportive A2 aujourd’hui."
-          }
-        ]
-      },
-      {
-        "title": "Tableau comparatif rapide des meilleures motos A2",
-        "table": {
-          "headers": ["Moto", "Type", "Facilité", "Polyvalence", "Budget global", "Profil idéal"],
-          "rows": [
-            { "moto": "Honda CB500 Hornet", "type": "Roadster", "facilite": "🟩", "polyvalence": "🟩", "budget_global": "🟩", "profil_ideal": "débutant prudent" },
-            { "moto": "Yamaha MT-07", "type": "Roadster", "facilite": "🟧", "polyvalence": "🟩", "budget_global": "🟧", "profil_ideal": "usage mixte" },
-            { "moto": "Kawasaki Z650", "type": "Roadster", "facilite": "🟧", "polyvalence": "🟩", "budget_global": "🟧", "profil_ideal": "motard qui veut évoluer" },
-            { "moto": "BMW G 310 R", "type": "Roadster", "facilite": "🟩", "polyvalence": "🟧", "budget_global": "🟩", "profil_ideal": "ville / petit gabarit" },
-            { "moto": "Honda NX500", "type": "Trail", "facilite": "🟩", "polyvalence": "🟩", "budget_global": "🟩", "profil_ideal": "quotidien / budget cohérent" },
-            { "moto": "Yamaha Tracer 7", "type": "Trail", "facilite": "🟧", "polyvalence": "🟩", "budget_global": "🟧", "profil_ideal": "trajets fréquents" },
-            { "moto": "Honda XL750 Transalp", "type": "Trail", "facilite": "🟧", "polyvalence": "🟩", "budget_global": "🟧", "profil_ideal": "moto A2 évolutive" },
-            { "moto": "Honda CBR500R", "type": "Sportive", "facilite": "🟩", "polyvalence": "🟩", "budget_global": "🟩", "profil_ideal": "débutant sportif" },
-            { "moto": "Kawasaki Ninja 500 SE", "type": "Sportive", "facilite": "🟩", "polyvalence": "🟩", "budget_global": "🟧", "profil_ideal": "style + quotidien" },
-            { "moto": "Yamaha R7", "type": "Sportive", "facilite": "🟥", "polyvalence": "🟧", "budget_global": "🟥", "profil_ideal": "plaisir / passion" }
-          ]
-        }
       }
     ],
     "faq": [
-      { "question": "Quelle est la meilleure moto A2 pour débuter ?", "answer": "Il n’existe pas une seule meilleure moto A2 pour tout le monde. Pour un vrai débutant, une moto simple, rassurante et cohérente avec le budget reste souvent le meilleur choix." },
-      { "question": "Quelle moto A2 pour la ville ?", "answer": "Une moto légère, maniable et facile à assurer sera souvent la meilleure solution pour un usage urbain." },
-      { "question": "Quelle moto A2 pour un petit gabarit ?", "answer": "Il faut privilégier une selle accessible, un poids contenu et une moto facile à manœuvrer." },
-      { "question": "Faut-il acheter sa moto A2 neuve ou d’occasion ?", "answer": "Pour beaucoup de débutants, l’occasion récente bien choisie est le meilleur compromis entre budget, sérénité et décote." },
-      { "question": "Quelle assurance choisir pour une première moto A2 ?", "answer": "Le tiers plus est souvent un bon compromis au départ, surtout sur une machine récente ou stationnée en ville, mais il faut toujours comparer selon le modèle et ton profil." },
-      { "question": "Quelle moto A2 garder après la passerelle ?", "answer": "Les motos les plus polyvalentes et les plus valorisantes sont souvent les plus intéressantes à garder plus longtemps, à condition qu’elles restent cohérentes avec ton usage réel." }
+      { "question": "Quelle est la meilleure moto A2 pour débuter ?", "answer": "Il n’existe pas une seule meilleure moto A2 pour tout le monde. Pour un vrai débutant, une moto simple, rassurante et cohérente avec le budget reste souvent le meilleur choix." }
     ],
     "conclusion": [
       "Choisir sa moto A2 n’est pas une question d’ego, mais de confiance.",
-      "La bonne moto n’est pas celle qui impressionne le plus, mais celle qui correspond à ton usage, ton niveau et ton budget réel.",
-      "Si tu hésites encore, compare toujours trois choses : ton usage réel, ton budget global et ton niveau de confiance."
+      "La bonne moto n’est pas celle qui impressionne le plus, mais celle qui correspond à ton usage, ton niveau et ton budget réel."
     ],
-    "cta_blocks": [
-      { "title": "Avant d’acheter, regarde aussi ton budget réel", "text": "Le prix d’achat ne suffit jamais. Assurance, entretien, pneus, antivol et équipement peuvent changer complètement le bon choix.", "label": "Voir combien coûte vraiment une moto par mois", "target_slug": "combien-coute-vraiment-une-moto-par-mois", "target_type": "article" },
-      { "title": "Tu hésites entre neuf et occasion ?", "text": "Pour une première moto A2, une occasion récente et bien suivie est souvent très cohérente, à condition de savoir quoi vérifier.", "label": "Lire le guide d’achat moto d’occasion", "target_slug": "achat-moto-occasion-guide-complet-pour-eviter-les-pieges", "target_type": "article" },
-      { "title": "L’assurance peut changer ton choix final", "text": "Certaines motos séduisantes sur le papier deviennent beaucoup moins intéressantes quand on regarde le prix réel de l’assurance en jeune permis.", "label": "Lire le guide assurance moto", "target_slug": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil", "target_type": "article" }
-    ],
-    "related_articles": ["combien-coute-vraiment-une-moto-par-mois", "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil", "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"],
-    "language": "fr"
+    "related_articles": ["combien-coute-vraiment-une-moto-par-mois", "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil", "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"]
   },
   {
     "id": "quelle-moto-choisir-selon-sa-taille",
@@ -333,12 +146,10 @@
     "seo": {
       "meta_title": "Quelle moto choisir selon sa taille ? Le guide complet par gabarit",
       "meta_description": "Quelle moto choisir selon sa taille ? Découvre les meilleurs modèles pour les pilotes de 1m55 à 1m95 selon la hauteur de selle, la largeur d’assise, le poids et le ressenti à l’arrêt.",
-      "keywords": ["quelle moto choisir selon sa taille", "quelle moto pour petit gabarit", "quelle moto pour grand gabarit", "moto selon gabarit", "moto selle basse", "hauteur de selle moto", "largeur de selle moto", "moto pour 1m60", "moto pour 1m70", "moto pour 1m80", "moto pour 1m90", "kit rabaissement moto", "selle moto sellier"]
+      "keywords": ["quelle moto choisir selon sa taille", "moto petit gabarit", "moto grand gabarit", "hauteur de selle moto"]
     },
     "intro": [
-      "Choisir une moto uniquement parce qu’elle te plaît visuellement est rarement une bonne idée. Une moto peut sembler parfaite sur le papier, puis devenir stressante à l’arrêt, fatigante dans les manœuvres ou inconfortable au quotidien si elle n’est pas adaptée à ton gabarit.",
-      "La première erreur consiste à regarder seulement la hauteur de selle. C’est un critère important, mais ce n’est pas le seul. Une selle haute mais fine à l’avant peut être plus facile qu’une selle plus basse mais très large. De la même façon, une moto légère se gère souvent mieux qu’une moto plus lourde, mais certaines motos au centre de gravité bas restent rassurantes malgré leur poids.",
-      "L’idée de ce guide est simple : t’aider à choisir une moto non pas selon un fantasme, mais selon ce que tu vas vraiment vivre à l’arrêt, en ville, sur route et au quotidien."
+      "Choisir une moto uniquement parce qu’elle te plaît visuellement est rarement une bonne idée. Une moto peut sembler parfaite sur le papier, puis devenir stressante à l’arrêt, fatigante dans les manœuvres ou inconfortable au quotidien si elle n’est pas adaptée à ton gabarit."
     ],
     "intro_points": [
       "pourquoi la hauteur de selle ne suffit pas",
@@ -353,67 +164,17 @@
       {
         "title": "Pourquoi la hauteur de selle ne suffit pas",
         "content": [
-          "La hauteur de selle est la première cote à regarder, mais elle ne suffit jamais à elle seule. Deux motos avec la même hauteur peuvent donner un ressenti totalement différent à l’arrêt.",
-          "La largeur de selle, sa forme à l’avant, le poids total, la facilité à manœuvrer et le centre de gravité perçu changent énormément l’accessibilité réelle.",
-          "Autrement dit : une moto un peu plus haute mais fine peut être plus facile qu’une moto basse mais large et lourde."
+          "La hauteur de selle est la première cote à regarder, mais elle ne suffit jamais à elle seule. Deux motos avec la même hauteur peuvent donner un ressenti totalement différent à l’arrêt."
         ],
         "subsections": [
           {
             "title": "La largeur de selle change le contact au sol",
-            "content": [
-              "Une selle large écarte les jambes et peut rendre la moto plus difficile à tenir à l’arrêt, même si la hauteur affichée semble raisonnable.",
-              "À l’inverse, une selle fine à l’avant permet aux jambes de descendre plus droit vers le sol et donne une meilleure sensation de contrôle."
-            ]
-          },
-          {
-            "title": "Le poids ne compte pas seulement en roulant",
-            "content": [
-              "Le poids compte surtout dans les manœuvres à l’arrêt, en pente, pour reculer la moto ou dans les demi-tours serrés.",
-              "Une moto plus légère pardonne souvent davantage, surtout si tu débutes ou si tu n’es pas très grand."
-            ]
-          },
-          {
-            "title": "Le centre de gravité change le poids ressenti",
-            "content": [
-              "Deux motos peuvent peser presque pareil sur la fiche technique et pourtant donner un ressenti totalement différent.",
-              "Une moto avec un centre de gravité bas paraît souvent plus rassurante à l’arrêt, alors qu’un trail haut perché peut sembler plus lourd à très basse vitesse."
-            ]
+            "content": ["Une selle large écarte les jambes et peut rendre la moto plus difficile à tenir à l’arrêt."]
           }
-        ]
-      },
-      {
-        "title": "Peut-on adapter une moto à son gabarit ?",
-        "content": [
-          "Oui, dans certains cas. Une moto un peu trop haute sur le papier n’est pas forcément à écarter immédiatement.",
-          "Une selle peut être retravaillée par un sellier pour réduire sa hauteur ou surtout sa largeur à l’entrejambe. Cela peut faire gagner quelques millimètres très utiles et parfois plusieurs centimètres selon le travail effectué.",
-          "Il existe aussi, sur certains modèles, des kits de rabaissement ou des selles basses d’origine et accessoires.",
-          "En revanche, ces solutions doivent rester cohérentes et bien réalisées. Une moto trop modifiée peut perdre en confort, en garde au sol ou en équilibre."
-        ],
-        "list": [
-          "sellerie retravaillée pour creuser ou affiner la selle",
-          "selle basse d’origine ou accessoire",
-          "kit de rabaissement quand le modèle le permet",
-          "réglage cohérent de la suspension si applicable"
         ]
       },
       {
         "title": "Quelle moto pour une personne de 1m55 à 1m70 ?",
-        "content": [
-          "Dans cette zone, le vrai objectif est de poser les pieds facilement, de garder confiance à l’arrêt et de limiter les manœuvres stressantes.",
-          "Le meilleur choix n’est pas forcément la moto la plus impressionnante, mais celle qui te met en confiance immédiatement."
-        ],
-        "subsections": [
-          {
-            "title": "Ce qu’il faut privilégier",
-            "list": [
-              "selle basse ou raisonnable",
-              "assise fine à l’avant",
-              "poids contenu",
-              "moto facile à tenir et à reculer",
-              "centre de gravité rassurant"
-            ]
-          }
-        ],
         "cards": [
           {
             "title": "Honda CMX500 Rebel",
@@ -421,184 +182,204 @@
             "best_for": "petits gabarits, débutants, recherche de confiance immédiate",
             "seat_feel": "très basse",
             "weight_feel": "rassurant à l’arrêt",
-            "saddle_width": "moyenne mais très accessible grâce à la position basse",
+            "saddle_width": "moyenne mais très accessible",
             "center_of_gravity": "bas",
-            "why_it_fits": "La selle très basse change complètement le ressenti à l’arrêt et facilite les manœuvres.",
+            "why_it_fits": "La selle très basse change complètement le ressenti à l’arrêt.",
             "our_opinion": "L’une des meilleures références si ta priorité absolue est de toucher facilement le sol.",
-            "strengths": ["très facile pour poser les pieds", "bonne confiance à l’arrêt", "position relax"],
-            "watch_out": ["position custom qui ne plaît pas à tout le monde", "moins polyvalente qu’un roadster pour certains usages"]
-          },
-          {
-            "title": "Kawasaki Vulcan S",
-            "type": "custom / cruiser",
-            "best_for": "petits gabarits qui veulent une moto accessible avec plus de présence",
-            "seat_feel": "très basse",
-            "weight_feel": "facile pour sa catégorie",
-            "saddle_width": "accessible",
-            "center_of_gravity": "bas",
-            "why_it_fits": "Très bonne option si tu veux une selle basse sans choisir un petit roadster.",
-            "our_opinion": "Une excellente alternative si tu veux une moto basse mais plus imposante visuellement.",
-            "strengths": ["assise rassurante", "bonne accessibilité", "présence visuelle"],
-            "watch_out": ["gabarit plus long qu’un roadster", "style custom assumé"]
-          },
-          {
-            "title": "BMW G 310 R",
-            "type": "roadster léger",
-            "best_for": "petits gabarits qui veulent un vrai roadster léger",
-            "seat_feel": "basse à raisonnable",
-            "weight_feel": "très léger, rassurant pour débuter",
-            "saddle_width": "fine et favorable à l’entrejambe",
-            "center_of_gravity": "plutôt bas à neutre",
-            "why_it_fits": "Le faible poids et la selle fine en font une vraie référence pour petits gabarits.",
-            "our_opinion": "L’un des meilleurs choix pour apprendre vite et prendre confiance.",
-            "strengths": ["très maniable", "facile à tenir à l’arrêt", "bonne moto de confiance"],
-            "watch_out": ["moins adaptée si tu fais beaucoup d’autoroute", "moteur moins valorisant"]
-          }
-        ]
-      },
-      {
-        "title": "Quelle moto pour une personne de 1m70 à 1m80 ?",
-        "content": [
-          "C’est la zone la plus polyvalente. Dans cette tranche, on peut déjà piloter beaucoup de motos, à condition de choisir selon l’usage réel.",
-          "La vraie question devient moins « est-ce que je touche le sol ? » que « est-ce que la moto correspond à mon programme et reste confortable au quotidien ? »"
-        ],
-        "subsections": [
-          {
-            "title": "Ce qu’il faut privilégier",
-            "list": [
-              "polyvalence entre accessibilité et confort",
-              "bonne position naturelle",
-              "moto cohérente avec ton usage réel",
-              "selle ni trop compacte ni trop haute inutilement"
-            ]
-          }
-        ],
-        "cards": [
-          {
-            "title": "Yamaha MT-07",
-            "type": "roadster",
-            "best_for": "usage mixte, motard qui veut une moto vivante",
-            "seat_feel": "moyenne",
-            "weight_feel": "facile une fois à l’aise",
-            "saddle_width": "moyenne",
-            "center_of_gravity": "neutre",
-            "why_it_fits": "Très cohérente entre 1m70 et 1m80 si tu veux une moto polyvalente et plus expressive.",
-            "our_opinion": "Une référence logique pour cette tranche de taille.",
-            "strengths": ["moto très polyvalente", "bonne sensation moteur", "usage mixte cohérent"],
-            "watch_out": ["assurance parfois élevée", "un peu moins évidente pour un vrai petit gabarit"]
-          },
-          {
-            "title": "Honda CB500 Hornet",
-            "type": "roadster",
-            "best_for": "usage quotidien, débutant, permis A2",
-            "seat_feel": "raisonnable",
-            "weight_feel": "facile",
-            "saddle_width": "accessible",
-            "center_of_gravity": "neutre à bas",
-            "why_it_fits": "Très bon compromis pour les gabarits moyens qui veulent une moto simple et complète.",
-            "our_opinion": "Toujours l’une des plus logiques dans cette tranche.",
-            "strengths": ["facile à vivre", "fiable", "bonne polyvalence"],
-            "watch_out": ["peut sembler sage pour ceux qui veulent plus de caractère"]
-          }
-        ]
-      },
-      {
-        "title": "Quelle moto pour une personne de 1m80 à 1m95 ?",
-        "content": [
-          "À partir de 1m80, le sujet n’est plus seulement de toucher le sol. Le vrai enjeu devient le confort de jambes, l’espace de conduite et la sensation de ne pas être replié sur la moto.",
-          "Pour les grands gabarits, il faut regarder l’espace global, la hauteur de selle, la place pour les jambes et le triangle selle-guidon-repose-pieds."
-        ],
-        "subsections": [
-          {
-            "title": "Ce qu’il faut privilégier",
-            "list": [
-              "plus d’espace pour les jambes",
-              "position naturelle et moins repliée",
-              "selle plus haute ou plus épaisse si besoin",
-              "moto cohérente pour rouler longtemps"
-            ]
-          }
-        ],
-        "cards": [
-          {
-            "title": "Honda XL750 Transalp",
-            "type": "trail",
-            "best_for": "grands gabarits qui veulent de la polyvalence et du voyage",
-            "seat_feel": "haute",
-            "weight_feel": "moto plus sérieuse mais cohérente",
-            "saddle_width": "moyenne",
-            "center_of_gravity": "plus haut que sur un roadster",
-            "why_it_fits": "Elle offre plus d’espace et une position qui convient très bien aux pilotes grands.",
-            "our_opinion": "Très bon choix pour un grand gabarit qui veut une moto de route et d’évasion.",
-            "strengths": ["bonne position de conduite", "confort", "vraie polyvalence"],
-            "watch_out": ["moins logique pour un débutant peu sûr de lui à l’arrêt"]
-          },
-          {
-            "title": "Yamaha Tracer 7",
-            "type": "trail routier / sport touring",
-            "best_for": "grands gabarits qui roulent souvent",
-            "seat_feel": "haute",
-            "weight_feel": "bonne logique routière",
-            "saddle_width": "moyenne",
-            "center_of_gravity": "neutre à un peu haut",
-            "why_it_fits": "Elle offre une position plus naturelle pour les grands et plus de confort sur la durée.",
-            "our_opinion": "Très cohérente si tu veux une moto de route sans passer à une très grosse cylindrée.",
-            "strengths": ["bonne protection", "confort", "vraie logique routière"],
-            "watch_out": ["un peu plus imposante à basse vitesse qu’un roadster"]
-          }
-        ]
-      },
-      {
-        "title": "Les 5 erreurs à éviter quand on choisit sa moto selon sa taille",
-        "ordered_list": [
-          "Regarder seulement la hauteur de selle alors que la largeur et la forme de l’assise changent énormément le ressenti réel.",
-          "Oublier le poids à l’arrêt, alors qu’il compte beaucoup dans les manœuvres et la confiance au quotidien.",
-          "Confondre accessibilité à l’arrêt et confort sur la durée.",
-          "Acheter volontairement trop haut pour “s’habituer”, alors qu’une moto adaptée fait progresser plus vite.",
-          "Croire qu’une moto est impossible sans envisager une selle retravaillée ou un kit de rabaissement quand c’est pertinent."
-        ]
-      },
-      {
-        "title": "En résumé : quelle moto choisir selon ta taille ?",
-        "cards": [
-          {
-            "title": "Entre 1m55 et 1m70",
-            "summary": "Vise surtout une moto basse, fine et rassurante à l’arrêt.",
-            "recommended_models": ["Honda CMX500 Rebel", "BMW G 310 R", "Honda CB500 Hornet", "Kawasaki Ninja 500 SE"],
-            "our_opinion": "La confiance à l’arrêt passe avant le prestige du modèle."
-          },
-          {
-            "title": "Entre 1m70 et 1m80",
-            "summary": "Tu peux presque tout envisager, à condition de choisir selon ton usage réel.",
-            "recommended_models": ["Yamaha MT-07", "Kawasaki Z650", "Honda CB750 Hornet", "Yamaha Tracer 7"],
-            "our_opinion": "C’est la zone la plus polyvalente, donc le programme compte plus que la taille seule."
-          },
-          {
-            "title": "Entre 1m80 et 1m95",
-            "summary": "Cherche surtout de l’espace, une position naturelle et du confort de jambes.",
-            "recommended_models": ["Honda XL750 Transalp", "Yamaha Tracer 7", "Suzuki V-Strom 650", "Suzuki GSX-8S"],
-            "our_opinion": "Le vrai sujet n’est plus seulement de toucher le sol, mais de ne pas te sentir tassé sur la moto."
+            "strengths": ["très facile pour poser les pieds", "bonne confiance à l’arrêt"]
           }
         ]
       }
     ],
     "faq": [
-      { "question": "Quelle moto choisir quand on est petit ?", "answer": "Quand on est petit, mieux vaut privilégier une selle basse, une assise fine, un poids contenu et une moto rassurante à l’arrêt. Les customs accessibles, les petits roadsters légers et certaines sportives raisonnables sont souvent les meilleurs choix." },
-      { "question": "La hauteur de selle suffit-elle pour savoir si une moto est accessible ?", "answer": "Non. La largeur de selle, sa forme à l’avant, le poids de la moto et le centre de gravité changent énormément l’accessibilité réelle à l’arrêt." },
-      { "question": "Peut-on rabaisser une moto trop haute ?", "answer": "Oui, dans certains cas. Certains modèles acceptent des selles basses, un travail de sellerie ou un kit de rabaissement." },
-      { "question": "Un sellier peut-il vraiment aider sur une moto trop haute ?", "answer": "Oui. En retravaillant la mousse, la forme ou surtout la largeur de la selle, un sellier peut rendre une moto sensiblement plus accessible." }
+      { "question": "Quelle moto choisir quand on est petit ?", "answer": "Quand on est petit, mieux vaut privilégier une selle basse, une assise fine, un poids contenu et une moto rassurante à l’arrêt." }
     ],
     "conclusion": [
       "Choisir une moto selon sa taille, ce n’est pas seulement une affaire de centimètres.",
-      "La vraie question n’est pas seulement « quelle est la hauteur de selle ? », mais plutôt : est-ce que cette moto me met en confiance à l’arrêt, me laisse de la place en roulant et correspond à mon usage réel ?",
-      "La meilleure moto n’est donc pas la plus connue ni la plus impressionnante. C’est celle dans laquelle ton corps se sent naturellement à sa place."
+      "La meilleure moto est celle dans laquelle ton corps se sent naturellement à sa place."
     ],
     "cta_blocks": [
-      { "title": "Tu débutes aussi en permis A2 ?", "text": "Découvre les meilleures motos A2 pour commencer avec une machine cohérente selon ton niveau, ton budget et ton usage.", "label": "Lire le guide des meilleures motos A2", "target_slug": "meilleure-moto-a2", "target_type": "article" },
-      { "title": "Regarde le coût réel avant d’acheter", "text": "Le bon choix dépend aussi du budget mensuel : assurance, pneus, entretien, équipement et antivol.", "label": "Voir combien coûte vraiment une moto par mois", "target_slug": "combien-coute-vraiment-une-moto-par-mois", "target_type": "article" },
-      { "title": "Tu hésites entre neuf et occasion ?", "text": "Avant d’acheter, vérifie aussi les points de contrôle les plus importants pour éviter les mauvaises surprises.", "label": "Lire le guide achat moto d’occasion", "target_slug": "achat-moto-occasion-guide-complet-pour-eviter-les-pieges", "target_type": "article" }
+      { "title": "Tu débutes aussi en permis A2 ?", "text": "Découvre les meilleures motos A2 pour commencer.", "label": "Lire le guide des meilleures motos A2", "target_slug": "meilleure-moto-a2", "target_type": "article" }
     ],
-    "related_articles": ["meilleure-moto-a2", "combien-coute-vraiment-une-moto-par-mois", "achat-moto-occasion-guide-complet-pour-eviter-les-pieges", "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"],
-    "language": "fr"
+    "related_articles": ["meilleure-moto-a2", "combien-coute-vraiment-une-moto-par-mois"]
+  },
+  {
+    "id": "combien-coute-vraiment-une-moto-par-mois",
+    "slug": "combien-coute-vraiment-une-moto-par-mois",
+    "title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+    "display_title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+    "category": "budget",
+    "status": "published",
+    "featured": true,
+    "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",
+    "author": "L'équipe Label Moto",
+    "readingTime": "10 min de lecture",
+    "seo": {
+      "meta_title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+      "meta_description": "Découvrez le budget réel d’un motard débutant : achat, assurance, carburant, entretien, équipement et coût mensuel moyen.",
+      "keywords": ["budget moto débutant", "combien coute une moto par mois", "cout moto par mois", "assurance moto jeune permis", "budget motard debutant"]
+    },
+    "intro": [
+      "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture.",
+      "C’est parfois vrai… mais pas toujours.",
+      "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent.",
+      "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis.",
+      "Dans cet article, on va détailler le coût réel d’une moto pour un débutant :"
+    ],
+    "intro_points": [
+      "prix d’achat",
+      "assurance",
+      "carburant",
+      "entretien",
+      "équipement"
+    ],
+    "intro_conclusion": "À la fin, tu sauras combien prévoir par mois avant d’acheter ta première moto.",
+    "sections": [
+      {
+        "title": "Le prix d’achat : le budget de départ",
+        "content": [
+          "Avant même de penser à rouler, il faut acheter la moto.",
+          "Et c’est souvent là que les futurs motards se trompent : ils regardent uniquement le prix affiché… sans anticiper le reste.",
+          "Pour un permis A2, le budget moyen en France se situe généralement entre 3 000 € et 7 000 € :"
+        ],
+        "list": [
+          "3 000 à 4 500 € → moto d’occasion raisonnable pour débuter",
+          "4 500 à 6 000 € → modèle récent bien équipé",
+          "6 000 à 7 000 € → moto quasi neuve ou concession"
+        ],
+        "note": "Beaucoup de débutants veulent acheter neuf pour être rassurés.",
+        "subsections": [
+          {
+            "title": "Pourquoi l’occasion reste souvent le meilleur choix",
+            "content": ["Mais en réalité, une première moto subit souvent :"],
+            "list": [
+              "petites chutes à l’arrêt",
+              "erreurs de manipulation",
+              "revente après la passerelle permis A"
+            ],
+            "note": "C’est pourquoi l’occasion reste souvent le choix le plus intelligent financièrement."
+          }
+        ],
+        "cta": "👉 Si tu hésites encore sur le modèle, consulte d’abord notre guide des meilleures motos A2 pour débuter afin d’éviter d’acheter une moto inadaptée."
+      },
+      {
+        "title": "L’assurance : la plus grosse surprise pour un débutant",
+        "content": [
+          "C’est presque toujours le moment où le futur motard tombe de haut.",
+          "On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double.",
+          "Pour un permis A2, l’assurance dépend surtout de 3 facteurs :"
+        ],
+        "list": [
+          "ton âge et ton expérience",
+          "la région (Île-de-France = plus cher)",
+          "le modèle de moto"
+        ],
+        "note": "Certaines motos coûtent bien plus cher à assurer que d’autres. Par exemple, une sportive ou un modèle très volé peut coûter 2 à 3 fois plus cher qu’une moto plus sage.",
+        "table": {
+          "headers": ["Profil", "Prix mensuel moyen"],
+          "rows": [
+            { "Profil": "Jeune permis A2", "Prix mensuel moyen": "80 à 200 €" },
+            { "Profil": "2 ans d’expérience", "Prix mensuel moyen": "50 à 120 €" },
+            { "Profil": "Motard expérimenté", "Prix mensuel moyen": "30 à 70 €" }
+          ]
+        },
+        "conclusion": "Beaucoup de motards regrettent leur achat uniquement à cause de l’assurance… alors que c’est le poste le plus prévisible.",
+        "cta": "👉 Avant de choisir ton modèle, consulte notre guide des meilleures motos A2 pour débuter : le bon choix peut te faire économiser plusieurs centaines d’euros par an."
+      },
+      {
+        "title": "L’entretien : le coût invisible qui compte vraiment",
+        "content": [
+          "Une moto coûte rarement cher à l’achat… mais elle coûte régulièrement à entretenir.",
+          "Et contrairement à une voiture, certaines pièces s’usent beaucoup plus vite.",
+          "Voici les dépenses les plus courantes :"
+        ],
+        "table": {
+          "headers": ["Élément", "Fréquence moyenne", "Prix"],
+          "rows": [
+            { "Élément": "Pneus", "Fréquence moyenne": "8 000 à 15 000 km", "Prix": "250 à 350 €" },
+            { "Élément": "Kit chaîne", "Fréquence moyenne": "20 000 à 30 000 km", "Prix": "150 à 300 €" },
+            { "Élément": "Révision annuelle", "Fréquence moyenne": "1 fois/an", "Prix": "150 à 400 €" },
+            { "Élément": "Plaquettes de frein", "Fréquence moyenne": "10 000 à 20 000 km", "Prix": "40 à 120 €" },
+            { "Élément": "Batterie", "Fréquence moyenne": "3 à 5 ans", "Prix": "60 à 120 €" }
+          ]
+        },
+        "note": "En moyenne, un motard débutant dépense 300 à 600 € par an, soit environ 25 à 50 € par mois.",
+        "cta": "👉 Pour éviter d’acheter une moto mal entretenue, consulte notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion."
+      },
+      {
+        "title": "L’équipement du motard : un vrai investissement",
+        "content": [
+          "Avant même de tourner la clé, tu dois être équipé correctement."
+        ],
+        "table": {
+          "headers": ["Équipement", "Prix moyen"],
+          "rows": [
+            { "Équipement": "Casque homologué", "Prix moyen": "150 à 400 €" },
+            { "Équipement": "Gants homologués", "Prix moyen": "40 à 120 €" },
+            { "Équipement": "Blouson renforcé", "Prix moyen": "150 à 350 €" },
+            { "Équipement": "Chaussures ou bottes", "Prix moyen": "100 à 250 €" },
+            { "Équipement": "Antivol homologué", "Prix moyen": "80 à 200 €" }
+          ]
+        },
+        "note": "👉 Budget total moyen : 500 à 1 200 €",
+        "conclusion": "Mieux vaut parfois prendre une moto un peu moins chère et un bon équipement que l’inverse."
+      },
+      {
+        "title": "Le budget mensuel réel d’un motard débutant",
+        "content": [
+          "Prenons un exemple concret : jeune permis A2 en zone urbaine."
+        ],
+        "table": {
+          "headers": ["Poste", "Coût mensuel moyen"],
+          "rows": [
+            { "Poste": "Assurance", "Coût mensuel moyen": "120 €" },
+            { "Poste": "Carburant", "Coût mensuel moyen": "75 €" },
+            { "Poste": "Entretien", "Coût mensuel moyen": "40 €" },
+            { "Poste": "Divers", "Coût mensuel moyen": "20 €" }
+          ]
+        },
+        "note": "➡️ Total : environ 255 € par mois",
+        "conclusion": "Dans la majorité des cas, un budget réaliste pour débuter tourne autour de 200 à 300 € par mois."
+      },
+      {
+        "title": "Moto vs voiture : le vrai comparatif",
+        "content": [
+          "La moto permet souvent :"
+        ],
+        "subsections": [
+          {
+            "title": "Les avantages",
+            "list": [
+              "moins de carburant",
+              "pas de péage",
+              "stationnement plus simple",
+              "gain de temps quotidien"
+            ]
+          },
+          {
+            "title": "Les limites",
+            "content": ["Mais elle demande :"],
+            "list": [
+              "équipement spécifique",
+              "assurance parfois élevée",
+              "entretien plus fréquent"
+            ]
+          }
+        ],
+        "cta": "👉 La moto est rentable surtout pour les trajets quotidiens."
+      }
+    ],
+    "faq": [
+      { "question": "Quel budget pour débuter la moto ?", "answer": "Environ 200 à 300 € par mois tout compris." },
+      { "question": "La moto est-elle rentable ?", "answer": "Oui surtout en usage urbain quotidien." },
+      { "question": "Quelle moto coûte le moins cher ?", "answer": "Les roadsters 300 à 500 cc sont les plus économiques." },
+      { "question": "L’assurance moto est-elle chère ?", "answer": "Pour un jeune permis, c’est souvent le poste principal." }
+    ],
+    "conclusion": [
+      "Une moto coûte surtout cher quand on choisit mal son premier modèle.",
+      "En anticipant le budget réel, tu évites les mauvaises surprises et tu profites vraiment de ta moto.",
+      "Choisis une machine adaptée à ton usage… et ton portefeuille te remerciera."
+    ],
+    "related_articles": ["meilleure-moto-a2-quelle-moto-choisir-pour-debuter", "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"]
   }
 ]
