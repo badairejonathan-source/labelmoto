@@ -4,7 +4,7 @@
     "id": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
     "slug": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
     "title": "Assurance moto : bien choisir sa formule selon votre profil",
-    "display_title": "Assurance moto : bien choisir sa formule selon votre profil",
+    "display_title": "Assurance moto : bien choisir sa formule selon votre profil (Guide 2024)",
     "status": "published",
     "category": "assurance",
     "author": "L'équipe Label Moto",
@@ -24,11 +24,11 @@
       {
         "title": "Les 3 grandes formules d’assurance moto",
         "table": {
-          "headers": ["Formule", "Niveau de protection", "Niveau de prix", "Idéale pour"],
+          "headers": ["Formule", "Protection", "Prix moyen", "Idéale pour"],
           "rows": [
-            { "Formule": "Tiers", "Niveau de protection": "Faible", "Niveau de prix": "€", "Idéale pour": "Motos anciennes, petit budget" },
-            { "Formule": "Tiers plus", "Niveau de protection": "Intermédiaire", "Niveau de prix": "€€", "Idéale pour": "Jeunes permis, motos récentes" },
-            { "Formule": "Tous risques", "Niveau de protection": "Élevé", "Niveau de prix": "€€€", "Idéale pour": "Motos neuves, gros rouleurs" }
+            { "Formule": "Tiers", "Protection": "Minimale", "Prix moyen": "15€ - 40€", "Idéale pour": "Motos anciennes, petit budget" },
+            { "Formule": "Tiers plus", "Protection": "Intermédiaire", "Prix moyen": "40€ - 80€", "Idéale pour": "Jeunes permis, motos récentes" },
+            { "Formule": "Tous risques", "Protection": "Maximale", "Prix moyen": "80€ - 150€+", "Idéale pour": "Motos neuves, gros rouleurs" }
           ]
         }
       },
@@ -36,12 +36,12 @@
         "title": "Quelle formule choisir selon votre profil ?",
         "cards": [
           {
-            "title": "Permis A2",
+            "title": "Profil Permis A2",
             "subtitle": "Jeune permis, première moto",
-            "recommended_formula": "Tiers Plus",
+            "recommended_formula": "Tiers Plus (Vol/Incendie)",
             "content": "C’est souvent le meilleur équilibre : protection minimale insuffisante sur une moto récente, mais tous risques parfois trop cher au départ.",
             "advantages": ["Protège mieux contre le vol", "Évite les surprimes excessives"],
-            "watch_out": ["Montant des franchises", "Garantie équipement"],
+            "watch_out": ["Montant des franchises élevé", "Garantie équipement limitée"],
             "linked_models": [
               { "label": "Yamaha MT-07 A2" },
               { "label": "Kawasaki Z650" },
@@ -49,12 +49,12 @@
             ]
           },
           {
-            "title": "Grand rouleur / Voyage",
+            "title": "Profil Grand rouleur",
             "subtitle": "Usage intensif, trajets fréquents",
-            "recommended_formula": "Tous risques",
-            "content": "Cette formule est la plus cohérente pour une machine de valeur utilisée quotidiennement.",
-            "advantages": ["Protection maximale", "Assistance 0km"],
-            "watch_out": ["Exclusions bagagerie"],
+            "recommended_formula": "Tous risques + Assistance 0km",
+            "content": "Cette formule est la plus cohérente pour une machine de valeur utilisée quotidiennement, été comme hiver.",
+            "advantages": ["Protection maximale", "Prise en charge panne", "Option prêt de véhicule"],
+            "watch_out": ["Exclusions bagagerie", "Indemnisation valeur à neuf"],
             "linked_models": [
               { "label": "BMW R1250 GS" },
               { "label": "Yamaha Tracer 7" }
@@ -67,76 +67,129 @@
   },
   {
     "id": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
-    "title": "Achat moto A2 : le guide complet des meilleures motos pour débuter",
-    "display_title": "Achat moto A2 : le guide complet des meilleures motos pour débuter",
-    "description": "Le guide ultime pour trouver votre première machine en 2024. Roadsters, Trails et Néo-rétros.",
+    "slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
+    "title": "Meilleure moto A2 : quelle moto choisir pour débuter ?",
+    "display_title": "Meilleure moto A2 : quelle moto choisir pour débuter en 2024 ?",
+    "status": "published",
+    "category": "achat",
     "author": "L'équipe Label Moto",
     "readingTime": "12 min de lecture",
     "imageUrl": "/images/achat-occasion.png",
+    "seo": {
+      "meta_title": "Meilleure moto A2 2024 : Guide d'achat et comparatif complet",
+      "meta_description": "Découvrez les meilleures motos permis A2 pour débuter en 2024. Comparatif Roadsters, Trails et conseils d'achat pour jeunes permis.",
+      "keywords": ["moto a2", "meilleure moto a2", "moto débutant", "comparatif moto a2", "première moto"]
+    },
+    "intro": [
+      "Le choix de la première moto est une étape cruciale pour tout nouveau détenteur du permis A2.",
+      "Entre le look, le budget, et les caractéristiques techniques, il est facile de s'y perdre.",
+      "Ce guide recense les meilleures machines du marché actuel, classées par catégorie, pour vous aider à trouver celle qui vous accompagnera dans vos premiers kilomètres."
+    ],
     "sections": [
       {
-        "title": "Les roadsters incontournables",
+        "title": "Les Roadsters : Le choix du fun et de l'agilité",
+        "description": "C'est la catégorie reine en France. Légers, maniables et souvent très performants, les roadsters sont parfaits pour apprendre à pencher.",
         "cards": [
           {
             "title": "Yamaha MT-07",
-            "subtitle": "La reine du marché",
-            "content": "Le moteur CP2 est un régal de couple. Légère et joueuse, c'est la moto école par excellence.",
-            "advantages": ["Moteur exceptionnel", "Revente facile", "Agilité"],
+            "subtitle": "La référence absolue",
+            "content": "Le moteur CP2 est légendaire pour son couple et son caractère. C'est la moto école par excellence, mais aussi un jouet redoutable.",
+            "advantages": ["Moteur ultra-joueur", "Revente assurée", "Agilité incroyable"],
+            "watch_out": ["Suspensions un peu souples", "Peinture cadre fragile"],
             "linked_models": [{ "label": "Yamaha MT-07 A2" }]
           },
           {
+            "title": "Kawasaki Z650",
+            "subtitle": "La précision japonaise",
+            "content": "Plus fine et plus basse que la MT-07, elle est idéale pour les petits gabarits qui cherchent une machine facile et rigoureuse.",
+            "advantages": ["Facilité de prise en main", "Embrayage assisté", "Look Sugomi"],
+            "watch_out": ["Moteur plus linéaire", "Confort de selle"],
+            "linked_models": [{ "label": "Kawasaki Z650" }]
+          },
+          {
             "title": "Honda CB500 Hornet",
-            "subtitle": "La rigueur Honda",
-            "content": "Ultra équilibrée, elle consomme peu et offre une prise en main immédiate en toute sécurité.",
-            "advantages": ["Consommation record", "Fiabilité", "Équipement"],
+            "subtitle": "L'équilibre parfait",
+            "content": "Anciennement CB500F, c'est la seule vraie 47.5 ch native. Elle consomme peu et offre une finition exemplaire.",
+            "advantages": ["Consommation record", "Fiabilité légendaire", "Écran TFT moderne"],
+            "watch_out": ["Caractère moteur sage", "Freinage suffisant mais pas sportif"],
             "linked_models": [{ "label": "Honda CB500 Hornet" }]
           }
         ]
       },
       {
-        "title": "Meilleurs trails permis A2",
+        "title": "Les Trails : L'aventure et le confort au quotidien",
+        "description": "Si vous mesurez plus d'1m75 ou si vous voulez voyager, le trail est votre meilleur allié. Protection et confort sont au rendez-vous.",
         "cards": [
           {
             "title": "Yamaha Tracer 7",
             "subtitle": "La routière polyvalente",
-            "content": "Une MT-07 avec une protection de bulle et une position droite. Idéale pour les longs trajets.",
-            "advantages": ["Confort", "Polyvalence", "Look"],
+            "content": "C'est une MT-07 avec une bulle et une position droite. Elle permet de traverser la France sans fatigue tout en restant fun.",
+            "advantages": ["Position naturelle", "Protection efficace", "Moteur CP2 généreux"],
+            "watch_out": ["Tarif plus élevé", "Bulle d'origine bruyante"],
             "linked_models": [{ "label": "Yamaha Tracer 7" }]
           },
           {
             "title": "Honda NX500",
-            "subtitle": "La rationnelle",
-            "content": "Anciennement CB500X, c'est la moto qui fait tout bien sans jamais faillir. Parfaite pour débuter.",
-            "advantages": ["Position naturelle", "Facilité", "Autonomie"],
+            "subtitle": "La rationnelle par excellence",
+            "content": "Héritière de la CB500X, elle fait tout bien. Idéale pour le quotidien et les petites escapades hors bitume.",
+            "advantages": ["Autonomie (450km+)", "Confort royal", "Polyvalence totale"],
+            "watch_out": ["Poids un peu haut placé", "Vitesse de pointe limitée"],
             "linked_models": [{ "label": "Honda NX500" }]
           },
           {
             "title": "Royal Enfield Himalayan 450",
             "subtitle": "L'aventure accessible",
-            "content": "Une moto robuste, simple et capable de sortir des sentiers battus sans complexe.",
-            "advantages": ["Robustesse", "Prix", "Caractère"],
+            "content": "Un vrai baroudeur simple, robuste et capable de sortir des sentiers battus sans complexe.",
+            "advantages": ["Look baroudeur", "Capacités Off-road", "Prix imbattable"],
+            "watch_out": ["Vibrations monocylindre", "Poids à l'arrêt"],
             "linked_models": [{ "label": "Royal Enfield Himalayan 450" }]
           }
         ]
+      },
+      {
+        "title": "Ton budget réel : Anticiper avant d'acheter",
+        "content": "Le prix d'achat n'est que la partie émergée de l'iceberg. L'entretien, l'essence et l'équipement pèsent lourd."
+      },
+      {
+        "title": "L'assurance : Le poste de dépense n°1",
+        "content": "Pour un jeune permis, l'assurance peut varier du simple au double selon le modèle choisi (Sportive vs Roadster)."
       }
     ],
-    "conclusion": "Prenez le temps d'essayer plusieurs modèles en concession avant de faire votre choix définitif."
+    "conclusion": "Prenez le temps d'essayer plusieurs modèles en concession. La meilleure moto est celle sur laquelle vous vous sentez en confiance dès les premiers mètres."
   },
   {
     "id": "combien-coute-vraiment-une-moto-par-mois",
+    "slug": "combien-coute-vraiment-une-moto-par-mois",
     "title": "Combien coûte vraiment une moto par mois ? Le budget réel",
     "display_title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
-    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, calculez votre budget mensuel.",
+    "description": "Entre l’assurance, l’équipement, l’entretien et l’essence, calculez votre budget mensuel pour rouler serein.",
     "author": "L'équipe Label Moto",
     "readingTime": "8 min de lecture",
     "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",
+    "seo": {
+      "meta_title": "Budget Moto 2024 : Calcul du coût réel par mois",
+      "meta_description": "Combien coûte l'entretien, l'assurance et l'essence d'une moto ? Découvrez le budget mensuel détaillé d'un motard débutant.",
+      "keywords": ["prix moto par mois", "budget motard", "entretien moto prix", "coût assurance moto"]
+    },
+    "intro": [
+      "Souvent, on ne voit que le prix affiché sur l'étiquette en concession.",
+      "Pourtant, rouler à moto implique des frais récurrents qu'il vaut mieux anticiper pour ne pas se retrouver bloqué au garage.",
+      "Voici le détail du budget moyen pour un motard roulant environ 6000 km par an."
+    ],
     "sections": [
       {
-        "title": "L’assurance : la plus grosse surprise",
-        "content": "C’est presque toujours le moment où le futur motard tombe de haut. Prévoyez entre 80€ et 150€ par mois pour un jeune permis.",
-        "note": "Consultez aussi notre guide complet sur l'assurance pour bien choisir votre formule."
+        "title": "Répartition des dépenses mensuelles",
+        "table": {
+          "headers": ["Poste de dépense", "Prix moyen", "Note"],
+          "rows": [
+            { "Poste de dépense": "Essence", "Prix moyen": "40€ - 70€", "Note": "Basé sur 5L/100km" },
+            { "Poste de dépense": "Assurance", "Prix moyen": "50€ - 120€", "Note": "Selon profil et ville" },
+            { "Poste de dépense": "Entretien", "Prix moyen": "20€ - 40€", "Note": "Révisions + Pneus" },
+            { "Poste de dépense": "Équipement", "Prix moyen": "15€ - 30€", "Note": "Amortissement du casque/gants" }
+          ]
+        }
       }
     ],
-    "conclusion": "Anticiper est la clé pour profiter de sa passion sans stress financier."
+    "conclusion": "Anticiper un budget d'environ 150€ à 250€ par mois (hors crédit) est une base saine pour profiter de sa passion sans stress financier."
   }
 ]
