@@ -1,83 +1,6 @@
 
 [
   {
-    "id": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
-    "slug": "assurance-moto-2026-bien-choisir-sa-formule",
-    "title": "Assurance moto : bien choisir sa formule selon votre profil",
-    "display_title": "Assurance moto : bien choisir sa formule selon votre profil (Guide 2024)",
-    "category": "assurance",
-    "status": "published",
-    "author": "L'équipe Label Moto",
-    "readingTime": "10 min de lecture",
-    "imageUrl": "/images/motard-article-assurance2026.png",
-    "seo": {
-      "meta_title": "Assurance moto : bien choisir sa formule selon votre profil",
-      "meta_description": "Découvrez quelle formule d’assurance moto choisir selon votre profil : permis A2, grand rouleur, occasionnel ou citadin.",
-      "keywords": ["assurance moto", "formule assurance moto", "assurance moto a2", "prix assurance moto"]
-    },
-    "intro": [
-      "Choisir une assurance moto, ce n’est pas seulement comparer un prix mensuel.",
-      "La bonne formule dépend surtout de votre usage, de votre expérience, de la valeur de votre moto et du niveau de protection que vous attendez.",
-      "Sur Label Moto, l’objectif est simple : vous aider à choisir une couverture cohérente avec votre profil de motard et votre machine."
-    ],
-    "sections": [
-      {
-        "title": "Les 3 grandes formules d’assurance moto",
-        "table": {
-          "headers": ["Formule", "Protection", "Prix moyen", "Idéale pour"],
-          "rows": [
-            { "Formule": "Tiers (Responsabilité Civile)", "Protection": "Minimale obligatoire", "Prix moyen": "15€ - 40€", "Idéale pour": "Motos anciennes, petit budget" },
-            { "Formule": "Tiers Plus (Vol/Incendie)", "Protection": "Intermédiaire", "Prix moyen": "40€ - 80€", "Idéale pour": "Jeunes permis, motos récentes" },
-            { "Formule": "Tous risques", "Protection": "Maximale (dommages tous accidents)", "Prix moyen": "80€ - 150€+", "Idéale pour": "Motos neuves, gros rouleurs" }
-          ]
-        }
-      },
-      {
-        "title": "Quelle formule choisir selon votre profil ?",
-        "cards": [
-          {
-            "title": "Profil Jeune Permis A2",
-            "subtitle": "Première moto, apprentissage",
-            "recommended_formula": "Tiers Plus (Vol/Incendie)",
-            "content": "C’est souvent le meilleur équilibre : protection minimale insuffisante sur une moto de moins de 5 ans, mais le tous risques est souvent prohibitif au départ.",
-            "advantages": ["Garantie vol incluse", "Rapport protection/prix optimal"],
-            "watch_out": ["Franchises élevées pour les A2", "Garantie équipement souvent en option"],
-            "linked_models": [
-              { "label": "Yamaha MT-07" },
-              { "label": "Kawasaki Z650" },
-              { "label": "Honda CB500 Hornet" }
-            ]
-          },
-          {
-            "title": "Profil Grand Rouleur / Urbain",
-            "subtitle": "Trajets quotidiens, travail",
-            "recommended_formula": "Tous risques + Assistance 0km",
-            "content": "Cette formule est indispensable pour une machine utilisée tous les jours, été comme hiver, car les risques de chute ou de collision augmentent avec le kilométrage.",
-            "advantages": ["Prise en charge même en tort", "Assistance panne devant chez soi", "Prêt de véhicule"],
-            "watch_out": ["Vérifier le montant de l'indemnisation à neuf"],
-            "linked_models": [
-              { "label": "BMW R1250 GS" },
-              { "label": "Yamaha Tracer 7" }
-            ]
-          },
-          {
-            "title": "Profil Sorties Loisir / Week-end",
-            "subtitle": "Balades occasionnelles",
-            "recommended_formula": "Tiers Plus + Option Individuelle Pilote",
-            "content": "Si vous ne roulez que par beau temps, une protection intermédiaire suffit, mais ne négligez jamais votre propre sécurité corporelle.",
-            "advantages": ["Budget maîtrisé", "Couverture corporelle maximale"],
-            "watch_out": ["Attention aux exclusions de kilométrage (assurance au km)"],
-            "linked_models": [
-              { "label": "Triumph Trident 660" },
-              { "label": "Royal Enfield Himalayan 450" }
-            ]
-          }
-        ]
-      }
-    ],
-    "conclusion": "La meilleure assurance est celle qui vous permet de rouler sereinement. Prenez le temps de comparer les options d'assistance et les franchises, car c'est là que se fait la vraie différence en cas de pépin."
-  },
-  {
     "id": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
     "slug": "meilleure-moto-a2",
     "title": "Meilleure moto A2 : quelle moto choisir pour débuter ?",
@@ -94,7 +17,7 @@
       "keywords": ["moto a2", "meilleure moto a2", "quelle moto a2 choisir", "premiere moto a2", "roadster a2", "trail a2", "sportive a2", "moto a2 pour debuter", "moto a2 ville", "moto a2 petit gabarit"]
     },
     "intro": [
-      "Obtenir le permis A2, c’est souvent le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop haute, elle intimidide. Trop lourde, elle fatigue. Trop séduisante sur le papier, elle peut coûter cher à assurer ou devenir pénible au quotidien.",
+      "Obtenir le permis A2, c’est souvent le vrai début de la vie de motard. Mais choisir sa première moto n’est pas simple : trop haute, elle intimide. Trop lourde, elle fatigue. Trop séduisante sur le papier, elle peut coûter cher à assurer ou devenir pénible au quotidien.",
       "La meilleure moto A2 n’est donc pas forcément la plus impressionnante. C’est celle qui te met en confiance, qui correspond à ton usage réel et qui te donne envie de rouler souvent.",
       "Dans ce guide, on va voir comment choisir ta première moto A2, les erreurs à éviter, quels modèles regarder selon ton profil et quelles motos sont les plus cohérentes en roadster, trail ou sportive."
     ],
@@ -263,7 +186,7 @@
             "summary": "Une moto très cohérente pour rouler souvent et plus longtemps.",
             "profile": "trajets fréquents / périphérique / longues balades",
             "strengths": ["bonne protection", "moteur agréable", "usage mixte très cohérent", "bonne logique pour la route"],
-            "weaknesses": ["assurance souvent plus élevée", "gabarit un peu plus imposant"],
+            "weaknesses": ["assurance souvent plus élevée", "gabarit un peu plus avantagé"],
             "watch_out": ["plus adaptée à un pilote déjà un peu sûr de lui"],
             "why_choose_it": "Confort, protection, polyvalence.",
             "our_opinion": "Très bonne option si tu veux une A2 capable de tout faire."
@@ -274,7 +197,7 @@
             "profile": "trajets réguliers / voyage / utilitaire longue durée",
             "strengths": ["confort", "polyvalence", "profil voyageur", "moto de bon sens"],
             "weaknesses": ["moins fun", "look plus fonctionnel"],
-            "watch_out": ["à vérifier selon millésime et disponibilité", "configuration A2 à confirmer selon version"],
+            "watch_out": ["à vérifier selon millésime et disponibilité"],
             "why_choose_it": "Confort, réputation de polyvalence, usage routier.",
             "our_opinion": "Très cohérente si tu veux d’abord rouler, voyager et consommer intelligemment."
           },
@@ -352,7 +275,7 @@
             "weaknesses": ["moins de prestige qu’une grosse sportive", "moins radicale pour les amateurs de sensations fortes"],
             "watch_out": ["vérifier le budget assurance comme toujours"],
             "why_choose_it": "Format rassurant, look réussi, facilité globale.",
-            "our_opinion": "L’une des meilleures entrées dans l’univers sportive A2 aujourd’hui."
+            "our_opinion": "L’un des meilleures entrées dans l’univers sportive A2 aujourd’hui."
           }
         ]
       },
@@ -397,6 +320,83 @@
     "language": "fr"
   },
   {
+    "id": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
+    "slug": "assurance-moto-2026-bien-choisir-sa-formule",
+    "title": "Assurance moto : bien choisir sa formule selon votre profil",
+    "display_title": "Assurance moto : bien choisir sa formule selon votre profil (Guide 2024)",
+    "category": "assurance",
+    "status": "published",
+    "author": "L'équipe Label Moto",
+    "readingTime": "10 min de lecture",
+    "imageUrl": "/images/motard-article-assurance2026.png",
+    "seo": {
+      "meta_title": "Assurance moto : bien choisir sa formule selon votre profil",
+      "meta_description": "Découvrez quelle formule d’assurance moto choisir selon votre profil : permis A2, grand rouleur, occasionnel ou citadin.",
+      "keywords": ["assurance moto", "formule assurance moto", "assurance moto a2", "prix assurance moto"]
+    },
+    "intro": [
+      "Choisir une assurance moto, ce n’est pas seulement comparer un prix mensuel.",
+      "La bonne formule dépend surtout de votre usage, de votre expérience, de la valeur de votre moto et du niveau de protection que vous attendez.",
+      "Sur Label Moto, l’objectif est simple : vous aider à choisir une couverture cohérente avec votre profil de motard et votre machine."
+    ],
+    "sections": [
+      {
+        "title": "Les 3 grandes formules d’assurance moto",
+        "table": {
+          "headers": ["Formule", "Protection", "Prix moyen", "Idéale pour"],
+          "rows": [
+            { "Formule": "Tiers (Responsabilité Civile)", "Protection": "Minimale obligatoire", "Prix moyen": "15€ - 40€", "Idéale pour": "Motos anciennes, petit budget" },
+            { "Formule": "Tiers Plus (Vol/Incendie)", "Protection": "Intermédiaire", "Prix moyen": "40€ - 80€", "Idéale pour": "Jeunes permis, motos récentes" },
+            { "Formule": "Tous risques", "Protection": "Maximale (dommages tous accidents)", "Prix moyen": "80€ - 150€+", "Idéale pour": "Motos neuves, gros rouleurs" }
+          ]
+        }
+      },
+      {
+        "title": "Quelle formule choisir selon votre profil ?",
+        "cards": [
+          {
+            "title": "Profil Jeune Permis A2",
+            "subtitle": "Première moto, apprentissage",
+            "recommended_formula": "Tiers Plus (Vol/Incendie)",
+            "content": "C’est souvent le meilleur équilibre : protection minimale insuffisante sur une moto de moins de 5 ans, mais le tous risques est souvent prohibitif au départ.",
+            "advantages": ["Garantie vol incluse", "Rapport protection/prix optimal"],
+            "watch_out": ["Franchises élevées pour les A2", "Garantie équipement souvent en option"],
+            "linked_models": [
+              { "label": "Yamaha MT-07" },
+              { "label": "Kawasaki Z650" },
+              { "label": "Honda CB500 Hornet" }
+            ]
+          },
+          {
+            "title": "Profil Grand Rouleur / Urbain",
+            "subtitle": "Trajets quotidiens, travail",
+            "recommended_formula": "Tous risques + Assistance 0km",
+            "content": "Cette formule est indispensable pour une machine utilisée tous les jours, été comme hiver, car les risques de chute ou de collision augmentent avec le kilométrage.",
+            "advantages": ["Prise en charge même en tort", "Assistance panne devant chez soi", "Prêt de véhicule"],
+            "watch_out": ["Vérifier le montant de l'indemnisation à neuf"],
+            "linked_models": [
+              { "label": "BMW R1250 GS" },
+              { "label": "Yamaha Tracer 7" }
+            ]
+          },
+          {
+            "title": "Profil Sorties Loisir / Week-end",
+            "subtitle": "Balades occasionnelles",
+            "recommended_formula": "Tiers Plus + Option Individuelle Pilote",
+            "content": "Si vous ne roulez que par beau temps, une protection intermédiaire suffit, mais ne négligez jamais votre propre sécurité corporelle.",
+            "advantages": ["Budget maîtrisé", "Couverture corporelle maximale"],
+            "watch_out": ["Attention aux exclusions de kilométrage (assurance au km)"],
+            "linked_models": [
+              { "label": "Triumph Trident 660" },
+              { "label": "Royal Enfield Himalayan 450" }
+            ]
+          }
+        ]
+      }
+    ],
+    "conclusion": "La meilleure assurance est celle qui vous permet de rouler sereinement. Prenez le temps de comparer les options d'assistance et les franchises, car c'est là que se fait la vraie différence en cas de pépin."
+  },
+  {
     "id": "combien-coute-vraiment-une-moto-par-mois",
     "slug": "combien-coute-vraiment-une-moto-par-mois",
     "title": "Combien coûte vraiment une moto par mois ? Le budget réel",
@@ -417,7 +417,7 @@
     ],
     "sections": [
       {
-        "title": "Répartition des dépenses mensuelles",
+        "title": "Répartition des denses mensuelles",
         "table": {
           "headers": ["Poste de dépense", "Prix moyen mensuel", "Note"],
           "rows": [

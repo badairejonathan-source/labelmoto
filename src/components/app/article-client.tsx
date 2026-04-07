@@ -356,12 +356,29 @@ export default function ArticleClient({ id }: { id: string }) {
                     <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
                         <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4">Ce que vous allez apprendre :</p>
                         <ul className="list-none space-y-3 pl-0">
-                            {article.intro_points.map((pt: string, i: number) => (
-                                <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black">
-                                    <CheckCircle2 className="h-5 w-5 text-brand shrink-0" />
-                                    <span>{pt}</span>
-                                </li>
-                            ))}
+                            {article.intro_points.map((pt: string, i: number) => {
+                                const ptLower = pt.toLowerCase();
+                                const bestSection = activeSections.find((s: any) => 
+                                    s.title && (
+                                        ptLower.includes(s.title.toLowerCase().substring(0, 15)) ||
+                                        s.title.toLowerCase().includes(ptLower.substring(0, 15))
+                                    )
+                                );
+                                const sectionId = bestSection ? slugify(bestSection.title) : null;
+
+                                return (
+                                    <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
+                                        <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
+                                        {sectionId ? (
+                                            <a href={`#${sectionId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
+                                                {pt}
+                                            </a>
+                                        ) : (
+                                            <span className="text-foreground">{pt}</span>
+                                        )}
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                 )}
