@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
-  ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, 
-  ChevronRight, Home, HelpCircle, Gauge, Scale, Settings2, 
+  CheckCircle2, Info, Loader2, 
+  ChevronRight, Home, HelpCircle, Gauge, Settings2, 
   ExternalLink, AlertTriangle, ShieldCheck, ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
@@ -61,7 +61,7 @@ export default function ArticleClient({ id }: { id: string }) {
   const { data: article, isLoading } = useDoc(articleRef);
 
   const imageUrl = useMemo(() => {
-    if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
+    if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
     const articleId = id.toLowerCase();
     if (articleId.includes('taille')) return "/images/motard-articles-hauteurdeselle.png";
     if (articleId.includes('assurance')) return "/images/motard-article-assurance2026.png";
@@ -69,19 +69,13 @@ export default function ArticleClient({ id }: { id: string }) {
     if (articleId.includes('occasion') || articleId.includes('pieges')) return "/images/evitelespieges.png";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
+    return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
   }, [article, id]);
 
   const activeSections = useMemo(() => {
     if (!article) return [];
     return article.sections || article.content || [];
   }, [article]);
-
-  const handleSearch = () => {
-    if (searchTerm.trim() !== '') {
-      router.push(`/map?search=${encodeURIComponent(searchTerm)}`);
-    }
-  };
 
   const renderTable = (tableData: any, key: string) => {
     if (!tableData) return null;
@@ -95,7 +89,7 @@ export default function ArticleClient({ id }: { id: string }) {
             <TableHeader className="bg-muted/50">
               <TableRow>
                 {headers.map((h: string, i: number) => (
-                  <TableHead key={i} className="font-black text-foreground py-3 px-3 md:py-4 md:px-4 uppercase tracking-widest text-[8px] md:text-[10px] whitespace-nowrap">
+                  <TableHead key={`th-${key}-${i}`} className="font-black text-foreground py-3 px-3 md:py-4 md:px-4 uppercase tracking-widest text-[8px] md:text-[10px] whitespace-nowrap">
                     {h}
                   </TableHead>
                 ))}
@@ -103,9 +97,9 @@ export default function ArticleClient({ id }: { id: string }) {
             </TableHeader>
             <TableBody>
               {rows.map((row: any, ri: number) => (
-                <TableRow key={ri} className="hover:bg-muted/30">
+                <TableRow key={`tr-${key}-${ri}`} className="hover:bg-muted/30">
                   {headers.map((header: string, hi: number) => (
-                    <TableCell key={hi} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
+                    <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
                       {String(row[header] || row[hi] || '')}
                     </TableCell>
                   ))}
@@ -185,7 +179,7 @@ export default function ArticleClient({ id }: { id: string }) {
           const modelLabel = card.title || card.recommended_models?.[0] || '';
           const ficheId = getFicheIdFromTitle(typeof modelLabel === 'string' ? modelLabel : '');
           return (
-            <Card key={`${keyPrefix}-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
+            <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">{card.title}</CardTitle>
@@ -204,7 +198,7 @@ export default function ArticleClient({ id }: { id: string }) {
                 {card.items && Array.isArray(card.items) && (
                   <ul className="space-y-2">
                     {card.items.map((item: string, i: number) => (
-                      <li key={i} className="flex items-center gap-2 text-sm font-bold text-foreground">
+                      <li key={`${keyPrefix}-item-${idx}-${i}`} className="flex items-center gap-2 text-sm font-bold text-foreground">
                         <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
                         {item}
                       </li>
@@ -216,21 +210,21 @@ export default function ArticleClient({ id }: { id: string }) {
                     {card.linked_models.map((m: any, i: number) => {
                       const modelFicheId = m.slug || getFicheIdFromTitle(m.label);
                       return modelFicheId ? (
-                        <Link key={i} href={`/fiches/${modelFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
-                      ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m.label}</span>)
+                        <Link key={`${keyPrefix}-link-${idx}-${i}`} href={`/fiches/${modelFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      ) : (<span key={`${keyPrefix}-span-${idx}-${i}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m.label}</span>)
                     })}
                   </div>
                 )}
                 {(card.strengths || card.advantages) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> {card.advantages ? "Avantages" : "Points forts"}</div>
-                    <ul className="list-none space-y-1">{(card.strengths || card.advantages).map((s: string, i: number) => (<li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
+                    <ul className="list-none space-y-1">{(card.strengths || card.advantages).map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
                 {card.watch_out && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
-                    <ul className="list-none space-y-1">{card.watch_out.map((s: string, i: number) => (<li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-orange-500">•</span> {s}</li>))}</ul>
+                    <ul className="list-none space-y-1">{card.watch_out.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-orange-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
               </CardContent>
@@ -250,14 +244,13 @@ export default function ArticleClient({ id }: { id: string }) {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     const bodyText = section.content || section.text || section.description;
 
-    // Handle comparison cards (strengths/weaknesses) inside a subsection
     if (section.strengths || section.weaknesses) {
         return (
-            <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full">
-                <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase">{section.title || "Comparatif"}</CardTitle></CardHeader>
+            <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm">
+                <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase tracking-tight">{section.title || "Comparatif"}</CardTitle></CardHeader>
                 <CardContent className="p-6 space-y-4">
-                    {section.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600">Avantages</div><ul className="list-none space-y-1">{section.strengths.map((s: string, j: number) => (<li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul></div>)}
-                    {section.weaknesses && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-red-600">Inconvénients</div><ul className="list-none space-y-1">{section.weaknesses.map((w: string, j: number) => (<li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>))}</ul></div>)}
+                    {section.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div><ul className="list-none space-y-1">{section.strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul></div>)}
+                    {section.weaknesses && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-red-600 tracking-widest">Inconvénients</div><ul className="list-none space-y-1">{section.weaknesses.map((w: string, j: number) => (<li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>))}</ul></div>)}
                 </CardContent>
             </Card>
         );
@@ -266,18 +259,18 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {section.cta && renderCtaBlock(section.cta, `cta-section-${idx}`)}
-        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={i} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
-        {section.table && renderTable(section.table, `table-${idx}`)}
-        {section.cards && renderCards(section.cards, `cards-${idx}`)}
-        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
+        {section.cta && renderCtaBlock(section.cta, `cta-${sectionId}`)}
+        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
+        {section.table && renderTable(section.table, `table-${sectionId}`)}
+        {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
+        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn(
             "space-y-10",
             section.subsections.some((s: any) => s.strengths || s.weaknesses) && "grid grid-cols-1 md:grid-cols-2 gap-6 space-y-0"
           )}>
-            {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${idx}-${si}`))}
+            {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
         )}
         {section.note && (
@@ -289,12 +282,12 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
-  if (isLoading) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement de l'article...</p></div>);
-  if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><p className="text-muted-foreground mb-8">Nous n'avons pas trouvé l'article demandé.</p><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
+  if (isLoading) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement Firestore...</p></div>);
+  if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><p className="text-muted-foreground mb-8">Nous n'avons pas trouvé l'article demandé dans la base de données.</p><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   return (
     <div className="min-h-screen relative">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} placeholderText="Recherche par departement , ville , marque, nom ... " />
+      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap"><Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link><ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link><ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span></nav>
@@ -309,7 +302,7 @@ export default function ArticleClient({ id }: { id: string }) {
                 </div>
             </div>
 
-            {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={i} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
+            {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
             
             {article.intro_points && (
                 <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
@@ -330,7 +323,7 @@ export default function ArticleClient({ id }: { id: string }) {
                             }
                             
                             if (!targetId) {
-                                const keywords = ["choisir", "erreurs", "profil", "roadster", "budget", "assurance", "occasion", "1m55", "1m70", "1m80", "1m85", "1m95", "rabaissement", "particulier", "concession"];
+                                const keywords = ["choisir", "erreurs", "profil", "roadster", "budget", "assurance", "occasion", "rabaissement", "particulier", "concession", "1m55", "1m70", "1m80", "1m95"];
                                 const found = keywords.find(k => ptLower.includes(k));
                                 if (found) {
                                     for (const s of activeSections) {
@@ -340,7 +333,7 @@ export default function ArticleClient({ id }: { id: string }) {
                             }
 
                             return (
-                                <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
+                                <li key={`ip-${i}`} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
                                     <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
                                     {targetId ? (<a href={`#${targetId}`} className="hover:text-brand transition-all decoration-brand/30 underline-offset-4 hover:underline">{pt}</a>) : (<span>{pt}</span>)}
                                 </li>
@@ -368,7 +361,7 @@ export default function ArticleClient({ id }: { id: string }) {
                 <div className="flex items-center gap-3 mb-6"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Questions fréquentes</h3></div>
                 <Accordion type="single" collapsible className="w-full">
                   {article.faq.map((item: any, idx: number) => (
-                    <AccordionItem key={idx} value={`faq-${idx}`} className="border-b-brand/10">
+                    <AccordionItem key={`faq-${idx}`} value={`faq-${idx}`} className="border-b-brand/10">
                       <AccordionTrigger className="text-left font-bold text-foreground py-4 hover:text-brand transition-colors">{item.question}</AccordionTrigger>
                       <AccordionContent className="text-muted-foreground leading-relaxed pb-4 font-medium">{item.answer}</AccordionContent>
                     </AccordionItem>
@@ -380,7 +373,7 @@ export default function ArticleClient({ id }: { id: string }) {
             {article.conclusion && (
                 <div className="mt-16 pt-8 border-t border-brand/20">
                     <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                    <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={i} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
+                    <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
                     <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
                 </div>
             )}
