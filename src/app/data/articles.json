@@ -1,3 +1,4 @@
+
 [
   {
     "id": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
@@ -23,26 +24,51 @@
     "sections": [
       {
         "title": "Comment choisir sa première moto A2 ?",
-        "content": ["Avant de regarder une fiche technique, pose-toi une question simple : où vas-tu rouler, avec quel budget, et avec quel niveau de confiance ?"],
+        "content": ["Avant de regarder une fiche technique, pose-toi une question simple : où vas-tu rouler, avec quel budget, et avec quel niveau de confiance ? La meilleure moto A2 n’est pas la même pour un citadin qui roule tous les jours que pour un motard loisir qui vise surtout le week-end."],
         "subsections": [
           {
             "title": "1. Ton gabarit",
-            "content": ["Une moto trop haute peut devenir stressante à chaque arrêt. Une moto trop lourde fatigue vite dans les manœuvres."],
-            "list": ["privilégie une selle accessible", "vise un poids raisonnable", "cherche une prise en main simple"]
+            "content": ["Une moto trop haute peut devenir stressante à chaque arrêt. Une moto trop lourde fatigue vite dans les manœuvres, en ville ou à basse vitesse."],
+            "list": [
+              "privilégie une selle accessible",
+              "vise un poids raisonnable",
+              "cherche une prise en main simple",
+              "évite de choisir uniquement au look"
+            ]
+          },
+          {
+            "title": "2. Ton usage",
+            "list": [
+              "ville quotidienne → roadster léger ou petite cylindrée facile",
+              "usage mixte ville / périphérique → roadster polyvalent",
+              "trajets plus longs / roulage fréquent → trail",
+              "plaisir et style sportif → sportive A2, avec plus de contraintes"
+            ]
+          },
+          {
+            "title": "3. Ton budget réel",
+            "content": ["Le prix affiché n’est jamais le vrai coût. Il faut aussi penser à l’assurance, aux pneus, aux révisions, à l’antivol et à l’équipement."],
+            "cta": {
+              "title": "Dossier Spécial Budget",
+              "label": "Voir le coût réel d’une moto par mois →",
+              "target_slug": "combien-coute-vraiment-une-moto-par-mois"
+            }
           }
+        ]
+      },
+      {
+        "title": "Les erreurs à éviter avant d’acheter une moto A2",
+        "ordered_list": [
+          "Acheter trop gros trop vite alors que tu n’es pas encore à l’aise à l’arrêt ou à basse vitesse.",
+          "Choisir uniquement au style alors que tu roules surtout en ville ou en quotidien.",
+          "Sous-estimer le prix de l’assurance, surtout sur les modèles les plus désirables ou les plus volés.",
+          "Négliger l’occasion récente alors qu’elle est souvent très cohérente pour une première moto.",
+          "Oublier le coût global : assurance, entretien, pneus, antivol et équipement."
         ]
       },
       {
         "title": "Les meilleurs roadsters A2",
         "cards": [
-          {
-            "title": "Yamaha MT-07",
-            "profile": "motard urbain quotidien / usage mixte",
-            "summary": "Une référence A2 très populaire, vivante et facile à garder après la passerelle.",
-            "strengths": ["moteur agréable", "maniabilité", "moto très connue"],
-            "weaknesses": ["assurance souvent élevée", "modèle exposé au vol"],
-            "our_opinion": "Très bon choix si tu veux une moto valorisante et polyvalente."
-          },
           {
             "title": "Honda CB500 Hornet",
             "profile": "débutant prudent / petit ou moyen gabarit",
@@ -50,6 +76,14 @@
             "strengths": ["très accessible", "faible coût d’entretien", "prise en main rapide"],
             "weaknesses": ["moins de sensations"],
             "our_opinion": "L’un des meilleurs choix pour apprendre vite et rouler souvent."
+          },
+          {
+            "title": "Yamaha MT-07",
+            "profile": "motard urbain quotidien / usage mixte",
+            "summary": "Une référence A2 très populaire, vivante et facile à garder après la passerelle.",
+            "strengths": ["moteur agréable", "maniabilité", "moto très connue"],
+            "weaknesses": ["assurance souvent élevée", "modèle exposé au vol"],
+            "our_opinion": "Très bon choix si tu veux une moto valorisante et polyvalente."
           }
         ]
       }
@@ -71,6 +105,131 @@
         "label": "Voir combien coûte vraiment une moto par mois",
         "target_slug": "combien-coute-vraiment-une-moto-par-mois"
       }
+    ]
+  },
+  {
+    "id": "combien-coute-vraiment-une-moto-par-mois",
+    "display_title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
+    "category": "budget",
+    "status": "published",
+    "featured": true,
+    "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",
+    "author": "L'équipe Label Moto",
+    "readingTime": "10 min de lecture",
+    "intro": [
+      "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours.",
+      "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu.",
+      "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis."
+    ],
+    "intro_points": [
+      "prix d’achat",
+      "assurance",
+      "carburant",
+      "entretien",
+      "équipement"
+    ],
+    "sections": [
+      {
+        "title": "Le prix d’achat : le budget de départ",
+        "content": ["Pour un permis A2, le budget moyen en France se situe généralement entre 3 000 € et 7 000 € :"],
+        "list": [
+          "3 000 à 4 500 € → moto d’occasion raisonnable pour débuter",
+          "4 500 à 6 000 € → modèle récent bien équipé",
+          "6 000 à 7 000 € → moto quasi neuve ou concession"
+        ],
+        "cta": {
+          "header": "OBJECTIF PERMIS A2",
+          "label": "QUELLE MOTO CHOISIR POUR DÉBUTER ? →",
+          "description": "Trouvez la machine idéale pour commencer sans vous tromper.",
+          "target_slug": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter"
+        }
+      },
+      {
+        "title": "L’assurance : la plus grosse surprise pour un débutant",
+        "content": ["On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double."],
+        "table": {
+          "headers": ["Profil", "Prix mensuel moyen"],
+          "rows": [
+            { "Profil": "Jeune permis A2", "Prix mensuel moyen": "80 à 200 €" },
+            { "Profil": "2 ans d’expérience", "Prix mensuel moyen": "50 à 120 €" },
+            { "Profil": "Motard expérimenté", "Prix mensuel moyen": "30 à 70 €" }
+          ]
+        },
+        "cta": {
+          "header": "DOSSIER SPÉCIAL ASSURANCE",
+          "label": "BIEN CHOISIR SON ASSURANCE MOTO →",
+          "description": "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
+          "target_slug": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
+        }
+      },
+      {
+        "title": "L’entretien : le coût invisible qui compte vraiment",
+        "content": ["Une moto coûte régulièrement à entretenir. Voici les dépenses les plus courantes :"],
+        "table": {
+          "headers": ["Élément", "Fréquence moyenne", "Prix"],
+          "rows": [
+            { "Élément": "Pneus", "Fréquence moyenne": "8 000 à 15 000 km", "Prix": "250 à 350 €" },
+            { "Élément": "Kit chaîne", "Fréquence moyenne": "20 000 à 30 000 km", "Prix": "150 à 300 €" },
+            { "Élément": "Révision annuelle", "Fréquence moyenne": "1 fois/an", "Prix": "150 à 400 €" }
+          ]
+        },
+        "cta": {
+          "header": "GUIDE ACHAT OCCASION",
+          "label": "ÉVITER LES PIÈGES EN OCCASION →",
+          "description": "Contrôle technique, points mécaniques : ne vous faites pas avoir.",
+          "target_slug": "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+        }
+      }
+    ],
+    "conclusion": [
+      "Une moto coûte surtout cher quand on choisit mal son premier modèle.",
+      "En anticipant le budget réel, tu évites les mauvaises surprises."
+    ]
+  },
+  {
+    "id": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
+    "display_title": "Assurance Moto 2026 : Le guide complet pour bien s'assurer",
+    "category": "assurance",
+    "status": "published",
+    "imageUrl": "/images/motard-article-assurance2026.png",
+    "author": "L'équipe Label Moto",
+    "readingTime": "10 min de lecture",
+    "intro": [
+      "S'assurer en 2026 n'est plus seulement une question de prix. Avec l'évolution des réglementations, le paysage de l'assurance moto a changé."
+    ],
+    "intro_points": [
+      "les 3 formules incontournables",
+      "les garanties à regarder avant de signer",
+      "assurance jeune permis A2",
+      "comparatif des prix 2026"
+    ],
+    "sections": [
+      {
+        "title": "Les 3 formules incontournables",
+        "table": {
+          "headers": ["Formule", "Niveau de protection", "Niveau de prix", "Idéale pour"],
+          "rows": [
+            { "Formule": "Tiers", "Niveau de protection": "Faible", "Niveau de prix": "€", "Idéale pour": "Motos anciennes, petit budget, faible valeur" },
+            { "Formule": "Tiers plus", "Niveau de protection": "Intermédiaire", "Niveau de prix": "€€", "Idéale pour": "Jeunes permis, citadins, motos récentes mais budget encadré" },
+            { "Formule": "Tous risques", "Niveau de protection": "Élevé", "Niveau de prix": "€€€", "Idéale pour": "Motos récentes, gros rouleurs, machines à forte valeur" }
+          ]
+        }
+      },
+      {
+        "title": "Les garanties à regarder avant de signer",
+        "table": {
+          "headers": ["Catégorie", "Garantie", "Conseil"],
+          "rows": [
+            { "Catégorie": "Protection des personnes", "Garantie": "Individuelle Pilote", "Conseil": "🟥 Crucial : vous couvre en cas de dommages corporels, même responsable." },
+            { "Catégorie": "Dommages matériels", "Garantie": "Vol et Incendie", "Conseil": "Recommandé en zone urbaine ou pour les modèles convoités." },
+            { "Catégorie": "Assistance", "Garantie": "Assistance 0 km", "Conseil": "Indispensable pour éviter de payer le remorquage près de chez vous." }
+          ]
+        }
+      }
+    ],
+    "conclusion": [
+      "L'assurance est votre meilleure alliée sur la route.",
+      "Comparez toujours avant de signer pour obtenir le meilleur rapport protection/prix."
     ]
   },
   {
@@ -119,104 +278,6 @@
         "label": "Lire le guide des meilleures motos A2",
         "target_slug": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter"
       }
-    ]
-  },
-  {
-    "id": "combien-coute-vraiment-une-moto-par-mois",
-    "display_title": "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant",
-    "category": "budget",
-    "status": "published",
-    "featured": true,
-    "imageUrl": "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080",
-    "author": "L'équipe Label Moto",
-    "readingTime": "10 min de lecture",
-    "intro": [
-      "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours.",
-      "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu."
-    ],
-    "intro_points": [
-      "prix d’achat",
-      "assurance",
-      "carburant",
-      "entretien",
-      "équipement"
-    ],
-    "sections": [
-      {
-        "title": "Le prix d’achat : le budget de départ",
-        "content": ["Avant même de penser à rouler, il faut acheter la moto."],
-        "list": [
-          "3 000 à 4 500 € → moto d’occasion raisonnable pour débuter",
-          "4 500 à 6 000 € → modèle récent bien équipé",
-          "6 000 à 7 000 € → moto quasi neuve ou concession"
-        ],
-        "cta": "consulte d’abord notre guide des meilleures motos A2 pour débuter"
-      },
-      {
-        "title": "L’assurance : la plus grosse surprise pour un débutant",
-        "content": ["On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double."],
-        "table": {
-          "headers": ["Profil", "Prix mensuel moyen"],
-          "rows": [
-            { "Profil": "Jeune permis A2", "Prix mensuel moyen": "80 à 200 €" },
-            { "Profil": "2 ans d’expérience", "Prix mensuel moyen": "50 à 120 €" },
-            { "Profil": "Motard expérimenté", "Prix mensuel moyen": "30 à 70 €" }
-          ]
-        },
-        "cta": "consulte notre guide assurance moto"
-      },
-      {
-        "title": "L’entretien : le coût invisible qui compte vraiment",
-        "content": ["Une moto coûte régulièrement à entretenir."],
-        "table": {
-          "headers": ["Élément", "Fréquence moyenne", "Prix"],
-          "rows": [
-            { "Élément": "Pneus", "Fréquence moyenne": "8 000 à 15 000 km", "Prix": "250 à 350 €" },
-            { "Élément": "Kit chaîne", "Fréquence moyenne": "20 000 à 30 000 km", "Prix": "150 à 300 €" },
-            { "Élément": "Révision annuelle", "Fréquence moyenne": "1 fois/an", "Prix": "150 à 400 €" }
-          ]
-        },
-        "cta": "consulte notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion"
-      }
-    ],
-    "conclusion": [
-      "Une moto coûte surtout cher quand on choisit mal son premier modèle.",
-      "En anticipant le budget réel, tu évites les mauvaises surprises."
-    ]
-  },
-  {
-    "id": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
-    "display_title": "Assurance Moto 2026 : Le guide complet pour bien s'assurer",
-    "category": "assurance",
-    "status": "published",
-    "imageUrl": "/images/motard-article-assurance2026.png",
-    "author": "L'équipe Label Moto",
-    "readingTime": "10 min de lecture",
-    "intro": [
-      "S'assurer en 2026 n'est plus seulement une question de prix. Avec l'évolution des réglementations, le paysage de l'assurance moto a changé."
-    ],
-    "intro_points": [
-      "les 3 formules incontournables",
-      "assurance jeune permis A2",
-      "garanties vol et équipement",
-      "comparatif des prix 2026"
-    ],
-    "sections": [
-      {
-        "title": "Les 3 formules incontournables",
-        "table": {
-          "headers": ["Formule", "Niveau de protection", "Idéale pour"],
-          "rows": [
-            { "Formule": "Tiers", "Niveau de protection": "Faible", "Idéale pour": "Motos anciennes, petit budget" },
-            { "Formule": "Tiers plus", "Niveau de protection": "Intermédiaire", "Idéale pour": "Jeunes permis, citadins" },
-            { "Formule": "Tous risques", "Niveau de protection": "Élevé", "Idéale pour": "Motos neuves, gros rouleurs" }
-          ]
-        }
-      }
-    ],
-    "conclusion": [
-      "L'assurance est votre meilleure alliée sur la route.",
-      "Comparez toujours avant de signer pour obtenir le meilleur rapport protection/prix."
     ]
   },
   {
