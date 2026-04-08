@@ -69,7 +69,7 @@
     "readingTime": "10 min de lecture",
     "intro": [
       "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours.",
-      "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu.",
+      "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent.",
       "Dans cet article, on va détailler le coût réel d’une moto pour un débutant :"
     ],
     "intro_points": [
@@ -87,7 +87,7 @@
           "Avant même de penser à rouler, il faut acheter la moto.",
           "Pour un permis A2, le budget moyen en France se situe généralement entre 3 000 € et 7 000 €."
         ],
-        "cta": "👉 Si tu hésites encore sur le modèle, consulte notre guide achat moto A2 pour éviter d'acheter une moto inadaptée.",
+        "cta": "👉 Si tu hésites encore sur le modèle, consulte d’abord notre guide d'achat moto A2 pour éviter d'acheter une moto inadaptée.",
         "list": [
           "3 000 à 4 500 € → Moto d’occasion raisonnable",
           "4 500 à 6 000 € → Modèle récent bien équipé",
@@ -100,7 +100,7 @@
           "C’est presque toujours le moment où le futur motard tombe de haut.",
           "Pour un permis A2, l’assurance dépend surtout de ton âge, de ta région et du modèle choisi."
         ],
-        "cta": "👉 Avant de signer, consultez notre guide complet sur l'assurance moto 2026 pour bien choisir votre formule.",
+        "cta": "👉 Avant de signer, consultez notre guide sur l'assurance moto 2026 pour bien choisir votre formule.",
         "table": {
           "headers": ["Profil", "Prix mensuel moyen"],
           "rows": [
@@ -214,6 +214,18 @@
       },
       {
         "title": "Quelle moto pour un grand gabarit (1m80 et plus) ?",
+        "subsections": [
+          {
+            "title": "Ce qu’il faut privilégier",
+            "list": [
+              "plus d’espace pour les jambes",
+              "position naturelle et moins repliée",
+              "selle plus haute ou plus épaisse si besoin",
+              "moto cohérente pour rouler longtemps"
+            ],
+            "cta": "👉 Pour trouver le modèle idéal adapté à votre taille, consultez notre guide d'achat moto A2 : les meilleures motos pour débuter."
+          }
+        ],
         "cards": [
           {
             "title": "Yamaha Tracer 7",
