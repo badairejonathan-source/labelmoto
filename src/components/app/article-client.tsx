@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { 
   CheckCircle2, Info, Loader2, 
   ChevronRight, Home, HelpCircle, Gauge, Settings2, 
-  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight, ShieldAlert
+  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight, LayoutGrid
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -32,18 +32,11 @@ import {
 } from "@/components/ui/accordion";
 
 const slugify = (text: string) => 
-  text.toLowerCase()
+  text?.toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
-
-const slugifyKey = (text: string) => 
-  text.toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/(^-|-$)+/g, "");
+      .replace(/(^-|-$)+/g, "") || "";
 
 const getFicheIdFromTitle = (title: string): string | null => {
   const t = typeof title === 'string' ? title.toLowerCase() : '';
@@ -246,8 +239,12 @@ export default function ArticleClient({ id }: { id: string }) {
             <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
                 <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase tracking-tight">{section.title || "Comparatif"}</CardTitle></CardHeader>
                 <CardContent className="p-6 space-y-4">
-                    {section.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div><ul className="list-none space-y-1">{section.strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul></div>)}
-                    {section.weaknesses && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-red-600 tracking-widest">Inconvénients</div><ul className="list-none space-y-1">{section.weaknesses.map((w: string, j: number) => (<li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>))}</ul></div>)}
+                    {section.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div><ul className="list-none space-y-1">{section.strengths.map((s: string, j: number) => (
+                      <li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
+                    ))}</ul></div>)}
+                    {section.weaknesses && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-red-600 tracking-widest">Inconvénients</div><ul className="list-none space-y-1">{section.weaknesses.map((w: string, j: number) => (
+                      <li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
+                    ))}</ul></div>)}
                 </CardContent>
             </Card>
         );
@@ -259,7 +256,9 @@ export default function ArticleClient({ id }: { id: string }) {
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
-        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
+        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (
+          <li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>
+        ))}</ul>)}
         
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn(
@@ -346,6 +345,35 @@ export default function ArticleClient({ id }: { id: string }) {
                         })}
                     </ul>
                 </div>
+            )}
+
+            {/* Sommaire automatique basé sur les titres des sections */}
+            {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
+              <div className="mb-12 p-8 bg-muted/30 rounded-3xl border-2 border-muted/50">
+                <div className="flex items-center gap-3 mb-6">
+                  <LayoutGrid className="h-5 w-5 text-brand" />
+                  <h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire</h2>
+                </div>
+                <nav>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
+                    {activeSections.map((section: any, idx: number) => {
+                      if (!section.title) return null;
+                      const sectionId = slugify(section.title);
+                      return (
+                        <li key={`toc-${idx}`} className="flex items-start gap-2 group">
+                          <span className="text-brand font-black text-xs mt-1 shrink-0">0{idx + 1}.</span>
+                          <a 
+                            href={`#${sectionId}`} 
+                            className="text-sm font-bold text-foreground hover:text-brand transition-colors decoration-brand/30 underline-offset-4 hover:underline"
+                          >
+                            {section.title}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </nav>
+              </div>
             )}
 
             <div className="space-y-12">
