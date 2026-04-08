@@ -21,7 +21,12 @@
       {
         "title": "1. L'achat et l'équipement : l'investissement de départ",
         "content": "Avant même de mettre le contact, vous devrez décaisser une somme importante. Pour une première moto A2 d'occasion fiable, comptez entre 3 500 € et 5 500 €.",
-        "cta": "consulte d’abord notre guide des meilleures motos A2 pour débuter",
+        "cta": {
+          "header": "OBJECTIF PERMIS A2",
+          "label": "QUELLE MOTO CHOISIR POUR DÉBUTER ? →",
+          "description": "Trouvez la machine idéale pour commencer sans vous tromper.",
+          "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
+        },
         "list": [
           "Casque homologué : 200 € à 500 €",
           "Blouson avec protections : 150 € à 400 €",
@@ -32,7 +37,12 @@
       {
         "title": "2. L'assurance : le poids lourd du budget",
         "content": "Pour un jeune permis, l'assurance est souvent très élevée, surtout si vous habitez en ville ou si vous choisissez un modèle prisé par les voleurs.",
-        "cta": "consulte notre dossier spécial assurance moto 2026",
+        "cta": {
+          "header": "DOSSIER SPÉCIAL ASSURANCE",
+          "label": "BIEN CHOISIR SON ASSURANCE MOTO →",
+          "description": "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
+          "target_slug": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
+        },
         "table": {
           "headers": ["Formule", "Prix Moyen Jeune Permis / mois"],
           "rows": [
@@ -45,7 +55,12 @@
       {
         "title": "3. Essence et Entretien",
         "content": "Une moto consomme en moyenne entre 4L et 6L aux 100 km. Pour un rouleur moyen (600 km/mois), comptez environ 60 € d'essence.",
-        "cta": "consulte notre guide d'occasion pour éviter les pièges",
+        "cta": {
+          "header": "GUIDE ACHAT OCCASION",
+          "label": "ÉVITER LES PIÈGES EN OCCASION →",
+          "description": "Inspection, papiers, essai : tout ce qu'il faut savoir avant d'acheter.",
+          "target_slug": "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+        },
         "table": {
           "headers": ["Poste", "Estimation Mensuelle"],
           "rows": [
@@ -59,8 +74,8 @@
     "conclusion": "En résumé, rouler à moto coûte entre 250 € et 400 € par mois tout compris (hors achat). C'est un budget conséquent qu'il vaut mieux anticiper."
   },
   {
-    "id": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
-    "slug": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
+    "id": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
+    "slug": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
     "display_title": "Assurance moto 2026 : bien choisir sa formule selon votre profil",
     "title": "Assurance moto 2026 : bien choisir sa formule selon votre profil",
     "category": "assurance",
@@ -260,8 +275,8 @@
     ]
   },
   {
-    "id": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
-    "slug": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
+    "id": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
+    "slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
     "display_title": "Achat moto A2 : Quelle moto choisir pour débuter ?",
     "title": "Guide : Choisir sa première moto A2",
     "description": "Roadster, Trail ou Custom ? Découvrez notre sélection des meilleures motos pour débutants selon votre usage et votre budget.",
@@ -296,7 +311,12 @@
         ]
       }
     ],
-    "cta": "Voir le budget réel d’une moto par mois",
+    "cta": {
+      "header": "DOSSIER SPÉCIAL BUDGET",
+      "label": "CALCULER MON BUDGET RÉEL →",
+      "description": "Assurance, entretien, équipement : ne laissez rien au hasard.",
+      "target_slug": "combien-coute-vraiment-une-moto-par-mois"
+    },
     "conclusion": "Essayez toujours plusieurs modèles avant de vous décider. Une moto sur laquelle on se sent bien à l'arrêt n'est pas forcément celle qui vous plaira en roulant."
   },
   {
@@ -328,13 +348,29 @@
       {
         "title": "Plus de 1m85 : Le confort",
         "content": "Les trails sont vos meilleurs alliés pour éviter d'avoir les jambes trop repliées.",
-        "cta": "consulte d’abord notre guide des meilleures motos A2 pour débuter",
+        "sections": [
+          {
+            "title": "Ce qu’il faut privilégier",
+            "list": [
+              "plus d’espace pour les jambes",
+              "position naturelle et moins repliée",
+              "selle plus haute ou plus épaisse si besoin",
+              "moto cohérente pour rouler longtemps"
+            ],
+            "cta": {
+              "header": "OBJECTIF PERMIS A2",
+              "label": "LIRE LE GUIDE DES MEILLEURES MOTOS A2 →",
+              "description": "Découvrez les machines idéales pour débuter selon votre gabarit.",
+              "target_slug": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
+            }
+          }
+        ],
         "cards": [
           {
             "title": "Yamaha Tracer 7",
             "profile": "Grand gabarit",
             "seat_feel": "835 mm",
-            "weight_feel": "Haut perché",
+            "weight_feel": "Haut après-midi",
             "strengths": ["Protection vent", "Position droite", "Polyvalence"]
           }
         ]

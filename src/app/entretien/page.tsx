@@ -129,12 +129,13 @@ export default function EntretienPage() {
       if (s.subsections) {
         s.subsections.forEach((sub: any) => {
           if (sub.title) {
-            points.push({ title: s.title, id: slugify(sub.title) });
+            points.push({ title: sub.title, id: slugify(sub.title) });
           }
         });
       }
     });
-    return points;
+    // Ensure uniqueness by ID to avoid duplicates in the UI
+    return points.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
   }, [activeSections]);
 
   const toggleBrand = (brandName: string) => {

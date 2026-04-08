@@ -92,7 +92,7 @@ export default function ArticleClient({ id }: { id: string }) {
         points.push({ title: s.title, id: slugify(s.title) });
       }
     });
-    return points;
+    return points.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
   }, [activeSections]);
   
   const handleSearch = () => {
@@ -164,14 +164,14 @@ export default function ArticleClient({ id }: { id: string }) {
           header: "DOSSIER SPÉCIAL ASSURANCE",
           label: "BIEN CHOISIR SON ASSURANCE MOTO →",
           description: "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
-          target_slug: "assurance-moto-bien-choisir-sa-formule-selon-votre-profil"
+          target_slug: "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
         };
       } else if (text.includes('meilleures motos a2') || text.includes('achat moto a2')) {
         ctaData = {
           header: "OBJECTIF PERMIS A2",
           label: "QUELLE MOTO CHOISIR POUR DÉBUTER ? →",
           description: "Trouvez la machine idéale pour commencer sans vous tromper.",
-          target_slug: "meilleure-moto-a2-quelle-moto-choisir-pour-debuter"
+          target_slug: "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
         };
       } else if (text.includes('occasion') || text.includes('pièges')) {
         ctaData = {
@@ -309,12 +309,13 @@ export default function ArticleClient({ id }: { id: string }) {
                 {card.linked_models && (
                   <div className="flex flex-wrap gap-2">
                     {card.linked_models.map((m: any, i: number) => (
-                      <Link key={i} href={`/fiches/${m.slug}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      <Link key={i} href={`/fiches/${m.slug || m.id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
                     ))}
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
+                  {card.seat_height && <div className="space-y-1"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Hauteur Selle</p><p className="text-[10px] font-black uppercase">{card.seat_height}</p></div>}
                   {card.seat_feel && <div className="space-y-1"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Assise</p><p className="text-[10px] font-black uppercase">{card.seat_feel}</p></div>}
                   {card.weight_feel && <div className="space-y-1"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Poids</p><p className="text-[10px] font-black uppercase">{card.weight_feel}</p></div>}
                 </div>
