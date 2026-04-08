@@ -171,7 +171,7 @@ export default function ArticleClient({ id }: { id: string }) {
           header: "DOSSIER SPÉCIAL ASSURANCE",
           label: "BIEN CHOISIR SON ASSURANCE MOTO →",
           description: "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
-          target_slug: "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
+          target_slug: "assurance-moto-bien-choisir-sa-formule-selon-votre-profil"
         };
       } else if (text.includes('meilleures motos a2') || text.includes('achat moto a2')) {
         ctaData = {
@@ -219,7 +219,7 @@ export default function ArticleClient({ id }: { id: string }) {
     else if (slug?.includes('occasion') || slug?.includes('pieges')) thumbnailUrl = "/images/evitelespieges.png";
     else if (slug?.includes('taille')) thumbnailUrl = "/images/motard-articles-hauteurdeselle.png";
     else if (slug?.includes('budget')) thumbnailUrl = "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-    else thumbnailUrl = "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070";
+    else thumbnailUrl = "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
 
     return (
       <div className={cn(
@@ -316,9 +316,12 @@ export default function ArticleClient({ id }: { id: string }) {
                 
                 {card.linked_models && (
                   <div className="flex flex-wrap gap-2">
-                    {card.linked_models.map((m: any, i: number) => (
-                      <Link key={i} href={`/fiches/${m.slug || m.id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
-                    ))}
+                    {card.linked_models.map((m: any, i: number) => {
+                      const mFicheId = m.slug || getFicheIdFromTitle(m.label);
+                      return mFicheId ? (
+                        <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m.label}</span>)
+                    })}
                   </div>
                 )}
 
@@ -457,12 +460,26 @@ export default function ArticleClient({ id }: { id: string }) {
                         <ul className="list-none space-y-3 pl-0">
                             {article.intro_points.map((pt: string, i: number) => {
                                 const ptLower = pt.toLowerCase();
-                                const bestSection = activeSections.find((s: any) => s.title && (ptLower.includes(s.title.toLowerCase().substring(0, 15)) || s.title.toLowerCase().includes(ptLower.substring(0, 15))));
+                                const bestSection = activeSections.find((s: any) => {
+                                    if (!s.title) return false;
+                                    const st = s.title.toLowerCase();
+                                    // Keyword matching logic for robust linking
+                                    if (st.includes(ptLower) || ptLower.includes(st)) return true;
+                                    const keywords = ["2024", "formule", "profil", "garantie", "1m55", "1m70", "1m80", "1m85", "1m95", "sellerie", "rabaissement"];
+                                    const shared = keywords.find(k => st.includes(k) && ptLower.includes(k));
+                                    return !!shared;
+                                });
                                 const sectionId = bestSection ? slugify(bestSection.title) : null;
                                 return (
                                     <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
                                         <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
-                                        {sectionId ? (<a href={`#${sectionId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">{pt}</a>) : (<span className="text-foreground">{pt}</span>)}
+                                        {sectionId ? (
+                                          <a href={`#${sectionId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
+                                            {pt}
+                                          </a>
+                                        ) : (
+                                          <span className="text-foreground">{pt}</span>
+                                        )}
                                     </li>
                                 );
                             })}
@@ -470,6 +487,16 @@ export default function ArticleClient({ id }: { id: string }) {
                     </div>
                 )}
                 <div className="space-y-12">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
+                
+                {article.cta_blocks && Array.isArray(article.cta_blocks) && (
+                  <div className="mt-16 pt-8 border-t border-brand/20">
+                    <h3 className="text-xl font-black uppercase tracking-tight text-brand mb-6">Articles recommandés</h3>
+                    <div className="space-y-4">
+                      {article.cta_blocks.map((block: any, idx: number) => renderCtaBlock(block))}
+                    </div>
+                  </div>
+                )}
+
                 {article.faq && (
                   <div className="mt-16 pt-8 border-t border-brand/20">
                     <div className="flex items-center gap-3 mb-6"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Questions fréquentes</h3></div>

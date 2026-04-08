@@ -117,25 +117,16 @@ export default function EntretienPage() {
 
   const activeSections = useMemo(() => {
     if (!article?.sections) return [];
-    return article.sections.filter((s: any) => s.title !== "Moto vs voiture : le vrai comparatif");
+    return article.sections.filter((s: any) => s.title && s.title.length > 3);
   }, [article]);
   
   const allSummaryPoints = useMemo(() => {
-    const points: { title: string; id: string }[] = [];
-    activeSections.forEach((s: any) => {
-      if (s.title) {
-        points.push({ title: s.title, id: slugify(s.title) });
-      }
-      if (s.subsections) {
-        s.subsections.forEach((sub: any) => {
-          if (sub.title) {
-            points.push({ title: sub.title, id: slugify(sub.title) });
-          }
-        });
-      }
-    });
-    // Ensure uniqueness by ID to avoid duplicates in the UI
-    return points.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+    if (!activeSections) return [];
+    // Only show main sections in the summary for clarity
+    return activeSections.map((s: any) => ({
+      title: s.title,
+      id: slugify(s.title)
+    }));
   }, [activeSections]);
 
   const toggleBrand = (brandName: string) => {
@@ -152,58 +143,19 @@ export default function EntretienPage() {
     }
   };
 
-  const handleFilterChange = (filter: 'shopping' | 'service') => {
-    router.push(`/map?filter=${filter}`);
-  };
-
   const renderNote = (note: string) => {
     if (!note) return null;
-    
-    const budgetArticleTitle = "Combien coûte vraiment une moto par mois ? Le budget réel d’un motard débutant";
-    const budgetId = "combien-coute-vraiment-une-moto-par-mois"; 
-    
-    const triggers = [
-        "notre guide sur le coût réel d’une moto par mois",
-        "notre guide sur le coût moyen d’une moto par mois",
-        "Vérifie AVANT l’achat pour éviter les mauvaises surprises",
-        "consulte aussi Combien coûte vraiment une moto par mois",
-        "consulte aussi notre guide"
-    ];
-    
-    let content: React.ReactNode = note;
-    let foundTrigger = triggers.find(t => note.includes(t));
-
-    if (foundTrigger) {
-      const parts = note.split(foundTrigger);
-      content = (
-        <>
-          {parts[0]}
-          <Link href={`/info/${budgetId}`} className="text-foreground font-black underline hover:text-brand transition-colors">
-            {budgetArticleTitle}
-          </Link>
-          {parts[1]}
-        </>
-      );
-    }
-
     return (
       <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
-        {content}
+        {note}
       </div>
     );
   };
 
   const renderTable = (tableData: any) => {
     if (!tableData) return null;
-    
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
-
-    const normalize = (s: string) => 
-        String(s).toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]+/g, "");
 
     return (
       <div className="my-8 overflow-x-auto rounded-xl border-2 border-muted shadow-sm">
@@ -216,180 +168,42 @@ export default function EntretienPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row: any, ri: number) => {
-              const rowValues = headers.map((header: string, hi: number) => {
-                const normHeader = normalize(header);
-                if (Array.isArray(row)) {
-                    return row[hi] !== undefined ? row[hi] : '';
-                }
-                if (row[header] !== undefined) return row[header];
-                const foundExact = Object.keys(row).find(k => normalize(k) === normHeader);
-                if (foundExact) return row[foundExact];
-                const foundKey = Object.keys(row).find(k => {
-                    const nk = normalize(k);
-                    const nh = normHeader;
-                    if (nk === nh) return true;
-                    if (nk.length > 2 && nh.includes(nk)) return true;
-                    if (nh.length > 2 && nk.includes(nh)) return true;
-                    const sharedWords = ["usage", "budget", "prix", "entretien", "frequence", "revision"];
-                    return sharedWords.some(word => nk.includes(word) && nh.includes(word));
-                });
-                if (foundKey) return row[foundKey];
-                const keys = Object.keys(row);
-                if (keys[hi] !== undefined) return row[keys[hi]];
-                return '';
-              });
-
-              return (
-                <TableRow key={ri} className="hover:bg-muted/30">
-                  {rowValues.map((cell: any, ci: number) => (
-                    <TableCell key={ci} className={cn("py-4 text-foreground font-black", ci === 0 && "font-black")}>
-                      {String(cell)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
+            {rows.map((row: any, ri: number) => (
+              <TableRow key={ri} className="hover:bg-muted/30">
+                {headers.map((header: string, hi: number) => (
+                  <TableCell key={hi} className="py-4 text-foreground font-black">
+                    {String(Array.isArray(row) ? row[hi] : row[header] || '')}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
     );
   };
 
-  const renderComparisonGrid = (items: any[]) => {
-    if (!items || items.length === 0) return null;
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-        {items.map((item, idx) => {
-          const ficheId = getFicheIdFromTitle(item.title);
-          const content = (
-            <Card className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm group/card hover:border-brand/50 transition-all">
-              <CardHeader className="bg-muted/30 py-4 border-b flex flex-row items-center justify-between">
-                <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
-                  {item.title}
-                </CardTitle>
-                {ficheId && <ExternalLink className="h-4 w-4 text-muted-foreground group-hover/card:text-brand transition-colors" />}
-              </CardHeader>
-              <CardContent className="p-6 space-y-6 flex-grow">
-                {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3" /> Avantages
-                    </div>
-                    <ul className="list-none space-y-2">
-                      {item.strengths.map((s: string, j: number) => (
-                        <li key={j} className="text-sm font-black flex items-start gap-2 text-foreground">
-                          <span className="text-green-500 font-black shrink-0">•</span> {s}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
-                      <AlertTriangle className="h-3 w-3" /> Inconvénients
-                    </div>
-                    <ul className="list-none space-y-2">
-                      {item.weaknesses.map((w: string, j: number) => (
-                        <li key={j} className="text-sm font-black flex items-start gap-2 text-foreground">
-                          <span className="text-red-400 font-black shrink-0">•</span> {w}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-              {ficheId && (
-                <CardFooter className="bg-brand/5 p-3 border-t">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-brand mx-auto">Voir la fiche technique →</span>
-                </CardFooter>
-              )}
-            </Card>
-          );
-
-          return ficheId ? (
-            <Link key={idx} href={`/fiches/${ficheId}?from=entretien`} className="block h-full transition-transform hover:-translate-y-1">
-              {content}
-            </Link>
-          ) : (
-            <div key={idx}>{content}</div>
-          );
-        })}
-      </div>
-    );
-  };
-
   const renderSection = (section: any, idx: number) => {
-    if (section.title === "Moto vs voiture : le vrai comparatif") return null;
-    const hasComparisonData = section.strengths || section.weaknesses;
-    const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
-
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {section.content && Array.isArray(section.content) && section.content.map((p: string, pi: number) => (
-          <p key={pi} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>
-        ))}
-        {section.list && Array.isArray(section.list) && (
-          <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
-            {section.list.map((item: string, li: number) => (
-              <li key={li} className="text-lg text-foreground font-black">{item}</li>
-            ))}
-          </ul>
-        )}
+        {section.content && (Array.isArray(section.content) ? (section.content.map((p: string, pi: number) => <p key={pi} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{section.content}</p>))}
         {section.table && renderTable(section.table)}
         {section.note && renderNote(section.note)}
-        {hasComparisonSubsections ? (
-            <div className="mt-8">
-                {renderComparisonGrid(section.subsections)}
-            </div>
-        ) : hasComparisonData ? (
-            <div className="mt-8">
-                {renderComparisonGrid([section])}
-            </div>
-        ) : (
-            section.subsections && Array.isArray(section.subsections) && (
-              <div className="space-y-6">
-                {section.subsections.map((sub: any, si: number) => renderSection(sub, si))}
-              </div>
-            )
-        )}
-        {section.title && 
-         (section.title.toLowerCase().includes('budget reel') || section.title.toLowerCase().includes('ton budget réel')) && (
-          <div className="mt-6 p-5 bg-brand/5 border-2 border-dashed border-brand/30 rounded-2xl">
-            <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="group flex items-center justify-between gap-4">
-              <div className="flex-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dossier Spécial</p>
-                <h4 className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">
-                  Calculer mon budget réel →
-                </h4>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">Assurance, entretien, équipement : ne laissez rien au hasard.</p>
-              </div>
-              <div className="bg-brand text-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform shrink-0">
-                <FileText className="h-5 w-5" />
-              </div>
-            </Link>
+        {section.subsections && Array.isArray(section.subsections) && (
+          <div className="space-y-6">
+            {section.subsections.map((sub: any, si: number) => renderSection(sub, si))}
           </div>
         )}
-        {section.conclusion && <p className="text-lg text-foreground font-black mt-6 italic border-l-4 border-muted pl-4">{section.conclusion}</p>}
       </div>
     );
   };
 
   return (
     <div className="min-h-screen relative">
-      <Header
-        searchTerm={searchTerm}
-        onSearchTermChange={setSearchTerm}
-        onSearch={handleSearch}
-        activeFilter={null}
-        onFilterChange={handleFilterChange}
-        placeholderText="Recherche par departement , ville , marque, nom ... "
-      />
+      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} placeholderText="Recherche par departement , ville , marque, nom ... " />
       
-      {/* Filigrane Logo */}
       <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
         <Image src="/images/logo-moto.png?v=6" alt="" width={600} height={192} className="opacity-[0.03] rotate-[-15deg]" priority />
       </div>
@@ -412,7 +226,7 @@ export default function EntretienPage() {
                   <section key={brand.name} className="border border-border/50 rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm shadow-sm transition-all">
                     <button onClick={() => toggleBrand(brand.name)} className={cn("w-full flex items-center justify-between p-6 transition-colors", isExpanded ? "bg-brand/10" : "hover:bg-muted/50")}>
                       <div className="flex items-center gap-4">
-                        <div className={cn("w-10 h-10 rounded-full flex items-center justify-center font-black transition-all", isExpanded ? "bg-brand text-brand-foreground rotate-0" : "bg-muted text-muted-foreground")}>{brand.name.charAt(0)}</div>
+                        <div className={cn("w-10 h-10 rounded-full flex items-center justify-center font-black transition-all", isExpanded ? "bg-brand text-brand-foreground" : "bg-muted text-muted-foreground")}>{brand.name.charAt(0)}</div>
                         <h2 className={cn("text-2xl font-black uppercase tracking-tighter", isExpanded ? "text-brand" : "text-foreground")}>{brand.name}</h2>
                       </div>
                       <div className="flex items-center gap-3"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{brand.models.length} modèles</span>{isExpanded ? <Minus className="h-5 w-5 text-brand" /> : <Plus className="h-5 w-5 text-muted-foreground" />}</div>
@@ -423,7 +237,7 @@ export default function EntretienPage() {
               })}
               <div className="pt-24 border-t border-border/50">
                 {isArticleLoading ? (
-                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground"><Loader2 className="h-10 w-10 animate-spin mb-4" /><p className="font-bold uppercase tracking-widest text-xs">Chargement de l'article conseils...</p></div>
+                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground"><Loader2 className="h-10 w-10 animate-spin mb-4" /><p className="font-bold uppercase tracking-widest text-xs">Chargement des conseils...</p></div>
                 ) : article ? (
                   <article className="prose prose-neutral dark:prose-invert max-w-none">
                     <div className="flex items-center gap-3 mb-8"><FileText className="h-10 w-10 text-brand" /><h2 className="text-4xl font-black uppercase tracking-tight m-0 text-foreground">{article.display_title || article.title}</h2></div>
@@ -436,23 +250,15 @@ export default function EntretienPage() {
                           <ul className="list-none space-y-3 pl-0">{allSummaryPoints.map((pt, i) => (<li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item"><CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" /><a href={`#${pt.id}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">{pt.title}</a></li>))}</ul>
                         </div>
                       )}
-                      {article.intro_conclusion && (<p className="text-lg leading-relaxed text-foreground font-black italic border-l-4 border-brand pl-6 my-8">{article.intro_conclusion}</p>)}
                     </div>
                     <div className="space-y-4">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
-                    {article.conclusion && (
-                      <div className="mt-16 pt-8 border-t border-brand/20">
-                        <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                        <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={i} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
-                        <div className="flex justify-end items-center mt-8"><p className="text-lg font-black text-foreground relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
-                      </div>
-                    )}
                   </article>
                 ) : (
-                  <div className="py-20 text-center border-2 border-dashed rounded-3xl bg-muted/10"><Info className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" /><p className="text-muted-foreground font-bold">L'article conseils est introuvable ou n'est pas encore publié.</p></div>
+                  <div className="py-20 text-center border-2 border-dashed rounded-3xl bg-muted/10"><Info className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" /><p className="text-muted-foreground font-bold">L'article conseils est introuvable.</p></div>
                 )}
               </div>
             </div>
-            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-bold leading-relaxed">Comparez les ateliers et concessions pour votre prochaine révision directement sur notre carte interactive.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
+            <aside className="lg:col-span-4 relative"><div className="md:sticky md:top-28 space-y-6"><Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20"><CardHeader className="p-6 bg-brand text-brand-foreground"><CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle></CardHeader><CardContent className="p-6"><Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl"><Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" /></Link><p className="text-muted-foreground text-sm mt-6 font-bold leading-relaxed">Comparez les ateliers et concessions pour votre prochaine révision.</p></CardContent><CardFooter className="px-6 pb-8"><Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/map">Voir la carte interactive</Link></Button></CardFooter></Card></div></aside>
           </div>
         </div>
       </main>
