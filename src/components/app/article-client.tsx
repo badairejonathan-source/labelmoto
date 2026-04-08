@@ -26,9 +26,9 @@ import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import {
   Accordion,
-  AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  AccordionContent,
 } from "@/components/ui/accordion";
 
 const slugify = (text: string) => 
@@ -308,63 +308,24 @@ export default function ArticleClient({ id }: { id: string }) {
 
             {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
             
-            {article.intro_points && (
-                <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4">Ce que vous allez apprendre :</p>
-                    <ul className="list-none space-y-3 pl-0">
-                        {article.intro_points.map((pt: string, i: number) => {
-                            const ptLower = pt.toLowerCase();
-                            let targetId = null;
-                            
-                            for (const s of activeSections) {
-                                if (s.title && (s.title.toLowerCase().includes(ptLower) || ptLower.includes(s.title.toLowerCase()))) {
-                                    targetId = slugify(s.title); break;
-                                }
-                                if (s.subsections) {
-                                    const sub = s.subsections.find((sb: any) => sb.title && (sb.title.toLowerCase().includes(ptLower) || ptLower.includes(sb.title.toLowerCase())));
-                                    if (sub) { targetId = slugify(sub.title); break; }
-                                }
-                            }
-                            
-                            if (!targetId) {
-                                const keywords = ["choisir", "erreurs", "profil", "roadster", "budget", "assurance", "occasion", "rabaissement", "particulier", "concession", "1m55", "1m70", "1m80", "1m95"];
-                                const found = keywords.find(k => ptLower.includes(k));
-                                if (found) {
-                                    for (const s of activeSections) {
-                                        if (s.title?.toLowerCase().includes(found)) { targetId = slugify(s.title); break; }
-                                    }
-                                }
-                            }
-
-                            return (
-                                <li key={`ip-${i}`} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
-                                    <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
-                                    {targetId ? (<a href={`#${targetId}`} className="hover:text-brand transition-all decoration-brand/30 underline-offset-4 hover:underline">{pt}</a>) : (<span>{pt}</span>)}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </div>
-            )}
-
-            {/* Sommaire automatique basé sur les titres des sections */}
+            {/* Sommaire automatique basé sur les titres des sections - Design Liste Pointillée */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
-              <div className="mb-12 p-8 bg-muted/30 rounded-3xl border-2 border-muted/50">
+              <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
                 <div className="flex items-center gap-3 mb-6">
-                  <LayoutGrid className="h-5 w-5 text-brand" />
-                  <h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire</h2>
+                  <CheckCircle2 className="h-5 w-5 text-brand" />
+                  <h2 className="text-sm font-black uppercase tracking-widest m-0">Ce que vous allez apprendre :</h2>
                 </div>
                 <nav>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
+                  <ul className="grid grid-cols-1 gap-y-4">
                     {activeSections.map((section: any, idx: number) => {
                       if (!section.title) return null;
                       const sectionId = slugify(section.title);
                       return (
-                        <li key={`toc-${idx}`} className="flex items-start gap-2 group">
-                          <span className="text-brand font-black text-xs mt-1 shrink-0">0{idx + 1}.</span>
+                        <li key={`toc-${idx}`} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
+                          <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform opacity-50" />
                           <a 
                             href={`#${sectionId}`} 
-                            className="text-sm font-bold text-foreground hover:text-brand transition-colors decoration-brand/30 underline-offset-4 hover:underline"
+                            className="hover:text-brand transition-all decoration-brand/30 underline-offset-4 hover:underline"
                           >
                             {section.title}
                           </a>
