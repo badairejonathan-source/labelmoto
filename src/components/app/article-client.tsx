@@ -177,7 +177,7 @@ export default function ArticleClient({ id }: { id: string }) {
           header: "GUIDE ACHAT OCCASION",
           label: "ÉVITER LES PIÈGES EN OCCASION →",
           description: "Contrôle technique, points mécaniques : ne vous faites pas avoir.",
-          target_slug: "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+          target_slug: "achat-moto-occasion-guide-complet-eviter-les-pieges"
         };
       } else if (text.includes('combien coûte vraiment une moto') || text.includes('budget')) {
         ctaData = {
