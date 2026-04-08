@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -94,7 +95,7 @@ export default function ArticleClient({ id }: { id: string }) {
       // 1. Si row est un tableau, accès direct
       if (Array.isArray(row)) return row[colIndex] || '';
 
-      // 2. Préparation des versions nettoyées du header (ignore casse, accents et symboles)
+      // 2. Préparation des versions nettoyées (ignore casse, accents et TOUS les symboles)
       const clean = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
       const cleanHeader = clean(header);
       
@@ -108,12 +109,15 @@ export default function ArticleClient({ id }: { id: string }) {
       const fuzzyMatch = keys.find(k => clean(k) === cleanHeader);
       if (fuzzyMatch) return row[fuzzyMatch];
 
-      // 5. Match par index numérique (si les clés Firestore sont "0", "1", "2"...)
+      // 5. Match par "inclusion" (si le header contient la clé ou vice versa)
+      const inclusionMatch = keys.find(k => cleanHeader.includes(clean(k)) || clean(k).includes(cleanHeader));
+      if (inclusionMatch) return row[inclusionMatch];
+
+      // 6. Match par index numérique (si les clés Firestore sont "0", "1", "2"...)
       if (row[colIndex] !== undefined) return row[colIndex];
       if (row[String(colIndex)] !== undefined) return row[String(colIndex)];
-      if (row[`col${colIndex}`] !== undefined) return row[`col${colIndex}`];
       
-      // 6. Fallback ultime : prendre la valeur à la même position physique dans l'objet
+      // 7. Fallback ultime : position physique
       const values = Object.values(row);
       if (values[colIndex] !== undefined) return values[colIndex];
       
@@ -222,7 +226,6 @@ export default function ArticleClient({ id }: { id: string }) {
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.watch_out || section.cons || section.points_vigilance;
 
-    // Affichage comparatif (côte à côte si deux blocs d'avantages/inconvénients sont présents)
     if (strengths || weaknesses) {
         return (
             <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
@@ -323,7 +326,6 @@ export default function ArticleClient({ id }: { id: string }) {
               </div>
             )}
             
-            {/* Sommaire Cliquable au design pointillé - Colonne unique */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
               <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
                 <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2></div>
