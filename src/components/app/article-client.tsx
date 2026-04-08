@@ -270,7 +270,6 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {section.cta && renderCtaBlock(section.cta, `cta-${sectionId}`)}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
@@ -279,7 +278,7 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn(
             "space-y-10",
-            section.subsections.some((s: any) => s.strengths || s.weaknesses) && "grid grid-cols-1 md:grid-cols-2 gap-6 space-y-0"
+            section.subsections.length === 2 && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0"
           )}>
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
