@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { 
   CheckCircle2, Info, Loader2, 
   ChevronRight, Home, HelpCircle, Gauge, Settings2, 
-  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight, LayoutGrid
+  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight, LayoutGrid, Bike
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -116,117 +116,94 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
-  const renderCtaBlock = (cta: any, key: string) => {
-    if (!cta) return null;
-    const isInsurance = cta.target_slug?.includes('assurance') || cta.header?.includes('ASSURANCE') || cta.title?.toLowerCase().includes('assurance');
-    
-    let thumbnailUrl = "";
-    const slug = cta.target_slug;
-    if (slug?.includes('assurance')) thumbnailUrl = "/images/motard-article-assurance2026.png";
-    else if (slug?.includes('a2')) thumbnailUrl = "/images/achat-occasion.png";
-    else if (slug?.includes('occasion') || slug?.includes('pieges')) thumbnailUrl = "/images/evitelespieges.png";
-    else if (slug?.includes('taille')) thumbnailUrl = "/images/motard-articles-hauteurdeselle.png";
-    else if (slug?.includes('budget')) thumbnailUrl = "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-    else if (slug?.includes('entretien')) thumbnailUrl = "/images/motard-entretien-page.png";
-    else thumbnailUrl = "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
-
-    return (
-      <div key={key} className={cn(
-        "mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden",
-        isInsurance ? "bg-blue-50/50 border-blue-200" : "bg-brand/5 border-brand/20"
-      )}>
-        <Link href={`/info/${cta.target_slug || cta.id || '#'}`} className="group flex flex-col sm:flex-row items-stretch">
-          <div className="relative w-full sm:w-32 md:w-44 aspect-video sm:aspect-square overflow-hidden bg-muted shrink-0 border-b sm:border-b-0 sm:border-r border-dashed border-muted">
-            <Image src={thumbnailUrl} alt="" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-black/10" />
-          </div>
-          <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
-            {(cta.header || cta.title) && (
-              <p className={cn("text-[9px] font-black uppercase tracking-widest mb-1.5", isInsurance ? "text-blue-600" : "text-brand")}>
-                {cta.header || cta.title}
-              </p>
-            )}
-            <h4 className={cn("text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight", isInsurance ? "group-hover:text-blue-600" : "group-hover:text-brand")}>
-              {cta.label || cta.display_title || "Découvrir le guide"}
-            </h4>
-            {cta.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{cta.text}</p>}
-          </div>
-          <div className="hidden md:flex items-center pr-6">
-            <div className={cn("text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0", isInsurance ? "bg-blue-600" : "bg-brand")}>
-              {isInsurance ? <ShieldCheck className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
-            </div>
-          </div>
-        </Link>
-      </div>
-    );
-  };
-
   const renderCards = (cards: any[], keyPrefix: string) => {
     if (!cards || cards.length === 0) return null;
     return (
       <div key={keyPrefix} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         {cards.map((card, idx) => {
-          const modelLabel = card.title || card.recommended_models?.[0] || '';
+          const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
+          
+          // Detection exhaustive des listes
+          const listItems = card.items || card.models || card.recommended_models || card.points || card.guarantees;
+          const strengths = card.strengths || card.advantages || card.pros;
+          const weaknesses = card.weaknesses || card.watch_out || card.cons;
+          const summary = card.summary || card.description || card.text;
+
           return (
             <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">{card.title}</CardTitle>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">{card.title}</CardTitle>
                   {(card.type || card.profile || card.subtitle) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile || card.subtitle}</p>}
                 </div>
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
-                {card.summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{card.summary}</p>}
+                {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
+                
                 {card.recommended_formula && (
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200">
                     <p className="text-[8px] font-black uppercase tracking-widest text-blue-600 mb-1">Formule conseillée</p>
                     <p className="text-sm font-black text-blue-700">{card.recommended_formula}</p>
                   </div>
                 )}
-                {card.items && Array.isArray(card.items) && (
+
+                {/* Liste principale (Modèles ou Points) */}
+                {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
-                    {card.items.map((item: string, i: number) => (
-                      <li key={`${keyPrefix}-item-${idx}-${i}`} className="flex items-center gap-2 text-sm font-bold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
-                        {item}
-                      </li>
-                    ))}
+                    {listItems.map((item: any, i: number) => {
+                      const text = typeof item === 'string' ? item : (item.label || item.name || '');
+                      return (
+                        <li key={`${keyPrefix}-item-${idx}-${i}`} className="flex items-start gap-2 text-sm font-bold text-foreground">
+                          <CheckCircle2 className="h-4 w-4 text-brand shrink-0 mt-0.5" />
+                          <span>{text}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
+
+                {/* Garanties spécifiques Assurance */}
                 {card.useful_guarantees && Array.isArray(card.useful_guarantees) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-blue-600">Garanties utiles</div>
                     <ul className="list-none space-y-1">
                       {card.useful_guarantees.map((g: string, i: number) => (
                         <li key={`${keyPrefix}-g-${idx}-${i}`} className="text-sm font-bold flex items-start gap-2">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0" /> {g}
+                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0 mt-0.5" /> {g}
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
-                {card.linked_models && (
+
+                {/* Liens vers fiches techniques */}
+                {card.linked_models && Array.isArray(card.linked_models) && (
                   <div className="flex flex-wrap gap-2 pt-4">
                     {card.linked_models.map((m: any, i: number) => {
-                      const modelFicheId = m.slug || getFicheIdFromTitle(m.label);
+                      const modelFicheId = m.slug || getFicheIdFromTitle(m.label || m);
+                      const label = m.label || m;
                       return modelFicheId ? (
-                        <Link key={`${keyPrefix}-link-${idx}-${i}`} href={`/fiches/${modelFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
-                      ) : (<span key={`${keyPrefix}-span-${idx}-${i}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m.label}</span>)
+                        <Link key={`${keyPrefix}-link-${idx}-${i}`} href={`/fiches/${modelFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{label} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      ) : (<span key={`${keyPrefix}-span-${idx}-${i}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{label}</span>)
                     })}
                   </div>
                 )}
-                {(card.strengths || card.advantages) && (
+
+                {/* Avantages */}
+                {strengths && Array.isArray(strengths) && (
                   <div className="space-y-2 pt-2">
-                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> {card.advantages ? "Avantages" : "Points forts"}</div>
-                    <ul className="list-none space-y-1">{(card.strengths || card.advantages).map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
+                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
+                    <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
-                {card.watch_out && (
+
+                {/* Points de vigilance */}
+                {weaknesses && Array.isArray(weaknesses) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
-                    <ul className="list-none space-y-1">{card.watch_out.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-orange-500">•</span> {s}</li>))}</ul>
+                    <ul className="list-none space-y-1">{weaknesses.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-orange-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
               </CardContent>
@@ -244,19 +221,37 @@ export default function ArticleClient({ id }: { id: string }) {
 
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
-    const bodyText = section.content || section.text || section.description;
+    const bodyText = section.content || section.text || section.description || section.intro || section.body;
+    
+    const strengths = section.strengths || section.advantages || section.pros;
+    const weaknesses = section.weaknesses || section.watch_out || section.cons;
 
-    if (section.strengths || section.weaknesses) {
+    // Rendu spécifique pour les blocs de comparaison (Avantages/Inconvénients)
+    if (strengths || weaknesses) {
         return (
             <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
                 <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase tracking-tight">{section.title || "Comparatif"}</CardTitle></CardHeader>
                 <CardContent className="p-6 space-y-4">
-                    {section.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div><ul className="list-none space-y-1">{section.strengths.map((s: string, j: number) => (
-                      <li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
-                    ))}</ul></div>)}
-                    {section.weaknesses && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-red-600 tracking-widest">Inconvénients</div><ul className="list-none space-y-1">{section.weaknesses.map((w: string, j: number) => (
-                      <li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
-                    ))}</ul></div>)}
+                    {strengths && Array.isArray(strengths) && (
+                      <div className="space-y-2">
+                        <div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div>
+                        <ul className="list-none space-y-1">
+                          {strengths.map((s: string, j: number) => (
+                            <li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {weaknesses && Array.isArray(weaknesses) && (
+                      <div className="space-y-2">
+                        <div className="text-[9px] font-black uppercase text-red-600 tracking-widest">Inconvénients</div>
+                        <ul className="list-none space-y-1">
+                          {weaknesses.map((w: string, j: number) => (
+                            <li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                 </CardContent>
             </Card>
         );
@@ -265,6 +260,7 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+        
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         
         {section.table && renderTable(section.table, `table-${sectionId}`)}
@@ -287,7 +283,7 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn(
             "space-y-10",
-            section.subsections.length >= 2 && section.subsections.every((s: any) => s.strengths || s.weaknesses) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0"
+            section.subsections.length >= 2 && section.subsections.every((s: any) => (s.strengths || s.advantages || s.weaknesses || s.watch_out)) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0"
           )}>
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
@@ -296,7 +292,7 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
                 {section.note}
-                {section.note.includes("Vérifie AVANT l’achat") && (
+                {section.note.includes("Assurance") || section.note.includes("Vérifie AVANT l’achat") ? (
                   <div className="mt-4 not-italic">
                     <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95">
                       <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">
@@ -304,7 +300,7 @@ export default function ArticleClient({ id }: { id: string }) {
                       </Link>
                     </Button>
                   </div>
-                )}
+                ) : null}
             </div>
         )}
       </div>
@@ -333,7 +329,7 @@ export default function ArticleClient({ id }: { id: string }) {
 
             {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
             
-            {/* Sommaire Dynamique Redessiné - Design Pointillé Unique Colonne */}
+            {/* Sommaire Dynamique Redessiné */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
               <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
                 <div className="flex items-center gap-3 mb-8">
@@ -372,7 +368,23 @@ export default function ArticleClient({ id }: { id: string }) {
               <div className="mt-16 pt-8 border-t border-brand/20">
                 <h3 className="text-xl font-black uppercase tracking-tight text-brand mb-6">Guides recommandés</h3>
                 <div className="space-y-4">
-                  {article.cta_blocks.map((block: any, idx: number) => renderCtaBlock(block, `footer-cta-${idx}`))}
+                  {article.cta_blocks.map((block: any, idx: number) => (
+                    <div key={`footer-cta-${idx}`} className="mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden bg-brand/5 border-brand/20">
+                      <Link href={`/info/${block.target_slug || block.id || '#'}`} className="group flex flex-col sm:flex-row items-stretch">
+                        <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
+                          <h4 className="text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight group-hover:text-brand">
+                            {block.label || block.display_title || "Découvrir le guide"}
+                          </h4>
+                          {block.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{block.text}</p>}
+                        </div>
+                        <div className="hidden md:flex items-center pr-6">
+                          <div className="text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0 bg-brand">
+                            <ArrowRight className="h-5 w-5" />
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
