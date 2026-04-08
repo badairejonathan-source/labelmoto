@@ -82,6 +82,35 @@ export default function ArticleClient({ id }: { id: string }) {
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
 
+    // Fonction de récupération de cellule robuste aux accents et à la casse
+    const getCellValue = (row: any, header: string, colIndex: number) => {
+      if (!row) return '';
+      
+      // 1. Test direct
+      if (row[header] !== undefined) return row[header];
+
+      // 2. Test normalisé (minuscules, sans accents, underscores)
+      const normalized = header.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[\s-]/g, '_');
+      
+      if (row[normalized] !== undefined) return row[normalized];
+
+      // 3. Test de toutes les clés de l'objet row
+      const foundKey = Object.keys(row).find(k => {
+        const kNorm = k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const hNorm = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return kNorm === hNorm || kNorm === normalized;
+      });
+
+      if (foundKey) return row[foundKey];
+
+      // 4. Test par index de colonne
+      if (row[colIndex] !== undefined) return row[colIndex];
+
+      return '';
+    };
+
     return (
       <div key={key} className="my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted shadow-sm">
         <div className="overflow-x-auto">
@@ -99,8 +128,7 @@ export default function ArticleClient({ id }: { id: string }) {
               {rows.map((row: any, ri: number) => (
                 <TableRow key={`tr-${key}-${ri}`} className="hover:bg-muted/30">
                   {headers.map((header: string, hi: number) => {
-                    const normalizedKey = header.toLowerCase().replace(/[\s-]/g, '_');
-                    const cellValue = row[header] ?? row[normalizedKey] ?? row[hi] ?? '';
+                    const cellValue = getCellValue(row, header, hi);
                     return (
                       <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
                         {String(cellValue)}
@@ -124,17 +152,17 @@ export default function ArticleClient({ id }: { id: string }) {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
           
-          // Detection exhaustive des listes
-          const listItems = card.items || card.models || card.recommended_models || card.points || card.guarantees;
-          const strengths = card.strengths || card.advantages || card.pros;
-          const weaknesses = card.weaknesses || card.watch_out || card.cons;
-          const summary = card.summary || card.description || card.text;
+          // Detection exhaustive des listes (on cherche tous les champs possibles de Firestore)
+          const listItems = card.items || card.models || card.recommended_models || card.points || card.guarantees || card.list;
+          const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
+          const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
+          const summary = card.summary || card.description || card.text || card.intro;
 
           return (
             <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">{card.title}</CardTitle>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">{card.title || "Information"}</CardTitle>
                   {(card.type || card.profile || card.subtitle) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile || card.subtitle}</p>}
                 </div>
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
@@ -153,7 +181,8 @@ export default function ArticleClient({ id }: { id: string }) {
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
                     {listItems.map((item: any, i: number) => {
-                      const text = typeof item === 'string' ? item : (item.label || item.name || '');
+                      const text = typeof item === 'string' ? item : (item.label || item.name || item.title || '');
+                      if (!text) return null;
                       return (
                         <li key={`${keyPrefix}-item-${idx}-${i}`} className="flex items-start gap-2 text-sm font-bold text-foreground">
                           <CheckCircle2 className="h-4 w-4 text-brand shrink-0 mt-0.5" />
@@ -223,8 +252,8 @@ export default function ArticleClient({ id }: { id: string }) {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     const bodyText = section.content || section.text || section.description || section.intro || section.body;
     
-    const strengths = section.strengths || section.advantages || section.pros;
-    const weaknesses = section.weaknesses || section.watch_out || section.cons;
+    const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
+    const weaknesses = section.weaknesses || section.watch_out || section.cons || section.points_vigilance;
 
     // Rendu spécifique pour les blocs de comparaison (Avantages/Inconvénients)
     if (strengths || weaknesses) {
@@ -329,7 +358,7 @@ export default function ArticleClient({ id }: { id: string }) {
 
             {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
             
-            {/* Sommaire Dynamique Redessiné */}
+            {/* Sommaire Dynamique Redessiné - Une seule colonne */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
               <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
                 <div className="flex items-center gap-3 mb-8">
