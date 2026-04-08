@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -153,40 +153,73 @@ export default function ArticleClient({ id }: { id: string }) {
   const renderCtaBlock = (cta: any) => {
     if (!cta) return null;
     
+    let ctaData = cta;
+
     if (typeof cta === 'string') {
-      return (
-        <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
-          {cta}
-        </div>
-      );
+      const text = cta.toLowerCase();
+      if (text.includes('meilleures motos a2') || text.includes('achat moto a2')) {
+        ctaData = {
+          header: "OBJECTIF PERMIS A2",
+          label: "QUELLE MOTO CHOISIR POUR DÉBUTER ? →",
+          description: "Trouvez la machine idéale pour commencer sans vous tromper.",
+          target_slug: "meilleure-moto-a2-quelle-moto-choisir-pour-debuter"
+        };
+      } else if (text.includes('occasion') || text.includes('pièges')) {
+        ctaData = {
+          header: "GUIDE ACHAT OCCASION",
+          label: "ÉVITER LES PIÈGES EN OCCASION →",
+          description: "Contrôle technique, points mécaniques : ne vous faites pas avoir.",
+          target_slug: "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+        };
+      } else if (text.includes('assurance')) {
+        ctaData = {
+          header: "DOSSIER SPÉCIAL ASSURANCE",
+          label: "BIEN CHOISIR SON ASSURANCE MOTO →",
+          description: "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
+          target_slug: "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
+        };
+      } else if (text.includes('combien coûte vraiment une moto')) {
+        ctaData = {
+          header: "DOSSIER SPÉCIAL BUDGET",
+          label: "CALCULER MON BUDGET RÉEL →",
+          description: "Assurance, entretien, équipement : ne laissez rien au hasard.",
+          target_slug: "combien-coute-vraiment-une-moto-par-mois"
+        };
+      } else {
+        return (
+          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
+            {cta}
+          </div>
+        );
+      }
     }
 
-    const isInsurance = cta.target_slug?.includes('assurance');
+    const isInsurance = ctaData.target_slug?.includes('assurance') || ctaData.header?.includes('ASSURANCE');
     
     return (
       <div className={cn(
         "mt-4 mb-8 p-6 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg",
         isInsurance ? "bg-blue-50/50 border-blue-200" : "bg-brand/5 border-brand/20"
       )}>
-        <Link href={`/info/${cta.target_slug}`} className="group flex items-center justify-between gap-4">
+        <Link href={`/info/${ctaData.target_slug}`} className="group flex items-center justify-between gap-4">
           <div className="flex-1">
-            {cta.header && (
+            {ctaData.header && (
               <p className={cn(
                 "text-[10px] font-black uppercase tracking-widest mb-1.5",
                 isInsurance ? "text-blue-600" : "text-brand"
               )}>
-                {cta.header}
+                {ctaData.header}
               </p>
             )}
             <h4 className={cn(
               "text-lg font-black uppercase tracking-tight text-foreground transition-colors",
               isInsurance ? "group-hover:text-blue-600" : "group-hover:text-brand"
             )}>
-              {cta.label}
+              {ctaData.label}
             </h4>
-            {cta.description && (
+            {ctaData.description && (
               <p className="text-xs text-muted-foreground mt-1.5 font-medium leading-relaxed">
-                {cta.description}
+                {ctaData.description}
               </p>
             )}
           </div>
@@ -242,7 +275,7 @@ export default function ArticleClient({ id }: { id: string }) {
               </CardContent>
               {ficheId && (
                 <CardFooter className="bg-brand/5 p-3 border-t">
-                  <Link href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
+                  <Link href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
                 </CardFooter>
               )}
             </Card>
