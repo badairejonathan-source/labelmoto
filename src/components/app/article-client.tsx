@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { 
   CheckCircle2, Info, Loader2, 
   ChevronRight, Home, HelpCircle, Gauge, Settings2, 
-  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight
+  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight, ShieldAlert
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -46,7 +46,7 @@ const slugifyKey = (text: string) =>
       .replace(/(^-|-$)+/g, "");
 
 const getFicheIdFromTitle = (title: string): string | null => {
-  const t = title.toLowerCase();
+  const t = typeof title === 'string' ? title.toLowerCase() : '';
   if (t.includes('mt-07')) return 'yamaha-mt-07-2021-plus';
   if (t.includes('z650')) return 'kawasaki-z650-2020-plus';
   if (t.includes('cb500 hornet') || t.includes('cb500f')) return 'honda-cb500f-2022-plus';
@@ -106,8 +106,8 @@ export default function ArticleClient({ id }: { id: string }) {
               {rows.map((row: any, ri: number) => (
                 <TableRow key={`tr-${key}-${ri}`} className="hover:bg-muted/30">
                   {headers.map((header: string, hi: number) => {
-                    const rKey = slugifyKey(header);
-                    const cellValue = row[header] ?? row[rKey] ?? row[hi] ?? '';
+                    const normalizedKey = header.toLowerCase().replace(/[\s-]/g, '_');
+                    const cellValue = row[header] ?? row[normalizedKey] ?? row[hi] ?? '';
                     return (
                       <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
                         {String(cellValue)}
@@ -125,7 +125,6 @@ export default function ArticleClient({ id }: { id: string }) {
 
   const renderCtaBlock = (cta: any, key: string) => {
     if (!cta) return null;
-    
     const isInsurance = cta.target_slug?.includes('assurance') || cta.header?.includes('ASSURANCE') || cta.title?.toLowerCase().includes('assurance');
     
     let thumbnailUrl = "";
@@ -150,30 +149,17 @@ export default function ArticleClient({ id }: { id: string }) {
           </div>
           <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
             {(cta.header || cta.title) && (
-              <p className={cn(
-                "text-[9px] font-black uppercase tracking-widest mb-1.5",
-                isInsurance ? "text-blue-600" : "text-brand"
-              )}>
+              <p className={cn("text-[9px] font-black uppercase tracking-widest mb-1.5", isInsurance ? "text-blue-600" : "text-brand")}>
                 {cta.header || cta.title}
               </p>
             )}
-            <h4 className={cn(
-              "text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight",
-              isInsurance ? "group-hover:text-blue-600" : "group-hover:text-brand"
-            )}>
+            <h4 className={cn("text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight", isInsurance ? "group-hover:text-blue-600" : "group-hover:text-brand")}>
               {cta.label || cta.display_title || "Découvrir le guide"}
             </h4>
-            {cta.text && (
-              <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">
-                {cta.text}
-              </p>
-            )}
+            {cta.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{cta.text}</p>}
           </div>
           <div className="hidden md:flex items-center pr-6">
-            <div className={cn(
-              "text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0",
-              isInsurance ? "bg-blue-600" : "bg-brand"
-            )}>
+            <div className={cn("text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0", isInsurance ? "bg-blue-600" : "bg-brand")}>
               {isInsurance ? <ShieldCheck className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
             </div>
           </div>
@@ -188,7 +174,7 @@ export default function ArticleClient({ id }: { id: string }) {
       <div key={keyPrefix} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || '';
-          const ficheId = getFicheIdFromTitle(typeof modelLabel === 'string' ? modelLabel : '');
+          const ficheId = getFicheIdFromTitle(String(modelLabel));
           return (
             <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
@@ -257,7 +243,7 @@ export default function ArticleClient({ id }: { id: string }) {
 
     if (section.strengths || section.weaknesses) {
         return (
-            <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm">
+            <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
                 <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase tracking-tight">{section.title || "Comparatif"}</CardTitle></CardHeader>
                 <CardContent className="p-6 space-y-4">
                     {section.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div><ul className="list-none space-y-1">{section.strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul></div>)}
@@ -278,7 +264,7 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn(
             "space-y-10",
-            section.subsections.length === 2 && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0"
+            section.subsections.length >= 2 && section.subsections.every((s: any) => s.strengths || s.weaknesses) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0"
           )}>
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
@@ -286,6 +272,15 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
                 {section.note}
+                {section.note.includes("Vérifie AVANT l’achat") && (
+                  <div className="mt-4 not-italic">
+                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95">
+                      <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">
+                        🛡️ Voir le guide Assurance 2026
+                      </Link>
+                    </Button>
+                  </div>
+                )}
             </div>
         )}
       </div>
