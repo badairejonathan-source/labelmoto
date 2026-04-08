@@ -278,7 +278,9 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
                 {section.note}
-                {(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT l’achat")) && (
+                {(section.note.includes("Assurance") || 
+                  section.note.includes("Vérifie AVANT l’achat") || 
+                  section.note.includes("coûtent bien plus cher à assurer")) && (
                   <div className="mt-4 not-italic">
                     <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95">
                       <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link>
