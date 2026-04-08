@@ -23,77 +23,33 @@
     "sections": [
       {
         "title": "Comment choisir sa première moto A2 ?",
-        "content": ["Avant de regarder une fiche technique, pose-toi une question simple : où vas-tu rouler, avec quel budget, et avec quel niveau de confiance ? La meilleure moto A2 n’est pas la même pour un citadin qui roule tous les jours que pour un motard loisir qui vise surtout le week-end."],
+        "content": ["Avant de regarder une fiche technique, pose-toi une question simple : où vas-tu rouler, avec quel budget, et avec quel niveau de confiance ?"],
         "subsections": [
           {
             "title": "1. Ton gabarit",
-            "content": ["Une moto trop haute peut devenir stressante à chaque arrêt. Une moto trop lourde fatigue vite dans les manœuvres, en ville ou à basse vitesse."],
-            "list": ["privilégie une selle accessible", "vise un poids raisonnable", "cherche une prise en main simple", "évite de choisir uniquement au look"]
-          },
-          {
-            "title": "2. Ton usage",
-            "list": ["ville quotidienne → roadster léger ou petite cylindrée facile", "usage mixte ville / périphérique → roadster polyvalent", "trajets plus longs / roulage fréquent → trail", "plaisir et style sportif → sportive A2, avec plus de contraintes"]
-          },
-          {
-            "title": "3. Ton budget réel",
-            "content": ["Le prix affiché n’est jamais le vrai coût. Il faut aussi penser à l’assurance, aux pneus, aux révisions, à l’antivol et à l’équipement."],
-            "cta": "consulte aussi Combien coûte vraiment une moto par mois"
-          },
-          {
-            "title": "4. Ton niveau de confiance",
-            "content": ["Quand on débute, la confiance compte plus que les performances. Une moto rassurante te fera progresser plus vite qu’une moto plus impressionnante mais moins cohérente avec ton quotidien."]
-          }
-        ]
-      },
-      {
-        "title": "Les erreurs à éviter avant d’acheter une moto A2",
-        "ordered_list": [
-          "Acheter trop gros trop vite alors que tu n’es pas encore à l’aise à l’arrêt ou à basse vitesse.",
-          "Choisir uniquement au style alors que tu roules surtout en ville ou en quotidien.",
-          "Sous-estimer le prix de l’assurance, surtout sur les modèles les plus désirables ou les plus volés.",
-          "Négliger l’occasion récente alors qu’elle est souvent très cohérente pour une première moto.",
-          "Oublier le coût global : assurance, entretien, pneus, antivol et équipement."
-        ],
-        "cta": "consulte notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion"
-      },
-      {
-        "title": "Quelle moto A2 choisir selon ton profil ?",
-        "cards": [
-          {
-            "title": "Débutant prudent / recherche de confiance",
-            "summary": "Tu veux une moto simple, facile et rassurante pour apprendre vite.",
-            "recommended_models": ["Honda CB500 Hornet", "BMW G 310 R", "Kawasaki Ninja 500 SE"],
-            "our_opinion": "Commencer par une moto facile à vivre est souvent le meilleur moyen de progresser vite et de rouler souvent."
-          },
-          {
-            "title": "Ville quotidienne / usage urbain",
-            "summary": "Tu roules surtout en circulation dense, avec beaucoup d’arrêts, de manœuvres et parfois du stationnement en voirie.",
-            "recommended_models": ["BMW G 310 R", "Honda CB500 Hornet", "Kawasaki Z650"],
-            "our_opinion": "En ville, la maniabilité, la facilité à basse vitesse et le coût d’usage comptent souvent plus que le prestige du modèle."
+            "content": ["Une moto trop haute peut devenir stressante à chaque arrêt. Une moto trop lourde fatigue vite dans les manœuvres."],
+            "list": ["privilégie une selle accessible", "vise un poids raisonnable", "cherche une prise en main simple"]
           }
         ]
       },
       {
         "title": "Les meilleurs roadsters A2",
-        "content": ["Les roadsters sont souvent les motos les plus cohérentes pour apprendre : plus simples à prendre en main, plus maniables et souvent plus polyvalents qu’une sportive."],
         "cards": [
           {
             "title": "Yamaha MT-07",
             "profile": "motard urbain quotidien / usage mixte",
             "summary": "Une référence A2 très populaire, vivante et facile à garder après la passerelle.",
-            "strengths": ["moteur agréable", "maniabilité", "moto très connue", "bonne polyvalence"],
+            "strengths": ["moteur agréable", "maniabilité", "moto très connue"],
             "weaknesses": ["assurance souvent élevée", "modèle exposé au vol"],
-            "our_opinion": "Très bon choix si tu veux une moto valorisante et polyvalente, à condition de bien regarder le coût global.",
-            "cta": "consulte aussi Combien coûte vraiment une moto par mois"
+            "our_opinion": "Très bon choix si tu veux une moto valorisante et polyvalente."
           },
           {
             "title": "Honda CB500 Hornet",
             "profile": "débutant prudent / petit ou moyen gabarit",
             "summary": "L’un des choix les plus logiques pour commencer sans stress.",
             "strengths": ["très accessible", "faible coût d’entretien", "prise en main rapide"],
-            "weaknesses": ["moins de sensations", "peut sembler trop sage"],
-            "our_opinion": "L’un des meilleurs choix pour apprendre vite et rouler souvent.",
-            "cta": "consulte notre guide assurance moto"
+            "weaknesses": ["moins de sensations"],
+            "our_opinion": "L’un des meilleurs choix pour apprendre vite et rouler souvent."
           }
         ]
       }
@@ -101,13 +57,12 @@
     "faq": [
       {
         "question": "Quelle est la meilleure moto A2 pour débuter ?",
-        "answer": "Il n’existe pas une seule meilleure moto A2 pour tout le monde. Pour un vrai débutant, une moto simple, rassurante et cohérente avec le budget reste souvent le meilleur choix."
+        "answer": "Il n’existe pas une seule meilleure moto A2 pour tout le monde. Pour un vrai débutant, une moto simple, rassurante et cohérente reste le meilleur choix."
       }
     ],
     "conclusion": [
       "Choisir sa moto A2 n’est pas une question d’ego, mais de confiance.",
-      "La bonne moto n’est pas celle qui impressionne le plus, mais celle qui correspond à ton usage, ton niveau et ton budget réel.",
-      "Si tu hésites encore, compare toujours trois choses : ton usage réel, ton budget global et ton niveau de confiance."
+      "La bonne moto est celle qui correspond à ton usage, ton niveau et ton budget réel."
     ],
     "cta_blocks": [
       {
@@ -115,12 +70,6 @@
         "text": "Le prix d’achat ne suffit jamais. Assurance, entretien, pneus, antivol et équipement peuvent changer complètement le bon choix.",
         "label": "Voir combien coûte vraiment une moto par mois",
         "target_slug": "combien-coute-vraiment-une-moto-par-mois"
-      },
-      {
-        "title": "L’assurance peut changer ton choix final",
-        "text": "Certaines motos séduisantes sur le papier deviennent beaucoup moins intéressantes quand on regarde le prix réel de l’assurance en jeune permis.",
-        "label": "Lire le guide assurance moto",
-        "target_slug": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
       }
     ]
   },
@@ -134,8 +83,8 @@
     "author": "L'équipe Label Moto",
     "readingTime": "12 min de lecture",
     "intro": [
-      "Choisir une moto uniquement parce qu’elle te plaît visuellement est rarement une bonne idée. Une moto peut sembler parfaite sur le papier, puis devenir stressante à l’arrêt, fatigante dans les manœuvres ou inconfortable au quotidien si elle n’est pas adaptée à ton gabarit.",
-      "La première erreur consiste à regarder seulement la hauteur de selle. C’est un critère important, mais ce n’est pas le seul. Une selle haute mais fine à l’avant peut être plus facile qu’une selle plus basse mais très large."
+      "Choisir une moto uniquement parce qu’elle te plaît visuellement est rarement une bonne idée.",
+      "La première erreur consiste à regarder seulement la hauteur de selle. C’est un critère important, mais ce n’est pas le seul."
     ],
     "intro_points": [
       "pourquoi la hauteur de selle ne suffit pas",
@@ -155,13 +104,6 @@
             "weight_feel": "rassurant à l’arrêt",
             "our_opinion": "L’une des meilleures références si ta priorité absolue est de toucher facilement le sol.",
             "strengths": ["très facile pour poser les pieds", "bonne confiance à l’arrêt"]
-          },
-          {
-            "title": "BMW G 310 R",
-            "type": "roadster léger",
-            "seat_feel": "basse à raisonnable",
-            "weight_feel": "très léger",
-            "our_opinion": "L’un des meilleurs choix pour apprendre vite et prendre confiance."
           }
         ]
       }
@@ -173,7 +115,7 @@
     "cta_blocks": [
       {
         "title": "Tu débutes aussi en permis A2 ?",
-        "text": "Découvre les meilleures motos A2 pour commencer avec une machine cohérente selon ton niveau.",
+        "text": "Découvre les meilleures motos A2 pour commencer avec une machine cohérente.",
         "label": "Lire le guide des meilleures motos A2",
         "target_slug": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter"
       }
@@ -225,7 +167,7 @@
       },
       {
         "title": "L’entretien : le coût invisible qui compte vraiment",
-        "content": ["Une moto coûte régulièrement à entretenir. Contrairement à une voiture, certaines pièces s’usent beaucoup plus vite."],
+        "content": ["Une moto coûte régulièrement à entretenir."],
         "table": {
           "headers": ["Élément", "Fréquence moyenne", "Prix"],
           "rows": [
@@ -271,6 +213,10 @@
           ]
         }
       }
+    ],
+    "conclusion": [
+      "L'assurance est votre meilleure alliée sur la route.",
+      "Comparez toujours avant de signer pour obtenir le meilleur rapport protection/prix."
     ]
   },
   {
@@ -278,7 +224,7 @@
     "display_title": "Achat moto d’occasion : le guide pour éviter les pièges",
     "category": "achat-occasion",
     "status": "published",
-    "imageUrl": "/images/evitelespieges.jpg",
+    "imageUrl": "/images/evitelespieges.png",
     "author": "L'équipe Label Moto",
     "readingTime": "12 min de lecture",
     "intro": [
@@ -289,6 +235,21 @@
       "points de contrôle mécanique",
       "l'essai routier",
       "négociation du prix"
+    ],
+    "sections": [
+      {
+        "title": "Les points de contrôle essentiels",
+        "list": [
+          "État des consommables (pneus, plaquettes)",
+          "Kit chaîne et tension",
+          "Absence de fuite moteur",
+          "Trace de chute ou de glissade"
+        ]
+      }
+    ],
+    "conclusion": [
+      "Ne vous précipitez jamais sur une occasion trop belle pour être vraie.",
+      "Une vérification rigoureuse vous fera économiser des milliers d'euros en réparations."
     ]
   }
 ]

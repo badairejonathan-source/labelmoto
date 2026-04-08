@@ -72,6 +72,7 @@ export default function ArticleClient({ id }: { id: string }) {
     if (id.includes('taille') || (article && article.id?.includes('taille'))) return "/images/motard-articles-hauteurdeselle.png";
     if (id.includes('assurance') || (article && article.id?.includes('assurance'))) return "/images/motard-article-assurance2026.png";
     if (id.includes('a2') || (article && article.id?.includes('a2'))) return "/images/achat-occasion.png";
+    if (id.includes('pieges') || id.includes('occasion') || (article && (article.id?.includes('pieges') || article.id?.includes('occasion')))) return "/images/evitelespieges.png";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
@@ -178,7 +179,7 @@ export default function ArticleClient({ id }: { id: string }) {
           description: "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
           target_slug: "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
         };
-      } else if (text.includes('combien coûte vraiment une moto')) {
+      } else if (text.includes('combien coûte vraiment une moto') || text.includes('budget')) {
         ctaData = {
           header: "DOSSIER SPÉCIAL BUDGET",
           label: "CALCULER MON BUDGET RÉEL →",
@@ -201,7 +202,7 @@ export default function ArticleClient({ id }: { id: string }) {
     const slug = ctaData.target_slug;
     if (slug?.includes('assurance')) thumbnailUrl = "/images/motard-article-assurance2026.png";
     else if (slug?.includes('a2')) thumbnailUrl = "/images/achat-occasion.png";
-    else if (slug?.includes('pieges')) thumbnailUrl = "/images/evitelespieges.jpg";
+    else if (slug?.includes('pieges') || slug?.includes('occasion')) thumbnailUrl = "/images/evitelespieges.png";
     else if (slug?.includes('budget')) thumbnailUrl = "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     else thumbnailUrl = "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070";
 
