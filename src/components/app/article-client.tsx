@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -5,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
   CheckCircle2, Info, Loader2, 
-  ChevronRight, Home, HelpCircle, Gauge, Settings2, 
+  ChevronRight, Home, Gauge, Settings2, 
   ExternalLink, AlertTriangle, ArrowRight, LayoutGrid,
   Map
 } from 'lucide-react';
@@ -25,12 +26,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 
 const slugify = (text: string) => 
   text?.toLowerCase()
@@ -92,19 +87,23 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       if (!row) return '';
       if (Array.isArray(row)) return row[colIndex] || '';
 
-      const clean = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
-      const cleanHeader = clean(header);
+      const clean = (s: string) => s?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') || '';
+      const targetHeader = clean(header);
       
       const keys = Object.keys(row);
-      const fuzzyMatch = keys.find(k => clean(k) === cleanHeader);
+      // Strategy 1: Fuzzy match on cleaned key
+      const fuzzyMatch = keys.find(k => clean(k) === targetHeader);
       if (fuzzyMatch) return row[fuzzyMatch];
 
-      const inclusionMatch = keys.find(k => cleanHeader.includes(clean(k)) || clean(k).includes(cleanHeader));
+      // Strategy 2: Inclusion match
+      const inclusionMatch = keys.find(k => targetHeader.includes(clean(k)) || clean(k).includes(targetHeader));
       if (inclusionMatch) return row[inclusionMatch];
 
+      // Strategy 3: Index match
       if (row[colIndex] !== undefined) return row[colIndex];
       if (row[String(colIndex)] !== undefined) return row[String(colIndex)];
       
+      // Strategy 4: Direct value extraction by index
       const values = Object.values(row);
       if (values[colIndex] !== undefined) return values[colIndex];
       
@@ -154,7 +153,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           const summary = card.summary || card.description || card.text || card.intro || card.content;
 
           return (
-            <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
+            <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all rounded-3xl">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">{card.title || "Information"}</CardTitle>
@@ -207,23 +206,24 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     if (strengths || weaknesses) {
         return (
-            <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
-                <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase tracking-tight">{section.title || "Comparatif"}</CardTitle></CardHeader>
-                <CardContent className="p-6 space-y-4">
-                    {strengths && Array.isArray(strengths) && (
-                      <div className="space-y-2">
-                        <div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div>
-                        <ul className="list-none space-y-1">{strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
-                      </div>
-                    )}
-                    {weaknesses && Array.isArray(weaknesses) && (
-                      <div className="space-y-2">
-                        <div className="text-[9px] font-black uppercase text-red-600 tracking-widest">Inconvénients</div>
-                        <ul className="list-none space-y-1">{weaknesses.map((w: string, j: number) => (<li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>))}</ul>
-                      </div>
-                    )}
-                </CardContent>
-            </Card>
+            <div key={key || sectionId} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+                <Card className="border-2 border-green-100 bg-green-50/10 overflow-hidden shadow-sm rounded-3xl">
+                    <CardHeader className="bg-green-50 py-4 border-b"><CardTitle className="text-lg font-black uppercase tracking-tight text-green-700 flex items-center gap-2"><CheckCircle2 className="h-5 w-5" /> Avantages</CardTitle></CardHeader>
+                    <CardContent className="p-6">
+                        <ul className="space-y-2">
+                            {strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground"><span className="text-green-500 shrink-0">•</span> {s}</li>))}
+                        </ul>
+                    </CardContent>
+                </Card>
+                <Card className="border-2 border-red-100 bg-red-50/10 overflow-hidden shadow-sm rounded-3xl">
+                    <CardHeader className="bg-red-50 py-4 border-b"><CardTitle className="text-lg font-black uppercase tracking-tight text-red-700 flex items-center gap-2"><AlertTriangle className="h-5 w-5" /> Inconvénients</CardTitle></CardHeader>
+                    <CardContent className="p-6">
+                        <ul className="space-y-2">
+                            {weaknesses && Array.isArray(weaknesses) && weaknesses.map((w: string, j: number) => (<li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground"><span className="text-red-400 shrink-0">•</span> {w}</li>))}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </div>
         );
     }
 
@@ -247,16 +247,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           </ol>
         )}
         {section.subsections && Array.isArray(section.subsections) && (
-          <div className={cn("space-y-10", section.subsections.length >= 2 && section.subsections.every((s: any) => (s.strengths || s.advantages || s.weaknesses || s.watch_out)) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0")}>
+          <div className="space-y-10">
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
         )}
         {section.note && (
-            <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
+            <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
                 {section.note}
                 {(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT") || section.note.includes("coûtent bien plus cher")) && (
-                  <div className="mt-4 not-italic">
-                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95">
+                  <div className="mt-6 not-italic">
+                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-8 py-6 shadow-lg transition-all hover:scale-105 active:scale-95">
                       <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link>
                     </Button>
                   </div>
@@ -276,7 +276,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8">
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-12">
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
@@ -285,11 +285,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             {/* Contenu Principal */}
             <article className="lg:col-span-8">
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-8 text-foreground">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-10 text-foreground">
                 {article.display_title || article.title}
               </h1>
 
-              <div className="relative w-full aspect-video rounded-3xl overflow-hidden mb-12 shadow-2xl border-4 border-white bg-muted">
+              <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl border-4 border-white bg-muted">
                   <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
               </div>
 
@@ -299,22 +299,23 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 </div>
               )}
               
+              {/* Sommaire au design "Pointillé" (Exemple validé par l'utilisateur) */}
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
-                <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
+                <div className="my-12 p-10 bg-brand/5 rounded-[2.5rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
                     <Image src="/images/logo-moto.png?v=6" alt="" width={200} height={64} />
                   </div>
-                  <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-widest m-0 text-muted-foreground">Au sommaire de ce guide :</h2></div>
+                  <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.3em] m-0 text-muted-foreground">Au sommaire de ce guide :</h2></div>
                   <nav>
-                    <ul className="space-y-4">
+                    <ul className="space-y-5">
                       {activeSections.map((section: any, idx: number) => { 
                         if (!section.title) return null; 
                         const sectionId = slugify(section.title); 
                         return (
                           <li key={`toc-${idx}`} className="group/item">
                             <a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all">
-                              <div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors"><CheckCircle2 className="h-3.5 w-3.5" /></div>
-                              <span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span>
+                              <div className="h-7 w-7 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-4 w-4" /></div>
+                              <span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span>
                             </a>
                           </li>
                         ); 
@@ -328,44 +329,34 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {children}
               
               {article.conclusion && (
-                  <div className="mt-16 pt-8 border-t border-brand/20">
-                      <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                      <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
-                      <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
+                  <div className="mt-20 pt-12 border-t border-brand/20">
+                      <div className="flex items-center gap-3 mb-8"><Info className="h-8 w-8 text-brand" /><h3 className="text-3xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
+                      <div className="space-y-6">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-xl text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-xl text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
+                      <div className="flex justify-end items-center mt-16"><p className="text-xl font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={140} height={140} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
                   </div>
               )}
             </article>
 
-            {/* Barre Latérale */}
+            {/* Barre Latérale "Magazine" */}
             <aside className="lg:col-span-4 relative">
-              <div className="sticky top-28 space-y-8">
-                <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2rem]">
-                  <CardHeader className="bg-brand text-white p-6">
-                    <CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-lg">
-                      <Map className="h-6 w-6" /> Trouver un pro
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6 text-center space-y-6">
-                    <div className="relative aspect-video rounded-2xl overflow-hidden border-4 border-muted shadow-lg group">
-                      <Image src="/images/apercucartezoom.png" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ArrowRight className="h-10 w-10 text-white" />
-                      </div>
+              <div className="lg:sticky lg:top-28 space-y-10">
+                <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2.5rem]">
+                  <CardHeader className="bg-brand text-white p-8"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-lg"><Map className="h-7 w-7" /> Trouver un pro</CardTitle></CardHeader>
+                  <CardContent className="p-8 text-center space-y-8">
+                    <div className="relative aspect-video rounded-3xl overflow-hidden border-4 border-muted shadow-xl group cursor-pointer" onClick={() => router.push('/map')}>
+                      <Image src="/images/apercucartezoom.png" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-12 w-12 text-white" /></div>
                     </div>
-                    <p className="text-sm font-bold text-muted-foreground leading-relaxed">
-                      Comparez les ateliers et concessions pour votre prochaine révision directement sur notre carte interactive.
-                    </p>
-                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[10px] py-7 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
-                      <Link href="/map">Voir la carte interactive</Link>
+                    <p className="text-base font-bold text-muted-foreground leading-relaxed italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
+                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-xs py-8 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                      <Link href="/map">🔘 Voir la carte interactive</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
-                <div className="bg-muted/30 p-6 rounded-3xl border-2 border-dashed border-muted-foreground/20 text-center">
-                  <p className="text-xs font-bold text-muted-foreground italic">
-                    Besoin d'un conseil personnalisé ? <br/>
-                    <Link href="/contact" className="text-brand underline underline-offset-4 not-italic font-black uppercase">Contactez l'équipe</Link>
-                  </p>
+                <div className="bg-muted/30 p-8 rounded-[2rem] border-2 border-dashed border-muted-foreground/20 text-center shadow-inner">
+                  <p className="text-sm font-bold text-muted-foreground mb-4">Besoin d'un conseil personnalisé ?</p>
+                  <Link href="/contact" className="text-brand hover:text-brand/80 font-black uppercase tracking-widest text-[10px] underline underline-offset-8 decoration-2 decoration-brand/30">Contactez l'équipe</Link>
                 </div>
               </div>
             </aside>
