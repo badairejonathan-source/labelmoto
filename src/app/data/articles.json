@@ -47,7 +47,7 @@
           "headers": ["Formule", "Prix Moyen Jeune Permis / mois"],
           "rows": [
             ["Tiers (Minimum)", "45 € - 70 €"],
-            ["Tiers Vol / Incendie", "75 € - 110 €"],
+            ["Tiers Plus (Vol / Incendie)", "75 € - 110 €"],
             ["Tous Risques", "120 € - 180 €"]
           ]
         }
@@ -88,6 +88,12 @@
       "La bonne formule dépend surtout de votre usage, de votre expérience, de la valeur de votre moto et du niveau de protection que vous attendez.",
       "Sur Label Moto, l’objectif est simple : vous aider à choisir une couverture cohérente avec votre profil de motard et votre machine, sans payer pour des garanties inutiles."
     ],
+    "intro_points": [
+      "Les évolutions réglementaires de 2024",
+      "Le comparatif des 3 formules (Tiers, Tiers Plus, Tous Risques)",
+      "Conseils personnalisés selon votre profil",
+      "Les garanties indispensables à vérifier"
+    ],
     "sections": [
       {
         "title": "Ce qui a changé depuis 2024",
@@ -125,24 +131,15 @@
         "subsections": [
           {
             "title": "1. Assurance au tiers",
-            "content": [
-              "C’est la formule minimale obligatoire.",
-              "Elle couvre la responsabilité civile, donc les dommages causés à autrui, mais pas les dégâts sur votre propre moto en cas de chute ou d’accident responsable."
-            ]
+            "content": "C’est la formule minimale obligatoire. Elle couvre la responsabilité civile, donc les dommages causés à autrui, mais pas les dégâts sur votre propre moto en cas de chute ou d’accident responsable."
           },
           {
             "title": "2. Assurance tiers plus",
-            "content": [
-              "C’est la formule intermédiaire.",
-              "Elle ajoute généralement des garanties utiles comme le vol, l’incendie, parfois le bris de glace, l’assistance ou certaines protections du pilote selon les contrats."
-            ]
+            "content": "C’est la formule intermédiaire. Elle ajoute généralement des garanties utiles comme le vol, l’incendie, parfois le bris de glace, l’assistance ou certaines protections du pilote selon les contrats."
           },
           {
             "title": "3. Assurance tous risques",
-            "content": [
-              "C’est la formule la plus protectrice.",
-              "Elle couvre aussi les dommages à votre moto, y compris lorsque vous êtes responsable, selon les limites prévues par le contrat."
-            ]
+            "content": "C’est la formule la plus protectrice. Elle couvre aussi les dommages à votre moto, y compris lorsque vous êtes responsable, selon les limites prévues par le contrat."
           }
         ]
       },
@@ -151,66 +148,34 @@
         "cards": [
           {
             "title": "Permis A2",
-            "subtitle": "Jeune permis, première moto, budget surveillé",
             "profile": "Jeune motard ou première vraie moto A2",
+            "subtitle": "Jeune permis, première moto, budget surveillé",
             "recommended_formula": "Tiers Plus",
-            "content": ["C’est souvent le meilleur équilibre pour un jeune motard : protection minimale insuffisante sur une moto récente ou recherchée, mais tous risques parfois trop cher au départ."],
+            "summary": "C’est souvent le meilleur équilibre pour un jeune motard : protection minimale insuffisante sur une moto récente ou recherchée, mais tous risques parfois trop cher au départ.",
             "advantages": [
               "Protège mieux contre le vol et l’incendie",
               "Évite de payer une formule premium sur une première moto",
-              "Reste plus réaliste face aux surprimes jeunes conducteurs"
+              "Reste plus réaliste face aux surprimes"
             ],
             "linked_models": [
               { "label": "Yamaha MT-07 A2", "slug": "yamaha-mt-07-2021-plus" },
-              { "label": "Kawasaki Z650", "slug": "kawasaki-z650-2020-plus" },
-              { "label": "Honda CB500 Hornet", "slug": "honda-cb500f-2022-plus" },
-              { "label": "Suzuki SV650", "slug": "suzuki-sv650-2016-plus" }
-            ],
-            "watch_out": [
-              "Montant des franchises",
-              "Garantie équipement",
-              "Prêt du guidon",
-              "Assistance en cas de panne ou d’accident"
+              { "label": "Honda CB500 Hornet", "slug": "honda-cb500f-2022-plus" }
             ]
           },
           {
-            "title": "Grand rouleur / GT / voyage",
-            "subtitle": "Trajets fréquents, longues distances, roulage régulier",
+            "title": "Grand rouleur / GT",
+            "profile": "Trajets fréquents, longues distances",
+            "subtitle": "Trajets quotidiens, roulage régulier toute l'année",
             "recommended_formula": "Tous risques",
-            "content": ["Cette formule est souvent la plus cohérente sur une moto plus chère, bien équipée ou utilisée très souvent."],
+            "summary": "Cette formule est la plus cohérente sur une moto récente, bien équipée ou utilisée quotidiennement pour le travail.",
             "advantages": [
-              "Protège mieux une moto souvent utilisée",
-              "Plus logique sur une machine plus chère ou bien équipée",
-              "Mieux adaptée à un usage intensif ou au voyage"
+              "Protection maximale en cas d'accident responsable",
+              "Sérénité pour les machines à forte valeur",
+              "Mieux adaptée à un usage intensif"
             ],
             "linked_models": [
-              { "label": "Yamaha Tracer 7", "slug": "yamaha-tracer-7-2021-plus" },
-              { "label": "BMW R1250 GS / R1300 GS", "slug": "bmw-r1250-gs-r1300-gs-2019-plus" },
-              { "label": "Honda XL750 Transalp", "slug": "honda-xl750-transalp-2023-plus" },
-              { "label": "Suzuki V-Strom 650", "slug": "suzuki-v-strom-650-2017-plus" }
-            ],
-            "useful_guarantees": [
-              "Assistance 0 km",
-              "Véhicule de remplacement",
-              "Protection bagages / accessoires",
-              "Garantie conducteur renforcée"
-            ]
-          },
-          {
-            "title": "Citadin",
-            "subtitle": "Trajets domicile-travail, stationnement en voirie, circulation dense",
-            "recommended_formula": "Tiers Plus avec options utiles",
-            "content": ["En ville, le risque de rayure, de chute à l’arrêt ou de tentative de vol est plus élevé. La formule intermédiaire avec bonnes options est souvent la plus cohérente."],
-            "advantages": [
-              "Meilleur compromis en zone urbaine",
-              "Plus logique qu’un simple tiers si la moto dort dehors",
-              "Permet d’ajouter les garanties vraiment utiles"
-            ],
-            "useful_guarantees": [
-              "Vol / vandalisme",
-              "Garantie équipement",
-              "Assistance",
-              "Protection conducteur"
+              { "label": "BMW R1250 GS", "slug": "bmw-r1250-gs-r1300-gs-2019-plus" },
+              { "label": "Yamaha Tracer 7", "slug": "yamaha-tracer-7-2021-plus" }
             ]
           }
         ]
@@ -221,8 +186,8 @@
           {
             "title": "Protection des personnes",
             "items": [
-              "Responsabilité civile",
-              "Garantie conducteur",
+              "Responsabilité civile (Obligatoire)",
+              "Garantie individuelle conducteur (Vitale)",
               "Protection juridique",
               "Défense / recours",
               "Prêt du guidon"
@@ -231,48 +196,26 @@
           {
             "title": "Dommages matériels",
             "items": [
-              "Vol",
-              "Incendie",
+              "Vol et Incendie",
               "Vandalisme",
               "Catastrophes naturelles",
               "Dommages tous accidents",
-              "Équipements du motard"
+              "Équipements (Casque, Blouson)"
             ]
           },
           {
             "title": "Assistance",
             "items": [
-              "Dépannage",
-              "Assistance 0 km",
-              "Remorquage",
-              "Véhicule de remplacement"
+              "Dépannage 0 km",
+              "Remorquage vers un garage agréé",
+              "Véhicule de remplacement",
+              "Rapatriement"
             ]
           }
         ]
-      },
-      {
-        "title": "3 conseils Label Moto avant de choisir",
-        "ordered_list": [
-          "Regardez la franchise avant le prix mensuel : une assurance peu chère peut coûter très cher au moment du sinistre.",
-          "Adaptez la formule à la valeur réelle de la moto : tous risques sur une ancienne petite valeur n’est pas toujours pertinent, mais un simple tiers sur une moto récente très volée peut être un mauvais calcul.",
-          "Choisissez selon votre usage réel, pas selon la peur : le bon contrat est celui qui protège votre vrai quotidien."
-        ]
-      },
-      {
-        "title": "Quelle formule pour quelle moto ?",
-        "list": [
-          "Permis A2 → plutôt Tiers Plus",
-          "Grand rouleur / GT → plutôt Tous risques",
-          "Occasionnel / loisir → plutôt Au kilomètre ou temporaire",
-          "Citadin → plutôt Tiers Plus avec options vol / équipement"
-        ]
       }
     ],
-    "conclusion": [
-      "La meilleure assurance moto n’est pas la plus chère, ni la plus complète sur le papier.",
-      "C’est celle qui correspond vraiment à votre profil, votre usage et votre moto.",
-      "Sur Label Moto, le plus logique est donc de raisonner ainsi : quel motard êtes-vous, quelle moto roulez-vous, et de quoi avez-vous réellement besoin ?"
-    ]
+    "conclusion": "La meilleure assurance moto n’est pas la plus chère, ni la plus complète sur le papier. C’est celle qui correspond vraiment à votre profil, votre usage et votre moto."
   },
   {
     "id": "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
@@ -339,7 +282,8 @@
           {
             "title": "Honda CMX500 Rebel",
             "profile": "Petit gabarit",
-            "seat_feel": "690 mm (Ultra basse)",
+            "seat_height": "690 mm",
+            "seat_feel": "Ultra basse",
             "weight_feel": "Centre de gravité bas",
             "strengths": ["Les deux pieds à plat", "Look Bobber", "Moteur A2 fiable"]
           }
@@ -348,7 +292,7 @@
       {
         "title": "Plus de 1m85 : Le confort",
         "content": "Les trails sont vos meilleurs alliés pour éviter d'avoir les jambes trop repliées.",
-        "sections": [
+        "subsections": [
           {
             "title": "Ce qu’il faut privilégier",
             "list": [
@@ -369,9 +313,10 @@
           {
             "title": "Yamaha Tracer 7",
             "profile": "Grand gabarit",
-            "seat_feel": "835 mm",
-            "weight_feel": "Haut après-midi",
-            "strengths": ["Protection vent", "Position droite", "Polyvalence"]
+            "seat_height": "835 mm",
+            "seat_feel": "Position droite",
+            "weight_feel": "Haut de gamme",
+            "strengths": ["Protection vent", "Position naturelle", "Polyvalence"]
           }
         ]
       }

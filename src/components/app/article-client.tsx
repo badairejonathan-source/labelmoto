@@ -91,6 +91,13 @@ export default function ArticleClient({ id }: { id: string }) {
       if (s.title) {
         points.push({ title: s.title, id: slugify(s.title) });
       }
+      if (s.subsections && !s.subsections.some((sub: any) => sub.strengths || sub.weaknesses)) {
+        s.subsections.forEach((sub: any) => {
+          if (sub.title) {
+            points.push({ title: sub.title, id: slugify(sub.title) });
+          }
+        });
+      }
     });
     return points.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
   }, [activeSections]);
@@ -173,7 +180,7 @@ export default function ArticleClient({ id }: { id: string }) {
           description: "Trouvez la machine idéale pour commencer sans vous tromper.",
           target_slug: "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter"
         };
-      } else if (text.includes('occasion') || text.includes('pièges')) {
+      } else if (text.includes('occasion') || text.includes('pieges')) {
         ctaData = {
           header: "GUIDE ACHAT OCCASION",
           label: "ÉVITER LES PIÈGES EN OCCASION →",
@@ -263,7 +270,8 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         {cards.map((card, idx) => {
-          const ficheId = getFicheIdFromTitle(card.title || card.recommended_models?.[0] || '');
+          const modelLabel = card.title || card.recommended_models?.[0] || '';
+          const ficheId = getFicheIdFromTitle(typeof modelLabel === 'string' ? modelLabel : '');
           return (
             <Card key={idx} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
@@ -297,11 +305,11 @@ export default function ArticleClient({ id }: { id: string }) {
                 {card.recommended_models && (
                   <div className="flex flex-wrap gap-2">
                     {card.recommended_models.map((m: any, i: number) => {
-                      const modelLabel = typeof m === 'string' ? m : m.label;
-                      const mFicheId = getFicheIdFromTitle(modelLabel);
+                      const modelLabelStr = typeof m === 'string' ? m : m.label;
+                      const mFicheId = getFicheIdFromTitle(modelLabelStr);
                       return mFicheId ? (
-                        <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{modelLabel} <ExternalLink className="h-2.5 w-2.5" /></Link>
-                      ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{modelLabel}</span>)
+                        <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{modelLabelStr} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{modelLabelStr}</span>)
                     })}
                   </div>
                 )}
@@ -351,9 +359,58 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
+  const renderComparisonGrid = (items: any[]) => {
+    if (!items || items.length === 0) return null;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+        {items.map((item, idx) => (
+          <Card key={idx} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm group/card hover:border-brand/50 transition-all">
+            <CardHeader className="bg-muted/30 py-4 border-b flex flex-row items-center justify-between">
+              <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
+                {item.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6 flex-grow">
+              {item.strengths && Array.isArray(item.strengths) && item.strengths.length > 0 && (
+                <div className="space-y-3">
+                  <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Avantages
+                  </div>
+                  <ul className="list-none space-y-2">
+                    {item.strengths.map((s: string, j: number) => (
+                      <li key={j} className="text-sm font-bold flex items-start gap-2 text-foreground">
+                        <span className="text-green-500 shrink-0">•</span> {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {item.weaknesses && Array.isArray(item.weaknesses) && item.weaknesses.length > 0 && (
+                <div className="space-y-3">
+                  <div className="text-[9px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Inconvénients
+                  </div>
+                  <ul className="list-none space-y-2">
+                    {item.weaknesses.map((w: string, j: number) => (
+                      <li key={j} className="text-sm font-bold flex items-start gap-2 text-foreground">
+                        <span className="text-red-400 shrink-0">•</span> {w}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+
   const renderSection = (section: any, idx: number) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     const bodyText = section.content || section.text || section.description;
+    const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
+
     return (
       <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
@@ -363,7 +420,12 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.cards && renderCards(section.cards)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-3 mb-8 pl-4">{section.ordered_list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ol>)}
-        {section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>)}
+        
+        {hasComparisonSubsections ? (
+          renderComparisonGrid(section.subsections)
+        ) : (
+          section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>)
+        )}
       </div>
     );
   };
