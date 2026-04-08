@@ -195,8 +195,20 @@ export default function ArticleClient({ id }: { id: string }) {
                     ))}
                   </ul>
                 )}
+                {card.useful_guarantees && Array.isArray(card.useful_guarantees) && (
+                  <div className="space-y-2 pt-2">
+                    <div className="text-[9px] font-black uppercase tracking-widest text-blue-600">Garanties utiles</div>
+                    <ul className="list-none space-y-1">
+                      {card.useful_guarantees.map((g: string, i: number) => (
+                        <li key={`${keyPrefix}-g-${idx}-${i}`} className="text-sm font-bold flex items-start gap-2">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0" /> {g}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {card.linked_models && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 pt-4">
                     {card.linked_models.map((m: any, i: number) => {
                       const modelFicheId = m.slug || getFicheIdFromTitle(m.label);
                       return modelFicheId ? (
@@ -254,11 +266,23 @@ export default function ArticleClient({ id }: { id: string }) {
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
+        
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
+        
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (
           <li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>
         ))}</ul>)}
+
+        {section.ordered_list && Array.isArray(section.ordered_list) && (
+          <ol className="list-decimal list-inside space-y-4 mb-8 pl-4">
+            {section.ordered_list.map((item: string, oi: number) => (
+              <li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">
+                {item}
+              </li>
+            ))}
+          </ol>
+        )}
         
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn(
@@ -268,6 +292,7 @@ export default function ArticleClient({ id }: { id: string }) {
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
         )}
+
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
                 {section.note}
@@ -308,26 +333,28 @@ export default function ArticleClient({ id }: { id: string }) {
 
             {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
             
-            {/* Sommaire automatique basé sur les titres des sections - Design Liste Pointillée */}
+            {/* Sommaire Dynamique Redessiné - Design Pointillé Unique Colonne */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
-              <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
-                <div className="flex items-center gap-3 mb-6">
-                  <CheckCircle2 className="h-5 w-5 text-brand" />
-                  <h2 className="text-sm font-black uppercase tracking-widest m-0">Ce que vous allez apprendre :</h2>
+              <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
+                <div className="flex items-center gap-3 mb-8">
+                  <LayoutGrid className="h-5 w-5 text-brand" />
+                  <h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2>
                 </div>
                 <nav>
-                  <ul className="grid grid-cols-1 gap-y-4">
+                  <ul className="space-y-5">
                     {activeSections.map((section: any, idx: number) => {
                       if (!section.title) return null;
                       const sectionId = slugify(section.title);
                       return (
-                        <li key={`toc-${idx}`} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
-                          <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform opacity-50" />
+                        <li key={`toc-${idx}`} className="group/item">
                           <a 
                             href={`#${sectionId}`} 
-                            className="hover:text-brand transition-all decoration-brand/30 underline-offset-4 hover:underline"
+                            className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all group-hover/item:translate-x-1"
                           >
-                            {section.title}
+                            <div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 transition-colors group-hover/item:bg-brand group-hover/item:text-white">
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                            </div>
+                            <span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span>
                           </a>
                         </li>
                       );
@@ -337,7 +364,7 @@ export default function ArticleClient({ id }: { id: string }) {
               </div>
             )}
 
-            <div className="space-y-12">
+            <div className="space-y-4">
               {activeSections.map((section: any, idx: number) => renderSection(section, idx))}
             </div>
             
