@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -215,9 +214,9 @@ export default function ArticleClient({ id }: { id: string }) {
                 {card.linked_models && (
                   <div className="flex flex-wrap gap-2">
                     {card.linked_models.map((m: any, i: number) => {
-                      const mFicheId = m.slug || getFicheIdFromTitle(m.label);
-                      return mFicheId ? (
-                        <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      const modelFicheId = m.slug || getFicheIdFromTitle(m.label);
+                      return modelFicheId ? (
+                        <Link key={i} href={`/fiches/${modelFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
                       ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m.label}</span>)
                     })}
                   </div>
@@ -251,6 +250,19 @@ export default function ArticleClient({ id }: { id: string }) {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     const bodyText = section.content || section.text || section.description;
 
+    // Handle comparison cards (strengths/weaknesses) inside a subsection
+    if (section.strengths || section.weaknesses) {
+        return (
+            <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full">
+                <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase">{section.title || "Comparatif"}</CardTitle></CardHeader>
+                <CardContent className="p-6 space-y-4">
+                    {section.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600">Avantages</div><ul className="list-none space-y-1">{section.strengths.map((s: string, j: number) => (<li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul></div>)}
+                    {section.weaknesses && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-red-600">Inconvénients</div><ul className="list-none space-y-1">{section.weaknesses.map((w: string, j: number) => (<li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>))}</ul></div>)}
+                </CardContent>
+            </Card>
+        );
+    }
+
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
@@ -261,23 +273,11 @@ export default function ArticleClient({ id }: { id: string }) {
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         
         {section.subsections && Array.isArray(section.subsections) && (
-          <div className="space-y-10">
-            {section.subsections.map((sub: any, si: number) => {
-                if (sub.strengths || sub.weaknesses) {
-                    return (
-                        <div key={`compare-${si}`} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-                            <Card className="border-2 border-muted overflow-hidden">
-                                <CardHeader className="bg-muted/30 py-4 border-b"><CardTitle className="text-xl font-black uppercase">{sub.title || "Particulier"}</CardTitle></CardHeader>
-                                <CardContent className="p-6 space-y-4">
-                                    {sub.strengths && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-green-600">Avantages</div><ul className="list-none space-y-1">{sub.strengths.map((s: string, j: number) => (<li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul></div>)}
-                                    {sub.weaknesses && (<div className="space-y-2"><div className="text-[9px] font-black uppercase text-red-600">Inconvénients</div><ul className="list-none space-y-1">{sub.weaknesses.map((w: string, j: number) => (<li key={j} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>))}</ul></div>)}
-                                </CardContent>
-                            </Card>
-                        </div>
-                    );
-                }
-                return renderSection(sub, si, `sub-${idx}-${si}`);
-            })}
+          <div className={cn(
+            "space-y-10",
+            section.subsections.some((s: any) => s.strengths || s.weaknesses) && "grid grid-cols-1 md:grid-cols-2 gap-6 space-y-0"
+          )}>
+            {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${idx}-${si}`))}
           </div>
         )}
         {section.note && (
@@ -319,7 +319,6 @@ export default function ArticleClient({ id }: { id: string }) {
                             const ptLower = pt.toLowerCase();
                             let targetId = null;
                             
-                            // Scan sections and subsections for matching keywords
                             for (const s of activeSections) {
                                 if (s.title && (s.title.toLowerCase().includes(ptLower) || ptLower.includes(s.title.toLowerCase()))) {
                                     targetId = slugify(s.title); break;
@@ -330,9 +329,8 @@ export default function ArticleClient({ id }: { id: string }) {
                                 }
                             }
                             
-                            // Fallback scan for common keywords
                             if (!targetId) {
-                                const keywords = ["choisir", "erreurs", "profil", "roadster", "budget", "assurance", "occasion", "1m55", "1m70", "1m80", "1m85", "1m95", "rabaissement"];
+                                const keywords = ["choisir", "erreurs", "profil", "roadster", "budget", "assurance", "occasion", "1m55", "1m70", "1m80", "1m85", "1m95", "rabaissement", "particulier", "concession"];
                                 const found = keywords.find(k => ptLower.includes(k));
                                 if (found) {
                                     for (const s of activeSections) {
