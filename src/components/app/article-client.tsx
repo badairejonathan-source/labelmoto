@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -8,7 +7,8 @@ import {
   CheckCircle2, Info, Loader2, 
   ChevronRight, Home, Gauge, Settings2, 
   ExternalLink, AlertTriangle, ArrowRight, LayoutGrid,
-  Map
+  Map,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -91,19 +91,13 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       const targetHeader = clean(header);
       
       const keys = Object.keys(row);
-      // Strategy 1: Fuzzy match on cleaned key
       const fuzzyMatch = keys.find(k => clean(k) === targetHeader);
       if (fuzzyMatch) return row[fuzzyMatch];
 
-      // Strategy 2: Inclusion match
       const inclusionMatch = keys.find(k => targetHeader.includes(clean(k)) || clean(k).includes(targetHeader));
       if (inclusionMatch) return row[inclusionMatch];
 
-      // Strategy 3: Index match
       if (row[colIndex] !== undefined) return row[colIndex];
-      if (row[String(colIndex)] !== undefined) return row[String(colIndex)];
-      
-      // Strategy 4: Direct value extraction by index
       const values = Object.values(row);
       if (values[colIndex] !== undefined) return values[colIndex];
       
@@ -283,7 +277,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           </nav>
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* Contenu Principal */}
             <article className="lg:col-span-8">
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-10 text-foreground">
                 {article.display_title || article.title}
@@ -293,13 +286,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
               </div>
 
+              {children}
+
               {article.intro && Array.isArray(article.intro) && (
-                <div className="mb-12 space-y-6">
+                <div className="my-12 space-y-6">
                   {article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}
                 </div>
               )}
               
-              {/* Sommaire au design "Pointillé" (Exemple validé par l'utilisateur) */}
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
                 <div className="my-12 p-10 bg-brand/5 rounded-[2.5rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
@@ -326,7 +320,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               )}
 
               <div className="space-y-4">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
-              {children}
               
               {article.conclusion && (
                   <div className="mt-20 pt-12 border-t border-brand/20">
@@ -337,7 +330,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               )}
             </article>
 
-            {/* Barre Latérale "Magazine" */}
             <aside className="lg:col-span-4 relative">
               <div className="lg:sticky lg:top-28 space-y-10">
                 <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2.5rem]">

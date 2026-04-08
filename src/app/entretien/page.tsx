@@ -39,7 +39,7 @@ export default function EntretienPage() {
 
   return (
     <ArticleClient id="entretien-moto-intervalles-prix-conseils-par-modele">
-      <div className="mt-16 pt-12 border-t-2 border-brand/20">
+      <div className="mb-16">
         <div id="fiches-par-modele" className="scroll-mt-28 mb-12">
           <h2 className="text-4xl font-black uppercase tracking-tighter mb-4 text-foreground">Fiches d'entretien par modèle</h2>
           <p className="text-xl text-muted-foreground font-medium mb-8">
