@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -165,7 +164,7 @@ export default function ArticleClient({ id }: { id: string }) {
           header: "DOSSIER SPÉCIAL ASSURANCE",
           label: "BIEN CHOISIR SON ASSURANCE MOTO →",
           description: "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
-          target_slug: "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
+          target_slug: "assurance-moto-bien-choisir-sa-formule-selon-votre-profil"
         };
       } else if (text.includes('meilleures motos a2') || text.includes('achat moto a2')) {
         ctaData = {
@@ -270,30 +269,71 @@ export default function ArticleClient({ id }: { id: string }) {
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">{card.title}</CardTitle>
-                  {(card.type || card.profile) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile}</p>}
+                  {(card.type || card.profile || card.subtitle) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile || card.subtitle}</p>}
                 </div>
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
                 {card.summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{card.summary}</p>}
+                
+                {card.recommended_formula && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-blue-600 mb-1">Formule conseillée</p>
+                    <p className="text-sm font-black text-blue-700">{card.recommended_formula}</p>
+                  </div>
+                )}
+
+                {card.items && Array.isArray(card.items) && (
+                  <ul className="space-y-2">
+                    {card.items.map((item: string, i: number) => (
+                      <li key={i} className="flex items-center gap-2 text-sm font-bold text-foreground">
+                        <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
                 {card.recommended_models && (
                   <div className="flex flex-wrap gap-2">
-                    {card.recommended_models.map((m: string, i: number) => {
-                      const mFicheId = getFicheIdFromTitle(m);
+                    {card.recommended_models.map((m: any, i: number) => {
+                      const modelLabel = typeof m === 'string' ? m : m.label;
+                      const mFicheId = getFicheIdFromTitle(modelLabel);
                       return mFicheId ? (
-                        <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m} <ExternalLink className="h-2.5 w-2.5" /></Link>
-                      ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{m}</span>)
+                        <Link key={i} href={`/fiches/${mFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{modelLabel} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                      ) : (<span key={i} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{modelLabel}</span>)
                     })}
                   </div>
                 )}
+                
+                {card.linked_models && (
+                  <div className="flex flex-wrap gap-2">
+                    {card.linked_models.map((m: any, i: number) => (
+                      <Link key={i} href={`/fiches/${m.slug}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{m.label} <ExternalLink className="h-2.5 w-2.5" /></Link>
+                    ))}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   {card.seat_feel && <div className="space-y-1"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Assise</p><p className="text-[10px] font-black uppercase">{card.seat_feel}</p></div>}
                   {card.weight_feel && <div className="space-y-1"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Poids</p><p className="text-[10px] font-black uppercase">{card.weight_feel}</p></div>}
                 </div>
                 {(card.strengths || card.advantages) && (
                   <div className="space-y-2 pt-2">
-                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
+                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> {card.advantages ? "Avantages" : "Points forts"}</div>
                     <ul className="list-none space-y-1">{(card.strengths || card.advantages).map((s: string, i: number) => (<li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
+                  </div>
+                )}
+                {card.useful_guarantees && (
+                  <div className="space-y-2 pt-2">
+                    <div className="text-[9px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> Options utiles</div>
+                    <ul className="list-none space-y-1">{card.useful_guarantees.map((s: string, i: number) => (<li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-blue-500">•</span> {s}</li>))}</ul>
+                  </div>
+                )}
+                {card.watch_out && (
+                  <div className="space-y-2 pt-2">
+                    <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
+                    <ul className="list-none space-y-1">{card.watch_out.map((s: string, i: number) => (<li key={i} className="text-[10px] font-bold flex items-start gap-2"><span className="text-orange-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
                 {card.our_opinion && <div className="bg-muted/30 p-3 rounded-lg border border-border/50 mt-auto"><p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">L'avis Label Moto</p><p className="text-[10px] font-bold text-foreground italic">"{card.our_opinion}"</p></div>}

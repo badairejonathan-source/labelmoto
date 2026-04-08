@@ -1,4 +1,3 @@
-
 [
   {
     "id": "combien-coute-vraiment-une-moto-par-mois",
@@ -33,7 +32,7 @@
       {
         "title": "2. L'assurance : le poids lourd du budget",
         "content": "Pour un jeune permis, l'assurance est souvent très élevée, surtout si vous habitez en ville ou si vous choisissez un modèle prisé par les voleurs.",
-        "cta": "consulte notre guide complet sur l'assurance moto 2026",
+        "cta": "consulte notre dossier spécial assurance moto 2026",
         "table": {
           "headers": ["Formule", "Prix Moyen Jeune Permis / mois"],
           "rows": [
@@ -46,7 +45,7 @@
       {
         "title": "3. Essence et Entretien",
         "content": "Une moto consomme en moyenne entre 4L et 6L aux 100 km. Pour un rouleur moyen (600 km/mois), comptez environ 60 € d'essence.",
-        "cta": "consulte notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion",
+        "cta": "consulte notre guide d'occasion pour éviter les pièges",
         "table": {
           "headers": ["Poste", "Estimation Mensuelle"],
           "rows": [
@@ -60,42 +59,205 @@
     "conclusion": "En résumé, rouler à moto coûte entre 250 € et 400 € par mois tout compris (hors achat). C'est un budget conséquent qu'il vaut mieux anticiper."
   },
   {
-    "id": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
-    "slug": "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil",
-    "display_title": "Assurance Moto 2026 : Bien choisir sa formule",
-    "title": "Assurance Moto 2026 : Le Guide Complet",
-    "description": "Tiers, Tiers Plus ou Tous Risques ? Découvrez comment protéger votre moto et votre permis au meilleur prix en 2026.",
+    "id": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
+    "slug": "assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
+    "display_title": "Assurance moto 2026 : bien choisir sa formule selon votre profil",
+    "title": "Assurance moto 2026 : bien choisir sa formule selon votre profil",
+    "category": "assurance",
+    "description": "Découvrez quelle formule d’assurance moto choisir selon votre profil en 2026 : permis A2, grand rouleur, occasionnel ou citadin.",
     "author": "L'équipe Label Moto",
     "imageUrl": "/images/motard-article-assurance2026.png",
+    "featured": true,
     "intro": [
-      "Choisir une assurance moto est souvent une étape stressante pour un nouveau motard. Les tarifs varient du simple au triple et les garanties sont parfois floues.",
-      "En 2026, les assureurs proposent de nouvelles options connectées et des tarifs adaptés au permis A2. Voici comment s'y retrouver."
+      "Choisir une assurance moto, ce n’est pas seulement comparer un prix mensuel.",
+      "La bonne formule dépend surtout de votre usage, de votre expérience, de la valeur de votre moto et du niveau de protection que vous attendez.",
+      "Sur Label Moto, l’objectif est simple : vous aider à choisir une couverture cohérente avec votre profil de motard et votre machine, sans payer pour des garanties inutiles."
     ],
     "sections": [
       {
-        "title": "Les 3 formules classiques",
+        "title": "Ce qui a changé depuis 2024",
+        "content": [
+          "Depuis le 1er avril 2024, la carte verte et la vignette d’assurance ne sont plus exigées pour les véhicules immatriculés.",
+          "Lors d’un contrôle, les forces de l’ordre vérifient désormais l’assurance via le Fichier des Véhicules Assurés (FVA) à partir de la plaque d’immatriculation.",
+          "L’assureur remet aussi un « Mémo Véhicule Assuré », utile notamment juste après la souscription, le temps que le véhicule apparaisse dans le fichier."
+        ]
+      },
+      {
+        "title": "Les 3 grandes formules d’assurance moto",
         "table": {
-          "headers": ["Formule", "Couverture", "Conseillé pour..."],
+          "headers": ["Formule", "Niveau de protection", "Niveau de prix", "Idéale pour"],
           "rows": [
-            ["Tiers", "Responsabilité Civile uniquement", "Vieilles motos (< 2000 €)"],
-            ["Tiers Plus", "Tiers + Vol + Incendie", "Motos d'occasion (2000-6000 €)"],
-            ["Tous Risques", "Dommages tous accidents", "Motos neuves ou récentes"]
+            {
+              "formule": "Tiers",
+              "niveau_de_protection": "Faible",
+              "niveau_de_prix": "€",
+              "ideale_pour": "Motos anciennes, petit budget, faible valeur"
+            },
+            {
+              "formule": "Tiers plus",
+              "niveau_de_protection": "Intermédiaire",
+              "niveau_de_prix": "€€",
+              "ideale_pour": "Jeunes permis, citadins, motos récentes mais budget encadré"
+            },
+            {
+              "formule": "Tous risques",
+              "niveau_de_protection": "Élevé",
+              "niveau_de_prix": "€€€",
+              "ideale_pour": "Motos récentes, gros rouleurs, machines à forte valeur"
+            }
           ]
-        }
+        },
+        "subsections": [
+          {
+            "title": "1. Assurance au tiers",
+            "content": [
+              "C’est la formule minimale obligatoire.",
+              "Elle couvre la responsabilité civile, donc les dommages causés à autrui, mais pas les dégâts sur votre propre moto en cas de chute ou d’accident responsable."
+            ]
+          },
+          {
+            "title": "2. Assurance tiers plus",
+            "content": [
+              "C’est la formule intermédiaire.",
+              "Elle ajoute généralement des garanties utiles comme le vol, l’incendie, parfois le bris de glace, l’assistance ou certaines protections du pilote selon les contrats."
+            ]
+          },
+          {
+            "title": "3. Assurance tous risques",
+            "content": [
+              "C’est la formule la plus protectrice.",
+              "Elle couvre aussi les dommages à votre moto, y compris lorsque vous êtes responsable, selon les limites prévues par le contrat."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Quelle formule choisir selon votre profil ?",
+        "cards": [
+          {
+            "title": "Permis A2",
+            "subtitle": "Jeune permis, première moto, budget surveillé",
+            "profile": "Jeune motard ou première vraie moto A2",
+            "recommended_formula": "Tiers Plus",
+            "content": ["C’est souvent le meilleur équilibre pour un jeune motard : protection minimale insuffisante sur une moto récente ou recherchée, mais tous risques parfois trop cher au départ."],
+            "advantages": [
+              "Protège mieux contre le vol et l’incendie",
+              "Évite de payer une formule premium sur une première moto",
+              "Reste plus réaliste face aux surprimes jeunes conducteurs"
+            ],
+            "linked_models": [
+              { "label": "Yamaha MT-07 A2", "slug": "yamaha-mt-07-2021-plus" },
+              { "label": "Kawasaki Z650", "slug": "kawasaki-z650-2020-plus" },
+              { "label": "Honda CB500 Hornet", "slug": "honda-cb500f-2022-plus" },
+              { "label": "Suzuki SV650", "slug": "suzuki-sv650-2016-plus" }
+            ],
+            "watch_out": [
+              "Montant des franchises",
+              "Garantie équipement",
+              "Prêt du guidon",
+              "Assistance en cas de panne ou d’accident"
+            ]
+          },
+          {
+            "title": "Grand rouleur / GT / voyage",
+            "subtitle": "Trajets fréquents, longues distances, roulage régulier",
+            "recommended_formula": "Tous risques",
+            "content": ["Cette formule est souvent la plus cohérente sur une moto plus chère, bien équipée ou utilisée très souvent."],
+            "advantages": [
+              "Protège mieux une moto souvent utilisée",
+              "Plus logique sur une machine plus chère ou bien équipée",
+              "Mieux adaptée à un usage intensif ou au voyage"
+            ],
+            "linked_models": [
+              { "label": "Yamaha Tracer 7", "slug": "yamaha-tracer-7-2021-plus" },
+              { "label": "BMW R1250 GS / R1300 GS", "slug": "bmw-r1250-gs-r1300-gs-2019-plus" },
+              { "label": "Honda XL750 Transalp", "slug": "honda-xl750-transalp-2023-plus" },
+              { "label": "Suzuki V-Strom 650", "slug": "suzuki-v-strom-650-2017-plus" }
+            ],
+            "useful_guarantees": [
+              "Assistance 0 km",
+              "Véhicule de remplacement",
+              "Protection bagages / accessoires",
+              "Garantie conducteur renforcée"
+            ]
+          },
+          {
+            "title": "Citadin",
+            "subtitle": "Trajets domicile-travail, stationnement en voirie, circulation dense",
+            "recommended_formula": "Tiers Plus avec options utiles",
+            "content": ["En ville, le risque de rayure, de chute à l’arrêt ou de tentative de vol est plus élevé. La formule intermédiaire avec bonnes options est souvent la plus cohérente."],
+            "advantages": [
+              "Meilleur compromis en zone urbaine",
+              "Plus logique qu’un simple tiers si la moto dort dehors",
+              "Permet d’ajouter les garanties vraiment utiles"
+            ],
+            "useful_guarantees": [
+              "Vol / vandalisme",
+              "Garantie équipement",
+              "Assistance",
+              "Protection conducteur"
+            ]
+          }
+        ]
       },
       {
         "title": "Les garanties à regarder avant de signer",
-        "table": {
-          "headers": ["Garantie", "Importance", "Description"],
-          "rows": [
-            ["Protection du pilote", "CRITIQUE", "Indispensable pour vos frais médicaux"],
-            ["Assistance 0 km", "ÉLEVÉE", "Dépannage même devant chez vous"],
-            ["Équipement", "MOYENNE", "Remboursement casque/blouson"]
-          ]
-        }
+        "cards": [
+          {
+            "title": "Protection des personnes",
+            "items": [
+              "Responsabilité civile",
+              "Garantie conducteur",
+              "Protection juridique",
+              "Défense / recours",
+              "Prêt du guidon"
+            ]
+          },
+          {
+            "title": "Dommages matériels",
+            "items": [
+              "Vol",
+              "Incendie",
+              "Vandalisme",
+              "Catastrophes naturelles",
+              "Dommages tous accidents",
+              "Équipements du motard"
+            ]
+          },
+          {
+            "title": "Assistance",
+            "items": [
+              "Dépannage",
+              "Assistance 0 km",
+              "Remorquage",
+              "Véhicule de remplacement"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "3 conseils Label Moto avant de choisir",
+        "ordered_list": [
+          "Regardez la franchise avant le prix mensuel : une assurance peu chère peut coûter très cher au moment du sinistre.",
+          "Adaptez la formule à la valeur réelle de la moto : tous risques sur une ancienne petite valeur n’est pas toujours pertinent, mais un simple tiers sur une moto récente très volée peut être un mauvais calcul.",
+          "Choisissez selon votre usage réel, pas selon la peur : le bon contrat est celui qui protège votre vrai quotidien."
+        ]
+      },
+      {
+        "title": "Quelle formule pour quelle moto ?",
+        "list": [
+          "Permis A2 → plutôt Tiers Plus",
+          "Grand rouleur / GT → plutôt Tous risques",
+          "Occasionnel / loisir → plutôt Au kilomètre ou temporaire",
+          "Citadin → plutôt Tiers Plus avec options vol / équipement"
+        ]
       }
     ],
-    "conclusion": "Ne négligez jamais la protection corporelle du pilote. C'est la seule garantie qui vous protège vous, et pas seulement votre machine."
+    "conclusion": [
+      "La meilleure assurance moto n’est pas la plus chère, ni la plus complète sur le papier.",
+      "C’est celle qui correspond vraiment à votre profil, votre usage et votre moto.",
+      "Sur Label Moto, le plus logique est donc de raisonner ainsi : quel motard êtes-vous, quelle moto roulez-vous, et de quoi avez-vous réellement besoin ?"
+    ]
   },
   {
     "id": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
