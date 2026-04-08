@@ -65,11 +65,11 @@ export default function ArticleClient({ id }: { id: string }) {
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
 
+    if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.png";
     if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
-    if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
     if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
@@ -89,31 +89,28 @@ export default function ArticleClient({ id }: { id: string }) {
     const getCellValue = (row: any, header: string, colIndex: number) => {
       if (!row) return '';
       
-      // Normalisation ultra-robuste pour matcher n'importe quel format de clé Firestore
       const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/(^_|_$)/g, '');
+      const stripAll = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+      
       const normHeader = normalize(header);
+      const strippedHeader = stripAll(header);
       
       // 1. Match exact
       if (row[header] !== undefined) return row[header];
       
-      // 2. Match normalisé (snake_case)
-      if (row[normHeader] !== undefined) return row[normHeader];
+      // 2. Scan de toutes les clés pour trouver une correspondance normalisée ou dépouillée
+      const foundKey = Object.keys(row).find(k => {
+        const nk = normalize(k);
+        const sk = stripAll(k);
+        return nk === normHeader || sk === strippedHeader || nk.includes(normHeader) || normHeader.includes(nk);
+      });
       
-      // 3. Scan de toutes les clés pour trouver une correspondance normalisée
-      const foundKey = Object.keys(row).find(k => normalize(k) === normHeader);
       if (foundKey) return row[foundKey];
       
-      // 4. Fallback sur l'index (col0, col1, etc.)
+      // 3. Fallback sur l'index (col0, col1, etc.)
       if (row[colIndex] !== undefined) return row[colIndex];
       if (row[`col${colIndex}`] !== undefined) return row[`col${colIndex}`];
       
-      // 5. Match lâche (si l'un contient l'autre)
-      const looseKey = Object.keys(row).find(k => {
-        const nk = normalize(k);
-        return nk.length > 2 && (normHeader.includes(nk) || nk.includes(normHeader));
-      });
-      if (looseKey) return row[looseKey];
-
       return '';
     };
 
@@ -155,7 +152,6 @@ export default function ArticleClient({ id }: { id: string }) {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
           
-          // Support de tous les noms de champs possibles dans Firestore
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
@@ -220,7 +216,6 @@ export default function ArticleClient({ id }: { id: string }) {
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.watch_out || section.cons || section.points_vigilance;
 
-    // Rendu spécifique pour les comparaisons (côte à côte)
     if (strengths || weaknesses) {
         return (
             <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
@@ -319,7 +314,6 @@ export default function ArticleClient({ id }: { id: string }) {
               </div>
             )}
             
-            {/* Sommaire Cliquable (Design pointillé, colonne unique) */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
               <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
                 <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2></div>
