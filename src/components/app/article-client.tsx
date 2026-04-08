@@ -67,6 +67,7 @@ export default function ArticleClient({ id }: { id: string }) {
     if (articleId.includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (articleId.includes('a2')) return "/images/achat-occasion.png";
     if (articleId.includes('occasion') || articleId.includes('pieges')) return "/images/evitelespieges.png";
+    if (articleId.includes('zfe')) return "/images/motardZFEarticle2.png";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
@@ -82,32 +83,18 @@ export default function ArticleClient({ id }: { id: string }) {
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
 
-    // Fonction de récupération de cellule robuste aux accents et à la casse
     const getCellValue = (row: any, header: string, colIndex: number) => {
       if (!row) return '';
-      
-      // 1. Test direct
       if (row[header] !== undefined) return row[header];
-
-      // 2. Test normalisé (minuscules, sans accents, underscores)
-      const normalized = header.toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[\s-]/g, '_');
-      
+      const normalized = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s-]/g, '_');
       if (row[normalized] !== undefined) return row[normalized];
-
-      // 3. Test de toutes les clés de l'objet row
       const foundKey = Object.keys(row).find(k => {
         const kNorm = k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const hNorm = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         return kNorm === hNorm || kNorm === normalized;
       });
-
       if (foundKey) return row[foundKey];
-
-      // 4. Test par index de colonne
       if (row[colIndex] !== undefined) return row[colIndex];
-
       return '';
     };
 
@@ -151,8 +138,6 @@ export default function ArticleClient({ id }: { id: string }) {
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
-          
-          // Detection exhaustive des listes (on cherche tous les champs possibles de Firestore)
           const listItems = card.items || card.models || card.recommended_models || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
@@ -169,15 +154,12 @@ export default function ArticleClient({ id }: { id: string }) {
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
-                
                 {card.recommended_formula && (
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200">
                     <p className="text-[8px] font-black uppercase tracking-widest text-blue-600 mb-1">Formule conseillée</p>
                     <p className="text-sm font-black text-blue-700">{card.recommended_formula}</p>
                   </div>
                 )}
-
-                {/* Liste principale (Modèles ou Points) */}
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
                     {listItems.map((item: any, i: number) => {
@@ -192,43 +174,12 @@ export default function ArticleClient({ id }: { id: string }) {
                     })}
                   </ul>
                 )}
-
-                {/* Garanties spécifiques Assurance */}
-                {card.useful_guarantees && Array.isArray(card.useful_guarantees) && (
-                  <div className="space-y-2 pt-2">
-                    <div className="text-[9px] font-black uppercase tracking-widest text-blue-600">Garanties utiles</div>
-                    <ul className="list-none space-y-1">
-                      {card.useful_guarantees.map((g: string, i: number) => (
-                        <li key={`${keyPrefix}-g-${idx}-${i}`} className="text-sm font-bold flex items-start gap-2">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0 mt-0.5" /> {g}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Liens vers fiches techniques */}
-                {card.linked_models && Array.isArray(card.linked_models) && (
-                  <div className="flex flex-wrap gap-2 pt-4">
-                    {card.linked_models.map((m: any, i: number) => {
-                      const modelFicheId = m.slug || getFicheIdFromTitle(m.label || m);
-                      const label = m.label || m;
-                      return modelFicheId ? (
-                        <Link key={`${keyPrefix}-link-${idx}-${i}`} href={`/fiches/${modelFicheId}?from=${id}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded hover:bg-brand/10 hover:text-brand transition-colors flex items-center gap-1">{label} <ExternalLink className="h-2.5 w-2.5" /></Link>
-                      ) : (<span key={`${keyPrefix}-span-${idx}-${i}`} className="text-[10px] font-black uppercase bg-muted px-2 py-1 rounded">{label}</span>)
-                    })}
-                  </div>
-                )}
-
-                {/* Avantages */}
                 {strengths && Array.isArray(strengths) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
                     <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
-
-                {/* Points de vigilance */}
                 {weaknesses && Array.isArray(weaknesses) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
@@ -251,11 +202,9 @@ export default function ArticleClient({ id }: { id: string }) {
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     const bodyText = section.content || section.text || section.description || section.intro || section.body;
-    
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.watch_out || section.cons || section.points_vigilance;
 
-    // Rendu spécifique pour les blocs de comparaison (Avantages/Inconvénients)
     if (strengths || weaknesses) {
         return (
             <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
@@ -264,21 +213,13 @@ export default function ArticleClient({ id }: { id: string }) {
                     {strengths && Array.isArray(strengths) && (
                       <div className="space-y-2">
                         <div className="text-[9px] font-black uppercase text-green-600 tracking-widest">Avantages</div>
-                        <ul className="list-none space-y-1">
-                          {strengths.map((s: string, j: number) => (
-                            <li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>
-                          ))}
-                        </ul>
+                        <ul className="list-none space-y-1">{strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
                       </div>
                     )}
                     {weaknesses && Array.isArray(weaknesses) && (
                       <div className="space-y-2">
                         <div className="text-[9px] font-black uppercase text-red-600 tracking-widest">Inconvénients</div>
-                        <ul className="list-none space-y-1">
-                          {weaknesses.map((w: string, j: number) => (
-                            <li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>
-                          ))}
-                        </ul>
+                        <ul className="list-none space-y-1">{weaknesses.map((w: string, j: number) => (<li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2"><span className="text-red-400">•</span> {w}</li>))}</ul>
                       </div>
                     )}
                 </CardContent>
@@ -289,45 +230,18 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
-        
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
-        
-        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (
-          <li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>
-        ))}</ul>)}
-
-        {section.ordered_list && Array.isArray(section.ordered_list) && (
-          <ol className="list-decimal list-inside space-y-4 mb-8 pl-4">
-            {section.ordered_list.map((item: string, oi: number) => (
-              <li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">
-                {item}
-              </li>
-            ))}
-          </ol>
-        )}
-        
-        {section.subsections && Array.isArray(section.subsections) && (
-          <div className={cn(
-            "space-y-10",
-            section.subsections.length >= 2 && section.subsections.every((s: any) => (s.strengths || s.advantages || s.weaknesses || s.watch_out)) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0"
-          )}>
-            {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
-          </div>
-        )}
-
+        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
+        {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
+        {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length >= 2 && section.subsections.every((s: any) => (s.strengths || s.advantages || s.weaknesses || s.watch_out)) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
                 {section.note}
                 {section.note.includes("Assurance") || section.note.includes("Vérifie AVANT l’achat") ? (
                   <div className="mt-4 not-italic">
-                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95">
-                      <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">
-                        🛡️ Voir le guide Assurance 2026
-                      </Link>
-                    </Button>
+                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link></Button>
                   </div>
                 ) : null}
             </div>
@@ -358,63 +272,19 @@ export default function ArticleClient({ id }: { id: string }) {
 
             {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
             
-            {/* Sommaire Dynamique Redessiné - Une seule colonne */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
               <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
-                <div className="flex items-center gap-3 mb-8">
-                  <LayoutGrid className="h-5 w-5 text-brand" />
-                  <h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2>
-                </div>
-                <nav>
-                  <ul className="space-y-5">
-                    {activeSections.map((section: any, idx: number) => {
-                      if (!section.title) return null;
-                      const sectionId = slugify(section.title);
-                      return (
-                        <li key={`toc-${idx}`} className="group/item">
-                          <a 
-                            href={`#${sectionId}`} 
-                            className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all group-hover/item:translate-x-1"
-                          >
-                            <div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 transition-colors group-hover/item:bg-brand group-hover/item:text-white">
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                            </div>
-                            <span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span>
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </nav>
+                <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2></div>
+                <nav><ul className="space-y-5">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all group-hover/item:translate-x-1"><div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 transition-colors group-hover/item:bg-brand group-hover/item:text-white"><CheckCircle2 className="h-3.5 w-3.5" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span></a></li>); })}</ul></nav>
               </div>
             )}
 
-            <div className="space-y-4">
-              {activeSections.map((section: any, idx: number) => renderSection(section, idx))}
-            </div>
+            <div className="space-y-4">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
             
             {article.cta_blocks && Array.isArray(article.cta_blocks) && (
               <div className="mt-16 pt-8 border-t border-brand/20">
                 <h3 className="text-xl font-black uppercase tracking-tight text-brand mb-6">Guides recommandés</h3>
-                <div className="space-y-4">
-                  {article.cta_blocks.map((block: any, idx: number) => (
-                    <div key={`footer-cta-${idx}`} className="mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden bg-brand/5 border-brand/20">
-                      <Link href={`/info/${block.target_slug || block.id || '#'}`} className="group flex flex-col sm:flex-row items-stretch">
-                        <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
-                          <h4 className="text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight group-hover:text-brand">
-                            {block.label || block.display_title || "Découvrir le guide"}
-                          </h4>
-                          {block.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{block.text}</p>}
-                        </div>
-                        <div className="hidden md:flex items-center pr-6">
-                          <div className="text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0 bg-brand">
-                            <ArrowRight className="h-5 w-5" />
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+                <div className="space-y-4">{article.cta_blocks.map((block: any, idx: number) => (<div key={`footer-cta-${idx}`} className="mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden bg-brand/5 border-brand/20"><Link href={`/info/${block.target_slug || block.id || '#'}`} className="group flex flex-col sm:flex-row items-stretch"><div className="flex-1 p-5 md:p-6 flex flex-col justify-center"><h4 className="text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight group-hover:text-brand">{block.label || block.display_title || "Découvrir le guide"}</h4>{block.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{block.text}</p>}</div><div className="hidden md:flex items-center pr-6"><div className="text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0 bg-brand"><ArrowRight className="h-5 w-5" /></div></div></Link></div>))}</div>
               </div>
             )}
 
@@ -422,12 +292,7 @@ export default function ArticleClient({ id }: { id: string }) {
               <div className="mt-16 pt-8 border-t border-brand/20">
                 <div className="flex items-center gap-3 mb-6"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Questions fréquentes</h3></div>
                 <Accordion type="single" collapsible className="w-full">
-                  {article.faq.map((item: any, idx: number) => (
-                    <AccordionItem key={`faq-${idx}`} value={`faq-${idx}`} className="border-b-brand/10">
-                      <AccordionTrigger className="text-left font-bold text-foreground py-4 hover:text-brand transition-colors">{item.question}</AccordionTrigger>
-                      <AccordionContent className="text-muted-foreground leading-relaxed pb-4 font-medium">{item.answer}</AccordionContent>
-                    </AccordionItem>
-                  ))}
+                  {article.faq.map((item: any, idx: number) => (<AccordionItem key={`faq-${idx}`} value={`faq-${idx}`} className="border-b-brand/10"><AccordionTrigger className="text-left font-bold text-foreground py-4 hover:text-brand transition-colors">{item.question}</AccordionTrigger><AccordionContent className="text-muted-foreground leading-relaxed pb-4 font-medium">{item.answer}</AccordionContent></AccordionItem>))}
                 </Accordion>
               </div>
             )}

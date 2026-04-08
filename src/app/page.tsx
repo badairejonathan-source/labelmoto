@@ -44,6 +44,7 @@ export default function LandingPage() {
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
         if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
         if (id.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.png";
+        if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
         
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
