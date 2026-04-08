@@ -34,6 +34,7 @@ export function initializeFirebase() {
 
 export function getSdks(firebaseApp: FirebaseApp) {
   // Use initializeFirestore with settings to fix "Could not reach Cloud Firestore backend" in proxy/dev environments
+  // Forcing long polling alone to avoid conflict with auto-detect
   const firestore = initializeFirestore(firebaseApp, {
     experimentalForceLongPolling: true,
   });
