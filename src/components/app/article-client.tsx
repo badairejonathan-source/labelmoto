@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { 
   ArrowLeft, Map, CheckCircle2, Info, Loader2, FileText, 
   ChevronRight, Home, HelpCircle, Gauge, Scale, Settings2, 
-  ExternalLink, AlertTriangle, ShieldCheck 
+  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -196,38 +196,53 @@ export default function ArticleClient({ id }: { id: string }) {
 
     const isInsurance = ctaData.target_slug?.includes('assurance') || ctaData.header?.includes('ASSURANCE');
     
+    // Attribution des miniatures selon le slug
+    let thumbnailUrl = "";
+    const slug = ctaData.target_slug;
+    if (slug?.includes('assurance')) thumbnailUrl = "/images/motard-article-assurance2026.png";
+    else if (slug?.includes('a2')) thumbnailUrl = "/images/achat-occasion.png";
+    else if (slug?.includes('pieges')) thumbnailUrl = "/images/evitelespieges.jpg";
+    else if (slug?.includes('budget')) thumbnailUrl = "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+    else thumbnailUrl = "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070";
+
     return (
       <div className={cn(
-        "mt-4 mb-8 p-6 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg",
+        "mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden",
         isInsurance ? "bg-blue-50/50 border-blue-200" : "bg-brand/5 border-brand/20"
       )}>
-        <Link href={`/info/${ctaData.target_slug}`} className="group flex items-center justify-between gap-4">
-          <div className="flex-1">
+        <Link href={`/info/${ctaData.target_slug}`} className="group flex flex-col sm:flex-row items-stretch">
+          <div className="relative w-full sm:w-32 md:w-44 aspect-video sm:aspect-square overflow-hidden bg-muted shrink-0 border-b sm:border-b-0 sm:border-r border-dashed border-muted">
+            <Image src={thumbnailUrl} alt="" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-black/10" />
+          </div>
+          <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
             {ctaData.header && (
               <p className={cn(
-                "text-[10px] font-black uppercase tracking-widest mb-1.5",
+                "text-[9px] font-black uppercase tracking-widest mb-1.5",
                 isInsurance ? "text-blue-600" : "text-brand"
               )}>
                 {ctaData.header}
               </p>
             )}
             <h4 className={cn(
-              "text-lg font-black uppercase tracking-tight text-foreground transition-colors",
+              "text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight",
               isInsurance ? "group-hover:text-blue-600" : "group-hover:text-brand"
             )}>
               {ctaData.label}
             </h4>
             {ctaData.description && (
-              <p className="text-xs text-muted-foreground mt-1.5 font-medium leading-relaxed">
+              <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">
                 {ctaData.description}
               </p>
             )}
           </div>
-          <div className={cn(
-            "text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0",
-            isInsurance ? "bg-blue-600" : "bg-brand"
-          )}>
-            {isInsurance ? <ShieldCheck className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+          <div className="hidden md:flex items-center pr-6">
+            <div className={cn(
+              "text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0",
+              isInsurance ? "bg-blue-600" : "bg-brand"
+            )}>
+              {isInsurance ? <ShieldCheck className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
+            </div>
           </div>
         </Link>
       </div>
