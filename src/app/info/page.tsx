@@ -17,13 +17,11 @@ const ArticleCard = ({ article }: { article: any }) => {
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
 
-        // PRIORITÉ : Forcer les chemins locaux pour éviter le scintillement (fallback vs Firestore)
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
         if (id.includes('taille') || title.includes('taille') || title.includes('gabarit')) return "/images/motard-articles-hauteurdeselle.png";
-        if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
+        if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
         if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-        if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
         if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
         
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -36,21 +35,17 @@ export default function LandingPage() {
     };
 
     const getArticleImage = (article: any) => {
-        if (article.imageUrl && article.imageUrl.trim() !== '') {
-            if (article.id?.includes('assurance') || article.title?.toLowerCase().includes('assurance')) return "/images/motard-article-assurance2026.png";
-            if (article.id?.includes('a2') || article.title?.toLowerCase().includes('a2')) return "/images/achat-occasion.png";
-            return article.imageUrl;
-        }
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
         
-        if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.jpg";
-        if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
-        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
-        if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
-        if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
+        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
+        if (id.includes('taille') || title.includes('taille')) return "/images/motard-articles-hauteurdeselle.png";
+        if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
+        if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+        if (id.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.png";
         
+        if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     };
 
@@ -102,7 +97,7 @@ export default function LandingPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {isArticlesLoading ? (Array.from({ length: 3 }).map((_, i) => (<div key={i} className="bg-card rounded-2xl overflow-hidden shadow-md animate-pulse h-[350px]" />))) : (
                                 featuredArticles?.map((article) => (
-                                    <Link key={article.id} href="/info" className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1">
+                                    <Link key={article.id} href={`/info/${article.id}`} className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1">
                                         <div className="relative aspect-video overflow-hidden bg-muted"><Image src={getArticleImage(article)} alt={article.display_title || article.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 100vw, 33vw" /></div>
                                         <div className="p-6 flex flex-col flex-grow">
                                             <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3 font-black uppercase tracking-widest"><FileText className="h-3.5 w-3.5 text-brand" /><span>Par {article.author || "L'équipe Label Moto"}</span></div>

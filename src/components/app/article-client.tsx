@@ -69,10 +69,11 @@ export default function ArticleClient({ id }: { id: string }) {
   }, [firestoreArticle, id]);
 
   const imageUrl = useMemo(() => {
-    if (id.includes('taille') || (article && article.id?.includes('taille'))) return "/images/motard-articles-hauteurdeselle.png";
-    if (id.includes('assurance') || (article && article.id?.includes('assurance'))) return "/images/motard-article-assurance2026.png";
-    if (id.includes('a2') || (article && article.id?.includes('a2'))) return "/images/achat-occasion.png";
-    if (id.includes('pieges') || id.includes('occasion') || (article && (article.id?.includes('pieges') || article.id?.includes('occasion')))) return "/images/evitelespieges.png";
+    const articleId = id.toLowerCase();
+    if (articleId.includes('taille')) return "/images/motard-articles-hauteurdeselle.png";
+    if (articleId.includes('assurance')) return "/images/motard-article-assurance2026.png";
+    if (articleId.includes('a2')) return "/images/achat-occasion.png";
+    if (articleId.includes('occasion') || articleId.includes('pieges')) return "/images/evitelespieges.png";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070&auto=format&fit=crop";
@@ -176,8 +177,8 @@ export default function ArticleClient({ id }: { id: string }) {
         ctaData = {
           header: "GUIDE ACHAT OCCASION",
           label: "ÉVITER LES PIÈGES EN OCCASION →",
-          description: "Contrôle technique, points mécaniques : ne vous faites pas avoir.",
-          target_slug: "achat-moto-occasion-guide-complet-eviter-les-pieges"
+          description: "Inspection, papiers, essai : tout ce qu'il faut savoir avant d'acheter.",
+          target_slug: "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
         };
       } else if (text.includes('combien coûte vraiment une moto') || text.includes('budget')) {
         ctaData = {
@@ -208,7 +209,7 @@ export default function ArticleClient({ id }: { id: string }) {
     const slug = ctaData.target_slug;
     if (slug?.includes('assurance')) thumbnailUrl = "/images/motard-article-assurance2026.png";
     else if (slug?.includes('a2')) thumbnailUrl = "/images/achat-occasion.png";
-    else if (slug?.includes('pieges') || slug?.includes('occasion')) thumbnailUrl = "/images/evitelespieges.png";
+    else if (slug?.includes('occasion') || slug?.includes('pieges')) thumbnailUrl = "/images/evitelespieges.png";
     else if (slug?.includes('taille')) thumbnailUrl = "/images/motard-articles-hauteurdeselle.png";
     else if (slug?.includes('budget')) thumbnailUrl = "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     else thumbnailUrl = "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070";
@@ -333,13 +334,7 @@ export default function ArticleClient({ id }: { id: string }) {
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={handleSearch} activeFilter={null} placeholderText="Recherche par departement , ville , marque, nom ... " />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
-            <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
-            <ChevronRight className="h-3 w-3 shrink-0" />
-            <Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
-            <ChevronRight className="h-3 w-3 shrink-0" />
-            <span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
-          </nav>
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap"><Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link><ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link><ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span></nav>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
               <article>

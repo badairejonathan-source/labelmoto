@@ -112,7 +112,7 @@
         "content": [
           "Une moto coûte régulièrement à entretenir. En moyenne, prévoyez 25 à 50 € par mois."
         ],
-        "cta": "👉 Pour éviter les pièges, consultez notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion.",
+        "cta": "👉 Pour éviter les pièges, consulte notre guide complet pour acheter une moto d'occasion en toute sécurité.",
         "table": {
           "headers": ["Élément", "Fréquence moyenne", "Prix"],
           "rows": [
@@ -209,42 +209,5 @@
         ]
       }
     ]
-  },
-  {
-    "id": "achat-moto-occasion-guide-complet-eviter-les-pieges",
-    "display_title": "Achat moto d’occasion : le guide pour éviter les pièges",
-    "category": "achat-occasion",
-    "status": "published",
-    "imageUrl": "/images/evitelespieges.png",
-    "author": "L'équipe Label Moto",
-    "readingTime": "12 min de lecture",
-    "intro": [
-      "Acheter une moto d'occasion est malin pour un débutant, mais cela demande de la méthode. Entre les vices cachés et les entretiens négligés, il faut savoir où regarder."
-    ],
-    "sections": [
-      {
-        "title": "Concession ou particulier : que choisir ?",
-        "content": ["Chaque option a ses avantages. Le particulier est souvent moins cher, mais le concessionnaire offre une sécurité non négligeable."],
-        "table": {
-          "headers": ["Critère", "Particulier", "Concessionnaire"],
-          "rows": [
-            { "Critère": "Prix", "Particulier": "Moins cher (-15%)", "Concessionnaire": "Prix du marché" },
-            { "Critère": "Garantie", "Particulier": "Aucune", "Concessionnaire": "3 à 12 mois" },
-            { "Critère": "Révision", "Particulier": "À vérifier", "Concessionnaire": "Effectuée" },
-            { "Critère": "Sécurité", "Particulier": "Limitée", "Concessionnaire": "Élevée" }
-          ]
-        }
-      },
-      {
-        "title": "Les points de contrôle mécaniques",
-        "list": [
-          "État des pneus et plaquettes",
-          "Kit chaîne (propreté et tension)",
-          "Absence de fuite aux joints spy",
-          "Démarrage à froid sans bruit suspect"
-        ]
-      }
-    ],
-    "conclusion": "Si vous avez un doute, passez votre chemin. Il y aura toujours d'autres occasions."
   }
 ]
