@@ -65,7 +65,9 @@ export default function ArticleClient({ id }: { id: string }) {
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
 
+    // Mapping officiel ZFE
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
+    
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.png";
     if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
@@ -89,27 +91,31 @@ export default function ArticleClient({ id }: { id: string }) {
     const getCellValue = (row: any, header: string, colIndex: number) => {
       if (!row) return '';
       
-      const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/(^_|_$)/g, '');
-      const stripAll = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+      // 1. Si row est un tableau, accès direct
+      if (Array.isArray(row)) return row[colIndex] || '';
+
+      // 2. Préparation des versions nettoyées du header (ignore casse, accents et symboles)
+      const clean = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+      const cleanHeader = clean(header);
       
-      const normHeader = normalize(header);
-      const strippedHeader = stripAll(header);
-      
-      // 1. Match exact
+      // 3. Match exact ou insensible à la casse
       if (row[header] !== undefined) return row[header];
-      
-      // 2. Scan de toutes les clés pour trouver une correspondance normalisée ou dépouillée
-      const foundKey = Object.keys(row).find(k => {
-        const nk = normalize(k);
-        const sk = stripAll(k);
-        return nk === normHeader || sk === strippedHeader || nk.includes(normHeader) || normHeader.includes(nk);
-      });
-      
-      if (foundKey) return row[foundKey];
-      
-      // 3. Fallback sur l'index (col0, col1, etc.)
+      const keys = Object.keys(row);
+      const exactMatch = keys.find(k => k.toLowerCase() === header.toLowerCase());
+      if (exactMatch) return row[exactMatch];
+
+      // 4. Match par "nettoyage total" (gère "DATE D'IMMATRICULATION" vs "date_immatriculation")
+      const fuzzyMatch = keys.find(k => clean(k) === cleanHeader);
+      if (fuzzyMatch) return row[fuzzyMatch];
+
+      // 5. Match par index numérique (si les clés Firestore sont "0", "1", "2"...)
       if (row[colIndex] !== undefined) return row[colIndex];
+      if (row[String(colIndex)] !== undefined) return row[String(colIndex)];
       if (row[`col${colIndex}`] !== undefined) return row[`col${colIndex}`];
+      
+      // 6. Fallback ultime : prendre la valeur à la même position physique dans l'objet
+      const values = Object.values(row);
+      if (values[colIndex] !== undefined) return values[colIndex];
       
       return '';
     };
@@ -216,6 +222,7 @@ export default function ArticleClient({ id }: { id: string }) {
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.watch_out || section.cons || section.points_vigilance;
 
+    // Affichage comparatif (côte à côte si deux blocs d'avantages/inconvénients sont présents)
     if (strengths || weaknesses) {
         return (
             <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
@@ -314,6 +321,7 @@ export default function ArticleClient({ id }: { id: string }) {
               </div>
             )}
             
+            {/* Sommaire Cliquable au design pointillé - Colonne unique */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
               <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
                 <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2></div>

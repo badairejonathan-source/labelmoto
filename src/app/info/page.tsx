@@ -17,7 +17,9 @@ const ArticleCard = ({ article }: { article: any }) => {
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
 
+        // Mapping officiel ZFE
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
+        
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
         if (id.includes('taille') || title.includes('taille') || title.includes('gabarit')) return "/images/motard-articles-hauteurdeselle.png";
