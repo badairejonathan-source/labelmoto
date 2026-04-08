@@ -1,3 +1,4 @@
+
 [
   {
     "id": "meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
@@ -18,7 +19,7 @@
       "les erreurs à éviter avant d’acheter",
       "quelle moto A2 selon ton profil",
       "les meilleurs roadsters, trails et sportives A2",
-      "le budget réel, l’assurance et l’occasion sans redondance"
+      "le budget réel, l’assurance et l’occasion"
     ],
     "sections": [
       {
@@ -95,8 +96,7 @@
     "readingTime": "10 min de lecture",
     "intro": [
       "On entend souvent dire que rouler en moto coûte moins cher qu’une voiture. C’est parfois vrai… mais pas toujours.",
-      "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu. Et c’est souvent là que les regrets commencent.",
-      "Pourtant, avec les bonnes informations, la moto peut rester un plaisir accessible — même pour un jeune permis.",
+      "Entre l’assurance, l’équipement obligatoire, l’entretien et l’essence, beaucoup de nouveaux motards découvrent après l’achat que le budget est plus élevé que prévu.",
       "Dans cet article, on va détailler le coût réel d’une moto pour un débutant :"
     ],
     "intro_points": [
@@ -112,43 +112,22 @@
         "title": "Le prix d’achat : le budget de départ",
         "content": [
           "Avant même de penser à rouler, il faut acheter la moto.",
-          "Et c’est souvent là que les futurs motards se trompent : ils regardent uniquement le prix affiché… sans anticiper le reste.",
-          "Pour un permis A2, le budget moyen en France se situe généralement entre 3 000 € et 7 000 € :"
+          "Pour un permis A2, le budget moyen en France se situe généralement entre 3 000 € et 7 000 €."
         ],
-        "cta": "👉 Si tu hésites encore sur le modèle, consulte d’abord notre guide des meilleures motos A2 pour débuter afin d’éviter d’acheter une moto inadaptée.",
+        "cta": "👉 Si tu hésites encore sur le modèle, consulte d’abord notre guide des meilleures motos A2 pour débuter.",
         "list": [
-          "3 000 à 4 500 € → moto d’occasion raisonnable pour débuter",
+          "3 000 à 4 500 € → moto d’occasion raisonnable",
           "4 500 à 6 000 € → modèle récent bien équipé",
-          "6 000 à 7 000 € → moto quasi neuve ou concession"
-        ],
-        "note": "Beaucoup de débutants veulent acheter neuf pour être rassurés.",
-        "subsections": [
-          {
-            "title": "Pourquoi l’occasion reste souvent le meilleur choix",
-            "content": ["Mais en réalité, une première moto subit souvent :"],
-            "list": [
-              "petites chutes à l’arrêt",
-              "erreurs de manipulation",
-              "revente après la passerelle permis A"
-            ],
-            "note": "C’est pourquoi l’occasion reste souvent le choix le plus intelligent financièrement."
-          }
+          "6 000 à 7 000 € → moto quasi neuve"
         ]
       },
       {
         "title": "L’assurance : la plus grosse surprise pour un débutant",
         "content": [
           "C’est presque toujours le moment où le futur motard tombe de haut.",
-          "On trouve une moto au bon prix… puis on demande un devis d’assurance… et là le budget double.",
-          "Pour un permis A2, l’assurance dépend surtout de 3 facteurs :"
+          "Pour un permis A2, l’assurance dépend surtout de ton âge, de ta région et du modèle choisi."
         ],
-        "cta": "👉 Avant de choisir ta formule, consulte notre dossier complet sur l'assurance moto 2026 pour faire le bon choix.",
-        "list": [
-          "ton âge et ton expérience",
-          "la région (Île-de-France = plus cher)",
-          "le modèle de moto"
-        ],
-        "note": "Certaines motos coûtent bien plus cher à assurer que d’autres. Par exemple, une sportive ou un modèle très volé peut coûter 2 à 3 fois plus cher qu’une moto plus sage.",
+        "cta": "👉 Avant de signer, consulte notre dossier complet sur l'assurance moto 2026 pour bien choisir ta formule.",
         "table": {
           "headers": ["Profil", "Prix mensuel moyen"],
           "rows": [
@@ -156,95 +135,27 @@
             { "Profil": "2 ans d’expérience", "Prix mensuel moyen": "50 à 120 €" },
             { "Profil": "Motard expérimenté", "Prix mensuel moyen": "30 à 70 €" }
           ]
-        },
-        "conclusion": "Beaucoup de motards regrettent leur achat uniquement à cause de l’assurance… alors que c’est le poste le plus prévisible."
+        }
       },
       {
         "title": "L’entretien : le coût invisible qui compte vraiment",
         "content": [
-          "Une moto coûte rarement cher à l’achat… mais elle coûte régulièrement à entretenir.",
-          "Et contrairement à une voiture, certaines pièces s’usent beaucoup plus vite.",
-          "Voici les dépenses les plus courantes :"
+          "Une moto coûte régulièrement à entretenir. En moyenne, prévoyez 25 à 50 € par mois."
         ],
-        "cta": "👉 Pour éviter d’acheter une moto mal entretenue, consulte notre guide complet pour éviter les erreurs lors d’un achat moto d’occasion.",
-        "note": "En moyenne, un motard débutant dépense 300 à 600 € par an, soit environ 25 à 50 € par mois.",
+        "cta": "👉 Pour éviter les frais imprévus, consulte notre guide pour éviter les pièges lors d’un achat moto d’occasion.",
         "table": {
           "headers": ["Élément", "Fréquence moyenne", "Prix"],
           "rows": [
             { "Élément": "Pneus", "Fréquence moyenne": "8 000 à 15 000 km", "Prix": "250 à 350 €" },
             { "Élément": "Kit chaîne", "Fréquence moyenne": "20 000 à 30 000 km", "Prix": "150 à 300 €" },
-            { "Élément": "Révision annuelle", "Fréquence moyenne": "1 fois/an", "Prix": "150 à 400 €" },
-            { "Élément": "Plaquettes de frein", "Fréquence moyenne": "10 000 à 20 000 km", "Prix": "40 à 120 €" },
-            { "Élément": "Batterie", "Fréquence moyenne": "3 à 5 ans", "Prix": "60 à 120 €" }
+            { "Élément": "Révision annuelle", "Fréquence moyenne": "1 fois/an", "Prix": "150 à 400 €" }
           ]
         }
-      },
-      {
-        "title": "L’équipement du motard : un vrai investissement",
-        "content": ["Avant même de tourner la clé, tu dois être équipé correctement."],
-        "note": "👉 Budget total moyen : 500 à 1 200 €",
-        "table": {
-          "headers": ["Équipement", "Prix moyen"],
-          "rows": [
-            { "Équipement": "Casque homologué", "Prix moyen": "150 à 400 €" },
-            { "Équipement": "Gants homologués", "Prix moyen": "40 à 120 €" },
-            { "Équipement": "Blouson renforcé", "Prix moyen": "150 à 350 €" },
-            { "Équipement": "Chaussures ou bottes", "Prix moyen": "100 à 250 €" },
-            { "Équipement": "Antivol homologué", "Prix moyen": "80 à 200 €" }
-          ]
-        },
-        "conclusion": "Mieux vaut parfois prendre une moto un peu moins chère et un bon équipement que l’inverse."
-      },
-      {
-        "title": "Le budget mensuel réel d’un motard débutant",
-        "content": ["Prenons un exemple concret : jeune permis A2 en zone urbaine."],
-        "note": "➡️ Total : environ 255 € par mois",
-        "table": {
-          "headers": ["Poste", "Coût mensuel moyen"],
-          "rows": [
-            { "Poste": "Assurance", "Coût mensuel moyen": "120 €" },
-            { "Poste": "Carburant", "Coût mensuel moyen": "75 €" },
-            { "Poste": "Entretien", "Coût mensuel moyen": "40 €" },
-            { "Poste": "Divers", "Coût mensuel moyen": "20 €" }
-          ]
-        },
-        "conclusion": "Dans la majorité des cas, un budget réaliste pour débuter tourne autour de 200 à 300 € par mois."
-      },
-      {
-        "title": "Moto vs voiture : le vrai comparatif",
-        "content": ["La moto permet souvent :"],
-        "cta": "👉 La moto est rentable surtout pour les trajets quotidiens.",
-        "subsections": [
-          {
-            "title": "Les avantages",
-            "list": [
-              "moins de carburant",
-              "pas de péage",
-              "stationnement plus simple",
-              "gain de temps quotidien"
-            ]
-          },
-          {
-            "title": "Les limites",
-            "list": [
-              "équipement spécifique",
-              "assurance parfois élevée",
-              "entretien plus fréquent"
-            ]
-          }
-        ]
       }
-    ],
-    "faq": [
-      { "question": "Quel budget pour débuter la moto ?", "answer": "Environ 200 à 300 € par mois tout compris." },
-      { "question": "La moto est-elle rentable ?", "answer": "Oui surtout en usage urbain quotidien." },
-      { "question": "Quelle moto coûte le moins cher ?", "answer": "Les roadsters 300 à 500 cc sont les plus économiques." },
-      { "question": "L’assurance moto est-elle chère ?", "answer": "Pour un jeune permis, c’est souvent le poste principal." }
     ],
     "conclusion": [
       "Une moto coûte surtout cher quand on choisit mal son premier modèle.",
-      "En anticipant le budget réel, tu évites les mauvaises surprises et tu profites vraiment de ta moto.",
-      "Choisis une machine adaptée à ton usage… et ton portefeuille te remerciera."
+      "En anticipant le budget réel, tu évites les mauvaises surprises."
     ]
   },
   {
@@ -267,11 +178,11 @@
       {
         "title": "Les 3 formules incontournables",
         "table": {
-          "headers": ["Formule", "Niveau de protection", "Niveau de prix", "Idéale pour"],
+          "headers": ["Formule", "Niveau de protection", "Prix", "Idéale pour"],
           "rows": [
-            { "Formule": "Tiers", "Niveau de protection": "Faible", "Niveau de prix": "€", "Idéale pour": "Motos anciennes, petit budget" },
-            { "Formule": "Tiers plus", "Niveau de protection": "Intermédiaire", "Niveau de prix": "€€", "Idéale pour": "Jeunes permis, citadins" },
-            { "Formule": "Tous risques", "Niveau de protection": "Élevé", "Niveau de prix": "€€€", "Idéale pour": "Motos récentes, gros rouleurs" }
+            { "Formule": "Tiers", "Niveau de protection": "Faible", "Prix": "€", "Idéale pour": "Motos anciennes" },
+            { "Formule": "Tiers plus", "Niveau de protection": "Intermédiaire", "Prix": "€€", "Idéale pour": "Jeunes permis" },
+            { "Formule": "Tous risques", "Niveau de protection": "Élevé", "Prix": "€€€", "Idéale pour": "Motos récentes" }
           ]
         }
       },
@@ -280,16 +191,16 @@
         "table": {
           "headers": ["Catégorie", "Garantie", "Conseil"],
           "rows": [
-            { "Catégorie": "Protection des personnes", "Garantie": "Individuelle Pilote", "Conseil": "🟥 Crucial : vous couvre en cas de dommages corporels." },
-            { "Catégorie": "Dommages matériels", "Garantie": "Vol et Incendie", "Conseil": "Recommandé en zone urbaine." },
-            { "Catégorie": "Assistance", "Garantie": "Assistance 0 km", "Conseil": "Indispensable pour éviter de payer le remorquage." }
+            { "Catégorie": "Protection personnes", "Garantie": "Individuelle Pilote", "Conseil": "🟥 Crucial : couvre vos dommages corporels." },
+            { "Catégorie": "Dommages matériels", "Garantie": "Vol et Incendie", "Conseil": "Recommandé en ville." },
+            { "Catégorie": "Assistance", "Garantie": "Assistance 0 km", "Conseil": "Indispensable pour le remorquage." }
           ]
         }
       }
     ],
     "conclusion": [
       "L'assurance est votre meilleure alliée sur la route.",
-      "Comparez toujours avant de signer pour obtenir le meilleur rapport protection/prix."
+      "Comparez toujours avant de signer."
     ]
   },
   {
@@ -302,33 +213,16 @@
     "author": "L'équipe Label Moto",
     "readingTime": "12 min de lecture",
     "intro": [
-      "Choisir une moto uniquement parce qu’elle te plaît visuellement est rarement une bonne idée. Une moto peut sembler parfaite sur le papier, puis devenir stressante à l’arrêt, fatigante dans les manœuvres ou inconfortable au quotidien si elle n’est pas adaptée à ton gabarit.",
-      "La première erreur consiste à regarder seulement la hauteur de selle. C’est un critère important, mais ce n’est pas le seul. Une selle haute mais fine à l’avant peut être plus facile qu’une selle plus basse mais très large.",
-      "L’idée de ce guide est simple : t’aider à choisir une moto non pas selon un fantasme, mais selon ce que tu vas vraiment vivre à l’arrêt, en ville, sur route et au quotidien."
+      "Choisir une moto uniquement parce qu’elle te plaît visuellement est rarement une bonne idée. Une moto peut sembler parfaite sur le papier, puis devenir stressante à l’arrêt si elle n’est pas adaptée à ton gabarit."
     ],
     "intro_points": [
       "pourquoi la hauteur de selle ne suffit pas",
       "comment la largeur de selle change tout",
-      "l’importance du poids et du centre de gravité",
       "les meilleures motos entre 1m55 et 1m70",
       "les meilleures motos entre 1m70 et 1m80",
-      "les meilleures motos entre 1m80 et 1m95",
-      "sellerie et kits de rabaissement : ce qu’il faut savoir"
+      "les meilleures motos entre 1m80 et 1m95"
     ],
     "sections": [
-      {
-        "title": "Pourquoi la hauteur de selle ne suffit pas",
-        "content": [
-          "La hauteur de selle est la première cote à regarder, mais elle ne suffit jamais à elle seule. Deux motos avec la même hauteur peuvent donner un ressenti totalement différent à l’arrêt.",
-          "La largeur de selle, sa forme à l’avant, le poids total, la facilité à manœuvrer et le centre de gravité perçu changent énormément l’accessibilité réelle."
-        ],
-        "subsections": [
-          {
-            "title": "La largeur de selle change le contact au sol",
-            "content": ["Une selle large écarte les jambes et peut rendre la moto plus difficile à tenir à l’arrêt. À l’inverse, une selle fine permet aux jambes de descendre plus droit."]
-          }
-        ]
-      },
       {
         "title": "Quelle moto pour une personne de 1m55 à 1m70 ?",
         "cards": [
@@ -336,15 +230,27 @@
             "title": "Honda CMX500 Rebel",
             "type": "custom / cruiser",
             "seat_feel": "très basse",
-            "weight_feel": "rassurant à l’arrêt",
-            "our_opinion": "L’une des meilleures références si ta priorité absolue est de toucher facilement le sol.",
-            "strengths": ["très facile pour poser les pieds", "bonne confiance à l’arrêt"]
+            "weight_feel": "rassurant",
+            "our_opinion": "La référence absolue pour toucher facilement le sol.",
+            "strengths": ["très facile", "confiance à l’arrêt"]
+          }
+        ]
+      },
+      {
+        "title": "Quelle moto pour une personne de 1m80 à 1m95 ?",
+        "cards": [
+          {
+            "title": "Yamaha Tracer 7",
+            "type": "trail routier",
+            "seat_feel": "haute",
+            "weight_feel": "équilibré",
+            "our_opinion": "Parfait pour ne pas se sentir tassé sur la route.",
+            "strengths": ["espace jambes", "confort route"]
           }
         ]
       }
     ],
     "conclusion": [
-      "Choisir une moto selon sa taille, ce n’est pas seulement une affaire de centimètres.",
       "La meilleure moto est celle dans laquelle ton corps se sent naturellement à sa place."
     ]
   },

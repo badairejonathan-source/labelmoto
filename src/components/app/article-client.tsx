@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -158,7 +159,15 @@ export default function ArticleClient({ id }: { id: string }) {
 
     if (typeof cta === 'string') {
       const text = cta.toLowerCase();
-      if (text.includes('meilleures motos a2') || text.includes('achat moto a2')) {
+      // On priorise le lien Assurance si le texte contient "assurance"
+      if (text.includes('assurance')) {
+        ctaData = {
+          header: "DOSSIER SPÉCIAL ASSURANCE",
+          label: "BIEN CHOISIR SON ASSURANCE MOTO →",
+          description: "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
+          target_slug: "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
+        };
+      } else if (text.includes('meilleures motos a2') || text.includes('achat moto a2')) {
         ctaData = {
           header: "OBJECTIF PERMIS A2",
           label: "QUELLE MOTO CHOISIR POUR DÉBUTER ? →",
@@ -171,13 +180,6 @@ export default function ArticleClient({ id }: { id: string }) {
           label: "ÉVITER LES PIÈGES EN OCCASION →",
           description: "Contrôle technique, points mécaniques : ne vous faites pas avoir.",
           target_slug: "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
-        };
-      } else if (text.includes('assurance')) {
-        ctaData = {
-          header: "DOSSIER SPÉCIAL ASSURANCE",
-          label: "BIEN CHOISIR SON ASSURANCE MOTO →",
-          description: "Tiers, Tiers Plus ou Tous Risques ? Découvrez la formule idéale.",
-          target_slug: "assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil"
         };
       } else if (text.includes('combien coûte vraiment une moto') || text.includes('budget')) {
         ctaData = {
@@ -204,7 +206,6 @@ export default function ArticleClient({ id }: { id: string }) {
 
     const isInsurance = ctaData.target_slug?.includes('assurance') || ctaData.header?.includes('ASSURANCE');
     
-    // Attribution des miniatures selon le slug
     let thumbnailUrl = "";
     const slug = ctaData.target_slug;
     if (slug?.includes('assurance')) thumbnailUrl = "/images/motard-article-assurance2026.png";
