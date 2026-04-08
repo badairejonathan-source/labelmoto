@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -7,7 +6,8 @@ import Image from 'next/image';
 import { 
   CheckCircle2, Info, Loader2, 
   ChevronRight, Home, HelpCircle, Gauge, Settings2, 
-  ExternalLink, AlertTriangle, ArrowRight, LayoutGrid
+  ExternalLink, AlertTriangle, ArrowRight, LayoutGrid,
+  Map
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -53,7 +53,7 @@ const getFicheIdFromTitle = (title: string): string | null => {
   return null;
 };
 
-export default function ArticleClient({ id }: { id: string }) {
+export default function ArticleClient({ id, showHeader = true, children }: { id: string, showHeader?: boolean, children?: React.ReactNode }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -66,14 +66,13 @@ export default function ArticleClient({ id }: { id: string }) {
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
 
-    // Mapping officiel ZFE
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
-    
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.png";
     if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
     if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+    if (articleId.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.png";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
@@ -91,33 +90,21 @@ export default function ArticleClient({ id }: { id: string }) {
 
     const getCellValue = (row: any, header: string, colIndex: number) => {
       if (!row) return '';
-      
-      // 1. Si row est un tableau, accès direct
       if (Array.isArray(row)) return row[colIndex] || '';
 
-      // 2. Préparation des versions nettoyées (ignore casse, accents et TOUS les symboles)
       const clean = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
       const cleanHeader = clean(header);
       
-      // 3. Match exact ou insensible à la casse
-      if (row[header] !== undefined) return row[header];
       const keys = Object.keys(row);
-      const exactMatch = keys.find(k => k.toLowerCase() === header.toLowerCase());
-      if (exactMatch) return row[exactMatch];
-
-      // 4. Match par "nettoyage total" (gère "DATE D'IMMATRICULATION" vs "date_immatriculation")
       const fuzzyMatch = keys.find(k => clean(k) === cleanHeader);
       if (fuzzyMatch) return row[fuzzyMatch];
 
-      // 5. Match par "inclusion" (si le header contient la clé ou vice versa)
       const inclusionMatch = keys.find(k => cleanHeader.includes(clean(k)) || clean(k).includes(cleanHeader));
       if (inclusionMatch) return row[inclusionMatch];
 
-      // 6. Match par index numérique (si les clés Firestore sont "0", "1", "2"...)
       if (row[colIndex] !== undefined) return row[colIndex];
       if (row[String(colIndex)] !== undefined) return row[String(colIndex)];
       
-      // 7. Fallback ultime : position physique
       const values = Object.values(row);
       if (values[colIndex] !== undefined) return values[colIndex];
       
@@ -161,7 +148,6 @@ export default function ArticleClient({ id }: { id: string }) {
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
-          
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
@@ -178,29 +164,22 @@ export default function ArticleClient({ id }: { id: string }) {
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
-                
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
-                    {listItems.map((item: any, i: number) => {
-                      const text = typeof item === 'string' ? item : (item.label || item.name || item.title || '');
-                      if (!text) return null;
-                      return (
-                        <li key={`${keyPrefix}-item-${idx}-${i}`} className="flex items-start gap-2 text-sm font-bold text-foreground">
-                          <CheckCircle2 className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-                          <span>{text}</span>
-                        </li>
-                      );
-                    })}
+                    {listItems.map((item: any, i: number) => (
+                      <li key={`${keyPrefix}-item-${idx}-${i}`} className="flex items-start gap-2 text-sm font-bold text-foreground">
+                        <CheckCircle2 className="h-4 w-4 text-brand shrink-0 mt-0.5" />
+                        <span>{typeof item === 'string' ? item : (item.label || item.name || item.title || '')}</span>
+                      </li>
+                    ))}
                   </ul>
                 )}
-
                 {strengths && Array.isArray(strengths) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
                     <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
-
                 {weaknesses && Array.isArray(weaknesses) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
@@ -251,39 +230,31 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        
         {bodyText && (Array.isArray(bodyText) ? 
           (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : 
           (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>)
         )}
-
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
-        
         {section.list && Array.isArray(section.list) && (
           <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
             {section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}
           </ul>
         )}
-
         {section.ordered_list && Array.isArray(section.ordered_list) && (
           <ol className="list-decimal list-inside space-y-4 mb-8 pl-4">
             {section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}
           </ol>
         )}
-
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn("space-y-10", section.subsections.length >= 2 && section.subsections.every((s: any) => (s.strengths || s.advantages || s.weaknesses || s.watch_out)) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0")}>
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
         )}
-
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
                 {section.note}
-                {(section.note.includes("Assurance") || 
-                  section.note.includes("Vérifie AVANT l’achat") || 
-                  section.note.includes("coûtent bien plus cher à assurer")) && (
+                {(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT") || section.note.includes("coûtent bien plus cher")) && (
                   <div className="mt-4 not-italic">
                     <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95">
                       <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link>
@@ -300,94 +271,105 @@ export default function ArticleClient({ id }: { id: string }) {
   if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   return (
-    <div className="min-h-screen relative">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />
+    <div className="min-h-screen relative bg-background">
+      {showHeader && <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />}
+      
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
+        <div className="max-w-6xl mx-auto">
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8">
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
           </nav>
           
-          <article>
-            <div className="relative w-full aspect-video md:aspect-[2/1] rounded-3xl overflow-hidden mb-12 shadow-2xl border-4 border-white bg-muted group">
-                <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" priority />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-6 md:p-10 text-white w-full">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-2 drop-shadow-lg max-w-[95%]">{article.display_title || article.title}</h1>
-                    <div className="flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-widest opacity-90"><span>Par {article.author || "L'équipe Label Moto"}</span></div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            {/* Contenu Principal */}
+            <article className="lg:col-span-8">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-8 text-foreground">
+                {article.display_title || article.title}
+              </h1>
+
+              <div className="relative w-full aspect-video rounded-3xl overflow-hidden mb-12 shadow-2xl border-4 border-white bg-muted">
+                  <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
+              </div>
+
+              {article.intro && Array.isArray(article.intro) && (
+                <div className="mb-12 space-y-6">
+                  {article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}
                 </div>
-            </div>
+              )}
+              
+              {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
+                <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                    <Image src="/images/logo-moto.png?v=6" alt="" width={200} height={64} />
+                  </div>
+                  <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-widest m-0 text-muted-foreground">Au sommaire de ce guide :</h2></div>
+                  <nav>
+                    <ul className="space-y-4">
+                      {activeSections.map((section: any, idx: number) => { 
+                        if (!section.title) return null; 
+                        const sectionId = slugify(section.title); 
+                        return (
+                          <li key={`toc-${idx}`} className="group/item">
+                            <a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all">
+                              <div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors"><CheckCircle2 className="h-3.5 w-3.5" /></div>
+                              <span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span>
+                            </a>
+                          </li>
+                        ); 
+                      })}
+                    </ul>
+                  </nav>
+                </div>
+              )}
 
-            {article.intro && Array.isArray(article.intro) && (
-              <div className="mb-12 space-y-4">
-                {article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}
-              </div>
-            )}
-            
-            {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
-              <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
-                <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2></div>
-                <nav>
-                  <ul className="space-y-5">
-                    {activeSections.map((section: any, idx: number) => { 
-                      if (!section.title) return null; 
-                      const sectionId = slugify(section.title); 
-                      return (
-                        <li key={`toc-${idx}`} className="group/item">
-                          <a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all group-hover/item:translate-x-1">
-                            <div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 transition-colors group-hover/item:bg-brand group-hover/item:text-white"><CheckCircle2 className="h-3.5 w-3.5" /></div>
-                            <span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span>
-                          </a>
-                        </li>
-                      ); 
-                    })}
-                  </ul>
-                </nav>
-              </div>
-            )}
+              <div className="space-y-4">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
+              {children}
+              
+              {article.conclusion && (
+                  <div className="mt-16 pt-8 border-t border-brand/20">
+                      <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
+                      <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
+                      <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
+                  </div>
+              )}
+            </article>
 
-            <div className="space-y-4">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
-            
-            {article.cta_blocks && Array.isArray(article.cta_blocks) && (
-              <div className="mt-16 pt-8 border-t border-brand/20">
-                <h3 className="text-xl font-black uppercase tracking-tight text-brand mb-6">Guides recommandés</h3>
-                <div className="space-y-4">
-                  {article.cta_blocks.map((block: any, idx: number) => (
-                    <div key={`footer-cta-${idx}`} className="mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden bg-brand/5 border-brand/20">
-                      <Link href={`/info/${block.target_slug || block.id || '#'}`} className="group flex flex-col sm:flex-row items-stretch">
-                        <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
-                          <h4 className="text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight group-hover:text-brand">{block.label || block.display_title || "Découvrir le guide"}</h4>
-                          {block.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{block.text}</p>}
-                        </div>
-                        <div className="hidden md:flex items-center pr-6">
-                          <div className="text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0 bg-brand"><ArrowRight className="h-5 w-5" /></div>
-                        </div>
-                      </Link>
+            {/* Barre Latérale */}
+            <aside className="lg:col-span-4 relative">
+              <div className="sticky top-28 space-y-8">
+                <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2rem]">
+                  <CardHeader className="bg-brand text-white p-6">
+                    <CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-lg">
+                      <Map className="h-6 w-6" /> Trouver un pro
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6 text-center space-y-6">
+                    <div className="relative aspect-video rounded-2xl overflow-hidden border-4 border-muted shadow-lg group">
+                      <Image src="/images/apercucartezoom.png" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ArrowRight className="h-10 w-10 text-white" />
+                      </div>
                     </div>
-                  ))}
+                    <p className="text-sm font-bold text-muted-foreground leading-relaxed">
+                      Comparez les ateliers et concessions pour votre prochaine révision directement sur notre carte interactive.
+                    </p>
+                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[10px] py-7 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
+                      <Link href="/map">Voir la carte interactive</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <div className="bg-muted/30 p-6 rounded-3xl border-2 border-dashed border-muted-foreground/20 text-center">
+                  <p className="text-xs font-bold text-muted-foreground italic">
+                    Besoin d'un conseil personnalisé ? <br/>
+                    <Link href="/contact" className="text-brand underline underline-offset-4 not-italic font-black uppercase">Contactez l'équipe</Link>
+                  </p>
                 </div>
               </div>
-            )}
-
-            {article.faq && (
-              <div className="mt-16 pt-8 border-t border-brand/20">
-                <div className="flex items-center gap-3 mb-6"><HelpCircle className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Questions fréquentes</h3></div>
-                <Accordion type="single" collapsible className="w-full">
-                  {article.faq.map((item: any, idx: number) => (<AccordionItem key={`faq-${idx}`} value={`faq-${idx}`} className="border-b-brand/10"><AccordionTrigger className="text-left font-bold text-foreground py-4 hover:text-brand transition-colors">{item.question}</AccordionTrigger><AccordionContent className="text-muted-foreground leading-relaxed pb-4 font-medium">{item.answer}</AccordionContent></AccordionItem>))}
-                </Accordion>
-              </div>
-            )}
-
-            {article.conclusion && (
-                <div className="mt-16 pt-8 border-t border-brand/20">
-                    <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                    <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
-                    <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={120} height={120} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
-                </div>
-            )}
-          </article>
+            </aside>
+          </div>
         </div>
       </main>
     </div>
