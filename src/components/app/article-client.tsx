@@ -186,6 +186,13 @@ export default function ArticleClient({ id }: { id: string }) {
           description: "Assurance, entretien, équipement : ne laissez rien au hasard.",
           target_slug: "combien-coute-vraiment-une-moto-par-mois"
         };
+      } else if (text.includes('taille') || text.includes('gabarit')) {
+        ctaData = {
+          header: "GUIDE MORPHOLOGIE",
+          label: "QUELLE MOTO SELON VOTRE TAILLE ? →",
+          description: "De 1m55 à 1m95, trouvez la moto adaptée à votre gabarit.",
+          target_slug: "quelle-moto-choisir-selon-sa-taille"
+        };
       } else {
         return (
           <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
@@ -203,6 +210,7 @@ export default function ArticleClient({ id }: { id: string }) {
     if (slug?.includes('assurance')) thumbnailUrl = "/images/motard-article-assurance2026.png";
     else if (slug?.includes('a2')) thumbnailUrl = "/images/achat-occasion.png";
     else if (slug?.includes('pieges') || slug?.includes('occasion')) thumbnailUrl = "/images/evitelespieges.png";
+    else if (slug?.includes('taille')) thumbnailUrl = "/images/motard-articles-hauteurdeselle.png";
     else if (slug?.includes('budget')) thumbnailUrl = "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     else thumbnailUrl = "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070";
 
@@ -375,21 +383,6 @@ export default function ArticleClient({ id }: { id: string }) {
                         </AccordionItem>
                       ))}
                     </Accordion>
-                  </div>
-                )}
-                {article.cta_blocks && (
-                  <div className="mt-16 space-y-6">
-                    {article.cta_blocks.map((block: any, i: number) => (
-                      <Card key={i} className="border-2 border-brand shadow-xl overflow-hidden group hover:scale-[1.01] transition-transform">
-                        <div className="flex flex-col md:flex-row items-stretch">
-                          <div className="bg-brand text-white p-6 md:w-1/3 flex flex-col justify-center"><h4 className="text-xl font-black uppercase tracking-tighter leading-tight">{block.title}</h4></div>
-                          <div className="p-6 md:flex-1 flex flex-col justify-between">
-                            <p className="text-sm font-bold text-muted-foreground mb-4">{block.text}</p>
-                            <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] tracking-widest w-fit"><Link href={`/info/${block.target_slug}`}>{block.label} →</Link></Button>
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
                   </div>
                 )}
                 {article.conclusion && (
