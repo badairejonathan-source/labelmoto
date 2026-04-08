@@ -38,6 +38,13 @@ const slugify = (text: string) =>
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
 
+const slugifyKey = (text: string) => 
+  text.toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/(^-|-$)+/g, "");
+
 const getFicheIdFromTitle = (title: string): string | null => {
   const t = title.toLowerCase();
   if (t.includes('mt-07')) return 'yamaha-mt-07-2021-plus';
@@ -98,11 +105,15 @@ export default function ArticleClient({ id }: { id: string }) {
             <TableBody>
               {rows.map((row: any, ri: number) => (
                 <TableRow key={`tr-${key}-${ri}`} className="hover:bg-muted/30">
-                  {headers.map((header: string, hi: number) => (
-                    <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
-                      {String(row[header] || row[hi] || '')}
-                    </TableCell>
-                  ))}
+                  {headers.map((header: string, hi: number) => {
+                    const rKey = slugifyKey(header);
+                    const cellValue = row[header] ?? row[rKey] ?? row[hi] ?? '';
+                    return (
+                      <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
+                        {String(cellValue)}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))}
             </TableBody>

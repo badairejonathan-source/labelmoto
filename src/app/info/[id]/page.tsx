@@ -4,8 +4,8 @@ import ArticleClient from '@/components/app/article-client';
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   
-  // Note: On ne peut pas appeler initializeFirebase() ici car c'est un module 'use client'.
-  // On génère des métadonnées intelligentes basées sur le slug pour le SEO.
+  // On génère des métadonnées intelligentes basées sur le slug pour le SEO
+  // car on ne peut pas appeler initializeFirebase() (module client) depuis le serveur.
   const title = id
     .replace(/-/g, ' ')
     .replace(/\b\w/g, (l) => l.toUpperCase());
