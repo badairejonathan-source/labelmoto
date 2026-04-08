@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -84,31 +85,13 @@ export default function ArticleClient({ id }: { id: string }) {
     return article.sections || article.content || [];
   }, [article]);
 
-  const allSummaryPoints = useMemo(() => {
-    const points: { title: string; id: string }[] = [];
-    if (!activeSections) return points;
-    activeSections.forEach((s: any) => {
-      if (s.title) {
-        points.push({ title: s.title, id: slugify(s.title) });
-      }
-      if (s.subsections && !s.subsections.some((sub: any) => sub.strengths || sub.weaknesses)) {
-        s.subsections.forEach((sub: any) => {
-          if (sub.title) {
-            points.push({ title: sub.title, id: slugify(sub.title) });
-          }
-        });
-      }
-    });
-    return points.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
-  }, [activeSections]);
-  
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
       router.push(`/map?search=${encodeURIComponent(searchTerm)}`);
     }
   };
 
-  const renderTable = (tableData: any) => {
+  const renderTable = (tableData: any, key?: string) => {
     if (!tableData) return null;
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
@@ -120,7 +103,7 @@ export default function ArticleClient({ id }: { id: string }) {
             .replace(/[^a-z0-9]+/g, "");
 
     return (
-      <div className="my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted shadow-sm">
+      <div key={key} className="my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted shadow-sm">
         <div className="overflow-x-auto">
           <Table className="w-full">
             <TableHeader className="bg-muted/50">
@@ -159,7 +142,7 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
-  const renderCtaBlock = (cta: any) => {
+  const renderCtaBlock = (cta: any, key?: string) => {
     if (!cta) return null;
     
     let ctaData = cta;
@@ -203,7 +186,7 @@ export default function ArticleClient({ id }: { id: string }) {
         };
       } else {
         return (
-          <div className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
+          <div key={key} className="bg-brand/5 border-l-4 border-brand p-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
             {cta}
           </div>
         );
@@ -222,7 +205,7 @@ export default function ArticleClient({ id }: { id: string }) {
     else thumbnailUrl = "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
 
     return (
-      <div className={cn(
+      <div key={key} className={cn(
         "mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden",
         isInsurance ? "bg-blue-50/50 border-blue-200" : "bg-brand/5 border-brand/20"
       )}>
@@ -265,15 +248,15 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
-  const renderCards = (cards: any[]) => {
+  const renderCards = (cards: any[], keyPrefix: string) => {
     if (!cards || cards.length === 0) return null;
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+      <div key={keyPrefix} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || '';
           const ficheId = getFicheIdFromTitle(typeof modelLabel === 'string' ? modelLabel : '');
           return (
-            <Card key={idx} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
+            <Card key={`${keyPrefix}-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">{card.title}</CardTitle>
@@ -362,12 +345,12 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
-  const renderComparisonGrid = (items: any[]) => {
+  const renderComparisonGrid = (items: any[], keyPrefix: string) => {
     if (!items || items.length === 0) return null;
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+      <div key={keyPrefix} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         {items.map((item, idx) => (
-          <Card key={idx} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm group/card hover:border-brand/50 transition-all">
+          <Card key={`${keyPrefix}-${idx}`} className="border-2 border-muted overflow-hidden bg-card h-full flex flex-col shadow-sm group/card hover:border-brand/50 transition-all">
             <CardHeader className="bg-muted/30 py-4 border-b flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground">
                 {item.title}
@@ -409,25 +392,29 @@ export default function ArticleClient({ id }: { id: string }) {
     );
   };
 
-  const renderSection = (section: any, idx: number) => {
+  const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     const bodyText = section.content || section.text || section.description;
     const hasComparisonSubsections = section.subsections?.some((sub: any) => sub.strengths || sub.weaknesses);
 
     return (
-      <div key={idx} id={sectionId} className="mb-12 scroll-mt-28">
+      <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {section.cta && renderCtaBlock(section.cta)}
+        {section.cta && renderCtaBlock(section.cta, `cta-section-${idx}`)}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={i} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
-        {section.table && renderTable(section.table)}
-        {section.cards && renderCards(section.cards)}
+        {section.table && renderTable(section.table, `table-${idx}`)}
+        {section.cards && renderCards(section.cards, `cards-${idx}`)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-3 mb-8 pl-4">{section.ordered_list.map((item: string, li: number) => (<li key={li} className="text-lg text-foreground font-black">{item}</li>))}</ol>)}
         
         {hasComparisonSubsections ? (
-          renderComparisonGrid(section.subsections)
+          renderComparisonGrid(section.subsections, `comparison-${idx}`)
         ) : (
-          section.subsections && Array.isArray(section.subsections) && (<div className="space-y-6">{section.subsections.map((sub: any, si: number) => renderSection(sub, si))}</div>)
+          section.subsections && Array.isArray(section.subsections) && (
+            <div className="space-y-6">
+              {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${idx}-${si}`))}
+            </div>
+          )
         )}
       </div>
     );
@@ -454,27 +441,50 @@ export default function ArticleClient({ id }: { id: string }) {
                     </div>
                 </div>
                 {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={i} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
+                
                 {article.intro_points && (
                     <div className="my-8 p-6 bg-brand/5 rounded-2xl border-2 border-dashed border-brand/20">
                         <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4">Ce que vous allez apprendre :</p>
                         <ul className="list-none space-y-3 pl-0">
                             {article.intro_points.map((pt: string, i: number) => {
                                 const ptLower = pt.toLowerCase();
-                                const bestSection = activeSections.find((s: any) => {
-                                    if (!s.title) return false;
-                                    const st = s.title.toLowerCase();
-                                    // Keyword matching logic for robust linking
-                                    if (st.includes(ptLower) || ptLower.includes(st)) return true;
-                                    const keywords = ["2024", "formule", "profil", "garantie", "1m55", "1m70", "1m80", "1m85", "1m95", "sellerie", "rabaissement"];
-                                    const shared = keywords.find(k => st.includes(k) && ptLower.includes(k));
-                                    return !!shared;
-                                });
-                                const sectionId = bestSection ? slugify(bestSection.title) : null;
+                                let targetId = null;
+                                
+                                for (const s of activeSections) {
+                                    if (s.title && (s.title.toLowerCase().includes(ptLower) || ptLower.includes(s.title.toLowerCase()))) {
+                                        targetId = slugify(s.title);
+                                        break;
+                                    }
+                                    if (s.subsections) {
+                                        const sub = s.subsections.find((sb: any) => 
+                                            sb.title && (sb.title.toLowerCase().includes(ptLower) || ptLower.includes(sb.title.toLowerCase()))
+                                        );
+                                        if (sub) {
+                                            targetId = slugify(sub.title);
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (!targetId) {
+                                    const keywords = ["2024", "formule", "profil", "garantie", "1m55", "1m70", "1m80", "1m85", "1m95", "sellerie", "rabaissement", "largeur de selle", "poids"];
+                                    const foundKeyword = keywords.find(k => ptLower.includes(k));
+                                    if (foundKeyword) {
+                                        for (const s of activeSections) {
+                                            if (s.title?.toLowerCase().includes(foundKeyword)) { targetId = slugify(s.title); break; }
+                                            if (s.subsections) {
+                                                const sub = s.subsections.find((sb: any) => sb.title?.toLowerCase().includes(foundKeyword));
+                                                if (sub) { targetId = slugify(sub.title); break; }
+                                            }
+                                        }
+                                    }
+                                }
+
                                 return (
                                     <li key={i} className="flex items-center gap-3 text-lg text-foreground font-black group/item">
                                         <CheckCircle2 className="h-5 w-5 text-brand shrink-0 group-hover/item:scale-110 transition-transform" />
-                                        {sectionId ? (
-                                          <a href={`#${sectionId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
+                                        {targetId ? (
+                                          <a href={`#${targetId}`} className="hover:text-brand transition-all hover:translate-x-1 decoration-brand/30 underline-offset-4 hover:underline">
                                             {pt}
                                           </a>
                                         ) : (
@@ -486,13 +496,16 @@ export default function ArticleClient({ id }: { id: string }) {
                         </ul>
                     </div>
                 )}
-                <div className="space-y-12">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
+
+                <div className="space-y-12">
+                  {activeSections.map((section: any, idx: number) => renderSection(section, idx, `main-section-${idx}`))}
+                </div>
                 
                 {article.cta_blocks && Array.isArray(article.cta_blocks) && (
                   <div className="mt-16 pt-8 border-t border-brand/20">
                     <h3 className="text-xl font-black uppercase tracking-tight text-brand mb-6">Articles recommandés</h3>
                     <div className="space-y-4">
-                      {article.cta_blocks.map((block: any, idx: number) => renderCtaBlock(block))}
+                      {article.cta_blocks.map((block: any, idx: number) => renderCtaBlock(block, `footer-cta-${idx}`))}
                     </div>
                   </div>
                 )}
