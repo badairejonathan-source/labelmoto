@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { 
   CheckCircle2, Info, Loader2, 
   ChevronRight, Home, HelpCircle, Gauge, Settings2, 
-  ExternalLink, AlertTriangle, ShieldCheck, ArrowRight, LayoutGrid, Bike
+  ExternalLink, AlertTriangle, ArrowRight, LayoutGrid
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -63,11 +63,14 @@ export default function ArticleClient({ id }: { id: string }) {
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
     const articleId = id.toLowerCase();
-    if (articleId.includes('taille')) return "/images/motard-articles-hauteurdeselle.png";
-    if (articleId.includes('assurance')) return "/images/motard-article-assurance2026.png";
-    if (articleId.includes('a2')) return "/images/achat-occasion.png";
-    if (articleId.includes('occasion') || articleId.includes('pieges')) return "/images/evitelespieges.png";
-    if (articleId.includes('zfe')) return "/images/motardZFEarticle2.png";
+    const title = (article.display_title || article.title || "").toLowerCase();
+
+    if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.png";
+    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
+    if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
+    if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
+    if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
+    if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
@@ -85,16 +88,32 @@ export default function ArticleClient({ id }: { id: string }) {
 
     const getCellValue = (row: any, header: string, colIndex: number) => {
       if (!row) return '';
+      
+      // Normalisation ultra-robuste pour matcher n'importe quel format de clé Firestore
+      const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/(^_|_$)/g, '');
+      const normHeader = normalize(header);
+      
+      // 1. Match exact
       if (row[header] !== undefined) return row[header];
-      const normalized = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s-]/g, '_');
-      if (row[normalized] !== undefined) return row[normalized];
-      const foundKey = Object.keys(row).find(k => {
-        const kNorm = k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const hNorm = header.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return kNorm === hNorm || kNorm === normalized;
-      });
+      
+      // 2. Match normalisé (snake_case)
+      if (row[normHeader] !== undefined) return row[normHeader];
+      
+      // 3. Scan de toutes les clés pour trouver une correspondance normalisée
+      const foundKey = Object.keys(row).find(k => normalize(k) === normHeader);
       if (foundKey) return row[foundKey];
+      
+      // 4. Fallback sur l'index (col0, col1, etc.)
       if (row[colIndex] !== undefined) return row[colIndex];
+      if (row[`col${colIndex}`] !== undefined) return row[`col${colIndex}`];
+      
+      // 5. Match lâche (si l'un contient l'autre)
+      const looseKey = Object.keys(row).find(k => {
+        const nk = normalize(k);
+        return nk.length > 2 && (normHeader.includes(nk) || nk.includes(normHeader));
+      });
+      if (looseKey) return row[looseKey];
+
       return '';
     };
 
@@ -114,14 +133,11 @@ export default function ArticleClient({ id }: { id: string }) {
             <TableBody>
               {rows.map((row: any, ri: number) => (
                 <TableRow key={`tr-${key}-${ri}`} className="hover:bg-muted/30">
-                  {headers.map((header: string, hi: number) => {
-                    const cellValue = getCellValue(row, header, hi);
-                    return (
-                      <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
-                        {String(cellValue)}
-                      </TableCell>
-                    );
-                  })}
+                  {headers.map((header: string, hi: number) => (
+                    <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
+                      {String(getCellValue(row, header, hi))}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))}
             </TableBody>
@@ -138,10 +154,12 @@ export default function ArticleClient({ id }: { id: string }) {
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
-          const listItems = card.items || card.models || card.recommended_models || card.points || card.guarantees || card.list;
+          
+          // Support de tous les noms de champs possibles dans Firestore
+          const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
-          const summary = card.summary || card.description || card.text || card.intro;
+          const summary = card.summary || card.description || card.text || card.intro || card.content;
 
           return (
             <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all">
@@ -154,12 +172,7 @@ export default function ArticleClient({ id }: { id: string }) {
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
-                {card.recommended_formula && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-blue-600 mb-1">Formule conseillée</p>
-                    <p className="text-sm font-black text-blue-700">{card.recommended_formula}</p>
-                  </div>
-                )}
+                
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
                     {listItems.map((item: any, i: number) => {
@@ -174,12 +187,14 @@ export default function ArticleClient({ id }: { id: string }) {
                     })}
                   </ul>
                 )}
+
                 {strengths && Array.isArray(strengths) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
                     <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
                   </div>
                 )}
+
                 {weaknesses && Array.isArray(weaknesses) && (
                   <div className="space-y-2 pt-2">
                     <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
@@ -205,6 +220,7 @@ export default function ArticleClient({ id }: { id: string }) {
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.watch_out || section.cons || section.points_vigilance;
 
+    // Rendu spécifique pour les comparaisons (côte à côte)
     if (strengths || weaknesses) {
         return (
             <Card key={key || sectionId} className="border-2 border-muted overflow-hidden h-full shadow-sm bg-card">
@@ -230,20 +246,43 @@ export default function ArticleClient({ id }: { id: string }) {
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
+        
+        {bodyText && (Array.isArray(bodyText) ? 
+          (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : 
+          (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>)
+        )}
+
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
-        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
-        {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
-        {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length >= 2 && section.subsections.every((s: any) => (s.strengths || s.advantages || s.weaknesses || s.watch_out)) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
+        
+        {section.list && Array.isArray(section.list) && (
+          <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
+            {section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}
+          </ul>
+        )}
+
+        {section.ordered_list && Array.isArray(section.ordered_list) && (
+          <ol className="list-decimal list-inside space-y-4 mb-8 pl-4">
+            {section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}
+          </ol>
+        )}
+
+        {section.subsections && Array.isArray(section.subsections) && (
+          <div className={cn("space-y-10", section.subsections.length >= 2 && section.subsections.every((s: any) => (s.strengths || s.advantages || s.weaknesses || s.watch_out)) && "md:grid md:grid-cols-2 md:gap-8 md:space-y-0")}>
+            {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
+          </div>
+        )}
+
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-4 mt-4 mb-8 italic rounded-r-lg shadow-sm text-foreground font-bold">
                 {section.note}
-                {section.note.includes("Assurance") || section.note.includes("Vérifie AVANT l’achat") ? (
+                {(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT l’achat")) && (
                   <div className="mt-4 not-italic">
-                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link></Button>
+                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-6 py-5 shadow-lg transition-all hover:scale-105 active:scale-95">
+                      <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link>
+                    </Button>
                   </div>
-                ) : null}
+                )}
             </div>
         )}
       </div>
@@ -251,14 +290,18 @@ export default function ArticleClient({ id }: { id: string }) {
   };
 
   if (isLoading) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement Firestore...</p></div>);
-  if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><p className="text-muted-foreground mb-8">Nous n'avons pas trouvé l'article demandé dans la base de données.</p><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
+  if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   return (
     <div className="min-h-screen relative">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap"><Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link><ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link><ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span></nav>
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 overflow-hidden whitespace-nowrap">
+            <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
+            <ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
+            <ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
+          </nav>
           
           <article>
             <div className="relative w-full aspect-video md:aspect-[2/1] rounded-3xl overflow-hidden mb-12 shadow-2xl border-4 border-white bg-muted group">
@@ -270,12 +313,32 @@ export default function ArticleClient({ id }: { id: string }) {
                 </div>
             </div>
 
-            {article.intro && Array.isArray(article.intro) && (<div className="mb-12 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>)}
+            {article.intro && Array.isArray(article.intro) && (
+              <div className="mb-12 space-y-4">
+                {article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}
+              </div>
+            )}
             
+            {/* Sommaire Cliquable (Design pointillé, colonne unique) */}
             {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
               <div className="my-12 p-8 bg-brand/5 rounded-3xl border-2 border-dashed border-brand/20 shadow-sm">
                 <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-sm font-black uppercase tracking-widest m-0">Sommaire de l'article</h2></div>
-                <nav><ul className="space-y-5">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all group-hover/item:translate-x-1"><div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 transition-colors group-hover/item:bg-brand group-hover/item:text-white"><CheckCircle2 className="h-3.5 w-3.5" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span></a></li>); })}</ul></nav>
+                <nav>
+                  <ul className="space-y-5">
+                    {activeSections.map((section: any, idx: number) => { 
+                      if (!section.title) return null; 
+                      const sectionId = slugify(section.title); 
+                      return (
+                        <li key={`toc-${idx}`} className="group/item">
+                          <a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all group-hover/item:translate-x-1">
+                            <div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 transition-colors group-hover/item:bg-brand group-hover/item:text-white"><CheckCircle2 className="h-3.5 w-3.5" /></div>
+                            <span className="border-b-2 border-transparent group-hover/item:border-brand/30">{section.title}</span>
+                          </a>
+                        </li>
+                      ); 
+                    })}
+                  </ul>
+                </nav>
               </div>
             )}
 
@@ -284,7 +347,21 @@ export default function ArticleClient({ id }: { id: string }) {
             {article.cta_blocks && Array.isArray(article.cta_blocks) && (
               <div className="mt-16 pt-8 border-t border-brand/20">
                 <h3 className="text-xl font-black uppercase tracking-tight text-brand mb-6">Guides recommandés</h3>
-                <div className="space-y-4">{article.cta_blocks.map((block: any, idx: number) => (<div key={`footer-cta-${idx}`} className="mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden bg-brand/5 border-brand/20"><Link href={`/info/${block.target_slug || block.id || '#'}`} className="group flex flex-col sm:flex-row items-stretch"><div className="flex-1 p-5 md:p-6 flex flex-col justify-center"><h4 className="text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight group-hover:text-brand">{block.label || block.display_title || "Découvrir le guide"}</h4>{block.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{block.text}</p>}</div><div className="hidden md:flex items-center pr-6"><div className="text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0 bg-brand"><ArrowRight className="h-5 w-5" /></div></div></Link></div>))}</div>
+                <div className="space-y-4">
+                  {article.cta_blocks.map((block: any, idx: number) => (
+                    <div key={`footer-cta-${idx}`} className="mt-4 mb-8 border-2 border-dashed rounded-2xl transition-all hover:shadow-lg overflow-hidden bg-brand/5 border-brand/20">
+                      <Link href={`/info/${block.target_slug || block.id || '#'}`} className="group flex flex-col sm:flex-row items-stretch">
+                        <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
+                          <h4 className="text-base md:text-xl font-black uppercase tracking-tight text-foreground transition-colors leading-tight group-hover:text-brand">{block.label || block.display_title || "Découvrir le guide"}</h4>
+                          {block.text && <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">{block.text}</p>}
+                        </div>
+                        <div className="hidden md:flex items-center pr-6">
+                          <div className="text-white p-3.5 rounded-full shadow-xl group-hover:scale-110 transition-transform shrink-0 bg-brand"><ArrowRight className="h-5 w-5" /></div>
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
