@@ -5,7 +5,24 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Gauge, Droplets, Wrench, Settings2, ChevronDown, Loader2, CheckCircle2, AlertTriangle, HelpCircle, LayoutGrid, Home, ChevronRight, Bike, Scale } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Gauge, 
+  Droplets, 
+  Wrench, 
+  Settings2, 
+  Loader2, 
+  CheckCircle2, 
+  AlertTriangle, 
+  HelpCircle, 
+  Home, 
+  ChevronRight, 
+  Bike, 
+  Scale,
+  Info,
+  ShieldCheck,
+  Zap
+} from 'lucide-react';
 
 import Header from '@/components/app/header';
 import LabelMotoLogo from '@/components/app/logo';
@@ -17,7 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
@@ -29,6 +46,7 @@ import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FicheClient({ modelId }: { modelId: string }) {
   const router = useRouter();
@@ -48,9 +66,12 @@ export default function FicheClient({ modelId }: { modelId: string }) {
 
   const displayData = useMemo(() => {
     if (!fiche) return null;
-    const variants = fiche.variants || (fiche.technical_sheet?.variants) || [];
+    
+    const variants = fiche.variants || [];
     const ts = fiche.technical_sheet || {};
     const activeVariant = variants[selectedVariantIndex] || {};
+    
+    // On fusionne les données de la variante avec les données de base
     const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
     const sg = fiche.service_guide || {};
 
@@ -74,6 +95,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         seatHeight: (activeVariant.seat_height_mm || ts.seat_height_mm) ? `${activeVariant.seat_height_mm || ts.seat_height_mm} mm` : "N/A",
         wetWeight: (activeVariant.weight_tpf_kg || ts.weight_tpf_kg) ? `${activeVariant.weight_tpf_kg || ts.weight_tpf_kg} kg` : "N/A",
         fuelCapacity: (activeVariant.tank_l || ts.tank_l) ? `${activeVariant.tank_l || ts.tank_l} L` : "N/A",
+        wheelbase: (activeVariant.wheelbase_mm || ts.wheelbase_mm) ? `${activeVariant.wheelbase_mm || ts.wheelbase_mm} mm` : "N/A",
       },
       chassis: {
         frame: cp.frame || "N/A",
@@ -93,12 +115,42 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     };
   }, [fiche, selectedVariantIndex, modelId]);
 
-  if (isLoading) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse">Chargement Firestore...</p></div>);
-  if (!fiche || !displayData) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase">Fiche non trouvée</h1><Button asChild><Link href="/entretien">Retour</Link></Button></div>);
+  if (isLoading) return (
+    <div className="min-h-screen bg-background">
+        <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
+        <main className="container mx-auto px-4 py-8">
+            <div className="max-w-5xl mx-auto space-y-8">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-12 w-full rounded-full" />
+                <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <Skeleton className="h-64 rounded-3xl" />
+                    <Skeleton className="h-64 rounded-3xl" />
+                </div>
+            </div>
+        </main>
+    </div>
+  );
+
+  if (!fiche || !displayData) return (
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
+        <h1 className="text-4xl font-black mb-4 uppercase">Fiche non trouvée</h1>
+        <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase rounded-full px-8">
+            <Link href="/entretien">Retour au catalogue</Link>
+        </Button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen relative bg-background">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />
+      <Header 
+        searchTerm={searchTerm} 
+        onSearchTermChange={setSearchTerm} 
+        onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} 
+        activeFilter={null} 
+        placeholderText="Recherche..." 
+      />
+      
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-5xl mx-auto">
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-8">
@@ -107,7 +159,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
             <ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate">{displayData.modelName}</span>
           </nav>
           
-          <div className="mb-8 flex justify-between items-center">
+          <div className="mb-8">
             {returnUrl && (
               <Button asChild variant="outline" className="border-brand text-brand rounded-full hover:bg-brand/10 h-10 px-6 font-black uppercase tracking-widest text-[10px]">
                   <Link href={returnUrl} className="flex items-center gap-2"><ArrowLeft className="h-4 w-4" /> {returnLabel}</Link>
@@ -115,8 +167,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
             )}
           </div>
 
-          <div className="space-y-8">
-            {/* --- HEADER FICHE TECHNIQUE --- */}
+          <div className="space-y-12">
+            {/* --- HERO FICHE TECHNIQUE --- */}
             <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black">
                 <div className="absolute inset-0 z-0">
                     <Image src={displayData.imageUrl} alt={displayData.modelName} fill className="object-cover opacity-60" priority />
@@ -130,10 +182,10 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85] mb-2">{displayData.modelName}</h1>
                             <p className="text-lg sm:text-2xl font-black text-brand italic">Millésime {displayData.year}</p>
                         </div>
-                        <div className="w-48 sm:w-64 Transition-all drop-shadow-2xl brightness-0 invert opacity-80"><LabelMotoLogo /></div>
+                        <div className="w-48 sm:w-64 drop-shadow-2xl brightness-0 invert opacity-80"><LabelMotoLogo /></div>
                     </div>
 
-                    {/* Bloc Caractéristiques Intégré */}
+                    {/* Bloc Caractéristiques Clés */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/20 shadow-2xl">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Gauge className="h-3.5 w-3.5" /> Puissance</div>
@@ -155,58 +207,66 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </div>
             </div>
 
+            {/* --- SÉLECTEUR DE VARIANTE --- */}
             {displayData.hasVariants && (
-              <div className="flex flex-col items-center gap-4 bg-muted/30 p-4 rounded-2xl border">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Sélectionnez la version :</p>
+              <div className="flex flex-col items-center gap-4 bg-muted/30 p-6 rounded-[2rem] border shadow-inner">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Sélectionnez la version :</p>
                 <Tabs value={String(selectedVariantIndex)} onValueChange={(v) => setSelectedVariantIndex(Number(v))} className="w-full max-w-md">
-                  <TabsList className="grid w-full h-12 bg-background border shadow-inner" style={{ gridTemplateColumns: `repeat(${displayData.variants.length}, 1fr)` }}>
-                    {displayData.variants.map((v: any, idx: number) => (<TabsTrigger key={idx} value={String(idx)} className="font-black uppercase text-[10px] data-[state=active]:bg-brand data-[state=active]:text-white">{v.label || `V${idx + 1}`}</TabsTrigger>))}
+                  <TabsList className="grid w-full h-14 bg-background border-2 shadow-xl p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${displayData.variants.length}, 1fr)` }}>
+                    {displayData.variants.map((v: any, idx: number) => (
+                      <TabsTrigger key={idx} value={String(idx)} className="font-black uppercase text-[10px] data-[state=active]:bg-brand data-[state=active]:text-white rounded-lg transition-all">
+                        {v.label || `V${idx + 1}`}
+                      </TabsTrigger>
+                    ))}
                   </TabsList>
                 </Tabs>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-              <Card className="shadow-xl border-none bg-card/50 backdrop-blur-sm overflow-hidden rounded-3xl">
-                <CardHeader className="bg-brand/5 border-b py-6"><CardTitle className="flex items-center gap-3 text-brand uppercase font-black text-lg"><Gauge className="h-6 w-6" /> Détails Moteur</CardTitle></CardHeader>
-                <CardContent className="p-6">
-                  <ul className="space-y-4">
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-xs uppercase">Type:</span><span className="font-black text-right">{displayData.engine.type}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-xs uppercase">Cylindrée:</span><span className="font-black text-right">{displayData.engine.displacement}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-xs uppercase">Couple:</span><span className="font-black text-right text-brand">{displayData.engine.torque}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-xs uppercase">Alimentation:</span><span className="font-black text-right">{displayData.engine.alimentation}</span></li>
+            {/* --- DÉTAILS TECHNIQUES --- */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2.5rem]">
+                <CardHeader className="bg-brand/5 border-b py-6"><CardTitle className="flex items-center gap-3 text-brand uppercase font-black text-lg"><Zap className="h-6 w-6" /> Moteur & Performance</CardTitle></CardHeader>
+                <CardContent className="p-8">
+                  <ul className="space-y-5">
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Type moteur</span><span className="font-black text-right text-sm">{displayData.engine.type}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Cylindrée</span><span className="font-black text-right text-sm">{displayData.engine.displacement}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Couple maxi</span><span className="font-black text-right text-sm text-brand">{displayData.engine.torque}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Alimentation</span><span className="font-black text-right text-sm">{displayData.engine.alimentation}</span></li>
                   </ul>
                 </CardContent>
               </Card>
               
-              <Card className="shadow-xl border-none bg-card/50 backdrop-blur-sm overflow-hidden rounded-3xl">
-                <CardHeader className="bg-blue-500/5 border-b py-6"><CardTitle className="flex items-center gap-3 text-blue-600 uppercase font-black text-lg"><Settings2 className="h-6 w-6" /> Capacité & Gabarit</CardTitle></CardHeader>
-                <CardContent className="p-6">
-                  <ul className="space-y-4">
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-xs uppercase">Réservoir:</span><span className="font-black text-right">{displayData.dimensions.fuelCapacity}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-xs uppercase">Hauteur selle:</span><span className="font-black text-right">{displayData.dimensions.seatHeight}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-xs uppercase">Poids TPF:</span><span className="font-black text-right">{displayData.dimensions.wetWeight}</span></li>
+              <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2.5rem]">
+                <CardHeader className="bg-blue-500/5 border-b py-6"><CardTitle className="flex items-center gap-3 text-blue-600 uppercase font-black text-lg"><Scale className="h-6 w-6" /> Capacités & Dimensions</CardTitle></CardHeader>
+                <CardContent className="p-8">
+                  <ul className="space-y-5">
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Réservoir</span><span className="font-black text-right text-sm">{displayData.dimensions.fuelCapacity}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Hauteur de selle</span><span className="font-black text-right text-sm">{displayData.dimensions.seatHeight}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Poids en marche</span><span className="font-black text-right text-sm">{displayData.dimensions.wetWeight}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Empattement</span><span className="font-black text-right text-sm">{displayData.dimensions.wheelbase}</span></li>
                   </ul>
                 </CardContent>
               </Card>
             </div>
 
-            <Accordion type="single" collapsible className="w-full mt-8">
+            {/* --- ACCORDION PARTIE CYCLE --- */}
+            <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="cycle" className="border-none">
-                    <AccordionTrigger className="bg-muted/30 p-8 rounded-3xl font-black uppercase text-brand hover:no-underline shadow-sm">
+                    <AccordionTrigger className="bg-muted/30 p-8 rounded-[2.5rem] font-black uppercase text-brand hover:no-underline shadow-sm transition-all hover:bg-brand/5">
                         <div className="flex items-center gap-4"><Settings2 className="h-6 w-6" /><span>Partie Cycle & Freinage</span></div>
                     </AccordionTrigger>
                     <AccordionContent className="pt-6 px-4">
-                        <div className="overflow-hidden rounded-2xl border bg-card">
+                        <div className="overflow-hidden rounded-[2rem] border-2 bg-card shadow-xl">
                             <Table>
                                 <TableBody>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground w-1/3">Cadre</TableCell><TableCell className="font-bold">{displayData.chassis.frame}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Suspension Avant</TableCell><TableCell className="font-bold">{displayData.chassis.frontSuspension}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Suspension Arrière</TableCell><TableCell className="font-bold">{displayData.chassis.rearSuspension}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Frein Avant</TableCell><TableCell className="font-bold">{displayData.chassis.frontBrake}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Frein Arrière</TableCell><TableCell className="font-bold">{displayData.chassis.rearBrake}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu Avant</TableCell><TableCell className="font-bold">{displayData.chassis.frontTire}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu Arrière</TableCell><TableCell className="font-bold">{displayData.chassis.rearTire}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground w-1/3 pl-8">Cadre</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frame}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Suspension AV</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frontSuspension}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Suspension AR</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearSuspension}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Frein Avant</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frontBrake}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Frein Arrière</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearBrake}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Avant</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frontTire}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Arrière</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearTire}</TableCell></TableRow>
                                 </TableBody>
                             </Table>
                         </div>
@@ -214,11 +274,12 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </AccordionItem>
             </Accordion>
 
-            <div className="pt-20 space-y-12">
+            {/* --- GUIDE ENTRETIEN --- */}
+            <div className="pt-16 space-y-12">
                 <div className="text-center space-y-4">
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none">Guide Entretien & Prix</h2>
                     <div className="w-20 h-2 bg-brand mx-auto rounded-full" />
-                    {displayData.introduction && <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto">{displayData.introduction}</p>}
+                    {displayData.introduction && <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">{displayData.introduction}</p>}
                 </div>
                 
                 {displayData.serviceSchedule.length > 0 && (
@@ -228,15 +289,15 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                             <Table>
                                 <TableHeader className="bg-muted/50">
                                     <TableRow>
-                                        <TableHead className="font-black uppercase text-[10px] py-6 px-8">Kilométrage</TableHead>
-                                        <TableHead className="font-black uppercase text-[10px]">Type de Service</TableHead>
-                                        <TableHead className="font-black uppercase text-[10px] text-right pr-8">Budget Estimé</TableHead>
+                                        <TableHead className="font-black uppercase text-[10px] py-6 px-8 tracking-widest">Kilométrage</TableHead>
+                                        <TableHead className="font-black uppercase text-[10px] tracking-widest">Type de Service</TableHead>
+                                        <TableHead className="font-black uppercase text-[10px] text-right pr-8 tracking-widest">Budget Estimé</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {displayData.serviceSchedule.map((s: any, i: number) => (
-                                        <TableRow key={i} className="hover:bg-brand/5 border-b last:border-0">
-                                            <TableCell className="font-black text-xl py-6 px-8">{s.km?.toLocaleString()} <span className="text-xs text-muted-foreground ml-1">km</span></TableCell>
+                                        <TableRow key={i} className="hover:bg-brand/5 border-b last:border-0 transition-colors">
+                                            <TableCell className="font-black text-xl py-8 px-8">{s.km?.toLocaleString()} <span className="text-[10px] text-muted-foreground ml-1 font-bold uppercase">km</span></TableCell>
                                             <TableCell className="font-bold text-lg">{s.service_label}</TableCell>
                                             <TableCell className="font-black text-xl text-brand text-right pr-8">{s.price_estimate}</TableCell>
                                         </TableRow>
@@ -247,15 +308,75 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     </Card>
                 )}
 
+                {/* CONSOMMABLES */}
                 {displayData.consumables.length > 0 && (
                     <div className="space-y-6">
-                        <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3"><Droplets className="h-6 w-6 text-blue-500" /> Consommables & Fluides</h3>
+                        <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3 pl-2"><Droplets className="h-6 w-6 text-blue-500" /> Consommables & Fluides</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {displayData.consumables.map((c: any, i: number) => (
-                                <Card key={i} className="border-2 border-muted bg-card shadow-sm hover:border-blue-200 transition-colors">
-                                    <CardContent className="p-5 flex justify-between items-center">
-                                        <span className="font-black uppercase text-[10px] text-muted-foreground">{c.label}</span>
-                                        <span className="font-black text-blue-600">{c.value}</span>
+                                <Card key={i} className="border-2 border-muted bg-card shadow-lg hover:border-blue-200 transition-all rounded-2xl group">
+                                    <CardContent className="p-6 flex justify-between items-center">
+                                        <span className="font-black uppercase text-[9px] text-muted-foreground group-hover:text-blue-500 transition-colors">{c.label}</span>
+                                        <span className="font-black text-foreground">{c.value}</span>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* VIGILANCE ET CONSEILS */}
+                {(displayData.knownIssues.length > 0 || displayData.longevityTips.length > 0) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {displayData.knownIssues.length > 0 && (
+                            <Card className="border-none shadow-2xl bg-orange-50/30 rounded-[2.5rem] overflow-hidden">
+                                <CardHeader className="bg-orange-100/50 py-6 border-b border-orange-200/50">
+                                    <CardTitle className="text-orange-700 uppercase font-black text-lg flex items-center gap-3"><AlertTriangle className="h-6 w-6" /> Points de vigilance</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-8">
+                                    <ul className="space-y-4">
+                                        {displayData.knownIssues.map((issue: string, idx: number) => (
+                                            <li key={idx} className="flex items-start gap-3 text-sm font-bold text-orange-900/80">
+                                                <div className="h-1.5 w-1.5 rounded-full bg-orange-400 mt-1.5 shrink-0" />
+                                                {issue}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        )}
+                        {displayData.longevityTips.length > 0 && (
+                            <Card className="border-none shadow-2xl bg-green-50/30 rounded-[2.5rem] overflow-hidden">
+                                <CardHeader className="bg-green-100/50 py-6 border-b border-green-200/50">
+                                    <CardTitle className="text-green-700 uppercase font-black text-lg flex items-center gap-3"><ShieldCheck className="h-6 w-6" /> Conseils de longévité</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-8">
+                                    <ul className="space-y-4">
+                                        {displayData.longevityTips.map((tip: string, idx: number) => (
+                                            <li key={idx} className="flex items-start gap-3 text-sm font-bold text-green-900/80">
+                                                <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                                                {tip}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+                )}
+
+                {/* FAQ */}
+                {displayData.faq.length > 0 && (
+                    <div className="space-y-6">
+                        <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3 pl-2"><HelpCircle className="h-6 w-6 text-brand" /> Questions Fréquentes</h3>
+                        <div className="space-y-4">
+                            {displayData.faq.map((item: any, idx: number) => (
+                                <Card key={idx} className="border-none shadow-xl rounded-2xl bg-card overflow-hidden">
+                                    <CardHeader className="p-6 bg-muted/20">
+                                        <CardTitle className="text-sm font-black uppercase leading-tight">{item.q}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-6">
+                                        <p className="text-sm font-medium text-muted-foreground leading-relaxed">{item.a}</p>
                                     </CardContent>
                                 </Card>
                             ))}
@@ -264,12 +385,15 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 )}
 
                 {displayData.conclusion && (
-                    <div className="bg-muted/30 p-10 rounded-[2.5rem] border-2 border-dashed text-center">
-                        <p className="text-lg font-bold italic text-muted-foreground leading-relaxed">"{displayData.conclusion}"</p>
-                        <div className="mt-6 flex items-center justify-center gap-4">
-                            <div className="h-px w-12 bg-muted-foreground/30" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Expertise Label Moto</p>
-                            <div className="h-px w-12 bg-muted-foreground/30" />
+                    <div className="bg-muted/30 p-12 rounded-[2.5rem] border-2 border-dashed text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                            <LabelMotoLogo />
+                        </div>
+                        <p className="text-xl font-bold italic text-muted-foreground leading-relaxed">"{displayData.conclusion}"</p>
+                        <div className="mt-8 flex items-center justify-center gap-4">
+                            <div className="h-px w-16 bg-muted-foreground/20" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Expertise Label Moto</p>
+                            <div className="h-px w-16 bg-muted-foreground/20" />
                         </div>
                     </div>
                 )}
