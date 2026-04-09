@@ -79,32 +79,42 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     return article.sections || article.content || [];
   }, [article]);
 
+  const getCellValue = (row: any, header: string, colIndex: number) => {
+    if (!row) return '';
+    
+    // Stratégie de normalisation radicale pour les correspondances difficiles (ZFE)
+    const normalize = (s: string) => String(s || '')
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]/g, '');
+
+    const target = normalize(header);
+    
+    // 1. Recherche par clé exacte
+    if (row[header] !== undefined) return row[header];
+    
+    // 2. Recherche par clé normalisée
+    const keys = Object.keys(row);
+    const matchedKey = keys.find(k => normalize(k) === target);
+    if (matchedKey) return row[matchedKey];
+    
+    // 3. Recherche par inclusion
+    const partialKey = keys.find(k => normalize(k).includes(target) || target.includes(normalize(k)));
+    if (partialKey) return row[partialKey];
+    
+    // 4. Recherche par index numérique
+    if (Array.isArray(row)) return row[colIndex] || '';
+    
+    // 5. Recherche par ordre des valeurs
+    const values = Object.values(row);
+    return values[colIndex] || '';
+  };
+
   const renderTable = (tableData: any, key: string) => {
     if (!tableData) return null;
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
-
-    const getCellValue = (row: any, header: string, colIndex: number) => {
-      if (!row) return '';
-      
-      const clean = (s: string) => String(s || '')
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]/g, '');
-
-      const target = clean(header);
-      
-      if (row[header] !== undefined) return row[header];
-      const keys = Object.keys(row);
-      const matchedKey = keys.find(k => clean(k) === target);
-      if (matchedKey) return row[matchedKey];
-      const partialKey = keys.find(k => clean(k).includes(target) || target.includes(clean(k)));
-      if (partialKey) return row[partialKey];
-      if (Array.isArray(row)) return row[colIndex] || '';
-      const values = Object.values(row);
-      return values[colIndex] || '';
-    };
 
     return (
       <div key={key} className="my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted shadow-sm">
@@ -218,12 +228,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
-    const replaceMaisParCar = (text: string) => typeof text === 'string' ? text.replace(/Mais en réalité/g, 'Car en réalité') : text;
+    
+    // Correction textuelle universelle
+    const fixText = (text: string) => typeof text === 'string' ? text.replace(/Mais en réalité/g, 'Car en réalité') : text;
 
     if (typeof bodyText === 'string') {
-        bodyText = replaceMaisParCar(bodyText);
+        bodyText = fixText(bodyText);
     } else if (Array.isArray(bodyText)) {
-        bodyText = bodyText.map(p => replaceMaisParCar(p));
+        bodyText = bodyText.map(p => fixText(p));
     }
 
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
@@ -297,7 +309,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         )}
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
-                {section.note}
+                {fixText(section.note)}
                 {(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT") || section.note.includes("coûtent bien plus cher")) && (
                   <div className="mt-6 not-italic">
                     <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-8 py-6 shadow-lg transition-all hover:scale-105 active:scale-95">
@@ -387,14 +399,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             <aside className="lg:col-span-4 relative">
               <div className="lg:sticky lg:top-28 space-y-8">
                 <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2.5rem]">
-                  <CardHeader className="bg-brand text-white p-8"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-lg"><Map className="h-7 w-7" /> Trouver un pro</CardTitle></CardHeader>
-                  <CardContent className="p-8 text-center space-y-8">
-                    <div className="relative aspect-video rounded-3xl overflow-hidden border-4 border-muted shadow-xl group cursor-pointer" onClick={() => router.push('/map')}>
+                  <CardHeader className="bg-brand text-white p-6"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-base"><Map className="h-6 w-6" /> Trouver un pro</CardTitle></CardHeader>
+                  <CardContent className="p-5 text-center space-y-4">
+                    <div className="relative aspect-video rounded-2xl overflow-hidden border-4 border-muted shadow-lg group cursor-pointer" onClick={() => router.push('/map')}>
                       <Image src="/images/apercucartezoom.png" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-12 w-12 text-white" /></div>
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-10 w-10 text-white" /></div>
                     </div>
-                    <p className="text-base font-bold text-muted-foreground leading-relaxed italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
-                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-xs py-8 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                    <p className="text-sm font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
+                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[10px] py-5 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
                       <Link href="/map">🔘 Voir la carte interactive</Link>
                     </Button>
                   </CardContent>
