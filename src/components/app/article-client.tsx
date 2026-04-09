@@ -97,15 +97,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       if (row[header] !== undefined) return row[header];
       
       const keys = Object.keys(row);
-      // Stratégie 1: Match exact après nettoyage total
       const matchedKey = keys.find(k => clean(k) === target);
       if (matchedKey) return row[matchedKey];
 
-      // Stratégie 2: Match partiel
       const partialKey = keys.find(k => clean(k).includes(target) || target.includes(clean(k)));
       if (partialKey) return row[partialKey];
 
-      // Stratégie 3: Fallback index
       if (Array.isArray(row)) return row[colIndex] || '';
       const values = Object.values(row);
       return values[colIndex] || '';
@@ -230,7 +227,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
     
-    // Remplacement textuel demandé
     if (typeof bodyText === 'string') {
         bodyText = bodyText.replace(/Mais en réalité/g, 'Car en réalité');
     } else if (Array.isArray(bodyText)) {
@@ -351,7 +347,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
               </div>
 
-              {/* Bloc Enfants (ex: Catalogue de marques) - Placé en haut sous l'image */}
               {children && (
                 <div className="mb-12">
                   {children}
@@ -419,6 +414,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 <div className="bg-muted/30 p-8 rounded-[2rem] border-2 border-dashed border-muted-foreground/20 text-center shadow-inner">
                   <p className="text-sm font-bold text-muted-foreground mb-4">Besoin d'un conseil personnalisé ?</p>
                   <Link href="/contact" className="text-brand hover:text-brand/80 font-black uppercase tracking-widest text-[10px] underline underline-offset-8 decoration-2 decoration-brand/30">Contactez l'équipe</Link>
+                  
+                  {/* Lien vers le guide assurance 2026 */}
+                  <div className="mt-6 pt-6 border-t border-muted-foreground/10">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Guide Recommandé</p>
+                    <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="text-brand hover:underline font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">
+                      🛡️ Assurance Moto 2026 <ChevronRight className="h-3 w-3" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </aside>
