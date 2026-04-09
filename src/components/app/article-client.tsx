@@ -80,11 +80,9 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     return article.sections || article.content || [];
   }, [article]);
 
-  // Logique de recommandation dynamique pour la barre latérale
   const sidebarRecommendation = useMemo(() => {
     const lowerId = id.toLowerCase();
     
-    // Si on lit un article A2
     if (lowerId.includes('a2')) {
       return {
         title: "Taille & Gabarit",
@@ -99,7 +97,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       };
     }
 
-    // Par défaut : Assurance
     return {
       title: "Guide Recommandé",
       description: "Tout savoir sur l'assurance moto en 2026 : tarifs, pièges et conseils.",
@@ -238,8 +235,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 </div>
               </CardContent>
               {ficheId && (
-                <CardFooter className="bg-brand/5 p-3 border-t">
-                  <Link href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-brand mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
+                <CardFooter className="bg-brand p-3 border-t-0">
+                  <Link href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-white mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
                 </CardFooter>
               )}
             </Card>
@@ -435,7 +432,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   </CardContent>
                 </Card>
 
-                {/* Bloc de recommandation dynamique et optimisé */}
                 <Card className={cn("border-2 border-dashed p-5 rounded-[2rem] shadow-sm text-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
                   <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3", sidebarRecommendation.iconBg)}>
                     {sidebarRecommendation.icon}
