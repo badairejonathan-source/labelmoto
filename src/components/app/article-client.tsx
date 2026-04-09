@@ -8,7 +8,8 @@ import {
   ChevronRight, Home, Gauge, Settings2, 
   ExternalLink, AlertTriangle, ArrowRight, LayoutGrid,
   Map,
-  FileText
+  FileText,
+  ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -94,12 +95,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
       const target = clean(header);
       
+      // Try exact match first
       if (row[header] !== undefined) return row[header];
       
       const keys = Object.keys(row);
+      
+      // Try normalized match
       const matchedKey = keys.find(k => clean(k) === target);
       if (matchedKey) return row[matchedKey];
 
+      // Try fuzzy match
       const partialKey = keys.find(k => clean(k).includes(target) || target.includes(clean(k)));
       if (partialKey) return row[partialKey];
 
@@ -125,7 +130,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {rows.map((row: any, ri: number) => (
                 <TableRow key={`tr-${key}-${ri}`} className="hover:bg-muted/30">
                   {headers.map((header: string, hi: number) => (
-                    <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight">
+                    <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:sm leading-tight">
                       {String(getCellValue(row, header, hi))}
                     </TableCell>
                   ))}
@@ -227,10 +232,13 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
     
+    // Remplacement textuel demandé
+    const replaceMaisParCar = (text: string) => typeof text === 'string' ? text.replace(/Mais en réalité/g, 'Car en réalité') : text;
+
     if (typeof bodyText === 'string') {
-        bodyText = bodyText.replace(/Mais en réalité/g, 'Car en réalité');
+        bodyText = replaceMaisParCar(bodyText);
     } else if (Array.isArray(bodyText)) {
-        bodyText = bodyText.map(p => typeof p === 'string' ? p.replace(/Mais en réalité/g, 'Car en réalité') : p);
+        bodyText = bodyText.map(p => replaceMaisParCar(p));
     }
 
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
@@ -337,12 +345,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             <ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
           </nav>
           
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-10 text-foreground">
+            {article.display_title || article.title}
+          </h1>
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <article className="lg:col-span-8">
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-10 text-foreground">
-                {article.display_title || article.title}
-              </h1>
-
               <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl border-4 border-white bg-muted">
                   <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
               </div>
@@ -411,18 +419,19 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   </CardContent>
                 </Card>
 
-                <div className="bg-muted/30 p-8 rounded-[2rem] border-2 border-dashed border-muted-foreground/20 text-center shadow-inner">
-                  <p className="text-sm font-bold text-muted-foreground mb-4">Besoin d'un conseil personnalisé ?</p>
-                  <Link href="/contact" className="text-brand hover:text-brand/80 font-black uppercase tracking-widest text-[10px] underline underline-offset-8 decoration-2 decoration-brand/30">Contactez l'équipe</Link>
-                  
-                  {/* Lien vers le guide assurance 2026 */}
-                  <div className="mt-6 pt-6 border-t border-muted-foreground/10">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Guide Recommandé</p>
-                    <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="text-brand hover:underline font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">
-                      🛡️ Assurance Moto 2026 <ChevronRight className="h-3 w-3" />
-                    </Link>
+                {/* Bloc Assurance mis en avant */}
+                <Card className="bg-blue-50/50 border-2 border-dashed border-blue-200 p-8 rounded-[2.5rem] shadow-sm text-center">
+                  <div className="bg-blue-600/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <ShieldCheck className="h-8 w-8 text-blue-600" />
                   </div>
-                </div>
+                  <h4 className="text-lg font-black uppercase tracking-tight text-blue-900 mb-2">Guide Recommandé</h4>
+                  <p className="text-sm font-bold text-blue-700/70 mb-6 leading-snug">Tout savoir sur l'assurance moto en 2026 : tarifs, pièges et conseils.</p>
+                  <Button asChild variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-black uppercase tracking-widest text-[10px] rounded-full py-6">
+                    <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex items-center justify-center gap-2">
+                      Lire le dossier Assurance <ChevronRight className="h-3 w-3" />
+                    </Link>
+                  </Button>
+                </Card>
               </div>
             </aside>
           </div>
