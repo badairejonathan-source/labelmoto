@@ -83,7 +83,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const sidebarRecommendation = useMemo(() => {
     const lowerId = id.toLowerCase();
     
-    if (lowerId.includes('a2')) {
+    // Si on lit le guide A2, on suggère le guide Gabarit/Hauteur de selle
+    if (lowerId.includes('meilleure-moto-a2')) {
       return {
         title: "Taille & Gabarit",
         description: "Quelle moto choisir selon votre gabarit ? Le guide des hauteurs de selle.",
@@ -97,16 +98,17 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       };
     }
 
+    // Par défaut (sur budget, entretien, etc.), on suggère le guide A2
     return {
-      title: "Guide Recommandé",
-      description: "Tout savoir sur l'assurance moto en 2026 : tarifs, pièges et conseils.",
-      link: "/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
-      icon: <ShieldCheck className="h-6 w-6 text-blue-600" />,
-      bgColor: "bg-blue-50/50",
-      borderColor: "border-blue-200",
-      iconBg: "bg-blue-600/10",
-      titleColor: "text-blue-900",
-      btnClass: "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+      title: "Guide A2 2026",
+      description: "Quelles sont les meilleures motos pour débuter ? Le guide complet A2.",
+      link: "/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
+      icon: <Bike className="h-6 w-6 text-brand" />,
+      bgColor: "bg-brand/5",
+      borderColor: "border-brand/20",
+      iconBg: "bg-brand/10",
+      titleColor: "text-brand",
+      btnClass: "border-brand text-brand hover:bg-brand hover:text-white"
     };
   }, [id]);
 
