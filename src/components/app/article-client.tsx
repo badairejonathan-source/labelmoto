@@ -229,9 +229,9 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     
     // Remplacement demandé par l'utilisateur
     if (typeof bodyText === 'string') {
-        bodyText = bodyText.replace('Mais en réalité', 'Car en réalité');
+        bodyText = bodyText.replace(/Mais en réalité/g, 'Car en réalité');
     } else if (Array.isArray(bodyText)) {
-        bodyText = bodyText.map(p => typeof p === 'string' ? p.replace('Mais en réalité', 'Car en réalité') : p);
+        bodyText = bodyText.map(p => typeof p === 'string' ? p.replace(/Mais en réalité/g, 'Car en réalité') : p);
     }
 
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
@@ -340,7 +340,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
               </div>
 
-              {children}
+              {/* Bloc Enfants (ex: Catalogue de marques) - Placé en haut sous l'image */}
+              {children && (
+                <div className="mb-12">
+                  {children}
+                </div>
+              )}
 
               {article.intro && Array.isArray(article.intro) && (
                 <div className="my-12 space-y-6">
