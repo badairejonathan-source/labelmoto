@@ -71,7 +71,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     const ts = fiche.technical_sheet || {};
     const activeVariant = variants[selectedVariantIndex] || {};
     
-    // On fusionne les données de la variante avec les données de base
     const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
     const sg = fiche.service_guide || {};
 
@@ -277,7 +276,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
             {/* --- GUIDE ENTRETIEN --- */}
             <div className="pt-16 space-y-12">
                 <div className="text-center space-y-4">
-                    <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none">Guide Entretien & Prix</h2>
+                    <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-foreground">Guide Entretien & Prix</h2>
                     <div className="w-20 h-2 bg-brand mx-auto rounded-full" />
                     {displayData.introduction && <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">{displayData.introduction}</p>}
                 </div>
@@ -314,8 +313,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3 pl-2"><Droplets className="h-6 w-6 text-blue-500" /> Consommables & Fluides</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {displayData.consumables.map((c: any, i: number) => (
-                                <Card key={i} className="border-2 border-muted bg-card shadow-lg hover:border-blue-200 transition-all rounded-2xl group">
-                                    <CardContent className="p-6 flex justify-between items-center">
+                                <Card key={i} className="border-2 border-muted bg-card shadow-lg hover:border-blue-200 transition-all rounded-full group">
+                                    <CardContent className="p-6 py-4 flex justify-between items-center">
                                         <span className="font-black uppercase text-[9px] text-muted-foreground group-hover:text-blue-500 transition-colors">{c.label}</span>
                                         <span className="font-black text-foreground">{c.value}</span>
                                     </CardContent>
@@ -329,7 +328,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 {(displayData.knownIssues.length > 0 || displayData.longevityTips.length > 0) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {displayData.knownIssues.length > 0 && (
-                            <Card className="border-none shadow-2xl bg-orange-50/30 rounded-[2.5rem] overflow-hidden">
+                            <Card className="border-none shadow-2xl bg-orange-50/30 rounded-[2.5rem] overflow-hidden border-t-4 border-orange-400">
                                 <CardHeader className="bg-orange-100/50 py-6 border-b border-orange-200/50">
                                     <CardTitle className="text-orange-700 uppercase font-black text-lg flex items-center gap-3"><AlertTriangle className="h-6 w-6" /> Points de vigilance</CardTitle>
                                 </CardHeader>
@@ -337,7 +336,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                     <ul className="space-y-4">
                                         {displayData.knownIssues.map((issue: string, idx: number) => (
                                             <li key={idx} className="flex items-start gap-3 text-sm font-bold text-orange-900/80">
-                                                <div className="h-1.5 w-1.5 rounded-full bg-orange-400 mt-1.5 shrink-0" />
+                                                <div className="text-orange-400 mt-0.5 shrink-0 font-black">•</div>
                                                 {issue}
                                             </li>
                                         ))}
@@ -346,7 +345,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                             </Card>
                         )}
                         {displayData.longevityTips.length > 0 && (
-                            <Card className="border-none shadow-2xl bg-green-50/30 rounded-[2.5rem] overflow-hidden">
+                            <Card className="border-none shadow-2xl bg-green-50/30 rounded-[2.5rem] overflow-hidden border-t-4 border-green-400">
                                 <CardHeader className="bg-green-100/50 py-6 border-b border-green-200/50">
                                     <CardTitle className="text-green-700 uppercase font-black text-lg flex items-center gap-3"><ShieldCheck className="h-6 w-6" /> Conseils de longévité</CardTitle>
                                 </CardHeader>
@@ -385,7 +384,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 )}
 
                 {displayData.conclusion && (
-                    <div className="bg-muted/30 p-12 rounded-[2.5rem] border-2 border-dashed text-center relative overflow-hidden">
+                    <div className="bg-muted/30 p-12 rounded-[2.5rem] border-2 border-dashed text-center relative overflow-hidden shadow-inner">
                         <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
                             <LabelMotoLogo />
                         </div>
