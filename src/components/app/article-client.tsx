@@ -9,7 +9,8 @@ import {
   ExternalLink, AlertTriangle, ArrowRight, LayoutGrid,
   Map,
   FileText,
-  ShieldCheck
+  ShieldCheck,
+  Bike
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -79,10 +80,42 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     return article.sections || article.content || [];
   }, [article]);
 
+  // Logique de recommandation dynamique pour la barre latérale
+  const sidebarRecommendation = useMemo(() => {
+    const lowerId = id.toLowerCase();
+    
+    // Si on lit un article A2
+    if (lowerId.includes('a2')) {
+      return {
+        title: "Taille & Gabarit",
+        description: "Quelle moto choisir selon votre gabarit ? Le guide des hauteurs de selle.",
+        link: "/info/quelle-moto-choisir-selon-sa-taille-et-son-gabarit",
+        icon: <Bike className="h-6 w-6 text-brand" />,
+        bgColor: "bg-brand/5",
+        borderColor: "border-brand/20",
+        iconBg: "bg-brand/10",
+        titleColor: "text-brand",
+        btnClass: "border-brand text-brand hover:bg-brand hover:text-white"
+      };
+    }
+
+    // Par défaut : Assurance
+    return {
+      title: "Guide Recommandé",
+      description: "Tout savoir sur l'assurance moto en 2026 : tarifs, pièges et conseils.",
+      link: "/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil",
+      icon: <ShieldCheck className="h-6 w-6 text-blue-600" />,
+      bgColor: "bg-blue-50/50",
+      borderColor: "border-blue-200",
+      iconBg: "bg-blue-600/10",
+      titleColor: "text-blue-900",
+      btnClass: "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+    };
+  }, [id]);
+
   const getCellValue = (row: any, header: string, colIndex: number) => {
     if (!row) return '';
     
-    // Stratégie de normalisation radicale pour les correspondances difficiles (ZFE)
     const normalize = (s: string) => String(s || '')
       .toLowerCase()
       .normalize("NFD")
@@ -91,22 +124,13 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     const target = normalize(header);
     
-    // 1. Recherche par clé exacte
     if (row[header] !== undefined) return row[header];
-    
-    // 2. Recherche par clé normalisée
     const keys = Object.keys(row);
     const matchedKey = keys.find(k => normalize(k) === target);
     if (matchedKey) return row[matchedKey];
-    
-    // 3. Recherche par inclusion
     const partialKey = keys.find(k => normalize(k).includes(target) || target.includes(normalize(k)));
     if (partialKey) return row[partialKey];
-    
-    // 4. Recherche par index numérique
     if (Array.isArray(row)) return row[colIndex] || '';
-    
-    // 5. Recherche par ordre des valeurs
     const values = Object.values(row);
     return values[colIndex] || '';
   };
@@ -229,7 +253,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
     
-    // Correction textuelle universelle
     const fixText = (text: string) => typeof text === 'string' ? text.replace(/Mais en réalité/g, 'Car en réalité') : text;
 
     if (typeof bodyText === 'string') {
@@ -412,16 +435,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   </CardContent>
                 </Card>
 
-                {/* Bloc Assurance optimisé (réduit de 40%) */}
-                <Card className="bg-blue-50/50 border-2 border-dashed border-blue-200 p-5 rounded-[2rem] shadow-sm text-center">
-                  <div className="bg-blue-600/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <ShieldCheck className="h-6 w-6 text-blue-600" />
+                {/* Bloc de recommandation dynamique et optimisé */}
+                <Card className={cn("border-2 border-dashed p-5 rounded-[2rem] shadow-sm text-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
+                  <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3", sidebarRecommendation.iconBg)}>
+                    {sidebarRecommendation.icon}
                   </div>
-                  <h4 className="text-base font-black uppercase tracking-tight text-blue-900 mb-1">Guide Recommandé</h4>
-                  <p className="text-xs font-bold text-blue-700/70 mb-4 leading-snug">Tout savoir sur l'assurance moto en 2026 : tarifs, pièges et conseils.</p>
-                  <Button asChild variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-black uppercase tracking-widest text-[9px] rounded-full py-4 h-auto">
-                    <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex items-center justify-center gap-2">
-                      Lire le dossier Assurance <ChevronRight className="h-3 w-3" />
+                  <h4 className={cn("text-base font-black uppercase tracking-tight mb-1", sidebarRecommendation.titleColor)}>{sidebarRecommendation.title}</h4>
+                  <p className={cn("text-xs font-bold mb-4 leading-snug opacity-70", sidebarRecommendation.titleColor)}>{sidebarRecommendation.description}</p>
+                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[9px] rounded-full py-4 h-auto", sidebarRecommendation.btnClass)}>
+                    <Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">
+                      Lire le dossier <ChevronRight className="h-3 w-3" />
                     </Link>
                   </Button>
                 </Card>
