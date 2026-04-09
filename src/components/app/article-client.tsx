@@ -95,19 +95,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
       const target = clean(header);
       
-      // Try exact match first
       if (row[header] !== undefined) return row[header];
-      
       const keys = Object.keys(row);
-      
-      // Try normalized match
       const matchedKey = keys.find(k => clean(k) === target);
       if (matchedKey) return row[matchedKey];
-
-      // Try fuzzy match
       const partialKey = keys.find(k => clean(k).includes(target) || target.includes(clean(k)));
       if (partialKey) return row[partialKey];
-
       if (Array.isArray(row)) return row[colIndex] || '';
       const values = Object.values(row);
       return values[colIndex] || '';
@@ -150,12 +143,10 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
-          
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance || card.limits;
           const usefulGuarantees = card.useful_guarantees || card.recommended_guarantees;
-          
           const summary = card.summary || card.description || card.text || card.intro || card.content;
           const formula = card.formula || card.recommended_formula || card.recommended_option;
 
@@ -175,7 +166,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
-                
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
                     {listItems.map((item: any, i: number) => (
@@ -186,7 +176,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                     ))}
                   </ul>
                 )}
-
                 <div className="space-y-4">
                   {usefulGuarantees && Array.isArray(usefulGuarantees) && (
                     <div className="space-y-2 pt-2">
@@ -200,14 +189,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                       </ul>
                     </div>
                   )}
-
                   {strengths && Array.isArray(strengths) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
                       <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-green-500">•</span> {s}</li>))}</ul>
                     </div>
                   )}
-
                   {weaknesses && Array.isArray(weaknesses) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
@@ -231,8 +218,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
-    
-    // Remplacement textuel demandé
     const replaceMaisParCar = (text: string) => typeof text === 'string' ? text.replace(/Mais en réalité/g, 'Car en réalité') : text;
 
     if (typeof bodyText === 'string') {
@@ -292,19 +277,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
-        
         {section.list && Array.isArray(section.list) && (
           <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
             {section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}
           </ul>
         )}
-        
         {section.ordered_list && Array.isArray(section.ordered_list) && (
           <ol className="list-decimal list-inside space-y-4 mb-8 pl-4">
             {section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}
           </ol>
         )}
-
         {section.subsections && Array.isArray(section.subsections) && (
           <div className={cn(
             "space-y-10",
@@ -313,7 +295,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
         )}
-
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
                 {section.note}
@@ -404,7 +385,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             </article>
 
             <aside className="lg:col-span-4 relative">
-              <div className="lg:sticky lg:top-28 space-y-10">
+              <div className="lg:sticky lg:top-28 space-y-8">
                 <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2.5rem]">
                   <CardHeader className="bg-brand text-white p-8"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-lg"><Map className="h-7 w-7" /> Trouver un pro</CardTitle></CardHeader>
                   <CardContent className="p-8 text-center space-y-8">
@@ -419,14 +400,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   </CardContent>
                 </Card>
 
-                {/* Bloc Assurance mis en avant */}
-                <Card className="bg-blue-50/50 border-2 border-dashed border-blue-200 p-8 rounded-[2.5rem] shadow-sm text-center">
-                  <div className="bg-blue-600/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <ShieldCheck className="h-8 w-8 text-blue-600" />
+                {/* Bloc Assurance optimisé (réduit de 40%) */}
+                <Card className="bg-blue-50/50 border-2 border-dashed border-blue-200 p-5 rounded-[2rem] shadow-sm text-center">
+                  <div className="bg-blue-600/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <ShieldCheck className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h4 className="text-lg font-black uppercase tracking-tight text-blue-900 mb-2">Guide Recommandé</h4>
-                  <p className="text-sm font-bold text-blue-700/70 mb-6 leading-snug">Tout savoir sur l'assurance moto en 2026 : tarifs, pièges et conseils.</p>
-                  <Button asChild variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-black uppercase tracking-widest text-[10px] rounded-full py-6">
+                  <h4 className="text-base font-black uppercase tracking-tight text-blue-900 mb-1">Guide Recommandé</h4>
+                  <p className="text-xs font-bold text-blue-700/70 mb-4 leading-snug">Tout savoir sur l'assurance moto en 2026 : tarifs, pièges et conseils.</p>
+                  <Button asChild variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-black uppercase tracking-widest text-[9px] rounded-full py-4 h-auto">
                     <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex items-center justify-center gap-2">
                       Lire le dossier Assurance <ChevronRight className="h-3 w-3" />
                     </Link>
