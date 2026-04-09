@@ -33,7 +33,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
     if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.png";
-    if (id.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+    if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.png";
     if (isMaintenance) return "/images/motard-entretien-page.png";
     
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
@@ -45,7 +45,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
   return (
     <Link href={href} className="group block w-full">
       <Card className={cn(
-        "w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border-l-4 hover:shadow-lg shadow-sm min-h-[120px] md:min-h-[160px] flex items-stretch relative",
+        "w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border-l-4 hover:shadow-lg shadow-sm min-h-[120px] md:min-h-[160px] flex items-stretch relative rounded-2xl",
         isPublicity 
           ? "border-blue-500 border-blue-500/20 bg-gradient-to-r from-blue-500/[0.03] to-background" 
           : "border-brand border-brand/20 bg-gradient-to-r from-brand/[0.02] to-background"

@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const slugify = (text: string) => 
   text?.toLowerCase()
@@ -68,7 +69,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
-    if (articleId.includes('budget') || title.includes('budget')) return "https://images.unsplash.com/photo-1572452571879-3d67d5b2a39f?q=80&w=1080";
+    if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.png";
     if (articleId.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.png";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
@@ -345,7 +346,32 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     );
   };
 
-  if (isLoading) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-brand mb-4" /><p className="text-muted-foreground font-black animate-pulse uppercase tracking-widest text-[10px]">Chargement Firestore...</p></div>);
+  if (isLoading) return (
+    <div className="min-h-screen bg-background">
+        {showHeader && <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />}
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-6xl mx-auto space-y-8">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-16 w-3/4" />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    <div className="lg:col-span-8 space-y-8">
+                        <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
+                        <div className="space-y-4">
+                            <Skeleton className="h-6 w-full" />
+                            <Skeleton className="h-6 w-full" />
+                            <Skeleton className="h-6 w-3/4" />
+                        </div>
+                    </div>
+                    <div className="lg:col-span-4 space-y-8">
+                        <Skeleton className="h-[300px] w-full rounded-[2.5rem]" />
+                        <Skeleton className="h-[200px] w-full rounded-[2rem]" />
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+  );
+
   if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   return (
