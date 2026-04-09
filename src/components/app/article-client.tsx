@@ -97,12 +97,15 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       if (row[header] !== undefined) return row[header];
       
       const keys = Object.keys(row);
+      // Stratégie 1: Match exact après nettoyage total
       const matchedKey = keys.find(k => clean(k) === target);
       if (matchedKey) return row[matchedKey];
 
+      // Stratégie 2: Match partiel
       const partialKey = keys.find(k => clean(k).includes(target) || target.includes(clean(k)));
       if (partialKey) return row[partialKey];
 
+      // Stratégie 3: Fallback index
       if (Array.isArray(row)) return row[colIndex] || '';
       const values = Object.values(row);
       return values[colIndex] || '';
@@ -148,7 +151,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
-          const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
+          const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance || card.limits;
           const usefulGuarantees = card.useful_guarantees || card.recommended_guarantees;
           
           const summary = card.summary || card.description || card.text || card.intro || card.content;
@@ -227,7 +230,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
     
-    // Remplacement demandé par l'utilisateur
+    // Remplacement textuel demandé
     if (typeof bodyText === 'string') {
         bodyText = bodyText.replace(/Mais en réalité/g, 'Car en réalité');
     } else if (Array.isArray(bodyText)) {
@@ -240,6 +243,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+        
         {bodyText && (Array.isArray(bodyText) ? 
           (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : 
           (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>)
@@ -284,21 +288,28 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
+        
         {section.list && Array.isArray(section.list) && (
           <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
             {section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}
           </ul>
         )}
+        
         {section.ordered_list && Array.isArray(section.ordered_list) && (
           <ol className="list-decimal list-inside space-y-4 mb-8 pl-4">
             {section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}
           </ol>
         )}
+
         {section.subsections && Array.isArray(section.subsections) && (
-          <div className="space-y-10">
+          <div className={cn(
+            "space-y-10",
+            section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0"
+          )}>
             {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
           </div>
         )}
+
         {section.note && (
             <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
                 {section.note}
