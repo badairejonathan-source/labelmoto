@@ -85,23 +85,31 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     const getCellValue = (row: any, header: string, colIndex: number) => {
       if (!row) return '';
-      if (Array.isArray(row)) return row[colIndex] || '';
-
-      const clean = (s: string) => s?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') || '';
-      const targetHeader = clean(header);
       
+      const clean = (s: string) => String(s || '')
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]/g, '');
+
+      const target = clean(header);
+      
+      // Stratégie 1 : Exact ou Casse
+      if (row[header] !== undefined) return row[header];
+      
+      // Stratégie 2 : Normalisation totale des clés
       const keys = Object.keys(row);
-      const fuzzyMatch = keys.find(k => clean(k) === targetHeader);
-      if (fuzzyMatch) return row[fuzzyMatch];
+      const matchedKey = keys.find(k => clean(k) === target);
+      if (matchedKey) return row[matchedKey];
 
-      const inclusionMatch = keys.find(k => targetHeader.includes(clean(k)) || clean(k).includes(targetHeader));
-      if (inclusionMatch) return row[inclusionMatch];
+      // Stratégie 3 : Inclusion floue
+      const partialKey = keys.find(k => clean(k).includes(target) || target.includes(clean(k)));
+      if (partialKey) return row[partialKey];
 
-      if (row[colIndex] !== undefined) return row[colIndex];
+      // Stratégie 4 : Index (Array ou Object values)
+      if (Array.isArray(row)) return row[colIndex] || '';
       const values = Object.values(row);
-      if (values[colIndex] !== undefined) return values[colIndex];
-      
-      return '';
+      return values[colIndex] || '';
     };
 
     return (
@@ -141,10 +149,15 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
+          
+          // Récupération exhaustive des listes
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
+          const usefulGuarantees = card.useful_guarantees || card.recommended_guarantees;
+          
           const summary = card.summary || card.description || card.text || card.intro || card.content;
+          const formula = card.formula || card.recommended_formula || card.recommended_option;
 
           return (
             <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all rounded-3xl">
@@ -152,11 +165,17 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 <div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">{card.title || "Information"}</CardTitle>
                   {(card.type || card.profile || card.subtitle) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile || card.subtitle}</p>}
+                  {formula && (
+                    <div className="mt-2 bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-flex items-center gap-1 shadow-sm">
+                      <CheckCircle2 className="h-3 w-3" /> Formule conseillée : {formula}
+                    </div>
+                  )}
                 </div>
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
               <CardContent className="p-6 space-y-6 flex-grow">
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
+                
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
                     {listItems.map((item: any, i: number) => (
@@ -167,18 +186,35 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                     ))}
                   </ul>
                 )}
-                {strengths && Array.isArray(strengths) && (
-                  <div className="space-y-2 pt-2">
-                    <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
-                    <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-green-500">•</span> {s}</li>))}</ul>
-                  </div>
-                )}
-                {weaknesses && Array.isArray(weaknesses) && (
-                  <div className="space-y-2 pt-2">
-                    <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
-                    <ul className="list-none space-y-1">{weaknesses.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2"><span className="text-orange-500">•</span> {s}</li>))}</ul>
-                  </div>
-                )}
+
+                <div className="space-y-4">
+                  {usefulGuarantees && Array.isArray(usefulGuarantees) && (
+                    <div className="space-y-2 pt-2">
+                      <div className="text-[9px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-2"><Settings2 className="h-3.5 w-3.5" /> Garanties conseillées</div>
+                      <ul className="list-none space-y-1">
+                        {usefulGuarantees.map((s: string, i: number) => (
+                          <li key={`${keyPrefix}-g-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground">
+                            <span className="text-blue-500">•</span> {s}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {strengths && Array.isArray(strengths) && (
+                    <div className="space-y-2 pt-2">
+                      <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Points forts</div>
+                      <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-green-500">•</span> {s}</li>))}</ul>
+                    </div>
+                  )}
+
+                  {weaknesses && Array.isArray(weaknesses) && (
+                    <div className="space-y-2 pt-2">
+                      <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
+                      <ul className="list-none space-y-1">{weaknesses.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-orange-500">•</span> {s}</li>))}</ul>
+                    </div>
+                  )}
+                </div>
               </CardContent>
               {ficheId && (
                 <CardFooter className="bg-brand/5 p-3 border-t">
@@ -202,18 +238,34 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         return (
             <div key={key || sectionId} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
                 <Card className="border-2 border-green-100 bg-green-50/10 overflow-hidden shadow-sm rounded-3xl">
-                    <CardHeader className="bg-green-50 py-4 border-b"><CardTitle className="text-lg font-black uppercase tracking-tight text-green-700 flex items-center gap-2"><CheckCircle2 className="h-5 w-5" /> Avantages</CardTitle></CardHeader>
+                    <CardHeader className="bg-green-50 py-4 border-b">
+                      <CardTitle className="text-lg font-black uppercase tracking-tight text-green-700 flex items-center gap-2">
+                        <CheckCircle2 className="h-5 w-5" /> Avantages
+                      </CardTitle>
+                    </CardHeader>
                     <CardContent className="p-6">
                         <ul className="space-y-2">
-                            {strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground"><span className="text-green-500 shrink-0">•</span> {s}</li>))}
+                            {strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (
+                              <li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground">
+                                <span className="text-green-500 shrink-0">•</span> {s}
+                              </li>
+                            ))}
                         </ul>
                     </CardContent>
                 </Card>
                 <Card className="border-2 border-red-100 bg-red-50/10 overflow-hidden shadow-sm rounded-3xl">
-                    <CardHeader className="bg-red-50 py-4 border-b"><CardTitle className="text-lg font-black uppercase tracking-tight text-red-700 flex items-center gap-2"><AlertTriangle className="h-5 w-5" /> Inconvénients</CardTitle></CardHeader>
+                    <CardHeader className="bg-red-50 py-4 border-b">
+                      <CardTitle className="text-lg font-black uppercase tracking-tight text-red-700 flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" /> Inconvénients
+                      </CardTitle>
+                    </CardHeader>
                     <CardContent className="p-6">
                         <ul className="space-y-2">
-                            {weaknesses && Array.isArray(weaknesses) && weaknesses.map((w: string, j: number) => (<li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground"><span className="text-red-400 shrink-0">•</span> {w}</li>))}
+                            {weaknesses && Array.isArray(weaknesses) && weaknesses.map((w: string, j: number) => (
+                              <li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground">
+                                <span className="text-red-400 shrink-0">•</span> {w}
+                              </li>
+                            ))}
                         </ul>
                     </CardContent>
                 </Card>
