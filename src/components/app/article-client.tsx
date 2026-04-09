@@ -94,19 +94,15 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
       const target = clean(header);
       
-      // Stratégie 1 : Exact ou Casse
       if (row[header] !== undefined) return row[header];
       
-      // Stratégie 2 : Normalisation totale des clés
       const keys = Object.keys(row);
       const matchedKey = keys.find(k => clean(k) === target);
       if (matchedKey) return row[matchedKey];
 
-      // Stratégie 3 : Inclusion floue
       const partialKey = keys.find(k => clean(k).includes(target) || target.includes(clean(k)));
       if (partialKey) return row[partialKey];
 
-      // Stratégie 4 : Index (Array ou Object values)
       if (Array.isArray(row)) return row[colIndex] || '';
       const values = Object.values(row);
       return values[colIndex] || '';
@@ -150,7 +146,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
           
-          // Récupération exhaustive des listes
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance;
@@ -230,13 +225,28 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
-    const bodyText = section.content || section.text || section.description || section.intro || section.body;
-    const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
-    const weaknesses = section.weaknesses || section.watch_out || section.cons || section.points_vigilance;
+    let bodyText = section.content || section.text || section.description || section.intro || section.body;
+    
+    // Remplacement demandé par l'utilisateur
+    if (typeof bodyText === 'string') {
+        bodyText = bodyText.replace('Mais en réalité', 'Car en réalité');
+    } else if (Array.isArray(bodyText)) {
+        bodyText = bodyText.map(p => typeof p === 'string' ? p.replace('Mais en réalité', 'Car en réalité') : p);
+    }
 
-    if (strengths || weaknesses) {
-        return (
-            <div key={key || sectionId} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+    const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
+    const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
+
+    return (
+      <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
+        {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+        {bodyText && (Array.isArray(bodyText) ? 
+          (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : 
+          (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>)
+        )}
+
+        {(strengths || weaknesses) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
                 <Card className="border-2 border-green-100 bg-green-50/10 overflow-hidden shadow-sm rounded-3xl">
                     <CardHeader className="bg-green-50 py-4 border-b">
                       <CardTitle className="text-lg font-black uppercase tracking-tight text-green-700 flex items-center gap-2">
@@ -256,7 +266,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 <Card className="border-2 border-red-100 bg-red-50/10 overflow-hidden shadow-sm rounded-3xl">
                     <CardHeader className="bg-red-50 py-4 border-b">
                       <CardTitle className="text-lg font-black uppercase tracking-tight text-red-700 flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5" /> Inconvénients
+                        <AlertTriangle className="h-5 w-5" /> Limites
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
@@ -270,16 +280,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                     </CardContent>
                 </Card>
             </div>
-        );
-    }
-
-    return (
-      <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
-        {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        {bodyText && (Array.isArray(bodyText) ? 
-          (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : 
-          (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>)
         )}
+
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
         {section.list && Array.isArray(section.list) && (
