@@ -2,8 +2,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-// Remplace ces valeurs par tes propres clés Firebase 
-// (tu les trouveras dans les paramètres de ton projet Firebase)
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,8 +11,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialise Firebase uniquement s'il n'est pas déjà initialisé
+// Initialisation propre pour éviter les erreurs de doublons
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-
-// Exporte la base de données Firestore
 export const db = getFirestore(app);
