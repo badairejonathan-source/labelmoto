@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -30,7 +31,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     const title = (article.title || '').toLowerCase();
 
     if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
-    if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
+    if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
     if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
     if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";

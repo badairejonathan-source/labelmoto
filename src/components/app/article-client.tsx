@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -66,7 +67,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
-    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
+    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";

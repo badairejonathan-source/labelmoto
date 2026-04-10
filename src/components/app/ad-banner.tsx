@@ -8,7 +8,7 @@ import { FileText } from 'lucide-react';
 const AdBanner: React.FC = () => {
   const article = {
     id: 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil',
-    imageUrl: '/images/motard-article-assurance2026.png',
+    imageUrl: '/images/motard-article-assurance20262.webp',
     imageHint: 'motorcycle insurance',
     title: 'Assurance moto : bien choisir sa formule',
   };
@@ -38,5 +38,3 @@ const AdBanner: React.FC = () => {
 };
 
 export default AdBanner;
-    
-    
