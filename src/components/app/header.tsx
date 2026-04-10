@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -302,7 +303,7 @@ const Header: React.FC<HeaderProps> = ({
     setPrediction('');
     const queryParams = new URLSearchParams();
     if (suggestion.lat && suggestion.lng) {
-        queryParams.set('lat', suggestion.lat.toString());
+        queryParams.set('lat', suggestion.lat.lat.toString());
         queryParams.set('lng', suggestion.lng.toString());
         if (suggestion.zoom) queryParams.set('zoom', suggestion.zoom.toString());
     }
@@ -339,7 +340,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-2">
           <div className="w-40 md:w-56 shrink-0 lg:justify-self-start"><Link href="/"><LabelMotoLogo /></Link></div>
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none relative overflow-hidden rounded-xl py-2">
-            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none"><Image src="/images/apercucarte.webp" alt="" fill className="object-cover grayscale" /></div>
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none"><Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover grayscale" /></div>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight relative z-10">Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span></p>
           </div>
           <div className="flex items-center gap-2 justify-end lg:justify-self-end"><UserMenu /></div>

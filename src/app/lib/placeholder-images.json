@@ -1,10 +1,11 @@
+
 {
   "landingPage": {
     "hero": {
       "src": "/images/motardnuitlandinfpage1.webp",
       "hint": "motorcycle urban",
       "mapPreview": {
-        "src": "/images/apercucarte.webp",
+        "src": "/images/apercucartezoom.webp",
         "hint": "apercu carte"
       }
     },
