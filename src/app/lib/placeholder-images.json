@@ -1,4 +1,3 @@
-
 {
   "landingPage": {
     "hero": {
@@ -31,7 +30,7 @@
       }
     ],
     "ctaSection": {
-      "src": "/images/motardcotesudlandingpage2.webp",
+      "src": "/images/motardcotesudlandingpage1.webp",
       "hint": "motorcycle group"
     }
   }
