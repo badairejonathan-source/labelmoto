@@ -64,13 +64,13 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
 
-    if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
-    if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.png";
-    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
-    if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
-    if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
-    if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.png";
-    if (articleId.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.png";
+    if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
+    if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
+    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
+    if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
+    if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
+    if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
+    if (articleId.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.webp";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
@@ -84,7 +84,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const sidebarRecommendation = useMemo(() => {
     const lowerId = id.toLowerCase();
     
-    // Si on lit le guide A2, on suggère le guide Gabarit/Hauteur de selle
     if (lowerId.includes('meilleure-moto-a2')) {
       return {
         title: "Taille & Gabarit",
@@ -99,7 +98,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       };
     }
 
-    // Par défaut (sur budget, entretien, etc.), on suggère le guide A2
     return {
       title: "Guide A2 2026",
       description: "Quelles sont les meilleures motos pour débuter ? Le guide complet A2.",
@@ -115,15 +113,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   const getCellValue = (row: any, header: string, colIndex: number) => {
     if (!row) return '';
-    
-    const normalize = (s: string) => String(s || '')
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]/g, '');
-
+    const normalize = (s: string) => String(s || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
     const target = normalize(header);
-    
     if (row[header] !== undefined) return row[header];
     const keys = Object.keys(row);
     const matchedKey = keys.find(k => normalize(k) === target);
@@ -139,7 +130,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (!tableData) return null;
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
-
     return (
       <div key={key} className="my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted shadow-sm">
         <div className="overflow-x-auto">
@@ -183,7 +173,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           const usefulGuarantees = card.useful_guarantees || card.recommended_guarantees;
           const summary = card.summary || card.description || card.text || card.intro || card.content;
           const formula = card.formula || card.recommended_formula || card.recommended_option;
-
           return (
             <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all rounded-3xl">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
@@ -252,96 +241,32 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
-    
     const fixText = (text: string) => typeof text === 'string' ? text.replace(/Mais en réalité/g, 'Car en réalité') : text;
-
-    if (typeof bodyText === 'string') {
-        bodyText = fixText(bodyText);
-    } else if (Array.isArray(bodyText)) {
-        bodyText = bodyText.map(p => fixText(p));
-    }
-
+    if (typeof bodyText === 'string') { bodyText = fixText(bodyText); } else if (Array.isArray(bodyText)) { bodyText = bodyText.map(p => fixText(p)); }
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
-
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
-        
-        {bodyText && (Array.isArray(bodyText) ? 
-          (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : 
-          (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>)
-        )}
-
+        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         {(strengths || weaknesses) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
                 <Card className="border-2 border-green-100 bg-green-50/10 overflow-hidden shadow-sm rounded-3xl">
-                    <CardHeader className="bg-green-50 py-4 border-b">
-                      <CardTitle className="text-lg font-black uppercase tracking-tight text-green-700 flex items-center gap-2">
-                        <CheckCircle2 className="h-5 w-5" /> Avantages
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                        <ul className="space-y-2">
-                            {strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (
-                              <li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground">
-                                <span className="text-green-500 shrink-0">•</span> {s}
-                              </li>
-                            ))}
-                        </ul>
-                    </CardContent>
+                    <CardHeader className="bg-green-50 py-4 border-b"><CardTitle className="text-lg font-black uppercase tracking-tight text-green-700 flex items-center gap-2"><CheckCircle2 className="h-5 w-5" /> Avantages</CardTitle></CardHeader>
+                    <CardContent className="p-6"><ul className="space-y-2">{strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (<li key={`stre-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground"><span className="text-green-500 shrink-0">•</span> {s}</li>))}</ul></CardContent>
                 </Card>
                 <Card className="border-2 border-red-100 bg-red-50/10 overflow-hidden shadow-sm rounded-3xl">
-                    <CardHeader className="bg-red-50 py-4 border-b">
-                      <CardTitle className="text-lg font-black uppercase tracking-tight text-red-700 flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5" /> Limites
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                        <ul className="space-y-2">
-                            {weaknesses && Array.isArray(weaknesses) && weaknesses.map((w: string, j: number) => (
-                              <li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground">
-                                <span className="text-red-400 shrink-0">•</span> {w}
-                              </li>
-                            ))}
-                        </ul>
-                    </CardContent>
+                    <CardHeader className="bg-red-50 py-4 border-b"><CardTitle className="text-lg font-black uppercase tracking-tight text-red-700 flex items-center gap-2"><AlertTriangle className="h-5 w-5" /> Limites</CardTitle></CardHeader>
+                    <CardContent className="p-6"><ul className="space-y-2">{weaknesses && Array.isArray(weaknesses) && weaknesses.map((w: string, j: number) => (<li key={`weak-${idx}-${j}`} className="text-sm font-bold flex items-start gap-2 text-foreground"><span className="text-red-400 shrink-0">•</span> {w}</li>))}</ul></CardContent>
                 </Card>
             </div>
         )}
-
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
-        {section.list && Array.isArray(section.list) && (
-          <ul className="list-disc list-inside space-y-3 mb-8 pl-4">
-            {section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}
-          </ul>
-        )}
-        {section.ordered_list && Array.isArray(section.ordered_list) && (
-          <ol className="list-decimal list-inside space-y-4 mb-8 pl-4">
-            {section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}
-          </ol>
-        )}
-        {section.subsections && Array.isArray(section.subsections) && (
-          <div className={cn(
-            "space-y-10",
-            section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0"
-          )}>
-            {section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}
-          </div>
-        )}
-        {section.note && (
-            <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
-                {fixText(section.note)}
-                {(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT") || section.note.includes("coûtent bien plus cher")) && (
-                  <div className="mt-6 not-italic">
-                    <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-8 py-6 shadow-lg transition-all hover:scale-105 active:scale-95">
-                      <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link>
-                    </Button>
-                  </div>
-                )}
-            </div>
-        )}
+        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
+        {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
+        {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
+        {section.note && (<div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">{fixText(section.note)}{(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT") || section.note.includes("coûtent bien plus cher")) && (<div className="mt-6 not-italic"><Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-8 py-6 shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link></Button></div>)}</div>)}
       </div>
     );
   };
@@ -356,16 +281,9 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-8 space-y-8">
                         <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
-                        <div className="space-y-4">
-                            <Skeleton className="h-6 w-full" />
-                            <Skeleton className="h-6 w-full" />
-                            <Skeleton className="h-6 w-3/4" />
-                        </div>
+                        <div className="space-y-4"><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-3/4" /></div>
                     </div>
-                    <div className="lg:col-span-4 space-y-8">
-                        <Skeleton className="h-[300px] w-full rounded-[2.5rem]" />
-                        <Skeleton className="h-[200px] w-full rounded-[2rem]" />
-                    </div>
+                    <div className="lg:col-span-4 space-y-8"><Skeleton className="h-[300px] w-full rounded-[2.5rem]" /><Skeleton className="h-[200px] w-full rounded-[2rem]" /></div>
                 </div>
             </div>
         </main>
@@ -396,40 +314,17 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
               </div>
 
-              {children && (
-                <div className="mb-12">
-                  {children}
-                </div>
-              )}
+              {children && (<div className="mb-12">{children}</div>)}
 
               {article.intro && Array.isArray(article.intro) && (
-                <div className="my-12 space-y-6">
-                  {article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}
-                </div>
+                <div className="my-12 space-y-6">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>
               )}
               
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
                 <div className="my-12 p-10 bg-brand/5 rounded-[2.5rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-                    <Image src="/images/logo-moto.png?v=6" alt="" width={200} height={64} />
-                  </div>
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={200} height={64} /></div>
                   <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.3em] m-0 text-muted-foreground">Au sommaire de ce guide :</h2></div>
-                  <nav>
-                    <ul className="space-y-5">
-                      {activeSections.map((section: any, idx: number) => { 
-                        if (!section.title) return null; 
-                        const sectionId = slugify(section.title); 
-                        return (
-                          <li key={`toc-${idx}`} className="group/item">
-                            <a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all">
-                              <div className="h-7 w-7 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-4 w-4" /></div>
-                              <span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span>
-                            </a>
-                          </li>
-                        ); 
-                      })}
-                    </ul>
-                  </nav>
+                  <nav><ul className="space-y-5">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all"><div className="h-7 w-7 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-4 w-4" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span></a></li>); })}</ul></nav>
                 </div>
               )}
 
@@ -439,7 +334,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <div className="mt-20 pt-12 border-t border-brand/20">
                       <div className="flex items-center gap-3 mb-8"><Info className="h-8 w-8 text-brand" /><h3 className="text-3xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
                       <div className="space-y-6">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-xl text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-xl text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
-                      <div className="flex justify-end items-center mt-16"><p className="text-xl font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.png?v=2" alt="Signature" width={140} height={140} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
+                      <div className="flex justify-end items-center mt-16"><p className="text-xl font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={140} height={140} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
                   </div>
               )}
             </article>
@@ -450,7 +345,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <CardHeader className="bg-brand text-white p-6"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-base"><Map className="h-6 w-6" /> Trouver un pro</CardTitle></CardHeader>
                   <CardContent className="p-5 text-center space-y-4">
                     <div className="relative aspect-video rounded-2xl overflow-hidden border-4 border-muted shadow-lg group cursor-pointer" onClick={() => router.push('/map')}>
-                      <Image src="/images/apercucartezoom.png" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-10 w-10 text-white" /></div>
                     </div>
                     <p className="text-sm font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
@@ -461,16 +356,10 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 </Card>
 
                 <Card className={cn("border-2 border-dashed p-5 rounded-[2rem] shadow-sm text-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
-                  <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3", sidebarRecommendation.iconBg)}>
-                    {sidebarRecommendation.icon}
-                  </div>
+                  <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3", sidebarRecommendation.iconBg)}>{sidebarRecommendation.icon}</div>
                   <h4 className={cn("text-base font-black uppercase tracking-tight mb-1", sidebarRecommendation.titleColor)}>{sidebarRecommendation.title}</h4>
                   <p className={cn("text-xs font-bold mb-4 leading-snug opacity-70", sidebarRecommendation.titleColor)}>{sidebarRecommendation.description}</p>
-                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[9px] rounded-full py-4 h-auto", sidebarRecommendation.btnClass)}>
-                    <Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">
-                      Lire le dossier <ChevronRight className="h-3 w-3" />
-                    </Link>
-                  </Button>
+                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[9px] rounded-full py-4 h-auto", sidebarRecommendation.btnClass)}><Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">Lire le dossier <ChevronRight className="h-3 w-3" /></Link></Button>
                 </Card>
               </div>
             </aside>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -96,7 +95,7 @@ const UserMenu = () => {
           </Avatar>
         ) : (
           <div className="h-9 w-9 rounded-full flex items-center justify-center p-1">
-            <Image src="/images/icon-moncompte.png" alt="Mon compte" width={36} height={36} className="h-9 w-9 object-contain" />
+            <Image src="/images/icon-moncompte.webp" alt="Mon compte" width={36} height={36} className="h-9 w-9 object-contain" />
           </div>
         )}
         <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border-2 border-white shadow-sm flex items-center justify-center">
@@ -118,7 +117,7 @@ const UserMenu = () => {
             <DropdownMenuItem asChild>
                 <Link href="/entretien" className="flex items-center gap-3 py-2 cursor-pointer">
                     <div className="w-6 flex justify-center">
-                        <Image src="/images/icon-entretienrevision.png" alt="" width={24} height={24} className="object-contain" />
+                        <Image src="/images/icon-entretienrevision.webp" alt="" width={24} height={24} className="object-contain" />
                     </div>
                     <span className="font-bold text-sm">Entretien & Révisions</span>
                 </Link>
@@ -126,7 +125,7 @@ const UserMenu = () => {
             <DropdownMenuItem asChild>
                 <Link href="/info" className="flex items-center gap-3 py-2 cursor-pointer">
                     <div className="w-6 flex justify-center">
-                        <Image src="/images/icon-conseils.png" alt="" width={22} height={22} className="object-contain" />
+                        <Image src="/images/icon-conseils.webp" alt="" width={22} height={22} className="object-contain" />
                     </div>
                     <span className="font-bold text-sm">Conseils pratiques</span>
                 </Link>
@@ -231,10 +230,8 @@ const Header: React.FC<HeaderProps> = ({
 
     const lowerTerm = searchTerm.toLowerCase().trim();
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
-    
     const results: Suggestion[] = [];
 
-    // --- VILLES ET DÉPARTEMENTS ---
     const matchingCities: { name: string; dept: string; lat: number; lng: number }[] = [];
     Object.entries(locationsData).forEach(([dept, info]) => {
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
@@ -250,12 +247,10 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // --- CONCESSIONNAIRES ---
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
         const normalizedTitle = title.replace(/[\s-]/g, '');
-        
         let score = 0;
         const isNumeric = /^\d+$/.test(lowerTerm);
         if (isNumeric && lowerTerm.length >= 2) {
@@ -266,17 +261,14 @@ const Header: React.FC<HeaderProps> = ({
         const belongsToMatchingCity = matchingCities.some(city => address.includes(city.name.toLowerCase()));
         if (belongsToMatchingCity) score = Math.max(score, 1150);
         if (address.includes(lowerTerm)) score = Math.max(score, 1100);
-        
         if (lowerTerm.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
             if (dist === 1) score = Math.max(score, 1050);
         }
         if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
-        
         if (score > 0) results.push({ ...d, score });
     });
 
-    // --- MARQUES ---
     const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
     let bestBrandMatch: string | null = null;
     sortedBrands.forEach(brand => {
@@ -345,16 +337,10 @@ const Header: React.FC<HeaderProps> = ({
     <header className={cn("bg-card py-3 px-4 border-b border-border z-40 relative", className)}>
       <div className="container mx-auto max-width-7xl flex flex-col gap-3">
         <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-2">
-          <div className="w-40 md:w-56 shrink-0 lg:justify-self-start">
-            <Link href="/"><LabelMotoLogo /></Link>
-          </div>
+          <div className="w-40 md:w-56 shrink-0 lg:justify-self-start"><Link href="/"><LabelMotoLogo /></Link></div>
           <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none relative overflow-hidden rounded-xl py-2">
-            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
-                <Image src="/images/apercucarte.png" alt="" fill className="object-cover grayscale" />
-            </div>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight relative z-10">
-              Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span>
-            </p>
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none"><Image src="/images/apercucarte.webp" alt="" fill className="object-cover grayscale" /></div>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight relative z-10">Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span></p>
           </div>
           <div className="flex items-center gap-2 justify-end lg:justify-self-end"><UserMenu /></div>
         </div>
@@ -368,40 +354,16 @@ const Header: React.FC<HeaderProps> = ({
                         <span className="text-base text-muted-foreground/40 select-none">{prediction.substring(searchTerm.length)}</span>
                     </div>
                   )}
-                  <Input
-                    type="search"
-                    placeholder={placeholderText}
-                    className="pr-24 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10"
-                    value={searchTerm}
-                    onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }}
-                    onFocus={() => { setShowSuggestions(true); }}
-                    onKeyDown={handleKeyDown}
-                    autoComplete="off"
-                  />
-                  {searchTerm && (
-                    <button 
-                      onClick={() => { onSearchTermChange(''); setPrediction(''); }}
-                      className="absolute top-1/2 right-14 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors"
-                      type="button"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  )}
+                  <Input type="search" placeholder={placeholderText} className="pr-24 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" value={searchTerm} onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} onFocus={() => { setShowSuggestions(true); }} onKeyDown={handleKeyDown} autoComplete="off" />
+                  {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-14 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
                   <Button type="submit" size="icon" className="absolute top-1/2 right-1.5 -translate-y-1/2 h-11 w-11 bg-brand rounded-full z-20" onClick={executeSearch}><Search className="h-5 w-5" /></Button>
                   {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">
-                        {suggestions.map((s, idx) => (
-                            <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
-                                <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">{s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}</div>
-                                <div className="flex flex-col min-0"><span className="text-base font-bold text-foreground truncate">{s.label}</span>{s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}</div>
-                            </button>
-                        ))}
-                    </div>
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">{suggestions.map((s, idx) => (<button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}><div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">{s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}</div><div className="flex flex-col min-0"><span className="text-base font-bold text-foreground truncate">{s.label}</span>{s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}</div></button>))}</div>
                   )}
                 </div>
                 <div className="hidden md:flex items-center gap-2 shrink-0 w-24 justify-end">
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/entretien" className="flex items-center justify-center"><Image src="/images/icon-entretienrevision.png" alt="" width={32} height={32} className="h-8 w-8 object-contain" /><span className="sr-only">Entretien</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Entretien</p></TooltipContent></Tooltip></TooltipProvider>
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/info" className="flex items-center justify-center"><Image src="/images/icon-conseils.png" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="sr-only">Conseils</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Conseils</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/entretien" className="flex items-center justify-center"><Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-8 w-8 object-contain" /><span className="sr-only">Entretien</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Entretien</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/info" className="flex items-center justify-center"><Image src="/images/icon-conseils.webp" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="sr-only">Conseils</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Conseils</p></TooltipContent></Tooltip></TooltipProvider>
                 </div>
             </div>
             <nav className="flex items-center justify-center gap-6 sm:gap-10 mt-1">

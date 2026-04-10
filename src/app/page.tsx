@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic'; // AJOUT : Pour charger les sections lourdes plus tard
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/app/header';
 import { FileText, CheckCircle, ArrowRight } from 'lucide-react';
@@ -13,8 +13,6 @@ import { useRouter } from 'next/navigation';
 import { collection, query, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// --- OPTIMISATION : On charge les sections du bas "à la demande" ---
-// Cela permet au Header et au Hero de s'afficher sans attendre le reste du code lourd.
 const HeavySections = dynamic(() => Promise.resolve(({ children }: { children: React.ReactNode }) => <>{children}</>), {
     ssr: true
 });
@@ -28,7 +26,6 @@ export default function LandingPage() {
     const firestore = useFirestore();
     const articlesQuery = useMemoFirebase(() => {
         if (!firestore) return null;
-        // On garde la limite à 3 pour ne pas charger trop de données
         return query(collection(firestore, 'articles'), limit(3));
     }, [firestore]);
     const { data: featuredArticles, isLoading: isArticlesLoading } = useCollection(articlesQuery);
@@ -43,17 +40,16 @@ export default function LandingPage() {
         }
     };
 
-    // Optimisation de la logique d'image (plus rapide car simple objet)
     const getArticleImage = (article: any) => {
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
-        if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
-        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
-        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
-        if (id.includes('taille') || title.includes('taille')) return "/images/motard-articles-hauteurdeselle.png";
-        if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
-        if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.png";
-        if (id.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.png";
+        if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
+        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
+        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
+        if (id.includes('taille') || title.includes('taille')) return "/images/motard-articles-hauteurdeselle.webp";
+        if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
+        if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
+        if (id.includes('entretien') || title.includes('entretien')) return "/images/motard-entretien-page.webp";
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     };
@@ -68,14 +64,13 @@ export default function LandingPage() {
             />
             <main className="py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* SECTION HERO - AFFICHAGE PRIORITAIRE */}
                 <div className="relative rounded-3xl border-2 border-brand bg-black mb-24 md:mb-32 overflow-visible shadow-2xl min-h-[400px]">
                      <Image 
                         src={hero.src} 
                         alt="Label Moto Hero" 
                         fill 
                         className="object-cover z-0 opacity-40 rounded-3xl" 
-                        priority // CRITIQUE pour la performance LCP
+                        priority 
                         sizes="100vw"
                     />
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12 md:pb-20">
@@ -98,7 +93,6 @@ export default function LandingPage() {
                     </div>
                 </div>
 
-                {/* --- SECTIONS EN DESSOUS DU HERO --- */}
                 <HeavySections>
                     <section className="mt-20 md:mt-32">
                         <div className="bg-muted/50 rounded-[2.5rem] p-8 border border-border/50 backdrop-blur-sm shadow-sm">
@@ -112,7 +106,6 @@ export default function LandingPage() {
                         </div>
                     </section>
                     
-                    {/* Section Articles avec Skeletons conservés */}
                     <section className="mt-16 md:mt-24">
                         <div className="bg-muted/50 rounded-[2.5rem] p-8 border-2 border-brand shadow-xl relative overflow-hidden">
                             <div className="text-center mb-10"><h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter leading-none">Objectif A2 : Roulez bien accompagnés.</h2><p className="text-base text-muted-foreground max-w-3xl mx-auto font-medium">De l’achat de votre première bécane au choix du bon garage, nos dossiers spéciaux vous aident à éviter les pièges et à tracer votre route sereinement.</p></div>
@@ -153,14 +146,13 @@ export default function LandingPage() {
                         </div>
                     </section>
 
-                    {/* Reste des sections inchangées pour le design */}
                     <section className="mt-16 md:mt-24"><div className="bg-muted/50 rounded-[2.5rem] p-10 text-center border border-border/50 backdrop-blur-sm shadow-sm"><h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter">Maîtrisez votre budget entretien.</h2><p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8 font-medium"><span className="font-black text-foreground">Anticipez vos dépenses en quelques clics.</span> Accédez au budget moyen et aux points de contrôle de votre modèle pour arriver au garage en toute confiance.</p><Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase tracking-widest text-xs px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95"><Link href="/entretien">Calculer mon budget entretien</Link></Button></div></section>
 
                     <section className="mt-16 md:mt-24">
                         <div className="relative rounded-[2.5rem] overflow-hidden bg-black shadow-2xl min-h-[300px] flex items-center">
-                            <Image src="/images/motardcotesudlandingpage2.png" alt="Ne perdez plus votre temps" fill className="object-cover z-0 opacity-30" />
+                            <Image src="/images/motardcotesudlandingpage2.webp" alt="Ne perdez plus votre temps" fill className="object-cover z-0 opacity-30" />
                             <div className="relative z-10 p-10 md:p-16 w-full">
-                                <div className="max-w-4xl mx-auto text-center text-white"><h2 className="text-3xl md:text-5xl font-black mb-8 uppercase tracking-tighter leading-none" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>🚦 Ne perdez plus votre temps dans les recherches.</h2><div className="space-y-6 text-base md:text-lg text-gray-200 font-medium leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}><p>Parce que chaque minute passée à chercher un garage est une minute de moins à pencher dans les virages, nous avons créé LABEL MOTO. Notre mission : rendre votre vie de motard plus fluide, plus connectée et surtout, plus fiable.</p><p>Trouvez en un clic votre future bécane, réservez un essai en concession, ou dénichez le préparateur qui saura sublimer votre machine. Que ce soit pour un entretien de routine ou l’équipement de votre vie, accédez uniquement à des professionnels sélectionnés.</p><p className="font-black text-white pt-4 text-xl uppercase tracking-widest italic">L'équipe Label Moto <Image src="/images/Stamp-LM.png?v=3" alt="Cachet Label Moto" width={48} height={48} className="inline-block -mt-2.5 opacity-90 scale-125 ml-2" /></p></div></div>
+                                <div className="max-w-4xl mx-auto text-center text-white"><h2 className="text-3xl md:text-5xl font-black mb-8 uppercase tracking-tighter leading-none" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>🚦 Ne perdez plus votre temps dans les recherches.</h2><div className="space-y-6 text-base md:text-lg text-gray-200 font-medium leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}><p>Parce que chaque minute passée à chercher un garage est une minute de moins à pencher dans les virages, nous avons créé LABEL MOTO. Notre mission : rendre votre vie de motard plus fluide, plus connectée et surtout, plus fiable.</p><p>Trouvez en un clic votre future bécane, réservez un essai en concession, ou dénichez le préparateur qui saura sublimer votre machine. Que ce soit pour un entretien de routine ou l’équipement de votre vie, accédez uniquement à des professionnels sélectionnés.</p><p className="font-black text-white pt-4 text-xl uppercase tracking-widest italic">L'équipe Label Moto <Image src="/images/Stamp-LM.webp" alt="Cachet Label Moto" width={48} height={48} className="inline-block -mt-2.5 opacity-90 scale-125 ml-2" /></p></div></div>
                             </div>
                         </div>
                     </section>
@@ -170,8 +162,8 @@ export default function LandingPage() {
                         <div className="flex flex-col lg:flex-row min-h-[350px]">
                           <div className="hidden lg:flex w-20 bg-muted/30 border-r border-border/50 items-center justify-center py-8 shrink-0"><span className="text-2xl font-black text-brand/10 tracking-[0.4em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>Espace Pro</span></div>
                           <div className="flex-grow flex flex-col lg:flex-row items-center p-8 md:p-12 gap-8 lg:gap-16">
-                            <div className="flex-1 text-center lg:text-left"><h2 className="text-3xl md:text-5xl font-black text-foreground leading-[0.9] mb-6 uppercase tracking-tighter">Professionnels, rejoignez le réseau Label Moto.</h2><p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">Connectez votre atelier ou concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.</p><div className="flex flex-col gap-4 items-center lg:items-start"><Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href={proRegisterLink}>🔘 Créer la fiche de mon établissement</Link></Button><Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href="/map?mode=pro_edit">🔘 Modifier une fiche existante</Link></Button></div></div>
-                            <div className="flex-1 relative w-full max-w-md lg:max-w-none"><div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white -rotate-2 group-hover:rotate-0 transition-all duration-1000 ease-out transform group-hover:scale-[1.05]"><Image src="/images/apercufiche.png" alt="Interface Pro Preview" fill className="object-cover" /></div><div className="absolute -bottom-4 right-4 bg-brand text-white px-5 py-2 rounded-2xl shadow-2xl font-black text-[10px] md:text-xs rotate-6 flex items-center gap-2 border-2 border-white"><div className="w-2 h-2 bg-white rounded-full animate-pulse" />100% GRATUIT</div></div>
+                            <div className="flex-1 text-center lg:text-left"><h2 className="text-3xl md:text-5xl font-black text-foreground leading-[0.9] mb-6 uppercase tracking-tighter">Professionnels, rejoignez le réseau Label Moto.</h2><p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">Connectez votre atelier or concession avec les motards de votre secteur. Une visibilité accrue, une gestion simple et une inscription 100% gratuite.</p><div className="flex flex-col gap-4 items-center lg:items-start"><Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href={proRegisterLink}>🔘 Créer la fiche de mon établissement</Link></Button><Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href="/map?mode=pro_edit">🔘 Modifier une fiche existante</Link></Button></div></div>
+                            <div className="flex-1 relative w-full max-w-md lg:max-w-none"><div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white -rotate-2 group-hover:rotate-0 transition-all duration-1000 ease-out transform group-hover:scale-[1.05]"><Image src="/images/apercufiche.webp" alt="Interface Pro Preview" fill className="object-cover" /></div><div className="absolute -bottom-4 right-4 bg-brand text-white px-5 py-2 rounded-2xl shadow-2xl font-black text-[10px] md:text-xs rotate-6 flex items-center gap-2 border-2 border-white"><div className="w-2 h-2 bg-white rounded-full animate-pulse" />100% GRATUIT</div></div>
                           </div>
                         </div>
                       </div>

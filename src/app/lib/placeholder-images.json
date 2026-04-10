@@ -1,11 +1,10 @@
-
 {
   "landingPage": {
     "hero": {
-      "src": "/images/motardnuitlandinfpage.png",
+      "src": "/images/motardnuitlandinfpage.webp",
       "hint": "motorcycle urban",
       "mapPreview": {
-        "src": "/images/apercucarte.png",
+        "src": "/images/apercucarte.webp",
         "hint": "apercu carte"
       }
     },
@@ -31,7 +30,7 @@
       }
     ],
     "ctaSection": {
-      "src": "/images/motardcotesudlandingpage2.png",
+      "src": "/images/motardcotesudlandingpage2.webp",
       "hint": "motorcycle group"
     }
   }

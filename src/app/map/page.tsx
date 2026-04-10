@@ -22,13 +22,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 const brandsList = Object.keys(brandLogos);
 
 const ads = [
-  { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.png' },
-  { id: 'combien-coute-vraiment-une-moto-par-mois', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: '/images/motard-budget-reel.png' },
-  { id: 'meilleure-moto-a2-quelle-moto-choisir-pour-debuter', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.png' },
-  { id: 'entretien-moto-intervalles-prix-conseils-par-modele', title: 'Guide d\'entretien & révisions', description: 'Tous les intervalles et prix estimés pour votre modèle de moto.', imageUrl: '/images/motard-entretien-page.png' },
+  { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
+  { id: 'combien-coute-vraiment-une-moto-par-mois', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: '/images/motard-budget-reel.webp' },
+  { id: 'meilleure-moto-a2-quelle-moto-choisir-pour-debuter', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.webp' },
+  { id: 'entretien-moto-intervalles-prix-conseils-par-modele', title: 'Guide d\'entretien & révisions', description: 'Tous les intervalles et prix estimés pour votre modèle de moto.', imageUrl: '/images/motard-entretien-page.webp' },
 ];
 
-// Import dynamique sécurisé pour Next 15
 const MapComponent = dynamic(
   () => import('@/components/app/map-component').then((mod) => mod.default), 
   { 
@@ -132,7 +131,6 @@ function MapPageComponent() {
   const isMobile = (width || 1024) < 768;
   const hasInitializedMap = useRef(false);
 
-  // RÉPARATION ICI : La logique complète du padding
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
     return drawerHeight === 'half' ? height / 2 : 70; 
@@ -173,10 +171,10 @@ function MapPageComponent() {
         if (activeFilter) { results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')); }
         if (submittedSearchTerm.trim() !== '') {
             const lower = submittedSearchTerm.toLowerCase().trim();
-            const normalizedSearch = lower.replace(/[\s-]/g, '');
-            if (/^\d{5}$/.test(normalizedSearch)) {
-                const coords = await getCityCoordinates(normalizedSearch);
-                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(normalizedSearch)); }
+            const normalizedTerm = lower.replace(/[\s-]/g, '');
+            if (/^\d{5}$/.test(normalizedTerm)) {
+                const coords = await getCityCoordinates(normalizedTerm);
+                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(normalizedTerm)); }
             } else {
                 const cityCoords = await getCityCoordinatesByName(lower);
                 if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }

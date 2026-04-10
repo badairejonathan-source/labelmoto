@@ -18,15 +18,13 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
 
-        // Mapping officiel ZFE
-        if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
-        
-        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
-        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
-        if (id.includes('taille') || title.includes('taille') || title.includes('gabarit')) return "/images/motard-articles-hauteurdeselle.png";
-        if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.png";
-        if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.png";
-        if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.png";
+        if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
+        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
+        if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
+        if (id.includes('taille') || title.includes('taille') || title.includes('gabarit')) return "/images/motard-articles-hauteurdeselle.webp";
+        if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
+        if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
+        if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
         
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         
@@ -87,7 +85,7 @@ function InfoPageComponent() {
             
             <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
                 <Image
-                    src="/images/logo-moto.png?v=6"
+                    src="/images/logo-moto.webp"
                     alt="Label Moto Watermark"
                     width={600}
                     height={192}
@@ -136,7 +134,7 @@ function InfoPageComponent() {
                                     </CardHeader>
                                     <CardContent className="p-6">
                                         <Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-muted">
-                                            <Image src="/images/apercucartezoom.png" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" />
+                                            <Image src="/images/apercucartezoom.webp" alt="Aperçu de la carte" width={400} height={300} className="object-cover w-full h-48 transition-transform duration-700 group-hover:scale-110" />
                                         </Link>
                                         <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Trouvez les meilleures concessions et ateliers moto en France sur notre carte interactive.</p>
                                     </CardContent>

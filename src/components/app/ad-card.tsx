@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -29,12 +29,12 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     const id = article.id?.toLowerCase() || '';
     const title = (article.title || '').toLowerCase();
 
-    if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.png";
-    if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.png";
-    if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.png";
-    if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.png";
-    if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.png";
-    if (isMaintenance) return "/images/motard-entretien-page.png";
+    if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
+    if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
+    if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
+    if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.webp";
+    if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
+    if (isMaintenance) return "/images/motard-entretien-page.webp";
     
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";

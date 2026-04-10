@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: "Le compagnon de route indispensable pour tout motard en France. Guides d'achat A2 et fiches techniques gratuites.",
     images: [
       {
-        url: "/images/logo-moto.png?v=6",
+        url: "/images/logo-moto.webp",
         width: 1200,
         height: 630,
         alt: "Label Moto - Annuaire et Conseils Moto",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Label Moto - L'annuaire intelligent des motards",
     description: "Trouvez votre concession et entretenez votre moto en toute confiance.",
-    images: ["/images/logo-moto.png?v=6"],
+    images: ["/images/logo-moto.webp"],
   },
   robots: {
     index: true,
