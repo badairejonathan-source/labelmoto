@@ -65,13 +65,14 @@ export default function LandingPage() {
             />
             <main className="py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                <div className="relative rounded-3xl border-2 border-brand bg-black mb-24 md:mb-32 overflow-visible shadow-2xl min-h-[400px]">
+              <div className="relative rounded-3xl border-2 border-brand bg-black mb-24 md:mb-32 overflow-visible shadow-2xl min-h-[500px] md:min-h-[450px]">
                      <Image 
                         src={hero.src} 
                         alt="Label Moto Hero" 
                         fill 
                         className="object-cover z-0 opacity-40 rounded-3xl" 
                         priority 
+                        fetchPriority="high" //
                         sizes="100vw"
                     />
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12 md:pb-20">

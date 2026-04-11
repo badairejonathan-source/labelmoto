@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -85,21 +84,25 @@ const UserMenu = () => {
   }
 
   const trigger = (
-    <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 flex items-center justify-center focus-visible:ring-0">
+    <Button 
+      variant="ghost" 
+      aria-label="Menu utilisateur"
+      className="relative h-10 w-10 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
+    >
       <div className="relative">
         {user ? (
-          <Avatar className="h-9 w-9 border-2 border-brand">
-            <AvatarImage src={user.photoURL || undefined} alt="User avatar" />
+          <Avatar className="h-9 w-9 border-2 border-brand" aria-hidden="true">
+            <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-9 w-9 rounded-full flex items-center justify-center p-1">
-            <Image src="/images/icon-moncompte.webp" alt="Mon compte" width={36} height={36} className="h-9 w-9 object-contain" />
+          <div className="h-9 w-9 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+            <Image src="/images/icon-moncompte.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain" />
           </div>
         )}
-        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border-2 border-white shadow-sm flex items-center justify-center">
+        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border-2 border-white shadow-sm flex items-center justify-center" aria-hidden="true">
           <Menu className="h-2 w-2" strokeWidth={3} />
         </div>
       </div>
@@ -303,7 +306,7 @@ const Header: React.FC<HeaderProps> = ({
     setPrediction('');
     const queryParams = new URLSearchParams();
     if (suggestion.lat && suggestion.lng) {
-        queryParams.set('lat', suggestion.lat.lat.toString());
+        queryParams.set('lat', suggestion.lat.toString());
         queryParams.set('lng', suggestion.lng.toString());
         if (suggestion.zoom) queryParams.set('zoom', suggestion.zoom.toString());
     }
@@ -337,13 +340,9 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-40 relative", className)}>
       <div className="container mx-auto max-width-7xl flex flex-col gap-3">
-        <div className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_2fr_1fr] items-center gap-y-2">
-          <div className="w-40 md:w-56 shrink-0 lg:justify-self-start"><Link href="/"><LabelMotoLogo /></Link></div>
-          <div className="col-span-2 lg:col-span-1 flex items-center justify-center px-4 order-3 lg:order-none relative overflow-hidden rounded-xl py-2">
-            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none"><Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover grayscale" /></div>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground text-center leading-tight relative z-10">Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span></p>
-          </div>
-          <div className="flex items-center gap-2 justify-end lg:justify-self-end"><UserMenu /></div>
+        <div className="flex items-center justify-between">
+          <div className="w-40 md:w-56 shrink-0"><Link href="/"><LabelMotoLogo /></Link></div>
+          <div className="flex items-center gap-2 justify-end"><UserMenu /></div>
         </div>
         <div className="flex flex-col items-center gap-2 w-full">
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
