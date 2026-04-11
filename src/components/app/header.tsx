@@ -338,7 +338,6 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    // CORRECTION : z-index réglé sur 1100 pour passer devant les contrôles de carte sans couvrir le drawer
     <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
       <div className="container mx-auto max-width-7xl flex flex-col gap-3">
         <div className="flex items-center justify-between">
@@ -346,6 +345,18 @@ const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-2 justify-end"><UserMenu /></div>
         </div>
         <div className="flex flex-col items-center gap-2 w-full">
+            {/* Phrase d'accroche avec filigrane carte */}
+            <div className="hidden md:flex items-center justify-center mb-1">
+                <div className="relative px-8 py-1.5 rounded-2xl overflow-hidden bg-muted/20 border border-border/40 shadow-sm">
+                    <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
+                        <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
+                    </div>
+                    <h2 className="text-lg md:text-xl font-black tracking-tight relative z-10">
+                        Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span>
+                    </h2>
+                </div>
+            </div>
+
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
                 <div className="hidden md:block w-24 shrink-0" />
                 <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
