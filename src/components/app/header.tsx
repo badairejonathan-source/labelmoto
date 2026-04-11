@@ -346,7 +346,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="hidden lg:flex items-center justify-center flex-1">
-            <div className="relative px-8 py-1.5 rounded-2xl overflow-hidden bg-muted/20 border border-border/40 shadow-sm">
+            <div className="relative px-28 py-1.5 rounded-2xl overflow-hidden bg-muted/20 border border-border/40 shadow-sm">
                 <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
                     <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
                 </div>
