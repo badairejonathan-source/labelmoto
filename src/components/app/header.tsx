@@ -20,7 +20,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
@@ -362,28 +361,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* LIGNE 2 : Bannière des logos de marques */}
-        <div className="hidden md:flex items-center justify-center overflow-x-auto no-scrollbar py-1 border-y border-border/10">
-          <div className="flex items-center gap-6 px-4">
-            {Object.entries(brandLogos).map(([brand, logoUrl]) => (
-              <TooltipProvider key={brand} delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button 
-                      onClick={() => handleSuggestionClick({ type: 'brand-only', label: brand, brand })}
-                      className="relative w-10 h-10 grayscale hover:grayscale-0 opacity-40 hover:opacity-100 transition-all duration-300 transform hover:scale-110"
-                    >
-                      <Image src={logoUrl} alt={brand} fill className="object-contain" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom"><p className="font-bold text-[10px] uppercase">{brand}</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ))}
-          </div>
-        </div>
-
-        {/* LIGNE 3 : Barre de recherche */}
+        {/* LIGNE 2 : Barre de recherche */}
         <div className="flex flex-col items-center gap-3 w-full">
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-4xl mx-auto">
                 <div className="relative flex-1" ref={suggestionsRef}>
@@ -425,12 +403,22 @@ const Header: React.FC<HeaderProps> = ({
                 
                 {/* Icônes de navigation rapide (Desktop) */}
                 <div className="hidden md:flex items-center gap-2 shrink-0">
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors"><Link href="/entretien" className="flex items-center justify-center"><Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-8 w-8 object-contain" /><span className="sr-only">Entretien</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Entretien</p></TooltipContent></Tooltip></TooltipProvider>
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors"><Link href="/info" className="flex items-center justify-center"><Image src="/images/icon-conseils.webp" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="sr-only">Conseils</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Conseils</p></TooltipContent></Tooltip></TooltipProvider>
+                    <Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors">
+                        <Link href="/entretien" className="flex items-center justify-center">
+                            <Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-8 w-8 object-contain" />
+                            <span className="sr-only">Entretien</span>
+                        </Link>
+                    </Button>
+                    <Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors">
+                        <Link href="/info" className="flex items-center justify-center">
+                            <Image src="/images/icon-conseils.webp" alt="" width={28} height={28} className="h-7 w-7 object-contain" />
+                            <span className="sr-only">Conseils</span>
+                        </Link>
+                    </Button>
                 </div>
             </div>
 
-            {/* LIGNE 4 : Filtres de navigation */}
+            {/* LIGNE 3 : Filtres de navigation */}
             <nav className="flex items-center justify-center gap-6 sm:gap-10 mt-1">
                 <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-4 py-2 h-auto flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-all", activeFilter === null ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
                   <Home className="h-4 w-4" />Tout
