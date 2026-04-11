@@ -338,7 +338,8 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    <header className={cn("bg-card py-3 px-4 border-b border-border z-40 relative", className)}>
+    // CORRECTION : z-index réglé sur 1100 pour passer devant les contrôles de carte sans couvrir le drawer
+    <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
       <div className="container mx-auto max-width-7xl flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="w-40 md:w-56 shrink-0"><Link href="/"><LabelMotoLogo /></Link></div>
