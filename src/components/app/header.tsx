@@ -339,49 +339,108 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
-      <div className="container mx-auto max-width-7xl flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="w-40 md:w-56 shrink-0"><Link href="/"><LabelMotoLogo /></Link></div>
-          <div className="flex items-center gap-2 justify-end"><UserMenu /></div>
-        </div>
-        <div className="flex flex-col items-center gap-2 w-full">
-            {/* Phrase d'accroche avec filigrane carte */}
-            <div className="hidden md:flex items-center justify-center mb-1">
-                <div className="relative px-8 py-1.5 rounded-2xl overflow-hidden bg-muted/20 border border-border/40 shadow-sm">
-                    <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
-                        <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
-                    </div>
-                    <h2 className="text-lg md:text-xl font-black tracking-tight relative z-10">
-                        Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span>
-                    </h2>
+      <div className="container mx-auto max-w-7xl flex flex-col gap-4">
+        {/* LIGNE 1 : Logo, Accroche (Centrée) et Menu */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="w-40 md:w-56 shrink-0">
+            <Link href="/"><LabelMotoLogo /></Link>
+          </div>
+          
+          <div className="hidden lg:flex items-center justify-center flex-1">
+            <div className="relative px-8 py-1.5 rounded-2xl overflow-hidden bg-muted/20 border border-border/40 shadow-sm">
+                <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
+                    <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
                 </div>
+                <h2 className="text-sm md:text-lg font-black tracking-tight relative z-10 whitespace-nowrap">
+                    Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span>
+                </h2>
             </div>
+          </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
-                <div className="hidden md:block w-24 shrink-0" />
-                <div className="relative flex-1 max-w-2xl mx-auto" ref={suggestionsRef}>
+          <div className="flex items-center gap-2 justify-end shrink-0">
+            <UserMenu />
+          </div>
+        </div>
+
+        {/* LIGNE 2 : Bannière des logos de marques */}
+        <div className="hidden md:flex items-center justify-center overflow-x-auto no-scrollbar py-1 border-y border-border/10">
+          <div className="flex items-center gap-6 px-4">
+            {Object.entries(brandLogos).map(([brand, logoUrl]) => (
+              <TooltipProvider key={brand} delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      onClick={() => handleSuggestionClick({ type: 'brand-only', label: brand, brand })}
+                      className="relative w-10 h-10 grayscale hover:grayscale-0 opacity-40 hover:opacity-100 transition-all duration-300 transform hover:scale-110"
+                    >
+                      <Image src={logoUrl} alt={brand} fill className="object-contain" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom"><p className="font-bold text-[10px] uppercase">{brand}</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))}
+          </div>
+        </div>
+
+        {/* LIGNE 3 : Barre de recherche */}
+        <div className="flex flex-col items-center gap-3 w-full">
+            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-4xl mx-auto">
+                <div className="relative flex-1" ref={suggestionsRef}>
                   {prediction && searchTerm && (
                     <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
                         <span className="text-base text-transparent select-none">{searchTerm}</span>
                         <span className="text-base text-muted-foreground/40 select-none">{prediction.substring(searchTerm.length)}</span>
                     </div>
                   )}
-                  <Input type="search" placeholder={placeholderText} className="pr-24 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" value={searchTerm} onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} onFocus={() => { setShowSuggestions(true); }} onKeyDown={handleKeyDown} autoComplete="off" />
+                  <Input 
+                    type="search" 
+                    placeholder={placeholderText} 
+                    className="pr-24 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" 
+                    value={searchTerm} 
+                    onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
+                    onFocus={() => { setShowSuggestions(true); }} 
+                    onKeyDown={handleKeyDown} 
+                    autoComplete="off" 
+                  />
                   {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-14 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
-                  <Button type="submit" size="icon" className="absolute top-1/2 right-1.5 -translate-y-1/2 h-11 w-11 bg-brand rounded-full z-20" onClick={executeSearch}><Search className="h-5 w-5" /></Button>
+                  <Button type="submit" size="icon" className="absolute top-1/2 right-1.5 -translate-y-1/2 h-11 w-11 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-5 w-5" /></Button>
+                  
                   {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">{suggestions.map((s, idx) => (<button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}><div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">{s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}</div><div className="flex flex-col min-0"><span className="text-base font-bold text-foreground truncate">{s.label}</span>{s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}</div></button>))}</div>
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">
+                      {suggestions.map((s, idx) => (
+                        <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
+                          <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
+                            {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
+                          </div>
+                          <div className="flex flex-col min-0">
+                            <span className="text-base font-bold text-foreground truncate">{s.label}</span>
+                            {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
-                <div className="hidden md:flex items-center gap-2 shrink-0 w-24 justify-end">
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/entretien" className="flex items-center justify-center"><Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-8 w-8 object-contain" /><span className="sr-only">Entretien</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Entretien</p></TooltipContent></Tooltip></TooltipProvider>
-                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-10 w-10"><Link href="/info" className="flex items-center justify-center"><Image src="/images/icon-conseils.webp" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="sr-only">Conseils</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Conseils</p></TooltipContent></Tooltip></TooltipProvider>
+                
+                {/* Icônes de navigation rapide (Desktop) */}
+                <div className="hidden md:flex items-center gap-2 shrink-0">
+                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors"><Link href="/entretien" className="flex items-center justify-center"><Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-8 w-8 object-contain" /><span className="sr-only">Entretien</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Entretien</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider delayDuration={0}><Tooltip><TooltipTrigger asChild><Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors"><Link href="/info" className="flex items-center justify-center"><Image src="/images/icon-conseils.webp" alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="sr-only">Conseils</span></Link></Button></TooltipTrigger><TooltipContent side="bottom"><p>Conseils</p></TooltipContent></Tooltip></TooltipProvider>
                 </div>
             </div>
+
+            {/* LIGNE 4 : Filtres de navigation */}
             <nav className="flex items-center justify-center gap-6 sm:gap-10 mt-1">
-                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold", activeFilter === null ? 'text-brand' : 'text-muted-foreground')}><Home className="h-5 w-5" />Tout</Button>
-                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold", activeFilter === 'shopping' ? 'text-brand' : 'text-muted-foreground')}><Bike className="h-5 w-5" />Concession</Button>
-                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("px-3 py-1.5 h-auto flex items-center gap-2 text-sm font-bold", activeFilter === 'service' ? 'text-brand' : 'text-muted-foreground')}><Wrench className="h-5 w-5" />Atelier</Button>
+                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-4 py-2 h-auto flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-all", activeFilter === null ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                  <Home className="h-4 w-4" />Tout
+                </Button>
+                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("px-4 py-2 h-auto flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'shopping' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                  <Bike className="h-4 w-4" />Concession
+                </Button>
+                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("px-4 py-2 h-auto flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'service' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                  <Wrench className="h-4 w-4" />Atelier
+                </Button>
             </nav>
         </div>
       </div>
