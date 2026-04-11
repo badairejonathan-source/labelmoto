@@ -350,8 +350,8 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
                     <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
                 </div>
-                <h2 className="text-[10px] sm:text-lg md:text-2xl font-black tracking-tight relative z-10 text-center leading-tight">
-                    Trouver une concession, un atelier ? <span className="text-brand italic">Fini la galère.</span>
+                <h2 className="text-base sm:text-lg md:text-2xl font-black tracking-tight relative z-10 text-center leading-tight">
+                    Trouver une concession, un atelier ? <span className="block sm:inline text-brand italic">Fini la galère.</span>
                 </h2>
             </div>
           </div>
