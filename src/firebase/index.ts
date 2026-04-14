@@ -26,19 +26,19 @@ export function initializeFirebase() {
   const auth = getAuth(firebaseApp);
   
   let firestore: Firestore;
-  if (typeof window !== 'undefined') {
-    // Client-side: use optimized settings for web browsers
-    // Using try-catch to handle cases where Firestore might already be initialized
-    try {
+  // Handle Firestore initialization carefully to avoid double-init errors or environment-specific crashes
+  try {
+    firestore = getFirestore(firebaseApp);
+  } catch (e) {
+    if (typeof window !== 'undefined') {
+      // Client-side: use optimized settings for web browsers
       firestore = initializeFirestore(firebaseApp, {
         experimentalForceLongPolling: true,
       });
-    } catch (e) {
+    } else {
+      // Server-side: fallback to standard getFirestore
       firestore = getFirestore(firebaseApp);
     }
-  } else {
-    // Server-side: use standard settings
-    firestore = getFirestore(firebaseApp);
   }
 
   return { firebaseApp, auth, firestore };

@@ -340,24 +340,24 @@ const Header: React.FC<HeaderProps> = ({
     <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
         {/* LIGNE 1 : Logo, Accroche GÉANTE et Menu */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="w-40 md:w-56 shrink-0">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="w-40 md:w-56 shrink-0 order-1">
             <Link href="/"><LabelMotoLogo /></Link>
           </div>
           
-          <div className="flex items-center justify-center flex-1">
-            <div className="relative px-4 md:px-60 py-3 rounded-[2rem] overflow-hidden bg-brand/5 border-2 border-brand/20 shadow-2xl transition-all hover:bg-brand/10 group">
+          <div className="flex items-center justify-center flex-1 order-3 md:order-2 w-full md:w-auto">
+            <div className="relative px-4 md:px-60 py-4 md:py-6 rounded-[2.5rem] overflow-hidden bg-brand/5 border-2 border-brand/20 shadow-2xl transition-all hover:bg-brand/10 group">
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
                     <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black tracking-tighter relative z-10 text-center leading-[0.9] uppercase">
-                    <span className="block sm:inline">Trouver une concession, un atelier ?</span>
-                    <span className="block text-brand italic sm:ml-2">Fini la galère.</span>
+                <h2 className="text-3xl md:text-5xl font-black tracking-tighter relative z-10 text-center leading-[0.9] uppercase max-w-[280px] md:max-w-none mx-auto">
+                    <span className="block md:inline">Trouver une concession, un atelier ?</span>
+                    <span className="block text-brand italic md:ml-2">Fini la galère.</span>
                 </h2>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 justify-end shrink-0">
+          <div className="flex items-center gap-2 justify-end shrink-0 order-2 md:order-3 self-end md:self-center">
             <UserMenu />
           </div>
         </div>
