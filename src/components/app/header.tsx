@@ -347,9 +347,10 @@ const Header: React.FC<HeaderProps> = ({
           
           <div className="flex-1 flex items-center justify-center min-w-0">
             <div className="relative px-3 py-1.5 md:px-12 md:py-4 rounded-full md:rounded-2xl overflow-hidden bg-brand/5 border border-brand/20 shadow-lg transition-all hover:bg-brand/10 group">
-                <h2 className="text-[9px] xs:text-[10px] sm:text-xs md:text-2xl lg:text-3xl font-black tracking-tighter relative z-10 text-center leading-none uppercase truncate md:whitespace-normal">
-                    <span className="text-foreground">Trouver une concession, un atelier ? </span>
-                    <span className="text-brand italic ml-1">Fini la galère.</span>
+                <h2 className="text-[9px] xs:text-[10px] sm:text-xs md:text-2xl lg:text-3xl font-black tracking-tighter relative z-10 text-center leading-[1.1] uppercase md:whitespace-normal">
+                    <span className="text-foreground">Trouver une concession, un atelier ?</span>
+                    <br />
+                    <span className="text-brand italic">Fini la galère.</span>
                 </h2>
             </div>
           </div>
