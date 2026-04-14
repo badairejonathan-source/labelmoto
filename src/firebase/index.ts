@@ -1,3 +1,4 @@
+
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
@@ -8,8 +9,8 @@ let auth: Auth;
 let firestore: Firestore;
 
 /**
- * Initializes and exports Firebase core services.
- * Designed to be safe for both Client and Server environments.
+ * Robust Firebase initialization for both Client and Server environments.
+ * Prevents multiple initializations and ensures Firestore settings are applied only when possible.
  */
 export function initializeFirebase() {
   if (getApps().length > 0) {
@@ -30,11 +31,11 @@ export function initializeFirebase() {
           experimentalForceLongPolling: true,
         });
       } else {
-        // Server-side: fallback to standard getFirestore
+        // Server-side: use standard getFirestore
         firestore = getFirestore(firebaseApp);
       }
     } catch (e) {
-      // Fallback if initializeFirestore was already called or failed
+      // Fallback if initializeFirestore was already called elsewhere
       firestore = getFirestore(firebaseApp);
     }
   }
@@ -42,8 +43,7 @@ export function initializeFirebase() {
   return { firebaseApp, auth, firestore };
 }
 
-export default initializeFirebase;
-
+// Ensure exports match what is expected by client-provider.tsx and other hooks
 export * from './provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
