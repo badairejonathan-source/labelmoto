@@ -1,7 +1,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore'
+import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore';
 
 let firebaseApp: FirebaseApp;
 let auth: Auth;
