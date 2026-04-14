@@ -340,9 +340,9 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo, Accroche et Menu sur UNE SEULE LIGNE MOBILE */}
+        {/* LIGNE 1 : Logo XXL, Accroche et Menu sur UNE SEULE LIGNE MOBILE */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
-          <div className="w-32 xs:w-44 md:w-64 shrink-0">
+          <div className="w-40 xs:w-56 md:w-80 shrink-0">
             <Link href="/"><LabelMotoLogo /></Link>
           </div>
           
