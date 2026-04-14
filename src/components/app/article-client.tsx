@@ -312,6 +312,27 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             </Card>
           </div>
         )}
+
+        {sectionId === 'quelle-assurance-choisir-pour-une-moto-a2' && (
+          <div className="mt-8 border-t border-dashed pt-8">
+            <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
+              <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
+                <div className="bg-brand/10 p-4 rounded-full">
+                  <ShieldCheck className="h-8 w-8 text-brand" />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Bien choisir son assurance</h4>
+                  <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet des formules 2026</p>
+                </div>
+                <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
+                  <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex items-center gap-2">
+                    Voir le guide complet <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     );
   };
