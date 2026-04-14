@@ -11,7 +11,8 @@ import {
   Map,
   FileText,
   ShieldCheck,
-  Bike
+  Bike,
+  Zap
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -268,6 +269,28 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
         {section.note && (<div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">{fixText(section.note)}{(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT") || section.note.includes("coûtent bien plus cher")) && (<div className="mt-6 not-italic"><Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-8 py-6 shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link></Button></div>)}</div>)}
+        
+        {/* AJOUT SPÉCIFIQUE : LIEN GABARIT MOTO */}
+        {sectionId === '1-ton-gabarit' && (
+          <div className="mt-8 border-t border-dashed pt-8">
+            <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
+              <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
+                <div className="bg-brand/10 p-4 rounded-full">
+                  <Bike className="h-8 w-8 text-brand" />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Besoin d'aide pour votre choix ?</h4>
+                  <p className="text-sm font-bold text-muted-foreground leading-snug">Découvrez notre guide complet pour choisir sa moto selon sa taille et son gabarit.</p>
+                </div>
+                <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
+                  <Link href="/info/quelle-moto-choisir-selon-sa-taille-et-son-gabarit" className="flex items-center gap-2">
+                    Voir le guide complet <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     );
   };

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -339,19 +340,20 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo, Accroche (Centrée) et Menu */}
+        {/* LIGNE 1 : Logo, Accroche GÉANTE et Menu */}
         <div className="flex items-center justify-between gap-4">
           <div className="w-40 md:w-56 shrink-0">
             <Link href="/"><LabelMotoLogo /></Link>
           </div>
           
           <div className="flex items-center justify-center flex-1">
-            <div className="relative px-4 md:px-28 py-1.5 rounded-2xl overflow-hidden bg-muted/20 border border-border/40 shadow-sm">
-                <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
+            <div className="relative px-4 md:px-48 py-3 rounded-[2rem] overflow-hidden bg-brand/5 border-2 border-brand/20 shadow-2xl transition-all hover:bg-brand/10 group">
+                <div className="absolute inset-0 opacity-[0.05] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
                     <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
                 </div>
-                <h2 className="text-base sm:text-lg md:text-2xl font-black tracking-tight relative z-10 text-center leading-tight">
-                    Trouver une concession, un atelier ? <span className="block sm:inline text-brand italic">Fini la galère.</span>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter relative z-10 text-center leading-[0.9] uppercase">
+                    <span className="block sm:inline">Trouver une concession, un atelier ?</span>
+                    <span className="block text-brand italic sm:ml-2">Fini la galère.</span>
                 </h2>
             </div>
           </div>

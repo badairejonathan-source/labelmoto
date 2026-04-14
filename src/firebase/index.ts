@@ -1,50 +1,47 @@
-'use client';
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore'
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
+/**
+ * Initializes and exports Firebase core services.
+ * Designed to be safe for both Client and Server environments.
+ */
 export function initializeFirebase() {
+  let firebaseApp: FirebaseApp;
+
   if (!getApps().length) {
-    // Important! initializeApp() is called without any arguments because Firebase App Hosting
-    // integrates with the initializeApp() function to provide the environment variables needed to
-    // populate the FirebaseOptions in production. It is critical that we attempt to call initializeApp()
-    // without arguments.
-    let firebaseApp;
     try {
-      // Attempt to initialize via Firebase App Hosting environment variables
+      // Primary attempt: automatic initialization (for App Hosting)
       firebaseApp = initializeApp();
     } catch (e) {
-      // Only warn in production because it's normal to use the firebaseConfig to initialize
-      // during development
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
-      }
+      // Fallback: manual initialization with config object
       firebaseApp = initializeApp(firebaseConfig);
     }
-
-    return getSdks(firebaseApp);
+  } else {
+    firebaseApp = getApp();
   }
 
-  // If already initialized, return the SDKs with the already initialized App
-  return getSdks(getApp());
+  // Robust SDK initialization
+  const auth = getAuth(firebaseApp);
+  
+  let firestore: Firestore;
+  if (typeof window !== 'undefined') {
+    // Client-side: use optimized settings for web browsers
+    firestore = initializeFirestore(firebaseApp, {
+      experimentalForceLongPolling: true,
+    });
+  } else {
+    // Server-side: use standard settings
+    firestore = getFirestore(firebaseApp);
+  }
+
+  return { firebaseApp, auth, firestore };
 }
 
-export function getSdks(firebaseApp: FirebaseApp) {
-  // Use initializeFirestore with settings to fix "Could not reach Cloud Firestore backend" in proxy/dev environments
-  // Forcing long polling alone to avoid conflict with auto-detect
-  const firestore = initializeFirestore(firebaseApp, {
-    experimentalForceLongPolling: true,
-  });
-
-  return {
-    firebaseApp,
-    auth: getAuth(firebaseApp),
-    firestore
-  };
-}
+// Ensure the function is also exported as default for easier imports if needed
+export default initializeFirebase;
 
 export * from './provider';
 export * from './client-provider';
