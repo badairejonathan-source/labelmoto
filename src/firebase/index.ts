@@ -24,18 +24,17 @@ export function initializeFirebase() {
   }
   
   if (!firestore) {
-    // Only use initializeFirestore on client side, and only if it hasn't been called
+    // Only use initializeFirestore on client side with specific settings
     if (typeof window !== 'undefined') {
       try {
         firestore = initializeFirestore(firebaseApp, {
           experimentalForceLongPolling: true,
         });
       } catch (err) {
-        // Fallback to existing instance or default
         firestore = getFirestore(firebaseApp);
       }
     } else {
-      // Server side always uses getFirestore
+      // Server side always uses standard getFirestore
       firestore = getFirestore(firebaseApp);
     }
   }

@@ -64,7 +64,7 @@ export default function LandingPage() {
             />
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* HERO SECTION COMPACTE AVEC CHEVAUCHEMENT - DIMENSIONS PARFAITES CONSERVÉES */}
+                {/* HERO SECTION COMPACTE AVEC CHEVAUCHEMENT OPTIMISÉ */}
                 <div className="relative rounded-[2rem] border-2 border-brand bg-black mb-20 md:mb-32 overflow-visible shadow-2xl min-h-[250px] md:min-h-[400px]">
                      <Image 
                         src={hero.src} 
@@ -77,7 +77,6 @@ export default function LandingPage() {
                     />
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
-                            {/* RESTAURATION DU TEXTE PRÉCÉDENT */}
                             <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-4 uppercase leading-[0.95]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
                                 Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics
                             </h1>
@@ -86,7 +85,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                          <div className="w-full md:w-2/5 flex justify-center md:justify-end relative z-10">
-                             {/* EFFET DE CHEVAUCHEMENT DU CADRE */}
+                             {/* EFFET DE CHEVAUCHEMENT DE LA CARTE SUR LE CADRE */}
                              <div className="relative transform translate-y-12 md:translate-y-24 group">
                                 <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
                                     <div className="relative w-36 h-36 md:w-72 md:h-72">
