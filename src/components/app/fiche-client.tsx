@@ -21,7 +21,13 @@ import {
   Scale,
   Info,
   ShieldCheck,
-  Zap
+  Zap,
+  Cpu,
+  RefreshCw,
+  Trophy,
+  ThumbsDown,
+  LayoutGrid,
+  FileText
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -73,11 +79,13 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     
     const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
     const sg = fiche.service_guide || {};
+    const rel = fiche.relations || {};
 
     return {
       modelName: fiche.display_title || fiche.model || modelId.replace(/-/g, ' ').toUpperCase(),
       brand: fiche.brand || (modelId.split('-')[0] || '').toUpperCase(),
       year: fiche.year_range || "N/A",
+      category: fiche.category || "Moto",
       introduction: sg.intro || "",
       imageUrl: fiche.imageUrl || "/images/motard-entretien-page.png",
       hasVariants: variants.length > 1,
@@ -90,6 +98,12 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         torque: activeVariant.torque || ts.torque || "N/A",
         alimentation: activeVariant.fuel_system || ts.fuel_system || "N/A"
       },
+      transmission: {
+        gearbox: activeVariant.gearbox || ts.gearbox || "6 rapports",
+        finalDrive: activeVariant.final_drive || ts.final_drive || "Chaîne",
+        clutch: activeVariant.clutch || ts.clutch || "Multidisque en bain d'huile"
+      },
+      electronics: activeVariant.electronics || ts.electronics || ["ABS de série"],
       dimensions: {
         seatHeight: (activeVariant.seat_height_mm || ts.seat_height_mm) ? `${activeVariant.seat_height_mm || ts.seat_height_mm} mm` : "N/A",
         wetWeight: (activeVariant.weight_tpf_kg || ts.weight_tpf_kg) ? `${activeVariant.weight_tpf_kg || ts.weight_tpf_kg} kg` : "N/A",
@@ -105,11 +119,19 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         frontTire: cp.front_tire || "N/A",
         rearTire: cp.rear_tire || "N/A"
       },
+      verdict: {
+        pros: sg.pros || fiche.pros || [],
+        cons: sg.cons || fiche.cons || []
+      },
       serviceSchedule: sg.service_schedule || [],
       consumables: sg.consumables || [],
       faq: sg.faq || [],
       knownIssues: sg.known_issues || [],
       longevityTips: sg.longevity_tips || [],
+      relations: {
+        articles: rel.related_articles || [],
+        models: rel.related_models || []
+      },
       conclusion: sg.conclusion || "",
     };
   }, [fiche, selectedVariantIndex, modelId]);
@@ -177,7 +199,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 <div className="relative z-10 p-6 md:p-12">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                         <div className="text-white">
-                            <span className="inline-block bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-3">Fiche Technique Officielle</span>
+                            <span className="inline-block bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-3">{displayData.category} - Officiel</span>
                             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85] mb-2">{displayData.modelName}</h1>
                             <p className="text-lg sm:text-2xl font-black text-brand italic">Millésime {displayData.year}</p>
                         </div>
@@ -222,38 +244,86 @@ export default function FicheClient({ modelId }: { modelId: string }) {
               </div>
             )}
 
-            {/* --- DÉTAILS TECHNIQUES --- */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2.5rem]">
-                <CardHeader className="bg-brand/5 border-b py-6"><CardTitle className="flex items-center gap-3 text-brand uppercase font-black text-lg"><Zap className="h-6 w-6" /> Moteur & Performance</CardTitle></CardHeader>
-                <CardContent className="p-8">
-                  <ul className="space-y-5">
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Type moteur</span><span className="font-black text-right text-sm">{displayData.engine.type}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Cylindrée</span><span className="font-black text-right text-sm">{displayData.engine.displacement}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Couple maxi</span><span className="font-black text-right text-sm text-brand">{displayData.engine.torque}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Alimentation</span><span className="font-black text-right text-sm">{displayData.engine.alimentation}</span></li>
+            {/* --- VERDICT RAPIDE --- */}
+            {(displayData.verdict.pros.length > 0 || displayData.verdict.cons.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-none shadow-xl bg-green-50/20 rounded-[2rem] overflow-hidden">
+                  <CardHeader className="bg-green-50 py-4 border-b border-green-100">
+                    <CardTitle className="text-green-700 uppercase font-black text-sm flex items-center gap-2"><Trophy className="h-4 w-4" /> Points Forts</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <ul className="space-y-3">
+                      {displayData.verdict.pros.map((p: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-sm font-bold text-foreground">
+                          <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card className="border-none shadow-xl bg-red-50/20 rounded-[2rem] overflow-hidden">
+                  <CardHeader className="bg-red-50 py-4 border-b border-red-100">
+                    <CardTitle className="text-red-700 uppercase font-black text-sm flex items-center gap-2"><ThumbsDown className="h-4 w-4" /> Points Faibles</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <ul className="space-y-3">
+                      {displayData.verdict.cons.map((p: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-sm font-bold text-foreground">
+                          <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* --- DÉTAILS TECHNIQUES GRILLE --- */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2rem]">
+                <CardHeader className="bg-brand/5 border-b py-4"><CardTitle className="flex items-center gap-2 text-brand uppercase font-black text-xs"><Zap className="h-4 w-4" /> Moteur</CardTitle></CardHeader>
+                <CardContent className="p-6">
+                  <ul className="space-y-4">
+                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Type</span><span className="font-black text-right text-xs">{displayData.engine.type}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Cylindrée</span><span className="font-black text-right text-xs">{displayData.engine.displacement}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Couple</span><span className="font-black text-right text-xs text-brand">{displayData.engine.torque}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Injection</span><span className="font-black text-right text-xs">{displayData.engine.alimentation}</span></li>
                   </ul>
                 </CardContent>
               </Card>
               
-              <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2.5rem]">
-                <CardHeader className="bg-blue-500/5 border-b py-6"><CardTitle className="flex items-center gap-3 text-blue-600 uppercase font-black text-lg"><Scale className="h-6 w-6" /> Capacités & Dimensions</CardTitle></CardHeader>
-                <CardContent className="p-8">
-                  <ul className="space-y-5">
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Réservoir</span><span className="font-black text-right text-sm">{displayData.dimensions.fuelCapacity}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Hauteur de selle</span><span className="font-black text-right text-sm">{displayData.dimensions.seatHeight}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Poids en marche</span><span className="font-black text-right text-sm">{displayData.dimensions.wetWeight}</span></li>
-                    <li className="flex justify-between items-end border-b border-dashed pb-2"><span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest">Empattement</span><span className="font-black text-right text-sm">{displayData.dimensions.wheelbase}</span></li>
+              <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2rem]">
+                <CardHeader className="bg-blue-500/5 border-b py-4"><CardTitle className="flex items-center gap-2 text-blue-600 uppercase font-black text-xs"><RefreshCw className="h-4 w-4" /> Transmission</CardTitle></CardHeader>
+                <CardContent className="p-6">
+                  <ul className="space-y-4">
+                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Boîte</span><span className="font-black text-right text-xs">{displayData.transmission.gearbox}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Finale</span><span className="font-black text-right text-xs">{displayData.transmission.finalDrive}</span></li>
+                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Embrayage</span><span className="font-black text-right text-xs">{displayData.transmission.clutch}</span></li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2rem]">
+                <CardHeader className="bg-purple-500/5 border-b py-4"><CardTitle className="flex items-center gap-2 text-purple-600 uppercase font-black text-xs"><Cpu className="h-4 w-4" /> Électronique</CardTitle></CardHeader>
+                <CardContent className="p-6">
+                  <ul className="space-y-2">
+                    {displayData.electronics.map((e: string, i: number) => (
+                      <li key={i} className="flex items-center gap-2 text-[10px] font-black text-foreground">
+                        <CheckCircle2 className="h-3 w-3 text-purple-500" /> {e}
+                      </li>
+                    ))}
                   </ul>
                 </CardContent>
               </Card>
             </div>
 
-            {/* --- ACCORDION PARTIE CYCLE --- */}
+            {/* --- PARTIE CYCLE ACCORDION --- */}
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="cycle" className="border-none">
                     <AccordionTrigger className="bg-muted/30 p-8 rounded-[2.5rem] font-black uppercase text-brand hover:no-underline shadow-sm transition-all hover:bg-brand/5">
-                        <div className="flex items-center gap-4"><Settings2 className="h-6 w-6" /><span>Partie Cycle & Freinage</span></div>
+                        <div className="flex items-center gap-4"><Settings2 className="h-6 w-6" /><span>Partie Cycle, Freins & Pneus</span></div>
                     </AccordionTrigger>
                     <AccordionContent className="pt-6 px-4">
                         <div className="overflow-hidden rounded-[2rem] border-2 bg-card shadow-xl">
@@ -264,8 +334,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                     <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Suspension AR</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearSuspension}</TableCell></TableRow>
                                     <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Frein Avant</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frontBrake}</TableCell></TableRow>
                                     <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Frein Arrière</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearBrake}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Avant</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frontTire}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Arrière</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearTire}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Avant</TableCell><TableCell className="font-black py-4 pr-8 text-brand">{displayData.chassis.frontTire}</TableCell></TableRow>
+                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Arrière</TableCell><TableCell className="font-black py-4 pr-8 text-brand">{displayData.chassis.rearTire}</TableCell></TableRow>
                                 </TableBody>
                             </Table>
                         </div>
@@ -362,6 +432,46 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                             </Card>
                         )}
                     </div>
+                )}
+
+                {/* RECOMMANDATIONS ET RELATIONS */}
+                {(displayData.relations.articles.length > 0 || displayData.relations.models.length > 0) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+                    {displayData.relations.articles.length > 0 && (
+                      <Card className="border-none shadow-xl bg-muted/20 rounded-[2rem]">
+                        <CardHeader className="py-6 border-b"><CardTitle className="flex items-center gap-2 text-brand uppercase font-black text-sm"><FileText className="h-4 w-4" /> Articles liés</CardTitle></CardHeader>
+                        <CardContent className="p-6">
+                          <ul className="space-y-3">
+                            {displayData.relations.articles.map((artId: string, idx: number) => (
+                              <li key={idx}>
+                                <Link href={`/info/${artId}`} className="flex items-center justify-between p-3 bg-white rounded-xl hover:bg-brand/5 border transition-all group">
+                                  <span className="text-sm font-bold group-hover:text-brand truncate">{artId.replace(/-/g, ' ').toUpperCase()}</span>
+                                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </CardContent>
+                      </Card>
+                    )}
+                    {displayData.relations.models.length > 0 && (
+                      <Card className="border-none shadow-xl bg-muted/20 rounded-[2rem]">
+                        <CardHeader className="py-6 border-b"><CardTitle className="flex items-center gap-2 text-brand uppercase font-black text-sm"><LayoutGrid className="h-4 w-4" /> Modèles similaires</CardTitle></CardHeader>
+                        <CardContent className="p-6">
+                          <ul className="space-y-3">
+                            {displayData.relations.models.map((modId: string, idx: number) => (
+                              <li key={idx}>
+                                <Link href={`/fiches/${modId}`} className="flex items-center justify-between p-3 bg-white rounded-xl hover:bg-brand/5 border transition-all group">
+                                  <span className="text-sm font-bold group-hover:text-brand truncate">{modId.replace(/-/g, ' ').toUpperCase()}</span>
+                                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
                 )}
 
                 {/* FAQ */}
