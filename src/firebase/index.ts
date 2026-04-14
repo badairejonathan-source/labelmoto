@@ -10,6 +10,7 @@ let firestore: Firestore;
 
 /**
  * Robust Firebase initialization for both Client and Server environments.
+ * Prevents multiple initializations and ensures exports are valid.
  */
 export function initializeFirebase() {
   if (getApps().length > 0) {
@@ -42,7 +43,7 @@ export function initializeFirebase() {
   return { firebaseApp, auth, firestore };
 }
 
-// Ensure exports match what is expected by client-provider.tsx and other hooks
+// Ensure exports match what is expected by providers and other hooks
 export { useFirebase, useAuth, useFirestore, useFirebaseApp, useMemoFirebase, useUser } from './provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';

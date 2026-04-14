@@ -64,7 +64,7 @@ export default function LandingPage() {
             />
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* HERO SECTION COMPACTE AVEC CHEVAUCHEMENT */}
+                {/* HERO SECTION COMPACTE AVEC CHEVAUCHEMENT - DIMENSIONS PARFAITES CONSERVÉES */}
                 <div className="relative rounded-[2rem] border-2 border-brand bg-black mb-20 md:mb-32 overflow-visible shadow-2xl min-h-[250px] md:min-h-[400px]">
                      <Image 
                         src={hero.src} 
@@ -77,14 +77,16 @@ export default function LandingPage() {
                     />
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
+                            {/* RESTAURATION DU TEXTE PRÉCÉDENT */}
                             <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-4 uppercase leading-[0.95]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                                Du A2 au motard expérimenté : trouvez les pros les plus proches
+                                Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics
                             </h1>
                             <p className="text-[10px] md:text-lg max-w-2xl mx-auto md:mx-0 mb-2 text-gray-200 font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                                Fini les dizaines d'onglets ouverts. Tout l’univers deux-roues au même endroit.
+                                Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit pour vous laisser plus de temps sur la route.
                             </p>
                         </div>
                          <div className="w-full md:w-2/5 flex justify-center md:justify-end relative z-10">
+                             {/* EFFET DE CHEVAUCHEMENT DU CADRE */}
                              <div className="relative transform translate-y-12 md:translate-y-24 group">
                                 <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
                                     <div className="relative w-36 h-36 md:w-72 md:h-72">
