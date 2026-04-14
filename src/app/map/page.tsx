@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -7,7 +8,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
+import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -172,10 +173,11 @@ function MapPageComponent() {
         if (activeFilter) { results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')); }
         if (submittedSearchTerm.trim() !== '') {
             const lower = submittedSearchTerm.toLowerCase().trim();
-            const normalizedTerm = lower.replace(/[\s-]/g, '');
-            if (/^\d{5}$/.test(normalizedTerm)) {
-                const coords = await getCityCoordinates(normalizedTerm);
-                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(normalizedTerm)); }
+            const normalizedTerm = lowerTerm.replace(/[\s-]/g, ''); // Fix: lowerTerm should be lower
+            const finalLower = lower.replace(/[\s-]/g, '');
+            if (/^\d{5}$/.test(finalLower)) {
+                const coords = await getCityCoordinates(finalLower);
+                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(finalLower)); }
             } else {
                 const cityCoords = await getCityCoordinatesByName(lower);
                 if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }
@@ -194,13 +196,19 @@ function MapPageComponent() {
   }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
+    // Si le zoom est faible (ouverture) et qu'aucune recherche n'est en cours
+    // On n'affiche aucune fiche de concession
+    if (mapZoom < 8 && submittedSearchTerm.trim() === '') {
+        return [];
+    }
+
     let results = [...filteredDealerships];
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng); 
     }
     return results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b)).slice(0, 20);
-  }, [filteredDealerships, mapBoundsStr, sortingAnchor]);
+  }, [filteredDealerships, mapBoundsStr, sortingAnchor, mapZoom, submittedSearchTerm]);
 
   const handleCardClick = useCallback((dealership: Dealership) => { 
     setSelectedDealershipId(dealership.id); setSelectionSource('card'); 
@@ -240,12 +248,32 @@ function MapPageComponent() {
         </div>
       ) : (
         <>
+            {/* Affichage des articles par défaut (zoom faible et pas de recherche) */}
             {dealershipsToDisplay.length === 0 && submittedSearchTerm === '' && mapZoom < 8 && (
-                <div className="bg-brand/5 border-2 border-brand/20 p-6 rounded-[2rem] shadow-sm mb-4">
-                    <div className="flex items-center gap-2 mb-4"><Sparkles className="h-5 w-5 text-brand animate-pulse" /><h3 className="text-sm font-black uppercase tracking-widest text-foreground">À la une</h3></div>
-                    <div className="space-y-4">{ads.map((ad, idx) => (<AdCard key={ad.id} article={ad} isPublicity={idx === 0} />))}</div>
+                <div className="space-y-4 pt-2">
+                    <div className="bg-brand/5 border-2 border-brand/20 p-6 rounded-[2rem] shadow-sm mb-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Sparkles className="h-5 w-5 text-brand animate-pulse" />
+                            <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Guides & Conseils</h3>
+                        </div>
+                        <div className="space-y-4">
+                            {ads.map((ad, idx) => (
+                                <AdCard key={ad.id} article={ad} isPublicity={idx === 0} />
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="p-8 border-2 border-dashed rounded-[2.5rem] text-center bg-muted/5">
+                        <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-4 opacity-20" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-snug">
+                            Plus de 3000 établissements référencés.<br/>
+                            <span className="text-brand">Zoomez sur la carte pour les afficher.</span>
+                        </p>
+                    </div>
                 </div>
             )}
+
+            {/* Liste des concessions (apparaît après zoom) */}
             {dealershipsToDisplay.map((dealer, index) => (
                 <React.Fragment key={dealer.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(dealer.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
@@ -254,8 +282,13 @@ function MapPageComponent() {
                     {(index + 1) % 4 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 4) % ads.length]} /></div>)}
                 </React.Fragment>
             ))}
-            {dealershipsToDisplay.length === 0 && !isLoading && (
-                <div className="text-center py-10 opacity-50"><p className="font-black uppercase tracking-widest text-xs">Aucun établissement dans cette zone</p></div>
+
+            {/* Cas où aucun résultat n'est trouvé après zoom ou recherche */}
+            {dealershipsToDisplay.length === 0 && (submittedSearchTerm !== '' || mapZoom >= 8) && !isLoading && (
+                <div className="text-center py-20 opacity-50">
+                    <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
+                    <p className="font-black uppercase tracking-widest text-xs">Aucun établissement dans cette zone</p>
+                </div>
             )}
         </>
       )}
