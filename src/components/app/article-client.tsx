@@ -294,16 +294,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
         {sectionId === '3-ton-budget-reel' && (
           <div className="mt-8 border-t border-dashed pt-8">
-            <Card className="bg-blue-500/5 border-2 border-blue-500/20 shadow-xl rounded-[2.5rem] overflow-hidden">
+            <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
               <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
-                <div className="bg-blue-500/10 p-4 rounded-full">
-                  <Wallet className="h-8 w-8 text-blue-600" />
+                <div className="bg-brand/10 p-4 rounded-full">
+                  <Wallet className="h-8 w-8 text-brand" />
                 </div>
                 <div className="flex-1 text-center md:text-left">
                   <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Calculer mon budget réel</h4>
                   <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet du coût par mois</p>
                 </div>
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
+                <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
                   <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="flex items-center gap-2">
                     Voir le guide complet <ChevronRight className="h-4 w-4" />
                   </Link>

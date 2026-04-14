@@ -10,26 +10,18 @@ import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore
 export function initializeFirebase() {
   let firebaseApp: FirebaseApp;
 
-  if (!getApps().length) {
-    try {
-      // Primary attempt: automatic initialization (for App Hosting)
-      firebaseApp = initializeApp();
-    } catch (e) {
-      // Fallback: manual initialization with config object
-      firebaseApp = initializeApp(firebaseConfig);
-    }
+  const existingApps = getApps();
+  if (existingApps.length > 0) {
+    firebaseApp = existingApps[0];
   } else {
-    firebaseApp = getApp();
+    firebaseApp = initializeApp(firebaseConfig);
   }
 
-  // Robust SDK initialization
   const auth = getAuth(firebaseApp);
   
   let firestore: Firestore;
-  // Handle Firestore initialization carefully to avoid double-init errors or environment-specific crashes
+  // Handle Firestore initialization carefully to avoid environment-specific crashes
   try {
-    firestore = getFirestore(firebaseApp);
-  } catch (e) {
     if (typeof window !== 'undefined') {
       // Client-side: use optimized settings for web browsers
       firestore = initializeFirestore(firebaseApp, {
@@ -39,12 +31,14 @@ export function initializeFirebase() {
       // Server-side: fallback to standard getFirestore
       firestore = getFirestore(firebaseApp);
     }
+  } catch (e) {
+    // Fallback if initializeFirestore was already called
+    firestore = getFirestore(firebaseApp);
   }
 
   return { firebaseApp, auth, firestore };
 }
 
-// Ensure the function is also exported as default for easier imports if needed
 export default initializeFirebase;
 
 export * from './provider';
