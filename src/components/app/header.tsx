@@ -175,7 +175,7 @@ const Header: React.FC<HeaderProps> = ({
     className, 
     activeFilter = null, 
     onFilterChange, 
-    placeholderText = "Recherche par departement , ville , marque, nom ... " 
+    placeholderText = "Recherche par departement, ville, marque, nom..." 
 }) => {
   const router = useRouter();
   const firestore = useFirestore();
@@ -339,20 +339,17 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo, Accroche et Menu - PARFAITEMENT RESPONSIVE SUR UNE LIGNE */}
+        {/* LIGNE 1 : Logo, Accroche et Menu sur UNE SEULE LIGNE */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
           <div className="w-24 xs:w-32 md:w-56 shrink-0">
             <Link href="/"><LabelMotoLogo /></Link>
           </div>
           
           <div className="flex-1 flex items-center justify-center min-w-0">
-            <div className="relative px-2 xs:px-4 md:px-12 py-2 md:py-4 rounded-xl md:rounded-2xl overflow-hidden bg-brand/5 border border-brand/20 shadow-lg transition-all hover:bg-brand/10 group w-full max-w-[180px] xs:max-w-[250px] md:max-w-none">
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
-                    <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
-                </div>
-                <h2 className="text-[9px] xs:text-[11px] sm:text-sm md:text-2xl lg:text-3xl font-black tracking-tighter relative z-10 text-center leading-[1.1] md:leading-[0.9] uppercase truncate md:whitespace-normal">
-                    <span className="block md:inline">Trouver une concession, un atelier ?</span>
-                    <span className="block text-brand italic md:ml-2">Fini la galère.</span>
+            <div className="relative px-3 py-1.5 md:px-12 md:py-4 rounded-full md:rounded-2xl overflow-hidden bg-brand/5 border border-brand/20 shadow-lg transition-all hover:bg-brand/10 group">
+                <h2 className="text-[9px] xs:text-[10px] sm:text-xs md:text-2xl lg:text-3xl font-black tracking-tighter relative z-10 text-center leading-none uppercase truncate md:whitespace-normal">
+                    <span className="text-foreground">Trouver un pro ? </span>
+                    <span className="text-brand italic ml-1">Fini la galère.</span>
                 </h2>
             </div>
           </div>

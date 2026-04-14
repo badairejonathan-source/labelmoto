@@ -1,16 +1,15 @@
-
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore';
+import { getFirestore, Firestore, initializeFirestore } from 'firebase/firestore';
 
+// Singleton instances
 let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 
 /**
  * Robust Firebase initialization for both Client and Server environments.
- * Prevents multiple initializations and ensures Firestore settings are applied only when possible.
  */
 export function initializeFirebase() {
   if (getApps().length > 0) {
@@ -24,18 +23,18 @@ export function initializeFirebase() {
   }
   
   if (!firestore) {
-    try {
-      if (typeof window !== 'undefined') {
-        // Client-side: use optimized settings for web browsers
+    // Only use initializeFirestore on client side, and only if it hasn't been called
+    if (typeof window !== 'undefined') {
+      try {
         firestore = initializeFirestore(firebaseApp, {
           experimentalForceLongPolling: true,
         });
-      } else {
-        // Server-side: use standard getFirestore
+      } catch (err) {
+        // Fallback to existing instance or default
         firestore = getFirestore(firebaseApp);
       }
-    } catch (e) {
-      // Fallback if initializeFirestore was already called elsewhere
+    } else {
+      // Server side always uses getFirestore
       firestore = getFirestore(firebaseApp);
     }
   }
@@ -44,7 +43,7 @@ export function initializeFirebase() {
 }
 
 // Ensure exports match what is expected by client-provider.tsx and other hooks
-export * from './provider';
+export { useFirebase, useAuth, useFirestore, useFirebaseApp, useMemoFirebase, useUser } from './provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
 export * from './non-blocking-updates';

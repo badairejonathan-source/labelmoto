@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -61,35 +60,43 @@ export default function LandingPage() {
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
                 onSearch={handleSearch}
-                placeholderText="Recherche par departement , ville , marque, nom ... "
+                placeholderText="Recherche par departement, ville, marque, nom..."
             />
-            <main className="py-6 md:py-12 px-4 sm:px-6 lg:px-8">
+            <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* HERO SECTION OPTIMISÉE POUR MOBILE */}
-                <div className="relative rounded-3xl border-2 border-brand bg-black mb-12 md:mb-32 overflow-visible shadow-2xl min-h-[380px] md:min-h-[450px]">
+                {/* HERO SECTION COMPACTE AVEC CHEVAUCHEMENT */}
+                <div className="relative rounded-[2rem] border-2 border-brand bg-black mb-20 md:mb-32 overflow-visible shadow-2xl min-h-[250px] md:min-h-[400px]">
                      <Image 
                         src={hero.src} 
                         alt="Label Moto Hero" 
                         fill 
-                        className="object-cover z-0 opacity-40 rounded-3xl" 
+                        className="object-cover z-0 opacity-40 rounded-[2rem]" 
                         priority 
                         fetchPriority="high"
                         sizes="100vw"
                     />
-                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-4 md:p-12 md:pb-20">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
-                            <h1 className="text-2xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-4 uppercase leading-[0.95]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics</h1>
-                            <p className="text-[11px] md:text-lg max-w-3xl mx-auto md:mx-0 mb-4 md:mb-6 text-gray-200 font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit.</p>
+                            <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-4 uppercase leading-[0.95]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
+                                Du A2 au motard expérimenté : trouvez les pros les plus proches
+                            </h1>
+                            <p className="text-[10px] md:text-lg max-w-2xl mx-auto md:mx-0 mb-2 text-gray-200 font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                                Fini les dizaines d'onglets ouverts. Tout l’univers deux-roues au même endroit.
+                            </p>
                         </div>
                          <div className="w-full md:w-2/5 flex justify-center md:justify-end relative z-10">
-                             <div className="relative transform translate-y-4 md:translate-y-24 lg:translate-y-28 group">
+                             <div className="relative transform translate-y-12 md:translate-y-24 group">
                                 <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
-                                    <div className="relative w-40 h-40 md:w-72 md:h-72">
-                                        <Image src={hero.mapPreview.src} alt="Aperçu de la carte" fill className="rounded-xl border-4 border-white shadow-2xl object-cover" sizes="(max-width: 768px) 160px, 288px" />
+                                    <div className="relative w-36 h-36 md:w-72 md:h-72">
+                                        <Image src={hero.mapPreview.src} alt="Aperçu de la carte" fill className="rounded-2xl border-4 border-white shadow-2xl object-cover" sizes="(max-width: 768px) 144px, 288px" />
                                     </div>
                                 </Link>
-                                <div className="absolute -left-6 md:-left-20 top-1/2 -translate-y-1/2 z-50">
-                                    <Link href="/map"><Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-[9px] md:text-base px-4 md:px-8 py-3 md:py-6 rounded-full shadow-2xl border-2 md:border-4 border-white whitespace-nowrap transition-transform hover:scale-105 tracking-widest">Explorer la carte</Button></Link>
+                                <div className="absolute -left-4 md:-left-20 top-1/2 -translate-y-1/2 z-50">
+                                    <Link href="/map">
+                                        <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-[8px] md:text-base px-4 md:px-8 py-3 md:py-6 rounded-full shadow-2xl border-2 md:border-4 border-white whitespace-nowrap transition-transform hover:scale-105 tracking-widest">
+                                            Explorer la carte
+                                        </Button>
+                                    </Link>
                                 </div>
                              </div>
                         </div>
@@ -97,7 +104,7 @@ export default function LandingPage() {
                 </div>
 
                 <HeavySections>
-                    <section className="mt-8 md:mt-32">
+                    <section className="mt-16 md:mt-32">
                         <div className="bg-muted/50 rounded-[2.5rem] p-6 md:p-8 border border-border/50 backdrop-blur-sm shadow-sm">
                             <h2 className="text-2xl md:text-5xl font-black text-foreground mb-8 text-center uppercase tracking-tighter">Pourquoi choisir LABEL MOTO</h2>
                             <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
