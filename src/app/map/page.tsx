@@ -288,7 +288,7 @@ function MapPageComponent() {
           </>
         ) : (
           <>
-            <main className="absolute inset-0 h-full w-full">
+            <main className="absolute inset-x-0 top-0 h-[calc(100%-115px)] w-full">
               <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
               <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={handleUserMapInteraction} bottomPadding={bottomPadding} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); }} />
               <Button size="icon" className="absolute top-2 right-2 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser"><Crosshair className="h-4 w-4" /></Button>
