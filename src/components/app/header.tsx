@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -347,11 +346,11 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="flex items-center justify-center flex-1">
-            <div className="relative px-4 md:px-48 py-3 rounded-[2rem] overflow-hidden bg-brand/5 border-2 border-brand/20 shadow-2xl transition-all hover:bg-brand/10 group">
+            <div className="relative px-4 md:px-60 py-3 rounded-[2rem] overflow-hidden bg-brand/5 border-2 border-brand/20 shadow-2xl transition-all hover:bg-brand/10 group">
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
                     <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter relative z-10 text-center leading-[0.9] uppercase">
+                <h2 className="text-3xl md:text-5xl font-black tracking-tighter relative z-10 text-center leading-[0.9] uppercase">
                     <span className="block sm:inline">Trouver une concession, un atelier ?</span>
                     <span className="block text-brand italic sm:ml-2">Fini la galère.</span>
                 </h2>

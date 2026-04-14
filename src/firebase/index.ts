@@ -28,9 +28,14 @@ export function initializeFirebase() {
   let firestore: Firestore;
   if (typeof window !== 'undefined') {
     // Client-side: use optimized settings for web browsers
-    firestore = initializeFirestore(firebaseApp, {
-      experimentalForceLongPolling: true,
-    });
+    // Using try-catch to handle cases where Firestore might already be initialized
+    try {
+      firestore = initializeFirestore(firebaseApp, {
+        experimentalForceLongPolling: true,
+      });
+    } catch (e) {
+      firestore = getFirestore(firebaseApp);
+    }
   } else {
     // Server-side: use standard settings
     firestore = getFirestore(firebaseApp);

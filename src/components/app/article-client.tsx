@@ -89,7 +89,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       return {
         title: "Taille & Gabarit",
         description: "Quelle moto choisir selon votre gabarit ? Le guide des hauteurs de selle.",
-        link: "/info/quelle-moto-choisir-selon-sa-taille-et-son-gabarit",
+        link: "/info/quelle-moto-choisir-selon-sa-taille",
         icon: <Bike className="h-6 w-6 text-brand" />,
         bgColor: "bg-brand/5",
         borderColor: "border-brand/20",
@@ -282,7 +282,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet par gabarit</p>
                 </div>
                 <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
-                  <Link href="/info/quelle-moto-choisir-selon-sa-taille-et-son-gabarit" className="flex items-center gap-2">
+                  <Link href="/info/quelle-moto-choisir-selon-sa-taille" className="flex items-center gap-2">
                     Voir le guide complet <ChevronRight className="h-4 w-4" />
                   </Link>
                 </Button>
