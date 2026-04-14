@@ -86,22 +86,22 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-10 w-10 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
+      className="relative h-8 w-8 md:h-10 md:w-10 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-9 w-9 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-7 w-7 md:h-9 md:w-9 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
+            <AvatarFallback className="bg-brand text-brand-foreground text-[10px] md:text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-9 w-9 rounded-full flex items-center justify-center p-1" aria-hidden="true">
-            <Image src="/images/icon-moncompte.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain" />
+          <div className="h-7 w-7 md:h-9 md:w-9 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+            <Image src="/images/icon-moncompte.webp" alt="" width={36} height={36} className="h-full w-full object-contain" />
           </div>
         )}
-        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border-2 border-white shadow-sm flex items-center justify-center" aria-hidden="true">
+        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border border-white shadow-sm flex items-center justify-center" aria-hidden="true">
           <Menu className="h-2 w-2" strokeWidth={3} />
         </div>
       </div>
@@ -339,25 +339,25 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo, Accroche et Menu */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="w-40 md:w-56 shrink-0 order-1">
+        {/* LIGNE 1 : Logo, Accroche et Menu - PARFAITEMENT RESPONSIVE SUR UNE LIGNE */}
+        <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
+          <div className="w-24 xs:w-32 md:w-56 shrink-0">
             <Link href="/"><LabelMotoLogo /></Link>
           </div>
           
-          <div className="flex items-center justify-center flex-1 order-3 md:order-2 w-full md:w-auto">
-            <div className="relative px-4 md:px-28 py-3 md:py-4 rounded-2xl overflow-hidden bg-brand/5 border border-brand/20 shadow-xl transition-all hover:bg-brand/10 group">
+          <div className="flex-1 flex items-center justify-center min-w-0">
+            <div className="relative px-2 xs:px-4 md:px-12 py-2 md:py-4 rounded-xl md:rounded-2xl overflow-hidden bg-brand/5 border border-brand/20 shadow-lg transition-all hover:bg-brand/10 group w-full max-w-[180px] xs:max-w-[250px] md:max-w-none">
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
                     <Image src="/images/apercucartezoom.webp" alt="" fill className="object-cover" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black tracking-tighter relative z-10 text-center leading-[0.9] uppercase max-w-[220px] md:max-w-none mx-auto">
+                <h2 className="text-[9px] xs:text-[11px] sm:text-sm md:text-2xl lg:text-3xl font-black tracking-tighter relative z-10 text-center leading-[1.1] md:leading-[0.9] uppercase truncate md:whitespace-normal">
                     <span className="block md:inline">Trouver une concession, un atelier ?</span>
                     <span className="block text-brand italic md:ml-2">Fini la galère.</span>
                 </h2>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 justify-end shrink-0 order-2 md:order-3 self-end md:self-center">
+          <div className="flex items-center justify-end shrink-0">
             <UserMenu />
           </div>
         </div>
@@ -375,7 +375,7 @@ const Header: React.FC<HeaderProps> = ({
                   <Input 
                     type="search" 
                     placeholder={placeholderText} 
-                    className="pr-24 h-14 text-base md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" 
+                    className="pr-24 h-12 md:h-14 text-sm md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" 
                     value={searchTerm} 
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                     onFocus={() => { setShowSuggestions(true); }} 
@@ -383,7 +383,7 @@ const Header: React.FC<HeaderProps> = ({
                     autoComplete="off" 
                   />
                   {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-14 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
-                  <Button type="submit" size="icon" className="absolute top-1/2 right-1.5 -translate-y-1/2 h-11 w-11 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-5 w-5" /></Button>
+                  <Button type="submit" size="icon" className="absolute top-1/2 right-1.5 -translate-y-1/2 h-9 w-9 md:h-11 md:w-11 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-4 w-4 md:h-5 md:w-5" /></Button>
                   
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">
@@ -420,15 +420,15 @@ const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* LIGNE 3 : Filtres de navigation */}
-            <nav className="flex items-center justify-center gap-6 sm:gap-10 mt-1">
-                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-4 py-2 h-auto flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-all", activeFilter === null ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
-                  <Home className="h-4 w-4" />Tout
+            <nav className="flex items-center justify-center gap-4 sm:gap-10 mt-1">
+                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === null ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                  <Home className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Tout
                 </Button>
-                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("px-4 py-2 h-auto flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'shopping' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
-                  <Bike className="h-4 w-4" />Concession
+                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'shopping' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                  <Bike className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Concession
                 </Button>
-                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("px-4 py-2 h-auto flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'service' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
-                  <Wrench className="h-4 w-4" />Atelier
+                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'service' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                  <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Atelier
                 </Button>
             </nav>
         </div>
