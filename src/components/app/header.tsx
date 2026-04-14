@@ -420,13 +420,13 @@ const Header: React.FC<HeaderProps> = ({
 
             {/* LIGNE 3 : Filtres de navigation */}
             <nav className="flex items-center justify-center gap-4 sm:gap-10 mt-1">
-                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === null ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === null ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-white hover:bg-brand')}>
                   <Home className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Tout
                 </Button>
-                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'shopping' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'shopping' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-white hover:bg-brand')}>
                   <Bike className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Concession
                 </Button>
-                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'service' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-brand')}>
+                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'service' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-white hover:bg-brand')}>
                   <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Atelier
                 </Button>
             </nav>
