@@ -341,13 +341,17 @@ function MapPageComponent() {
             </div>
         </aside>
       ) : (
-        <div className={cn(
-          "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
-          drawerHeight === 'collapsed' ? 'bottom-0 h-[70px] z-[1100]' : 
-          drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
-          'bottom-0 h-[calc(100vh-160px)] z-[1300]'
-        )}>
-          <div className="relative w-full flex flex-col items-center pt-3 pb-1 cursor-grab" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <div 
+          className={cn(
+            "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[70px] z-[1100]' : 
+            drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
+            'bottom-0 h-[calc(100vh-160px)] z-[1300]'
+          )}
+          onTouchStart={onTouchStart} 
+          onTouchEnd={onTouchEnd}
+        >
+          <div className="relative w-full flex flex-col items-center pt-3 pb-1 cursor-grab">
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
           </div>
           <div className="px-3 h-full flex flex-col overflow-hidden">
