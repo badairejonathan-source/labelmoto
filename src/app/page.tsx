@@ -44,7 +44,7 @@ export default function LandingPage() {
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
-        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
+        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
         if (id.includes('taille') || title.includes('taille')) return "/images/motard-articles-hauteurdeselle.webp";
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
