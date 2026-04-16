@@ -109,7 +109,7 @@ function MapPageComponent() {
 
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
-    if (drawerHeight === 'full') return height - 140;
+    if (drawerHeight === 'full') return height - 160;
     return drawerHeight === 'half' ? height / 2 : 70; 
   }, [isMobile, height, drawerHeight]);
   
@@ -210,7 +210,7 @@ function MapPageComponent() {
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
   const onTouchEnd = (e: React.TouchEvent) => { 
     const diff = touchStartY.current - e.changedTouches[0].clientY; 
-    if (Math.abs(diff) > 50) {
+    if (Math.abs(diff) > 40) {
       if (diff > 0) {
         // Balayage vers le haut
         setDrawerHeight(prev => prev === 'collapsed' ? 'half' : 'full');
@@ -302,8 +302,8 @@ function MapPageComponent() {
         />
       </div>
 
-      {/* 2. Header Flottant et Semi-transparent (z-50) */}
-      <div className="absolute top-0 left-0 right-0 z-[1100] pointer-events-none">
+      {/* 2. Header Flottant (Conteneur sans z-index forcé pour laisser les enfants respirer) */}
+      <div className="absolute top-0 left-0 right-0 pointer-events-none">
         <div className="pointer-events-auto relative">
           <Header 
             searchTerm={searchTerm} 
@@ -314,7 +314,7 @@ function MapPageComponent() {
           />
           
           {/* 3. Bouton Me Localiser - Aligné avec les filtres sur la droite de l'écran */}
-          <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1300] flex flex-col items-center gap-2">
+          <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
             <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
             <Button 
               size="icon" 
@@ -343,9 +343,9 @@ function MapPageComponent() {
       ) : (
         <div className={cn(
           "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
-          drawerHeight === 'collapsed' ? 'bottom-0 h-[70px] z-[1200]' : 
-          drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1200]' : 
-          'bottom-0 h-[calc(100vh-140px)] z-[1400]'
+          drawerHeight === 'collapsed' ? 'bottom-0 h-[70px] z-[1100]' : 
+          drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
+          'bottom-0 h-[calc(100vh-160px)] z-[1300]'
         )}>
           <div className="relative w-full flex flex-col items-center pt-3 pb-1 cursor-grab" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
@@ -357,12 +357,12 @@ function MapPageComponent() {
                 size="icon" 
                 className="rounded-full" 
                 onClick={() => {
-                  if (drawerHeight === 'full') setDrawerHeight('half');
-                  else if (drawerHeight === 'half') setDrawerHeight('collapsed');
+                  if (drawerHeight === 'collapsed') setDrawerHeight('half');
+                  else if (drawerHeight === 'half') setDrawerHeight('full');
                   else setDrawerHeight('half');
                 }}
               >
-                {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />}
+                {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : (drawerHeight === 'full' ? <ChevronDown className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />)}
               </Button>
             </div>
             <div className="flex-1 overflow-y-auto mt-3">{listContent}</div>

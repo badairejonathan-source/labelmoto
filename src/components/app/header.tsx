@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -86,18 +87,18 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-12 w-12 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-lg border-2 border-white bg-white hover:border-brand/20 transition-all"
+      className="relative h-16 w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-lg border-2 border-white bg-white hover:border-brand/20 transition-all"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-10 w-10 md:h-14 md:w-14 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-14 w-14 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-sm font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-10 w-10 md:h-14 md:w-14 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-14 w-14 rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={56} height={56} className="h-full w-full object-contain" />
           </div>
         )}
@@ -341,7 +342,7 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    <header className={cn("bg-transparent py-3 px-4 border-none z-[1100] relative pb-12 md:pb-16", className)}>
+    <header className={cn("bg-transparent py-3 px-4 border-none relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
         {/* LIGNE 1 : Logo XXL, Accroche et Menu */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
@@ -377,7 +378,7 @@ const Header: React.FC<HeaderProps> = ({
                   <Input 
                     type="search" 
                     placeholder={placeholderText} 
-                    className="pr-32 h-14 md:h-16 text-sm md:text-lg rounded-full shadow-xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
+                    className="pr-32 h-16 text-sm md:text-lg rounded-full shadow-xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
                     value={searchTerm} 
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                     onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
@@ -385,7 +386,7 @@ const Header: React.FC<HeaderProps> = ({
                     autoComplete="off" 
                   />
                   {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-20 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
-                  <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-12 w-12 md:h-16 md:w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-8 w-8" /></Button>
+                  <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-16 w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-8 w-8" /></Button>
                   
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-2 animate-in fade-in slide-in-from-top-2 duration-200">
