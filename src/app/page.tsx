@@ -44,6 +44,8 @@ export default function LandingPage() {
     const getArticleImage = (article: any) => {
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
+        
+        // Priorité aux correspondances locales par ID/Titre
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
@@ -51,7 +53,11 @@ export default function LandingPage() {
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
         if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+        
+        // Fallback Firestore
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+        
+        // Fallback final
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     };
 
@@ -211,3 +217,4 @@ export default function LandingPage() {
         </div>
     );
 }
+

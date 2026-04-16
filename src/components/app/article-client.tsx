@@ -436,3 +436,4 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     </div>
   );
 }
+
