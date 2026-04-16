@@ -374,15 +374,15 @@ const Header: React.FC<HeaderProps> = ({
                   <Input 
                     type="search" 
                     placeholder={placeholderText} 
-                    className="pr-24 h-12 md:h-14 text-sm md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" 
+                    className="pr-32 h-12 md:h-14 text-sm md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" 
                     value={searchTerm} 
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                     onFocus={() => { setShowSuggestions(true); }} 
                     onKeyDown={handleKeyDown} 
                     autoComplete="off" 
                   />
-                  {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
-                  <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-5 w-5 md:h-6 md:w-6" /></Button>
+                  {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-20 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
+                  <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-12 w-12 md:h-16 md:w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-6 w-6 md:h-8 md:w-8" /></Button>
                   
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">
