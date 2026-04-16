@@ -433,7 +433,7 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* LIGNE 3 : Filtres de navigation - Version Ronde & Overlap (z-[1200]) */}
-        <nav className="absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
+        <nav className="absolute -bottom-2 md:-bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
             <Button 
               variant="ghost" 
               onClick={() => handleTabClick(null)} 

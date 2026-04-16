@@ -314,7 +314,7 @@ function MapPageComponent() {
           />
           
           {/* 3. Bouton Me Localiser - Aligné avec les filtres sur la droite de l'écran */}
-          <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
+          <div className="absolute -bottom-2 md:-bottom-4 right-6 z-[1250] flex flex-col items-center gap-2">
             <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
             <Button 
               size="icon" 
