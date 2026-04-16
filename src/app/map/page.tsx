@@ -209,7 +209,7 @@ function MapPageComponent() {
 
   const onTouchStart = (e: React.TouchEvent) => { 
     touchStartY.current = e.touches[0].clientY; 
-    // Empêche la propagation à la carte
+    // Empêche la propagation à la carte pour éviter le scroll de map pendant le scroll de liste
     e.stopPropagation();
   };
 
@@ -325,7 +325,7 @@ function MapPageComponent() {
             <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
             <Button 
               size="icon" 
-              className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-brand text-white shadow-2xl border-4 border-white transition-transform hover:scale-110 active:scale-95" 
+              className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-transform hover:scale-110 active:scale-95 hover:bg-brand/5" 
               onClick={() => setIsLoadingLocating(true)} 
               aria-label="Me localiser"
             >
@@ -371,7 +371,8 @@ function MapPageComponent() {
                 className="rounded-full" 
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (drawerHeight === 'half') setDrawerHeight('collapsed');
+                  // Fermeture vers le bas si on est à mi-hauteur ou plein
+                  if (drawerHeight !== 'collapsed') setDrawerHeight('collapsed');
                   else setDrawerHeight('half');
                 }}
               >
