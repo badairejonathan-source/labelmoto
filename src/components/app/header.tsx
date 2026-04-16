@@ -77,7 +77,7 @@ const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center">
+      <div className="h-16 w-16 flex items-center justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-brand" />
       </div>
     );
@@ -87,18 +87,18 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-12 w-12 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
+      className="relative h-16 w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-9 w-9 md:h-12 md:w-12 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-12 w-12 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-[12px] md:text-sm font-black">
+            <AvatarFallback className="bg-brand text-brand-foreground text-sm font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-9 w-9 md:h-12 md:w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-12 w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={48} height={48} className="h-full w-full object-contain" />
           </div>
         )}
@@ -382,7 +382,7 @@ const Header: React.FC<HeaderProps> = ({
                     autoComplete="off" 
                   />
                   {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-20 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
-                  <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-12 w-12 md:h-16 md:w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-6 w-6 md:h-8 md:w-8" /></Button>
+                  <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-16 w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-8 w-8" /></Button>
                   
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">
