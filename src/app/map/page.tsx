@@ -315,7 +315,7 @@ function MapPageComponent() {
 
       {/* 2. Header Flottant et Semi-transparent (z-50) */}
       <div className="absolute top-0 left-0 right-0 z-[1100] pointer-events-none">
-        <div className="pointer-events-auto">
+        <div className="pointer-events-auto relative">
           <Header 
             searchTerm={searchTerm} 
             onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
@@ -323,15 +323,20 @@ function MapPageComponent() {
             activeFilter={activeFilter} 
             onFilterChange={setActiveFilter} 
           />
+          
+          {/* 3. Bouton Me Localiser - Aligné avec les filtres sur la droite de l'écran */}
+          <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1300] flex flex-col items-center gap-2">
+            <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
+            <Button 
+              size="icon" 
+              className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-brand text-white shadow-2xl border-4 border-white transition-transform hover:scale-110 active:scale-95" 
+              onClick={() => setIsLoadingLocating(true)} 
+              aria-label="Me localiser"
+            >
+              <Compass className="h-8 w-8 md:h-10 md:w-10" />
+            </Button>
+          </div>
         </div>
-      </div>
-
-      {/* 3. Bouton Me Localiser Flottant (Déplacé à mi-hauteur pour être toujours accessible) */}
-      <div className="absolute top-1/2 right-6 -translate-y-1/2 z-[1300] flex flex-col items-center gap-2 pointer-events-auto">
-        <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
-        <Button size="icon" className="h-14 w-14 rounded-full bg-brand text-white shadow-[0_10px_25px_rgba(234,88,12,0.4)] transition-transform hover:scale-110 active:scale-95" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser">
-          <Compass className="h-6 w-6" />
-        </Button>
       </div>
 
       {/* 4. Listing des Etablissements (Panneau flottant ou Tiroir mobile) */}
