@@ -291,51 +291,73 @@ function MapPageComponent() {
   if (!mounted || width === undefined) return <div className="flex h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden bg-background">
-      <Header 
-        searchTerm={searchTerm} 
-        onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-        onSearch={() => { setSubmittedSearchTerm(searchTerm); }} 
-        activeFilter={activeFilter} 
-        onFilterChange={setActiveFilter} 
-      />
-      <div className="flex-1 flex overflow-hidden relative">
-        {!isMobile ? (
-          <>
-            <aside className="w-[70%] flex flex-col border-r h-full bg-muted/5">
-                <RatingFilter value={ratingFilter} onChange={setRatingFilter} />
-                <div className="flex-1 overflow-y-auto p-3">{listContent}</div>
-            </aside>
-            <main className="flex-1 relative">
-              <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
-              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={handleUserMapInteraction} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); }} />
-              <Button size="icon" className="absolute top-3 right-3 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser"><Crosshair className="h-4 w-4" /></Button>
-            </main>
-          </>
-        ) : (
-          <>
-            <main className="absolute inset-x-0 top-0 h-[calc(100%-115px)] w-full">
-              <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
-              <MapComponent dealerships={filteredDealerships} center={mapCenter} zoom={mapZoom} hoveredDealershipId={hoveredDealershipId} selectedDealershipId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={handleUserMapInteraction} bottomPadding={bottomPadding} isLocating={isLocating} onLocateEnd={() => setIsLoadingLocating(false)} onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); }} />
-              <Button size="icon" className="absolute top-2 right-2 z-[1000] rounded-full bg-brand text-white shadow-xl" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser"><Crosshair className="h-4 w-4" /></Button>
-            </main>
-            <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] z-[1200] transition-all duration-500 ease-out border-t", drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]')}>
-              <div className="relative w-full flex flex-col items-center pt-3 pb-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-                <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
-              </div>
-              <div className="px-3 h-full flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between border-b pb-2">
-                  <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="flex-1" />
-                  <Button variant="ghost" size="icon" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>
-                    {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-                  </Button>
-                </div>
-                <div className="flex-1 overflow-y-auto mt-3">{listContent}</div>
-              </div>
-            </div>
-          </>
-        )}
+    <div className="relative w-full h-screen overflow-hidden bg-background">
+      {/* 1. Carte Interactive en Arrière-plan Total (z-0) */}
+      <div className="absolute inset-0 z-0">
+        <MapComponent 
+          dealerships={filteredDealerships} 
+          center={mapCenter} 
+          zoom={mapZoom} 
+          hoveredDealershipId={hoveredDealershipId} 
+          selectedDealershipId={selectedDealershipId} 
+          onMarkerClick={handleMarkerClick} 
+          onMarkerMouseOver={setHoveredDealershipId} 
+          onMarkerMouseOut={() => setHoveredDealershipId(null)} 
+          onMapChange={handleMapChange} 
+          onMapClick={handleUserMapInteraction} 
+          onUserInteraction={handleUserMapInteraction} 
+          bottomPadding={bottomPadding} 
+          isLocating={isLocating} 
+          onLocateEnd={() => setIsLoadingLocating(false)} 
+          onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); }} 
+        />
       </div>
+
+      {/* 2. Header Flottant et Semi-transparent (z-50) */}
+      <div className="absolute top-0 left-0 right-0 z-[1100] pointer-events-none">
+        <div className="pointer-events-auto">
+          <Header 
+            searchTerm={searchTerm} 
+            onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+            onSearch={() => { setSubmittedSearchTerm(searchTerm); }} 
+            activeFilter={activeFilter} 
+            onFilterChange={setActiveFilter} 
+          />
+        </div>
+      </div>
+
+      {/* 3. Bouton Me Localiser Flottant */}
+      <div className="absolute bottom-10 right-6 z-[1000] flex flex-col items-center gap-2 pointer-events-auto">
+        <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
+        <Button size="icon" className="h-14 w-14 rounded-full bg-brand text-white shadow-[0_10px_25px_rgba(234,88,12,0.4)] transition-transform hover:scale-110 active:scale-95" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser">
+          <Crosshair className="h-6 w-6" />
+        </Button>
+      </div>
+
+      {/* 4. Listing des Etablissements (Panneau flottant ou Tiroir mobile) */}
+      {!isMobile ? (
+        <aside className="absolute top-[220px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500">
+            <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="bg-transparent border-b border-border/50" />
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                {listContent}
+            </div>
+        </aside>
+      ) : (
+        <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] z-[1200] transition-all duration-500 ease-out border-t", drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]')}>
+          <div className="relative w-full flex flex-col items-center pt-3 pb-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+            <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
+          </div>
+          <div className="px-3 h-full flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between border-b pb-2">
+              <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="flex-1" />
+              <Button variant="ghost" size="icon" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>
+                {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+              </Button>
+            </div>
+            <div className="flex-1 overflow-y-auto mt-3">{listContent}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

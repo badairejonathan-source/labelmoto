@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -338,7 +337,7 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative pb-12 md:pb-16", className)}>
+    <header className={cn("bg-background/60 backdrop-blur-xl py-3 px-4 border-b border-border/50 z-[1100] relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
         {/* LIGNE 1 : Logo XXL, Accroche et Menu */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
