@@ -184,6 +184,7 @@ const Header: React.FC<HeaderProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<Suggestion[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -218,6 +219,7 @@ const Header: React.FC<HeaderProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
+        setIsFocused(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -302,6 +304,7 @@ const Header: React.FC<HeaderProps> = ({
     if (suggestion.type === 'brand-only') searchTermToUse = suggestion.brand || suggestion.label;
     onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
+    setIsFocused(false);
     setPrediction('');
     const queryParams = new URLSearchParams();
     if (suggestion.lat && suggestion.lng) {
@@ -318,6 +321,7 @@ const Header: React.FC<HeaderProps> = ({
   const executeSearch = () => {
     onSearch();
     setShowSuggestions(false);
+    setIsFocused(false);
     setPrediction('');
   };
 
@@ -360,8 +364,8 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* LIGNE 2 : Barre de recherche */}
-        <div className="flex flex-col items-center gap-3 w-full">
+        {/* LIGNE 2 : Barre de recherche - Passage au premier plan (z-[1500]) si active */}
+        <div className={cn("flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-4xl mx-auto">
                 <div className="relative flex-1" ref={suggestionsRef}>
                   {prediction && searchTerm && (
@@ -376,7 +380,7 @@ const Header: React.FC<HeaderProps> = ({
                     className="pr-32 h-14 md:h-16 text-sm md:text-lg rounded-full shadow-xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
                     value={searchTerm} 
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
-                    onFocus={() => { setShowSuggestions(true); }} 
+                    onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
                     onKeyDown={handleKeyDown} 
                     autoComplete="off" 
                   />
@@ -384,7 +388,7 @@ const Header: React.FC<HeaderProps> = ({
                   <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-12 w-12 md:h-16 md:w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-8 w-8" /></Button>
                   
                   {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-50 max-h-[65vh] overflow-y-auto py-2">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                       {suggestions.map((s, idx) => (
                         <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
                           <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
@@ -418,7 +422,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
         </div>
 
-        {/* LIGNE 3 : Filtres de navigation - Version Ronde & Overlap */}
+        {/* LIGNE 3 : Filtres de navigation - Version Ronde & Overlap (z-[1200]) */}
         <nav className="absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
             <Button 
               variant="ghost" 
