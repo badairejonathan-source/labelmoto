@@ -5,11 +5,13 @@ import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import LabelMotoLogo from './logo';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
 const Footer = () => {
   const { user } = useUser();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
@@ -17,6 +19,9 @@ const Footer = () => {
     setMounted(true);
     setCurrentYear(new Date().getFullYear());
   }, []);
+
+  // On ne masque le footer QUE sur la page de la carte pour laisser la place à l'interface interactive
+  if (pathname === '/map') return null;
 
   // Handle hydration mismatch for auth-dependent links
   const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
@@ -67,10 +72,10 @@ const Footer = () => {
                     )}
                 </div>
                 <div className="flex items-center space-x-4">
-                    <Link href="#" aria-label="Facebook" className="text-muted-foreground hover:text-accent"><Facebook className="h-5 w-5" /></Link>
-                    <Link href="#" aria-label="Twitter" className="text-muted-foreground hover:text-accent"><Twitter className="h-5 w-5" /></Link>
+                    <Facebook className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
+                    <Twitter className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
                     <Link href="https://www.instagram.com/labelmoto.fr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-accent"><Instagram className="h-5 w-5" /></Link>
-                    <Link href="#" aria-label="Youtube" className="text-muted-foreground hover:text-accent"><Youtube className="h-5 w-5" /></Link>
+                    <Youtube className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
                 </div>
             </div>
              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-6 text-xs">
