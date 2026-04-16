@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -94,7 +95,7 @@ function MapPageComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
   const { firestore } = useFirebase();
-  const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half'>('half');
+  const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const [showDesktopPanel, setShowDesktopPanel] = useState(true);
   const touchStartY = useRef<number>(0);
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
@@ -108,6 +109,7 @@ function MapPageComponent() {
 
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
+    if (drawerHeight === 'full') return height - 140;
     return drawerHeight === 'half' ? height / 2 : 70; 
   }, [isMobile, height, drawerHeight]);
   
@@ -208,7 +210,15 @@ function MapPageComponent() {
   const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
   const onTouchEnd = (e: React.TouchEvent) => { 
     const diff = touchStartY.current - e.changedTouches[0].clientY; 
-    if (Math.abs(diff) > 50) setDrawerHeight(diff > 0 ? 'half' : 'collapsed'); 
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        // Balayage vers le haut
+        setDrawerHeight(prev => prev === 'collapsed' ? 'half' : 'full');
+      } else {
+        // Balayage vers le bas
+        setDrawerHeight(prev => prev === 'full' ? 'half' : 'collapsed');
+      }
+    }
   };
 
   const listContent = (
@@ -331,13 +341,27 @@ function MapPageComponent() {
             </div>
         </aside>
       ) : (
-        <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] z-[1200] transition-all duration-500 ease-out border-t", drawerHeight === 'collapsed' ? 'bottom-0 h-[70px]' : 'bottom-0 h-[50vh]')}>
-          <div className="relative w-full flex flex-col items-center pt-3 pb-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <div className={cn(
+          "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
+          drawerHeight === 'collapsed' ? 'bottom-0 h-[70px] z-[1200]' : 
+          drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1200]' : 
+          'bottom-0 h-[calc(100vh-140px)] z-[1400]'
+        )}>
+          <div className="relative w-full flex flex-col items-center pt-3 pb-1 cursor-grab" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
           </div>
           <div className="px-3 h-full flex flex-col overflow-hidden">
             <div className="flex items-center justify-end border-b pb-2">
-              <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full" 
+                onClick={() => {
+                  if (drawerHeight === 'full') setDrawerHeight('half');
+                  else if (drawerHeight === 'half') setDrawerHeight('collapsed');
+                  else setDrawerHeight('half');
+                }}
+              >
                 {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />}
               </Button>
             </div>
