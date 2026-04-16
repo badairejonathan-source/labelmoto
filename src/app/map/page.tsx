@@ -326,8 +326,8 @@ function MapPageComponent() {
         </div>
       </div>
 
-      {/* 3. Bouton Me Localiser Flottant */}
-      <div className="absolute bottom-10 right-6 z-[1000] flex flex-col items-center gap-2 pointer-events-auto">
+      {/* 3. Bouton Me Localiser Flottant (Déplacé à mi-hauteur pour être toujours accessible) */}
+      <div className="absolute top-1/2 right-6 -translate-y-1/2 z-[1300] flex flex-col items-center gap-2 pointer-events-auto">
         <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
         <Button size="icon" className="h-14 w-14 rounded-full bg-brand text-white shadow-[0_10px_25px_rgba(234,88,12,0.4)] transition-transform hover:scale-110 active:scale-95" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser">
           <Crosshair className="h-6 w-6" />

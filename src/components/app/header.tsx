@@ -337,7 +337,7 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    <header className={cn("bg-background/60 backdrop-blur-xl py-3 px-4 border-b border-border/50 z-[1100] relative pb-12 md:pb-16", className)}>
+    <header className={cn("bg-background/20 backdrop-blur-xl py-3 px-4 border-b border-border/50 z-[1100] relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
         {/* LIGNE 1 : Logo XXL, Accroche et Menu */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
@@ -373,7 +373,7 @@ const Header: React.FC<HeaderProps> = ({
                   <Input 
                     type="search" 
                     placeholder={placeholderText} 
-                    className="pr-32 h-14 md:h-16 text-sm md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
+                    className="pr-32 h-14 md:h-16 text-sm md:text-lg rounded-full shadow-xl bg-white/70 backdrop-blur-md focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
                     value={searchTerm} 
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                     onFocus={() => { setShowSuggestions(true); }} 
