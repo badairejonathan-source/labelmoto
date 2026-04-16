@@ -7,7 +7,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin } from 'lucide-react';
+import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -69,36 +69,6 @@ const getCityCoordinatesByName = async (cityName: string): Promise<[number, numb
   } catch (error) { return null; }
 };
 
-const RatingFilter = ({ value, onChange, className }: { value: number; onChange: (value: number) => void; className?: string; }) => {
-    const ratings = [4, 3, 2, 1];
-    return (
-        <div className={cn("p-2 bg-background sticky top-0 z-10", className)}>
-            <div className="flex items-center justify-center space-x-3">
-                <span className="text-[15px] font-black text-muted-foreground mr-2 hidden md:inline uppercase tracking-widest">Note :</span>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  onClick={() => onChange(0)} 
-                  className={cn("rounded-full px-5 text-[15px] font-black h-11 transition-all duration-200 uppercase tracking-widest", value === 0 ? "bg-brand text-brand-foreground shadow-lg" : "hover:bg-muted")}
-                >
-                  TOUS
-                </Button>
-                {ratings.map((rating) => (
-                    <Button 
-                      key={rating} 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => onChange(value === rating ? 0 : rating)} 
-                      className={cn("flex gap-2 rounded-full px-4 text-[15px] font-black h-11 transition-all duration-200 shadow-sm", value === rating ? "bg-brand text-brand-foreground shadow-lg" : "hover:bg-muted")}
-                    >
-                        <span>{rating}</span><Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                    </Button>
-                ))}
-            </div>
-        </div>
-    );
-};
-
 function MapPageComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -123,9 +93,9 @@ function MapPageComponent() {
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
-  const [ratingFilter, setRatingFilter] = useState<number>(0);
   const { firestore } = useFirebase();
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half'>('half');
+  const [showDesktopPanel, setShowDesktopPanel] = useState(true);
   const touchStartY = useRef<number>(0);
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -148,8 +118,15 @@ function MapPageComponent() {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); setSortingAnchor(pos); setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
     }
-    if (selectedIdParam) setSelectedDealershipId(selectedIdParam);
-    if (searchParam) { setSearchTerm(searchParam); setSubmittedSearchTerm(searchParam); }
+    if (selectedIdParam) {
+      setSelectedDealershipId(selectedIdParam);
+      setShowDesktopPanel(true);
+    }
+    if (searchParam) { 
+      setSearchTerm(searchParam); 
+      setSubmittedSearchTerm(searchParam); 
+      setShowDesktopPanel(true);
+    }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
   useEffect(() => {
@@ -181,12 +158,12 @@ function MapPageComponent() {
                 if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }
                 else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
             }
+            setShowDesktopPanel(true);
         }
-        if (ratingFilter > 0) results = results.filter(d => (parseFloat(String(d.rating).replace(',', '.')) || 0) >= ratingFilter);
         setFilteredDealerships(results);
     };
     processSearch();
-  }, [submittedSearchTerm, allDealerships, activeFilter, ratingFilter]);
+  }, [submittedSearchTerm, allDealerships, activeFilter]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => { 
     setMapBoundsStr(bounds.toBBoxString()); setMapCenter(newCenter); setMapZoom(newZoom); 
@@ -211,6 +188,7 @@ function MapPageComponent() {
     if (dealership.latitude && dealership.longitude) { 
       setMapCenter([dealership.latitude, dealership.longitude]); setMapZoom(14); 
       if (isMobile) setDrawerHeight('half'); 
+      setShowDesktopPanel(true);
     } 
   }, [isMobile]);
 
@@ -219,6 +197,7 @@ function MapPageComponent() {
     const dealer = allDealerships.find(d => d.id === id); 
     if (dealer && dealer.latitude && dealer.longitude) { setMapCenter([dealer.latitude, dealer.longitude]); setSortingAnchor([dealer.latitude, dealer.longitude]); setMapZoom(14); } 
     if (isMobile) setDrawerHeight('half'); 
+    setShowDesktopPanel(true);
   }, [isMobile, allDealerships]);
 
   const handleUserMapInteraction = useCallback(() => { 
@@ -341,8 +320,12 @@ function MapPageComponent() {
 
       {/* 4. Listing des Etablissements (Panneau flottant ou Tiroir mobile) */}
       {!isMobile ? (
-        <aside className="absolute top-[220px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500">
-            <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="bg-transparent border-b border-border/50" />
+        <aside className={cn("absolute top-[220px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
+            <div className="flex justify-end p-4 border-b border-border/50">
+              <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
+                <X className="h-6 w-6 text-muted-foreground" />
+              </Button>
+            </div>
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {listContent}
             </div>
@@ -353,10 +336,9 @@ function MapPageComponent() {
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
           </div>
           <div className="px-3 h-full flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between border-b pb-2">
-              <RatingFilter value={ratingFilter} onChange={setRatingFilter} className="flex-1" />
-              <Button variant="ghost" size="icon" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>
-                {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+            <div className="flex items-center justify-end border-b pb-2">
+              <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>
+                {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />}
               </Button>
             </div>
             <div className="flex-1 overflow-y-auto mt-3">{listContent}</div>
