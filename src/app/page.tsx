@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -45,7 +44,6 @@ export default function LandingPage() {
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
         
-        // Priorité aux correspondances locales par ID/Titre
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
@@ -54,10 +52,8 @@ export default function LandingPage() {
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
         if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
         
-        // Fallback Firestore
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         
-        // Fallback final
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     };
 
@@ -71,15 +67,14 @@ export default function LandingPage() {
             />
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* HERO SECTION COMPACTE AVEC CHEVAUCHEMENT OPTIMISÉ */}
-                <div className="relative rounded-[2rem] border-2 border-brand bg-black mb-20 md:mb-32 overflow-visible shadow-2xl min-h-[250px] md:min-h-[400px]">
+                {/* HERO SECTION AVEC OVERFLOW-HIDDEN POUR L'IMAGE DE FOND */}
+                <div className="relative rounded-[2rem] border-2 border-brand bg-black mb-20 md:mb-32 overflow-hidden shadow-2xl min-h-[250px] md:min-h-[400px]">
                      <Image 
                         src={hero.src} 
                         alt="Label Moto Hero" 
                         fill 
-                        className="object-cover z-0 opacity-40 rounded-[2rem]" 
+                        className="object-cover z-0 opacity-40" 
                         priority 
-                        fetchPriority="high"
                         sizes="100vw"
                     />
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12">
@@ -92,7 +87,6 @@ export default function LandingPage() {
                             </p>
                         </div>
                          <div className="w-full md:w-2/5 flex justify-center md:justify-end relative z-10">
-                             {/* EFFET DE CHEVAUCHEMENT DE LA CARTE SUR LE CADRE */}
                              <div className="relative transform translate-y-12 md:translate-y-24 group">
                                 <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
                                     <div className="relative w-36 h-36 md:w-72 md:h-72">
@@ -162,7 +156,6 @@ export default function LandingPage() {
                                 )}
                             </div>
 
-                            {/* APPEL À L'ACTION : VOIR PLUS D'ARTICLES */}
                             <div className="mt-12 flex flex-col items-center gap-6 pt-10 border-t border-brand/10">
                                 <div className="text-center">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">Envie d'aller plus loin ?</p>
@@ -217,4 +210,3 @@ export default function LandingPage() {
         </div>
     );
 }
-
