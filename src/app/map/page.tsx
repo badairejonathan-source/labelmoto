@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -73,14 +72,14 @@ const getCityCoordinatesByName = async (cityName: string): Promise<[number, numb
 const RatingFilter = ({ value, onChange, className }: { value: number; onChange: (value: number) => void; className?: string; }) => {
     const ratings = [4, 3, 2, 1];
     return (
-        <div className={cn("p-1 bg-background sticky top-0 z-10", className)}>
-            <div className="flex items-center justify-center space-x-1.5">
-                <span className="text-[10px] font-bold text-muted-foreground mr-1 hidden md:inline uppercase tracking-wider">Note :</span>
+        <div className={cn("p-2 bg-background sticky top-0 z-10", className)}>
+            <div className="flex items-center justify-center space-x-3">
+                <span className="text-[15px] font-black text-muted-foreground mr-2 hidden md:inline uppercase tracking-widest">Note :</span>
                 <Button 
                   size="sm" 
                   variant="ghost" 
                   onClick={() => onChange(0)} 
-                  className={cn("rounded-full px-3 text-[10px] font-bold h-7 transition-all duration-200", value === 0 ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted")}
+                  className={cn("rounded-full px-5 text-[15px] font-black h-11 transition-all duration-200 uppercase tracking-widest", value === 0 ? "bg-brand text-brand-foreground shadow-lg" : "hover:bg-muted")}
                 >
                   TOUS
                 </Button>
@@ -90,9 +89,9 @@ const RatingFilter = ({ value, onChange, className }: { value: number; onChange:
                       size="sm" 
                       variant="ghost" 
                       onClick={() => onChange(value === rating ? 0 : rating)} 
-                      className={cn("flex gap-1 rounded-full px-2.5 text-[10px] font-bold h-7 transition-all duration-200", value === rating ? "bg-brand text-brand-foreground shadow-sm" : "hover:bg-muted")}
+                      className={cn("flex gap-2 rounded-full px-4 text-[15px] font-black h-11 transition-all duration-200 shadow-sm", value === rating ? "bg-brand text-brand-foreground shadow-lg" : "hover:bg-muted")}
                     >
-                        <span>{rating}</span><Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                        <span>{rating}</span><Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                     </Button>
                 ))}
             </div>
@@ -173,7 +172,6 @@ function MapPageComponent() {
         if (activeFilter) { results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')); }
         if (submittedSearchTerm.trim() !== '') {
             const lower = submittedSearchTerm.toLowerCase().trim();
-            const normalizedTerm = lowerTerm.replace(/[\s-]/g, ''); // Fix: lowerTerm should be lower
             const finalLower = lower.replace(/[\s-]/g, '');
             if (/^\d{5}$/.test(finalLower)) {
                 const coords = await getCityCoordinates(finalLower);
@@ -196,8 +194,6 @@ function MapPageComponent() {
   }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
-    // Si le zoom est faible (ouverture) et qu'aucune recherche n'est en cours
-    // On n'affiche aucune fiche de concession
     if (mapZoom < 8 && submittedSearchTerm.trim() === '') {
         return [];
     }
@@ -248,7 +244,6 @@ function MapPageComponent() {
         </div>
       ) : (
         <>
-            {/* Affichage des articles par défaut (zoom faible et pas de recherche) */}
             {dealershipsToDisplay.length === 0 && submittedSearchTerm === '' && mapZoom < 8 && (
                 <div className="space-y-4 pt-2">
                     <div className="bg-brand/5 border-2 border-brand/20 p-6 rounded-[2rem] shadow-sm mb-4">
@@ -273,7 +268,6 @@ function MapPageComponent() {
                 </div>
             )}
 
-            {/* Liste des concessions (apparaît après zoom) */}
             {dealershipsToDisplay.map((dealer, index) => (
                 <React.Fragment key={dealer.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(dealer.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
@@ -283,7 +277,6 @@ function MapPageComponent() {
                 </React.Fragment>
             ))}
 
-            {/* Cas où aucun résultat n'est trouvé après zoom ou recherche */}
             {dealershipsToDisplay.length === 0 && (submittedSearchTerm !== '' || mapZoom >= 8) && !isLoading && (
                 <div className="text-center py-20 opacity-50">
                     <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
