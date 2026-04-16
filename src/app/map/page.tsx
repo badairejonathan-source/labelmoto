@@ -325,11 +325,11 @@ function MapPageComponent() {
             <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
             <Button 
               size="icon" 
-              className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-transform hover:scale-110 active:scale-95 hover:bg-brand/5" 
+              className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
               onClick={() => setIsLoadingLocating(true)} 
               aria-label="Me localiser"
             >
-              <Compass className="h-8 w-8 md:h-10 md:w-10" />
+              <Compass className="h-7 w-7 md:h-8 md:w-8" />
             </Button>
           </div>
         </div>
