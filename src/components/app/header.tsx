@@ -116,24 +116,28 @@ const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end" forceMount>
-        <div className="md:hidden">
-            <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Navigation</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-                <Link href="/entretien" className="flex items-center gap-3 py-2 cursor-pointer">
-                    <div className="w-6 flex justify-center">
-                        <Image src="/images/icon-entretienrevision.webp" alt="" width={24} height={24} className="object-contain" />
-                    </div>
-                    <span className="font-bold text-sm">Entretien & Révisions</span>
-                </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-                <Link href="/info" className="flex items-center gap-3 py-2 cursor-pointer">
-                    <div className="w-6 flex justify-center">
-                        <Image src="/images/icon-conseils.webp" alt="" width={22} height={22} className="object-contain" />
-                    </div>
-                    <span className="font-bold text-sm">Conseils pratiques</span>
-                </Link>
-            </DropdownMenuItem>
+        <div className="md:hidden p-2">
+            <DropdownMenuLabel className="text-[9px] uppercase tracking-[0.4em] text-muted-foreground font-black text-center mb-2">Guide</DropdownMenuLabel>
+            <div className="flex items-center justify-center gap-6 bg-muted/30 border-2 border-dashed border-border/50 p-4 rounded-[2rem] shadow-inner mb-2">
+                <div className="flex flex-col items-center gap-1.5">
+                    <Button asChild variant="ghost" size="icon" className="h-14 w-14 rounded-full bg-white shadow-md hover:bg-brand/5 transition-all border-4 border-white hover:border-brand/20">
+                        <Link href="/entretien" className="flex items-center justify-center">
+                            <Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-9 w-9 object-contain" />
+                            <span className="sr-only">Entretien</span>
+                        </Link>
+                    </Button>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-foreground/80">Entretien</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5">
+                    <Button asChild variant="ghost" size="icon" className="h-14 w-14 rounded-full bg-white shadow-md hover:bg-brand/5 transition-all border-4 border-white hover:border-brand/20">
+                        <Link href="/info" className="flex items-center justify-center">
+                            <Image src="/images/icon-conseils.webp" alt="" width={28} height={28} className="h-8 w-8 object-contain" />
+                            <span className="sr-only">Conseils</span>
+                        </Link>
+                    </Button>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-foreground/80">Conseils</span>
+                </div>
+            </div>
             <DropdownMenuSeparator />
         </div>
 
