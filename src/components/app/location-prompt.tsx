@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -27,9 +26,8 @@ export default function LocationPrompt({ onLocate }: LocationPromptProps) {
     <div className="absolute top-2 right-14 md:top-3 md:right-16 z-[1001] animate-in fade-in slide-in-from-right-2 duration-700 pointer-events-none">
       <div className="flex items-center gap-2 relative">
         {/* Tutorial-style tooltip hint */}
-        <div className="bg-white/95 backdrop-blur-sm border-2 border-brand/40 text-brand px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 ring-4 ring-black/5 animate-bounce-subtle">
+        <div className="bg-white/95 backdrop-blur-sm border-2 border-brand/40 text-brand px-3 py-2 rounded-2xl shadow-xl flex items-center gap-2 ring-4 ring-black/5 animate-bounce-subtle">
           <Sparkles className="h-3.5 w-3.5 animate-pulse shrink-0 opacity-70" />
-          <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap text-muted-foreground/80">localisez vous</span>
           <ArrowRight className="h-4 w-4 animate-pointing-right shrink-0 opacity-60" />
         </div>
         

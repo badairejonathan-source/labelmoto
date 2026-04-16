@@ -7,7 +7,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Crosshair, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin } from 'lucide-react';
+import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -330,7 +330,7 @@ function MapPageComponent() {
       <div className="absolute top-1/2 right-6 -translate-y-1/2 z-[1300] flex flex-col items-center gap-2 pointer-events-auto">
         <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
         <Button size="icon" className="h-14 w-14 rounded-full bg-brand text-white shadow-[0_10px_25px_rgba(234,88,12,0.4)] transition-transform hover:scale-110 active:scale-95" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser">
-          <Crosshair className="h-6 w-6" />
+          <Compass className="h-6 w-6" />
         </Button>
       </div>
 
