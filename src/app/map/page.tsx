@@ -362,7 +362,7 @@ function MapPageComponent() {
                 className="rounded-full" 
                 onClick={() => {
                   if (drawerHeight === 'collapsed') setDrawerHeight('half');
-                  else if (drawerHeight === 'half') setDrawerHeight('full');
+                  else if (drawerHeight === 'half') setDrawerHeight('collapsed');
                   else setDrawerHeight('half');
                 }}
               >
