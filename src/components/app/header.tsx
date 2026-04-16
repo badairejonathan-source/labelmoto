@@ -11,7 +11,7 @@ import LabelMotoLogo from './logo';
 import { cn, levenshteinDistance } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -183,6 +183,7 @@ const Header: React.FC<HeaderProps> = ({
     placeholderText = "Recherche par departement, ville, marque, nom..." 
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const firestore = useFirestore();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [prediction, setPrediction] = useState('');
@@ -191,6 +192,8 @@ const Header: React.FC<HeaderProps> = ({
   const [mounted, setMounted] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  const isMapPage = pathname === '/map';
 
   useEffect(() => {
     setMounted(true);
@@ -348,10 +351,18 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-transparent py-3 px-4 border-none relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo XXL avec bulle blanche, Accroche et Menu */}
+        {/* LIGNE 1 : Logo et Menu */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
           <div className="shrink-0">
-            <Link href="/" className="block bg-white/95 backdrop-blur-sm px-4 py-2 md:px-8 md:py-4 rounded-full shadow-lg border border-white/50 hover:bg-white transition-all">
+            <Link 
+                href="/" 
+                className={cn(
+                    "block transition-all",
+                    isMapPage 
+                      ? "bg-white/95 backdrop-blur-sm px-4 py-2 md:px-8 md:py-4 rounded-full shadow-lg border border-white/50 hover:bg-white" 
+                      : "py-2"
+                )}
+            >
                 <div className="w-32 xs:w-40 md:w-64">
                     <LabelMotoLogo />
                 </div>
@@ -373,7 +384,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* LIGNE 2 : Barre de recherche - Passage au premier plan (z-[1500]) si active */}
+        {/* LIGNE 2 : Barre de recherche */}
         <div className={cn("flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
                 <div className="relative flex-1" ref={suggestionsRef}>
@@ -413,8 +424,8 @@ const Header: React.FC<HeaderProps> = ({
                   )}
                 </div>
                 
-                {/* Icônes de navigation rapide (Desktop) : Section Guide décalée */}
-                <div className="hidden md:flex flex-col items-center gap-1 shrink-0 ml-32">
+                {/* Guide Desktop */}
+                <div className="hidden md:flex flex-col items-center gap-1 shrink-0 ml-16">
                     <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/50 mb-1">Guide</span>
                     <div className="flex items-center gap-6 bg-white/40 backdrop-blur-sm border-2 border-dashed border-border/50 p-3 rounded-[2.5rem] shadow-inner transition-all hover:bg-white/60">
                         <div className="flex flex-col items-center gap-1.5">
@@ -440,7 +451,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
         </div>
 
-        {/* LIGNE 3 : Filtres de navigation - Version Ronde & Overlap (z-[1200]) */}
+        {/* LIGNE 3 : Filtres */}
         <nav className="absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
             <Button 
               variant="ghost" 
