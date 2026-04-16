@@ -7,7 +7,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X, Plus, Minus } from 'lucide-react';
+import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -179,7 +179,7 @@ function MapPageComponent() {
     let results = [...filteredDealerships];
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
-        results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng); 
+        results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLat); 
     }
     return results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b)).slice(0, 20);
   }, [filteredDealerships, mapBoundsStr, sortingAnchor, mapZoom, submittedSearchTerm]);
@@ -208,20 +208,16 @@ function MapPageComponent() {
 
   const onTouchStart = (e: React.TouchEvent) => { 
     touchStartY.current = e.touches[0].clientY; 
-    // Empêche la propagation à la carte pour éviter le scroll de map pendant le scroll de liste
     e.stopPropagation();
   };
 
   const onTouchEnd = (e: React.TouchEvent) => { 
-    // Empêche la propagation à la carte
     e.stopPropagation();
     const diff = touchStartY.current - e.changedTouches[0].clientY; 
     if (Math.abs(diff) > 40) {
       if (diff > 0) {
-        // Balayage vers le haut
         setDrawerHeight(prev => prev === 'collapsed' ? 'half' : 'full');
       } else {
-        // Balayage vers le bas
         setDrawerHeight(prev => prev === 'full' ? 'half' : 'collapsed');
       }
     }
@@ -287,7 +283,6 @@ function MapPageComponent() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* 1. Carte Interactive en Arrière-plan Total (z-0) */}
       <div className="absolute inset-0 z-0">
         <MapComponent 
           dealerships={filteredDealerships} 
@@ -308,7 +303,6 @@ function MapPageComponent() {
         />
       </div>
 
-      {/* 2. Header Flottant (Conteneur sans z-index forcé pour laisser les enfants respirer) */}
       <div className="absolute top-0 left-0 right-0 pointer-events-none">
         <div className="pointer-events-auto relative">
           <Header 
@@ -319,27 +313,6 @@ function MapPageComponent() {
             onFilterChange={setActiveFilter} 
           />
           
-          {/* Zoom Buttons - Aligné à gauche à l'opposé de la boussole */}
-          <div className="absolute -bottom-8 md:-bottom-10 left-6 z-[1250] flex flex-col gap-2">
-            <Button 
-              size="icon" 
-              className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
-              onClick={() => setMapZoom(prev => Math.min(prev + 1, 18))}
-              aria-label="Zoomer"
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-            <Button 
-              size="icon" 
-              className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
-              onClick={() => setMapZoom(prev => Math.max(prev - 1, 5))}
-              aria-label="Dézoomer"
-            >
-              <Minus className="h-6 w-6" />
-            </Button>
-          </div>
-
-          {/* 3. Bouton Me Localiser - Aligné avec les filtres sur la droite de l'écran */}
           <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
             <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
             <Button 
@@ -354,7 +327,6 @@ function MapPageComponent() {
         </div>
       </div>
 
-      {/* 4. Listing des Etablissements (Panneau flottant ou Tiroir mobile) */}
       {!isMobile ? (
         <aside className={cn("absolute top-[220px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
             <div className="flex justify-end p-4 border-b border-border/50">
@@ -390,7 +362,6 @@ function MapPageComponent() {
                 className="rounded-full" 
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Fermeture vers le bas si on est à mi-hauteur ou plein
                   if (drawerHeight !== 'collapsed') setDrawerHeight('collapsed');
                   else setDrawerHeight('half');
                 }}
