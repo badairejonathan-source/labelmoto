@@ -367,7 +367,7 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* LIGNE 2 : Barre de recherche - Passage au premier plan (z-[1500]) si active */}
         <div className={cn("flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
-            <div className="flex items-center gap-2 sm:gap-6 w-full max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 sm:gap-16 w-full max-w-4xl mx-auto">
                 <div className="relative flex-1" ref={suggestionsRef}>
                   {prediction && searchTerm && (
                     <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
