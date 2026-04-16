@@ -207,8 +207,15 @@ function MapPageComponent() {
     setSelectionSource(null);
   }, [isMobile]);
 
-  const onTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
+  const onTouchStart = (e: React.TouchEvent) => { 
+    touchStartY.current = e.touches[0].clientY; 
+    // Empêche la propagation à la carte
+    e.stopPropagation();
+  };
+
   const onTouchEnd = (e: React.TouchEvent) => { 
+    // Empêche la propagation à la carte
+    e.stopPropagation();
     const diff = touchStartY.current - e.changedTouches[0].clientY; 
     if (Math.abs(diff) > 40) {
       if (diff > 0) {
@@ -350,6 +357,8 @@ function MapPageComponent() {
           )}
           onTouchStart={onTouchStart} 
           onTouchEnd={onTouchEnd}
+          onTouchMove={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="relative w-full flex flex-col items-center pt-3 pb-1 cursor-grab">
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
@@ -360,9 +369,9 @@ function MapPageComponent() {
                 variant="ghost" 
                 size="icon" 
                 className="rounded-full" 
-                onClick={() => {
-                  if (drawerHeight === 'collapsed') setDrawerHeight('half');
-                  else if (drawerHeight === 'half') setDrawerHeight('collapsed');
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (drawerHeight === 'half') setDrawerHeight('collapsed');
                   else setDrawerHeight('half');
                 }}
               >
