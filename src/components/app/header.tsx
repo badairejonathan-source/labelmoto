@@ -115,7 +115,7 @@ const UserMenu = () => {
       <DropdownMenuTrigger asChild>
         {trigger}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64" align="end" forceMount>
+      <DropdownMenuContent className="w-64 z-[3000]" align="end" forceMount>
         <div className="md:hidden p-2">
             <DropdownMenuLabel className="text-[9px] uppercase tracking-[0.4em] text-muted-foreground font-black text-center mb-2">Guide</DropdownMenuLabel>
             <div className="flex items-center justify-center gap-6 bg-muted/30 border-2 border-dashed border-border/50 p-4 rounded-[2rem] shadow-inner mb-2">
@@ -348,10 +348,14 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-transparent py-3 px-4 border-none relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo XXL, Accroche et Menu */}
+        {/* LIGNE 1 : Logo XXL avec bulle blanche, Accroche et Menu */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
-          <div className="w-44 xs:w-56 md:w-80 shrink-0">
-            <Link href="/"><LabelMotoLogo /></Link>
+          <div className="shrink-0">
+            <Link href="/" className="block bg-white/95 backdrop-blur-sm px-4 py-2 md:px-8 md:py-4 rounded-full shadow-lg border border-white/50 hover:bg-white transition-all">
+                <div className="w-32 xs:w-40 md:w-64">
+                    <LabelMotoLogo />
+                </div>
+            </Link>
           </div>
           
           <div className="flex-1 flex items-center justify-center min-w-0">
