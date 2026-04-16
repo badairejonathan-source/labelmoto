@@ -87,19 +87,19 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-16 w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
+      className="relative h-16 w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-lg border-2 border-transparent hover:border-brand/20 transition-all"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-12 w-12 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-14 w-14 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-sm font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-12 w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
-            <Image src="/images/icon-moncompte.webp" alt="" width={48} height={48} className="h-full w-full object-contain" />
+          <div className="h-14 w-14 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+            <Image src="/images/icon-moncompte.webp" alt="" width={56} height={56} className="h-full w-full object-contain" />
           </div>
         )}
         <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border border-white shadow-sm flex items-center justify-center" aria-hidden="true">
@@ -338,11 +338,11 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative", className)}>
+    <header className={cn("bg-card py-3 px-4 border-b border-border z-[1100] relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo XXL, Accroche et Menu sur UNE SEULE LIGNE MOBILE */}
+        {/* LIGNE 1 : Logo XXL, Accroche et Menu */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
-          <div className="w-40 xs:w-56 md:w-80 shrink-0">
+          <div className="w-44 xs:w-56 md:w-80 shrink-0">
             <Link href="/"><LabelMotoLogo /></Link>
           </div>
           
@@ -374,7 +374,7 @@ const Header: React.FC<HeaderProps> = ({
                   <Input 
                     type="search" 
                     placeholder={placeholderText} 
-                    className="pr-32 h-12 md:h-14 text-sm md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10" 
+                    className="pr-32 h-14 md:h-16 text-sm md:text-lg rounded-full shadow-xl bg-gray-100 dark:bg-gray-800 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
                     value={searchTerm} 
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                     onFocus={() => { setShowSuggestions(true); }} 
@@ -403,34 +403,66 @@ const Header: React.FC<HeaderProps> = ({
                 
                 {/* Icônes de navigation rapide (Desktop) */}
                 <div className="hidden md:flex items-center gap-2 shrink-0">
-                    <Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors">
+                    <Button asChild variant="ghost" size="icon" className="h-14 w-14 rounded-xl hover:bg-brand/5 transition-colors border-2 border-transparent hover:border-brand/10">
                         <Link href="/entretien" className="flex items-center justify-center">
-                            <Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-8 w-8 object-contain" />
+                            <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="h-10 w-10 object-contain" />
                             <span className="sr-only">Entretien</span>
                         </Link>
                     </Button>
-                    <Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-brand/5 transition-colors">
+                    <Button asChild variant="ghost" size="icon" className="h-14 w-14 rounded-xl hover:bg-brand/5 transition-colors border-2 border-transparent hover:border-brand/10">
                         <Link href="/info" className="flex items-center justify-center">
-                            <Image src="/images/icon-conseils.webp" alt="" width={28} height={28} className="h-7 w-7 object-contain" />
+                            <Image src="/images/icon-conseils.webp" alt="" width={32} height={32} className="h-9 w-9 object-contain" />
                             <span className="sr-only">Conseils</span>
                         </Link>
                     </Button>
                 </div>
             </div>
-
-            {/* LIGNE 3 : Filtres de navigation */}
-            <nav className="flex items-center justify-center gap-4 sm:gap-10 mt-1">
-                <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === null ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-white hover:bg-brand')}>
-                  <Home className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Tout
-                </Button>
-                <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'shopping' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-white hover:bg-brand')}>
-                  <Bike className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Concession
-                </Button>
-                <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("px-2 sm:px-4 py-2 h-auto flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-black uppercase tracking-widest transition-all", activeFilter === 'service' ? 'text-brand bg-brand/5' : 'text-muted-foreground hover:text-white hover:bg-brand')}>
-                  <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4" />Atelier
-                </Button>
-            </nav>
         </div>
+
+        {/* LIGNE 3 : Filtres de navigation - Version Ronde & Overlap */}
+        <nav className="absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
+            <Button 
+              variant="ghost" 
+              onClick={() => handleTabClick(null)} 
+              className={cn(
+                "h-16 w-16 md:h-20 md:w-20 rounded-full flex flex-col items-center justify-center gap-0.5 md:gap-1 shadow-2xl transition-all border-4",
+                activeFilter === null 
+                  ? 'bg-brand text-white border-white scale-110 z-10' 
+                  : 'bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10'
+              )}
+            >
+              <Home className={cn("h-5 w-5 md:h-6 md:w-6", activeFilter === null ? "text-white" : "text-brand")} />
+              <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tout</span>
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              onClick={() => handleTabClick('shopping')} 
+              className={cn(
+                "h-16 w-16 md:h-20 md:w-20 rounded-full flex flex-col items-center justify-center gap-0.5 md:gap-1 shadow-2xl transition-all border-4",
+                activeFilter === 'shopping' 
+                  ? 'bg-brand text-white border-white scale-110 z-10' 
+                  : 'bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10'
+              )}
+            >
+              <Bike className={cn("h-5 w-5 md:h-6 md:w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+              <span className="text-[7px] md:text-[9px] font-black uppercase tracking-tighter leading-none">Concession</span>
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              onClick={() => handleTabClick('service')} 
+              className={cn(
+                "h-16 w-16 md:h-20 md:w-20 rounded-full flex flex-col items-center justify-center gap-0.5 md:gap-1 shadow-2xl transition-all border-4",
+                activeFilter === 'service' 
+                  ? 'bg-brand text-white border-white scale-110 z-10' 
+                  : 'bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10'
+              )}
+            >
+              <Wrench className={cn("h-5 w-5 md:h-6 md:w-6", activeFilter === 'service' ? "text-white" : "text-brand")} />
+              <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">Atelier</span>
+            </Button>
+        </nav>
       </div>
     </header>
   );
