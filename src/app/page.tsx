@@ -154,6 +154,23 @@ export default function LandingPage() {
                                     ))
                                 )}
                             </div>
+
+                            {/* NOUVEL APPEL À L'ACTION : VOIR PLUS D'ARTICLES */}
+                            <div className="mt-12 flex flex-col items-center gap-6 pt-10 border-t border-brand/10">
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">Envie d'aller plus loin ?</p>
+                                    <p className="text-xl md:text-3xl font-black uppercase tracking-tighter text-foreground mb-6">Explorez tous nos guides et conseils pratiques</p>
+                                </div>
+                                <div className="flex flex-col items-center gap-3">
+                                    <Button asChild variant="ghost" size="icon" className="h-24 w-24 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-brand/5 transition-all border-8 border-white hover:border-brand/10 group">
+                                        <Link href="/info" className="flex items-center justify-center">
+                                            <Image src="/images/icon-conseils.webp" alt="Tous les articles" width={56} height={56} className="h-14 w-14 object-contain transition-transform group-hover:rotate-12" />
+                                            <span className="sr-only">Voir tous les articles</span>
+                                        </Link>
+                                    </Button>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand animate-pulse">Cliquer pour voir la liste</span>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
