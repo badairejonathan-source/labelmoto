@@ -258,7 +258,7 @@ const Header: React.FC<HeaderProps> = ({
         const address = d.subLabel?.toLowerCase() || '';
         const normalizedTitle = title.replace(/[\s-]/g, '');
         let score = 0;
-        const isNumeric = /^\d+$/.test(lowerTerm);
+        const isNumeric = /^\d{5}$/.test(lowerTerm);
         if (isNumeric && lowerTerm.length >= 2) {
             const zipMatch = address.match(/\b\d{5}\b/);
             if (zipMatch && zipMatch[0].startsWith(lowerTerm)) score = 1300;
@@ -433,7 +433,7 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* LIGNE 3 : Filtres de navigation - Version Ronde & Overlap (z-[1200]) */}
-        <nav className="absolute -bottom-2 md:-bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
+        <nav className="absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
             <Button 
               variant="ghost" 
               onClick={() => handleTabClick(null)} 
