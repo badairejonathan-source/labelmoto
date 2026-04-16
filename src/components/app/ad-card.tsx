@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -21,10 +22,6 @@ interface AdCardProps {
 const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
   if (!article) return null;
 
-  const isMaintenance = article.id === 'entretien-moto-intervalles-prix-conseils-par-modele' || 
-                        article.title?.toLowerCase().includes('entretien') || 
-                        article.title?.toLowerCase().includes('révision');
-
   const imageUrl = React.useMemo(() => {
     const id = article.id?.toLowerCase() || '';
     const title = (article.title || '').toLowerCase();
@@ -32,13 +29,14 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
     if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
     if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
+    if (id.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
     if (id.includes('pieges') || id.includes('occasion') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
-    if (isMaintenance) return "/images/motard-entretien-page.webp";
+    if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
     
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
-  }, [article, isMaintenance]);
+  }, [article]);
 
   const href = `/info/${article.id}`;
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -74,7 +75,7 @@ export default function ContactPage() {
       />
       <main className="container mx-auto px-4 py-12 relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none opacity-[0.03]">
-          <Image src="/images/logo-moto.png?v=6" alt="" width={800} height={256} className="rotate-[-15deg] scale-150" />
+          <Image src="/images/logo-moto.webp" alt="" width={800} height={256} className="rotate-[-15deg] scale-150" />
         </div>
 
         <div className="max-w-2xl mx-auto">

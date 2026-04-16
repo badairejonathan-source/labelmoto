@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -226,7 +227,7 @@ function RegisterProContent() {
       <main className="container mx-auto p-4 sm:p-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <section className="text-center bg-card p-8 rounded-xl shadow-lg border">
-            <Image src="/images/Stamp-LM.png?v=3" alt="Label Moto" width={100} height={100} className="mx-auto mb-4 opacity-80" />
+            <Image src="/images/Stamp-LM.webp" alt="Label Moto" width={100} height={100} className="mx-auto mb-4 opacity-80" />
             <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground mb-2">Espace Professionnel</h1>
             <p className="text-lg text-muted-foreground">Rejoignez le réseau des meilleurs ateliers et concessions de France.</p>
           </section>

@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState } from 'react';
@@ -35,7 +36,7 @@ export default function SelectionPage() {
       {/* Filigrane Logo */}
       <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
         <Image
-          src="/images/logo-moto.png?v=6"
+          src="/images/logo-moto.webp"
           alt="Label Moto Watermark"
           width={600}
           height={192}

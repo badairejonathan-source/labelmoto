@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -88,7 +87,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       year: fiche.year_range || "N/A",
       category: fiche.category || "Moto",
       introduction: sg.intro || "",
-      imageUrl: fiche.imageUrl || "/images/motard-entretien-page.png",
+      imageUrl: fiche.imageUrl || "/images/motard-entretien-page.webp",
       hasVariants: variants.length > 1,
       variants: variants,
       engine: {
