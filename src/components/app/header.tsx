@@ -406,7 +406,7 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
                 
                 {/* Icônes de navigation rapide (Desktop) : Section Guide décalée */}
-                <div className="hidden md:flex flex-col items-center gap-1 shrink-0 ml-16">
+                <div className="hidden md:flex flex-col items-center gap-1 shrink-0 ml-32">
                     <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/50 mb-1">Guide</span>
                     <div className="flex items-center gap-6 bg-white/40 backdrop-blur-sm border-2 border-dashed border-border/50 p-3 rounded-[2.5rem] shadow-inner transition-all hover:bg-white/60">
                         <div className="flex flex-col items-center gap-1.5">
