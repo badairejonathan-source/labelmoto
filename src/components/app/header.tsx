@@ -367,7 +367,7 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* LIGNE 2 : Barre de recherche - Passage au premier plan (z-[1500]) si active */}
         <div className={cn("flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
-            <div className="flex items-center gap-2 sm:gap-4 w-full max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 sm:gap-6 w-full max-w-4xl mx-auto">
                 <div className="relative flex-1" ref={suggestionsRef}>
                   {prediction && searchTerm && (
                     <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
@@ -406,19 +406,25 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
                 
                 {/* Icônes de navigation rapide (Desktop) */}
-                <div className="hidden md:flex items-center gap-2 shrink-0">
-                    <Button asChild variant="ghost" size="icon" className="h-14 w-14 rounded-xl bg-white shadow-lg hover:bg-brand/5 transition-colors border-2 border-transparent hover:border-brand/10">
-                        <Link href="/entretien" className="flex items-center justify-center">
-                            <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="h-10 w-10 object-contain" />
-                            <span className="sr-only">Entretien</span>
-                        </Link>
-                    </Button>
-                    <Button asChild variant="ghost" size="icon" className="h-14 w-14 rounded-xl bg-white shadow-lg hover:bg-brand/5 transition-colors border-2 border-transparent hover:border-brand/10">
-                        <Link href="/info" className="flex items-center justify-center">
-                            <Image src="/images/icon-conseils.webp" alt="" width={32} height={32} className="h-9 w-9 object-contain" />
-                            <span className="sr-only">Conseils</span>
-                        </Link>
-                    </Button>
+                <div className="hidden md:flex items-center gap-6 shrink-0">
+                    <div className="flex flex-col items-center gap-1.5">
+                        <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl hover:bg-brand/5 transition-all border-4 border-white hover:border-brand/20">
+                            <Link href="/entretien" className="flex items-center justify-center">
+                                <Image src="/images/icon-entretienrevision.webp" alt="" width={40} height={40} className="h-11 w-11 object-contain" />
+                                <span className="sr-only">Entretien</span>
+                            </Link>
+                        </Button>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/80">Entretien</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5">
+                        <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl hover:bg-brand/5 transition-all border-4 border-white hover:border-brand/20">
+                            <Link href="/info" className="flex items-center justify-center">
+                                <Image src="/images/icon-conseils.webp" alt="" width={36} height={36} className="h-10 w-10 object-contain" />
+                                <span className="sr-only">Conseils</span>
+                            </Link>
+                        </Button>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/80">Conseils</span>
+                    </div>
                 </div>
             </div>
         </div>
