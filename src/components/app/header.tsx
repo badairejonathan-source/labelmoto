@@ -77,7 +77,7 @@ const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-10 w-10 flex items-center justify-center">
+      <div className="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-brand" />
       </div>
     );
@@ -87,19 +87,19 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-8 w-8 md:h-10 md:w-10 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
+      className="relative h-12 w-12 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-7 w-7 md:h-9 md:w-9 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-9 w-9 md:h-12 md:w-12 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-[10px] md:text-xs font-black">
+            <AvatarFallback className="bg-brand text-brand-foreground text-[12px] md:text-sm font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-7 w-7 md:h-9 md:w-9 rounded-full flex items-center justify-center p-1" aria-hidden="true">
-            <Image src="/images/icon-moncompte.webp" alt="" width={36} height={36} className="h-full w-full object-contain" />
+          <div className="h-9 w-9 md:h-12 md:w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+            <Image src="/images/icon-moncompte.webp" alt="" width={48} height={48} className="h-full w-full object-contain" />
           </div>
         )}
         <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border border-white shadow-sm flex items-center justify-center" aria-hidden="true">
