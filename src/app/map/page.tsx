@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -8,7 +7,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X } from 'lucide-react';
+import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X, Plus, Minus } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -320,6 +319,26 @@ function MapPageComponent() {
             onFilterChange={setActiveFilter} 
           />
           
+          {/* Zoom Buttons - Aligné à gauche à l'opposé de la boussole */}
+          <div className="absolute -bottom-8 md:-bottom-10 left-6 z-[1250] flex flex-col gap-2">
+            <Button 
+              size="icon" 
+              className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
+              onClick={() => setMapZoom(prev => Math.min(prev + 1, 18))}
+              aria-label="Zoomer"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+            <Button 
+              size="icon" 
+              className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
+              onClick={() => setMapZoom(prev => Math.max(prev - 1, 5))}
+              aria-label="Dézoomer"
+            >
+              <Minus className="h-6 w-6" />
+            </Button>
+          </div>
+
           {/* 3. Bouton Me Localiser - Aligné avec les filtres sur la droite de l'écran */}
           <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
             <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />

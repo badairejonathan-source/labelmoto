@@ -72,6 +72,7 @@ const MapComponent = ({
       minZoom: 5,
       zoomSnap: 0.1,
       fadeAnimation: true,
+      zoomControl: false, // On désactive les contrôles par défaut pour les mettre à gauche via React
     }).setView(center, zoom);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
