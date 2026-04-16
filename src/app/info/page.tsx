@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -96,7 +97,7 @@ function InfoPageComponent() {
 
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
                 <div className="max-w-6xl mx-auto">
-                    <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
+                    <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-12"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
                     <div className="text-center mb-12"><h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">Conseils pratiques</h1><div className="mt-4 w-20 h-1.5 bg-brand mx-auto rounded-full" /></div>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
                         <div className="md:col-span-8">
