@@ -68,8 +68,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
-    // Utilisation de l'URL Unsplash de référence pour l'assurance pour garantir le chargement
-    if (articleId.includes('assurance') || title.includes('assurance')) return "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?q=80&w=1080&auto=format&fit=crop";
+    if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
