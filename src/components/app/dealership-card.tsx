@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -238,7 +237,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             </div>
           </div>
           
-          {/* Section latérale avec boutons ronds */}
           <div className="absolute inset-y-0 right-0 w-14 md:w-20 z-40 flex flex-col items-center justify-center gap-4 bg-muted/10 border-l border-border/30">
             <button 
               className={cn(

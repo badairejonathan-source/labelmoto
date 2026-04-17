@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -156,7 +155,7 @@ function MapPageComponent() {
                 if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(finalLower)); }
             } else {
                 const cityCoords = await getCityCoordinatesByName(lower);
-                if (coords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }
+                if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }
                 else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
             }
             setShowDesktopPanel(true);

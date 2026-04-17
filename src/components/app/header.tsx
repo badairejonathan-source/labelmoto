@@ -102,7 +102,6 @@ const UserMenu = () => {
           </div>
         )}
         
-        {/* Pictogramme Menu par dessus */}
         <div className="absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-1.5 border-2 border-white shadow-md z-20">
           <Menu className="h-3.5 w-3.5 md:h-4.5 md:w-4.5" />
         </div>
@@ -391,7 +390,6 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-transparent py-3 px-4 border-none relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo, Recherche (Desktop), Menu */}
         <div className="flex flex-row items-center justify-between gap-2 md:gap-6">
           <div className="shrink-0">
             <Link 
@@ -409,7 +407,6 @@ const Header: React.FC<HeaderProps> = ({
             </Link>
           </div>
           
-          {/* Recherche Desktop - Remplace le bloc texte pour optimiser l'espace */}
           <div className="hidden md:flex flex-1 items-center justify-center min-w-0 max-w-3xl">
              {searchInput}
           </div>
@@ -419,14 +416,12 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* LIGNE 2 : Barre de recherche (Mobile uniquement) */}
         <div className={cn("md:hidden flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
                 {searchInput}
             </div>
         </div>
 
-        {/* LIGNE 3 : Filtres (Mobile uniquement sur la carte) */}
         <nav className={cn(
             "md:hidden absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 z-[1200] w-full max-w-lg px-4",
             !isMapPage && "hidden"

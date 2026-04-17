@@ -1,11 +1,10 @@
-
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { FileText, ArrowRight, Store } from 'lucide-react';
+import { FileText, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface AdCardProps {
@@ -43,43 +42,40 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
   return (
     <Link href={href} className="group block w-full">
       <Card className={cn(
-        "w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border-l-4 hover:shadow-lg shadow-sm min-h-[120px] md:min-h-[160px] flex items-stretch relative rounded-2xl",
-        isPublicity 
-          ? "border-blue-500 border-blue-500/20 bg-gradient-to-r from-blue-500/[0.03] to-background" 
-          : "border-brand border-brand/20 bg-gradient-to-r from-brand/[0.02] to-background"
+        "w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border-l-4 hover:shadow-lg shadow-sm min-h-[140px] flex items-stretch relative rounded-2xl border-brand border-brand/20 bg-gradient-to-r from-brand/[0.02] to-background"
       )}>
-        <div className="absolute -top-2 -right-2 opacity-[0.02] pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
-            {isPublicity ? <Store className="w-24 h-24 text-blue-500" /> : <FileText className="w-24 h-24 text-brand" />}
-        </div>
-        <div className="relative w-32 sm:w-48 md:w-64 flex-shrink-0 overflow-hidden bg-muted">
-          <Image src={imageUrl} alt={article.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-110" data-ai-hint={article.imageHint || "motorcycle"} sizes="(max-width: 768px) 128px, 256px" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-transparent" />
-          <div className={cn("absolute top-3 left-3 flex items-center gap-1.5 text-[9px] md:text-[11px] font-black text-white rounded-full px-2.5 py-1 uppercase tracking-widest shadow-lg z-20", isPublicity ? "bg-blue-600" : "bg-brand")}>
-            {isPublicity ? <Store className="h-3 w-3 md:h-3.5 md:w-3.5" /> : <FileText className="h-3 w-3 md:h-3.5 md:w-3.5" />}
-            <span className="hidden sm:inline">{isPublicity ? "Publicité" : "Guide"}</span>
+        <div className="relative w-40 sm:w-56 md:w-72 flex-shrink-0 overflow-hidden bg-muted">
+          <Image src={imageUrl} alt={article.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-110" data-ai-hint={article.imageHint || "motorcycle"} sizes="(max-width: 768px) 160px, 300px" />
+          
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          
+          <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
+             <h3 className="font-black text-xs md:text-sm text-white leading-tight uppercase drop-shadow-md">
+                {article.title}
+             </h3>
+          </div>
+
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 text-[8px] md:text-[9px] font-black text-white rounded-full px-2 py-0.5 uppercase tracking-widest shadow-lg z-20 bg-brand">
+            <FileText className="h-3 w-3" />
+            <span>Guide</span>
           </div>
         </div>
-        <div className="flex flex-col justify-center flex-grow p-4 md:p-6 min-w-0 z-10">
-          <div className="flex items-center gap-1.5 mb-1.5"><div className={cn("h-[1.5px] w-6", isPublicity ? "bg-blue-500/40" : "bg-brand/40")} /><span className={cn("text-[9px] uppercase tracking-widest font-black", isPublicity ? "text-blue-600/70" : "text-brand/70")}>{isPublicity ? "Offre Partenaire" : "Conseil Moto"}</span></div>
-          <h3 className="font-black text-base md:text-xl text-foreground leading-tight uppercase group-hover:text-brand transition-colors line-clamp-2">{article.title}</h3>
-          <p className="text-[11px] md:sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed font-medium">{article.description}</p>
+
+        <div className="flex flex-col justify-center flex-grow p-4 md:p-5 min-w-0 z-10">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <div className="h-[1.5px] w-4 bg-brand/40" />
+            <span className="text-[8px] uppercase tracking-widest font-black text-brand/70">Conseil Moto</span>
+          </div>
+          <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-3 leading-relaxed font-medium">{article.description}</p>
         </div>
-        <div className="hidden md:flex flex-shrink-0 w-32 flex-col justify-center items-center p-4 bg-muted/[0.01] border-l border-border/50 z-10">
+
+        <div className="hidden sm:flex flex-shrink-0 w-24 flex-col justify-center items-center p-3 bg-muted/[0.01] border-l border-border/50 z-10">
            <div className="flex flex-col items-center gap-2">
-             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand transition-colors">{isPublicity ? "En profiter" : "Découvrir"}</span>
-             <div className={cn(
-               "h-16 w-16 rounded-full flex flex-col items-center justify-center text-white shadow-md transition-all group-hover:scale-110 group-hover:shadow-xl", 
-               isPublicity ? "bg-blue-600 shadow-blue-500/10 group-hover:shadow-blue-500/20" : "bg-brand shadow-brand/10 group-hover:shadow-brand/20"
-             )}>
-               <ArrowRight className="h-5 w-5 mb-0.5" />
-               <span className="text-[8px] font-black uppercase tracking-tighter leading-none">{isPublicity ? "Voir" : "Lire"}</span>
+             <div className="h-14 w-14 rounded-full flex flex-col items-center justify-center text-white shadow-md transition-all group-hover:scale-110 group-hover:shadow-brand/20 bg-brand shadow-brand/10">
+               <ArrowRight className="h-4 w-4" />
+               <span className="text-[7px] font-black uppercase tracking-tighter leading-none mt-0.5">Lire</span>
              </div>
            </div>
-        </div>
-        <div className="md:hidden flex items-center pr-4 z-10">
-          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm", isPublicity ? "bg-blue-500/10 group-hover:bg-blue-600 text-blue-600 group-hover:text-white" : "bg-brand/10 group-hover:bg-brand text-brand group-hover:text-white")}>
-            <ArrowRight className="w-5 h-5" />
-          </div>
         </div>
       </Card>
     </Link>
