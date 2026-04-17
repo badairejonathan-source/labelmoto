@@ -1,7 +1,8 @@
+
 {
   "landingPage": {
     "hero": {
-      "src": "/images/motardnuitlandingpage1.webp",
+      "src": "/images/motardnuitlandinfpage1.webp",
       "hint": "motorcycle urban",
       "mapPreview": {
         "src": "/images/apercucartezoom.webp",
@@ -24,7 +25,7 @@
         "hint": "motorcycle riding"
       },
       {
-        "src": "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw8fHxhc3N1cmFuY2UlMjBtb3RvfGVufDB8fHx8MTc3MDk4ODQ4MHww&ixlib=rb-4.1.0&q=80&w=1080",
+        "src": "/images/motard-article-assurance20262.webp",
         "hint": "assurance moto",
         "text": "Shark nouveau casque 2026"
       }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -67,7 +68,7 @@ export default function LandingPage() {
             />
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* HERO SECTION AVEC OVERFLOW-HIDDEN POUR L'IMAGE DE FOND */}
+                {/* HERO SECTION AVEC IMAGE DE FOND RÉINTÉGRÉE */}
                 <div className="relative rounded-[2rem] border-2 border-brand bg-black mb-20 md:mb-32 overflow-hidden shadow-2xl min-h-[250px] md:min-h-[400px]">
                      <Image 
                         src={hero.src} 
