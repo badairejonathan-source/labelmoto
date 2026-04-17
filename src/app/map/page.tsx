@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -375,7 +376,7 @@ function MapPageComponent() {
                   )}
                 >
                   <Wrench className={cn("h-7 w-7", activeFilter === 'service' ? "text-white" : "text-brand")} />
-                  <span className="text-[9px] font-black uppercase tracking-widest mt-1">Atelier</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest mt-1">Atelier</span>
                 </button>
               </div>
               <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full h-10 w-10 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>

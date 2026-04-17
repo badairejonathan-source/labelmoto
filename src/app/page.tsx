@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -70,7 +71,7 @@ export default function LandingPage() {
                 <div className="relative mb-24 md:mb-48">
                     <div className="absolute inset-0 rounded-[2rem] border-2 border-brand bg-black overflow-hidden shadow-2xl">
                          <Image 
-                            src={hero.src} 
+                            src="/images/motardnuitlandinfpage1.webp" 
                             alt="Label Moto Hero" 
                             fill 
                             className="object-cover z-0 opacity-40" 
