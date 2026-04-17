@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -155,7 +156,7 @@ function MapPageComponent() {
                 if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(finalLower)); }
             } else {
                 const cityCoords = await getCityCoordinatesByName(lower);
-                if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }
+                if (coords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }
                 else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
             }
             setShowDesktopPanel(true);
@@ -332,38 +333,38 @@ function MapPageComponent() {
                 <button 
                   onClick={() => setActiveFilter(null)}
                   className={cn(
-                    "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
                     activeFilter === null 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  <Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} />
-                  <span className="text-[8px] font-black uppercase tracking-widest mt-1">Tout</span>
+                  <Home className={cn("h-7 w-7", activeFilter === null ? "text-white" : "text-brand")} />
+                  <span className="text-[9px] font-black uppercase tracking-widest mt-1">Tout</span>
                 </button>
                 <button 
                   onClick={() => setActiveFilter('shopping')}
                   className={cn(
-                    "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
                     activeFilter === 'shopping' 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  <Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
-                  <span className="text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Concession</span>
+                  <Bike className={cn("h-7 w-7", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none mt-1">Concession</span>
                 </button>
                 <button 
                   onClick={() => setActiveFilter('service')}
                   className={cn(
-                    "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
                     activeFilter === 'service' 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  <Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} />
-                  <span className="text-[8px] font-black uppercase tracking-widest mt-1">Atelier</span>
+                  <Wrench className={cn("h-7 w-7", activeFilter === 'service' ? "text-white" : "text-brand")} />
+                  <span className="text-[9px] font-black uppercase tracking-widest mt-1">Atelier</span>
                 </button>
               </div>
               <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full h-10 w-10 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
