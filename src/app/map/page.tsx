@@ -82,12 +82,14 @@ function MapPageComponent() {
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
-  // Décalage important vers l'Ouest (-7.0) pour que la France soit à droite du large panneau sur Desktop
+  
+  // Coordonnées de base pour Desktop : centre décalé très à l'ouest pour avoir la France à droite
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, -7.0]);
-  // L'ancre de tri reste sur le centre géographique réel de la France (1.8)
-  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
-  // Dézoom d'un cran supplémentaire (4.5) pour voir la France entière
   const [mapZoom, setMapZoom] = useState(4.5);
+  
+  // L'ancre de tri reste fixe sur le centre géographique réel de la France
+  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
+  
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
@@ -114,7 +116,14 @@ function MapPageComponent() {
     return drawerHeight === 'half' ? height / 2 : 70; 
   }, [isMobile, height, drawerHeight]);
   
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true); 
+    // Sur mobile, on recentre sur la France (sans l'offset Desktop)
+    if (isMobile && !latParam) {
+      setMapCenter([46.603354, 1.888334]);
+      setMapZoom(5.5);
+    }
+  }, [isMobile, latParam]);
 
   useEffect(() => {
     if (latParam && lngParam) {
