@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -20,7 +19,7 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
         const title = (article.display_title || article.title || "").toLowerCase();
 
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
-        if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance2026.webp";
+        if (id.includes('assurance') || title.includes('assurance')) return "https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?q=80&w=1080&auto=format&fit=crop";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
         if (id.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
@@ -166,4 +165,3 @@ export default function InfoPage() {
         </Suspense>
     ); 
 }
-

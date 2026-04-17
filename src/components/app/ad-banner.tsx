@@ -7,7 +7,7 @@ import { FileText } from 'lucide-react';
 const AdBanner: React.FC = () => {
   const article = {
     id: 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil',
-    imageUrl: '/images/motard-article-assurance2026.webp',
+    imageUrl: 'https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?q=80&w=1080&auto=format&fit=crop',
     imageHint: 'motorcycle insurance',
     title: 'Assurance moto : bien choisir sa formule',
   };
