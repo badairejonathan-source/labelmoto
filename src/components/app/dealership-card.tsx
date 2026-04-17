@@ -166,9 +166,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         )}
         
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
-          <div className="flex flex-1 flex-row items-stretch pr-14 md:pr-20">
+          <div className="flex flex-1 flex-row items-stretch pr-18 md:pr-26">
             <div 
-              className="relative w-24 sm:w-32 md:w-44 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
+              className="relative w-28 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
               onClick={(e) => { e.stopPropagation(); setIsZoomDialogOpen(true); }}
             >
               {dealership.imgUrl ? (
@@ -241,31 +241,31 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             </div>
           </div>
           
-          <div className="absolute inset-y-0 right-0 w-14 md:w-20 z-40 flex flex-col items-center justify-center gap-4 bg-muted/10 border-l border-border/30">
+          <div className="absolute inset-y-0 right-0 w-18 md:w-26 z-40 flex flex-col items-center justify-center gap-4 bg-muted/10 border-l border-border/30">
             <button 
               className={cn(
-                "h-11 w-11 md:h-14 md:w-14 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
+                "h-14 w-14 md:h-[72px] md:w-[72px] rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
                 showHours ? "bg-brand border-white text-white scale-110" : "bg-white border-brand/20 text-brand hover:bg-brand/5"
               )} 
               onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}
             >
-              <Clock className="h-4 w-4 md:h-5 md:w-5" />
-              <span className="text-[6px] md:text-[8px] font-black uppercase tracking-tighter leading-none mt-1">Horaires</span>
+              <Clock className="h-5 w-5 md:h-6 md:w-6" />
+              <span className="text-[7px] md:text-[9px] font-black uppercase tracking-tighter leading-none mt-1">Horaires</span>
             </button>
             <button 
               className={cn(
-                "h-11 w-11 md:h-14 md:w-14 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
+                "h-14 w-14 md:h-[72px] md:w-[72px] rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
                 showReviews ? "bg-blue-600 border-white text-white scale-110" : "bg-white border-blue-500/20 text-blue-500 hover:bg-blue-50"
               )} 
               onClick={(e) => { e.stopPropagation(); setShowReviews(!showReviews); setShowHours(false); }}
             >
-              <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
-              <span className="text-[6px] md:text-[8px] font-black uppercase tracking-tighter leading-none mt-1">Avis</span>
+              <MessageSquare className="h-5 w-5 md:h-6 md:w-6" />
+              <span className="text-[7px] md:text-[9px] font-black uppercase tracking-tighter leading-none mt-1">Avis</span>
             </button>
           </div>
 
           {(showHours || showReviews) && (
-            <div className="absolute inset-y-0 left-0 right-14 md:right-20 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
+            <div className="absolute inset-y-0 left-0 right-18 md:right-26 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
               {showHours && (
                 <div className="space-y-1 w-full">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (

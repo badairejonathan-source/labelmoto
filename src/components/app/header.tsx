@@ -224,17 +224,6 @@ const Header: React.FC<HeaderProps> = ({
   }, [firestore, mounted]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false);
-        setIsFocused(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
     if (searchTerm.trim().length < 1) {
         setSuggestions([]);
         setPrediction('');
@@ -389,7 +378,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={cn("bg-transparent py-3 px-4 border-none relative pb-12 md:pb-16", className)}>
-      <div className="container mx-auto max-w-7xl flex flex-col gap-4">
+      <div className="container mx-auto max-w-7xl flex flex-col gap-6">
         <div className="flex flex-row items-center justify-between gap-2 md:gap-6">
           <div className="shrink-0">
             <Link 
@@ -407,14 +396,64 @@ const Header: React.FC<HeaderProps> = ({
             </Link>
           </div>
           
-          <div className="hidden md:flex flex-1 items-center justify-center min-w-0 max-w-3xl">
-             {searchInput}
-          </div>
+          {isMapPage ? (
+            <div className="hidden md:flex flex-1 items-center justify-center min-w-0 max-w-3xl">
+               {searchInput}
+            </div>
+          ) : (
+            <div className="hidden md:flex flex-1 items-center justify-center text-center px-4">
+                <div className="bg-brand/5 border-2 border-dashed border-brand/20 px-8 py-2.5 rounded-full shadow-sm">
+                    <p className="text-[11px] md:text-sm font-black uppercase tracking-tight text-foreground">
+                        Trouver une concession ou un atelier ? <span className="text-brand italic">Fini la galère.</span>
+                    </p>
+                </div>
+            </div>
+          )}
 
           <div className="flex items-center justify-end shrink-0">
             <UserMenu />
           </div>
         </div>
+
+        {!isMapPage && (
+            <div className="hidden md:flex flex-col items-center gap-6 w-full max-w-4xl mx-auto">
+                <div className="w-full">
+                    {searchInput}
+                </div>
+                <nav className="flex items-center justify-center gap-4">
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick(null)} 
+                        className={cn(
+                            "h-16 w-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-xl transition-all border-4 bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
+                        )}
+                    >
+                        <Home className="h-5 w-5" />
+                        <span className="text-[8px] font-black uppercase tracking-widest">Tout</span>
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick('shopping')} 
+                        className={cn(
+                            "h-16 w-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-xl transition-all border-4 bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
+                        )}
+                    >
+                        <Bike className="h-5 w-5" />
+                        <span className="text-[7px] font-black uppercase tracking-tighter leading-none">Concession</span>
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick('service')} 
+                        className={cn(
+                            "h-16 w-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-xl transition-all border-4 bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
+                        )}
+                    >
+                        <Wrench className="h-5 w-5" />
+                        <span className="text-[8px] font-black uppercase tracking-widest">Atelier</span>
+                    </Button>
+                </nav>
+            </div>
+        )}
 
         <div className={cn("md:hidden flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
