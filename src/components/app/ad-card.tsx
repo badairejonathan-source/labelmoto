@@ -65,9 +65,22 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
           <p className="text-[11px] md:sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed font-medium">{article.description}</p>
         </div>
         <div className="hidden md:flex flex-shrink-0 w-32 flex-col justify-center items-center p-4 bg-muted/[0.01] border-l border-border/50 z-10">
-           <div className="flex flex-col items-center gap-2"><span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand transition-colors">{isPublicity ? "En profiter" : "Découvrir"}</span><div className={cn("inline-flex items-center justify-center rounded-full text-white font-black text-[11px] uppercase tracking-widest px-6 h-10 shadow-md transition-all group-hover:scale-105 group-hover:-translate-y-0.5", isPublicity ? "bg-blue-600 shadow-blue-500/10 group-hover:shadow-blue-500/20" : "bg-brand shadow-brand/10 group-hover:shadow-brand/20")}>{isPublicity ? "Voir" : "Lire"}<ArrowRight className="ml-2 h-4 w-4" /></div></div>
+           <div className="flex flex-col items-center gap-2">
+             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand transition-colors">{isPublicity ? "En profiter" : "Découvrir"}</span>
+             <div className={cn(
+               "h-16 w-16 rounded-full flex flex-col items-center justify-center text-white shadow-md transition-all group-hover:scale-110 group-hover:shadow-xl", 
+               isPublicity ? "bg-blue-600 shadow-blue-500/10 group-hover:shadow-blue-500/20" : "bg-brand shadow-brand/10 group-hover:shadow-brand/20"
+             )}>
+               <ArrowRight className="h-5 w-5 mb-0.5" />
+               <span className="text-[8px] font-black uppercase tracking-tighter leading-none">{isPublicity ? "Voir" : "Lire"}</span>
+             </div>
+           </div>
         </div>
-        <div className="md:hidden flex items-center pr-4 z-10"><div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm", isPublicity ? "bg-blue-500/10 group-hover:bg-blue-600 text-blue-600 group-hover:text-white" : "bg-brand/10 group-hover:bg-brand text-brand group-hover:text-white")}><ArrowRight className="w-5 h-5" /></div></div>
+        <div className="md:hidden flex items-center pr-4 z-10">
+          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm", isPublicity ? "bg-blue-500/10 group-hover:bg-blue-600 text-blue-600 group-hover:text-white" : "bg-brand/10 group-hover:bg-brand text-brand group-hover:text-white")}>
+            <ArrowRight className="w-5 h-5" />
+          </div>
+        </div>
       </Card>
     </Link>
   );
