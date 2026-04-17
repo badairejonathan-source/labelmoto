@@ -14,7 +14,6 @@ import { useFirebase } from '@/firebase';
 import { collection, onSnapshot } from "firebase/firestore";
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
-import LocationPrompt from '@/components/app/location-prompt';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ads = [
@@ -314,7 +313,6 @@ function MapPageComponent() {
           />
           
           <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
-            <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
             <Button 
               size="icon" 
               className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
@@ -328,7 +326,7 @@ function MapPageComponent() {
       </div>
 
       {!isMobile ? (
-        <aside className={cn("absolute top-[220px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
+        <aside className={cn("absolute top-[180px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
             <div className="flex justify-end p-4 border-b border-border/50">
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
                 <X className="h-6 w-6 text-muted-foreground" />

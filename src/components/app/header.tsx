@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -87,24 +86,21 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-16 w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-lg border-2 border-white bg-white hover:border-brand/20 transition-all"
+      className="relative h-12 w-12 md:h-14 md:w-14 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-lg border-2 border-white bg-white hover:border-brand/20 transition-all"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-14 w-14 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-sm font-black">
+            <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-14 w-14 rounded-full flex items-center justify-center p-1" aria-hidden="true">
-            <Image src="/images/icon-moncompte.webp" alt="" width={56} height={56} className="h-full w-full object-contain" />
+          <div className="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+            <Image src="/images/icon-moncompte.webp" alt="" width={48} height={48} className="h-full w-full object-contain" />
           </div>
         )}
-        <div className="md:hidden absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border border-white shadow-sm flex items-center justify-center" aria-hidden="true">
-          <Menu className="h-2 w-2" strokeWidth={3} />
-        </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
     </Button>
@@ -116,7 +112,7 @@ const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64 z-[3000]" align="end" forceMount>
-        <div className="md:hidden p-2">
+        <div className="p-2">
             <DropdownMenuLabel className="text-[9px] uppercase tracking-[0.4em] text-muted-foreground font-black text-center mb-2">Guide</DropdownMenuLabel>
             <div className="flex items-center justify-center gap-6 bg-muted/30 border-2 border-dashed border-border/50 p-4 rounded-[2rem] shadow-inner mb-2">
                 <div className="flex flex-col items-center gap-1.5">
@@ -346,37 +342,71 @@ const Header: React.FC<HeaderProps> = ({
     else router.push(`/map${filter ? `?filter=${filter}` : ''}`);
   };
 
+  const searchInput = (
+    <div className="relative flex-1" ref={suggestionsRef}>
+      {prediction && searchTerm && (
+        <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
+            <span className="text-base text-transparent select-none">{searchTerm}</span>
+            <span className="text-base text-muted-foreground/40 select-none">{prediction.substring(searchTerm.length)}</span>
+        </div>
+      )}
+      <Input 
+        type="search" 
+        placeholder={placeholderText} 
+        className="pr-32 h-14 md:h-16 text-sm md:text-lg rounded-full shadow-xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
+        value={searchTerm} 
+        onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
+        onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
+        onKeyDown={handleKeyDown} 
+        autoComplete="off" 
+      />
+      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-20 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
+      <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-14 w-14 md:h-16 md:w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-6 w-6 md:h-8 md:w-8" /></Button>
+      
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          {suggestions.map((s, idx) => (
+            <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
+              <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
+                {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
+              </div>
+              <div className="flex flex-col min-0">
+                <span className="text-base font-bold text-foreground truncate">{s.label}</span>
+                {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   if (!mounted) return null;
 
   return (
     <header className={cn("bg-transparent py-3 px-4 border-none relative pb-12 md:pb-16", className)}>
       <div className="container mx-auto max-w-7xl flex flex-col gap-4">
-        {/* LIGNE 1 : Logo et Menu */}
-        <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
+        {/* LIGNE 1 : Logo, Recherche (Desktop), Menu */}
+        <div className="flex flex-row items-center justify-between gap-2 md:gap-6">
           <div className="shrink-0">
             <Link 
                 href="/" 
                 className={cn(
                     "block transition-all",
                     isMapPage 
-                      ? "bg-white/95 backdrop-blur-sm px-4 py-2 md:px-8 md:py-4 rounded-full shadow-lg border border-white/50 hover:bg-white" 
+                      ? "bg-white/95 backdrop-blur-sm px-4 py-2 md:px-6 md:py-3 rounded-full shadow-lg border border-white/50 hover:bg-white" 
                       : "py-2"
                 )}
             >
-                <div className="w-32 xs:w-40 md:w-64">
+                <div className="w-32 xs:w-40 md:w-52">
                     <LabelMotoLogo />
                 </div>
             </Link>
           </div>
           
-          <div className="flex-1 flex items-center justify-center min-w-0">
-            <div className="relative px-3 py-1.5 md:px-12 md:py-4 rounded-full md:rounded-2xl overflow-hidden bg-white/90 border border-border shadow-lg transition-all hover:bg-white group">
-                <h2 className="text-[9px] xs:text-[10px] sm:text-xs md:text-2xl lg:text-3xl font-black tracking-tighter relative z-10 text-center leading-[1.1] uppercase md:whitespace-normal">
-                    <span className="text-foreground">Trouver une concession, un atelier ?</span>
-                    <br />
-                    <span className="text-brand italic">Fini la galère.</span>
-                </h2>
-            </div>
+          {/* Recherche Desktop - Remplace le bloc texte pour optimiser l'espace */}
+          <div className="hidden md:flex flex-1 items-center justify-center min-w-0 max-w-3xl">
+             {searchInput}
           </div>
 
           <div className="flex items-center justify-end shrink-0">
@@ -384,70 +414,10 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* LIGNE 2 : Barre de recherche */}
-        <div className={cn("flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
+        {/* LIGNE 2 : Barre de recherche (Mobile uniquement) */}
+        <div className={cn("md:hidden flex flex-col items-center gap-3 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
             <div className="flex items-center gap-2 sm:gap-4 w-full max-w-5xl mx-auto">
-                <div className="relative flex-1" ref={suggestionsRef}>
-                  {prediction && searchTerm && (
-                    <div className="absolute inset-0 px-6 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
-                        <span className="text-base text-transparent select-none">{searchTerm}</span>
-                        <span className="text-base text-muted-foreground/40 select-none">{prediction.substring(searchTerm.length)}</span>
-                    </div>
-                  )}
-                  <Input 
-                    type="search" 
-                    placeholder={placeholderText} 
-                    className="pr-32 h-16 text-sm md:text-lg rounded-full shadow-xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 relative z-10 font-bold" 
-                    value={searchTerm} 
-                    onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
-                    onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
-                    onKeyDown={handleKeyDown} 
-                    autoComplete="off" 
-                  />
-                  {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-20 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5" /></button>)}
-                  <Button type="submit" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-16 w-16 bg-brand rounded-full z-20 shadow-lg" onClick={executeSearch}><Search className="h-8 w-8" /></Button>
-                  
-                  {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                      {suggestions.map((s, idx) => (
-                        <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
-                          <div className="shrink-0 w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
-                            {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
-                          </div>
-                          <div className="flex flex-col min-0">
-                            <span className="text-base font-bold text-foreground truncate">{s.label}</span>
-                            {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-widest">{s.subLabel}</span>}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                
-                {/* Guide Desktop */}
-                <div className="hidden md:flex flex-col items-center gap-1 shrink-0 ml-16">
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/50 mb-1">Guide</span>
-                    <div className="flex items-center gap-6 bg-white/40 backdrop-blur-sm border-2 border-dashed border-border/50 p-3 rounded-[2.5rem] shadow-inner transition-all hover:bg-white/60">
-                        <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl hover:bg-brand/5 transition-all border-4 border-white hover:border-brand/20">
-                                <Link href="/entretien" className="flex items-center justify-center">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={40} height={40} className="h-11 w-11 object-contain" />
-                                    <span className="sr-only">Entretien</span>
-                                </Link>
-                            </Button>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-foreground/80">Entretien</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl hover:bg-brand/5 transition-all border-4 border-white hover:border-brand/20">
-                                <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={36} height={36} className="h-10 w-10 object-contain" />
-                                    <span className="sr-only">Conseils</span>
-                                </Link>
-                            </Button>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-foreground/80">Conseils</span>
-                        </div>
-                    </div>
-                </div>
+                {searchInput}
             </div>
         </div>
 
