@@ -326,7 +326,7 @@ function MapPageComponent() {
       </div>
 
       {!isMobile ? (
-        <aside className={cn("absolute top-[180px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
+        <aside className={cn("absolute top-[110px] left-6 bottom-6 w-[550px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
             <div className="relative px-6 py-8 border-b border-border/50 flex items-center justify-center">
               <div className="flex items-center justify-center gap-6 w-full">
                 <button 
