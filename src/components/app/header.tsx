@@ -117,7 +117,6 @@ const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 z-[3000] p-4 rounded-[2rem] border-2 shadow-2xl" align="end" forceMount>
-        {/* BLOC GUIDE MOBILE */}
         <div className="md:hidden mb-6">
             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
             <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
@@ -378,7 +377,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-12 md:pb-16" : "pb-8 md:pb-16", className)}>
-      <div className="container mx-auto max-w-7xl flex flex-col gap-6 md:gap-12">
+      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-12">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-10">
           <div className="shrink-0">
             <Link 
@@ -412,7 +411,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-6xl mx-auto">
+        <div className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-screen-xl mx-auto">
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 w-full">
                 <div className="flex-1 w-full">
                     {searchInput}
