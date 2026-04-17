@@ -21,7 +21,7 @@ const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
   { id: 'combien-coute-vraiment-une-moto-par-mois', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: '/images/motard-budget-reel.webp' },
   { id: 'meilleure-moto-a2-quelle-moto-choisir-pour-debuter', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.webp' },
-  { id: 'entretien-moto-intervalles-prix-conseils-par-modele', title: 'Guide d\'entretien & révisions', description: 'Tous les intervalles et prix estimés pour votre modèle de moto.', imageUrl: '/images/motard-entretien-page.webp' },
+  { id: 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil', title: 'Assurance moto : bien choisir sa formule', description: 'Le guide complet des formules 2026 pour motards.', imageUrl: '/images/motard-article-assurance20262.webp' },
 ];
 
 const MapComponent = dynamic(
@@ -317,7 +317,7 @@ function MapPageComponent() {
             <LocationPrompt onLocate={() => setIsLoadingLocating(true)} />
             <Button 
               size="icon" 
-              className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
+              className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
               onClick={() => setIsLoadingLocating(true)} 
               aria-label="Me localiser"
             >
