@@ -82,11 +82,12 @@ function MapPageComponent() {
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
-  // Décalage du centre vers l'Ouest (-1.8) pour que la France soit à droite du panneau sur Desktop
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, -1.8]);
+  // Décalage important vers l'Ouest (-7.0) pour que la France soit à droite du large panneau sur Desktop
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, -7.0]);
   // L'ancre de tri reste sur le centre géographique réel de la France (1.8)
   const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
-  const [mapZoom, setMapZoom] = useState(5.5);
+  // Dézoom d'un cran supplémentaire (4.5) pour voir la France entière
+  const [mapZoom, setMapZoom] = useState(4.5);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
