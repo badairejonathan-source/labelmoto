@@ -327,47 +327,47 @@ function MapPageComponent() {
 
       {!isMobile ? (
         <aside className={cn("absolute top-[180px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
-            <div className="px-6 py-5 border-b border-border/50 flex items-center justify-between">
-              <div className="flex items-center gap-4">
+            <div className="relative px-6 py-8 border-b border-border/50 flex items-center justify-center">
+              <div className="flex items-center justify-center gap-6 w-full">
                 <button 
                   onClick={() => setActiveFilter(null)}
                   className={cn(
-                    "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
                     activeFilter === null 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  <Home className={cn("h-4 w-4", activeFilter === null ? "text-white" : "text-brand")} />
-                  <span className="text-[8px] font-black uppercase tracking-widest mt-0.5">Tout</span>
+                  <Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} />
+                  <span className="text-[8px] font-black uppercase tracking-widest mt-1">Tout</span>
                 </button>
                 <button 
                   onClick={() => setActiveFilter('shopping')}
                   className={cn(
-                    "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
                     activeFilter === 'shopping' 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  <Bike className={cn("h-4 w-4", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
-                  <span className="text-[7px] font-black uppercase tracking-tighter leading-none mt-0.5">Concession</span>
+                  <Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+                  <span className="text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Concession</span>
                 </button>
                 <button 
                   onClick={() => setActiveFilter('service')}
                   className={cn(
-                    "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
                     activeFilter === 'service' 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  <Wrench className={cn("h-4 w-4", activeFilter === 'service' ? "text-white" : "text-brand")} />
-                  <span className="text-[8px] font-black uppercase tracking-widest mt-0.5">Atelier</span>
+                  <Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} />
+                  <span className="text-[8px] font-black uppercase tracking-widest mt-1">Atelier</span>
                 </button>
               </div>
-              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
-                <X className="h-5 w-5 text-muted-foreground" />
+              <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full h-10 w-10 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
+                <X className="h-6 w-6 text-muted-foreground" />
               </Button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
