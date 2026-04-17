@@ -333,7 +333,7 @@ const Header: React.FC<HeaderProps> = ({
         autoComplete="off" 
       />
       {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-20 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-4 w-4 md:h-5 md:w-5" /></button>)}
-      <Button type="submit" size="icon" className={cn("absolute top-1/2 right-1.5 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg", isMapPage ? "h-11 w-11 md:h-14 md:w-14" : "h-13 w-13 md:h-20 md:w-20")} onClick={executeSearch}><Search className="h-5 w-5 md:h-8 md:w-8" /></Button>
+      <Button type="submit" size="icon" className={cn("absolute top-1/2 right-1.5 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg", isMapPage ? "h-11 w-11 md:h-14 md:w-14" : "h-14 w-14 md:h-20 md:w-20")} onClick={executeSearch}><Search className="h-6 w-6 md:h-10 md:w-10" /></Button>
       
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-2xl shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-2 animate-in fade-in slide-in-from-top-2 duration-200">
