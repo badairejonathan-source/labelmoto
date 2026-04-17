@@ -195,32 +195,31 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 </div>
               </div>
               
-              {/* Boutons d'action dans des cercles */}
-              <div className="flex flex-wrap items-center gap-6 mt-4">
+              <div className="flex flex-wrap items-center gap-4 mt-6">
                 {dealership.phoneNumber && (
-                  <a href={`tel:${dealership.phoneNumber}`} className="flex flex-col items-center gap-1.5 group/btn" onClick={(e) => e.stopPropagation()}>
-                    <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-sm">
-                      <Phone className="h-4 w-4 text-brand group-hover/btn:text-white" />
+                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn">
+                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
+                      <Phone className="h-5 w-5 text-brand group-hover/btn:text-white mb-0.5" />
+                      <span className="text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Appel</span>
                     </div>
-                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/btn:text-brand transition-colors">Appel</span>
                   </a>
                 )}
                 {dealership.website && (
-                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 group/btn" onClick={(e) => e.stopPropagation()}>
-                    <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-sm">
-                      <Globe className="h-4 w-4 text-brand group-hover/btn:text-white" />
+                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn">
+                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
+                      <Globe className="h-5 w-5 text-brand group-hover/btn:text-white mb-0.5" />
+                      <span className="text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Web</span>
                     </div>
-                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/btn:text-brand transition-colors">Web</span>
                   </a>
                 )}
                 <button 
                   onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} 
-                  className="flex flex-col items-center gap-1.5 group/btn"
+                  className="group/btn"
                 >
-                  <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-sm">
-                    <MessageSquare className="h-4 w-4 text-brand group-hover/btn:text-white" />
+                  <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
+                    <MessageSquare className="h-5 w-5 text-brand group-hover/btn:text-white mb-0.5" />
+                    <span className="text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Avis</span>
                   </div>
-                  <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/btn:text-brand transition-colors">Avis</span>
                 </button>
               </div>
               
