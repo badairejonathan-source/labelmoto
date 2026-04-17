@@ -344,7 +344,7 @@ const Header: React.FC<HeaderProps> = ({
         type="search" 
         placeholder={placeholderText} 
         className={cn(
-            "pr-28 md:pr-40 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-10 relative z-10 font-black transition-all",
+            "pr-20 md:pr-40 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-10 relative z-10 font-black transition-all",
             isMapPage ? "h-14 md:h-20 text-xs md:text-xl" : "h-16 md:h-28 text-xs md:text-2xl"
         )}
         value={searchTerm} 
@@ -353,8 +353,8 @@ const Header: React.FC<HeaderProps> = ({
         onKeyDown={handleKeyDown} 
         autoComplete="off" 
       />
-      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-20 md:right-28 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5 md:h-8 md:w-8" /></button>)}
-      <Button type="submit" size="icon" className={cn("absolute top-1/2 right-1.5 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg", isMapPage ? "h-12 w-12 md:h-18 md:w-18" : "h-14 w-14 md:h-32 md:w-32")} onClick={executeSearch}><Search className="h-7 w-7 md:h-14 md:w-14" /></Button>
+      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-14 md:right-28 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5 md:h-8 md:w-8" /></button>)}
+      <Button type="submit" size="icon" className={cn("absolute top-1/2 -right-2 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg", isMapPage ? "h-18 w-18 md:h-20 md:w-20" : "h-14 w-14 md:h-32 md:w-32")} onClick={executeSearch}><Search className="h-10 w-10 md:h-14 md:w-14" /></Button>
       
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-4 bg-background border rounded-[2.5rem] shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-4 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -390,42 +390,34 @@ const Header: React.FC<HeaderProps> = ({
                       : "py-2"
                 )}
             >
-                <div className="w-40 xs:w-56 md:w-96">
+                <div className="w-32 xs:w-56 md:w-96">
                     <LabelMotoLogo />
                 </div>
             </Link>
           </div>
           
-          {!isMapPage && (
-            <div className="flex-1 flex justify-center px-2">
-                <div className="bg-white px-6 py-4 md:px-16 md:py-10 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 text-center transform md:-translate-y-4 hover:scale-[1.02] transition-transform">
-                    <p className="text-[10px] md:text-3xl font-black uppercase tracking-tight text-foreground leading-none">
-                        Trouver une concession, un atelier ?
-                    </p>
-                    <p className="text-[12px] md:text-5xl font-black italic text-brand mt-1 md:mt-3 leading-none tracking-tighter">
-                        FINI LA GALÈRE.
-                    </p>
-                </div>
-            </div>
-          )}
-
-          {isMapPage && (
-            <div className="hidden md:flex flex-1 items-center justify-center min-w-0 max-w-4xl">
-               {searchInput}
-            </div>
-          )}
+          <div className="flex-1 flex justify-center px-2">
+              <div className="bg-white px-4 py-3 md:px-16 md:py-10 rounded-full md:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
+                  <p className="text-[8px] md:text-3xl font-black uppercase tracking-tight text-foreground leading-none">
+                      {isMapPage ? "Trouver une concession ?" : "Trouver une concession, un atelier ?"}
+                  </p>
+                  <p className="text-[10px] md:text-5xl font-black italic text-brand mt-0.5 md:mt-3 leading-none tracking-tighter">
+                      FINI LA GALÈRE.
+                  </p>
+              </div>
+          </div>
 
           <div className="flex items-center justify-end shrink-0">
             <UserMenu />
           </div>
         </div>
 
-        {!isMapPage && (
-            <div className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-6xl mx-auto">
-                <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 w-full">
-                    <div className="flex-1 w-full">
-                        {searchInput}
-                    </div>
+        <div className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 w-full">
+                <div className="flex-1 w-full">
+                    {searchInput}
+                </div>
+                {!isMapPage && (
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[3rem] p-8 gap-14 items-center bg-white/40 backdrop-blur-md shadow-inner">
                         <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-background px-5 text-[12px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-3">
@@ -447,101 +439,54 @@ const Header: React.FC<HeaderProps> = ({
                             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
                         </div>
                     </div>
-                </div>
-                <nav className="flex items-center justify-center gap-6 md:gap-12">
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick(null)} 
-                        className={cn(
-                            "h-24 w-24 md:h-36 md:w-36 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
-                            activeFilter === null 
-                              ? "bg-brand text-white border-white scale-115 z-10 shadow-brand/40" 
-                              : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
-                        )}
-                    >
-                        <Home className={cn("h-8 w-8 md:h-12 md:w-12", activeFilter === null ? "text-white" : "text-brand")} />
-                        <span className="text-[10px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-2">Tout</span>
-                    </Button>
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick('shopping')} 
-                        className={cn(
-                            "h-24 w-24 md:h-36 md:w-36 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
-                            activeFilter === 'shopping' 
-                              ? "bg-brand text-white border-white scale-115 z-10 shadow-brand/40" 
-                              : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
-                        )}
-                    >
-                        <Bike className={cn("h-8 w-8 md:h-12 md:w-12", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
-                        <span className="text-[9px] md:text-[12px] font-black uppercase tracking-tighter leading-none mt-2">Concession</span>
-                    </Button>
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick('service')} 
-                        className={cn(
-                            "h-24 w-24 md:h-36 md:w-36 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
-                            activeFilter === 'service' 
-                              ? "bg-brand text-white border-white scale-115 z-10 shadow-brand/40" 
-                              : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
-                        )}
-                    >
-                        <Wrench className={cn("h-8 w-8 md:h-12 md:w-12", activeFilter === 'service' ? "text-white" : "text-brand")} />
-                        <span className="text-[10px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-2">Atelier</span>
-                    </Button>
-                </nav>
+                )}
             </div>
-        )}
-
-        {isMapPage && (
-            <>
-                <div className={cn("md:hidden flex flex-col items-center gap-4 w-full relative transition-all duration-300", (isFocused || showSuggestions) && "z-[1500]")}>
-                    {searchInput}
-                </div>
-                <nav className="md:hidden absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center justify-center gap-4 z-[1200] w-full max-w-lg px-6">
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => handleTabClick(null)} 
-                      className={cn(
-                        "h-20 w-20 rounded-full flex flex-col items-center justify-center gap-1 shadow-2xl transition-all border-4",
+            
+            <nav className={cn(
+              "flex items-center justify-center gap-4 md:gap-8",
+              isMapPage && "md:hidden"
+            )}>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => handleTabClick(null)} 
+                    className={cn(
+                        "h-20 w-20 md:h-36 md:w-36 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
                         activeFilter === null 
-                          ? 'bg-brand text-white border-white scale-110 z-10 shadow-brand/30' 
-                          : 'bg-white text-muted-foreground border-transparent hover:bg-brand/5 shadow-black/5'
-                      )}
-                    >
-                      <Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Tout</span>
-                    </Button>
-                    
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => handleTabClick('shopping')} 
-                      className={cn(
-                        "h-20 w-20 rounded-full flex flex-col items-center justify-center gap-1 shadow-2xl transition-all border-4",
+                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
+                    )}
+                >
+                    <Home className={cn("h-6 w-6 md:h-12 md:w-12", activeFilter === null ? "text-white" : "text-brand")} />
+                    <span className="text-[9px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-1 md:mt-2">Tout</span>
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => handleTabClick('shopping')} 
+                    className={cn(
+                        "h-20 w-20 md:h-36 md:w-36 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
                         activeFilter === 'shopping' 
-                          ? 'bg-brand text-white border-white scale-110 z-10 shadow-brand/30' 
-                          : 'bg-white text-muted-foreground border-transparent hover:bg-brand/5 shadow-black/5'
-                      )}
-                    >
-                      <Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
-                      <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Concession</span>
-                    </Button>
-                    
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => handleTabClick('service')} 
-                      className={cn(
-                        "h-20 w-20 rounded-full flex flex-col items-center justify-center gap-1 shadow-2xl transition-all border-4",
+                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
+                    )}
+                >
+                    <Bike className={cn("h-6 w-6 md:h-12 md:w-12", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+                    <span className="text-[8px] md:text-[12px] font-black uppercase tracking-tighter leading-none mt-1 md:mt-2">Concession</span>
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => handleTabClick('service')} 
+                    className={cn(
+                        "h-20 w-20 md:h-36 md:w-36 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
                         activeFilter === 'service' 
-                          ? 'bg-brand text-white border-white scale-110 z-10 shadow-brand/30' 
-                          : 'bg-white text-muted-foreground border-transparent hover:bg-brand/5 shadow-black/5'
-                      )}
-                    >
-                      <Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Atelier</span>
-                    </Button>
-                </nav>
-            </>
-        )}
+                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
+                    )}
+                >
+                    <Wrench className={cn("h-6 w-6 md:h-12 md:w-12", activeFilter === 'service' ? "text-white" : "text-brand")} />
+                    <span className="text-[9px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-1 md:mt-2">Atelier</span>
+                </Button>
+            </nav>
+        </div>
       </div>
     </header>
   );
