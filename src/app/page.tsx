@@ -69,7 +69,7 @@ export default function LandingPage() {
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
                 <div className="relative mb-24 md:mb-48">
-                    <div className="absolute inset-0 rounded-[2rem] border-2 border-brand bg-black overflow-hidden shadow-2xl">
+                    <div className="absolute inset-0 rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl">
                          <Image 
                             src="/images/motardnuitlandinfpage1.webp" 
                             alt="Label Moto Hero" 
@@ -165,9 +165,9 @@ export default function LandingPage() {
                                     <p className="text-xl md:text-3xl font-black uppercase tracking-tighter text-foreground mb-6">Explorez tous nos guides et conseils pratiques</p>
                                 </div>
                                 <div className="flex flex-col items-center gap-3">
-                                    <Button asChild variant="ghost" size="icon" className="h-24 w-24 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-brand/5 transition-all border-8 border-white hover:border-brand/10 group">
+                                    <Button asChild variant="ghost" size="icon" className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-brand/5 transition-all border-4 md:border-8 border-white hover:border-brand/10 group">
                                         <Link href="/info" className="flex items-center justify-center">
-                                            <Image src="/images/icon-conseils.webp" alt="Tous les articles" width={56} height={56} className="h-14 w-14 object-contain transition-transform group-hover:rotate-12" />
+                                            <Image src="/images/icon-conseils.webp" alt="Tous les articles" width={56} height={56} className="h-10 w-10 md:h-14 md:w-14 object-contain transition-transform group-hover:rotate-12" />
                                             <span className="sr-only">Voir tous les articles</span>
                                         </Link>
                                     </Button>

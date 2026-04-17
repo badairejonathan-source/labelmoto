@@ -159,15 +159,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         {isAdmin && (
           <button 
             onClick={handleQuarantine} 
-            className="absolute top-2 right-10 z-50 p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive hover:text-white transition-colors shadow-sm"
+            className="absolute top-2 right-2 md:right-10 z-50 p-1.5 md:p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive hover:text-white transition-colors shadow-sm"
             title="Mettre en quarantaine"
           >
-            <ShieldAlert className="h-4 w-4" />
+            <ShieldAlert className="h-3.5 w-3.5 md:h-4 w-4" />
           </button>
         )}
         
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
-          <div className="flex flex-1 flex-row items-stretch pr-18 md:pr-26">
+          <div className="flex flex-1 flex-row items-stretch pr-18 md:pr-[92px]">
             <div 
               className="relative w-28 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
               onClick={(e) => { e.stopPropagation(); setIsZoomDialogOpen(true); }}
@@ -198,17 +198,17 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               <div className="flex flex-wrap items-center gap-4 mt-6">
                 {dealership.phoneNumber && (
                   <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn">
-                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
-                      <Phone className="h-5 w-5 text-brand group-hover/btn:text-white mb-0.5" />
-                      <span className="text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Appel</span>
+                    <div className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
+                      <Phone className="h-4 w-4 md:h-5 md:w-5 text-brand group-hover/btn:text-white mb-0.5" />
+                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Appel</span>
                     </div>
                   </a>
                 )}
                 {dealership.website && (
                   <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn">
-                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
-                      <Globe className="h-5 w-5 text-brand group-hover/btn:text-white mb-0.5" />
-                      <span className="text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Web</span>
+                    <div className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
+                      <Globe className="h-4 w-4 md:h-5 md:w-5 text-brand group-hover/btn:text-white mb-0.5" />
+                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Web</span>
                     </div>
                   </a>
                 )}
@@ -219,10 +219,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="inline-flex items-center gap-3 bg-brand text-white px-4 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full"
+                  className="inline-flex items-center gap-3 bg-brand text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <MapPin className="h-4 w-4 shrink-0" />
+                  <MapPin className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
                   <div className="flex flex-col items-start leading-tight text-left">
                     {(() => {
                       const parts = dealership.address.split(',');
@@ -242,7 +242,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             </div>
           </div>
           
-          <div className="absolute inset-y-0 right-0 w-18 md:w-26 z-40 flex flex-col items-center justify-center gap-4 bg-muted/10 border-l border-border/30">
+          <div className="absolute inset-y-0 right-0 w-18 md:w-[92px] z-40 flex flex-col items-center justify-center gap-4 bg-muted/10 border-l border-border/30">
             <button 
               className={cn(
                 "h-14 w-14 md:h-[72px] md:w-[72px] rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
@@ -266,7 +266,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
           </div>
 
           {(showHours || showReviews) && (
-            <div className="absolute inset-y-0 left-0 right-18 md:right-26 z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
+            <div className="absolute inset-y-0 left-0 right-18 md:right-[92px] z-30 bg-background border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
               {showHours && (
                 <div className="space-y-1 w-full">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
