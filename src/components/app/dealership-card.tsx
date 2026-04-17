@@ -218,11 +218,24 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   href={navigationUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="inline-flex items-center gap-2 bg-brand text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full"
+                  className="inline-flex items-center gap-3 bg-brand text-white px-4 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <MapPin className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{dealership.address}</span>
+                  <MapPin className="h-4 w-4 shrink-0" />
+                  <div className="flex flex-col items-start leading-tight text-left">
+                    {(() => {
+                      const parts = dealership.address.split(',');
+                      if (parts.length > 1) {
+                        return (
+                          <>
+                            <span className="truncate w-full">{parts[0].trim()}</span>
+                            <span className="opacity-80 font-bold truncate w-full">{parts.slice(1).join(',').trim()}</span>
+                          </>
+                        );
+                      }
+                      return <span className="truncate">{dealership.address}</span>;
+                    })()}
+                  </div>
                 </a>
               </div>
             </div>
