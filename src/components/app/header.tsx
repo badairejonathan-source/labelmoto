@@ -421,48 +421,51 @@ const Header: React.FC<HeaderProps> = ({
             </div>
         </div>
 
-        {/* LIGNE 3 : Filtres */}
-        <nav className="absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 md:gap-6 z-[1200] w-full max-w-lg px-4">
+        {/* LIGNE 3 : Filtres (Mobile uniquement sur la carte) */}
+        <nav className={cn(
+            "md:hidden absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-3 z-[1200] w-full max-w-lg px-4",
+            !isMapPage && "hidden"
+        )}>
             <Button 
               variant="ghost" 
               onClick={() => handleTabClick(null)} 
               className={cn(
-                "h-16 w-16 md:h-20 md:w-20 rounded-full flex flex-col items-center justify-center gap-0.5 md:gap-1 shadow-2xl transition-all border-4",
+                "h-16 w-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-2xl transition-all border-4",
                 activeFilter === null 
                   ? 'bg-brand text-white border-white scale-110 z-10' 
                   : 'bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10'
               )}
             >
-              <Home className={cn("h-5 w-5 md:h-6 md:w-6", activeFilter === null ? "text-white" : "text-brand")} />
-              <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tout</span>
+              <Home className={cn("h-5 w-5", activeFilter === null ? "text-white" : "text-brand")} />
+              <span className="text-[8px] font-black uppercase tracking-widest">Tout</span>
             </Button>
             
             <Button 
               variant="ghost" 
               onClick={() => handleTabClick('shopping')} 
               className={cn(
-                "h-16 w-16 md:h-20 md:w-20 rounded-full flex flex-col items-center justify-center gap-0.5 md:gap-1 shadow-2xl transition-all border-4",
+                "h-16 w-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-2xl transition-all border-4",
                 activeFilter === 'shopping' 
                   ? 'bg-brand text-white border-white scale-110 z-10' 
                   : 'bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10'
               )}
             >
-              <Bike className={cn("h-5 w-5 md:h-6 md:w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
-              <span className="text-[7px] md:text-[9px] font-black uppercase tracking-tighter leading-none">Concession</span>
+              <Bike className={cn("h-5 w-5", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+              <span className="text-[7px] font-black uppercase tracking-tighter leading-none">Concession</span>
             </Button>
             
             <Button 
               variant="ghost" 
               onClick={() => handleTabClick('service')} 
               className={cn(
-                "h-16 w-16 md:h-20 md:w-20 rounded-full flex flex-col items-center justify-center gap-0.5 md:gap-1 shadow-2xl transition-all border-4",
+                "h-16 w-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-2xl transition-all border-4",
                 activeFilter === 'service' 
                   ? 'bg-brand text-white border-white scale-110 z-10' 
                   : 'bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10'
               )}
             >
-              <Wrench className={cn("h-5 w-5 md:h-6 md:w-6", activeFilter === 'service' ? "text-white" : "text-brand")} />
-              <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">Atelier</span>
+              <Wrench className={cn("h-5 w-5", activeFilter === 'service' ? "text-white" : "text-brand")} />
+              <span className="text-[8px] font-black uppercase tracking-widest">Atelier</span>
             </Button>
         </nav>
       </div>

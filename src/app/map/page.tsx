@@ -327,9 +327,38 @@ function MapPageComponent() {
 
       {!isMobile ? (
         <aside className={cn("absolute top-[180px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
-            <div className="flex justify-end p-4 border-b border-border/50">
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
-                <X className="h-6 w-6 text-muted-foreground" />
+            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 bg-muted/50 p-1 rounded-full border shadow-inner">
+                <button 
+                  onClick={() => setActiveFilter(null)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                    activeFilter === null ? "bg-brand text-white shadow-md" : "text-muted-foreground hover:text-brand"
+                  )}
+                >
+                  Tout
+                </button>
+                <button 
+                  onClick={() => setActiveFilter('shopping')}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                    activeFilter === 'shopping' ? "bg-brand text-white shadow-md" : "text-muted-foreground hover:text-brand"
+                  )}
+                >
+                  Concession
+                </button>
+                <button 
+                  onClick={() => setActiveFilter('service')}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                    activeFilter === 'service' ? "bg-brand text-white shadow-md" : "text-muted-foreground hover:text-brand"
+                  )}
+                >
+                  Atelier
+                </button>
+              </div>
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
+                <X className="h-5 w-5 text-muted-foreground" />
               </Button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
