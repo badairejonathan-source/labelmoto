@@ -7,7 +7,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X } from 'lucide-react';
+import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X, Home, Bike, Wrench } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -315,7 +315,7 @@ function MapPageComponent() {
           <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
             <Button 
               size="icon" 
-              className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
+              className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
               onClick={() => setIsLoadingLocating(true)} 
               aria-label="Me localiser"
             >
@@ -327,34 +327,43 @@ function MapPageComponent() {
 
       {!isMobile ? (
         <aside className={cn("absolute top-[180px] left-6 bottom-6 w-[450px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
-            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 bg-muted/50 p-1 rounded-full border shadow-inner">
+            <div className="px-6 py-5 border-b border-border/50 flex items-center justify-between">
+              <div className="flex items-center gap-4">
                 <button 
                   onClick={() => setActiveFilter(null)}
                   className={cn(
-                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
-                    activeFilter === null ? "bg-brand text-white shadow-md" : "text-muted-foreground hover:text-brand"
+                    "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    activeFilter === null 
+                      ? "bg-brand text-white border-white scale-110 z-10" 
+                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  Tout
+                  <Home className={cn("h-4 w-4", activeFilter === null ? "text-white" : "text-brand")} />
+                  <span className="text-[8px] font-black uppercase tracking-widest mt-0.5">Tout</span>
                 </button>
                 <button 
                   onClick={() => setActiveFilter('shopping')}
                   className={cn(
-                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
-                    activeFilter === 'shopping' ? "bg-brand text-white shadow-md" : "text-muted-foreground hover:text-brand"
+                    "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    activeFilter === 'shopping' 
+                      ? "bg-brand text-white border-white scale-110 z-10" 
+                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  Concession
+                  <Bike className={cn("h-4 w-4", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+                  <span className="text-[7px] font-black uppercase tracking-tighter leading-none mt-0.5">Concession</span>
                 </button>
                 <button 
                   onClick={() => setActiveFilter('service')}
                   className={cn(
-                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
-                    activeFilter === 'service' ? "bg-brand text-white shadow-md" : "text-muted-foreground hover:text-brand"
+                    "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4",
+                    activeFilter === 'service' 
+                      ? "bg-brand text-white border-white scale-110 z-10" 
+                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                   )}
                 >
-                  Atelier
+                  <Wrench className={cn("h-4 w-4", activeFilter === 'service' ? "text-white" : "text-brand")} />
+                  <span className="text-[8px] font-black uppercase tracking-widest mt-0.5">Atelier</span>
                 </button>
               </div>
               <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
