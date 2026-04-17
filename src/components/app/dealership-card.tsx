@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { deleteDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -195,23 +195,36 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 </div>
               </div>
               
-              <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-[9px] uppercase font-black mt-3">
+              {/* Boutons d'action dans des cercles */}
+              <div className="flex flex-wrap items-center gap-6 mt-4">
                 {dealership.phoneNumber && (
-                  <a href={`tel:${dealership.phoneNumber}`} className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Phone className="h-4 w-4 text-brand" /> Appel
+                  <a href={`tel:${dealership.phoneNumber}`} className="flex flex-col items-center gap-1.5 group/btn" onClick={(e) => e.stopPropagation()}>
+                    <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-sm">
+                      <Phone className="h-4 w-4 text-brand group-hover/btn:text-white" />
+                    </div>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/btn:text-brand transition-colors">Appel</span>
                   </a>
                 )}
                 {dealership.website && (
-                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="hover:text-brand flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Globe className="h-4 w-4 text-brand" /> Web
+                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 group/btn" onClick={(e) => e.stopPropagation()}>
+                    <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-sm">
+                      <Globe className="h-4 w-4 text-brand group-hover/btn:text-white" />
+                    </div>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/btn:text-brand transition-colors">Web</span>
                   </a>
                 )}
-                <button onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} className="hover:text-brand flex flex-col items-center gap-1">
-                  <MessageSquare className="h-4 w-4 text-brand" /> Avis
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} 
+                  className="flex flex-col items-center gap-1.5 group/btn"
+                >
+                  <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-sm">
+                    <MessageSquare className="h-4 w-4 text-brand group-hover/btn:text-white" />
+                  </div>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/btn:text-brand transition-colors">Avis</span>
                 </button>
               </div>
               
-              <div className="mt-3 border-t border-dashed pt-2">
+              <div className="mt-4 border-t border-dashed pt-2">
                 <a 
                   href={navigationUrl} 
                   target="_blank" 
