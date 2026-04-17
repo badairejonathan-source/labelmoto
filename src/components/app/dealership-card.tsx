@@ -211,15 +211,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     </div>
                   </a>
                 )}
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setShowReviews(true); setShowHours(false); }} 
-                  className="group/btn"
-                >
-                  <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
-                    <MessageSquare className="h-5 w-5 text-brand group-hover/btn:text-white mb-0.5" />
-                    <span className="text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Avis</span>
-                  </div>
-                </button>
               </div>
               
               <div className="mt-4 border-t border-dashed pt-2">
