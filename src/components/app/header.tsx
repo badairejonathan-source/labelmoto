@@ -86,21 +86,26 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-12 w-12 md:h-14 md:w-14 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-lg border-2 border-white bg-white hover:border-brand/20 transition-all"
+      className="relative h-16 w-16 md:h-20 md:w-20 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-13 w-13 md:h-16 md:w-16 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
-            <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
+            <AvatarFallback className="bg-brand text-brand-foreground text-sm font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
-            <Image src="/images/icon-moncompte.webp" alt="" width={48} height={48} className="h-full w-full object-contain" />
+          <div className="h-13 w-13 md:h-16 md:w-16 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+            <Image src="/images/icon-moncompte.webp" alt="" width={64} height={64} className="h-full w-full object-contain" />
           </div>
         )}
+        
+        {/* Pictogramme Menu par dessus */}
+        <div className="absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-1.5 border-2 border-white shadow-md z-20">
+          <Menu className="h-3.5 w-3.5 md:h-4.5 md:w-4.5" />
+        </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
     </Button>
