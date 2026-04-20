@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -376,8 +375,8 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-12 md:pb-10" : "pb-8 md:pb-10", className)}>
-      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-8">
+    <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-2", className)}>
+      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-4 md:gap-6">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-8">
           <div className="shrink-0">
             <Link 
@@ -411,8 +410,8 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-8 md:gap-8 w-full max-w-screen-xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-8 w-full">
+        <div className="flex flex-col items-center gap-4 md:gap-4 w-full max-w-screen-xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full">
                 <div className="flex-1 w-full">
                     {searchInput}
                 </div>
@@ -442,7 +441,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-4 md:gap-3",
+              "flex items-center justify-center gap-3 md:gap-2",
               isMapPage && "md:hidden"
             )}>
                 <Button 
