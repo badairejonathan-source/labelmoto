@@ -202,7 +202,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-6">
                 {dealership.phoneNumber && (
                   <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn">
-                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
+                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
                       <Phone className="h-4 w-4 md:h-5 md:w-5 text-brand group-hover/btn:text-white mb-0.5" />
                       <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Appel</span>
                     </div>
@@ -210,7 +210,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 )}
                 {dealership.website && (
                   <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn">
-                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
+                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
                       <Globe className="h-4 w-4 md:h-5 md:w-5 text-brand group-hover/btn:text-white mb-0.5" />
                       <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Web</span>
                     </div>
@@ -218,7 +218,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 )}
                 <button 
                   className={cn(
-                    "h-[68px] w-[68px] md:h-16 md:w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
+                    "h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
                     showHours ? "bg-brand border-white text-white scale-110" : "bg-brand/10 border-transparent text-brand hover:bg-brand/20"
                   )} 
                   onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}
@@ -228,7 +228,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 </button>
                 <button 
                   className={cn(
-                    "h-[68px] w-[68px] md:h-16 md:w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
+                    "h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2", 
                     showReviews ? "bg-blue-600 border-white text-white scale-110" : "bg-blue-500/10 border-transparent text-blue-500 hover:bg-blue-50"
                   )} 
                   onClick={(e) => { e.stopPropagation(); setShowReviews(!showReviews); setShowHours(false); }}
