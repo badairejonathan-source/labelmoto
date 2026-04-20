@@ -21,6 +21,7 @@ interface MapComponentProps {
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   onUserInteraction?: () => void;
   bottomPadding?: number;
+  leftPadding?: number;
   isLocating?: boolean;
   onLocateEnd?: () => void;
   onLocationFound?: (coords: [number, number]) => void;
@@ -54,7 +55,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
 const MapComponent = ({
   dealerships, center, zoom, hoveredDealershipId, selectedDealershipId,
   onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
-  onUserInteraction, bottomPadding = 0, isLocating = false, onLocateEnd = () => {},
+  onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
 }: MapComponentProps) => {
   
@@ -64,7 +65,6 @@ const MapComponent = ({
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
 
-  // 1. Initialisation de la Carte
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -72,7 +72,7 @@ const MapComponent = ({
       minZoom: 5,
       zoomSnap: 0.1,
       fadeAnimation: true,
-      zoomControl: false, // On désactive les contrôles par défaut pour les mettre à gauche via React
+      zoomControl: false,
     }).setView(center, zoom);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
@@ -107,12 +107,10 @@ const MapComponent = ({
     };
   }, []);
 
-  // 2. Gestion des Marqueurs (Fail-safe)
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
 
-    // SÉCURITÉ : Si aucun marqueur ne s'affiche, on vide et on remplit tout
     clusterGroup.clearLayers();
     markersRef.current.clear();
 
@@ -140,19 +138,23 @@ const MapComponent = ({
     clusterGroup.addLayers(newMarkers);
   }, [dealerships, hoveredDealershipId, selectedDealershipId, zoom]);
 
-  // 3. Mise à jour Position
   useEffect(() => {
     const map = mapRef.current;
     if (!map || isUpdatingFromProps.current) return;
 
     isUpdatingFromProps.current = true;
     map.setView(center, zoom, { animate: true });
-    if (bottomPadding > 0) map.panBy([0, bottomPadding / 3]);
+    
+    // Application des décalages pour le centrage visuel
+    const panX = leftPadding / 2;
+    const panY = bottomPadding / 3;
+    if (panX !== 0 || panY !== 0) {
+      map.panBy([-panX, panY]);
+    }
     
     setTimeout(() => { isUpdatingFromProps.current = false; }, 500);
-  }, [center, zoom, bottomPadding]);
+  }, [center, zoom, bottomPadding, leftPadding]);
 
-  // 4. Géolocalisation
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;

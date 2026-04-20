@@ -85,10 +85,10 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, -7.0]);
-  const [mapZoom, setMapZoom] = useState(4.5);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 2.35]);
+  const [mapZoom, setMapZoom] = useState(6);
   
-  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
+  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 2.35]);
   
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -115,11 +115,16 @@ function MapPageComponent() {
     if (drawerHeight === 'full') return height - 160;
     return drawerHeight === 'half' ? height / 2 : 70; 
   }, [isMobile, height, drawerHeight]);
+
+  const leftPadding = useMemo(() => {
+    if (isMobile) return 0;
+    return showDesktopPanel ? 480 : 0;
+  }, [isMobile, showDesktopPanel]);
   
   useEffect(() => { 
     setMounted(true); 
     if (isMobile && !latParam) {
-      setMapCenter([46.603354, 1.888334]);
+      setMapCenter([46.603354, 2.35]);
       setMapZoom(5.5);
     }
   }, [isMobile, latParam]);
@@ -307,6 +312,7 @@ function MapPageComponent() {
           onMapClick={handleUserMapInteraction} 
           onUserInteraction={handleUserMapInteraction} 
           bottomPadding={bottomPadding} 
+          leftPadding={leftPadding}
           isLocating={isLocating} 
           onLocateEnd={() => setIsLoadingLocating(false)} 
           onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); }} 
