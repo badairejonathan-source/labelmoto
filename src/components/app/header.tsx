@@ -442,7 +442,7 @@ const Header: React.FC<HeaderProps> = ({
             
             <nav className={cn(
               "flex items-center justify-center gap-3 md:gap-2 relative z-50",
-              isMapPage ? "md:hidden" : "-mb-8 md:-mb-10"
+              isMapPage ? "md:hidden" : "-mb-10 md:-mb-14"
             )}>
                 <Button 
                     variant="ghost" 
