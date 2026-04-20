@@ -342,18 +342,6 @@ function MapPageComponent() {
             <div className="relative px-6 py-8 border-b border-border/50 flex items-center justify-center">
               <div className="flex items-center justify-center gap-6 w-full">
                 <button 
-                  onClick={() => setActiveFilter(null)}
-                  className={cn(
-                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
-                    activeFilter === null 
-                      ? "bg-brand text-white border-white scale-110 z-10" 
-                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
-                  )}
-                >
-                  <Home className={cn("h-7 w-7 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                  <span className="text-[9px] font-black uppercase tracking-widest mt-1 transition-colors">Tout</span>
-                </button>
-                <button 
                   onClick={() => setActiveFilter('shopping')}
                   className={cn(
                     "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
@@ -364,6 +352,18 @@ function MapPageComponent() {
                 >
                   <Bike className={cn("h-7 w-7 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
                   <span className="text-[8px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
+                </button>
+                <button 
+                  onClick={() => setActiveFilter(null)}
+                  className={cn(
+                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
+                    activeFilter === null 
+                      ? "bg-brand text-white border-white scale-110 z-10" 
+                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
+                  )}
+                >
+                  <Home className={cn("h-7 w-7 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                  <span className="text-[9px] font-black uppercase tracking-widest mt-1 transition-colors">Tout</span>
                 </button>
                 <button 
                   onClick={() => setActiveFilter('service')}

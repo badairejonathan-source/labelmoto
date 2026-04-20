@@ -446,19 +446,6 @@ const Header: React.FC<HeaderProps> = ({
             )}>
                 <Button 
                     variant="ghost" 
-                    onClick={() => handleTabClick(null)} 
-                    className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group border-[6px]",
-                        activeFilter === null 
-                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
-                    )}
-                >
-                    <Home className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mt-1 md:mt-2 transition-colors">Tout</span>
-                </Button>
-                <Button 
-                    variant="ghost" 
                     onClick={() => handleTabClick('shopping')} 
                     className={cn(
                         "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group border-[6px]",
@@ -469,6 +456,19 @@ const Header: React.FC<HeaderProps> = ({
                 >
                     <Bike className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
                     <span className="text-[8px] md:text-[9px] font-black uppercase tracking-tighter leading-none mt-1 md:mt-2 transition-colors">Concession</span>
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => handleTabClick(null)} 
+                    className={cn(
+                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group border-[6px]",
+                        activeFilter === null 
+                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
+                    )}
+                >
+                    <Home className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mt-1 md:mt-2 transition-colors">Tout</span>
                 </Button>
                 <Button 
                     variant="ghost" 
