@@ -54,11 +54,14 @@ export const UserMenu = () => {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const isMapPage = pathname === '/map';
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
@@ -118,7 +121,7 @@ export const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 z-[3000] p-4 rounded-[2rem] border-2 shadow-2xl" align="end" forceMount>
-        <div className="md:hidden mb-6">
+        <div className={cn(!isMapPage && "md:hidden", "mb-6")}>
             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
             <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
                 <Link href="/entretien" className="flex flex-col items-center gap-3 group">
@@ -136,7 +139,7 @@ export const UserMenu = () => {
             </div>
         </div>
 
-        <DropdownMenuSeparator className="md:hidden mb-4 bg-muted/50" />
+        <DropdownMenuSeparator className={cn(!isMapPage && "md:hidden", "mb-4 bg-muted/50")} />
 
         <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black px-2 mb-2">Utilisateur</DropdownMenuLabel>
         {user ? (
@@ -149,7 +152,7 @@ export const UserMenu = () => {
             <DropdownMenuItem asChild className="cursor-pointer text-brand focus:text-brand font-bold py-3">
               <Link href="/account">
                 <UserIcon className="mr-3 h-5 w-5" />
-                <span className="text-sm uppercase font-black tracking-widest">Gérer mon compte</span>
+                <span className="text-sm uppercase font-black tracking-widest">Mon Profil / Compte</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-muted/50" />
