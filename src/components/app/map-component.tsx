@@ -142,17 +142,30 @@ const MapComponent = ({
     const map = mapRef.current;
     if (!map || isUpdatingFromProps.current) return;
 
+    // To prevent the "jumping" behavior when user is dragging, 
+    // we only setView if the target center is significantly different from current center
+    const currentMapCenter = map.getCenter();
+    const threshold = 0.0001;
+    if (Math.abs(currentMapCenter.lat - center[0]) < threshold && Math.abs(currentMapCenter.lng - center[1]) < threshold && Math.abs(map.getZoom() - zoom) < 0.1) {
+      return;
+    }
+
     isUpdatingFromProps.current = true;
     map.setView(center, zoom, { animate: true });
     
-    // Application des décalages pour le centrage visuel
+    // Application des décalages pour le centrage visuel uniquement lors d'un changement de centre/zoom programmatique
     const panX = leftPadding / 2;
     const panY = bottomPadding / 3;
     if (panX !== 0 || panY !== 0) {
-      map.panBy([-panX, panY]);
+      // Small delay to allow setView to complete before panning
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.panBy([-panX, panY], { animate: true });
+        }
+      }, 50);
     }
     
-    setTimeout(() => { isUpdatingFromProps.current = false; }, 500);
+    setTimeout(() => { isUpdatingFromProps.current = false; }, 600);
   }, [center, zoom, bottomPadding, leftPadding]);
 
   useEffect(() => {

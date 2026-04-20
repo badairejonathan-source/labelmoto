@@ -85,16 +85,17 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 2.35]);
+  // Initial center on France
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
   
-  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 2.35]);
+  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
   
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
-  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | null>(null);
+  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
   const { firestore } = useFirebase();
@@ -124,7 +125,7 @@ function MapPageComponent() {
   useEffect(() => { 
     setMounted(true); 
     if (isMobile && !latParam) {
-      setMapCenter([46.603354, 2.35]);
+      setMapCenter([46.603354, 1.888334]);
       setMapZoom(5.5);
     }
   }, [isMobile, latParam]);
@@ -133,15 +134,18 @@ function MapPageComponent() {
     if (latParam && lngParam) {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); setSortingAnchor(pos); setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
+        setSelectionSource('external');
     }
     if (selectedIdParam) {
       setSelectedDealershipId(selectedIdParam);
       setShowDesktopPanel(true);
+      setSelectionSource('external');
     }
     if (searchParam) { 
       setSearchTerm(searchParam); 
       setSubmittedSearchTerm(searchParam); 
       setShowDesktopPanel(true);
+      setSelectionSource('external');
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
@@ -168,10 +172,21 @@ function MapPageComponent() {
             const finalLower = lower.replace(/[\s-]/g, '');
             if (/^\d{5}$/.test(finalLower)) {
                 const coords = await getCityCoordinates(finalLower);
-                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); results = results.filter(d => d.address?.includes(finalLower)); }
+                if (coords) { 
+                  setMapCenter(coords); 
+                  setSortingAnchor(coords); 
+                  setMapZoom(13); 
+                  setSelectionSource('external');
+                  results = results.filter(d => d.address?.includes(finalLower)); 
+                }
             } else {
                 const cityCoords = await getCityCoordinatesByName(lower);
-                if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); }
+                if (cityCoords) { 
+                  setMapCenter(cityCoords); 
+                  setSortingAnchor(cityCoords); 
+                  setMapZoom(12); 
+                  setSelectionSource('external');
+                }
                 else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
             }
             setShowDesktopPanel(true);
@@ -182,8 +197,13 @@ function MapPageComponent() {
   }, [submittedSearchTerm, allDealerships, activeFilter]);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => { 
-    setMapBoundsStr(bounds.toBBoxString()); setMapCenter(newCenter); setMapZoom(newZoom); 
-    if (selectionSource !== 'card') { setSortingAnchor(newCenter); } 
+    setMapBoundsStr(bounds.toBBoxString()); 
+    // We only update state if it's NOT coming from a programmatic change to avoid jumping
+    if (selectionSource === null) {
+      setMapCenter(newCenter);
+      setSortingAnchor(newCenter);
+      setMapZoom(newZoom);
+    }
   }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
@@ -315,7 +335,7 @@ function MapPageComponent() {
           leftPadding={leftPadding}
           isLocating={isLocating} 
           onLocateEnd={() => setIsLoadingLocating(false)} 
-          onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); }} 
+          onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); setSelectionSource('external'); }} 
         />
       </div>
 
@@ -325,18 +345,18 @@ function MapPageComponent() {
             <Header 
                 searchTerm={searchTerm} 
                 onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                onSearch={() => { setSubmittedSearchTerm(searchTerm); }} 
+                onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
                 activeFilter={activeFilter} 
                 onFilterChange={setActiveFilter} 
             />
           ) : (
-            <div className="flex justify-end p-6 pr-24">
+            <div className="flex justify-center p-6">
                 <Header 
                     variant="floating"
                     hideUserMenu
                     searchTerm={searchTerm} 
                     onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                    onSearch={() => { setSubmittedSearchTerm(searchTerm); }} 
+                    onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
                     activeFilter={activeFilter} 
                     onFilterChange={setActiveFilter} 
                 />
@@ -360,14 +380,14 @@ function MapPageComponent() {
         <aside className={cn("absolute top-6 left-6 bottom-6 w-[480px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
             <div className="relative px-6 py-10 border-b border-border/50 bg-white/50 backdrop-blur-sm">
                 <div className="flex items-center justify-between gap-4 mb-10">
-                    <div className="w-32 shrink-0"><Link href="/"><LabelMotoLogo /></Link></div>
+                    <div className="w-28 shrink-0"><Link href="/"><LabelMotoLogo /></Link></div>
                     
                     <div className="bg-white px-5 py-4 rounded-[1.8rem] shadow-sm border border-gray-100 text-center flex-1">
-                        <p className="text-[10px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
-                        <p className="text-[18px] font-black italic text-brand mt-1.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
+                        <p className="text-[9px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
+                        <p className="text-[16px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p>
                     </div>
                     
-                    <div className="shrink-0">
+                    <div className="shrink-0 scale-90">
                         <UserMenu />
                     </div>
                 </div>

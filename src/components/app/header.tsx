@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -365,14 +364,14 @@ const Header: React.FC<HeaderProps> = ({
             "absolute top-1/2 -right-2 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg transition-transform", 
             isMapPage 
               ? "h-[67px] w-[67px] md:h-[77px] w-[77px]" 
-              : "h-[67px] w-[67px] md:h-[115px] w-[115px]"
+              : "h-[80px] w-[80px] md:h-[96px] w-[96px]"
         )} 
         onClick={executeSearch}
       >
         <Search className={cn(
             isMapPage 
               ? "h-9 w-9 md:h-11 md:w-11" 
-              : "h-9 w-9 md:h-14 md:w-14"
+              : "h-9 w-9 md:h-12 md:w-12"
         )} />
       </Button>
       
