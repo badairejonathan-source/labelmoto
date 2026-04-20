@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -219,7 +218,7 @@ function RegisterProContent() {
     <div className="min-h-screen bg-muted/20">
         <header className="bg-background border-b p-4 sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
-                 <div className="w-60"><Link href="/"><LabelMotoLogo /></Link></div>
+                 <div className="w-80"><LabelMotoLogo /></div>
                  <Button asChild variant="outline"><Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Link></Button>
             </div>
         </header>

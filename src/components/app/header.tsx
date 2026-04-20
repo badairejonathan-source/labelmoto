@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
+import useWindowSize from '@/hooks/use-window-size';
 
 const brandsList = Object.keys(brandLogos);
 
@@ -55,6 +56,7 @@ export const UserMenu = () => {
   const auth = useAuth();
   const firestore = useFirestore();
   const pathname = usePathname();
+  const { width } = useWindowSize();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -62,6 +64,8 @@ export const UserMenu = () => {
   }, []);
 
   const isMapPage = pathname === '/map';
+  const isMobile = mounted && width !== undefined && width < 1024;
+  const showGuides = isMobile || isMapPage;
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
@@ -121,26 +125,28 @@ export const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 z-[3000] p-4 rounded-[2rem] border-2 shadow-2xl" align="end" forceMount>
-        {/* On affiche les guides dans le menu profil */}
-        <div className="mb-6">
-            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
-            <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
-                <Link href="/entretien" className="flex flex-col items-center gap-3 group">
-                    <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
-                        <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="object-contain group-hover:brightness-0 group-hover:invert" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Entretien</span>
-                </Link>
-                <Link href="/info" className="flex flex-col items-center gap-3 group">
-                    <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
-                        <Image src="/images/icon-conseils.webp" alt="" width={42} height={42} className="object-contain group-hover:brightness-0 group-hover:invert" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Conseils</span>
-                </Link>
+        {showGuides && (
+          <>
+            <div className="mb-6">
+                <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
+                <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
+                    <Link href="/entretien" className="flex flex-col items-center gap-3 group">
+                        <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
+                            <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="object-contain group-hover:brightness-0 group-hover:invert" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Entretien</span>
+                    </Link>
+                    <Link href="/info" className="flex flex-col items-center gap-3 group">
+                        <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
+                            <Image src="/images/icon-conseils.webp" alt="" width={42} height={42} className="object-contain group-hover:brightness-0 group-hover:invert" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Conseils</span>
+                    </Link>
+                </div>
             </div>
-        </div>
-
-        <DropdownMenuSeparator className="mb-4 bg-muted/50" />
+            <DropdownMenuSeparator className="mb-4 bg-muted/50" />
+          </>
+        )}
 
         <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black px-2 mb-2">Utilisateur</DropdownMenuLabel>
         {user ? (
@@ -360,7 +366,7 @@ const Header: React.FC<HeaderProps> = ({
         onKeyDown={handleKeyDown} 
         autoComplete="off" 
       />
-      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-32 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5 md:h-6 md:w-6" /></button>)}
+      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-32 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button"><X className="h-5 w-5 md:h-6 md:w-6" /></button>)}
       <Button 
         type="submit" 
         size="icon" 
@@ -424,7 +430,7 @@ const Header: React.FC<HeaderProps> = ({
                       : "py-2"
                 )}
             >
-                <div className="w-40 xs:w-72 md:w-[400px]">
+                <div className="w-52 xs:w-80 md:w-[520px]">
                     <LabelMotoLogo />
                 </div>
             </Link>
