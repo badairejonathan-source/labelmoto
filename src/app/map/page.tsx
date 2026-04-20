@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -395,42 +394,42 @@ function MapPageComponent() {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-6 w-full">
+                <div className="flex items-center justify-center gap-8 w-full">
                     <button 
                         onClick={() => setActiveFilter('shopping')}
                         className={cn(
-                            "h-24 w-24 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-28 w-28 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === 'shopping' 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                         )}
                     >
-                        <Bike className={cn("h-8 w-8 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                        <span className="text-[11px] font-black uppercase tracking-tighter leading-none mt-1.5 transition-colors">Concession</span>
+                        <Bike className={cn("h-10 w-10 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[13px] font-black uppercase tracking-tighter leading-none mt-1.5 transition-colors">Concession</span>
                     </button>
                     <button 
                         onClick={() => setActiveFilter(null)}
                         className={cn(
-                            "h-24 w-24 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-28 w-28 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === null 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                         )}
                     >
-                        <Home className={cn("h-8 w-8 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                        <span className="text-[12px] font-black uppercase tracking-widest mt-1.5 transition-colors">Tout</span>
+                        <Home className={cn("h-10 w-10 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[14px] font-black uppercase tracking-widest mt-1.5 transition-colors">Tout</span>
                     </button>
                     <button 
                         onClick={() => setActiveFilter('service')}
                         className={cn(
-                            "h-24 w-24 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-28 w-28 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === 'service' 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                         )}
                     >
-                        <Wrench className={cn("h-8 w-8 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                        <span className="text-[12px] font-black uppercase tracking-widest mt-1.5 transition-colors">Atelier</span>
+                        <Wrench className={cn("h-10 w-10 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[14px] font-black uppercase tracking-widest mt-1.5 transition-colors">Atelier</span>
                     </button>
                 </div>
                 
