@@ -353,16 +353,15 @@ function MapPageComponent() {
       {!isMobile ? (
         <aside className={cn("absolute top-6 left-6 bottom-6 w-[480px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
             <div className="relative px-6 py-10 border-b border-border/50 bg-white/50 backdrop-blur-sm">
-                <div className="flex justify-center mb-8">
-                    <div className="w-56"><Link href="/"><LabelMotoLogo /></Link></div>
-                </div>
-
-                <div className="flex items-center justify-center relative mb-10">
-                    <div className="bg-white px-6 py-4 rounded-[2rem] shadow-sm border border-gray-100 text-center">
-                        <p className="text-[11px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
-                        <p className="text-[16px] font-black italic text-brand mt-1.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
+                <div className="flex items-center justify-between gap-4 mb-10">
+                    <div className="w-32 shrink-0"><Link href="/"><LabelMotoLogo /></Link></div>
+                    
+                    <div className="bg-white px-5 py-4 rounded-[1.8rem] shadow-sm border border-gray-100 text-center flex-1">
+                        <p className="text-[10px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
+                        <p className="text-[18px] font-black italic text-brand mt-1.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
                     </div>
-                    <div className="absolute right-0">
+                    
+                    <div className="shrink-0">
                         <UserMenu />
                     </div>
                 </div>
