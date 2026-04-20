@@ -397,8 +397,8 @@ const Header: React.FC<HeaderProps> = ({
 
   if (variant === 'floating') {
     return (
-        <div className={cn("flex items-center gap-4 pointer-events-auto", className)}>
-            <div className="w-[450px] md:w-[650px]">
+        <div className={cn("flex items-center gap-3 md:gap-4 pointer-events-auto", className)}>
+            <div className="w-[280px] xs:w-[320px] sm:w-[400px] md:w-[480px] lg:w-[650px] max-w-[calc(100vw-60px)] transition-all duration-300">
                 {searchInput}
             </div>
             {!hideUserMenu && <UserMenu />}

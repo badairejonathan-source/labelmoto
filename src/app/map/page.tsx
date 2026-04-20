@@ -196,7 +196,7 @@ function MapPageComponent() {
     processSearch();
   }, [submittedSearchTerm, allDealerships, activeFilter]);
 
-  const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: LatLngBounds) => { 
+  const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
     setMapBoundsStr(bounds.toBBoxString()); 
     // We only update state if it's NOT coming from a programmatic change to avoid jumping
     if (selectionSource === null) {
@@ -350,7 +350,7 @@ function MapPageComponent() {
                 onFilterChange={setActiveFilter} 
             />
           ) : (
-            <div className="flex justify-center p-6">
+            <div className="flex justify-end p-6 md:p-10 md:pr-20">
                 <Header 
                     variant="floating"
                     hideUserMenu
