@@ -375,7 +375,7 @@ const Header: React.FC<HeaderProps> = ({
   if (!mounted) return null;
 
   return (
-    <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-2", className)}>
+    <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
       <div className="container mx-auto max-w-screen-2xl flex flex-col gap-4 md:gap-6">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-8">
           <div className="shrink-0">
@@ -441,16 +441,16 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-3 md:gap-2",
-              isMapPage && "md:hidden"
+              "flex items-center justify-center gap-3 md:gap-2 relative z-50",
+              isMapPage ? "md:hidden" : "-mb-8 md:-mb-10"
             )}>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick(null)} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
+                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all",
                         activeFilter === null 
-                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          ? "bg-brand text-white border-[6px] border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
                     )}
                 >
@@ -461,9 +461,9 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick('shopping')} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
+                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all",
                         activeFilter === 'shopping' 
-                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          ? "bg-brand text-white border-[6px] border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
                     )}
                 >
@@ -474,9 +474,9 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick('service')} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all border-4",
+                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all",
                         activeFilter === 'service' 
-                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          ? "bg-brand text-white border-[6px] border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand/5 hover:border-brand/10"
                     )}
                 >

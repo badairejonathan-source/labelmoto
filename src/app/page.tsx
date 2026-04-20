@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -80,7 +79,7 @@ export default function LandingPage() {
                         />
                     </div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12 min-h-[250px] md:min-h-[400px]">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-white p-6 md:p-12 pt-16 md:pt-20 min-h-[250px] md:min-h-[400px]">
                         <div className="md:w-3/5 text-center md:text-left relative z-20">
                             <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-2 md:mb-4 uppercase leading-[0.95]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
                                 Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics
