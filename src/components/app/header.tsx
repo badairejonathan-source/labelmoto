@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -34,6 +35,7 @@ interface HeaderProps {
     activeFilter?: 'shopping' | 'service' | null;
     onFilterChange?: (filter: 'shopping' | 'service' | null) => void;
     placeholderText?: string;
+    variant?: 'default' | 'floating';
 }
 
 interface Suggestion {
@@ -76,7 +78,7 @@ const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-12 w-12 md:h-20 md:w-20 flex items-center justify-center">
+      <div className="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-brand" />
       </div>
     );
@@ -86,24 +88,24 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-14 w-14 md:h-20 md:w-20 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
+      className="relative h-14 w-14 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-12 w-12 md:h-16 md:w-16 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-12 w-12 md:h-14 md:w-14 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs md:text-sm font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-12 w-12 md:h-16 md:w-16 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
           </div>
         )}
         
         <div className="absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-1 border-2 border-white shadow-md z-20">
-          <Menu className="h-3 w-3 md:h-5 md:w-5" />
+          <Menu className="h-3 w-3 md:h-4 md:w-4" />
         </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
@@ -175,7 +177,8 @@ const Header: React.FC<HeaderProps> = ({
     className, 
     activeFilter = null, 
     onFilterChange, 
-    placeholderText = "Recherche par departement, ville, marque, nom..." 
+    placeholderText = "Recherche par departement, ville, marque, nom...",
+    variant = 'default'
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -352,7 +355,7 @@ const Header: React.FC<HeaderProps> = ({
         autoComplete="off" 
       />
       {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-14 md:right-24 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5 md:h-6 md:w-6" /></button>)}
-      <Button type="submit" size="icon" className={cn("absolute top-1/2 -right-2 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg", isMapPage ? "h-18 w-18 md:h-16 md:w-16" : "h-14 w-14 md:h-24 md:w-24")} onClick={executeSearch}><Search className="h-10 w-10 md:h-10 md:w-10" /></Button>
+      <Button type="submit" size="icon" className={cn("absolute top-1/2 -right-2 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg", isMapPage ? "h-14 w-14 md:h-16 md:w-16" : "h-14 w-14 md:h-24 md:w-24")} onClick={executeSearch}><Search className="h-8 w-8 md:h-10 md:w-10" /></Button>
       
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-4 bg-background border rounded-[2.5rem] shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-4 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -373,6 +376,17 @@ const Header: React.FC<HeaderProps> = ({
   );
 
   if (!mounted) return null;
+
+  if (variant === 'floating') {
+    return (
+        <div className={cn("flex items-center gap-4 pointer-events-auto", className)}>
+            <div className="w-[450px] md:w-[650px]">
+                {searchInput}
+            </div>
+            <UserMenu />
+        </div>
+    );
+  }
 
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>

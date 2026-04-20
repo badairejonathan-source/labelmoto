@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -15,6 +16,8 @@ import { collection, onSnapshot } from "firebase/firestore";
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
+import LabelMotoLogo from '@/components/app/logo';
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -83,11 +86,9 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // Coordonnées de base pour Desktop : centre décalé très à l'ouest pour avoir la France à droite
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, -7.0]);
   const [mapZoom, setMapZoom] = useState(4.5);
   
-  // L'ancre de tri reste fixe sur le centre géographique réel de la France
   const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
   
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
@@ -108,7 +109,7 @@ function MapPageComponent() {
   });
 
   const { width, height } = useWindowSize();
-  const isMobile = (width || 1024) < 768;
+  const isMobile = (width || 1024) < 1024;
 
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
@@ -118,7 +119,6 @@ function MapPageComponent() {
   
   useEffect(() => { 
     setMounted(true); 
-    // Sur mobile, on recentre sur la France (sans l'offset Desktop)
     if (isMobile && !latParam) {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(5.5);
@@ -314,15 +314,28 @@ function MapPageComponent() {
         />
       </div>
 
-      <div className="absolute top-0 left-0 right-0 pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 pointer-events-none z-[1200]">
         <div className="pointer-events-auto relative">
-          <Header 
-            searchTerm={searchTerm} 
-            onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-            onSearch={() => { setSubmittedSearchTerm(searchTerm); }} 
-            activeFilter={activeFilter} 
-            onFilterChange={setActiveFilter} 
-          />
+          {isMobile ? (
+            <Header 
+                searchTerm={searchTerm} 
+                onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+                onSearch={() => { setSubmittedSearchTerm(searchTerm); }} 
+                activeFilter={activeFilter} 
+                onFilterChange={setActiveFilter} 
+            />
+          ) : (
+            <div className="flex justify-end p-6 pr-24">
+                <Header 
+                    variant="floating"
+                    searchTerm={searchTerm} 
+                    onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+                    onSearch={() => { setSubmittedSearchTerm(searchTerm); }} 
+                    activeFilter={activeFilter} 
+                    onFilterChange={setActiveFilter} 
+                />
+            </div>
+          )}
           
           <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
             <Button 
@@ -338,49 +351,58 @@ function MapPageComponent() {
       </div>
 
       {!isMobile ? (
-        <aside className={cn("absolute top-[110px] left-6 bottom-6 w-[550px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
-            <div className="relative px-6 py-8 border-b border-border/50 flex items-center justify-center">
-              <div className="flex items-center justify-center gap-6 w-full">
-                <button 
-                  onClick={() => setActiveFilter('shopping')}
-                  className={cn(
-                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
-                    activeFilter === 'shopping' 
-                      ? "bg-brand text-white border-white scale-110 z-10" 
-                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
-                  )}
-                >
-                  <Bike className={cn("h-7 w-7 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
-                </button>
-                <button 
-                  onClick={() => setActiveFilter(null)}
-                  className={cn(
-                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
-                    activeFilter === null 
-                      ? "bg-brand text-white border-white scale-110 z-10" 
-                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
-                  )}
-                >
-                  <Home className={cn("h-7 w-7 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                  <span className="text-[9px] font-black uppercase tracking-widest mt-1 transition-colors">Tout</span>
-                </button>
-                <button 
-                  onClick={() => setActiveFilter('service')}
-                  className={cn(
-                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
-                    activeFilter === 'service' 
-                      ? "bg-brand text-white border-white scale-110 z-10" 
-                      : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
-                  )}
-                >
-                  <Wrench className={cn("h-7 w-7 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                  <span className="text-[10px] font-black uppercase tracking-widest mt-1 transition-colors">Atelier</span>
-                </button>
-              </div>
-              <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full h-10 w-10 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
-                <X className="h-6 w-6 text-muted-foreground" />
-              </Button>
+        <aside className={cn("absolute top-6 left-6 bottom-6 w-[480px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
+            <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm">
+                <div className="flex items-center justify-between gap-4 mb-6">
+                    <Link href="/" className="w-32"><LabelMotoLogo /></Link>
+                    <div className="bg-white px-3 py-2 rounded-xl shadow-sm border border-gray-100 text-center">
+                        <p className="text-[7px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
+                        <p className="text-[9px] font-black italic text-brand mt-0.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-4 w-full">
+                    <button 
+                        onClick={() => setActiveFilter('shopping')}
+                        className={cn(
+                            "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            activeFilter === 'shopping' 
+                            ? "bg-brand text-white border-white scale-110 z-10" 
+                            : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
+                        )}
+                    >
+                        <Bike className={cn("h-5 w-5 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[7px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
+                    </button>
+                    <button 
+                        onClick={() => setActiveFilter(null)}
+                        className={cn(
+                            "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            activeFilter === null 
+                            ? "bg-brand text-white border-white scale-110 z-10" 
+                            : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
+                        )}
+                    >
+                        <Home className={cn("h-5 w-5 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[8px] font-black uppercase tracking-widest mt-1 transition-colors">Tout</span>
+                    </button>
+                    <button 
+                        onClick={() => setActiveFilter('service')}
+                        className={cn(
+                            "h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            activeFilter === 'service' 
+                            ? "bg-brand text-white border-white scale-110 z-10" 
+                            : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
+                        )}
+                    >
+                        <Wrench className={cn("h-5 w-5 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[8px] font-black uppercase tracking-widest mt-1 transition-colors">Atelier</span>
+                    </button>
+                </div>
+                
+                <Button variant="ghost" size="icon" className="absolute top-2 right-2 rounded-full h-8 w-8 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
+                    <X className="h-5 w-5 text-muted-foreground" />
+                </Button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {listContent}
