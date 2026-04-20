@@ -121,7 +121,8 @@ export const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 z-[3000] p-4 rounded-[2rem] border-2 shadow-2xl" align="end" forceMount>
-        <div className={cn(!isMapPage && "md:hidden", "mb-6")}>
+        {/* On affiche toujours les guides dans le menu profil sur la page carte ou en mobile */}
+        <div className="mb-6">
             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
             <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
                 <Link href="/entretien" className="flex flex-col items-center gap-3 group">
@@ -139,7 +140,7 @@ export const UserMenu = () => {
             </div>
         </div>
 
-        <DropdownMenuSeparator className={cn(!isMapPage && "md:hidden", "mb-4 bg-muted/50")} />
+        <DropdownMenuSeparator className="mb-4 bg-muted/50" />
 
         <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black px-2 mb-2">Utilisateur</DropdownMenuLabel>
         {user ? (
