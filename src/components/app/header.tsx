@@ -77,7 +77,7 @@ const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center">
+      <div className="h-12 w-12 md:h-20 md:w-20 flex items-center justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-brand" />
       </div>
     );
@@ -87,24 +87,24 @@ const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-14 w-14 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
+      className="relative h-14 w-14 md:h-20 md:w-20 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
     >
       <div className="relative">
         {user ? (
-          <Avatar className="h-12 w-12 md:h-14 md:w-14 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-12 w-12 md:h-16 md:w-16 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs md:text-sm font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-12 w-12 md:h-16 md:w-16 rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
           </div>
         )}
         
         <div className="absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-1 border-2 border-white shadow-md z-20">
-          <Menu className="h-3 w-3 md:h-4 md:w-4" />
+          <Menu className="h-3 w-3 md:h-5 md:w-5" />
         </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
@@ -389,18 +389,18 @@ const Header: React.FC<HeaderProps> = ({
                       : "py-2"
                 )}
             >
-                <div className="w-32 xs:w-56 md:w-64">
+                <div className="w-32 xs:w-56 md:w-[310px]">
                     <LabelMotoLogo />
                 </div>
             </Link>
           </div>
           
           <div className="flex-1 flex justify-center px-2">
-              <div className="bg-white px-4 py-3 md:px-10 md:py-6 rounded-full md:rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
-                  <p className="text-[8px] md:text-xl font-black uppercase tracking-tight text-foreground leading-none">
+              <div className="bg-white px-4 py-3 md:px-12 md:py-7 rounded-full md:rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
+                  <p className="text-[8px] md:text-2xl font-black uppercase tracking-tight text-foreground leading-none">
                       {isMapPage ? "Trouver une concession ?" : "Trouver une concession, un atelier ?"}
                   </p>
-                  <p className="text-[10px] md:text-3xl font-black italic text-brand mt-0.5 md:mt-2 leading-none tracking-tighter">
+                  <p className="text-[10px] md:text-4xl font-black italic text-brand mt-0.5 md:mt-2 leading-none tracking-tighter">
                       FINI LA GALÈRE.
                   </p>
               </div>
@@ -442,7 +442,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-4 md:gap-6",
+              "flex items-center justify-center gap-4 md:gap-3",
               isMapPage && "md:hidden"
             )}>
                 <Button 
