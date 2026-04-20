@@ -275,12 +275,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {sectionId === '1-ton-gabarit' && (
           <div className="mt-8 border-t border-dashed pt-8">
             <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
+              <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
                 <div className="bg-brand/10 p-4 rounded-full">
                   <Bike className="h-8 w-8 text-brand" />
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Quelle moto choisir selon sa taille ?</h4>
+                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">Quelle moto choisir selon sa taille ?</h4>
                   <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet par gabarit</p>
                 </div>
                 <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
@@ -296,12 +296,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {sectionId === '3-ton-budget-reel' && (
           <div className="mt-8 border-t border-dashed pt-8">
             <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
+              <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
                 <div className="bg-brand/10 p-4 rounded-full">
                   <Wallet className="h-8 w-8 text-brand" />
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Calculer mon budget réel</h4>
+                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">Calculer mon budget réel</h4>
                   <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet du coût par mois</p>
                 </div>
                 <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
@@ -317,12 +317,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {sectionId === 'quelle-assurance-choisir-pour-une-moto-a2' && (
           <div className="mt-8 border-t border-dashed pt-8">
             <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
+              <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
                 <div className="bg-brand/10 p-4 rounded-full">
                   <ShieldCheck className="h-8 w-8 text-brand" />
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Bien choisir son assurance</h4>
+                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">Bien choisir son assurance</h4>
                   <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet des formules 2026</p>
                 </div>
                 <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
@@ -341,16 +341,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   if (isLoading) return (
     <div className="min-h-screen bg-background">
         {showHeader && <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />}
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="max-w-6xl mx-auto space-y-8">
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="max-w-6xl mx-auto space-y-6">
                 <Skeleton className="h-4 w-40" />
-                <Skeleton className="h-16 w-3/4" />
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    <div className="lg:col-span-8 space-y-8">
+                <Skeleton className="h-12 w-3/4" />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                    <div className="lg:col-span-8 space-y-6">
                         <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
-                        <div className="space-y-4"><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-3/4" /></div>
+                        <div className="space-y-3"><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-3/4" /></div>
                     </div>
-                    <div className="lg:col-span-4 space-y-8"><Skeleton className="h-[300px] w-full rounded-[2.5rem]" /><Skeleton className="h-[200px] w-full rounded-[2rem]" /></div>
+                    <div className="lg:col-span-4 space-y-6"><Skeleton className="h-[250px] w-full rounded-[2.5rem]" /><Skeleton className="h-[180px] w-full rounded-[2rem]" /></div>
                 </div>
             </div>
         </main>
@@ -363,70 +363,70 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     <div className="min-h-screen relative bg-background">
       {showHeader && <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />}
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-12 pt-12">
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-8">
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
           </nav>
           
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-10 text-foreground">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-[0.95] mb-6 text-foreground">
             {article.display_title || article.title}
           </h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <article className="lg:col-span-8">
-              <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl border-4 border-white bg-muted">
+              <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted">
                   <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
               </div>
 
-              {children && (<div className="mb-12">{children}</div>)}
+              {children && (<div className="mb-8">{children}</div>)}
 
               {article.intro && Array.isArray(article.intro) && (
-                <div className="my-12 space-y-6">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-xl leading-relaxed text-foreground font-black">{p}</p>))}</div>
+                <div className="my-8 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-lg leading-relaxed text-foreground font-black">{p}</p>))}</div>
               )}
               
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
-                <div className="my-12 p-10 bg-brand/5 rounded-[2.5rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={200} height={64} /></div>
-                  <div className="flex items-center gap-3 mb-8"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.3em] m-0 text-muted-foreground">Au sommaire de ce guide :</h2></div>
-                  <nav><ul className="space-y-5">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-lg font-black text-foreground hover:text-brand transition-all"><div className="h-7 w-7 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-4 w-4" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span></a></li>); })}</ul></nav>
+                <div className="my-8 p-8 bg-brand/5 rounded-[2rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={150} height={48} /></div>
+                  <div className="flex items-center gap-3 mb-6"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.3em] m-0 text-muted-foreground">Au sommaire :</h2></div>
+                  <nav><ul className="space-y-4">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-base font-black text-foreground hover:text-brand transition-all"><div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-3.5 w-3.5" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span></a></li>); })}</ul></nav>
                 </div>
               )}
 
-              <div className="space-y-4">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
+              <div className="space-y-3">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
               
               {article.conclusion && (
-                  <div className="mt-20 pt-12 border-t border-brand/20">
-                      <div className="flex items-center gap-3 mb-8"><Info className="h-8 w-8 text-brand" /><h3 className="text-3xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                      <div className="space-y-6">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-xl text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-xl text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
-                      <div className="flex justify-end items-center mt-16"><p className="text-xl font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={140} height={140} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-12" /></div>
+                  <div className="mt-16 pt-8 border-t border-brand/20">
+                      <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
+                      <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
+                      <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={110} height={110} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-10" /></div>
                   </div>
               )}
             </article>
 
             <aside className="lg:col-span-4 relative">
-              <div className="lg:sticky lg:top-28 space-y-8">
-                <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2.5rem]">
-                  <CardHeader className="bg-brand text-white p-6"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-base"><Map className="h-6 w-6" /> Trouver un pro</CardTitle></CardHeader>
-                  <CardContent className="p-5 text-center space-y-4">
-                    <div className="relative aspect-video rounded-2xl overflow-hidden border-4 border-muted shadow-lg group cursor-pointer" onClick={() => router.push('/map')}>
+              <div className="lg:sticky lg:top-24 space-y-6">
+                <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2rem]">
+                  <CardHeader className="bg-brand text-white p-5"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-sm"><Map className="h-5 w-5" /> Trouver un pro</CardTitle></CardHeader>
+                  <CardContent className="p-4 text-center space-y-3">
+                    <div className="relative aspect-video rounded-xl overflow-hidden border-4 border-muted shadow-lg group cursor-pointer" onClick={() => router.push('/map')}>
                       <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-10 w-10 text-white" /></div>
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-8 w-8 text-white" /></div>
                     </div>
-                    <p className="text-sm font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
-                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[10px] py-5 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
+                    <p className="text-xs font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
+                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[9px] py-4 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
                       <Link href="/map">🔘 Voir la carte interactive</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
-                <Card className={cn("border-2 border-dashed p-5 rounded-[2rem] shadow-sm text-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
-                  <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3", sidebarRecommendation.iconBg)}>{sidebarRecommendation.icon}</div>
-                  <h4 className={cn("text-base font-black uppercase tracking-tight mb-1", sidebarRecommendation.titleColor)}>{sidebarRecommendation.title}</h4>
-                  <p className={cn("text-xs font-bold mb-4 leading-snug opacity-70", sidebarRecommendation.titleColor)}>{sidebarRecommendation.description}</p>
-                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[9px] rounded-full py-4 h-auto", sidebarRecommendation.btnClass)}><Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">Lire le dossier <ChevronRight className="h-3 w-3" /></Link></Button>
+                <Card className={cn("border-2 border-dashed p-4 rounded-[1.5rem] shadow-sm text-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
+                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2", sidebarRecommendation.iconBg)}>{sidebarRecommendation.icon}</div>
+                  <h4 className={cn("text-sm font-black uppercase tracking-tight mb-1", sidebarRecommendation.titleColor)}>{sidebarRecommendation.title}</h4>
+                  <p className={cn("text-[10px] font-bold mb-3 leading-snug opacity-70", sidebarRecommendation.titleColor)}>{sidebarRecommendation.description}</p>
+                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[8px] rounded-full py-3 h-auto", sidebarRecommendation.btnClass)}><Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">Lire le dossier <ChevronRight className="h-3 w-3" /></Link></Button>
                 </Card>
               </div>
             </aside>
