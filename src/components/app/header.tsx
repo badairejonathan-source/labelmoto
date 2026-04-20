@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -346,8 +347,9 @@ const Header: React.FC<HeaderProps> = ({
         type="search" 
         placeholder={placeholderText} 
         className={cn(
-            "pr-20 md:pr-28 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-10 relative z-10 font-black transition-all",
-            isMapPage ? "h-14 md:h-16 text-xs md:text-base" : "h-16 md:h-20 text-xs md:text-lg"
+            "pr-24 md:pr-32 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-10 relative z-10 font-black transition-all",
+            isMapPage ? "h-14 md:h-16 text-xs md:text-base" : "h-16 md:h-20 text-xs md:text-lg",
+            !isMapPage && "md:pr-[135px]"
         )}
         value={searchTerm} 
         onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
@@ -355,8 +357,24 @@ const Header: React.FC<HeaderProps> = ({
         onKeyDown={handleKeyDown} 
         autoComplete="off" 
       />
-      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-14 md:right-24 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5 md:h-6 md:w-6" /></button>)}
-      <Button type="submit" size="icon" className={cn("absolute top-1/2 -right-2 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg", isMapPage ? "h-14 w-14 md:h-16 md:w-16" : "h-14 w-14 md:h-24 md:w-24")} onClick={executeSearch}><Search className="h-8 w-8 md:h-10 md:w-10" /></Button>
+      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-32 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand z-20 transition-colors" type="button"><X className="h-5 w-5 md:h-6 md:w-6" /></button>)}
+      <Button 
+        type="submit" 
+        size="icon" 
+        className={cn(
+            "absolute top-1/2 -right-2 md:right-2 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg transition-transform", 
+            isMapPage 
+              ? "h-[67px] w-[67px] md:h-[77px] w-[77px]" 
+              : "h-[67px] w-[67px] md:h-[115px] w-[115px]"
+        )} 
+        onClick={executeSearch}
+      >
+        <Search className={cn(
+            isMapPage 
+              ? "h-9 w-9 md:h-11 md:w-11" 
+              : "h-9 w-9 md:h-14 md:w-14"
+        )} />
+      </Button>
       
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-4 bg-background border rounded-[2.5rem] shadow-2xl z-[1600] max-h-[65vh] overflow-y-auto py-4 animate-in fade-in slide-in-from-top-2 duration-200">
