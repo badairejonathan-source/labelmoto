@@ -344,7 +344,7 @@ function MapPageComponent() {
                 <button 
                   onClick={() => setActiveFilter(null)}
                   className={cn(
-                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4 group",
+                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
                     activeFilter === null 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
@@ -356,7 +356,7 @@ function MapPageComponent() {
                 <button 
                   onClick={() => setActiveFilter('shopping')}
                   className={cn(
-                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4 group",
+                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
                     activeFilter === 'shopping' 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
@@ -368,7 +368,7 @@ function MapPageComponent() {
                 <button 
                   onClick={() => setActiveFilter('service')}
                   className={cn(
-                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-4 group",
+                    "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[6px] group",
                     activeFilter === 'service' 
                       ? "bg-brand text-white border-white scale-110 z-10" 
                       : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"

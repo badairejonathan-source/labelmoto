@@ -448,10 +448,10 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick(null)} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group",
+                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group border-[6px]",
                         activeFilter === null 
-                          ? "bg-brand text-white border-[6px] border-white scale-110 z-10 shadow-brand/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white"
+                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
                     <Home className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
@@ -461,10 +461,10 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick('shopping')} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group",
+                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group border-[6px]",
                         activeFilter === 'shopping' 
-                          ? "bg-brand text-white border-[6px] border-white scale-110 z-10 shadow-brand/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white"
+                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
                     <Bike className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
@@ -474,10 +474,10 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick('service')} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group",
+                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all group border-[6px]",
                         activeFilter === 'service' 
-                          ? "bg-brand text-white border-[6px] border-white scale-110 z-10 shadow-brand/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white"
+                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
                     <Wrench className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
