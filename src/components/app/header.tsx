@@ -408,7 +408,7 @@ const Header: React.FC<HeaderProps> = ({
   if (variant === 'floating') {
     return (
         <div className={cn("flex items-center gap-3 md:gap-4 pointer-events-auto", className)}>
-            <div className="w-[280px] xs:w-[320px] sm:w-[400px] md:w-[440px] lg:w-[580px] max-w-[calc(100vw-60px)] transition-all duration-300">
+            <div className="w-[280px] xs:w-[320px] sm:w-[400px] md:w-[320px] lg:w-[400px] max-w-[calc(100vw-60px)] transition-all duration-300">
                 {searchInput}
             </div>
             {!hideUserMenu && <UserMenu />}
@@ -452,8 +452,8 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex flex-col items-center gap-4 md:gap-3 w-full max-w-screen-xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-5 w-full">
-                <div className="flex-1 w-full">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-5 w-full justify-center">
+                <div className="w-full max-w-2xl">
                     {searchInput}
                 </div>
                 {!isMapPage && (
@@ -489,40 +489,40 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick('shopping')} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-24 w-24 md:h-28 md:w-28 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'shopping' 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Bike className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[8px] md:text-[10px] font-black uppercase tracking-tighter leading-none mt-1 md:mt-1.5 transition-colors">Concession</span>
+                    <Bike className={cn("h-7 w-7 md:h-9 md:w-9 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[9px] md:text-[11px] font-black uppercase tracking-tighter leading-none mt-1 md:mt-1.5 transition-colors">Concession</span>
                 </Button>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick(null)} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-24 w-24 md:h-28 md:w-28 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === null 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Home className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Tout</span>
+                    <Home className={cn("h-7 w-7 md:h-9 md:w-9 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Tout</span>
                 </Button>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick('service')} 
                     className={cn(
-                        "h-20 w-20 md:h-24 md:w-24 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-24 w-24 md:h-28 md:w-28 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'service' 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Wrench className={cn("h-6 w-6 md:h-8 md:w-8 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Atelier</span>
+                    <Wrench className={cn("h-7 w-7 md:h-9 md:w-9 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Atelier</span>
                 </Button>
             </nav>
         </div>
