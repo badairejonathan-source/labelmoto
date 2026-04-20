@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -36,6 +35,7 @@ interface HeaderProps {
     onFilterChange?: (filter: 'shopping' | 'service' | null) => void;
     placeholderText?: string;
     variant?: 'default' | 'floating';
+    hideUserMenu?: boolean;
 }
 
 interface Suggestion {
@@ -50,7 +50,7 @@ interface Suggestion {
     score?: number;
 }
 
-const UserMenu = () => {
+export const UserMenu = () => {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -178,7 +178,8 @@ const Header: React.FC<HeaderProps> = ({
     activeFilter = null, 
     onFilterChange, 
     placeholderText = "Recherche par departement, ville, marque, nom...",
-    variant = 'default'
+    variant = 'default',
+    hideUserMenu = false
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -383,7 +384,7 @@ const Header: React.FC<HeaderProps> = ({
             <div className="w-[450px] md:w-[650px]">
                 {searchInput}
             </div>
-            <UserMenu />
+            {!hideUserMenu && <UserMenu />}
         </div>
     );
   }
