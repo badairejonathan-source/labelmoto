@@ -457,7 +457,7 @@ const Header: React.FC<HeaderProps> = ({
                     {searchInput}
                 </div>
                 {!isMapPage && (
-                    <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-3xl p-2 gap-4 items-center bg-white/40 backdrop-blur-md shadow-inner">
+                    <div className="hidden md:flex md:ml-36 relative border-2 border-dashed border-gray-200 rounded-3xl p-2 gap-4 items-center bg-white/40 backdrop-blur-md shadow-inner">
                         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-1">
                             <Button asChild variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
