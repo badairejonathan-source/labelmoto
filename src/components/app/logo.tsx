@@ -8,8 +8,8 @@ const LabelMotoLogo = ({ className }: { className?: string }) => {
       <Image 
         src="/images/logo-moto.webp" 
         alt="Label Moto Logo" 
-        width={288} 
-        height={92}
+        width={400} 
+        height={128}
         priority 
         className="h-auto w-full object-contain"
       />

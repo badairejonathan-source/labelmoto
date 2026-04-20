@@ -121,7 +121,7 @@ export const UserMenu = () => {
         {trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 z-[3000] p-4 rounded-[2rem] border-2 shadow-2xl" align="end" forceMount>
-        {/* On affiche toujours les guides dans le menu profil sur la page carte ou en mobile */}
+        {/* On affiche les guides dans le menu profil */}
         <div className="mb-6">
             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
             <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
@@ -424,7 +424,7 @@ const Header: React.FC<HeaderProps> = ({
                       : "py-2"
                 )}
             >
-                <div className="w-32 xs:w-56 md:w-[310px]">
+                <div className="w-40 xs:w-72 md:w-[400px]">
                     <LabelMotoLogo />
                 </div>
             </Link>
