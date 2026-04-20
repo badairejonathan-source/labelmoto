@@ -120,16 +120,16 @@ const UserMenu = () => {
             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
             <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
                 <Link href="/entretien" className="flex flex-col items-center gap-3 group">
-                    <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:border-brand/20 transition-all transform group-active:scale-95">
-                        <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="object-contain" />
+                    <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
+                        <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="object-contain group-hover:brightness-0 group-hover:invert" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Entretien</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Entretien</span>
                 </Link>
                 <Link href="/info" className="flex flex-col items-center gap-3 group">
-                    <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:border-brand/20 transition-all transform group-active:scale-95">
-                        <Image src="/images/icon-conseils.webp" alt="" width={42} height={42} className="object-contain" />
+                    <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
+                        <Image src="/images/icon-conseils.webp" alt="" width={42} height={42} className="object-contain group-hover:brightness-0 group-hover:invert" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Conseils</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Conseils</span>
                 </Link>
             </div>
         </div>
@@ -419,18 +419,18 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-3xl p-5 gap-10 items-center bg-white/40 backdrop-blur-md shadow-inner">
                         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-3 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-2">
-                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-2xl border-2 border-white hover:border-brand/20 transition-all hover:scale-110 active:scale-95">
+                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-2xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/entretien" className="flex items-center justify-center">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain" />
+                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
                         <div className="flex flex-col items-center gap-2">
-                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-2xl border-2 border-white hover:border-brand/20 transition-all hover:scale-110 active:scale-95">
+                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-2xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain" />
+                                    <Image src="/images/icon-conseils.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>

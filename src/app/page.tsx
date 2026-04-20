@@ -164,9 +164,9 @@ export default function LandingPage() {
                                     <p className="text-xl md:text-3xl font-black uppercase tracking-tighter text-foreground mb-6">Explorez tous nos guides et conseils pratiques</p>
                                 </div>
                                 <div className="flex flex-col items-center gap-3">
-                                    <Button asChild variant="ghost" size="icon" className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-brand/5 transition-all border-4 md:border-8 border-white hover:border-brand/10 group">
+                                    <Button asChild variant="ghost" size="icon" className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-brand transition-all border-4 md:border-8 border-white hover:border-white group">
                                         <Link href="/info" className="flex items-center justify-center">
-                                            <Image src="/images/icon-conseils.webp" alt="Tous les articles" width={56} height={56} className="h-10 w-10 md:h-14 md:w-14 object-contain transition-transform group-hover:rotate-12" />
+                                            <Image src="/images/icon-conseils.webp" alt="Tous les articles" width={56} height={56} className="h-10 w-10 md:h-14 md:w-14 object-contain transition-transform group-hover:rotate-12 group-hover:brightness-0 group-hover:invert" />
                                             <span className="sr-only">Voir tous les articles</span>
                                         </Link>
                                     </Button>
