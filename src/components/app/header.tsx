@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -429,7 +430,7 @@ const Header: React.FC<HeaderProps> = ({
                       : "py-2"
                 )}
             >
-                <div className="w-52 xs:w-80 md:w-[520px]">
+                <div className="w-52 xs:w-80 md:w-[416px]">
                     <LabelMotoLogo />
                 </div>
             </div>

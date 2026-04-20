@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, Suspense, useEffect } from 'react';
@@ -172,7 +173,7 @@ function LoginContent() {
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
-            <div className="w-56">
+            <div className="w-72 md:w-56">
                 <LabelMotoLogo />
             </div>
         </div>
