@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -85,8 +86,8 @@ export const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-10 w-10 md:h-12 md:w-12 flex items-center justify-center">
-        <Loader2 className="h-5 w-5 animate-spin text-brand" />
+      <div className="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-brand" />
       </div>
     );
   }
@@ -95,24 +96,24 @@ export const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-10 w-10 md:h-10 md:w-10 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
+      className="relative h-10 w-10 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
     >
-      <div className="relative">
+      <div className="relative h-full w-full flex items-center justify-center">
         {user ? (
-          <Avatar className="h-8 w-8 md:h-8 md:w-8 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-8 w-8 md:h-12 md:w-12 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-8 w-8 md:h-8 md:w-8 rounded-full flex items-center justify-center p-1" aria-hidden="true">
-            <Image src="/images/icon-moncompte.webp" alt="" width={60} height={60} className="h-full w-full object-contain" />
+          <div className="h-8 w-8 md:h-12 md:w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+            <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
           </div>
         )}
         
-        <div className="absolute -bottom-1 -right-1 bg-brand text-white rounded-full p-0.5 border-2 border-white shadow-md z-20">
-          <Menu className="h-2 w-2 md:h-2.5 md:w-2.5" />
+        <div className="absolute -bottom-0.5 -right-0.5 md:bottom-1 md:right-1 bg-brand text-white rounded-full p-0.5 md:p-1 border-2 border-white shadow-md z-20">
+          <Menu className="h-2 w-2 md:h-3 md:w-3" />
         </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
@@ -357,7 +358,7 @@ const Header: React.FC<HeaderProps> = ({
         placeholder={placeholderText} 
         className={cn(
             "pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 relative z-10 font-black transition-all",
-            isMapPage ? "h-11 md:h-12 text-xs" : "h-12 md:h-14 text-xs md:text-sm",
+            isMapPage ? "h-11 md:h-12 text-xs" : "h-12 md:h-16 text-xs md:text-base",
             !isMapPage && "md:pr-[90px]"
         )}
         value={searchTerm} 
@@ -374,14 +375,14 @@ const Header: React.FC<HeaderProps> = ({
             "absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg transition-transform", 
             isMapPage 
               ? "h-[48px] w-[48px] md:h-[54px] w-[54px]" 
-              : "h-[54px] w-[54px] md:h-[66px] w-[62px]"
+              : "h-[54px] w-[54px] md:h-[76px] w-[70px]"
         )} 
         onClick={executeSearch}
       >
         <Search className={cn(
             isMapPage 
               ? "h-6 w-6 md:h-7 md:w-7" 
-              : "h-7 w-7 md:h-8 md:w-8"
+              : "h-7 w-7 md:h-9 md:w-9"
         )} />
       </Button>
       
@@ -418,7 +419,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
-      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-4 md:gap-4">
+      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-8 md:gap-10">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-6">
           <div className="shrink-0">
             <div 
@@ -435,55 +436,57 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
           
-          <div className="flex-1 flex justify-center px-2">
-              <div className="bg-white px-3 py-2 md:px-8 md:py-4 rounded-full md:rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
-                  <p className="text-[7px] md:text-base font-black uppercase tracking-tight text-foreground leading-none">
-                      {isMapPage ? "Trouver une concession ?" : "Trouver une concession, un atelier ?"}
-                  </p>
-                  <p className="text-[9px] md:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
-                      FINI LA GALÈRE.
-                  </p>
-              </div>
-          </div>
+          {!isMapPage && (
+            <div className="hidden lg:flex flex-1 justify-center px-4">
+                <div className="bg-white px-10 py-6 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
+                    <p className="text-sm md:text-2xl font-black uppercase tracking-tight text-foreground leading-none">
+                        TROUVER UNE CONCESSION, UN ATELIER ?
+                    </p>
+                    <p className="text-base md:text-3xl font-black italic text-brand mt-2 leading-none tracking-tighter">
+                        FINI LA GALÈRE.
+                    </p>
+                </div>
+            </div>
+          )}
 
           <div className="flex items-center justify-end shrink-0">
             <UserMenu />
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 md:gap-3 w-full max-w-screen-xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-5 w-full justify-center">
+        <div className="flex flex-col items-center gap-4 md:gap-6 w-full max-w-screen-xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 w-full justify-center">
                 <div className="w-full max-w-2xl">
                     {searchInput}
                 </div>
                 {!isMapPage && (
-                    <div className="hidden md:flex md:ml-36 relative border-2 border-dashed border-gray-200 rounded-3xl p-2 gap-4 items-center bg-white/40 backdrop-blur-md shadow-inner">
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
-                        <div className="flex flex-col items-center gap-1">
-                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                    <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner">
+                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-background px-3 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
+                        <div className="flex flex-col items-center gap-2">
+                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/entretien" className="flex items-center justify-center">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={32} height={32} className="h-6 w-6 object-contain group-hover:brightness-0 group-hover:invert" />
+                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
-                            <span className="text-[7px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
-                        <div className="flex flex-col items-center gap-1">
-                            <Button asChild variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                        <div className="flex flex-col items-center gap-2">
+                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={32} height={32} className="h-6 w-6 object-contain group-hover:brightness-0 group-hover:invert" />
+                                    <Image src="/images/icon-conseils.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>
-                            <span className="text-[7px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
                         </div>
                     </div>
                 )}
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-4 md:gap-6 relative z-50",
-              isMapPage ? "md:hidden" : "-mb-14 md:-mb-20"
+              "flex items-center justify-center gap-6 md:gap-10 relative z-50",
+              isMapPage ? "md:hidden" : "-mb-16 md:-mb-24"
             )}>
                 <Button 
                     variant="ghost" 
