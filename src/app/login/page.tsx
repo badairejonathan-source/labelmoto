@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, Suspense, useEffect } from 'react';
@@ -173,9 +172,9 @@ function LoginContent() {
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
-            <Link href="/" className="w-56">
+            <div className="w-56">
                 <LabelMotoLogo />
-            </Link>
+            </div>
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted rounded-full">

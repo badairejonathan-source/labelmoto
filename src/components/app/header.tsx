@@ -421,8 +421,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className="container mx-auto max-w-screen-2xl flex flex-col gap-4 md:gap-6">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-8">
           <div className="shrink-0">
-            <Link 
-                href="/" 
+            <div 
                 className={cn(
                     "block transition-all",
                     isMapPage 
@@ -433,7 +432,7 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="w-52 xs:w-80 md:w-[520px]">
                     <LabelMotoLogo />
                 </div>
-            </Link>
+            </div>
           </div>
           
           <div className="flex-1 flex justify-center px-2">

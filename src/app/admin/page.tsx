@@ -171,7 +171,7 @@ export default function AdminPage() {
       <header className="bg-background border-b shadow-sm sticky top-0 z-50">
         <div className="container mx-auto p-4 flex items-center justify-between">
           <div className="w-40 md:w-60">
-            <Link href="/"><LabelMotoLogo /></Link>
+            <LabelMotoLogo />
           </div>
           <div className="flex gap-2">
              <Button asChild variant="outline" size="sm">
