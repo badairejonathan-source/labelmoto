@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
-import LabelMotoLogo from './logo'; // Assure-toi que le fichier s'appelle bien logo.tsx
+import LabelMotoLogo from './logo';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -20,10 +20,8 @@ const Footer = () => {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
-  // On ne masque le footer QUE sur la page de la carte pour laisser la place à l'interface interactive
   if (pathname === '/map') return null;
 
-  // Gestion de l'hydratation pour les liens dépendants de l'auth
   const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
   const isAdmin = mounted && user && user.uid === ADMIN_UID;
 
