@@ -365,7 +365,7 @@ function MapPageComponent() {
             </div>
           )}
           
-          <div className="absolute top-[80px] md:top-auto md:bottom-10 right-6 z-[1250] flex flex-col items-center gap-2 pointer-events-auto">
+          <div className="absolute top-[200px] md:top-auto md:bottom-10 right-6 z-[1250] flex flex-col items-center gap-2 pointer-events-auto">
             <Button 
               size="icon" 
               className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
