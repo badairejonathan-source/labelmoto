@@ -61,28 +61,28 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border/50 pt-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                    <div className="w-68 md:w-56 shrink-0">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                    <div className="w-48 sm:w-56 shrink-0">
                         <LabelMotoLogo />
                     </div>
                     {currentYear && (
-                    <p className="text-xs text-muted-foreground">&copy; {currentYear} Label Moto. Tous droits réservés.</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium whitespace-nowrap">&copy; {currentYear} Label Moto. Tous droits réservés.</p>
                     )}
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-6">
                     <Facebook className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
                     <Twitter className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
-                    <Link href="https://www.instagram.com/labelmoto.fr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-accent"><Instagram className="h-5 w-5" /></Link>
+                    <Link href="https://www.instagram.com/labelmoto.fr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-accent transition-colors"><Instagram className="h-5 w-5" /></Link>
                     <Youtube className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
                 </div>
             </div>
-             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-6 text-xs">
-                <Link href="/terms" className="text-muted-foreground hover:text-accent">Conditions d'utilisation</Link>
-                <Link href="/privacy" className="text-muted-foreground hover:text-accent">Confidentialité et utilisation des cookies</Link>
-                <Link href="/legal" className="text-muted-foreground hover:text-accent">Mentions Légales</Link>
-                <Link href="/accessibility" className="text-muted-foreground hover:text-accent">Politique d'accessibilité</Link>
-                <Link href="/contact" className="text-muted-foreground hover:text-accent">Contactez-nous</Link>
+             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-8 text-[10px] sm:text-xs font-medium border-t border-dashed border-border/50 pt-6">
+                <Link href="/terms" className="text-muted-foreground hover:text-accent transition-colors">Conditions d'utilisation</Link>
+                <Link href="/privacy" className="text-muted-foreground hover:text-accent transition-colors">Confidentialité & Cookies</Link>
+                <Link href="/legal" className="text-muted-foreground hover:text-accent transition-colors">Mentions Légales</Link>
+                <Link href="/accessibility" className="text-muted-foreground hover:text-accent transition-colors">Accessibilité</Link>
+                <Link href="/contact" className="text-muted-foreground hover:text-accent transition-colors">Contact</Link>
             </div>
         </div>
       </div>
