@@ -420,7 +420,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
-      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-8 md:gap-10">
+      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-6">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-6">
           <div className="shrink-0">
             <div 
@@ -439,11 +439,11 @@ const Header: React.FC<HeaderProps> = ({
           
           {!isMapPage && (
             <div className="hidden lg:flex flex-1 justify-center px-4">
-                <div className="bg-white px-10 py-6 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
-                    <p className="text-sm md:text-2xl font-black uppercase tracking-tight text-foreground leading-none">
+                <div className="bg-white px-8 py-4 rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
+                    <p className="text-sm md:text-xl font-black uppercase tracking-tight text-foreground leading-none">
                         TROUVER UNE CONCESSION, UN ATELIER ?
                     </p>
-                    <p className="text-base md:text-3xl font-black italic text-brand mt-2 leading-none tracking-tighter">
+                    <p className="text-base md:text-2xl font-black italic text-brand mt-1 leading-none tracking-tighter">
                         FINI LA GALÈRE.
                     </p>
                 </div>
@@ -455,78 +455,78 @@ const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 md:gap-6 w-full max-w-screen-xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 w-full justify-center">
+        <div className="flex flex-col items-center gap-4 md:gap-4 w-full max-w-screen-xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full justify-center">
                 <div className="w-full max-w-2xl">
                     {searchInput}
                 </div>
                 {!isMapPage && (
-                    <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
-                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-background px-3 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
-                        <div className="flex flex-col items-center gap-2">
-                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                    <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2rem] p-3 gap-4 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
+                        <div className="flex flex-col items-center gap-1.5">
+                            <Button asChild variant="ghost" size="icon" className="h-14 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/entretien" className="flex items-center justify-center">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain group-hover:brightness-0 group-hover:invert" />
+                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
-                        <div className="flex flex-col items-center gap-2">
-                            <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                        <div className="flex flex-col items-center gap-1.5">
+                            <Button asChild variant="ghost" size="icon" className="h-14 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain group-hover:brightness-0 group-hover:invert" />
+                                    <Image src="/images/icon-conseils.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
                         </div>
                     </div>
                 )}
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-10 md:gap-10 relative z-50",
-              isMapPage ? "md:hidden" : "-mb-16 md:-mb-20"
+              "flex items-center justify-center gap-6 md:gap-6 relative z-50",
+              isMapPage ? "md:hidden" : "-mb-16 md:-mb-14"
             )}>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick('shopping')} 
                     className={cn(
-                        "h-28 w-28 md:h-[90px] md:w-[90px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-28 w-28 md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'shopping' 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Bike className={cn("h-8 w-8 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1.5 transition-colors">Concession</span>
+                    <Bike className={cn("h-7 w-7 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[9px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
                 </Button>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick(null)} 
                     className={cn(
-                        "h-28 w-28 md:h-[90px] md:w-[90px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-28 w-28 md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === null 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Home className={cn("h-8 w-8 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] mt-1.5 transition-colors">Tout</span>
+                    <Home className={cn("h-7 w-7 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Tout</span>
                 </Button>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick('service')} 
                     className={cn(
-                        "h-28 w-28 md:h-[90px] md:w-[90px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-28 w-28 md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'service' 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Wrench className={cn("h-8 w-8 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] mt-1.5 transition-colors">Atelier</span>
+                    <Wrench className={cn("h-7 w-7 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Atelier</span>
                 </Button>
             </nav>
         </div>

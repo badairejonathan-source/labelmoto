@@ -376,9 +376,9 @@ function MapPageComponent() {
 
       {!isMobile ? (
         <aside className={cn("absolute top-6 left-6 bottom-6 w-[480px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
-            <div className="relative px-6 py-10 border-b border-border/50 bg-white/50 backdrop-blur-sm">
-                <div className="flex items-center justify-between gap-4 mb-10">
-                    <div className="w-56 shrink-0 z-[150]">
+            <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm">
+                <div className="flex items-center justify-between gap-4 mb-6">
+                    <div className="w-56 shrink-0 z-[150] relative">
                       <LabelMotoLogo />
                     </div>
                     
@@ -387,47 +387,47 @@ function MapPageComponent() {
                         <p className="text-[16px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p>
                     </div>
                     
-                    <div className="shrink-0 z-[150]">
+                    <div className="shrink-0 z-[150] relative">
                         <UserMenu />
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-10 w-full">
+                <div className="flex items-center justify-center gap-6 w-full">
                     <button 
                         onClick={() => setActiveFilter('shopping')}
                         className={cn(
-                            "h-[90px] w-[90px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-[80px] w-[80px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === 'shopping' 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                         )}
                     >
-                        <Bike className={cn("h-8 w-8 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                        <span className="text-[11px] font-black uppercase tracking-tighter leading-none mt-1.5 transition-colors">Concession</span>
+                        <Bike className={cn("h-7 w-7 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
                     </button>
                     <button 
                         onClick={() => setActiveFilter(null)}
                         className={cn(
-                            "h-[90px] w-[90px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-[80px] w-[80px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === null 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                         )}
                     >
-                        <Home className={cn("h-8 w-8 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                        <span className="text-[12px] font-black uppercase tracking-widest mt-1.5 transition-colors">Tout</span>
+                        <Home className={cn("h-7 w-7 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[11px] font-black uppercase tracking-widest mt-1 transition-colors">Tout</span>
                     </button>
                     <button 
                         onClick={() => setActiveFilter('service')}
                         className={cn(
-                            "h-[90px] w-[90px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-[80px] w-[80px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === 'service' 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
                         )}
                     >
-                        <Wrench className={cn("h-8 w-8 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                        <span className="text-[12px] font-black uppercase tracking-widest mt-1.5 transition-colors">Atelier</span>
+                        <Wrench className={cn("h-7 w-7 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
+                        <span className="text-[11px] font-black uppercase tracking-widest mt-1 transition-colors">Atelier</span>
                     </button>
                 </div>
                 
