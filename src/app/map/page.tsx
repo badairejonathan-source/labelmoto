@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -384,7 +383,7 @@ function MapPageComponent() {
             "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)] absolute top-6 left-6 w-[480px] rounded-[2.5rem]",
             showDesktopPanel 
               ? "bottom-6" 
-              : "h-auto ring-4 ring-brand/10"
+              : "h-auto"
         )}>
             <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10">
                 <div className="flex items-center justify-between gap-4 mb-6 relative z-20">
@@ -480,7 +479,45 @@ function MapPageComponent() {
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
           </div>
           <div className="px-3 h-full flex flex-col overflow-hidden">
-            <div className="flex items-center justify-end border-b pb-2">
+            <div className="flex items-center justify-between border-b pb-2">
+              <div className="flex items-center gap-3 py-1">
+                <button 
+                    onClick={() => setActiveFilter('shopping')}
+                    className={cn(
+                        "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        activeFilter === 'shopping' 
+                          ? "bg-brand text-white border-white scale-105" 
+                          : "bg-white text-muted-foreground border-transparent"
+                    )}
+                >
+                    <Bike className="h-4 w-4" />
+                    <span className="text-[7px] font-black uppercase mt-0.5">Concession</span>
+                </button>
+                <button 
+                    onClick={() => setActiveFilter(null)}
+                    className={cn(
+                        "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        activeFilter === null 
+                          ? "bg-brand text-white border-white scale-105" 
+                          : "bg-white text-muted-foreground border-transparent"
+                    )}
+                >
+                    <Home className="h-4 w-4" />
+                    <span className="text-[7px] font-black uppercase mt-0.5">Tout</span>
+                </button>
+                <button 
+                    onClick={() => setActiveFilter('service')}
+                    className={cn(
+                        "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        activeFilter === 'service' 
+                          ? "bg-brand text-white border-white scale-105" 
+                          : "bg-white text-muted-foreground border-transparent"
+                    )}
+                >
+                    <Wrench className="h-4 w-4" />
+                    <span className="text-[7px] font-black uppercase mt-0.5">Atelier</span>
+                </button>
+              </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
