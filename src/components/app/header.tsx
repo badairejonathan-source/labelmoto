@@ -97,9 +97,9 @@ export const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-10 w-10 md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
+      className="relative h-10 w-10 md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
     >
-      <div className="relative h-full w-full flex items-center justify-center">
+      <div className="relative h-full w-full flex items-center justify-center pointer-events-none">
         {user ? (
           <Avatar className="h-8 w-8 md:h-[54px] md:w-[54px] border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
@@ -422,23 +422,19 @@ const Header: React.FC<HeaderProps> = ({
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
       <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-4">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-6">
-          <div className="shrink-0">
-            <div 
+          <div className="shrink-0 relative z-[150]">
+            <LabelMotoLogo 
                 className={cn(
-                    "block transition-all",
+                    "transition-all",
                     isMapPage 
-                      ? "bg-white/95 backdrop-blur-sm px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white" 
-                      : "py-1"
+                      ? "bg-white/95 backdrop-blur-sm px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white w-40 xs:w-56 md:w-[320px]" 
+                      : "w-40 xs:w-56 md:w-[320px] py-1"
                 )}
-            >
-                <div className="w-40 xs:w-56 md:w-[320px]">
-                    <LabelMotoLogo />
-                </div>
-            </div>
+            />
           </div>
           
           {!isMapPage && (
-            <div className="hidden lg:flex flex-1 justify-center px-4">
+            <div className="hidden lg:flex flex-1 justify-center px-4 relative z-10">
                 <div className="bg-white px-6 py-3 rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
                     <p className="text-sm md:text-lg font-black uppercase tracking-tight text-foreground leading-none">
                         TROUVER UNE CONCESSION, UN ATELIER ?
@@ -450,12 +446,12 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
-          <div className="flex items-center justify-end shrink-0">
+          <div className="flex items-center justify-end shrink-0 relative z-[150]">
             <UserMenu />
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 md:gap-4 w-full max-w-screen-xl mx-auto">
+        <div className="flex flex-col items-center gap-4 md:gap-4 w-full max-w-screen-xl mx-auto relative z-20">
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full justify-center">
                 <div className="w-full max-w-2xl">
                     {searchInput}
@@ -464,18 +460,18 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
                         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-11 w-11 md:h-[70px] md:w-[70px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
-                                <Link href="/entretien" className="flex items-center justify-center">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="h-9 w-9 md:h-11 md:w-11 object-contain group-hover:brightness-0 group-hover:invert" />
+                            <Button asChild variant="ghost" size="icon" className="h-[70px] w-[70px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                                <Link href="/entretien" className="flex items-center justify-center h-full w-full">
+                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
                         <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-11 w-11 md:h-[70px] md:w-[70px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
-                                <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={44} height={44} className="h-9 w-9 md:h-11 md:w-11 object-contain group-hover:brightness-0 group-hover:invert" />
+                            <Button asChild variant="ghost" size="icon" className="h-[70px] w-[70px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                                <Link href="/info" className="flex items-center justify-center h-full w-full">
+                                    <Image src="/images/icon-conseils.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>

@@ -382,7 +382,7 @@ function MapPageComponent() {
                       <LabelMotoLogo />
                     </div>
                     
-                    <div className="bg-white px-5 py-4 rounded-[1.8rem] shadow-sm border border-gray-100 text-center flex-1">
+                    <div className="bg-white px-5 py-4 rounded-[1.8rem] shadow-sm border border-gray-100 text-center flex-1 relative z-10">
                         <p className="text-[9px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
                         <p className="text-[16px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p>
                     </div>
@@ -392,7 +392,7 @@ function MapPageComponent() {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-6 w-full">
+                <div className="flex items-center justify-center gap-6 w-full relative z-20">
                     <button 
                         onClick={() => setActiveFilter('shopping')}
                         className={cn(
@@ -431,7 +431,7 @@ function MapPageComponent() {
                     </button>
                 </div>
                 
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2 rounded-full h-8 w-8 hover:bg-muted" onClick={() => setShowDesktopPanel(false)}>
+                <Button variant="ghost" size="icon" className="absolute top-2 right-2 rounded-full h-8 w-8 hover:bg-muted z-[200]" onClick={() => setShowDesktopPanel(false)}>
                     <X className="h-5 w-5 text-muted-foreground" />
                 </Button>
             </div>
