@@ -91,8 +91,8 @@ export default function LandingPage() {
                          <div className="w-full md:w-2/5 flex justify-center md:justify-end relative z-10">
                              <div className="relative transform translate-y-12 md:translate-y-24 group">
                                 <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
-                                    <div className="relative w-44 h-44 md:w-[350px] md:h-[350px]">
-                                        <Image src={hero.mapPreview.src} alt="Aperçu de la carte" fill className="rounded-2xl border-4 border-white shadow-2xl object-cover" sizes="(max-width: 768px) 176px, 350px" />
+                                    <div className="relative w-44 h-44 md:w-[340px] md:h-[340px]">
+                                        <Image src={hero.mapPreview.src} alt="Aperçu de la carte" fill className="rounded-2xl border-4 border-white shadow-2xl object-cover" sizes="(max-width: 768px) 176px, 340px" />
                                     </div>
                                 </Link>
                                 <div className="absolute -left-4 md:-left-20 top-1/2 -translate-y-1/2 z-50">
