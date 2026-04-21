@@ -87,7 +87,7 @@ export const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center">
+      <div className="h-10 w-10 md:h-14 md:w-14 flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-brand" />
       </div>
     );
@@ -97,23 +97,23 @@ export const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-10 w-10 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
+      className="relative h-10 w-10 md:h-14 md:w-14 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
     >
       <div className="relative h-full w-full flex items-center justify-center">
         {user ? (
-          <Avatar className="h-8 w-8 md:h-12 md:w-12 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-8 w-8 md:h-11 md:w-11 border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-8 w-8 md:h-12 md:w-12 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-8 w-8 md:h-11 md:w-11 rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
           </div>
         )}
         
-        <div className="absolute -bottom-0.5 -right-0.5 md:bottom-1 md:right-1 bg-brand text-white rounded-full p-0.5 md:p-1 border-2 border-white shadow-md z-20">
+        <div className="absolute -bottom-0.5 -right-0.5 md:bottom-0.5 md:right-0.5 bg-brand text-white rounded-full p-0.5 md:p-1 border-2 border-white shadow-md z-20">
           <Menu className="h-2 w-2 md:h-3 w-3" />
         </div>
       </div>
@@ -133,14 +133,14 @@ export const UserMenu = () => {
                 <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
                 <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
                     <Link href="/entretien" className="flex flex-col items-center gap-3 group">
-                        <div className="h-16 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
-                            <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="object-contain group-hover:brightness-0 group-hover:invert" />
+                        <div className="h-14 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
+                            <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Entretien</span>
                     </Link>
                     <Link href="/info" className="flex flex-col items-center gap-3 group">
-                        <div className="h-16 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
-                            <Image src="/images/icon-conseils.webp" alt="" width={34} height={34} className="object-contain group-hover:brightness-0 group-hover:invert" />
+                        <div className="h-14 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
+                            <Image src="/images/icon-conseils.webp" alt="" width={34} height={34} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Conseils</span>
                     </Link>
@@ -359,7 +359,7 @@ const Header: React.FC<HeaderProps> = ({
         placeholder={placeholderText} 
         className={cn(
             "pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 relative z-10 font-black transition-all",
-            isMapPage ? "h-11 md:h-16 text-xs md:text-base" : "h-12 md:h-16 text-xs md:text-base",
+            isMapPage ? "h-11 md:h-14 text-xs md:text-base" : "h-12 md:h-14 text-xs md:text-base",
             !isMapPage && "md:pr-[90px]"
         )}
         value={searchTerm} 
@@ -375,15 +375,15 @@ const Header: React.FC<HeaderProps> = ({
         className={cn(
             "absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg transition-transform", 
             isMapPage 
-              ? "h-[48px] w-[48px] md:h-[70px] w-[70px]" 
-              : "h-[54px] w-[54px] md:h-[76px] w-[70px]"
+              ? "h-[48px] w-[48px] md:h-[60px] md:w-[60px]" 
+              : "h-[54px] w-[54px] md:h-[60px] md:w-[60px]"
         )} 
         onClick={executeSearch}
       >
         <Search className={cn(
             isMapPage 
-              ? "h-6 w-6 md:h-8 md:w-8" 
-              : "h-7 w-7 md:h-9 md:w-9"
+              ? "h-6 w-6 md:h-7 md:w-7" 
+              : "h-7 w-7 md:h-7 md:w-7"
         )} />
       </Button>
       
@@ -420,7 +420,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
-      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-6">
+      <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-4">
         <div className="flex flex-row items-center justify-between gap-4 md:gap-6">
           <div className="shrink-0">
             <div 
@@ -439,11 +439,11 @@ const Header: React.FC<HeaderProps> = ({
           
           {!isMapPage && (
             <div className="hidden lg:flex flex-1 justify-center px-4">
-                <div className="bg-white px-8 py-4 rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
-                    <p className="text-sm md:text-xl font-black uppercase tracking-tight text-foreground leading-none">
+                <div className="bg-white px-6 py-3 rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform">
+                    <p className="text-sm md:text-lg font-black uppercase tracking-tight text-foreground leading-none">
                         TROUVER UNE CONCESSION, UN ATELIER ?
                     </p>
-                    <p className="text-base md:text-2xl font-black italic text-brand mt-1 leading-none tracking-tighter">
+                    <p className="text-base md:text-xl font-black italic text-brand mt-1 leading-none tracking-tighter">
                         FINI LA GALÈRE.
                     </p>
                 </div>
@@ -464,18 +464,18 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2rem] p-3 gap-4 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
                         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-14 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                            <Button asChild variant="ghost" size="icon" className="h-11 w-13 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/entretien" className="flex items-center justify-center">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
+                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="h-8 w-8 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
                         <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-14 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                            <Button asChild variant="ghost" size="icon" className="h-11 w-13 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
+                                    <Image src="/images/icon-conseils.webp" alt="" width={36} height={36} className="h-8 w-8 object-contain group-hover:brightness-0 group-hover:invert" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>
@@ -487,7 +487,7 @@ const Header: React.FC<HeaderProps> = ({
             
             <nav className={cn(
               "flex items-center justify-center gap-6 md:gap-6 relative z-50",
-              isMapPage ? "md:hidden" : "-mb-16 md:-mb-14"
+              isMapPage ? "md:hidden" : "-mb-16 md:-mb-10"
             )}>
                 <Button 
                     variant="ghost" 
