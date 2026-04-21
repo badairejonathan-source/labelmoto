@@ -85,7 +85,6 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // Initial center on France
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
   const [mapZoom, setMapZoom] = useState(6);
   
@@ -198,7 +197,6 @@ function MapPageComponent() {
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
     setMapBoundsStr(bounds.toBBoxString()); 
-    // We only update state if it's NOT coming from a programmatic change to avoid jumping
     if (selectionSource === null) {
       setMapCenter(newCenter);
       setSortingAnchor(newCenter);
@@ -380,7 +378,7 @@ function MapPageComponent() {
         <aside className={cn("absolute top-6 left-6 bottom-6 w-[480px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
             <div className="relative px-6 py-10 border-b border-border/50 bg-white/50 backdrop-blur-sm">
                 <div className="flex items-center justify-between gap-4 mb-10">
-                    <div className="w-56 shrink-0">
+                    <div className="w-56 shrink-0 z-[150]">
                       <LabelMotoLogo />
                     </div>
                     
@@ -389,12 +387,12 @@ function MapPageComponent() {
                         <p className="text-[16px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p>
                     </div>
                     
-                    <div className="shrink-0 scale-90">
+                    <div className="shrink-0 z-[150]">
                         <UserMenu />
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-8 w-full">
+                <div className="flex items-center justify-center gap-10 w-full">
                     <button 
                         onClick={() => setActiveFilter('shopping')}
                         className={cn(
@@ -482,7 +480,7 @@ function MapPageComponent() {
 
 export default function MapPage() { 
   return (
-    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}>
+    <Suspense fallback={<div className="flex h-screen w-full flex-col items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}>
       <MapPageComponent />
     </Suspense>
   ); 

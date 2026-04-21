@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -66,6 +65,8 @@ export const UserMenu = () => {
 
   const isMapPage = pathname === '/map';
   const isMobile = mounted && width !== undefined && width < 1024;
+  
+  // Section GUIDE visible uniquement sur mobile OU sur la page de la carte
   const showGuides = isMobile || isMapPage;
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
@@ -96,7 +97,7 @@ export const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-10 w-10 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95"
+      className="relative h-10 w-10 md:h-16 md:w-16 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
     >
       <div className="relative h-full w-full flex items-center justify-center">
         {user ? (
@@ -113,7 +114,7 @@ export const UserMenu = () => {
         )}
         
         <div className="absolute -bottom-0.5 -right-0.5 md:bottom-1 md:right-1 bg-brand text-white rounded-full p-0.5 md:p-1 border-2 border-white shadow-md z-20">
-          <Menu className="h-2 w-2 md:h-3 md:w-3" />
+          <Menu className="h-2 w-2 md:h-3 w-3" />
         </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
@@ -358,7 +359,7 @@ const Header: React.FC<HeaderProps> = ({
         placeholder={placeholderText} 
         className={cn(
             "pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 relative z-10 font-black transition-all",
-            isMapPage ? "h-11 md:h-12 text-xs" : "h-12 md:h-16 text-xs md:text-base",
+            isMapPage ? "h-11 md:h-16 text-xs md:text-base" : "h-12 md:h-16 text-xs md:text-base",
             !isMapPage && "md:pr-[90px]"
         )}
         value={searchTerm} 
@@ -374,14 +375,14 @@ const Header: React.FC<HeaderProps> = ({
         className={cn(
             "absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg transition-transform", 
             isMapPage 
-              ? "h-[48px] w-[48px] md:h-[54px] w-[54px]" 
+              ? "h-[48px] w-[48px] md:h-[70px] w-[70px]" 
               : "h-[54px] w-[54px] md:h-[76px] w-[70px]"
         )} 
         onClick={executeSearch}
       >
         <Search className={cn(
             isMapPage 
-              ? "h-6 w-6 md:h-7 md:w-7" 
+              ? "h-6 w-6 md:h-8 md:w-8" 
               : "h-7 w-7 md:h-9 md:w-9"
         )} />
       </Button>
@@ -393,7 +394,7 @@ const Header: React.FC<HeaderProps> = ({
               <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
                 {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
               </div>
-              <div className="flex flex-col min-0">
+              <div className="flex flex-col min-w-0">
                 <span className="text-sm font-black text-foreground truncate uppercase tracking-tight">{s.label}</span>
                 {s.subLabel && <span className="text-[9px] text-muted-foreground truncate uppercase font-black tracking-[0.2em]">{s.subLabel}</span>}
               </div>
@@ -409,7 +410,7 @@ const Header: React.FC<HeaderProps> = ({
   if (variant === 'floating') {
     return (
         <div className={cn("flex items-center gap-3 md:gap-4 pointer-events-auto", className)}>
-            <div className="w-[280px] xs:w-[320px] sm:w-[400px] md:w-[320px] lg:w-[400px] max-w-[calc(100vw-60px)] transition-all duration-300">
+            <div className="w-[280px] xs:w-[320px] sm:w-[400px] md:w-[520px] max-w-[calc(100vw-60px)] transition-all duration-300">
                 {searchInput}
             </div>
             {!hideUserMenu && <UserMenu />}
@@ -460,7 +461,7 @@ const Header: React.FC<HeaderProps> = ({
                     {searchInput}
                 </div>
                 {!isMapPage && (
-                    <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner">
+                    <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
                         <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-background px-3 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-2">
                             <Button asChild variant="ghost" size="icon" className="h-16 w-16 rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
@@ -485,7 +486,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-6 md:gap-10 relative z-50",
+              "flex items-center justify-center gap-10 md:gap-14 relative z-50",
               isMapPage ? "md:hidden" : "-mb-16 md:-mb-24"
             )}>
                 <Button 
@@ -498,8 +499,8 @@ const Header: React.FC<HeaderProps> = ({
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Bike className={cn("h-7 w-7 md:h-9 md:w-9 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[9px] md:text-[11px] font-black uppercase tracking-tighter leading-none mt-1 md:mt-1.5 transition-colors">Concession</span>
+                    <Bike className={cn("h-8 w-8 md:h-10 md:w-10 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[10px] md:text-[12px] font-black uppercase tracking-tighter leading-none mt-1 md:mt-1.5 transition-colors">Concession</span>
                 </Button>
                 <Button 
                     variant="ghost" 
@@ -511,8 +512,8 @@ const Header: React.FC<HeaderProps> = ({
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Home className={cn("h-7 w-7 md:h-9 md:w-9 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Tout</span>
+                    <Home className={cn("h-8 w-8 md:h-10 md:w-10 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Tout</span>
                 </Button>
                 <Button 
                     variant="ghost" 
@@ -524,8 +525,8 @@ const Header: React.FC<HeaderProps> = ({
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
                     )}
                 >
-                    <Wrench className={cn("h-7 w-7 md:h-9 md:w-9 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Atelier</span>
+                    <Wrench className={cn("h-8 w-8 md:h-10 md:w-10 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
+                    <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] mt-1 md:mt-1.5 transition-colors">Atelier</span>
                 </Button>
             </nav>
         </div>

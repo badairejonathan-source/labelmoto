@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const LabelMotoLogo = ({ className }: { className?: string }) => {
   return (
-    <Link href="/" className={cn('relative w-full block', className)}>
+    <Link href="/" className={cn('relative w-full block z-[100]', className)}>
       <Image 
         src="/images/logo-moto.webp" 
         alt="Label Moto Logo" 
