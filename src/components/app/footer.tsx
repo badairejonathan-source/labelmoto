@@ -20,10 +20,8 @@ const Footer = () => {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
-  // Masquer le footer sur la page de la carte
   if (pathname === '/map') return null;
 
-  // Gestion de l'hydratation (évite les bugs entre serveur et client)
   const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
   const isAdmin = mounted && user && user.uid === ADMIN_UID;
 
@@ -31,7 +29,6 @@ const Footer = () => {
     <footer className="bg-muted/30 border-t border-border/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-sm">
         
-        {/* Navigation Section */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-12">
           <div>
             <h3 className="font-semibold text-foreground mb-4">À propos de Label Moto</h3>
@@ -63,7 +60,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Section: Logo, Socials and Legal */}
         <div className="border-t border-border/50 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
