@@ -338,30 +338,34 @@ function MapPageComponent() {
       </div>
 
       <div className="absolute top-0 left-0 right-0 pointer-events-none z-[1200]">
-        <div className="pointer-events-auto relative">
+        <div className="pointer-events-none relative h-screen">
           {isMobile ? (
-            <Header 
-                searchTerm={searchTerm} 
-                onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
-                activeFilter={activeFilter} 
-                onFilterChange={setActiveFilter} 
-            />
+            <div className="pointer-events-auto">
+              <Header 
+                  searchTerm={searchTerm} 
+                  onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+                  onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
+                  activeFilter={activeFilter} 
+                  onFilterChange={setActiveFilter} 
+              />
+            </div>
           ) : (
-            <div className="flex justify-end p-6 md:p-10 md:pr-20">
-                <Header 
-                    variant="floating"
-                    hideUserMenu
-                    searchTerm={searchTerm} 
-                    onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                    onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
-                    activeFilter={activeFilter} 
-                    onFilterChange={setActiveFilter} 
-                />
+            <div className="flex justify-end p-6 md:p-10 md:pr-20 pointer-events-none">
+                <div className="pointer-events-auto">
+                  <Header 
+                      variant="floating"
+                      hideUserMenu
+                      searchTerm={searchTerm} 
+                      onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+                      onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
+                      activeFilter={activeFilter} 
+                      onFilterChange={setActiveFilter} 
+                  />
+                </div>
             </div>
           )}
           
-          <div className="absolute -bottom-8 md:-bottom-10 right-6 z-[1250] flex flex-col items-center gap-2">
+          <div className="absolute top-[80px] md:top-auto md:bottom-10 right-6 z-[1250] flex flex-col items-center gap-2 pointer-events-auto">
             <Button 
               size="icon" 
               className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
@@ -375,11 +379,11 @@ function MapPageComponent() {
       </div>
 
       {!isMobile ? (
-        <aside className={cn("absolute top-6 left-6 bottom-6 w-[480px] z-[1000] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
-            <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm">
-                <div className="flex items-center justify-between gap-4 mb-6">
-                    <div className="w-56 shrink-0 z-[150] relative">
-                      <LabelMotoLogo />
+        <aside className={cn("absolute top-6 left-6 bottom-6 w-[480px] z-[1500] flex flex-col bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in slide-in-from-left duration-500", !showDesktopPanel && "hidden")}>
+            <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10">
+                <div className="flex items-center justify-between gap-4 mb-6 relative z-20">
+                    <div className="w-56 shrink-0 relative z-30">
+                      <LabelMotoLogo className="hover:scale-[1.02] transition-transform" />
                     </div>
                     
                     <div className="bg-white px-5 py-4 rounded-[1.8rem] shadow-sm border border-gray-100 text-center flex-1 relative z-10">
@@ -387,7 +391,7 @@ function MapPageComponent() {
                         <p className="text-[16px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p>
                     </div>
                     
-                    <div className="shrink-0 z-[150] relative">
+                    <div className="shrink-0 relative z-30">
                         <UserMenu />
                     </div>
                 </div>
@@ -431,11 +435,11 @@ function MapPageComponent() {
                     </button>
                 </div>
                 
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2 rounded-full h-8 w-8 hover:bg-muted z-[200]" onClick={() => setShowDesktopPanel(false)}>
+                <Button variant="ghost" size="icon" className="absolute top-2 right-2 rounded-full h-8 w-8 hover:bg-muted z-30" onClick={() => setShowDesktopPanel(false)}>
                     <X className="h-5 w-5 text-muted-foreground" />
                 </Button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar relative z-0">
                 {listContent}
             </div>
         </aside>
