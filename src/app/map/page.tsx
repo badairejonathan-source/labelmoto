@@ -405,7 +405,7 @@ function MapPageComponent() {
                     <button 
                         onClick={() => setActiveFilter('shopping')}
                         className={cn(
-                            "h-[80px] w-[80px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === 'shopping' 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
@@ -417,7 +417,7 @@ function MapPageComponent() {
                     <button 
                         onClick={() => setActiveFilter(null)}
                         className={cn(
-                            "h-[80px] w-[80px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === null 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
@@ -429,7 +429,7 @@ function MapPageComponent() {
                     <button 
                         onClick={() => setActiveFilter('service')}
                         className={cn(
-                            "h-[80px] w-[80px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
+                            "h-20 w-20 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[4px] group",
                             activeFilter === 'service' 
                             ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                             : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white shadow-brand/10"
@@ -479,12 +479,12 @@ function MapPageComponent() {
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
           </div>
           <div className="px-3 h-full flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between border-b pb-2">
-              <div className="flex items-center gap-3 py-1">
+            <div className="relative flex items-center justify-center border-b pb-3 pt-1">
+              <div className="flex items-center gap-4 py-1">
                 <button 
                     onClick={() => setActiveFilter('shopping')}
                     className={cn(
-                        "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        "h-[50px] w-[50px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                         activeFilter === 'shopping' 
                           ? "bg-brand text-white border-white scale-105" 
                           : "bg-white text-muted-foreground border-transparent"
@@ -496,7 +496,7 @@ function MapPageComponent() {
                 <button 
                     onClick={() => setActiveFilter(null)}
                     className={cn(
-                        "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        "h-[50px] w-[50px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                         activeFilter === null 
                           ? "bg-brand text-white border-white scale-105" 
                           : "bg-white text-muted-foreground border-transparent"
@@ -508,7 +508,7 @@ function MapPageComponent() {
                 <button 
                     onClick={() => setActiveFilter('service')}
                     className={cn(
-                        "h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        "h-[50px] w-[50px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                         activeFilter === 'service' 
                           ? "bg-brand text-white border-white scale-105" 
                           : "bg-white text-muted-foreground border-transparent"
@@ -518,18 +518,20 @@ function MapPageComponent() {
                     <span className="text-[7px] font-black uppercase mt-0.5">Atelier</span>
                 </button>
               </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (drawerHeight !== 'collapsed') setDrawerHeight('collapsed');
-                  else setDrawerHeight('half');
-                }}
-              >
-                {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : (drawerHeight === 'full' ? <ChevronDown className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />)}
-              </Button>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full h-10 w-10" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (drawerHeight !== 'collapsed') setDrawerHeight('collapsed');
+                    else setDrawerHeight('half');
+                  }}
+                >
+                  {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : (drawerHeight === 'full' ? <ChevronDown className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />)}
+                </Button>
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto mt-3">{listContent}</div>
           </div>
