@@ -87,7 +87,7 @@ export const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-10 w-10 md:h-14 md:w-14 flex items-center justify-center">
+      <div className="h-10 w-10 md:h-[70px] md:w-[70px] flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-brand" />
       </div>
     );
@@ -97,24 +97,24 @@ export const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-10 w-10 md:h-14 md:w-14 rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
+      className="relative h-10 w-10 md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
     >
       <div className="relative h-full w-full flex items-center justify-center">
         {user ? (
-          <Avatar className="h-8 w-8 md:h-11 md:w-11 border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-8 w-8 md:h-[54px] md:w-[54px] border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-8 w-8 md:h-11 md:w-11 rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-8 w-8 md:h-[54px] md:w-[54px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
           </div>
         )}
         
         <div className="absolute -bottom-0.5 -right-0.5 md:bottom-0.5 md:right-0.5 bg-brand text-white rounded-full p-0.5 md:p-1 border-2 border-white shadow-md z-20">
-          <Menu className="h-2 w-2 md:h-3 w-3" />
+          <Menu className="h-2 w-2 md:h-4 md:w-4" />
         </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
