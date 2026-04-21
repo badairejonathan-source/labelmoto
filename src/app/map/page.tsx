@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -383,7 +384,7 @@ function MapPageComponent() {
             "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)]",
             showDesktopPanel 
               ? "absolute top-6 left-6 bottom-6 w-[480px] rounded-[2.5rem] translate-x-0" 
-              : "absolute bottom-6 right-24 w-[480px] h-auto rounded-[2.5rem] shadow-2xl translate-x-0 ring-4 ring-brand/10"
+              : "fixed bottom-6 right-24 w-[480px] h-auto rounded-[2.5rem] shadow-2xl translate-x-0 ring-4 ring-brand/10"
         )}>
             <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10">
                 <div className="flex items-center justify-between gap-4 mb-6 relative z-20">
@@ -455,7 +456,7 @@ function MapPageComponent() {
             </div>
             <div className={cn(
                 "flex-1 overflow-y-auto p-4 custom-scrollbar relative z-0 transition-opacity duration-300",
-                !showDesktopPanel ? "h-0 opacity-0 pointer-events-none" : "opacity-100"
+                !showDesktopPanel ? "hidden" : "opacity-100"
             )}>
                 {listContent}
             </div>
