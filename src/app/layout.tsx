@@ -16,14 +16,19 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   title: {
-    default: "Label Moto - L'annuaire intelligent des motards en Île-de-France",
+    default: "Label Moto - L'annuaire intelligent des motards dans toute la france",
     template: "%s | Label Moto"
   },
-  description: "Trouvez les meilleures concessions et ateliers moto à Paris et en Île-de-France. Guides d'entretien, fiches techniques gratuites et conseils permis A2 pour tous les motards.",
+  description: "Trouvez les meilleures concessions et ateliers dans toute la France. Guides d'entretien, fiches techniques gratuites et conseils permis A2 pour tous les motards.",
   keywords: ["moto", "concessionnaire moto Paris", "atelier moto Île-de-France", "entretien moto", "permis A2", "fiche technique moto", "assurance moto", "révision moto prix"],
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
   publisher: "Label Moto",
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     type: "website",
     locale: "fr_FR",
