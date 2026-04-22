@@ -241,11 +241,9 @@ function MapPageComponent() {
 
   const onTouchStart = useCallback((e: React.TouchEvent) => { 
     touchStartY.current = e.touches[0].clientY; 
-    e.stopPropagation();
   }, []);
 
   const onTouchEnd = useCallback((e: React.TouchEvent) => { 
-    e.stopPropagation();
     const diff = touchStartY.current - e.changedTouches[0].clientY; 
     if (Math.abs(diff) > 40) {
       if (diff > 0) {
@@ -366,14 +364,13 @@ function MapPageComponent() {
           )}
           
           <div className="absolute top-[200px] md:top-auto md:bottom-10 right-6 z-[1250] flex flex-col items-center gap-2 pointer-events-auto">
-            <Button 
-              size="icon" 
-              className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
+            <button 
+              className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
               onClick={() => setIsLoadingLocating(true)} 
               aria-label="Me localiser"
             >
               <Compass className="h-7 w-7 md:h-8 md:w-8" />
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -465,7 +462,7 @@ function MapPageComponent() {
       {isMobile && (
         <div 
           className={cn(
-            "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
+            "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t flex flex-col", 
             drawerHeight === 'collapsed' ? 'bottom-0 h-[110px] z-[1100]' : 
             drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
             'bottom-0 h-[calc(100vh-160px)] z-[1300]'
@@ -473,13 +470,12 @@ function MapPageComponent() {
           onPointerDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
         >
           {/* Zone de Geste (Poignée + Filtres) */}
           <div 
             onTouchStart={onTouchStart} 
             onTouchEnd={onTouchEnd}
-            className="cursor-grab active:cursor-grabbing pointer-events-auto"
+            className="cursor-grab active:cursor-grabbing pointer-events-auto shrink-0"
           >
             <div className="relative w-full flex flex-col items-center pt-3 pb-1">
               <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
@@ -525,10 +521,8 @@ function MapPageComponent() {
                   </button>
                 </div>
                 <div className="absolute right-0 top-1/2 -translate-y-1/2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full h-10 w-10" 
+                  <button 
+                    className="rounded-full h-10 w-10 flex items-center justify-center hover:bg-muted" 
                     onClick={(e) => {
                       e.stopPropagation();
                       if (drawerHeight !== 'collapsed') setDrawerHeight('collapsed');
@@ -536,12 +530,13 @@ function MapPageComponent() {
                     }}
                   >
                     {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : (drawerHeight === 'full' ? <ChevronDown className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />)}
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto mt-3 px-3">
+          {/* Zone de Liste scrollable */}
+          <div className="flex-1 overflow-y-auto mt-3 px-3 min-h-0 custom-scrollbar">
             {listContent}
           </div>
         </div>
