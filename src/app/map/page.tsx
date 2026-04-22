@@ -113,7 +113,7 @@ function MapPageComponent() {
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
     if (drawerHeight === 'full') return height - 160;
-    return drawerHeight === 'half' ? height / 2 : 110; 
+    return drawerHeight === 'half' ? height / 2 : 200; 
   }, [isMobile, height, drawerHeight]);
 
   const leftPadding = useMemo(() => {
@@ -466,7 +466,7 @@ function MapPageComponent() {
         <div 
           className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[110px] z-[1100]' : 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[200px] z-[1100]' : 
             drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
             'bottom-0 h-[calc(100vh-160px)] z-[1300]'
           )}
@@ -479,58 +479,75 @@ function MapPageComponent() {
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
           </div>
           <div className="px-3 h-full flex flex-col overflow-hidden">
-            <div className="relative flex items-center justify-center border-b pb-8 pt-1">
-              <div className="flex items-center gap-4 py-1">
-                <button 
-                    onClick={() => setActiveFilter('shopping')}
-                    className={cn(
-                        "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
-                        activeFilter === 'shopping' 
-                          ? "bg-brand text-white border-white scale-105" 
-                          : "bg-white text-muted-foreground border-transparent"
-                    )}
-                >
-                    <Bike className="h-5 w-5" />
-                    <span className="text-[7px] font-black uppercase mt-0.5">Concession</span>
-                </button>
-                <button 
-                    onClick={() => setActiveFilter(null)}
-                    className={cn(
-                        "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
-                        activeFilter === null 
-                          ? "bg-brand text-white border-white scale-105" 
-                          : "bg-white text-muted-foreground border-transparent"
-                    )}
-                >
-                    <Home className="h-5 w-5" />
-                    <span className="text-[7px] font-black uppercase mt-0.5">Tout</span>
-                </button>
-                <button 
-                    onClick={() => setActiveFilter('service')}
-                    className={cn(
-                        "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
-                        activeFilter === 'service' 
-                          ? "bg-brand text-white border-white scale-105" 
-                          : "bg-white text-muted-foreground border-transparent"
-                    )}
-                >
-                    <Wrench className="h-5 w-5" />
-                    <span className="text-[7px] font-black uppercase mt-0.5">Atelier</span>
-                </button>
+            <div className="px-2 pt-2 pb-6 border-b border-border/50">
+              {/* Rangée 1 : Logo, Bulle Promo, Menu Profil */}
+              <div className="flex items-center justify-between gap-3 mb-5">
+                  <div className="w-[140px] shrink-0">
+                    <LabelMotoLogo />
+                  </div>
+                  <div className="bg-white px-2 py-2 rounded-xl shadow-sm border border-gray-100 text-center flex-1 min-w-0">
+                      <p className="text-[7px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
+                      <p className="text-[11px] font-black italic text-brand mt-0.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
+                  </div>
+                  <div className="shrink-0">
+                    <UserMenu />
+                  </div>
               </div>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="rounded-full h-10 w-10" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (drawerHeight !== 'collapsed') setDrawerHeight('collapsed');
-                    else setDrawerHeight('half');
-                  }}
-                >
-                  {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : (drawerHeight === 'full' ? <ChevronDown className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />)}
-                </Button>
+
+              {/* Rangée 2 : Filtres et Bouton Toggle */}
+              <div className="relative flex items-center justify-center">
+                <div className="flex items-center gap-4">
+                  <button 
+                      onClick={() => setActiveFilter('shopping')}
+                      className={cn(
+                          "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                          activeFilter === 'shopping' 
+                            ? "bg-brand text-white border-white scale-105" 
+                            : "bg-white text-muted-foreground border-transparent"
+                      )}
+                  >
+                      <Bike className="h-5 w-5" />
+                      <span className="text-[7px] font-black uppercase mt-0.5">Concession</span>
+                  </button>
+                  <button 
+                      onClick={() => setActiveFilter(null)}
+                      className={cn(
+                          "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                          activeFilter === null 
+                            ? "bg-brand text-white border-white scale-105" 
+                            : "bg-white text-muted-foreground border-transparent"
+                      )}
+                  >
+                      <Home className="h-5 w-5" />
+                      <span className="text-[7px] font-black uppercase mt-0.5">Tout</span>
+                  </button>
+                  <button 
+                      onClick={() => setActiveFilter('service')}
+                      className={cn(
+                          "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                          activeFilter === 'service' 
+                            ? "bg-brand text-white border-white scale-105" 
+                            : "bg-white text-muted-foreground border-transparent"
+                      )}
+                  >
+                      <Wrench className="h-5 w-5" />
+                      <span className="text-[7px] font-black uppercase mt-0.5">Atelier</span>
+                  </button>
+                </div>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full h-10 w-10" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (drawerHeight !== 'collapsed') setDrawerHeight('collapsed');
+                      else setDrawerHeight('half');
+                    }}
+                  >
+                    {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : (drawerHeight === 'full' ? <ChevronDown className="h-6 w-6" /> : <X className="h-6 w-6 text-muted-foreground" />)}
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto mt-3">{listContent}</div>
