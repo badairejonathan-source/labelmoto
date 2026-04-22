@@ -113,7 +113,7 @@ function MapPageComponent() {
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
     if (drawerHeight === 'full') return height - 160;
-    return drawerHeight === 'half' ? height / 2 : 110; 
+    return drawerHeight === 'half' ? height / 2 : 200; 
   }, [isMobile, height, drawerHeight]);
 
   const leftPadding = useMemo(() => {
@@ -463,7 +463,7 @@ function MapPageComponent() {
         <div 
           className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t flex flex-col", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[110px] z-[1100]' : 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[200px] z-[1100]' : 
             drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
             'bottom-0 h-[calc(100vh-160px)] z-[1300]'
           )}
@@ -471,15 +471,32 @@ function MapPageComponent() {
           onWheel={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* Zone de Geste (Poignée + Filtres) */}
+          {/* Zone de Geste (Poignée + Branding + Filtres) */}
           <div 
             onTouchStart={onTouchStart} 
             onTouchEnd={onTouchEnd}
-            className="cursor-grab active:cursor-grabbing pointer-events-auto shrink-0"
+            className="cursor-grab active:cursor-grabbing pointer-events-auto shrink-0 bg-white rounded-t-[2.5rem]"
           >
             <div className="relative w-full flex flex-col items-center pt-3 pb-1">
               <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
             </div>
+
+            {/* Branding identique au desktop sur smartphone */}
+            <div className="px-5 pt-2 pb-2">
+                <div className="flex items-center justify-between gap-3 w-full">
+                    <div className="w-[140px] shrink-0" onTouchStart={(e) => e.stopPropagation()}>
+                        <LabelMotoLogo />
+                    </div>
+                    <div className="bg-white px-2 py-1.5 rounded-xl shadow-sm border border-gray-100 text-center flex-1 min-w-0" onTouchStart={(e) => e.stopPropagation()}>
+                        <p className="text-[7px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
+                        <p className="text-[9px] font-black italic text-brand mt-0.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
+                    </div>
+                    <div className="shrink-0" onTouchStart={(e) => e.stopPropagation()}>
+                        <UserMenu />
+                    </div>
+                </div>
+            </div>
+
             <div className="px-5 pt-2 pb-6 border-b border-border/50">
               <div className="relative flex items-center justify-center">
                 <div className="flex items-center gap-4">
