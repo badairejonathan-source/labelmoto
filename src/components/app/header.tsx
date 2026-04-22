@@ -421,36 +421,33 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
       <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-4">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 md:gap-6">
-          <div className="w-full lg:w-auto flex flex-row items-center justify-between gap-4">
-            <div className="shrink-0 relative z-[150]">
-              <LabelMotoLogo 
-                  className={cn(
-                      "transition-all",
-                      isMapPage 
-                        ? "bg-white/95 backdrop-blur-sm px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white w-40 xs:w-56 md:w-[320px]" 
-                        : "w-40 xs:w-56 md:w-[320px] py-1"
-                  )}
-              />
-            </div>
-            
-            <div className="lg:hidden flex items-center justify-end shrink-0 relative z-[150]">
-              {!hideUserMenu && <UserMenu />}
-            </div>
+        <div className="flex flex-row items-center justify-between gap-2 md:gap-6 w-full">
+          {/* Bloc 1: Logo */}
+          <div className="shrink-0 relative z-[150]">
+            <LabelMotoLogo 
+                className={cn(
+                    "transition-all",
+                    isMapPage 
+                      ? "bg-white/95 backdrop-blur-sm px-3 md:px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white w-24 xs:w-32 sm:w-44 md:w-[320px]" 
+                      : "w-24 xs:w-32 sm:w-44 md:w-[320px] py-1"
+                )}
+            />
           </div>
           
-          <div className="flex flex-1 justify-center px-2 md:px-4 relative z-10 w-full lg:w-auto">
-              <div className="bg-white px-4 py-2 md:px-6 md:py-3 rounded-[1.5rem] md:rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-sm sm:max-w-md lg:max-w-none">
-                  <p className="text-[10px] sm:text-sm md:text-lg font-black uppercase tracking-tight text-foreground leading-none">
-                      TROUVER UNE CONCESSION, UN ATELIER ?
+          {/* Bloc 2: Bulle Promo */}
+          <div className="flex flex-1 justify-center px-1 md:px-4 relative z-10 min-w-0">
+              <div className="bg-white px-2 py-1.5 md:px-6 md:py-3 rounded-xl md:rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-xs md:max-w-md lg:max-w-none overflow-hidden">
+                  <p className="text-[7px] xs:text-[9px] sm:text-xs md:text-lg font-black uppercase tracking-tight text-foreground leading-tight">
+                      TROUVER UNE CONCESSION ?
                   </p>
-                  <p className="text-sm sm:text-base md:text-xl font-black italic text-brand mt-1 leading-none tracking-tighter">
+                  <p className="text-[9px] xs:text-[11px] sm:text-sm md:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
                       FINI LA GALÈRE.
                   </p>
               </div>
           </div>
 
-          <div className="hidden lg:flex items-center justify-end shrink-0 relative z-[150]">
+          {/* Bloc 3: User Menu */}
+          <div className="shrink-0 relative z-[150]">
             {!hideUserMenu && <UserMenu />}
           </div>
         </div>
