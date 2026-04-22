@@ -87,7 +87,7 @@ export const UserMenu = () => {
 
   if (!mounted || isUserLoading) {
     return (
-      <div className="h-10 w-10 md:h-[70px] md:w-[70px] flex items-center justify-center">
+      <div className="h-[62px] w-[62px] flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-brand" />
       </div>
     );
@@ -490,7 +490,7 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick('shopping')} 
                     className={cn(
-                        "h-28 w-28 md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'shopping' 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
@@ -503,7 +503,7 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick(null)} 
                     className={cn(
-                        "h-28 w-28 md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === null 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
@@ -516,7 +516,7 @@ const Header: React.FC<HeaderProps> = ({
                     variant="ghost" 
                     onClick={() => handleTabClick('service')} 
                     className={cn(
-                        "h-28 w-28 md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'service' 
                           ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
                           : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
