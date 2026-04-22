@@ -113,7 +113,7 @@ function MapPageComponent() {
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
     if (drawerHeight === 'full') return height - 160;
-    return drawerHeight === 'half' ? height / 2 : 70; 
+    return drawerHeight === 'half' ? height / 2 : 92; 
   }, [isMobile, height, drawerHeight]);
 
   const leftPadding = useMemo(() => {
@@ -466,7 +466,7 @@ function MapPageComponent() {
         <div 
           className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[70px] z-[1100]' : 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[92px] z-[1100]' : 
             drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
             'bottom-0 h-[calc(100vh-160px)] z-[1300]'
           )}
@@ -484,37 +484,37 @@ function MapPageComponent() {
                 <button 
                     onClick={() => setActiveFilter('shopping')}
                     className={cn(
-                        "h-[50px] w-[50px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                         activeFilter === 'shopping' 
                           ? "bg-brand text-white border-white scale-105" 
                           : "bg-white text-muted-foreground border-transparent"
                     )}
                 >
-                    <Bike className="h-4 w-4" />
+                    <Bike className="h-5 w-5" />
                     <span className="text-[7px] font-black uppercase mt-0.5">Concession</span>
                 </button>
                 <button 
                     onClick={() => setActiveFilter(null)}
                     className={cn(
-                        "h-[50px] w-[50px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                         activeFilter === null 
                           ? "bg-brand text-white border-white scale-105" 
                           : "bg-white text-muted-foreground border-transparent"
                     )}
                 >
-                    <Home className="h-4 w-4" />
+                    <Home className="h-5 w-5" />
                     <span className="text-[7px] font-black uppercase mt-0.5">Tout</span>
                 </button>
                 <button 
                     onClick={() => setActiveFilter('service')}
                     className={cn(
-                        "h-[50px] w-[50px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
+                        "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                         activeFilter === 'service' 
                           ? "bg-brand text-white border-white scale-105" 
                           : "bg-white text-muted-foreground border-transparent"
                     )}
                 >
-                    <Wrench className="h-4 w-4" />
+                    <Wrench className="h-5 w-5" />
                     <span className="text-[7px] font-black uppercase mt-0.5">Atelier</span>
                 </button>
               </div>
