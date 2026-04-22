@@ -97,18 +97,18 @@ export const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-12 w-12 md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
+      className="relative h-18 w-18 md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
     >
       <div className="relative h-full w-full flex items-center justify-center pointer-events-none">
         {user ? (
-          <Avatar className="h-10 w-10 md:h-[54px] md:w-[54px] border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-15 w-15 md:h-[54px] md:w-[54px] border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-10 w-10 md:h-[54px] md:w-[54px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-15 w-15 md:h-[54px] md:w-[54px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
           </div>
         )}
@@ -428,8 +428,8 @@ const Header: React.FC<HeaderProps> = ({
                 className={cn(
                     "transition-all",
                     isMapPage 
-                      ? "bg-white/95 backdrop-blur-sm px-3 md:px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white w-28 xs:w-40 sm:w-44 md:w-[320px]" 
-                      : "w-28 xs:w-40 sm:w-44 md:w-[320px] py-1"
+                      ? "bg-white/95 backdrop-blur-sm px-3 md:px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white w-42 xs:w-40 sm:w-44 md:w-[320px]" 
+                      : "w-42 xs:w-40 sm:w-44 md:w-[320px] py-1"
                 )}
             />
           </div>
