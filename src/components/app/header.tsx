@@ -97,18 +97,18 @@ export const UserMenu = () => {
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
-      className="relative h-14 w-14 md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
+      className="relative h-[62px] w-[62px] md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
     >
       <div className="relative h-full w-full flex items-center justify-center pointer-events-none">
         {user ? (
-          <Avatar className="h-11 w-11 md:h-[54px] md:w-[54px] border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-[48px] w-[48px] md:h-[54px] md:w-[54px] border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-11 w-11 md:h-[54px] md:w-[54px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-[48px] w-[48px] md:h-[54px] md:w-[54px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
             <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
           </div>
         )}
