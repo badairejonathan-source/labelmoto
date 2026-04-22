@@ -113,7 +113,7 @@ function MapPageComponent() {
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
     if (drawerHeight === 'full') return height - 160;
-    return drawerHeight === 'half' ? height / 2 : 92; 
+    return drawerHeight === 'half' ? height / 2 : 110; 
   }, [isMobile, height, drawerHeight]);
 
   const leftPadding = useMemo(() => {
@@ -466,7 +466,7 @@ function MapPageComponent() {
         <div 
           className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[92px] z-[1100]' : 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[110px] z-[1100]' : 
             drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
             'bottom-0 h-[calc(100vh-160px)] z-[1300]'
           )}
@@ -479,7 +479,7 @@ function MapPageComponent() {
             <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
           </div>
           <div className="px-3 h-full flex flex-col overflow-hidden">
-            <div className="relative flex items-center justify-center border-b pb-3 pt-1">
+            <div className="relative flex items-center justify-center border-b pb-8 pt-1">
               <div className="flex items-center gap-4 py-1">
                 <button 
                     onClick={() => setActiveFilter('shopping')}
