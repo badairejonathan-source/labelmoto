@@ -113,7 +113,7 @@ function MapPageComponent() {
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
     if (drawerHeight === 'full') return height - 160;
-    return drawerHeight === 'half' ? height / 2 : 200; 
+    return drawerHeight === 'half' ? height / 2 : 110; 
   }, [isMobile, height, drawerHeight]);
 
   const leftPadding = useMemo(() => {
@@ -239,12 +239,12 @@ function MapPageComponent() {
     setSelectionSource(null);
   }, [isMobile]);
 
-  const onTouchStart = (e: React.TouchEvent) => { 
+  const onTouchStart = useCallback((e: React.TouchEvent) => { 
     touchStartY.current = e.touches[0].clientY; 
     e.stopPropagation();
-  };
+  }, []);
 
-  const onTouchEnd = (e: React.TouchEvent) => { 
+  const onTouchEnd = useCallback((e: React.TouchEvent) => { 
     e.stopPropagation();
     const diff = touchStartY.current - e.changedTouches[0].clientY; 
     if (Math.abs(diff) > 40) {
@@ -254,7 +254,7 @@ function MapPageComponent() {
         setDrawerHeight(prev => prev === 'full' ? 'half' : 'collapsed');
       }
     }
-  };
+  }, []);
 
   const listContent = (
     <div className="space-y-3 pb-20">
@@ -466,39 +466,29 @@ function MapPageComponent() {
         <div 
           className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[200px] z-[1100]' : 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[110px] z-[1100]' : 
             drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
             'bottom-0 h-[calc(100vh-160px)] z-[1300]'
           )}
-          onTouchStart={onTouchStart} 
-          onTouchEnd={onTouchEnd}
-          onTouchMove={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
         >
-          <div className="relative w-full flex flex-col items-center pt-3 pb-1 cursor-grab">
-            <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
-          </div>
-          <div className="px-3 h-full flex flex-col overflow-hidden">
-            <div className="px-2 pt-2 pb-6 border-b border-border/50">
-              {/* Rangée 1 : Logo, Bulle Promo, Menu Profil */}
-              <div className="flex items-center justify-between gap-3 mb-5">
-                  <div className="w-[140px] shrink-0">
-                    <LabelMotoLogo />
-                  </div>
-                  <div className="bg-white px-2 py-2 rounded-xl shadow-sm border border-gray-100 text-center flex-1 min-w-0">
-                      <p className="text-[7px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
-                      <p className="text-[11px] font-black italic text-brand mt-0.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
-                  </div>
-                  <div className="shrink-0">
-                    <UserMenu />
-                  </div>
-              </div>
-
-              {/* Rangée 2 : Filtres et Bouton Toggle */}
+          {/* Zone de Geste (Poignée + Filtres) */}
+          <div 
+            onTouchStart={onTouchStart} 
+            onTouchEnd={onTouchEnd}
+            className="cursor-grab active:cursor-grabbing pointer-events-auto"
+          >
+            <div className="relative w-full flex flex-col items-center pt-3 pb-1">
+              <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
+            </div>
+            <div className="px-5 pt-2 pb-6 border-b border-border/50">
               <div className="relative flex items-center justify-center">
                 <div className="flex items-center gap-4">
                   <button 
-                      onClick={() => setActiveFilter('shopping')}
+                      onClick={(e) => { e.stopPropagation(); setActiveFilter('shopping'); }}
                       className={cn(
                           "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                           activeFilter === 'shopping' 
@@ -510,7 +500,7 @@ function MapPageComponent() {
                       <span className="text-[7px] font-black uppercase mt-0.5">Concession</span>
                   </button>
                   <button 
-                      onClick={() => setActiveFilter(null)}
+                      onClick={(e) => { e.stopPropagation(); setActiveFilter(null); }}
                       className={cn(
                           "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                           activeFilter === null 
@@ -522,7 +512,7 @@ function MapPageComponent() {
                       <span className="text-[7px] font-black uppercase mt-0.5">Tout</span>
                   </button>
                   <button 
-                      onClick={() => setActiveFilter('service')}
+                      onClick={(e) => { e.stopPropagation(); setActiveFilter('service'); }}
                       className={cn(
                           "h-[62px] w-[62px] rounded-full flex flex-col items-center justify-center shadow-sm transition-all border-2",
                           activeFilter === 'service' 
@@ -550,7 +540,9 @@ function MapPageComponent() {
                 </div>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto mt-3">{listContent}</div>
+          </div>
+          <div className="flex-1 overflow-y-auto mt-3 px-3">
+            {listContent}
           </div>
         </div>
       )}
