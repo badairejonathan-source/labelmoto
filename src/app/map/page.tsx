@@ -113,7 +113,7 @@ function MapPageComponent() {
   const bottomPadding = useMemo(() => { 
     if (!isMobile || !height) return 0; 
     if (drawerHeight === 'full') return height - 160;
-    return drawerHeight === 'half' ? height / 2 : 200; 
+    return drawerHeight === 'half' ? height / 2 : 110; 
   }, [isMobile, height, drawerHeight]);
 
   const leftPadding = useMemo(() => {
@@ -255,7 +255,7 @@ function MapPageComponent() {
   }, []);
 
   const listContent = (
-    <div className="space-y-3 pb-20">
+    <div className="space-y-3 pb-20 min-h-0 custom-scrollbar">
       {isLoading ? (
         <div className="space-y-4 pt-4">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -337,33 +337,17 @@ function MapPageComponent() {
 
       <div className="absolute top-0 left-0 right-0 pointer-events-none z-[1200]">
         <div className="pointer-events-none relative h-screen">
-          {isMobile ? (
-            <div className="pointer-events-auto">
-              <Header 
-                  searchTerm={searchTerm} 
-                  onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                  onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
-                  activeFilter={activeFilter} 
-                  onFilterChange={setActiveFilter} 
-              />
-            </div>
-          ) : (
-            <div className="flex justify-end p-6 md:p-10 md:pr-20 pointer-events-none">
-                <div className="pointer-events-auto">
-                  <Header 
-                      variant="floating"
-                      hideUserMenu
-                      searchTerm={searchTerm} 
-                      onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                      onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
-                      activeFilter={activeFilter} 
-                      onFilterChange={setActiveFilter} 
-                  />
-                </div>
-            </div>
-          )}
+          <div className="pointer-events-auto w-full">
+            <Header 
+                searchTerm={searchTerm} 
+                onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+                onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
+                activeFilter={activeFilter} 
+                onFilterChange={setActiveFilter} 
+            />
+          </div>
           
-          <div className="absolute top-[200px] md:top-auto md:bottom-10 right-6 z-[1250] flex flex-col items-center gap-2 pointer-events-auto">
+          <div className="absolute top-[280px] md:top-auto md:bottom-10 right-6 z-[1250] flex flex-col items-center gap-2 pointer-events-auto">
             <button 
               className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
               onClick={() => setIsLoadingLocating(true)} 
@@ -377,27 +361,12 @@ function MapPageComponent() {
 
       {!isMobile && (
         <aside className={cn(
-            "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)] absolute top-6 left-6 w-[480px] rounded-[2.5rem]",
+            "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)] absolute top-32 left-6 w-[480px] rounded-[2.5rem]",
             showDesktopPanel 
               ? "bottom-6" 
               : "h-auto"
         )}>
-            <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10">
-                <div className="flex items-center justify-between gap-4 mb-6 relative z-20">
-                    <div className="w-56 shrink-0 relative z-30">
-                      <LabelMotoLogo className="hover:scale-[1.02] transition-transform" />
-                    </div>
-                    
-                    <div className="bg-white px-5 py-4 rounded-[1.8rem] shadow-sm border border-gray-100 text-center flex-1 relative z-10">
-                        <p className="text-[9px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
-                        <p className="text-[16px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p>
-                    </div>
-                    
-                    <div className="shrink-0 relative z-30">
-                        <UserMenu />
-                    </div>
-                </div>
-
+            <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10 shrink-0">
                 <div className="flex items-center justify-center gap-6 w-full relative z-20">
                     <button 
                         onClick={() => setActiveFilter('shopping')}
@@ -437,10 +406,8 @@ function MapPageComponent() {
                     </button>
                 </div>
                 
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="absolute top-2 right-2 rounded-full h-8 w-8 hover:bg-muted z-30" 
+                <button 
+                  className="absolute top-2 right-2 rounded-full h-8 w-8 hover:bg-muted z-30 flex items-center justify-center" 
                   onClick={() => setShowDesktopPanel(!showDesktopPanel)}
                 >
                     {showDesktopPanel ? (
@@ -448,7 +415,7 @@ function MapPageComponent() {
                     ) : (
                       <ChevronDown className="h-5 w-5 text-brand animate-bounce" />
                     )}
-                </Button>
+                </button>
             </div>
             <div className={cn(
                 "flex-1 overflow-y-auto p-4 custom-scrollbar relative z-0 transition-opacity duration-300",
@@ -463,7 +430,7 @@ function MapPageComponent() {
         <div 
           className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t flex flex-col", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[200px] z-[1100]' : 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[110px] z-[1100]' : 
             drawerHeight === 'half' ? 'bottom-0 h-[50vh] z-[1100]' : 
             'bottom-0 h-[calc(100vh-160px)] z-[1300]'
           )}
@@ -471,7 +438,7 @@ function MapPageComponent() {
           onWheel={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* Zone de Geste (Poignée + Branding + Filtres) */}
+          {/* Zone de Geste (Poignée + Filtres) */}
           <div 
             onTouchStart={onTouchStart} 
             onTouchEnd={onTouchEnd}
@@ -481,23 +448,7 @@ function MapPageComponent() {
               <div className="w-12 h-1.5 bg-muted rounded-full mb-2" />
             </div>
 
-            {/* Branding identique au desktop sur smartphone */}
-            <div className="px-5 pt-2 pb-2">
-                <div className="flex items-center justify-between gap-3 w-full">
-                    <div className="w-[140px] shrink-0" onTouchStart={(e) => e.stopPropagation()}>
-                        <LabelMotoLogo />
-                    </div>
-                    <div className="bg-white px-2 py-1.5 rounded-xl shadow-sm border border-gray-100 text-center flex-1 min-w-0" onTouchStart={(e) => e.stopPropagation()}>
-                        <p className="text-[7px] font-black uppercase tracking-tight text-foreground leading-none">Trouver une concession ?</p>
-                        <p className="text-[9px] font-black italic text-brand mt-0.5 leading-none tracking-tighter">FINI LA GALÈRE.</p>
-                    </div>
-                    <div className="shrink-0" onTouchStart={(e) => e.stopPropagation()}>
-                        <UserMenu />
-                    </div>
-                </div>
-            </div>
-
-            <div className="px-5 pt-2 pb-6 border-b border-border/50">
+            <div className="px-5 pt-2 pb-8 border-b border-border/50">
               <div className="relative flex items-center justify-center">
                 <div className="flex items-center gap-4">
                   <button 
