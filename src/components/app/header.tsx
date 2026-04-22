@@ -428,8 +428,8 @@ const Header: React.FC<HeaderProps> = ({
                 className={cn(
                     "transition-all",
                     isMapPage 
-                      ? "bg-white/95 backdrop-blur-sm px-3 md:px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white w-32 sm:w-44 md:w-[320px]" 
-                      : "w-32 sm:w-44 md:w-[320px] py-1"
+                      ? "bg-white/95 backdrop-blur-sm px-3 md:px-5 py-2 rounded-full shadow-xl border border-white/50 hover:bg-white w-[140px] sm:w-44 md:w-[320px]" 
+                      : "w-[140px] sm:w-44 md:w-[320px] py-1"
                 )}
             />
           </div>
