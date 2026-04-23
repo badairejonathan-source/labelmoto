@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -176,12 +177,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
           <div className="flex flex-1 flex-row items-stretch">
             <div 
-              className="relative w-28 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
+              className="relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
               onClick={(e) => { e.stopPropagation(); setIsZoomDialogOpen(true); }}
             >
               {dealership.imgUrl ? (
                 <>
-                  <Image src={dealership.imgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:brightness-110 duration-700" />
+                  <Image 
+                    src={dealership.imgUrl} 
+                    alt={dealership.title} 
+                    fill 
+                    className="object-cover transition-transform group-hover:brightness-110 duration-700" 
+                    sizes="(max-width: 768px) 160px, 200px"
+                  />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
                     <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
                   </div>
