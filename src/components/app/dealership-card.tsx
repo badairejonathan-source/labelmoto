@@ -62,8 +62,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
-  // Récupération de l'image avec fallback sur plusieurs noms de champs possibles
-  const actualImgUrl = dealership.imgUrl || dealership.imageUrl || dealership.photoUrl || dealership.image || "";
+  // Récupération de l'image avec priorité absolue sur imgUrl
+  const actualImgUrl = useMemo(() => {
+    if (dealership.imgUrl && dealership.imgUrl.trim() !== '') return dealership.imgUrl;
+    if (dealership.imageUrl && dealership.imageUrl.trim() !== '') return dealership.imageUrl;
+    if (dealership.photoUrl && dealership.photoUrl.trim() !== '') return dealership.photoUrl;
+    return "";
+  }, [dealership]);
 
   const approvedComments = useCollection(useMemoFirebase(() => {
     if (!firestore) return null;
