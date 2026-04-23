@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -92,6 +93,7 @@ function MapPageComponent() {
   
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(null);
@@ -123,10 +125,13 @@ function MapPageComponent() {
   
   useEffect(() => { 
     setMounted(true); 
+    // Optimisation TBT : On attend que l'UI soit prête avant d'injecter la carte
+    const timer = setTimeout(() => setShowMap(true), 300);
     if (isMobile && !latParam) {
       setMapCenter([46.603354, 1.888334]);
       setMapZoom(5.5);
     }
+    return () => clearTimeout(timer);
   }, [isMobile, latParam]);
 
   useEffect(() => {
@@ -315,24 +320,30 @@ function MapPageComponent() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
-        <MapComponent 
-          dealerships={filteredDealerships} 
-          center={mapCenter} 
-          zoom={mapZoom} 
-          hoveredDealershipId={hoveredDealershipId} 
-          selectedDealershipId={selectedDealershipId} 
-          onMarkerClick={handleMarkerClick} 
-          onMarkerMouseOver={setHoveredDealershipId} 
-          onMarkerMouseOut={() => setHoveredDealershipId(null)} 
-          onMapChange={handleMapChange} 
-          onMapClick={handleUserMapInteraction} 
-          onUserInteraction={handleUserMapInteraction} 
-          bottomPadding={bottomPadding} 
-          leftPadding={leftPadding}
-          isLocating={isLocating} 
-          onLocateEnd={() => setIsLoadingLocating(false)} 
-          onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); setSelectionSource('external'); }} 
-        />
+        {showMap ? (
+            <MapComponent 
+            dealerships={filteredDealerships} 
+            center={mapCenter} 
+            zoom={mapZoom} 
+            hoveredDealershipId={hoveredDealershipId} 
+            selectedDealershipId={selectedDealershipId} 
+            onMarkerClick={handleMarkerClick} 
+            onMarkerMouseOver={setHoveredDealershipId} 
+            onMarkerMouseOut={() => setHoveredDealershipId(null)} 
+            onMapChange={handleMapChange} 
+            onMapClick={handleUserMapInteraction} 
+            onUserInteraction={handleUserMapInteraction} 
+            bottomPadding={bottomPadding} 
+            leftPadding={leftPadding}
+            isLocating={isLocating} 
+            onLocateEnd={() => setIsLoadingLocating(false)} 
+            onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); setSelectionSource('external'); }} 
+            />
+        ) : (
+            <div className="w-full h-full flex items-center justify-center bg-muted/10">
+                <Loader2 className="h-10 w-10 animate-spin text-brand/20" />
+            </div>
+        )}
       </div>
 
       <div className="absolute top-0 left-0 right-0 pointer-events-none z-[1200]">
@@ -379,7 +390,7 @@ function MapPageComponent() {
         >
             <div className="relative px-6 pt-6 pb-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10 shrink-0">
                 <div className="flex items-center justify-between gap-3 w-full mb-6">
-                    <div className="w-44"><LabelMotoLogo /></div>
+                    <div className="w-44"><LabelMotoLogo noBubble /></div>
                     <div className="flex-1 bg-white border border-gray-100 rounded-full py-2 px-3 text-center shadow-sm">
                         <p className="text-[10px] font-black uppercase leading-tight text-foreground">Trouver une concession ?</p>
                         <p className="text-xs font-black italic text-brand leading-none tracking-tighter">FINI LA GALÈRE.</p>

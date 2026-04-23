@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -136,13 +137,13 @@ export const UserMenu = () => {
                 <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
                     <Link href="/entretien" className="flex flex-col items-center gap-3 group">
                         <div className="h-14 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
-                            <Image src="/images/icon-entretienrevision.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
+                            <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Entretien</span>
                     </Link>
                     <Link href="/info" className="flex flex-col items-center gap-3 group">
                         <div className="h-14 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
-                            <Image src="/images/icon-conseils.webp" alt="" width={34} height={34} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert" />
+                            <Image src="/images/icon-conseils.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Conseils</span>
                     </Link>
@@ -205,6 +206,7 @@ const Header: React.FC<HeaderProps> = ({
   const [allDealers, setAllDealers] = useState<Suggestion[]>(globalDealersCache || []);
   const [mounted, setMounted] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const isMapPage = pathname === '/map';
@@ -215,9 +217,11 @@ const Header: React.FC<HeaderProps> = ({
     setMounted(true);
   }, []);
 
+  // Optimisation TBT : On ne télécharge les établissements que si l'utilisateur focus la barre de recherche
   useEffect(() => {
     const fetchDealers = async () => {
-        if (!firestore || globalDealersCache) return;
+        if (!firestore || globalDealersCache || !isFocused) return;
+        setIsDataLoading(true);
         try {
             const q = query(collection(firestore, 'concessions'), limit(3000));
             const snapshot = await getDocs(q);
@@ -235,10 +239,12 @@ const Header: React.FC<HeaderProps> = ({
             setAllDealers(dealers);
         } catch (e) {
             console.error("Erreur suggestions dealers:", e);
+        } finally {
+            setIsDataLoading(false);
         }
     };
-    if (mounted) fetchDealers();
-  }, [firestore, mounted]);
+    if (mounted && isFocused) fetchDealers();
+  }, [firestore, mounted, isFocused]);
 
   useEffect(() => {
     if (searchTerm.trim().length < 1) {
@@ -374,7 +380,15 @@ const Header: React.FC<HeaderProps> = ({
         onKeyDown={handleKeyDown} 
         autoComplete="off" 
       />
-      {searchTerm && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-12 md:right-20 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button"><X className="h-4 w-4" /></button>)}
+      
+      {/* Indicateur de chargement discret pendant le lazy-fetch */}
+      {isDataLoading && (
+        <div className="absolute top-1/2 right-20 md:right-28 -translate-y-1/2 z-20">
+            <Loader2 className="h-4 w-4 animate-spin text-brand/40" />
+        </div>
+      )}
+
+      {searchTerm && !isDataLoading && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-12 md:right-20 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button"><X className="h-4 w-4" /></button>)}
       <Button 
         type="submit" 
         size="icon" 
@@ -420,7 +434,7 @@ const Header: React.FC<HeaderProps> = ({
           <div className="flex flex-row items-center justify-between gap-2 md:gap-6 w-full">
             <div className="shrink-0 relative z-[150]">
               <LabelMotoLogo 
-                  noBubble={!isMapPage}
+                  noBubble={isMapPage}
                   className={cn(
                       "transition-all w-[140px] sm:w-44 md:w-[320px] py-1"
                   )}
