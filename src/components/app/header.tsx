@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -27,30 +26,6 @@ import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
 import useWindowSize from '@/hooks/use-window-size';
 
 const brandsList = Object.keys(brandLogos);
-
-interface HeaderProps {
-    searchTerm: string;
-    onSearchTermChange: (term: string) => void;
-    onSearch: () => void;
-    className?: string;
-    activeFilter?: 'shopping' | 'service' | null;
-    onFilterChange?: (filter: 'shopping' | 'service' | null) => void;
-    placeholderText?: string;
-    variant?: 'default' | 'floating';
-    hideUserMenu?: boolean;
-}
-
-interface Suggestion {
-    type: 'city' | 'dept' | 'dealer' | 'brand-location' | 'brand-only';
-    label: string;
-    subLabel?: string;
-    lat?: number;
-    lng?: number;
-    zoom?: number;
-    id?: string;
-    brand?: string;
-    score?: number;
-}
 
 export const UserMenu = () => {
   const { user, isUserLoading } = useUser();
@@ -416,7 +391,7 @@ const Header: React.FC<HeaderProps> = ({
           <div className="flex flex-row items-center justify-between gap-2 md:gap-6 w-full">
             <div className="shrink-0 relative z-[150]">
               <LabelMotoLogo 
-                  noBubble={isMapPage}
+                  noBubble={!isMapPage}
                   className={cn(
                       "transition-all w-[140px] sm:w-44 md:w-[320px] py-1"
                   )}

@@ -69,7 +69,7 @@ const Footer = () => {
             {/* Logo et Copyright empilés sur mobile, alignés sur desktop */}
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
               <div className="w-48 sm:w-56 shrink-0">
-                <LabelMotoLogo />
+                <LabelMotoLogo noBubble />
               </div>
               {currentYear && (
                 <p className="text-[10px] sm:text-xs text-muted-foreground font-medium whitespace-nowrap">
