@@ -118,7 +118,7 @@ function MapPageComponent() {
 
   const leftPadding = useMemo(() => {
     if (isMobile) return 0;
-    return showDesktopPanel ? 480 : 0;
+    return showDesktopPanel ? 520 : 0;
   }, [isMobile, showDesktopPanel]);
   
   useEffect(() => { 
@@ -361,7 +361,7 @@ function MapPageComponent() {
 
       {!isMobile && (
         <aside className={cn(
-            "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)] absolute top-32 left-6 w-[480px] rounded-[2.5rem]",
+            "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)] absolute top-32 left-6 w-[520px] rounded-[2.5rem]",
             showDesktopPanel 
               ? "bottom-6" 
               : "h-auto"
@@ -371,7 +371,6 @@ function MapPageComponent() {
         onMouseDown={(e) => e.stopPropagation()}
         >
             <div className="relative px-6 pt-6 pb-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10 shrink-0">
-                {/* Branding Block reintegred for Desktop sidebar only */}
                 <div className="flex items-center justify-between gap-3 w-full mb-6">
                     <div className="w-44"><LabelMotoLogo /></div>
                     <div className="flex-1 bg-white border border-gray-100 rounded-2xl py-2 px-3 text-center shadow-sm">
@@ -452,7 +451,6 @@ function MapPageComponent() {
           onWheel={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* Zone de Geste (Poignée + Filtres) - Branding handled by main Header on Mobile */}
           <div 
             onTouchStart={onTouchStart} 
             onTouchEnd={onTouchEnd}
@@ -517,7 +515,6 @@ function MapPageComponent() {
               </div>
             </div>
           </div>
-          {/* Zone de Liste scrollable */}
           <div className="flex-1 overflow-y-auto mt-3 px-3 min-h-0 custom-scrollbar">
             {listContent}
           </div>
