@@ -23,12 +23,10 @@ import {
   Zap,
   Cpu,
   RefreshCw,
-  Trophy,
-  ThumbsDown,
   LayoutGrid,
   FileText,
-  MessageSquare,
-  ArrowRight
+  ArrowRight,
+  ClipboardList
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -43,12 +41,6 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -71,7 +63,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
 
   // Scroll to top on model change
   useEffect(() => { 
-    window.scrollTo(0, 0);
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
     setSelectedVariantIndex(0); 
   }, [modelId]);
 
@@ -84,7 +76,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     
     const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
     
-    // Robust data recovery from different possible locations
+    // Mapping flexible pour parer aux variations de structure dans Firestore
     const sg = fiche.service_guide || {};
     const rel = fiche.relations || {};
 
@@ -127,8 +119,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         rearTire: cp.rear_tire || "N/A"
       },
       verdict: {
-        pros: sg.pros || fiche.pros || [],
-        cons: sg.cons || fiche.cons || []
+        pros: sg.known_issues ? [] : (sg.pros || fiche.pros || []),
+        cons: sg.known_issues ? [] : (sg.cons || fiche.cons || [])
       },
       serviceSchedule: sg.service_schedule || fiche.service_schedule || [],
       consumables: sg.consumables || fiche.consumables || [],
@@ -148,12 +140,10 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
         <main className="container mx-auto px-4 py-8">
             <div className="max-w-5xl mx-auto space-y-8">
-                <Skeleton className="h-4 w-40" />
-                <Skeleton className="h-12 w-full rounded-full" />
-                <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <Skeleton className="h-64 rounded-3xl" />
-                    <Skeleton className="h-64 rounded-3xl" />
+                <div className="pt-28 md:pt-32 space-y-6">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-12 w-full rounded-full" />
+                    <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
                 </div>
             </div>
         </main>
@@ -210,7 +200,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85] mb-2">{displayData.modelName}</h1>
                             <p className="text-lg sm:text-2xl font-black text-brand italic">Millésime {displayData.year}</p>
                         </div>
-                        <div className="w-48 sm:w-64 drop-shadow-2xl brightness-0 invert opacity-80"><LabelMotoLogo /></div>
+                        <div className="w-48 sm:w-64 drop-shadow-2xl brightness-0 invert opacity-80"><LabelMotoLogo noBubble /></div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/20 shadow-2xl">
@@ -323,14 +313,20 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 {displayData.consumables.length > 0 && (
                     <div className="space-y-6">
                         <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3 pl-2"><Droplets className="h-6 w-6 text-blue-500" /> Consommables & Fluides</h3>
-                        <div className="flex flex-wrap gap-4">
-                            {displayData.consumables.map((c: any, i: number) => (
-                                <div key={i} className="bg-white border-2 border-muted px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:border-blue-200 transition-all group flex items-center gap-6 min-w-[200px]">
-                                    <span className="font-black uppercase text-[10px] text-muted-foreground group-hover:text-blue-500 transition-colors">{c.label}</span>
-                                    <span className="font-black text-foreground text-sm">{c.value}</span>
-                                </div>
-                            ))}
-                        </div>
+                        <Card className="border-none shadow-2xl bg-card rounded-[2rem] overflow-hidden">
+                            <CardContent className="p-0">
+                                <Table>
+                                    <TableBody>
+                                        {displayData.consumables.map((c: any, i: number) => (
+                                            <TableRow key={i} className="hover:bg-muted/50 transition-colors">
+                                                <TableCell className="py-5 px-8 font-black uppercase text-[10px] text-muted-foreground w-1/2">{c.label || c.name}</TableCell>
+                                                <TableCell className="py-5 px-8 font-black text-foreground text-sm text-right">{c.value || c.quantity}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
                     </div>
                 )}
 
@@ -351,7 +347,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-sm italic text-muted-foreground">Aucun point de vigilance particulier répertorié.</p>
+                                <p className="text-sm italic text-muted-foreground font-medium">Aucun point de vigilance particulier répertorié pour ce modèle.</p>
                             )}
                         </CardContent>
                     </Card>
@@ -371,7 +367,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-sm italic text-muted-foreground">Appliquez les révisions standards pour une longévité optimale.</p>
+                                <p className="text-sm italic text-muted-foreground font-medium">Suivez les préconisations constructeurs pour une durée de vie optimale.</p>
                             )}
                         </CardContent>
                     </Card>
@@ -394,16 +390,16 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                         </Link>
                                     ))
                                 ) : (
-                                    <>
+                                    <div className="space-y-2">
                                         <Link href="/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter" className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
-                                            <span className="text-xs font-black uppercase">ACHAT MOTO A2 GUIDE DEBUTER</span>
+                                            <span className="text-xs font-black uppercase">CHOISIR SA PREMIÈRE MOTO A2</span>
                                             <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
                                         </Link>
                                         <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
-                                            <span className="text-xs font-black uppercase">BUDGET MOTO PAR MOIS</span>
+                                            <span className="text-xs font-black uppercase">VOTRE BUDGET MOTO RÉEL</span>
                                             <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
                                         </Link>
-                                    </>
+                                    </div>
                                 )}
                             </div>
                         </CardContent>
@@ -424,7 +420,11 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="p-6 text-center text-xs font-bold text-muted-foreground">Consultez le catalogue complet pour voir les alternatives.</p>
+                                    <div className="p-10 text-center space-y-4">
+                                        <ClipboardList className="h-10 w-10 text-muted-foreground/20 mx-auto" />
+                                        <p className="text-xs font-bold text-muted-foreground">Découvrez d'autres modèles dans notre catalogue complet d'entretien.</p>
+                                        <Button asChild variant="outline" className="rounded-full border-brand text-brand hover:bg-brand hover:text-white font-black uppercase text-[10px] px-6"><Link href="/entretien">Voir tout le catalogue</Link></Button>
+                                    </div>
                                 )}
                             </div>
                         </CardContent>
@@ -432,34 +432,30 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </div>
 
                 {/* FAQ */}
-                <div className="space-y-8 pt-8">
-                    <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
-                        <HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes
-                    </h3>
-                    <div className="space-y-4">
-                        {displayData.faq.length > 0 ? (
-                            displayData.faq.map((item: any, idx: number) => (
+                {displayData.faq.length > 0 && (
+                    <div className="space-y-8 pt-8">
+                        <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
+                            <HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes
+                        </h3>
+                        <div className="space-y-4">
+                            {displayData.faq.map((item: any, idx: number) => (
                                 <Card key={idx} className="border-none shadow-xl rounded-[2rem] bg-card overflow-hidden">
                                     <CardHeader className="p-8 bg-muted/20 border-b">
-                                        <CardTitle className="text-lg font-black uppercase leading-tight">{item.q}</CardTitle>
+                                        <CardTitle className="text-lg font-black uppercase leading-tight">{item.q || item.question}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="p-8">
-                                        <p className="text-base font-bold text-muted-foreground leading-relaxed">{item.a}</p>
+                                        <p className="text-base font-bold text-muted-foreground leading-relaxed">{item.a || item.answer}</p>
                                     </CardContent>
                                 </Card>
-                            ))
-                        ) : (
-                            Array.from({ length: 3 }).map((_, i) => (
-                                <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />
-                            ))
-                        )}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {displayData.conclusion && (
                     <div className="bg-muted/30 p-12 rounded-[2.5rem] border-2 border-dashed text-center relative overflow-hidden shadow-inner mt-16">
                         <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-                            <LabelMotoLogo />
+                            <LabelMotoLogo noBubble />
                         </div>
                         <p className="text-xl font-bold italic text-muted-foreground leading-relaxed">"{displayData.conclusion}"</p>
                         <div className="mt-8 flex items-center justify-center gap-4">
