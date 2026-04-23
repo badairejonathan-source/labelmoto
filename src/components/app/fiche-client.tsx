@@ -23,7 +23,8 @@ import {
   RefreshCw,
   LayoutGrid,
   FileText,
-  ClipboardList
+  ClipboardList,
+  CircleDot
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -36,24 +37,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Utilitaire pour extraire une valeur d'un objet de manière flexible
-const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "") => {
+const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "N/A") => {
   if (!obj || typeof obj !== 'object') return defaultValue;
   for (const key of preferredKeys) {
     if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
       return String(obj[key]);
     }
   }
-  const values = Object.values(obj).filter(v => typeof v === 'string' || typeof v === 'number');
-  if (values.length > 0) return String(values[0]);
   return defaultValue;
 };
 
@@ -109,7 +107,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         clutch: activeVariant.clutch || ts.clutch || "Multidisque"
       },
       cycleParts: {
-        frame: getRobustValue(cp, ['cadre', 'frame', 'chassis']),
+        frame: getRobustValue(cp, ['frame', 'cadre', 'chassis']),
         frontBrake: getRobustValue(cp, ['front_brake', 'frein_avant']),
         rearBrake: getRobustValue(cp, ['rear_brake', 'frein_arriere']),
         frontSuspension: getRobustValue(cp, ['front_suspension', 'suspension_avant', 'fourche']),
@@ -117,7 +115,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         frontTire: getRobustValue(cp, ['front_tire', 'pneu_avant']),
         rearTire: getRobustValue(cp, ['rear_tire', 'pneu_arriere']),
       },
-      electronics: activeVariant.electronics || ts.electronics || ["ABS"],
       dimensions: {
         wetWeight: (activeVariant.weight_tpf_kg || ts.weight_tpf_kg) ? `${activeVariant.weight_tpf_kg || ts.weight_tpf_kg} kg` : "N/A",
         seatHeight: (activeVariant.seat_height_mm || ts.seat_height_mm) ? `${activeVariant.seat_height_mm || ts.seat_height_mm} mm` : "N/A",
@@ -181,7 +178,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-12">
-            {/* HERO SECTION */}
+            {/* HERO SECTION - DESIGN ORIGINAL LABEL MOTO */}
             <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[450px] flex flex-col justify-end">
                 <div className="absolute inset-0 z-0">
                     <Image 
@@ -206,15 +203,26 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/20 shadow-2xl">
-                        <div className="space-y-1"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Gauge className="h-3.5 w-3.5" /> Puissance</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.power}</p></div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Scale className="h-3.5 w-3.5" /> Poids</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.wetWeight}</p></div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Bike className="h-3.5 w-3.5" /> Selle</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.seatHeight}</p></div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><CheckCircle2 className="h-3.5 w-3.5" /> Permis</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.bridage}</p></div>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Gauge className="h-3.5 w-3.5" /> Puissance</div>
+                          <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.power}</p>
+                        </div>
+                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6">
+                          <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Scale className="h-3.5 w-3.5" /> Poids</div>
+                          <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.wetWeight}</p>
+                        </div>
+                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6">
+                          <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Bike className="h-3.5 w-3.5" /> Selle</div>
+                          <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.seatHeight}</p>
+                        </div>
+                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6">
+                          <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><ShieldCheck className="h-3.5 w-3.5" /> Permis</div>
+                          <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.bridage}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* SOMMAIRE & INTRO */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-10">
                     {displayData.introduction && (
@@ -227,7 +235,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     {/* SELECTEUR DE VARIANTE */}
                     {displayData.hasVariants && (
                         <div className="bg-brand/5 p-6 rounded-[2rem] border-2 border-brand/20 shadow-inner">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4 text-center">Plusieurs versions disponibles pour ce modèle :</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4 text-center">Plusieurs versions disponibles :</p>
                             <div className="flex flex-wrap justify-center gap-3">
                                 {displayData.variants.map((v: any, i: number) => (
                                     <Button key={i} onClick={() => setSelectedVariantIndex(i)} variant={selectedVariantIndex === i ? 'default' : 'outline'} className={cn("rounded-full font-black uppercase text-[9px] h-10 px-6", selectedVariantIndex === i ? "bg-brand" : "border-brand/30 text-brand")}>{v.label || `Variante ${i+1}`}</Button>
@@ -236,7 +244,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </div>
                     )}
 
-                    {/* CARACTÉRISTIQUES TECHNIQUES */}
+                    {/* SPÉCIFICATIONS TECHNIQUES DÉTAILLÉES */}
                     <div id="tech" className="scroll-mt-28 space-y-8">
                         <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-2 flex items-center gap-4"><Cpu className="h-8 w-8 text-brand" /> Spécifications Techniques</h2>
                         
@@ -250,22 +258,24 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                             <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Cylindrée</TableCell><TableCell className="font-bold text-sm">{displayData.engine.displacement}</TableCell></TableRow>
                                             <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Alimentation</TableCell><TableCell className="font-bold text-sm">{displayData.engine.alimentation}</TableCell></TableRow>
                                             <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Boîte</TableCell><TableCell className="font-bold text-sm">{displayData.transmission.gearbox}</TableCell></TableRow>
-                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Finale</TableCell><TableCell className="font-bold text-sm">{displayData.transmission.finalDrive}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Finale</TableCell><TableCell className="font-bold text-sm">{displayData.transmission.finalDrive}</TableCell></TableRow>
+                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Embrayage</TableCell><TableCell className="font-bold text-sm">{displayData.transmission.clutch}</TableCell></TableRow>
                                         </TableBody>
                                     </Table>
                                 </CardContent>
                             </Card>
 
                             <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-card">
-                                <CardHeader className="bg-muted/30 py-4"><CardTitle className="text-lg font-black uppercase flex items-center gap-2"><LayoutGrid className="h-5 w-5 text-brand" /> Partie-Cycle</CardTitle></CardHeader>
+                                <CardHeader className="bg-muted/30 py-4"><CardTitle className="text-lg font-black uppercase flex items-center gap-2"><LayoutGrid className="h-5 w-5 text-brand" /> Partie-Cycle & Freinage</CardTitle></CardHeader>
                                 <CardContent className="p-0">
                                     <Table>
                                         <TableBody>
                                             <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground w-1/3">Cadre</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frame}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Susp. Avant</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontSuspension}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Frein Avant</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontBrake}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu Avant</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontTire}</TableCell></TableRow>
-                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu Arrière</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.rearTire}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Fourche</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontSuspension}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Amortisseur</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.rearSuspension}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Frein AV</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontBrake}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu AV</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontTire}</TableCell></TableRow>
+                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu AR</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.rearTire}</TableCell></TableRow>
                                         </TableBody>
                                     </Table>
                                 </CardContent>
@@ -273,13 +283,12 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </div>
                     </div>
 
-                    {/* GUIDE D'ENTRETIEN */}
+                    {/* GUIDE D'ENTRETIEN OFFICIEL */}
                     <div id="service" className="scroll-mt-28 space-y-8">
                         <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-2 flex items-center gap-4"><Wrench className="h-8 w-8 text-brand" /> Guide d'Entretien Officiel</h2>
                         
-                        {/* TABLEAU DES RÉVISIONS */}
                         <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
-                            <CardHeader className="bg-brand text-white py-6">
+                            <CardHeader className="bg-brand text-white py-6 px-8">
                                 <div className="flex items-center justify-between">
                                     <CardTitle className="text-xl font-black uppercase tracking-widest flex items-center gap-3"><ClipboardList className="h-6 w-6" /> Plan de Maintenance</CardTitle>
                                     <div className="hidden sm:block text-[10px] font-black uppercase tracking-tighter opacity-80">Données Constructeur</div>
@@ -290,28 +299,27 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                     <TableHeader className="bg-muted/50">
                                         <TableRow>
                                             <TableHead className="font-black uppercase text-[10px] py-4 pl-8">Intervalle</TableHead>
-                                            <TableHead className="font-black uppercase text-[10px] py-4">Opérations de Contrôle</TableHead>
-                                            <TableHead className="font-black uppercase text-[10px] py-4 text-right pr-8">Budget Estimé</TableHead>
+                                            <TableHead className="font-black uppercase text-[10px] py-4">Opérations principales</TableHead>
+                                            <TableHead className="font-black uppercase text-[10px] py-4 text-right pr-8">Budget Moyen</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {displayData.serviceSchedule.length > 0 ? displayData.serviceSchedule.map((s: any, i: number) => (
-                                            <TableRow key={i} className="hover:bg-muted/20 border-muted/50">
+                                            <TableRow key={i} className="hover:bg-muted/20 border-muted/50 transition-colors">
                                                 <TableCell className="font-black text-brand py-6 pl-8">{getRobustValue(s, ['km', 'intervalle', 'label', 'title'])}</TableCell>
                                                 <TableCell className="font-medium text-sm py-6 leading-relaxed max-w-md">{getRobustValue(s, ['operations', 'content', 'description'])}</TableCell>
                                                 <TableCell className="text-right pr-8 py-6">
-                                                    <div className="inline-block bg-brand/10 text-brand px-4 py-1.5 rounded-full font-black text-sm">{getRobustValue(s, ['price', 'prix', 'budget'], 'N/A')}</div>
+                                                    <div className="inline-block bg-brand/10 text-brand px-4 py-1.5 rounded-full font-black text-sm">{getRobustValue(s, ['price', 'prix', 'budget'])}</div>
                                                 </TableCell>
                                             </TableRow>
                                         )) : (
-                                            <TableRow><TableCell colSpan={3} className="text-center py-10 text-muted-foreground font-bold italic">Données de périodicité en cours d'actualisation...</TableCell></TableRow>
+                                            <TableRow><TableCell colSpan={3} className="text-center py-10 text-muted-foreground font-bold italic">Données en cours d'actualisation...</TableCell></TableRow>
                                         )}
                                     </TableBody>
                                 </Table>
                             </CardContent>
                         </Card>
 
-                        {/* CONSOMMABLES */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                              <div className="space-y-6">
                                 <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2 pl-2"><Droplets className="h-5 w-5 text-brand" /> Consommables</h3>
@@ -330,30 +338,29 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                              </div>
 
                              <div className="space-y-6">
-                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2 pl-2"><AlertTriangle className="h-5 w-5 text-orange-500" /> Points d'Attention</h3>
+                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2 pl-2"><AlertTriangle className="h-5 w-5 text-orange-500" /> Points de Vigilance</h3>
                                 <div className="bg-orange-50/30 border-2 border-orange-100 p-6 rounded-[2rem] space-y-6 shadow-sm">
                                     <div className="space-y-3">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-orange-600">Problèmes connus :</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-orange-600">Défauts connus :</p>
                                         <ul className="space-y-2">
                                             {displayData.knownIssues.map((issue: string, i: number) => (
                                                 <li key={i} className="flex items-start gap-3 text-sm font-bold text-foreground/80">
-                                                    <span className="h-1.5 w-1.5 rounded-full bg-orange-400 mt-2 shrink-0" />
+                                                    <CircleDot className="h-1.5 w-1.5 text-orange-400 mt-2 shrink-0" />
                                                     {issue}
                                                 </li>
                                             ))}
-                                            {displayData.knownIssues.length === 0 && <li className="italic text-muted-foreground text-sm">Aucun défaut majeur signalé.</li>}
+                                            {displayData.knownIssues.length === 0 && <li className="italic text-muted-foreground text-sm">Aucun défaut majeur signalé par la communauté.</li>}
                                         </ul>
                                     </div>
                                     <div className="pt-4 border-t border-orange-100 space-y-3">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-green-600">Conseils longévité :</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-green-600">Conseils de longévité :</p>
                                         <ul className="space-y-2">
                                             {displayData.longevityTips.map((tip: string, i: number) => (
                                                 <li key={i} className="flex items-start gap-3 text-sm font-bold text-foreground/80">
-                                                    <span className="h-1.5 w-1.5 rounded-full bg-green-400 mt-2 shrink-0" />
+                                                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
                                                     {tip}
                                                 </li>
                                             ))}
-                                            {displayData.longevityTips.length === 0 && <li className="italic text-muted-foreground text-sm">Suivez le plan d'entretien régulier.</li>}
                                         </ul>
                                     </div>
                                 </div>
@@ -368,7 +375,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                              <div className="space-y-4">
                                 {displayData.faq.map((item: any, i: number) => (
                                     <Card key={i} className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-card transition-all hover:shadow-2xl">
-                                        <CardHeader className="bg-muted/20 p-6 sm:p-8">
+                                        <CardHeader className="bg-muted/20 p-6 sm:p-8 border-b">
                                             <CardTitle className="text-lg font-black uppercase leading-snug">{getRobustValue(item, ['question', 'q', 'titre'])}</CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-6 sm:p-8">
@@ -383,7 +390,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     {/* CONCLUSION */}
                     {displayData.conclusion && (
                         <div className="mt-16 pt-8 border-t-4 border-dashed border-muted">
-                            <div className="flex items-center gap-3 mb-6"><ShieldCheck className="h-8 w-8 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de l'expert</h3></div>
+                            <div className="flex items-center gap-3 mb-6"><ShieldCheck className="h-8 w-8 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">L'avis de l'expert</h3></div>
                             <p className="text-lg text-foreground font-black leading-relaxed italic">{displayData.conclusion}</p>
                             <div className="flex justify-end items-center mt-12">
                                 <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
@@ -393,25 +400,24 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     )}
                 </div>
 
-                {/* SIDEBAR */}
+                {/* SIDEBAR NAVIGATION & CTA */}
                 <aside className="lg:col-span-4 relative">
                     <div className="lg:sticky lg:top-24 space-y-8">
-                        {/* NAVIGATION RAPIDE */}
                         <Card className="border-2 border-brand/20 shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
-                            <CardHeader className="bg-brand text-white p-6"><CardTitle className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3"><LayoutGrid className="h-5 w-5" /> Navigation Rapide</CardTitle></CardHeader>
+                            <CardHeader className="bg-brand text-white p-6"><CardTitle className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3"><LayoutGrid className="h-5 w-5" /> Sommaire</CardTitle></CardHeader>
                             <CardContent className="p-6">
                                 <nav className="space-y-4">
                                     <a href="#tech" className="flex items-center gap-4 text-sm font-black text-foreground hover:text-brand transition-colors group/nav">
-                                        <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all"><Cpu className="h-4 w-4" /></div>
+                                        <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-sm"><Cpu className="h-4 w-4" /></div>
                                         Fiche Technique
                                     </a>
                                     <a href="#service" className="flex items-center gap-4 text-sm font-black text-foreground hover:text-brand transition-colors group/nav">
-                                        <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all"><Wrench className="h-4 w-4" /></div>
-                                        Entretien & Budget
+                                        <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-sm"><Wrench className="h-4 w-4" /></div>
+                                        Plan d'Entretien
                                     </a>
                                     {displayData.faq.length > 0 && (
                                         <a href="#faq" className="flex items-center gap-4 text-sm font-black text-foreground hover:text-brand transition-colors group/nav">
-                                            <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all"><HelpCircle className="h-4 w-4" /></div>
+                                            <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-sm"><HelpCircle className="h-4 w-4" /></div>
                                             FAQ Modèle
                                         </a>
                                     )}
@@ -419,10 +425,9 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                             </CardContent>
                         </Card>
 
-                        {/* ARTICLES LIÉS */}
                         {displayData.relations.articles.length > 0 && (
                              <Card className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-muted/20">
-                                <CardHeader className="p-6 pb-2"><CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">Conseils Pratiques</CardTitle></CardHeader>
+                                <CardHeader className="p-6 pb-2"><CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">Articles Liés</CardTitle></CardHeader>
                                 <CardContent className="p-4 space-y-3">
                                     {displayData.relations.articles.map((artId: string, i: number) => (
                                         <Link key={i} href={`/info/${artId}`} className="block p-4 bg-white rounded-2xl border-2 border-transparent hover:border-brand hover:shadow-lg transition-all group">
@@ -436,14 +441,13 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                              </Card>
                         )}
 
-                        {/* CTA CARTE */}
                         <Card className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-brand relative group cursor-pointer" onClick={() => router.push('/map')}>
                              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
                              <CardContent className="relative z-10 p-10 text-center space-y-6">
                                 <div className="h-20 w-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto border-2 border-white/30 animate-bounce-subtle"><RefreshCw className="h-10 w-10 text-white" /></div>
-                                <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">Trouver un pro pour l'entretien ?</h4>
-                                <p className="text-white/80 text-xs font-bold leading-relaxed">Réservez votre révision dans l'atelier le plus proche.</p>
-                                <Button className="w-full bg-white text-brand hover:bg-white/90 font-black uppercase tracking-widest text-[10px] py-6 rounded-full shadow-xl">🔘 Voir les ateliers à proximité</Button>
+                                <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">Besoin d'un atelier ?</h4>
+                                <p className="text-white/80 text-xs font-bold leading-relaxed">Trouvez un professionnel qualifié pour votre révision à proximité.</p>
+                                <Button className="w-full bg-white text-brand hover:bg-white/90 font-black uppercase tracking-widest text-[10px] py-6 rounded-full shadow-xl">🔘 Voir la carte des ateliers</Button>
                              </CardContent>
                         </Card>
                     </div>
