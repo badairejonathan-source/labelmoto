@@ -9,7 +9,6 @@ import {
   Gauge, 
   Droplets, 
   Wrench, 
-  Settings2, 
   Loader2, 
   CheckCircle2, 
   AlertTriangle, 
@@ -18,14 +17,12 @@ import {
   ChevronRight, 
   Bike, 
   Scale,
-  Info,
   ShieldCheck,
   Zap,
   Cpu,
   RefreshCw,
   LayoutGrid,
   FileText,
-  ArrowRight,
   ClipboardList
 } from 'lucide-react';
 
@@ -39,13 +36,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Utilitaire pour extraire une valeur d'un objet de manière flexible
+const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "") => {
+  if (!obj || typeof obj !== 'object') return defaultValue;
+  
+  // 1. Chercher dans les clés préférées
+  for (const key of preferredKeys) {
+    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+      return String(obj[key]);
+    }
+  }
+  
+  // 2. Fallback sur n'importe quelle clé si c'est un objet simple (souvent le cas pour les tableaux de données)
+  const values = Object.values(obj).filter(v => typeof v === 'string' || typeof v === 'number');
+  if (values.length > 0) return String(values[0]);
+
+  return defaultValue;
+};
 
 export default function FicheClient({ modelId }: { modelId: string }) {
   const router = useRouter();
@@ -61,7 +76,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
-  // Scroll to top on model change
   useEffect(() => { 
     if (typeof window !== 'undefined') window.scrollTo(0, 0);
     setSelectedVariantIndex(0); 
@@ -73,10 +87,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     const variants = fiche.variants || [];
     const ts = fiche.technical_sheet || {};
     const activeVariant = variants[selectedVariantIndex] || {};
-    
     const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
-    
-    // Mapping flexible pour parer aux variations de structure dans Firestore
     const sg = fiche.service_guide || {};
     const rel = fiche.relations || {};
 
@@ -100,27 +111,12 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       transmission: {
         gearbox: activeVariant.gearbox || ts.gearbox || "6 rapports",
         finalDrive: activeVariant.final_drive || ts.final_drive || "Chaîne",
-        clutch: activeVariant.clutch || ts.clutch || "Multidisque en bain d'huile"
+        clutch: activeVariant.clutch || ts.clutch || "Multidisque"
       },
-      electronics: activeVariant.electronics || ts.electronics || ["ABS de série"],
+      electronics: activeVariant.electronics || ts.electronics || ["ABS"],
       dimensions: {
-        seatHeight: (activeVariant.seat_height_mm || ts.seat_height_mm) ? `${activeVariant.seat_height_mm || ts.seat_height_mm} mm` : "N/A",
         wetWeight: (activeVariant.weight_tpf_kg || ts.weight_tpf_kg) ? `${activeVariant.weight_tpf_kg || ts.weight_tpf_kg} kg` : "N/A",
-        fuelCapacity: (activeVariant.tank_l || ts.tank_l) ? `${activeVariant.tank_l || ts.tank_l} L` : "N/A",
-        wheelbase: (activeVariant.wheelbase_mm || ts.wheelbase_mm) ? `${activeVariant.wheelbase_mm || ts.wheelbase_mm} mm` : "N/A",
-      },
-      chassis: {
-        frame: cp.frame || "N/A",
-        frontSuspension: cp.front_suspension || "N/A",
-        rearSuspension: cp.rear_suspension || "N/A",
-        frontBrake: cp.front_brake || "N/A",
-        rearBrake: cp.rear_brake || "N/A",
-        frontTire: cp.front_tire || "N/A",
-        rearTire: cp.rear_tire || "N/A"
-      },
-      verdict: {
-        pros: sg.known_issues ? [] : (sg.pros || fiche.pros || []),
-        cons: sg.known_issues ? [] : (sg.cons || fiche.cons || [])
+        seatHeight: (activeVariant.seat_height_mm || ts.seat_height_mm) ? `${activeVariant.seat_height_mm || ts.seat_height_mm} mm` : "N/A",
       },
       serviceSchedule: sg.service_schedule || fiche.service_schedule || [],
       consumables: sg.consumables || fiche.consumables || [],
@@ -139,12 +135,10 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     <div className="min-h-screen bg-background">
         <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
         <main className="container mx-auto px-4 py-8">
-            <div className="max-w-5xl mx-auto space-y-8">
-                <div className="pt-28 md:pt-32 space-y-6">
-                    <Skeleton className="h-4 w-40" />
-                    <Skeleton className="h-12 w-full rounded-full" />
-                    <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
-                </div>
+            <div className="max-w-5xl mx-auto space-y-8 pt-28">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-12 w-full rounded-full" />
+                <Skeleton className="aspect-video w-full rounded-[2.5rem]" />
             </div>
         </main>
     </div>
@@ -153,21 +147,13 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   if (!fiche || !displayData) return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4">
         <h1 className="text-4xl font-black mb-4 uppercase">Fiche non trouvée</h1>
-        <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase rounded-full px-8">
-            <Link href="/entretien">Retour au catalogue</Link>
-        </Button>
+        <Button asChild className="bg-brand rounded-full px-8"><Link href="/entretien">Retour au catalogue</Link></Button>
     </div>
   );
 
   return (
     <div className="min-h-screen relative bg-background">
-      <Header 
-        searchTerm={searchTerm} 
-        onSearchTermChange={setSearchTerm} 
-        onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} 
-        activeFilter={null} 
-        placeholderText="Recherche..." 
-      />
+      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} />
       
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-5xl mx-auto">
@@ -186,15 +172,15 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-12">
-            {/* --- HERO FICHE TECHNIQUE --- */}
-            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black">
+            {/* HERO SECTION */}
+            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[400px] flex flex-col justify-end">
                 <div className="absolute inset-0 z-0">
                     <Image src={displayData.imageUrl} alt={displayData.modelName} fill className="object-cover opacity-60" priority />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                 </div>
                 
-                <div className="relative z-10 p-6 md:p-12">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+                <div className="relative z-10 p-6 md:p-12 w-full">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
                         <div className="text-white">
                             <span className="inline-block bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-3">{displayData.category} - Officiel</span>
                             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85] mb-2">{displayData.modelName}</h1>
@@ -204,22 +190,10 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/20 shadow-2xl">
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Gauge className="h-3.5 w-3.5" /> Puissance</div>
-                            <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.power}</p>
-                        </div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6">
-                            <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Scale className="h-3.5 w-3.5" /> Poids (TPF)</div>
-                            <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.wetWeight}</p>
-                        </div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6">
-                            <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Bike className="h-3.5 w-3.5" /> Hauteur Selle</div>
-                            <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.seatHeight}</p>
-                        </div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6">
-                            <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><CheckCircle2 className="h-3.5 w-3.5" /> Permis</div>
-                            <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.bridage}</p>
-                        </div>
+                        <div className="space-y-1"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Gauge className="h-3.5 w-3.5" /> Puissance</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.power}</p></div>
+                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Scale className="h-3.5 w-3.5" /> Poids</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.wetWeight}</p></div>
+                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Bike className="h-3.5 w-3.5" /> Selle</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.dimensions.seatHeight}</p></div>
+                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><CheckCircle2 className="h-3.5 w-3.5" /> Permis</div><p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.engine.bridage}</p></div>
                     </div>
                 </div>
             </div>
@@ -230,9 +204,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 <Tabs value={String(selectedVariantIndex)} onValueChange={(v) => setSelectedVariantIndex(Number(v))} className="w-full max-w-md">
                   <TabsList className="grid w-full h-14 bg-background border-2 shadow-xl p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${displayData.variants.length}, 1fr)` }}>
                     {displayData.variants.map((v: any, idx: number) => (
-                      <TabsTrigger key={idx} value={String(idx)} className="font-black uppercase text-[10px] data-[state=active]:bg-brand data-[state=active]:text-white rounded-lg transition-all">
-                        {v.label || `V${idx + 1}`}
-                      </TabsTrigger>
+                      <TabsTrigger key={idx} value={String(idx)} className="font-black uppercase text-[10px] data-[state=active]:bg-brand data-[state=active]:text-white rounded-lg transition-all">{v.label || `V${idx + 1}`}</TabsTrigger>
                     ))}
                   </TabsList>
                 </Tabs>
@@ -244,7 +216,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 <CardHeader className="bg-brand/5 border-b py-4"><CardTitle className="flex items-center gap-2 text-brand uppercase font-black text-xs"><Zap className="h-4 w-4" /> Moteur</CardTitle></CardHeader>
                 <CardContent className="p-6">
                   <ul className="space-y-4">
-                    <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Type</span><span className="font-black text-right text-xs">{displayData.engine.type}</span></li>
                     <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Cylindrée</span><span className="font-black text-right text-xs">{displayData.engine.displacement}</span></li>
                     <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Couple</span><span className="font-black text-right text-xs text-brand">{displayData.engine.torque}</span></li>
                     <li className="flex justify-between items-end border-b border-dashed pb-1"><span className="font-bold text-muted-foreground text-[9px] uppercase">Injection</span><span className="font-black text-right text-xs">{displayData.engine.alimentation}</span></li>
@@ -266,19 +237,17 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 <CardContent className="p-6">
                   <ul className="space-y-2">
                     {displayData.electronics.map((e: string, i: number) => (
-                      <li key={i} className="flex items-center gap-2 text-[10px] font-black text-foreground">
-                        <CheckCircle2 className="h-3 w-3 text-purple-500" /> {e}
-                      </li>
+                      <li key={i} className="flex items-center gap-2 text-[10px] font-black text-foreground"><CheckCircle2 className="h-3 w-3 text-purple-500" /> {e}</li>
                     ))}
                   </ul>
                 </CardContent>
               </Card>
             </div>
 
-            {/* --- GUIDE ENTRETIEN & PRIX --- */}
+            {/* ENTRETIEN SECTION */}
             <div className="pt-16 space-y-12">
                 <div className="text-center space-y-4">
-                    <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-foreground">Guide Entretien & Prix</h2>
+                    <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-foreground">Entretien & Prix</h2>
                     <div className="w-20 h-2 bg-brand mx-auto rounded-full" />
                     {displayData.introduction && <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">{displayData.introduction}</p>}
                 </div>
@@ -286,7 +255,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 {displayData.serviceSchedule.length > 0 && (
                     <Card className="border-none shadow-2xl bg-card overflow-hidden rounded-[2.5rem]">
                         <CardHeader className="bg-brand text-white p-8"><CardTitle className="flex items-center gap-3 text-2xl font-black uppercase tracking-widest"><Wrench className="h-8 w-8" /> Calendrier des révisions</CardTitle></CardHeader>
-                        <CardContent className="p-0">
+                        <CardContent className="p-0 overflow-x-auto">
                             <Table>
                                 <TableHeader className="bg-muted/50">
                                     <TableRow>
@@ -298,9 +267,9 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                 <TableBody>
                                     {displayData.serviceSchedule.map((s: any, i: number) => (
                                         <TableRow key={i} className="hover:bg-brand/5 border-b last:border-0 transition-colors">
-                                            <TableCell className="font-black text-xl py-8 px-8">{s.km?.toLocaleString()} <span className="text-[10px] text-muted-foreground ml-1 font-bold uppercase">km</span></TableCell>
-                                            <TableCell className="font-bold text-lg">{s.service_label}</TableCell>
-                                            <TableCell className="font-black text-xl text-brand text-right pr-8">{s.price_estimate}</TableCell>
+                                            <TableCell className="font-black text-xl py-8 px-8">{getRobustValue(s, ['km', 'intervalle', 'kilometrage'])} <span className="text-[10px] text-muted-foreground ml-1 font-bold uppercase">km</span></TableCell>
+                                            <TableCell className="font-bold text-lg">{getRobustValue(s, ['service_label', 'label', 'description', 'entretien'])}</TableCell>
+                                            <TableCell className="font-black text-xl text-brand text-right pr-8">{getRobustValue(s, ['price_estimate', 'price', 'budget', 'prix'])}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -309,7 +278,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     </Card>
                 )}
 
-                {/* CONSOMMABLES */}
+                {/* CONSOMMABLES AVEC DÉTECTION ROBUSTE DES CLÉS */}
                 {displayData.consumables.length > 0 && (
                     <div className="space-y-6">
                         <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3 pl-2"><Droplets className="h-6 w-6 text-blue-500" /> Consommables & Fluides</h3>
@@ -317,12 +286,19 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                             <CardContent className="p-0">
                                 <Table>
                                     <TableBody>
-                                        {displayData.consumables.map((c: any, i: number) => (
-                                            <TableRow key={i} className="hover:bg-muted/50 transition-colors">
-                                                <TableCell className="py-5 px-8 font-black uppercase text-[10px] text-muted-foreground w-1/2">{c.label || c.name}</TableCell>
-                                                <TableCell className="py-5 px-8 font-black text-foreground text-sm text-right">{c.value || c.quantity}</TableCell>
-                                            </TableRow>
-                                        ))}
+                                        {displayData.consumables.map((c: any, i: number) => {
+                                            // On cherche le nom de l'item (ex: Huile moteur)
+                                            const label = getRobustValue(c, ['label', 'name', 'type', 'item', 'nom', 'titre']);
+                                            // On cherche la valeur/quantité (ex: 10W40 - 2.8L)
+                                            const value = getRobustValue(c, ['value', 'quantity', 'qty', 'spec', 'valeur', 'quantite', 'capacite']);
+                                            
+                                            return (
+                                                <TableRow key={i} className="hover:bg-muted/50 transition-colors">
+                                                    <TableCell className="py-5 px-8 font-black uppercase text-[10px] text-muted-foreground w-1/2">{label}</TableCell>
+                                                    <TableCell className="py-5 px-8 font-black text-foreground text-sm text-right">{value}</TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
                                     </TableBody>
                                 </Table>
                             </CardContent>
@@ -330,139 +306,51 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     </div>
                 )}
 
-                {/* VIGILANCE ET CONSEILS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <Card className="border-none shadow-2xl bg-orange-50/20 rounded-[2.5rem] overflow-hidden">
-                        <CardHeader className="bg-orange-50 py-6 border-b border-orange-100">
-                            <CardTitle className="text-orange-700 uppercase font-black text-lg flex items-center gap-3"><AlertTriangle className="h-6 w-6" /> Points de vigilance</CardTitle>
-                        </CardHeader>
+                        <CardHeader className="bg-orange-50 py-6 border-b border-orange-100"><CardTitle className="text-orange-700 uppercase font-black text-lg flex items-center gap-3"><AlertTriangle className="h-6 w-6" /> Points de vigilance</CardTitle></CardHeader>
                         <CardContent className="p-8">
                             {displayData.knownIssues.length > 0 ? (
-                                <ul className="space-y-5">
-                                    {displayData.knownIssues.map((issue: string, idx: number) => (
-                                        <li key={idx} className="flex items-start gap-3 text-sm font-bold text-orange-900/80">
-                                            <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mt-1.5 shrink-0" />
-                                            {issue}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-sm italic text-muted-foreground font-medium">Aucun point de vigilance particulier répertorié pour ce modèle.</p>
-                            )}
+                                <ul className="space-y-5">{displayData.knownIssues.map((issue: string, idx: number) => (<li key={idx} className="flex items-start gap-3 text-sm font-bold text-orange-900/80"><div className="w-1.5 h-1.5 bg-orange-400 rounded-full mt-1.5 shrink-0" />{issue}</li>))}</ul>
+                            ) : (<p className="text-sm italic text-muted-foreground font-medium">Aucun point de vigilance répertorié.</p>)}
                         </CardContent>
                     </Card>
 
                     <Card className="border-none shadow-2xl bg-green-50/20 rounded-[2.5rem] overflow-hidden">
-                        <CardHeader className="bg-green-50 py-6 border-b border-green-100">
-                            <CardTitle className="text-green-700 uppercase font-black text-lg flex items-center gap-3"><ShieldCheck className="h-6 w-6" /> Conseils de longévité</CardTitle>
-                        </CardHeader>
+                        <CardHeader className="bg-green-50 py-6 border-b border-green-100"><CardTitle className="text-green-700 uppercase font-black text-lg flex items-center gap-3"><ShieldCheck className="h-6 w-6" /> Conseils de longévité</CardTitle></CardHeader>
                         <CardContent className="p-8">
                             {displayData.longevityTips.length > 0 ? (
-                                <ul className="space-y-5">
-                                    {displayData.longevityTips.map((tip: string, idx: number) => (
-                                        <li key={idx} className="flex items-start gap-3 text-sm font-bold text-green-900/80">
-                                            <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                                            {tip}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-sm italic text-muted-foreground font-medium">Suivez les préconisations constructeurs pour une durée de vie optimale.</p>
-                            )}
+                                <ul className="space-y-5">{displayData.longevityTips.map((tip: string, idx: number) => (<li key={idx} className="flex items-start gap-3 text-sm font-bold text-green-900/80"><CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />{tip}</li>))}</ul>
+                            ) : (<p className="text-sm italic text-muted-foreground font-medium">Suivez les préconisations constructeurs.</p>)}
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* RELATIONS (ARTICLES ET MODÈLES) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <Card className="border-none shadow-2xl bg-card rounded-[2.5rem] overflow-hidden">
-                        <CardHeader className="py-6 border-b flex flex-row items-center gap-3">
-                            <FileText className="h-5 w-5 text-brand" />
-                            <CardTitle className="uppercase font-black text-sm text-muted-foreground tracking-widest">Articles liés</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                            <div className="space-y-2">
-                                {displayData.relations.articles.length > 0 ? (
-                                    displayData.relations.articles.map((artId: string, idx: number) => (
-                                        <Link key={idx} href={`/info/${artId}`} className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
-                                            <span className="text-xs font-black uppercase truncate pr-4">{artId.replace(/-/g, ' ')}</span>
-                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <div className="space-y-2">
-                                        <Link href="/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter" className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
-                                            <span className="text-xs font-black uppercase">CHOISIR SA PREMIÈRE MOTO A2</span>
-                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
-                                        </Link>
-                                        <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
-                                            <span className="text-xs font-black uppercase">VOTRE BUDGET MOTO RÉEL</span>
-                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-none shadow-2xl bg-card rounded-[2.5rem] overflow-hidden">
-                        <CardHeader className="py-6 border-b flex flex-row items-center gap-3">
-                            <LayoutGrid className="h-5 w-5 text-brand" />
-                            <CardTitle className="uppercase font-black text-sm text-muted-foreground tracking-widest">Modèles similaires</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                            <div className="space-y-2">
-                                {displayData.relations.models.length > 0 ? (
-                                    displayData.relations.models.map((modId: string, idx: number) => (
-                                        <Link key={idx} href={`/fiches/${modId}`} className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
-                                            <span className="text-xs font-black uppercase truncate pr-4">{modId.replace(/-/g, ' ')}</span>
-                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <div className="p-10 text-center space-y-4">
-                                        <ClipboardList className="h-10 w-10 text-muted-foreground/20 mx-auto" />
-                                        <p className="text-xs font-bold text-muted-foreground">Découvrez d'autres modèles dans notre catalogue complet d'entretien.</p>
-                                        <Button asChild variant="outline" className="rounded-full border-brand text-brand hover:bg-brand hover:text-white font-black uppercase text-[10px] px-6"><Link href="/entretien">Voir tout le catalogue</Link></Button>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* FAQ */}
+                {/* FAQ AVEC DÉTECTION ROBUSTE DES CLÉS */}
                 {displayData.faq.length > 0 && (
                     <div className="space-y-8 pt-8">
-                        <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
-                            <HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes
-                        </h3>
+                        <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2"><HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes</h3>
                         <div className="space-y-4">
-                            {displayData.faq.map((item: any, idx: number) => (
-                                <Card key={idx} className="border-none shadow-xl rounded-[2rem] bg-card overflow-hidden">
-                                    <CardHeader className="p-8 bg-muted/20 border-b">
-                                        <CardTitle className="text-lg font-black uppercase leading-tight">{item.q || item.question}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-8">
-                                        <p className="text-base font-bold text-muted-foreground leading-relaxed">{item.a || item.answer}</p>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                            {displayData.faq.map((item: any, idx: number) => {
+                                const question = getRobustValue(item, ['question', 'q', 'titre', 'query']);
+                                const answer = getRobustValue(item, ['answer', 'a', 'reponse', 'content', 'response']);
+                                
+                                return (
+                                    <Card key={idx} className="border-none shadow-xl rounded-[2rem] bg-card overflow-hidden">
+                                        <CardHeader className="p-8 bg-muted/20 border-b"><CardTitle className="text-lg font-black uppercase leading-tight">{question}</CardTitle></CardHeader>
+                                        <CardContent className="p-8"><p className="text-base font-bold text-muted-foreground leading-relaxed">{answer}</p></CardContent>
+                                    </Card>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
 
                 {displayData.conclusion && (
                     <div className="bg-muted/30 p-12 rounded-[2.5rem] border-2 border-dashed text-center relative overflow-hidden shadow-inner mt-16">
-                        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-                            <LabelMotoLogo noBubble />
-                        </div>
+                        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><LabelMotoLogo noBubble /></div>
                         <p className="text-xl font-bold italic text-muted-foreground leading-relaxed">"{displayData.conclusion}"</p>
-                        <div className="mt-8 flex items-center justify-center gap-4">
-                            <div className="h-px w-16 bg-muted-foreground/20" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Expertise Label Moto</p>
-                            <div className="h-px w-16 bg-muted-foreground/20" />
-                        </div>
+                        <div className="mt-8 flex items-center justify-center gap-4"><div className="h-px w-16 bg-muted-foreground/20" /><p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Expertise Label Moto</p><div className="h-px w-16 bg-muted-foreground/20" /></div>
                     </div>
                 )}
             </div>
