@@ -174,7 +174,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
           </div>
         </div>
         
-        <div className="flex items-stretch min-h-[110px] md:min-h-[140px]">
+        <div className="flex items-stretch min-h-[130px] md:min-h-[150px]">
           <div className="flex flex-1 flex-row items-stretch">
             <div 
               className="relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
@@ -205,7 +205,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 <span className="text-brand text-[9px] md:text-xs font-black uppercase tracking-widest">{categoryLabel}</span>
               </div>
               
-              <div className="flex flex-nowrap items-center gap-2 md:gap-4 mt-6 overflow-x-auto no-scrollbar">
+              <div className="flex flex-nowrap items-center gap-2 md:gap-4 mt-3 overflow-x-auto no-scrollbar">
                 {dealership.phoneNumber && (
                   <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
                     <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
@@ -244,7 +244,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 </button>
               </div>
               
-              <div className="mt-4 border-t border-dashed pt-2">
+              <div className="mt-3 border-t border-dashed pt-2">
                 <a 
                   href={navigationUrl} 
                   target="_blank" 
