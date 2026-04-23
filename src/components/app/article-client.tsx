@@ -12,7 +12,8 @@ import {
   ShieldCheck,
   Bike,
   Zap,
-  Wallet
+  Wallet,
+  HelpCircle
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -38,6 +39,18 @@ const slugify = (text: string) =>
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "") || "";
+
+const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "") => {
+  if (!obj || typeof obj !== 'object') return defaultValue;
+  for (const key of preferredKeys) {
+    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+      return String(obj[key]);
+    }
+  }
+  const values = Object.values(obj).filter(v => typeof v === 'string' || typeof v === 'number');
+  if (values.length > 0) return String(values[0]);
+  return defaultValue;
+};
 
 const getFicheIdFromTitle = (title: string): string | null => {
   const t = typeof title === 'string' ? title.toLowerCase() : '';
@@ -240,6 +253,34 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     );
   };
 
+  const renderFaq = (faqData: any[], key: string) => {
+    if (!faqData || !Array.isArray(faqData) || faqData.length === 0) return null;
+    return (
+      <div key={key} className="space-y-8 pt-8 mb-12">
+        <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
+          <HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes
+        </h3>
+        <div className="space-y-4">
+          {faqData.map((item: any, idx: number) => {
+            const question = getRobustValue(item, ['question', 'q', 'titre', 'query']);
+            const answer = getRobustValue(item, ['answer', 'a', 'reponse', 'content', 'response']);
+            
+            return (
+              <Card key={idx} className="border-none shadow-xl rounded-[2rem] bg-card overflow-hidden">
+                <CardHeader className="p-8 bg-muted/20 border-b">
+                  <CardTitle className="text-lg font-black uppercase leading-tight">{question}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <p className="text-base font-bold text-muted-foreground leading-relaxed">{answer}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
@@ -247,6 +288,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (typeof bodyText === 'string') { bodyText = fixText(bodyText); } else if (Array.isArray(bodyText)) { bodyText = bodyText.map(p => fixText(p)); }
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
+    const faq = section.faq || section.faqs;
+
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
@@ -265,6 +308,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         )}
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
+        {faq && renderFaq(faq, `faq-${sectionId}`)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
@@ -340,8 +384,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   if (isLoading) return (
     <div className="min-h-screen bg-background">
         {showHeader && <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />}
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="max-w-6xl mx-auto space-y-6">
+        <main className="container mx-auto px-4 py-8">
+            <div className="max-w-6xl mx-auto space-y-6 pt-28">
                 <Skeleton className="h-4 w-40" />
                 <Skeleton className="h-12 w-3/4" />
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -396,6 +440,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
               <div className="space-y-3">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
               
+              {(article.faq || article.faqs) && renderFaq(article.faq || article.faqs, "article-faq")}
+
               {article.conclusion && (
                   <div className="mt-16 pt-8 border-t border-brand/20">
                       <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
