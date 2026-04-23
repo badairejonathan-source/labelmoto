@@ -27,6 +27,9 @@ import useWindowSize from '@/hooks/use-window-size';
 
 const brandsList = Object.keys(brandLogos);
 
+// Cache global pour éviter de re-télécharger 3000 documents à chaque changement de page
+let globalDealersCache: Suggestion[] | null = null;
+
 interface Suggestion {
     type: 'city' | 'dept' | 'dealer' | 'brand-only';
     label: string;
@@ -199,14 +202,13 @@ const Header: React.FC<HeaderProps> = ({
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [prediction, setPrediction] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [allDealers, setAllDealers] = useState<Suggestion[]>([]);
+  const [allDealers, setAllDealers] = useState<Suggestion[]>(globalDealersCache || []);
   const [mounted, setMounted] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const isMapPage = pathname === '/map';
   const isMobile = mounted && width !== undefined && width < 1024;
-  // Détecte les pages Conseil ou Entretien pour réduire la marge
   const isCompactPage = pathname === '/info' || pathname.startsWith('/info/') || pathname === '/entretien' || pathname.startsWith('/fiches/');
 
   useEffect(() => {
@@ -215,7 +217,7 @@ const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     const fetchDealers = async () => {
-        if (!firestore) return;
+        if (!firestore || globalDealersCache) return;
         try {
             const q = query(collection(firestore, 'concessions'), limit(3000));
             const snapshot = await getDocs(q);
@@ -229,6 +231,7 @@ const Header: React.FC<HeaderProps> = ({
                 id: doc.id,
                 brand: Array.isArray(doc.data().brands) ? doc.data().brands[0] : undefined
             }));
+            globalDealersCache = dealers;
             setAllDealers(dealers);
         } catch (e) {
             console.error("Erreur suggestions dealers:", e);
@@ -449,8 +452,8 @@ const Header: React.FC<HeaderProps> = ({
                 {!isMapPage && (
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
                         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
-                        <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                        <div className="flex flex-col items-center gap-1.5 shrink-0">
+                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
                                 <Link href="/entretien" className="flex items-center justify-center h-full w-full">
                                     <Image src="/images/icon-entretienrevision.webp" alt="" width={38} height={38} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Entretien</span>
@@ -458,8 +461,8 @@ const Header: React.FC<HeaderProps> = ({
                             </Button>
                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
-                        <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                        <div className="flex flex-col items-center gap-1.5 shrink-0">
+                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
                                 <Link href="/info" className="flex items-center justify-center h-full w-full">
                                     <Image src="/images/icon-conseils.webp" alt="" width={38} height={38} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Conseils</span>
