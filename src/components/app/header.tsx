@@ -27,6 +27,30 @@ import useWindowSize from '@/hooks/use-window-size';
 
 const brandsList = Object.keys(brandLogos);
 
+interface Suggestion {
+    type: 'city' | 'dept' | 'dealer' | 'brand-only';
+    label: string;
+    subLabel?: string;
+    lat?: number;
+    lng?: number;
+    zoom?: number;
+    id?: string;
+    brand?: string;
+    score?: number;
+}
+
+interface HeaderProps {
+    searchTerm: string;
+    onSearchTermChange: (value: string) => void;
+    onSearch: () => void;
+    className?: string;
+    activeFilter?: 'shopping' | 'service' | null;
+    onFilterChange?: (filter: 'shopping' | 'service' | null) => void;
+    placeholderText?: string;
+    variant?: 'default' | 'map';
+    hideUserMenu?: boolean;
+}
+
 export const UserMenu = () => {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
@@ -424,18 +448,18 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
                         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-[70px] w-[70px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/entretien" className="flex items-center justify-center h-full w-full">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
+                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={38} height={38} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
                         <div className="flex flex-col items-center gap-1.5">
-                            <Button asChild variant="ghost" size="icon" className="h-[70px] w-[70px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
+                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group">
                                 <Link href="/info" className="flex items-center justify-center h-full w-full">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
+                                    <Image src="/images/icon-conseils.webp" alt="" width={38} height={38} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>
