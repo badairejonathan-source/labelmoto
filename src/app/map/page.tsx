@@ -361,7 +361,7 @@ function MapPageComponent() {
 
       {!isMobile && (
         <aside className={cn(
-            "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)] absolute top-32 left-6 w-[520px] rounded-[2.5rem]",
+            "z-[1500] flex flex-col bg-background/95 backdrop-blur-xl border border-white/20 overflow-hidden transition-all duration-700 ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.3)] absolute top-6 left-6 w-[520px] rounded-[2.5rem]",
             showDesktopPanel 
               ? "bottom-6" 
               : "h-auto"
