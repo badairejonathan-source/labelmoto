@@ -45,14 +45,14 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
       <Card className={cn(
         "w-full ml-auto overflow-hidden transition-all duration-500 ease-in-out border-l-4 hover:shadow-lg shadow-sm min-h-[140px] flex items-stretch relative rounded-2xl border-brand border-brand/20 bg-gradient-to-r from-brand/[0.02] to-background"
       )}>
-        <div className="relative w-40 sm:w-56 md:w-72 flex-shrink-0 overflow-hidden bg-muted">
+        <div className="relative w-[200px] sm:w-56 md:w-72 flex-shrink-0 overflow-hidden bg-muted">
           <Image 
             src={imageUrl} 
             alt={article.title} 
             fill 
             className="object-cover transition-transform duration-1000 group-hover:scale-110" 
             data-ai-hint={article.imageHint || "motorcycle"} 
-            sizes="(max-width: 768px) 160px, 300px" 
+            sizes="(max-width: 768px) 200px, 300px" 
           />
           
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
