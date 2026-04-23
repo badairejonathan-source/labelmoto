@@ -365,8 +365,22 @@ function MapPageComponent() {
             showDesktopPanel 
               ? "bottom-6" 
               : "h-auto"
-        )}>
-            <div className="relative px-6 py-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10 shrink-0">
+        )}
+        onPointerDown={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        >
+            <div className="relative px-6 pt-6 pb-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10 shrink-0">
+                {/* Branding Block reintegred for Desktop sidebar only */}
+                <div className="flex items-center justify-between gap-3 w-full mb-6">
+                    <div className="w-44"><LabelMotoLogo /></div>
+                    <div className="flex-1 bg-white border border-gray-100 rounded-2xl py-2 px-3 text-center shadow-sm">
+                        <p className="text-[10px] font-black uppercase leading-tight text-foreground">Trouver une concession ?</p>
+                        <p className="text-xs font-black italic text-brand leading-none tracking-tighter">FINI LA GALÈRE.</p>
+                    </div>
+                    <UserMenu />
+                </div>
+
                 <div className="flex items-center justify-center gap-6 w-full relative z-20">
                     <button 
                         onClick={() => setActiveFilter('shopping')}
@@ -418,7 +432,7 @@ function MapPageComponent() {
                 </button>
             </div>
             <div className={cn(
-                "flex-1 overflow-y-auto p-4 custom-scrollbar relative z-0 transition-opacity duration-300",
+                "flex-1 overflow-y-auto p-4 custom-scrollbar relative z-0 transition-opacity duration-300 min-h-0",
                 !showDesktopPanel ? "hidden" : "opacity-100"
             )}>
                 {listContent}
@@ -438,7 +452,7 @@ function MapPageComponent() {
           onWheel={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* Zone de Geste (Poignée + Filtres) */}
+          {/* Zone de Geste (Poignée + Filtres) - Branding handled by main Header on Mobile */}
           <div 
             onTouchStart={onTouchStart} 
             onTouchEnd={onTouchEnd}

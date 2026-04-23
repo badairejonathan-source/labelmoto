@@ -195,6 +195,7 @@ const Header: React.FC<HeaderProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const firestore = useFirestore();
+  const { width } = useWindowSize();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [prediction, setPrediction] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -204,6 +205,7 @@ const Header: React.FC<HeaderProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const isMapPage = pathname === '/map';
+  const isMobile = mounted && width !== undefined && width < 1024;
 
   useEffect(() => {
     setMounted(true);
@@ -406,48 +408,39 @@ const Header: React.FC<HeaderProps> = ({
 
   if (!mounted) return null;
 
-  if (variant === 'floating') {
-    return (
-        <div className={cn("flex items-center gap-3 md:gap-4 pointer-events-auto", className)}>
-            <div className="w-[280px] xs:w-[320px] sm:w-[400px] md:w-[520px] max-w-[calc(100vw-60px)] transition-all duration-300">
-                {searchInput}
-            </div>
-            {!hideUserMenu && <UserMenu />}
-        </div>
-    );
-  }
-
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
       <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-4">
-        {/* Bloc Logo / Promo / Menu - Toujours visible en haut de page */}
-        <div className="flex flex-row items-center justify-between gap-2 md:gap-6 w-full">
-          {/* Bloc 1: Logo */}
-          <div className="shrink-0 relative z-[150]">
-            <LabelMotoLogo 
-                className={cn(
-                    "transition-all w-[140px] sm:w-44 md:w-[320px] py-1"
-                )}
-            />
-          </div>
-          
-          {/* Bloc 2: Bulle Promo */}
-          <div className="flex flex-1 justify-center px-1 md:px-4 relative z-10 min-w-0">
-              <div className="bg-white px-1 py-1 md:px-6 md:py-3 rounded-xl md:rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-xs md:max-w-md lg:max-w-none overflow-hidden">
-                  <p className="text-[7px] xs:text-[9px] sm:text-xs md:text-lg font-black uppercase tracking-tight text-foreground leading-tight">
-                      TROUVER UNE CONCESSION ?
-                  </p>
-                  <p className="text-[9px] xs:text-[11px] sm:text-sm md:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
-                      FINI LA GALÈRE.
-                  </p>
-              </div>
-          </div>
+        {/* On masque ce bloc uniquement sur la page carte en format ordinateur car il est déjà dans la sidebar */}
+        {(!isMapPage || isMobile) && (
+          <div className="flex flex-row items-center justify-between gap-2 md:gap-6 w-full">
+            {/* Bloc 1: Logo */}
+            <div className="shrink-0 relative z-[150]">
+              <LabelMotoLogo 
+                  className={cn(
+                      "transition-all w-[140px] sm:w-44 md:w-[320px] py-1"
+                  )}
+              />
+            </div>
+            
+            {/* Bloc 2: Bulle Promo */}
+            <div className="flex flex-1 justify-center px-1 md:px-4 relative z-10 min-w-0">
+                <div className="bg-white px-1 py-1 md:px-6 md:py-3 rounded-xl md:rounded-[1.8rem] shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-xs md:max-w-md lg:max-w-none overflow-hidden">
+                    <p className="text-[7px] xs:text-[9px] sm:text-xs md:text-lg font-black uppercase tracking-tight text-foreground leading-tight">
+                        TROUVER UNE CONCESSION ?
+                    </p>
+                    <p className="text-[9px] xs:text-[11px] sm:text-sm md:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
+                        FINI LA GALÈRE.
+                    </p>
+                </div>
+            </div>
 
-          {/* Bloc 3: User Menu */}
-          <div className="shrink-0 relative z-[150]">
-            {!hideUserMenu && <UserMenu />}
+            {/* Bloc 3: User Menu */}
+            <div className="shrink-0 relative z-[150]">
+              {!hideUserMenu && <UserMenu />}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-col items-center gap-4 md:gap-4 w-full max-w-screen-xl mx-auto relative z-20">
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full justify-center">
