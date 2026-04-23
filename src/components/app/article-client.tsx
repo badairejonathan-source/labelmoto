@@ -104,7 +104,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         title: "Taille & Gabarit",
         description: "Quelle moto choisir selon votre gabarit ? Le guide des hauteurs de selle.",
         link: "/info/quelle-moto-choisir-selon-sa-taille",
-        icon: <Bike className="h-6 w-6 text-brand" />,
+        icon: <Bike className="h-7 w-7 text-brand" />,
         bgColor: "bg-brand/5",
         borderColor: "border-brand/20",
         iconBg: "bg-brand/10",
@@ -117,7 +117,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       title: "Guide A2 2026",
       description: "Quelles sont les meilleures motos pour débuter ? Le guide complet A2.",
       link: "/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
-      icon: <Bike className="h-6 w-6 text-brand" />,
+      icon: <Bike className="h-7 w-7 text-brand" />,
       bgColor: "bg-brand/5",
       borderColor: "border-brand/20",
       iconBg: "bg-brand/10",
@@ -467,11 +467,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   </CardContent>
                 </Card>
 
-                <Card className={cn("border-2 border-dashed p-4 rounded-[1.5rem] shadow-sm text-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2", sidebarRecommendation.iconBg)}>{sidebarRecommendation.icon}</div>
-                  <h4 className={cn("text-sm font-black uppercase tracking-tight mb-1", sidebarRecommendation.titleColor)}>{sidebarRecommendation.title}</h4>
-                  <p className={cn("text-[10px] font-bold mb-3 leading-snug opacity-70", sidebarRecommendation.titleColor)}>{sidebarRecommendation.description}</p>
-                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[8px] rounded-full py-3 h-auto", sidebarRecommendation.btnClass)}><Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">Lire le dossier <ChevronRight className="h-3 w-3" /></Link></Button>
+                <Card className={cn("border-2 border-dashed p-8 rounded-[3rem] shadow-sm text-center flex flex-col items-center justify-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
+                  <div className={cn("w-14 h-14 rounded-full flex items-center justify-center mb-4", sidebarRecommendation.iconBg)}>{sidebarRecommendation.icon}</div>
+                  <h4 className={cn("text-lg font-black uppercase tracking-tight mb-2", sidebarRecommendation.titleColor)}>{sidebarRecommendation.title}</h4>
+                  <p className={cn("text-xs font-bold mb-6 leading-relaxed opacity-70", sidebarRecommendation.titleColor)}>{sidebarRecommendation.description}</p>
+                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[9px] rounded-full py-6 h-auto shadow-lg transition-all hover:scale-105", sidebarRecommendation.btnClass)}><Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">Lire le dossier <ChevronRight className="h-4 w-4" /></Link></Button>
                 </Card>
               </div>
             </aside>
