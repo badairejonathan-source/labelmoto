@@ -26,7 +26,9 @@ import {
   Trophy,
   ThumbsDown,
   LayoutGrid,
-  FileText
+  FileText,
+  MessageSquare,
+  ArrowRight
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -67,7 +69,11 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
-  useEffect(() => { setSelectedVariantIndex(0); }, [modelId]);
+  // Scroll to top on model change
+  useEffect(() => { 
+    window.scrollTo(0, 0);
+    setSelectedVariantIndex(0); 
+  }, [modelId]);
 
   const displayData = useMemo(() => {
     if (!fiche) return null;
@@ -77,6 +83,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     const activeVariant = variants[selectedVariantIndex] || {};
     
     const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
+    
+    // Robust data recovery from different possible locations
     const sg = fiche.service_guide || {};
     const rel = fiche.relations || {};
 
@@ -85,7 +93,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       brand: fiche.brand || (modelId.split('-')[0] || '').toUpperCase(),
       year: fiche.year_range || "N/A",
       category: fiche.category || "Moto",
-      introduction: sg.intro || "",
+      introduction: sg.intro || fiche.intro || "",
       imageUrl: fiche.imageUrl || "/images/motard-entretien-page.webp",
       hasVariants: variants.length > 1,
       variants: variants,
@@ -122,16 +130,16 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         pros: sg.pros || fiche.pros || [],
         cons: sg.cons || fiche.cons || []
       },
-      serviceSchedule: sg.service_schedule || [],
-      consumables: sg.consumables || [],
-      faq: sg.faq || [],
-      knownIssues: sg.known_issues || [],
-      longevityTips: sg.longevity_tips || [],
+      serviceSchedule: sg.service_schedule || fiche.service_schedule || [],
+      consumables: sg.consumables || fiche.consumables || [],
+      faq: sg.faq || fiche.faq || [],
+      knownIssues: sg.known_issues || fiche.known_issues || [],
+      longevityTips: sg.longevity_tips || fiche.longevity_tips || [],
       relations: {
-        articles: rel.related_articles || [],
-        models: rel.related_models || []
+        articles: rel.related_articles || fiche.related_articles || [],
+        models: rel.related_models || fiche.related_models || []
       },
-      conclusion: sg.conclusion || "",
+      conclusion: sg.conclusion || fiche.conclusion || "",
     };
   }, [fiche, selectedVariantIndex, modelId]);
 
@@ -205,7 +213,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         <div className="w-48 sm:w-64 drop-shadow-2xl brightness-0 invert opacity-80"><LabelMotoLogo /></div>
                     </div>
 
-                    {/* Bloc Caractéristiques Clés */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/20 shadow-2xl">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[9px]"><Gauge className="h-3.5 w-3.5" /> Puissance</div>
@@ -227,7 +234,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </div>
             </div>
 
-            {/* --- SÉLECTEUR DE VARIANTE --- */}
             {displayData.hasVariants && (
               <div className="flex flex-col items-center gap-4 bg-muted/30 p-6 rounded-[2rem] border shadow-inner">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Sélectionnez la version :</p>
@@ -243,43 +249,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
               </div>
             )}
 
-            {/* --- VERDICT RAPIDE --- */}
-            {(displayData.verdict.pros.length > 0 || displayData.verdict.cons.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="border-none shadow-xl bg-green-50/20 rounded-[2rem] overflow-hidden">
-                  <CardHeader className="bg-green-50 py-4 border-b border-green-100">
-                    <CardTitle className="text-green-700 uppercase font-black text-sm flex items-center gap-2"><Trophy className="h-4 w-4" /> Points Forts</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <ul className="space-y-3">
-                      {displayData.verdict.pros.map((p: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm font-bold text-foreground">
-                          <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                          <span>{p}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                <Card className="border-none shadow-xl bg-red-50/20 rounded-[2rem] overflow-hidden">
-                  <CardHeader className="bg-red-50 py-4 border-b border-red-100">
-                    <CardTitle className="text-red-700 uppercase font-black text-sm flex items-center gap-2"><ThumbsDown className="h-4 w-4" /> Points Faibles</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <ul className="space-y-3">
-                      {displayData.verdict.cons.map((p: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm font-bold text-foreground">
-                          <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
-                          <span>{p}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {/* --- DÉTAILS TECHNIQUES GRILLE --- */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2rem]">
                 <CardHeader className="bg-brand/5 border-b py-4"><CardTitle className="flex items-center gap-2 text-brand uppercase font-black text-xs"><Zap className="h-4 w-4" /> Moteur</CardTitle></CardHeader>
@@ -292,7 +261,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                   </ul>
                 </CardContent>
               </Card>
-              
               <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2rem]">
                 <CardHeader className="bg-blue-500/5 border-b py-4"><CardTitle className="flex items-center gap-2 text-blue-600 uppercase font-black text-xs"><RefreshCw className="h-4 w-4" /> Transmission</CardTitle></CardHeader>
                 <CardContent className="p-6">
@@ -303,7 +271,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                   </ul>
                 </CardContent>
               </Card>
-
               <Card className="shadow-2xl border-none bg-card overflow-hidden rounded-[2rem]">
                 <CardHeader className="bg-purple-500/5 border-b py-4"><CardTitle className="flex items-center gap-2 text-purple-600 uppercase font-black text-xs"><Cpu className="h-4 w-4" /> Électronique</CardTitle></CardHeader>
                 <CardContent className="p-6">
@@ -318,31 +285,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
               </Card>
             </div>
 
-            {/* --- PARTIE CYCLE ACCORDION --- */}
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="cycle" className="border-none">
-                    <AccordionTrigger className="bg-muted/30 p-8 rounded-[2.5rem] font-black uppercase text-brand hover:no-underline shadow-sm transition-all hover:bg-brand/5">
-                        <div className="flex items-center gap-4"><Settings2 className="h-6 w-6" /><span>Partie Cycle, Freins & Pneus</span></div>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-6 px-4">
-                        <div className="overflow-hidden rounded-[2rem] border-2 bg-card shadow-xl">
-                            <Table>
-                                <TableBody>
-                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground w-1/3 pl-8">Cadre</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frame}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Suspension AV</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frontSuspension}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Suspension AR</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearSuspension}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Frein Avant</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.frontBrake}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Frein Arrière</TableCell><TableCell className="font-bold py-4 pr-8">{displayData.chassis.rearBrake}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50 border-b border-dashed"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Avant</TableCell><TableCell className="font-black py-4 pr-8 text-brand">{displayData.chassis.frontTire}</TableCell></TableRow>
-                                    <TableRow className="hover:bg-muted/50"><TableCell className="font-black text-[9px] uppercase text-muted-foreground pl-8">Pneu Arrière</TableCell><TableCell className="font-black py-4 pr-8 text-brand">{displayData.chassis.rearTire}</TableCell></TableRow>
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-
-            {/* --- GUIDE ENTRETIEN --- */}
+            {/* --- GUIDE ENTRETIEN & PRIX --- */}
             <div className="pt-16 space-y-12">
                 <div className="text-center space-y-4">
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-foreground">Guide Entretien & Prix</h2>
@@ -380,120 +323,141 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 {displayData.consumables.length > 0 && (
                     <div className="space-y-6">
                         <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3 pl-2"><Droplets className="h-6 w-6 text-blue-500" /> Consommables & Fluides</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="flex flex-wrap gap-4">
                             {displayData.consumables.map((c: any, i: number) => (
-                                <Card key={i} className="border-2 border-muted bg-card shadow-lg hover:border-blue-200 transition-all rounded-full group">
-                                    <CardContent className="p-6 py-4 flex justify-between items-center">
-                                        <span className="font-black uppercase text-[9px] text-muted-foreground group-hover:text-blue-500 transition-colors">{c.label}</span>
-                                        <span className="font-black text-foreground">{c.value}</span>
-                                    </CardContent>
-                                </Card>
+                                <div key={i} className="bg-white border-2 border-muted px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:border-blue-200 transition-all group flex items-center gap-6 min-w-[200px]">
+                                    <span className="font-black uppercase text-[10px] text-muted-foreground group-hover:text-blue-500 transition-colors">{c.label}</span>
+                                    <span className="font-black text-foreground text-sm">{c.value}</span>
+                                </div>
                             ))}
                         </div>
                     </div>
                 )}
 
                 {/* VIGILANCE ET CONSEILS */}
-                {(displayData.knownIssues.length > 0 || displayData.longevityTips.length > 0) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {displayData.knownIssues.length > 0 && (
-                            <Card className="border-none shadow-2xl bg-orange-50/30 rounded-[2.5rem] overflow-hidden border-t-4 border-orange-400">
-                                <CardHeader className="bg-orange-100/50 py-6 border-b border-orange-200/50">
-                                    <CardTitle className="text-orange-700 uppercase font-black text-lg flex items-center gap-3"><AlertTriangle className="h-6 w-6" /> Points de vigilance</CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-8">
-                                    <ul className="space-y-4">
-                                        {displayData.knownIssues.map((issue: string, idx: number) => (
-                                            <li key={idx} className="flex items-start gap-3 text-sm font-bold text-orange-900/80">
-                                                <div className="text-orange-400 mt-0.5 shrink-0 font-black">•</div>
-                                                {issue}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        )}
-                        {displayData.longevityTips.length > 0 && (
-                            <Card className="border-none shadow-2xl bg-green-50/30 rounded-[2.5rem] overflow-hidden border-t-4 border-green-400">
-                                <CardHeader className="bg-green-100/50 py-6 border-b border-green-200/50">
-                                    <CardTitle className="text-green-700 uppercase font-black text-lg flex items-center gap-3"><ShieldCheck className="h-6 w-6" /> Conseils de longévité</CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-8">
-                                    <ul className="space-y-4">
-                                        {displayData.longevityTips.map((tip: string, idx: number) => (
-                                            <li key={idx} className="flex items-start gap-3 text-sm font-bold text-green-900/80">
-                                                <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                                                {tip}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
-                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <Card className="border-none shadow-2xl bg-orange-50/20 rounded-[2.5rem] overflow-hidden">
+                        <CardHeader className="bg-orange-50 py-6 border-b border-orange-100">
+                            <CardTitle className="text-orange-700 uppercase font-black text-lg flex items-center gap-3"><AlertTriangle className="h-6 w-6" /> Points de vigilance</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-8">
+                            {displayData.knownIssues.length > 0 ? (
+                                <ul className="space-y-5">
+                                    {displayData.knownIssues.map((issue: string, idx: number) => (
+                                        <li key={idx} className="flex items-start gap-3 text-sm font-bold text-orange-900/80">
+                                            <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mt-1.5 shrink-0" />
+                                            {issue}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm italic text-muted-foreground">Aucun point de vigilance particulier répertorié.</p>
+                            )}
+                        </CardContent>
+                    </Card>
 
-                {/* RECOMMANDATIONS ET RELATIONS */}
-                {(displayData.relations.articles.length > 0 || displayData.relations.models.length > 0) && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
-                    {displayData.relations.articles.length > 0 && (
-                      <Card className="border-none shadow-xl bg-muted/20 rounded-[2rem]">
-                        <CardHeader className="py-6 border-b"><CardTitle className="flex items-center gap-2 text-brand uppercase font-black text-sm"><FileText className="h-4 w-4" /> Articles liés</CardTitle></CardHeader>
-                        <CardContent className="p-6">
-                          <ul className="space-y-3">
-                            {displayData.relations.articles.map((artId: string, idx: number) => (
-                              <li key={idx}>
-                                <Link href={`/info/${artId}`} className="flex items-center justify-between p-3 bg-white rounded-xl hover:bg-brand/5 border transition-all group">
-                                  <span className="text-sm font-bold group-hover:text-brand truncate">{artId.replace(/-/g, ' ').toUpperCase()}</span>
-                                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                    <Card className="border-none shadow-2xl bg-green-50/20 rounded-[2.5rem] overflow-hidden">
+                        <CardHeader className="bg-green-50 py-6 border-b border-green-100">
+                            <CardTitle className="text-green-700 uppercase font-black text-lg flex items-center gap-3"><ShieldCheck className="h-6 w-6" /> Conseils de longévité</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-8">
+                            {displayData.longevityTips.length > 0 ? (
+                                <ul className="space-y-5">
+                                    {displayData.longevityTips.map((tip: string, idx: number) => (
+                                        <li key={idx} className="flex items-start gap-3 text-sm font-bold text-green-900/80">
+                                            <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                                            {tip}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm italic text-muted-foreground">Appliquez les révisions standards pour une longévité optimale.</p>
+                            )}
                         </CardContent>
-                      </Card>
-                    )}
-                    {displayData.relations.models.length > 0 && (
-                      <Card className="border-none shadow-xl bg-muted/20 rounded-[2rem]">
-                        <CardHeader className="py-6 border-b"><CardTitle className="flex items-center gap-2 text-brand uppercase font-black text-sm"><LayoutGrid className="h-4 w-4" /> Modèles similaires</CardTitle></CardHeader>
-                        <CardContent className="p-6">
-                          <ul className="space-y-3">
-                            {displayData.relations.models.map((modId: string, idx: number) => (
-                              <li key={idx}>
-                                <Link href={`/fiches/${modId}`} className="flex items-center justify-between p-3 bg-white rounded-xl hover:bg-brand/5 border transition-all group">
-                                  <span className="text-sm font-bold group-hover:text-brand truncate">{modId.replace(/-/g, ' ').toUpperCase()}</span>
-                                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                    </Card>
+                </div>
+
+                {/* RELATIONS (ARTICLES ET MODÈLES) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <Card className="border-none shadow-2xl bg-card rounded-[2.5rem] overflow-hidden">
+                        <CardHeader className="py-6 border-b flex flex-row items-center gap-3">
+                            <FileText className="h-5 w-5 text-brand" />
+                            <CardTitle className="uppercase font-black text-sm text-muted-foreground tracking-widest">Articles liés</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4">
+                            <div className="space-y-2">
+                                {displayData.relations.articles.length > 0 ? (
+                                    displayData.relations.articles.map((artId: string, idx: number) => (
+                                        <Link key={idx} href={`/info/${artId}`} className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
+                                            <span className="text-xs font-black uppercase truncate pr-4">{artId.replace(/-/g, ' ')}</span>
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <>
+                                        <Link href="/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter" className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
+                                            <span className="text-xs font-black uppercase">ACHAT MOTO A2 GUIDE DEBUTER</span>
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
+                                        </Link>
+                                        <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
+                                            <span className="text-xs font-black uppercase">BUDGET MOTO PAR MOIS</span>
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
+                                        </Link>
+                                    </>
+                                )}
+                            </div>
                         </CardContent>
-                      </Card>
-                    )}
-                  </div>
-                )}
+                    </Card>
+
+                    <Card className="border-none shadow-2xl bg-card rounded-[2.5rem] overflow-hidden">
+                        <CardHeader className="py-6 border-b flex flex-row items-center gap-3">
+                            <LayoutGrid className="h-5 w-5 text-brand" />
+                            <CardTitle className="uppercase font-black text-sm text-muted-foreground tracking-widest">Modèles similaires</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4">
+                            <div className="space-y-2">
+                                {displayData.relations.models.length > 0 ? (
+                                    displayData.relations.models.map((modId: string, idx: number) => (
+                                        <Link key={idx} href={`/fiches/${modId}`} className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group">
+                                            <span className="text-xs font-black uppercase truncate pr-4">{modId.replace(/-/g, ' ')}</span>
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="p-6 text-center text-xs font-bold text-muted-foreground">Consultez le catalogue complet pour voir les alternatives.</p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
                 {/* FAQ */}
-                {displayData.faq.length > 0 && (
-                    <div className="space-y-6">
-                        <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3 pl-2"><HelpCircle className="h-6 w-6 text-brand" /> Questions Fréquentes</h3>
-                        <div className="space-y-4">
-                            {displayData.faq.map((item: any, idx: number) => (
-                                <Card key={idx} className="border-none shadow-xl rounded-2xl bg-card overflow-hidden">
-                                    <CardHeader className="p-6 bg-muted/20">
-                                        <CardTitle className="text-sm font-black uppercase leading-tight">{item.q}</CardTitle>
+                <div className="space-y-8 pt-8">
+                    <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
+                        <HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes
+                    </h3>
+                    <div className="space-y-4">
+                        {displayData.faq.length > 0 ? (
+                            displayData.faq.map((item: any, idx: number) => (
+                                <Card key={idx} className="border-none shadow-xl rounded-[2rem] bg-card overflow-hidden">
+                                    <CardHeader className="p-8 bg-muted/20 border-b">
+                                        <CardTitle className="text-lg font-black uppercase leading-tight">{item.q}</CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-6">
-                                        <p className="text-sm font-medium text-muted-foreground leading-relaxed">{item.a}</p>
+                                    <CardContent className="p-8">
+                                        <p className="text-base font-bold text-muted-foreground leading-relaxed">{item.a}</p>
                                     </CardContent>
                                 </Card>
-                            ))}
-                        </div>
+                            ))
+                        ) : (
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />
+                            ))
+                        )}
                     </div>
-                )}
+                </div>
 
                 {displayData.conclusion && (
-                    <div className="bg-muted/30 p-12 rounded-[2.5rem] border-2 border-dashed text-center relative overflow-hidden shadow-inner">
+                    <div className="bg-muted/30 p-12 rounded-[2.5rem] border-2 border-dashed text-center relative overflow-hidden shadow-inner mt-16">
                         <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
                             <LabelMotoLogo />
                         </div>
