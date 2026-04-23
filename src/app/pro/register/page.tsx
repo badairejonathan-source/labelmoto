@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, CheckCircle, Store, AlertCircle, Search, Send, MapPin } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
