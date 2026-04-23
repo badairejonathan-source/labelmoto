@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -62,6 +61,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
+
+  // Récupération de l'image avec fallback sur plusieurs noms de champs possibles
+  const actualImgUrl = dealership.imgUrl || dealership.imageUrl || dealership.photoUrl || dealership.image || "";
 
   const approvedComments = useCollection(useMemoFirebase(() => {
     if (!firestore) return null;
@@ -139,9 +141,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               <X className="h-6 w-6" />
             </button>
             <div className="relative w-full h-full">
-              {dealership.imgUrl && (
+              {actualImgUrl && (
                 <Image 
-                  src={dealership.imgUrl} 
+                  src={actualImgUrl} 
                   alt={dealership.title}
                   fill
                   className="object-contain"
@@ -180,10 +182,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               className="relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
               onClick={(e) => { e.stopPropagation(); setIsZoomDialogOpen(true); }}
             >
-              {dealership.imgUrl ? (
+              {actualImgUrl ? (
                 <>
                   <Image 
-                    src={dealership.imgUrl} 
+                    src={actualImgUrl} 
                     alt={dealership.title} 
                     fill 
                     className="object-cover transition-transform group-hover:brightness-110 duration-700" 

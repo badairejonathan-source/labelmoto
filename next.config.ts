@@ -29,15 +29,15 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-       {
+      {
         protocol: 'https',
-        hostname: 'streetviewpixels-pa.googleapis.com',
+        hostname: '*.googleapis.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
+        hostname: '*.googleusercontent.com',
         port: '',
         pathname: '/**',
       },
