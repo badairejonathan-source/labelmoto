@@ -416,6 +416,7 @@ const Header: React.FC<HeaderProps> = ({
           <div className="flex flex-row items-center justify-between gap-2 md:gap-6 w-full">
             <div className="shrink-0 relative z-[150]">
               <LabelMotoLogo 
+                  noBubble={isMapPage}
                   className={cn(
                       "transition-all w-[140px] sm:w-44 md:w-[320px] py-1"
                   )}
