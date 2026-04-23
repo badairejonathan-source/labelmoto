@@ -442,7 +442,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <article className="lg:col-span-8">
               <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted">
-                  <Image src={imageUrl} alt={article.display_title || article.title} fill className="object-cover" priority />
+                  <Image 
+                    src={imageUrl} 
+                    alt={article.display_title || article.title} 
+                    fill 
+                    className="object-cover" 
+                    priority 
+                    sizes="(max-width: 1024px) 100vw, 800px"
+                  />
               </div>
 
               {children && (<div className="mb-8">{children}</div>)}
@@ -478,7 +485,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <CardHeader className="bg-brand text-white p-5"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-sm"><Map className="h-5 w-5" /> Trouver un pro</CardTitle></CardHeader>
                   <CardContent className="p-4 text-center space-y-3">
                     <div className="relative aspect-video rounded-xl overflow-hidden border-4 border-muted shadow-lg group cursor-pointer" onClick={() => router.push('/map')}>
-                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" sizes="(max-width: 1024px) 100vw, 400px" />
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-8 w-8 text-white" /></div>
                     </div>
                     <p className="text-xs font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>

@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react';
@@ -33,9 +32,9 @@ export default function AboutPage() {
         placeholderText="Recherche par departement , ville , marque, nom ... "
       />
       
-      {/* Filigrane Logo */}
+      {/* Filigrane Logo - Optimisé: Pas de priorité car décoratif */}
       <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
-        <Image src="/images/logo-moto.webp" alt="" width={600} height={192} className="opacity-[0.03] rotate-[-15deg]" priority />
+        <Image src="/images/logo-moto.webp" alt="" width={600} height={192} className="opacity-[0.03] rotate-[-15deg]" />
       </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
