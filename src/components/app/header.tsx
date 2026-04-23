@@ -455,7 +455,7 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="flex flex-col items-center gap-1.5 shrink-0">
                             <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
                                 <Link href="/entretien" className="flex items-center justify-center h-full w-full">
-                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={38} height={38} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
+                                    <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
@@ -464,7 +464,7 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="flex flex-col items-center gap-1.5 shrink-0">
                             <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
                                 <Link href="/info" className="flex items-center justify-center h-full w-full">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={38} height={38} className="h-9 w-9 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
+                                    <Image src="/images/icon-conseils.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>
