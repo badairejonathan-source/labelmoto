@@ -8,7 +8,11 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import CookieConsent from "@/components/app/cookie-consent";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ 
+  subsets: ["latin"], 
+  variable: "--font-sans",
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
@@ -70,7 +74,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning className={inter.variable}>
       <head>
         <link 
           rel="stylesheet" 
@@ -85,7 +89,7 @@ export default function RootLayout({
           href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" 
         />
       </head>
-      <body className={cn("bg-background font-sans antialiased", inter.variable)}>
+      <body className={cn("bg-background font-sans antialiased", inter.className)}>
         <FirebaseClientProvider>
           {children}
           <CookieConsent />
