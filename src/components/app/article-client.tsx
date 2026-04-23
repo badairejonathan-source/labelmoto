@@ -66,6 +66,27 @@ const getFicheIdFromTitle = (title: string): string | null => {
   return null;
 };
 
+const InternalLinkCard = ({ title, description, link, icon: Icon }: any) => (
+  <div className="mt-8 mb-12">
+    <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden hover:border-brand/40 transition-all group/link">
+      <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
+        <div className="bg-brand/10 p-4 rounded-full group-hover/link:bg-brand/20 transition-colors">
+          <Icon className="h-8 w-8 text-brand" />
+        </div>
+        <div className="flex-1 text-center md:text-left">
+          <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title}</h4>
+          <p className="text-sm font-bold text-muted-foreground leading-snug">{description}</p>
+        </div>
+        <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
+          <Link href={link} className="flex items-center gap-2">
+            Voir le guide complet <ChevronRight className="h-4 w-4" />
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
+  </div>
+);
+
 export default function ArticleClient({ id, showHeader = true, children }: { id: string, showHeader?: boolean, children?: React.ReactNode }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
@@ -290,6 +311,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
     const faq = section.faq || section.faqs;
 
+    // Détection pour remplacer la note par une carte harmonisée
+    const isBudgetNote = section.note && (section.note.includes("budget global") || section.note.includes("coût réel"));
+    const isAssuranceNote = section.note && (section.note.includes("Assurance") || section.note.includes("formule"));
+    const isGabaritNote = section.note && (section.note.includes("gabarit") || section.note.includes("tailles"));
+
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
@@ -312,70 +338,65 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
-        {section.note && (<div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">{fixText(section.note)}{(section.note.includes("Assurance") || section.note.includes("Vérifie AVANT") || section.note.includes("coûtent bien plus cher")) && (<div className="mt-6 not-italic"><Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] rounded-full px-8 py-6 shadow-lg transition-all hover:scale-105 active:scale-95"><Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil">🛡️ Voir le guide Assurance 2026</Link></Button></div>)}</div>)}
         
-        {/* INJECTION DES LIENS ARTICLES COMPLETS */}
-        {sectionId === '1-ton-gabarit' && (
-          <div className="mt-8 border-t border-dashed pt-8">
-            <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
-                <div className="bg-brand/10 p-4 rounded-full">
-                  <Bike className="h-8 w-8 text-brand" />
-                </div>
-                <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">Quelle moto choisir selon sa taille ?</h4>
-                  <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet par gabarit</p>
-                </div>
-                <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
-                  <Link href="/info/quelle-moto-choisir-selon-sa-taille" className="flex items-center gap-2">
-                    Voir le guide complet <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+        {/* RENDU DES NOTES OU DES CARTES HARMONISÉES */}
+        {section.note && (
+          <>
+            {isBudgetNote ? (
+              <InternalLinkCard 
+                title="Calculer mon budget réel"
+                description="Consultez notre guide complet sur le coût réel d'une moto par mois : assurance, essence, entretien."
+                link="/info/combien-coute-vraiment-une-moto-par-mois"
+                icon={Wallet}
+              />
+            ) : isAssuranceNote ? (
+              <InternalLinkCard 
+                title="Bien choisir son assurance"
+                description="Le guide complet des formules 2026 : comparez les garanties et évitez les pièges."
+                link="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil"
+                icon={ShieldCheck}
+              />
+            ) : isGabaritNote ? (
+              <InternalLinkCard 
+                title="Quelle moto pour ma taille ?"
+                description="Le guide complet par gabarit pour trouver la hauteur de selle idéale."
+                link="/info/quelle-moto-choisir-selon-sa-taille"
+                icon={Bike}
+              />
+            ) : (
+              <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
+                {fixText(section.note)}
+              </div>
+            )}
+          </>
+        )}
+        
+        {/* INJECTION DES LIENS ARTICLES COMPLETS PAR ID (FALLBACK) */}
+        {sectionId === '1-ton-gabarit' && !isGabaritNote && (
+          <InternalLinkCard 
+            title="Quelle moto choisir selon sa taille ?"
+            description="Le guide complet par gabarit"
+            link="/info/quelle-moto-choisir-selon-sa-taille"
+            icon={Bike}
+          />
         )}
 
-        {sectionId === '3-ton-budget-reel' && (
-          <div className="mt-8 border-t border-dashed pt-8">
-            <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
-                <div className="bg-brand/10 p-4 rounded-full">
-                  <Wallet className="h-8 w-8 text-brand" />
-                </div>
-                <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">Calculer mon budget réel</h4>
-                  <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet du coût par mois</p>
-                </div>
-                <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
-                  <Link href="/info/combien-coute-vraiment-une-moto-par-mois" className="flex items-center gap-2">
-                    Voir le guide complet <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+        {sectionId === '3-ton-budget-reel' && !isBudgetNote && (
+          <InternalLinkCard 
+            title="Calculer mon budget réel"
+            description="Le guide complet du coût par mois"
+            link="/info/combien-coute-vraiment-une-moto-par-mois"
+            icon={Wallet}
+          />
         )}
 
-        {sectionId === 'quelle-assurance-choisir-pour-une-moto-a2' && (
-          <div className="mt-8 border-t border-dashed pt-8">
-            <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
-                <div className="bg-brand/10 p-4 rounded-full">
-                  <ShieldCheck className="h-8 w-8 text-brand" />
-                </div>
-                <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">Bien choisir son assurance</h4>
-                  <p className="text-sm font-bold text-muted-foreground leading-snug">Le guide complet des formules 2026</p>
-                </div>
-                <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
-                  <Link href="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil" className="flex items-center gap-2">
-                    Voir le guide complet <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+        {sectionId === 'quelle-assurance-choisir-pour-une-moto-a2' && !isAssuranceNote && (
+          <InternalLinkCard 
+            title="Bien choisir son assurance"
+            description="Le guide complet des formules 2026"
+            link="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil"
+            icon={ShieldCheck}
+          />
         )}
       </div>
     );
