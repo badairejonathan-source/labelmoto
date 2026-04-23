@@ -62,7 +62,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
-  // Récupération de l'image avec priorité absolue sur imgUrl
   const actualImgUrl = useMemo(() => {
     if (dealership.imgUrl && dealership.imgUrl.trim() !== '') return dealership.imgUrl;
     if (dealership.imageUrl && dealership.imageUrl.trim() !== '') return dealership.imageUrl;
@@ -173,7 +172,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
           </button>
         )}
 
-        {/* Note dans un rond orange sur l'image */}
         <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black">
           <div className="flex flex-col items-center leading-none">
             <span className="text-xs md:text-sm">{rating > 0 ? rating.toFixed(1) : "—"}</span>
