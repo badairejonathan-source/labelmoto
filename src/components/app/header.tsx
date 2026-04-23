@@ -206,6 +206,8 @@ const Header: React.FC<HeaderProps> = ({
 
   const isMapPage = pathname === '/map';
   const isMobile = mounted && width !== undefined && width < 1024;
+  // Détecte les pages Conseil ou Entretien pour réduire la marge
+  const isCompactPage = pathname === '/info' || pathname.startsWith('/info/') || pathname === '/entretien' || pathname.startsWith('/fiches/');
 
   useEffect(() => {
     setMounted(true);
@@ -471,7 +473,7 @@ const Header: React.FC<HeaderProps> = ({
             
             <nav className={cn(
               "flex items-center justify-center gap-6 md:gap-6 relative z-50",
-              isMapPage ? "hidden" : "-mb-16 md:-mb-10"
+              isMapPage ? "hidden" : (isCompactPage ? "-mb-24 md:-mb-20" : "-mb-16 md:-mb-10")
             )}>
                 <Button 
                     variant="ghost" 
