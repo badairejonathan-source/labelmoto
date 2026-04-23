@@ -311,7 +311,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
     const faq = section.faq || section.faqs;
 
-    // Détection pour remplacer la note par une carte harmonisée
     const isBudgetNote = section.note && (section.note.includes("budget global") || section.note.includes("coût réel"));
     const isAssuranceNote = section.note && (section.note.includes("Assurance") || section.note.includes("formule"));
     const isGabaritNote = section.note && (section.note.includes("gabarit") || section.note.includes("tailles"));
@@ -339,7 +338,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
         
-        {/* RENDU DES NOTES OU DES CARTES HARMONISÉES */}
         {section.note && (
           <>
             {isBudgetNote ? (
@@ -369,34 +367,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               </div>
             )}
           </>
-        )}
-        
-        {/* INJECTION DES LIENS ARTICLES COMPLETS PAR ID (FALLBACK) */}
-        {sectionId === '1-ton-gabarit' && !isGabaritNote && (
-          <InternalLinkCard 
-            title="Quelle moto choisir selon sa taille ?"
-            description="Le guide complet par gabarit"
-            link="/info/quelle-moto-choisir-selon-sa-taille"
-            icon={Bike}
-          />
-        )}
-
-        {sectionId === '3-ton-budget-reel' && !isBudgetNote && (
-          <InternalLinkCard 
-            title="Calculer mon budget réel"
-            description="Le guide complet du coût par mois"
-            link="/info/combien-coute-vraiment-une-moto-par-mois"
-            icon={Wallet}
-          />
-        )}
-
-        {sectionId === 'quelle-assurance-choisir-pour-une-moto-a2' && !isAssuranceNote && (
-          <InternalLinkCard 
-            title="Bien choisir son assurance"
-            description="Le guide complet des formules 2026"
-            link="/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil"
-            icon={ShieldCheck}
-          />
         )}
       </div>
     );
