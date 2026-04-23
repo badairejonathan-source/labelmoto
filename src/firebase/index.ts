@@ -1,7 +1,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore, initializeFirestore } from 'firebase/firestore';
+import { getFirestore, Firestore } from 'firebase/firestore';
 
 // Singleton instances
 let firebaseApp: FirebaseApp;
@@ -24,19 +24,8 @@ export function initializeFirebase() {
   }
   
   if (!firestore) {
-    // Only use initializeFirestore on client side with specific settings
-    if (typeof window !== 'undefined') {
-      try {
-        firestore = initializeFirestore(firebaseApp, {
-          experimentalForceLongPolling: true,
-        });
-      } catch (err) {
-        firestore = getFirestore(firebaseApp);
-      }
-    } else {
-      // Server side always uses standard getFirestore
-      firestore = getFirestore(firebaseApp);
-    }
+    // Standard initialization for maximum performance (WebSockets/gRPC)
+    firestore = getFirestore(firebaseApp);
   }
 
   return { firebaseApp, auth, firestore };

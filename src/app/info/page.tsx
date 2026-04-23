@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/app/header';
-import { Loader2, Map, ArrowLeft, FileText, ChevronRight, Home } from 'lucide-react';
+import { Loader2, Map, FileText, ChevronRight, Home } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -73,7 +73,7 @@ function InfoPageComponent() {
     
     useEffect(() => setSearchTerm(searchParam || ''), [searchParam]);
 
-    const filteredArticles = React.useMemo(() => {
+    const filteredArticles = useMemo(() => {
         if (!allArticles) return [];
         const EXCLUDED_ARTICLE_ID = 'entretien-moto-intervalles-prix-conseils-par-modele';
         return allArticles.filter(a => a.id !== EXCLUDED_ARTICLE_ID);
@@ -103,11 +103,13 @@ function InfoPageComponent() {
                                 <div className="space-y-12">
                                     {Array.from({ length: 4 }).map((_, i) => (
                                         <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b">
-                                            <div className="md:col-span-2 space-y-4">
-                                                <Skeleton className="h-8 w-3/4" />
-                                                <Skeleton className="h-4 w-full" />
-                                                <Skeleton className="h-4 w-full" />
-                                                <Skeleton className="h-3 w-24" />
+                                            <div className="md:col-span-2 space-y-4 pt-2">
+                                                <Skeleton className="h-10 w-3/4 rounded-lg" />
+                                                <div className="space-y-2">
+                                                  <Skeleton className="h-4 w-full" />
+                                                  <Skeleton className="h-4 w-5/6" />
+                                                </div>
+                                                <Skeleton className="h-3 w-32 rounded-full mt-4" />
                                             </div>
                                             <Skeleton className="aspect-video w-full rounded-2xl order-first md:order-last" />
                                         </div>
