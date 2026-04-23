@@ -390,7 +390,7 @@ function MapPageComponent() {
         >
             <div className="relative px-6 pt-6 pb-6 border-b border-border/50 bg-white/50 backdrop-blur-sm z-10 shrink-0">
                 <div className="flex items-center justify-between gap-3 w-full mb-6">
-                    <div className="w-44"><LabelMotoLogo noBubble /></div>
+                    <div className="w-44"><LabelMotoLogo /></div>
                     <div className="flex-1 bg-white border border-gray-100 rounded-full py-2 px-3 text-center shadow-sm">
                         <p className="text-[10px] font-black uppercase leading-tight text-foreground">Trouver une concession ?</p>
                         <p className="text-xs font-black italic text-brand leading-none tracking-tighter">FINI LA GALÈRE.</p>
