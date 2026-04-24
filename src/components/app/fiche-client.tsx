@@ -44,14 +44,39 @@ import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Utilitaire pour extraire une valeur d'un objet de manière flexible
-const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "N/A") => {
+// Utilitaire d'extraction de données ultra-robuste pour éviter les "N/A"
+const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "—") => {
   if (!obj || typeof obj !== 'object') return defaultValue;
+  
+  // 1. Chercher dans les clés préférées
   for (const key of preferredKeys) {
     if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
       return String(obj[key]);
     }
   }
+
+  // 2. Chercher des correspondances floues (synonymes)
+  const allKeys = Object.keys(obj);
+  const commonSynonyms: Record<string, string[]> = {
+    'operations': ['content', 'description', 'details', 'desc', 'label', 'op'],
+    'price': ['prix', 'budget', 'coût', 'cout', 'valeur'],
+    'km': ['intervalle', 'interval', 'distance', 'periodicité', 'periodicite'],
+    'spec': ['value', 'details', 'reference', 'ref', 'type'],
+  };
+
+  for (const prefKey of preferredKeys) {
+    const synonyms = commonSynonyms[prefKey] || [];
+    for (const syn of synonyms) {
+      if (obj[syn] !== undefined && obj[syn] !== null && obj[syn] !== "") {
+        return String(obj[syn]);
+      }
+    }
+  }
+
+  // 3. Retourner la première valeur textuelle si rien n'est trouvé
+  const firstString = Object.values(obj).find(v => typeof v === 'string' && v.length > 0);
+  if (firstString) return String(firstString);
+
   return defaultValue;
 };
 
@@ -87,7 +112,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     return {
       modelName: fiche.display_title || fiche.model || modelId.replace(/-/g, ' ').toUpperCase(),
       brand: fiche.brand || (modelId.split('-')[0] || '').toUpperCase(),
-      year: fiche.year_range || "N/A",
+      year: fiche.year_range || "2020+",
       category: fiche.category || "Moto",
       introduction: sg.intro || fiche.intro || "",
       imageUrl: fiche.imageUrl || "/images/motard-entretien-page.webp",
@@ -99,7 +124,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
         displacement: (activeVariant.displacement_cc || ts.displacement_cc) ? `${activeVariant.displacement_cc || ts.displacement_cc} cm³` : "N/A",
         power: activeVariant.power || ts.power || "N/A",
         torque: activeVariant.torque || ts.torque || "N/A",
-        alimentation: activeVariant.fuel_system || ts.fuel_system || "N/A"
+        alimentation: activeVariant.fuel_system || ts.fuel_system || "Injection électronique"
       },
       transmission: {
         gearbox: activeVariant.gearbox || ts.gearbox || "6 rapports",
@@ -178,8 +203,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-12">
-            {/* HERO SECTION - DESIGN ORIGINAL LABEL MOTO */}
-            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[450px] flex flex-col justify-end">
+            {/* HERO SECTION - DESIGN EMBLÉMATIQUE LABEL MOTO */}
+            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[480px] flex flex-col justify-end">
                 <div className="absolute inset-0 z-0">
                     <Image 
                       src={displayData.imageUrl} 
@@ -189,7 +214,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                       priority 
                       sizes="(max-width: 1280px) 100vw, 1280px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
                 </div>
                 
                 <div className="relative z-10 p-6 md:p-12 w-full">
@@ -224,21 +249,32 @@ export default function FicheClient({ modelId }: { modelId: string }) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div className="lg:col-span-8 space-y-10">
+                <div className="lg:col-span-8 space-y-12">
                     {displayData.introduction && (
-                        <section className="bg-card p-8 rounded-[2rem] border-2 border-muted shadow-sm">
+                        <section className="bg-card p-8 rounded-[2rem] border-2 border-muted shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={120} height={40} /></div>
                             <h2 className="text-2xl font-black uppercase tracking-tighter mb-4 text-foreground flex items-center gap-3"><FileText className="h-6 w-6 text-brand" /> Présentation</h2>
-                            <p className="text-lg leading-relaxed text-foreground font-medium italic">{displayData.introduction}</p>
+                            <p className="text-lg leading-relaxed text-foreground font-medium italic border-l-4 border-brand/20 pl-6">{displayData.introduction}</p>
                         </section>
                     )}
 
                     {/* SELECTEUR DE VARIANTE */}
                     {displayData.hasVariants && (
-                        <div className="bg-brand/5 p-6 rounded-[2rem] border-2 border-brand/20 shadow-inner">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-4 text-center">Plusieurs versions disponibles :</p>
-                            <div className="flex flex-wrap justify-center gap-3">
+                        <div className="bg-brand/5 p-8 rounded-[2rem] border-2 border-brand/20 shadow-inner">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-6 text-center">Plusieurs versions disponibles :</p>
+                            <div className="flex flex-wrap justify-center gap-4">
                                 {displayData.variants.map((v: any, i: number) => (
-                                    <Button key={i} onClick={() => setSelectedVariantIndex(i)} variant={selectedVariantIndex === i ? 'default' : 'outline'} className={cn("rounded-full font-black uppercase text-[9px] h-10 px-6", selectedVariantIndex === i ? "bg-brand" : "border-brand/30 text-brand")}>{v.label || `Variante ${i+1}`}</Button>
+                                    <Button 
+                                      key={i} 
+                                      onClick={() => setSelectedVariantIndex(i)} 
+                                      variant={selectedVariantIndex === i ? 'default' : 'outline'} 
+                                      className={cn(
+                                        "rounded-full font-black uppercase text-[10px] h-12 px-8 shadow-sm transition-all", 
+                                        selectedVariantIndex === i ? "bg-brand text-white scale-105" : "border-brand/30 text-brand hover:bg-brand/10"
+                                      )}
+                                    >
+                                      {v.label || `Variante ${i+1}`}
+                                    </Button>
                                 ))}
                             </div>
                         </div>
@@ -246,36 +282,36 @@ export default function FicheClient({ modelId }: { modelId: string }) {
 
                     {/* SPÉCIFICATIONS TECHNIQUES DÉTAILLÉES */}
                     <div id="tech" className="scroll-mt-28 space-y-8">
-                        <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-2 flex items-center gap-4"><Cpu className="h-8 w-8 text-brand" /> Spécifications Techniques</h2>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-3 flex items-center gap-4 text-foreground"><Cpu className="h-8 w-8 text-brand" /> Spécifications Techniques</h2>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-card">
-                                <CardHeader className="bg-muted/30 py-4"><CardTitle className="text-lg font-black uppercase flex items-center gap-2"><Zap className="h-5 w-5 text-brand" /> Moteur & Transmission</CardTitle></CardHeader>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <Card className="border-none shadow-2xl rounded-[2rem] overflow-hidden bg-card transition-all hover:shadow-brand/5">
+                                <CardHeader className="bg-muted/30 py-5 border-b"><CardTitle className="text-lg font-black uppercase flex items-center gap-3"><Zap className="h-6 w-6 text-brand" /> Moteur & Transmission</CardTitle></CardHeader>
                                 <CardContent className="p-0">
                                     <Table>
                                         <TableBody>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground w-1/3">Type</TableCell><TableCell className="font-bold text-sm">{displayData.engine.type}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Cylindrée</TableCell><TableCell className="font-bold text-sm">{displayData.engine.displacement}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Alimentation</TableCell><TableCell className="font-bold text-sm">{displayData.engine.alimentation}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Boîte</TableCell><TableCell className="font-bold text-sm">{displayData.transmission.gearbox}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Finale</TableCell><TableCell className="font-bold text-sm">{displayData.transmission.finalDrive}</TableCell></TableRow>
-                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Embrayage</TableCell><TableCell className="font-bold text-sm">{displayData.transmission.clutch}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground w-1/3 py-4 pl-6">Type</TableCell><TableCell className="font-bold text-sm py-4">{displayData.engine.type}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Cylindrée</TableCell><TableCell className="font-bold text-sm py-4">{displayData.engine.displacement}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Alimentation</TableCell><TableCell className="font-bold text-sm py-4">{displayData.engine.alimentation}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Boîte</TableCell><TableCell className="font-bold text-sm py-4">{displayData.transmission.gearbox}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Finale</TableCell><TableCell className="font-bold text-sm py-4">{displayData.transmission.finalDrive}</TableCell></TableRow>
+                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Embrayage</TableCell><TableCell className="font-bold text-sm py-4">{displayData.transmission.clutch}</TableCell></TableRow>
                                         </TableBody>
                                     </Table>
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-card">
-                                <CardHeader className="bg-muted/30 py-4"><CardTitle className="text-lg font-black uppercase flex items-center gap-2"><LayoutGrid className="h-5 w-5 text-brand" /> Partie-Cycle & Freinage</CardTitle></CardHeader>
+                            <Card className="border-none shadow-2xl rounded-[2rem] overflow-hidden bg-card transition-all hover:shadow-brand/5">
+                                <CardHeader className="bg-muted/30 py-5 border-b"><CardTitle className="text-lg font-black uppercase flex items-center gap-3"><LayoutGrid className="h-6 w-6 text-brand" /> Partie-Cycle & Freinage</CardTitle></CardHeader>
                                 <CardContent className="p-0">
                                     <Table>
                                         <TableBody>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground w-1/3">Cadre</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frame}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Fourche</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontSuspension}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Amortisseur</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.rearSuspension}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Frein AV</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontBrake}</TableCell></TableRow>
-                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu AV</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.frontTire}</TableCell></TableRow>
-                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground">Pneu AR</TableCell><TableCell className="font-bold text-sm">{displayData.cycleParts.rearTire}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground w-1/3 py-4 pl-6">Cadre</TableCell><TableCell className="font-bold text-sm py-4">{displayData.cycleParts.frame}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Fourche</TableCell><TableCell className="font-bold text-sm py-4">{displayData.cycleParts.frontSuspension}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Amortisseur</TableCell><TableCell className="font-bold text-sm py-4">{displayData.cycleParts.rearSuspension}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Frein AV</TableCell><TableCell className="font-bold text-sm py-4">{displayData.cycleParts.frontBrake}</TableCell></TableRow>
+                                            <TableRow className="border-muted/50"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Pneu AV</TableCell><TableCell className="font-bold text-sm py-4">{displayData.cycleParts.frontTire}</TableCell></TableRow>
+                                            <TableRow className="border-0"><TableCell className="font-black text-[10px] uppercase text-muted-foreground py-4 pl-6">Pneu AR</TableCell><TableCell className="font-bold text-sm py-4">{displayData.cycleParts.rearTire}</TableCell></TableRow>
                                         </TableBody>
                                     </Table>
                                 </CardContent>
@@ -285,79 +321,86 @@ export default function FicheClient({ modelId }: { modelId: string }) {
 
                     {/* GUIDE D'ENTRETIEN OFFICIEL */}
                     <div id="service" className="scroll-mt-28 space-y-8">
-                        <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-2 flex items-center gap-4"><Wrench className="h-8 w-8 text-brand" /> Guide d'Entretien Officiel</h2>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-3 flex items-center gap-4 text-foreground"><Wrench className="h-8 w-8 text-brand" /> Guide d'Entretien Officiel</h2>
                         
                         <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
-                            <CardHeader className="bg-brand text-white py-6 px-8">
+                            <CardHeader className="bg-brand text-white py-8 px-10">
                                 <div className="flex items-center justify-between">
-                                    <CardTitle className="text-xl font-black uppercase tracking-widest flex items-center gap-3"><ClipboardList className="h-6 w-6" /> Plan de Maintenance</CardTitle>
-                                    <div className="hidden sm:block text-[10px] font-black uppercase tracking-tighter opacity-80">Données Constructeur</div>
+                                    <CardTitle className="text-xl font-black uppercase tracking-widest flex items-center gap-4"><ClipboardList className="h-7 w-7" /> Plan de Maintenance</CardTitle>
+                                    <div className="hidden sm:block text-[11px] font-black uppercase tracking-widest opacity-90 italic">Données Constructeur</div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-0">
                                 <Table>
                                     <TableHeader className="bg-muted/50">
                                         <TableRow>
-                                            <TableHead className="font-black uppercase text-[10px] py-4 pl-8">Intervalle</TableHead>
-                                            <TableHead className="font-black uppercase text-[10px] py-4">Opérations principales</TableHead>
-                                            <TableHead className="font-black uppercase text-[10px] py-4 text-right pr-8">Budget Moyen</TableHead>
+                                            <TableHead className="font-black uppercase text-[11px] tracking-widest py-6 pl-10">Intervalle</TableHead>
+                                            <TableHead className="font-black uppercase text-[11px] tracking-widest py-6">Opérations principales</TableHead>
+                                            <TableHead className="font-black uppercase text-[11px] tracking-widest py-6 text-right pr-10">Budget Moyen</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {displayData.serviceSchedule.length > 0 ? displayData.serviceSchedule.map((s: any, i: number) => (
-                                            <TableRow key={i} className="hover:bg-muted/20 border-muted/50 transition-colors">
-                                                <TableCell className="font-black text-brand py-6 pl-8">{getRobustValue(s, ['km', 'intervalle', 'label', 'title'])}</TableCell>
-                                                <TableCell className="font-medium text-sm py-6 leading-relaxed max-w-md">{getRobustValue(s, ['operations', 'content', 'description'])}</TableCell>
-                                                <TableCell className="text-right pr-8 py-6">
-                                                    <div className="inline-block bg-brand/10 text-brand px-4 py-1.5 rounded-full font-black text-sm">{getRobustValue(s, ['price', 'prix', 'budget'])}</div>
+                                            <TableRow key={i} className="hover:bg-brand/5 border-muted/50 transition-colors">
+                                                <TableCell className="font-black text-brand text-base py-8 pl-10">
+                                                  {getRobustValue(s, ['km', 'intervalle', 'label', 'title'])}
+                                                </TableCell>
+                                                <TableCell className="font-medium text-sm py-8 leading-relaxed max-w-md">
+                                                  {getRobustValue(s, ['operations', 'content', 'description', 'desc'])}
+                                                </TableCell>
+                                                <TableCell className="text-right pr-10 py-8">
+                                                  <div className="inline-block bg-brand/10 text-brand px-5 py-2 rounded-full font-black text-sm shadow-sm border border-brand/5">
+                                                    {getRobustValue(s, ['price', 'prix', 'budget', 'valeur'])}
+                                                  </div>
                                                 </TableCell>
                                             </TableRow>
                                         )) : (
-                                            <TableRow><TableCell colSpan={3} className="text-center py-10 text-muted-foreground font-bold italic">Données en cours d'actualisation...</TableCell></TableRow>
+                                            <TableRow><TableCell colSpan={3} className="text-center py-20 text-muted-foreground font-black uppercase tracking-widest text-xs italic opacity-50">Données en cours d'actualisation...</TableCell></TableRow>
                                         )}
                                     </TableBody>
                                 </Table>
                             </CardContent>
                         </Card>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                             <div className="space-y-6">
-                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2 pl-2"><Droplets className="h-5 w-5 text-brand" /> Consommables</h3>
-                                <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                             <div className="space-y-8">
+                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3 pl-2 text-foreground"><Droplets className="h-6 w-6 text-brand" /> Consommables</h3>
+                                <div className="space-y-4">
                                     {displayData.consumables.map((c: any, i: number) => (
-                                        <div key={i} className="flex items-center justify-between p-4 bg-muted/20 rounded-2xl border-2 border-transparent hover:border-brand/20 transition-all group">
+                                        <div key={i} className="flex items-center justify-between p-6 bg-muted/20 rounded-[1.5rem] border-2 border-transparent hover:border-brand/30 hover:bg-white transition-all group shadow-sm">
                                             <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{getRobustValue(c, ['part', 'category', 'type'])}</span>
-                                                <span className="text-sm font-black text-foreground">{getRobustValue(c, ['label', 'reference', 'name'])}</span>
+                                                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em] mb-1">{getRobustValue(c, ['part', 'category', 'type'])}</span>
+                                                <span className="text-base font-black text-foreground group-hover:text-brand transition-colors">{getRobustValue(c, ['label', 'reference', 'name'])}</span>
                                             </div>
-                                            <div className="bg-white px-3 py-1 rounded-full text-[10px] font-black text-brand shadow-sm border border-brand/10">{getRobustValue(c, ['spec', 'value', 'details'])}</div>
+                                            <div className="bg-white px-4 py-2 rounded-full text-[11px] font-black text-brand shadow-sm border border-brand/10 group-hover:scale-105 transition-transform">{getRobustValue(c, ['spec', 'value', 'details'])}</div>
                                         </div>
                                     ))}
-                                    {displayData.consumables.length === 0 && <p className="italic text-muted-foreground text-sm pl-4">Liste détaillée à venir.</p>}
+                                    {displayData.consumables.length === 0 && <p className="italic text-muted-foreground text-sm pl-6 border-l-2 border-dashed border-muted">Liste détaillée des pièces à venir.</p>}
                                 </div>
                              </div>
 
-                             <div className="space-y-6">
-                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2 pl-2"><AlertTriangle className="h-5 w-5 text-orange-500" /> Points de Vigilance</h3>
-                                <div className="bg-orange-50/30 border-2 border-orange-100 p-6 rounded-[2rem] space-y-6 shadow-sm">
-                                    <div className="space-y-3">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-orange-600">Défauts connus :</p>
-                                        <ul className="space-y-2">
+                             <div className="space-y-8">
+                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3 pl-2 text-foreground"><AlertTriangle className="h-6 w-6 text-orange-500" /> Points de Vigilance</h3>
+                                <div className="bg-orange-50/40 border-2 border-orange-100 p-8 rounded-[2.5rem] space-y-8 shadow-sm relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-4 opacity-5"><AlertTriangle className="h-20 w-20 text-orange-500" /></div>
+                                    <div className="space-y-4 relative z-10">
+                                        <p className="text-[11px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2">⚠️ Défauts connus :</p>
+                                        <ul className="space-y-3">
                                             {displayData.knownIssues.map((issue: string, i: number) => (
-                                                <li key={i} className="flex items-start gap-3 text-sm font-bold text-foreground/80">
-                                                    <CircleDot className="h-1.5 w-1.5 text-orange-400 mt-2 shrink-0" />
+                                                <li key={i} className="flex items-start gap-4 text-sm font-bold text-foreground/80 leading-relaxed">
+                                                    <CircleDot className="h-2 w-2 text-orange-400 mt-2 shrink-0" />
                                                     {issue}
                                                 </li>
                                             ))}
-                                            {displayData.knownIssues.length === 0 && <li className="italic text-muted-foreground text-sm">Aucun défaut majeur signalé par la communauté.</li>}
+                                            {displayData.knownIssues.length === 0 && <li className="italic text-muted-foreground text-sm font-medium">Aucun défaut majeur répertorié.</li>}
                                         </ul>
                                     </div>
-                                    <div className="pt-4 border-t border-orange-100 space-y-3">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-green-600">Conseils de longévité :</p>
-                                        <ul className="space-y-2">
+                                    <div className="pt-6 border-t border-orange-200/50 space-y-4 relative z-10">
+                                        <p className="text-[11px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2">✅ Conseils de longévité :</p>
+                                        <ul className="space-y-3">
                                             {displayData.longevityTips.map((tip: string, i: number) => (
-                                                <li key={i} className="flex items-start gap-3 text-sm font-bold text-foreground/80">
-                                                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                                                <li key={i} className="flex items-start gap-4 text-sm font-bold text-foreground/80 leading-relaxed">
+                                                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
                                                     {tip}
                                                 </li>
                                             ))}
@@ -368,18 +411,18 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </div>
                     </div>
 
-                    {/* FAQ */}
+                    {/* FAQ MODÈLE */}
                     {displayData.faq.length > 0 && (
                         <div id="faq" className="scroll-mt-28 space-y-8 pt-8">
-                             <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-2 flex items-center gap-4"><HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes</h2>
-                             <div className="space-y-4">
+                             <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-brand/20 pb-3 flex items-center gap-4 text-foreground"><HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes</h2>
+                             <div className="space-y-6">
                                 {displayData.faq.map((item: any, i: number) => (
-                                    <Card key={i} className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-card transition-all hover:shadow-2xl">
-                                        <CardHeader className="bg-muted/20 p-6 sm:p-8 border-b">
-                                            <CardTitle className="text-lg font-black uppercase leading-snug">{getRobustValue(item, ['question', 'q', 'titre'])}</CardTitle>
+                                    <Card key={i} className="border-none shadow-2xl rounded-[2rem] overflow-hidden bg-card transition-all hover:scale-[1.01]">
+                                        <CardHeader className="bg-muted/20 p-8 border-b">
+                                            <CardTitle className="text-lg font-black uppercase leading-tight text-foreground">{getRobustValue(item, ['question', 'q', 'titre', 'query'])}</CardTitle>
                                         </CardHeader>
-                                        <CardContent className="p-6 sm:p-8">
-                                            <p className="text-base font-bold text-muted-foreground leading-relaxed italic border-l-4 border-brand/30 pl-6">{getRobustValue(item, ['answer', 'reponse', 'content'])}</p>
+                                        <CardContent className="p-8">
+                                            <p className="text-base font-bold text-muted-foreground leading-relaxed italic border-l-4 border-brand/30 pl-8">{getRobustValue(item, ['answer', 'reponse', 'content', 'response'])}</p>
                                         </CardContent>
                                     </Card>
                                 ))}
@@ -387,14 +430,17 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </div>
                     )}
 
-                    {/* CONCLUSION */}
+                    {/* CONCLUSION EXPERTE */}
                     {displayData.conclusion && (
-                        <div className="mt-16 pt-8 border-t-4 border-dashed border-muted">
-                            <div className="flex items-center gap-3 mb-6"><ShieldCheck className="h-8 w-8 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">L'avis de l'expert</h3></div>
-                            <p className="text-lg text-foreground font-black leading-relaxed italic">{displayData.conclusion}</p>
+                        <div className="mt-20 pt-10 border-t-4 border-dashed border-muted relative">
+                            <div className="flex items-center gap-4 mb-8"><ShieldCheck className="h-10 w-10 text-brand" /><h3 className="text-3xl font-black uppercase m-0 text-foreground tracking-tighter">L'avis de l'expert</h3></div>
+                            <p className="text-xl text-foreground font-black leading-relaxed italic pr-12">{displayData.conclusion}</p>
                             <div className="flex justify-end items-center mt-12">
-                                <p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p>
-                                <Image src="/images/Stamp-LM.webp" alt="Signature" width={110} height={110} className="object-contain opacity-40 -rotate-[15deg] pointer-events-none -ml-10" />
+                                <div className="text-right">
+                                  <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-1">Rédigé par</p>
+                                  <p className="text-xl font-black text-foreground italic">L'équipe Label Moto</p>
+                                </div>
+                                <Image src="/images/Stamp-LM.webp" alt="Signature" width={140} height={140} className="object-contain opacity-50 -rotate-[15deg] pointer-events-none -ml-8 -mb-4" />
                             </div>
                         </div>
                     )}
@@ -402,22 +448,22 @@ export default function FicheClient({ modelId }: { modelId: string }) {
 
                 {/* SIDEBAR NAVIGATION & CTA */}
                 <aside className="lg:col-span-4 relative">
-                    <div className="lg:sticky lg:top-24 space-y-8">
-                        <Card className="border-2 border-brand/20 shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
-                            <CardHeader className="bg-brand text-white p-6"><CardTitle className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3"><LayoutGrid className="h-5 w-5" /> Sommaire</CardTitle></CardHeader>
-                            <CardContent className="p-6">
-                                <nav className="space-y-4">
-                                    <a href="#tech" className="flex items-center gap-4 text-sm font-black text-foreground hover:text-brand transition-colors group/nav">
-                                        <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-sm"><Cpu className="h-4 w-4" /></div>
+                    <div className="lg:sticky lg:top-28 space-y-8">
+                        <Card className="border-4 border-white shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
+                            <CardHeader className="bg-brand text-white p-7 border-b-4 border-white/20"><CardTitle className="text-xs font-black uppercase tracking-[0.3em] flex items-center gap-4"><LayoutGrid className="h-6 w-6" /> Navigation Rapide</CardTitle></CardHeader>
+                            <CardContent className="p-8">
+                                <nav className="space-y-5">
+                                    <a href="#tech" className="flex items-center gap-5 text-sm font-black text-foreground hover:text-brand transition-all group/nav">
+                                        <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-md"><Cpu className="h-5 w-5" /></div>
                                         Fiche Technique
                                     </a>
-                                    <a href="#service" className="flex items-center gap-4 text-sm font-black text-foreground hover:text-brand transition-colors group/nav">
-                                        <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-sm"><Wrench className="h-4 w-4" /></div>
+                                    <a href="#service" className="flex items-center gap-5 text-sm font-black text-foreground hover:text-brand transition-all group/nav">
+                                        <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-md"><Wrench className="h-5 w-5" /></div>
                                         Plan d'Entretien
                                     </a>
                                     {displayData.faq.length > 0 && (
-                                        <a href="#faq" className="flex items-center gap-4 text-sm font-black text-foreground hover:text-brand transition-colors group/nav">
-                                            <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-sm"><HelpCircle className="h-4 w-4" /></div>
+                                        <a href="#faq" className="flex items-center gap-5 text-sm font-black text-foreground hover:text-brand transition-all group/nav">
+                                            <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center group-hover/nav:bg-brand group-hover/nav:text-white transition-all shadow-md"><HelpCircle className="h-5 w-5" /></div>
                                             FAQ Modèle
                                         </a>
                                     )}
@@ -426,14 +472,14 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </Card>
 
                         {displayData.relations.articles.length > 0 && (
-                             <Card className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-muted/20">
-                                <CardHeader className="p-6 pb-2"><CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">Articles Liés</CardTitle></CardHeader>
-                                <CardContent className="p-4 space-y-3">
+                             <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-muted/30">
+                                <CardHeader className="p-8 pb-4"><CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2"><FileText className="h-4 w-4" /> Articles Liés</CardTitle></CardHeader>
+                                <CardContent className="p-5 space-y-4">
                                     {displayData.relations.articles.map((artId: string, i: number) => (
-                                        <Link key={i} href={`/info/${artId}`} className="block p-4 bg-white rounded-2xl border-2 border-transparent hover:border-brand hover:shadow-lg transition-all group">
+                                        <Link key={i} href={`/info/${artId}`} className="block p-5 bg-white rounded-2xl border-2 border-transparent hover:border-brand hover:shadow-xl transition-all group shadow-sm">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm font-black uppercase group-hover:text-brand transition-colors truncate pr-4">{artId.replace(/-/g, ' ')}</span>
-                                                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
+                                                <span className="text-[11px] font-black uppercase group-hover:text-brand transition-colors truncate pr-6 tracking-tight">{artId.replace(/-/g, ' ')}</span>
+                                                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand group-hover:translate-x-1 transition-all" />
                                             </div>
                                         </Link>
                                     ))}
@@ -442,12 +488,14 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         )}
 
                         <Card className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-brand relative group cursor-pointer" onClick={() => router.push('/map')}>
-                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                             <CardContent className="relative z-10 p-10 text-center space-y-6">
-                                <div className="h-20 w-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto border-2 border-white/30 animate-bounce-subtle"><RefreshCw className="h-10 w-10 text-white" /></div>
-                                <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">Besoin d'un atelier ?</h4>
-                                <p className="text-white/80 text-xs font-bold leading-relaxed">Trouvez un professionnel qualifié pour votre révision à proximité.</p>
-                                <Button className="w-full bg-white text-brand hover:bg-white/90 font-black uppercase tracking-widest text-[10px] py-6 rounded-full shadow-xl">🔘 Voir la carte des ateliers</Button>
+                             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                             <CardContent className="relative z-10 p-12 text-center space-y-8">
+                                <div className="h-24 w-24 rounded-full bg-white/20 backdrop-blur-lg flex items-center justify-center mx-auto border-4 border-white/30 animate-pulse-subtle shadow-2xl"><RefreshCw className="h-12 w-12 text-white" /></div>
+                                <div>
+                                  <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-none mb-3">Besoin d'un atelier ?</h4>
+                                  <p className="text-white/80 text-xs font-bold leading-relaxed">Trouvez un professionnel qualifié pour votre révision à proximité.</p>
+                                </div>
+                                <Button className="w-full bg-white text-brand hover:bg-white/95 font-black uppercase tracking-[0.1em] text-[10px] py-7 rounded-full shadow-2xl transform group-hover:scale-105 transition-all">🔘 Voir la carte des ateliers</Button>
                              </CardContent>
                         </Card>
                     </div>
@@ -458,12 +506,12 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       </main>
       
       <style jsx global>{`
-        @keyframes bounce-subtle {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
+        @keyframes pulse-subtle {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.05); opacity: 1; }
         }
-        .animate-bounce-subtle {
-          animation: bounce-subtle 3s ease-in-out infinite;
+        .animate-pulse-subtle {
+          animation: pulse-subtle 4s ease-in-out infinite;
         }
       `}</style>
     </div>
