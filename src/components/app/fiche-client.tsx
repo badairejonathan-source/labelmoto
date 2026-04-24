@@ -46,20 +46,30 @@ import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
+/**
+ * Fonction utilitaire pour extraire des données de manière robuste
+ * même si les noms de champs varient dans Firestore.
+ */
 const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "—") => {
   if (!obj || typeof obj !== 'object') return defaultValue;
+  
+  // 1. Chercher dans les clés préférées fournies
   for (const key of preferredKeys) {
     if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
       return String(obj[key]);
     }
   }
-  const allKeys = Object.keys(obj);
+
+  // 2. Chercher dans des synonymes techniques connus
   const commonSynonyms: Record<string, string[]> = {
-    'operations': ['content', 'description', 'details', 'desc', 'label', 'op'],
-    'price': ['prix', 'budget', 'coût', 'cout', 'valeur'],
+    'operations': ['service_label', 'content', 'description', 'details', 'label', 'op'],
+    'price': ['price_estimate', 'prix', 'budget', 'coût', 'cout', 'valeur'],
     'km': ['intervalle', 'interval', 'distance', 'periodicité', 'periodicite'],
     'spec': ['value', 'details', 'reference', 'ref', 'type'],
+    'part': ['nom', 'label', 'item'],
+    'lifetime': ['average_lifetime', 'duree', 'vie', 'km']
   };
+
   for (const prefKey of preferredKeys) {
     const synonyms = commonSynonyms[prefKey] || [];
     for (const syn of synonyms) {
@@ -68,8 +78,11 @@ const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string 
       }
     }
   }
-  const firstString = Object.values(obj).find(v => typeof v === 'string' && v.length > 0);
+
+  // 3. Retourner la première valeur string trouvée si rien d'autre
+  const firstString = Object.values(obj).find(v => (typeof v === 'string' || typeof v === 'number') && String(v).length > 0);
   if (firstString) return String(firstString);
+  
   return defaultValue;
 };
 
@@ -98,8 +111,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     const variants = fiche.variants || [];
     const ts = fiche.technical_sheet || {};
     const activeVariant = variants[selectedVariantIndex] || {};
-    const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
     const sg = fiche.service_guide || {};
+    const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
 
     return {
       modelName: fiche.display_title || fiche.model || modelId.replace(/-/g, ' ').toUpperCase(),
@@ -172,7 +185,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-10">
-            {/* HERO SECTION - REPRODUCTION FIDÈLE */}
+            {/* HERO SECTION - REPRODUCTION FIDÈLE DU DESIGN ORIGINAL */}
             <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[420px] flex flex-col justify-end">
                 <div className="absolute inset-0 z-0">
                     <Image 
@@ -215,7 +228,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </div>
             </div>
 
-            {/* VERSION SELECTOR - REPRODUCTION FIDÈLE */}
+            {/* VERSION SELECTOR */}
             {displayData.hasVariants && (
                 <div className="bg-muted/30 p-4 md:p-6 rounded-2xl border-2 border-muted flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">SÉLECTIONNEZ LA VERSION :</span>
@@ -236,7 +249,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </div>
             )}
 
-            {/* DATA CARDS - DESIGN RECONSTITUÉ */}
+            {/* DATA CARDS - DESIGN ORIGINAL CÔTE À CÔTE AVEC POINTILLÉS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-card">
                     <CardHeader className="bg-brand/[0.03] py-5 border-b border-brand/10">
@@ -282,7 +295,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </Card>
             </div>
 
-            {/* ACCORDION SECTION */}
+            {/* ACCORDION PARTIE CYCLE */}
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="cycle" className="border-none shadow-md rounded-2xl bg-card overflow-hidden mb-4">
                     <AccordionTrigger className="px-8 py-5 hover:no-underline group">
@@ -312,7 +325,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </AccordionItem>
             </Accordion>
 
-            {/* GUIDE ENTRETIEN & PRIX - DESIGN RECONSTITUÉ */}
+            {/* GUIDE ENTRETIEN & PRIX - DESIGN AVEC TITRE SOULIGNÉ ET TABLEAU À EN-TÊTE ORANGE */}
             <section id="service" className="scroll-mt-28 space-y-12 pt-16 border-t-2 border-dashed border-muted">
                 <div className="text-center space-y-6">
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground leading-none">GUIDE ENTRETIEN & PRIX</h2>
@@ -340,11 +353,11 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                           {getRobustValue(s, ['km', 'intervalle', 'label'])} <span className="text-[10px] text-muted-foreground">km</span>
                                         </TableCell>
                                         <TableCell className="font-black text-sm py-8 leading-tight">
-                                          {getRobustValue(s, ['operations', 'content', 'description'])}
+                                          {getRobustValue(s, ['service_label', 'operations', 'content', 'description'])}
                                         </TableCell>
                                         <TableCell className="text-right pr-10 py-8">
                                           <span className="text-brand font-black text-sm">
-                                            ≈ {getRobustValue(s, ['price', 'prix', 'budget'])}
+                                            {getRobustValue(s, ['price_estimate', 'price', 'prix', 'budget'])}
                                           </span>
                                         </TableCell>
                                     </TableRow>
@@ -356,7 +369,28 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     </CardContent>
                 </Card>
 
-                {/* POINTS DE VIGILANCE */}
+                {/* CONSOMMABLES */}
+                {displayData.consumables.length > 0 && (
+                  <Card className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-card">
+                    <CardHeader className="bg-muted/50 py-6 px-10 border-b">
+                        <CardTitle className="text-sm font-black uppercase text-foreground flex items-center gap-4"><Droplets className="h-5 w-5 text-brand" /> DURÉE DE VIE DES CONSOMMABLES</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableBody>
+                                {displayData.consumables.map((c: any, i: number) => (
+                                    <TableRow key={i} className="hover:bg-muted/20 border-muted/30">
+                                        <TableCell className="font-black text-muted-foreground text-xs py-5 pl-10 uppercase tracking-widest">{getRobustValue(c, ['part', 'nom'])}</TableCell>
+                                        <TableCell className="text-right pr-10 font-black text-sm text-foreground">{getRobustValue(c, ['average_lifetime', 'duree', 'lifetime'])}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* POINTS DE VIGILANCE & CONSEILS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
                      <div className="bg-orange-50/40 border-2 border-orange-100 p-8 rounded-[2rem] space-y-6 shadow-sm">
                         <div className="flex items-center gap-3 text-orange-600 font-black uppercase text-xs mb-2"><AlertTriangle className="h-5 w-5" /> DÉFAUTS CONNUS</div>
@@ -383,12 +417,31 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                      </div>
                 </div>
 
+                {/* FAQ */}
+                {displayData.faq.length > 0 && (
+                  <div className="space-y-8 pt-10">
+                    <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2"><HelpCircle className="h-8 w-8 text-brand" /> QUESTIONS FRÉQUENTES</h3>
+                    <div className="grid gap-4">
+                      {displayData.faq.map((item: any, idx: number) => (
+                        <Card key={idx} className="border-none shadow-lg rounded-[2rem] overflow-hidden">
+                          <CardHeader className="bg-muted/20 p-6 md:p-8 border-b">
+                            <CardTitle className="text-lg font-black uppercase leading-tight">{getRobustValue(item, ['question', 'q'])}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-6 md:p-8">
+                            <p className="text-base font-bold text-muted-foreground leading-relaxed italic">{getRobustValue(item, ['answer', 'a'])}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* CONCLUSION EXPERTE */}
                 <div className="mt-20 pt-10 border-t-4 border-dashed border-muted relative flex flex-col md:flex-row items-center gap-8 bg-muted/10 p-10 rounded-[3rem]">
                     <div className="shrink-0"><ShieldCheck className="h-16 w-16 text-brand" /></div>
                     <div className="flex-1">
                         <h3 className="text-2xl font-black uppercase mb-4 text-foreground tracking-tighter">L'AVIS DE L'EXPERT</h3>
-                        <p className="text-lg text-foreground/80 font-black leading-relaxed italic">{displayData.conclusion}</p>
+                        <p className="text-lg text-foreground/80 font-black leading-relaxed italic">"{displayData.conclusion}"</p>
                         <div className="flex justify-end items-center mt-8">
                             <p className="text-lg font-black text-foreground italic relative z-10">L'équipe Label Moto</p>
                             <Image src="/images/Stamp-LM.webp" alt="Signature" width={100} height={100} className="opacity-40 -rotate-12 pointer-events-none -ml-8" />
