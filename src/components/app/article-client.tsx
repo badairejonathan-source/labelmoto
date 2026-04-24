@@ -29,8 +29,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { doc, collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const slugify = (text: string) => 
@@ -95,6 +95,19 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
+  // Listing des autres articles pour la sidebar
+  const articlesListRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
+  const { data: allArticles, isLoading: isArticlesListLoading } = useCollection(articlesListRef);
+
+  const otherArticles = useMemo(() => {
+    if (!allArticles) return [];
+    // On exclut l'article actuel et l'article d'index d'entretien s'il existe
+    return allArticles
+        .filter(a => a.id !== id && a.id !== 'entretien-moto-intervalles-prix-conseils-par-modele')
+        .sort(() => 0.5 - Math.random()) // Un peu d'aléatoire pour le dynamisme
+        .slice(0, 5);
+  }, [allArticles, id]);
+
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
     const articleId = id.toLowerCase();
@@ -116,36 +129,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (!article) return [];
     return article.sections || article.content || [];
   }, [article]);
-
-  const sidebarRecommendation = useMemo(() => {
-    const lowerId = id.toLowerCase();
-    
-    if (lowerId.includes('meilleure-moto-a2')) {
-      return {
-        title: "Taille & Gabarit",
-        description: "Quelle moto choisir selon votre gabarit ? Le guide des hauteurs de selle.",
-        link: "/info/quelle-moto-choisir-selon-sa-taille",
-        icon: <Bike className="h-7 w-7 text-brand" />,
-        bgColor: "bg-brand/5",
-        borderColor: "border-brand/20",
-        iconBg: "bg-brand/10",
-        titleColor: "text-brand",
-        btnClass: "border-brand text-brand hover:bg-brand hover:text-white"
-      };
-    }
-
-    return {
-      title: "Guide A2 2026",
-      description: "Quelles sont les meilleures motos pour débuter ? Le guide complet A2.",
-      link: "/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter",
-      icon: <Bike className="h-7 w-7 text-brand" />,
-      bgColor: "bg-brand/5",
-      borderColor: "border-brand/20",
-      iconBg: "bg-brand/10",
-      titleColor: "text-brand",
-      btnClass: "border-brand text-brand hover:bg-brand hover:text-white"
-    };
-  }, [id]);
 
   const getCellValue = (row: any, header: string, colIndex: number) => {
     if (!row) return '';
@@ -465,12 +448,41 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   </CardContent>
                 </Card>
 
-                <Card className={cn("border-2 border-dashed p-8 rounded-[3rem] shadow-sm text-center flex flex-col items-center justify-center", sidebarRecommendation.bgColor, sidebarRecommendation.borderColor)}>
-                  <div className={cn("w-14 h-14 rounded-full flex items-center justify-center mb-4", sidebarRecommendation.iconBg)}>{sidebarRecommendation.icon}</div>
-                  <h4 className={cn("text-lg font-black uppercase tracking-tight mb-2", sidebarRecommendation.titleColor)}>{sidebarRecommendation.title}</h4>
-                  <p className={cn("text-xs font-bold mb-6 leading-relaxed opacity-70", sidebarRecommendation.titleColor)}>{sidebarRecommendation.description}</p>
-                  <Button asChild variant="outline" className={cn("w-full font-black uppercase tracking-widest text-[9px] rounded-full py-6 h-auto shadow-lg transition-all hover:scale-105", sidebarRecommendation.btnClass)}><Link href={sidebarRecommendation.link} className="flex items-center justify-center gap-2">Lire le dossier <ChevronRight className="h-4 w-4" /></Link></Button>
-                </Card>
+                {/* Listing rapide des autres articles */}
+                <div className="bg-muted/30 rounded-[2.5rem] p-8 border border-border/50">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-6 flex items-center gap-2">
+                        <FileText className="h-3.5 w-3.5 text-brand" /> À LIRE AUSSI
+                    </h3>
+                    <div className="space-y-4">
+                        {isArticlesListLoading ? (
+                            Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="space-y-2">
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-3 w-2/3" />
+                                </div>
+                            ))
+                        ) : (
+                            otherArticles.map((art: any) => (
+                                <Link key={art.id} href={`/info/${art.id}`} className="group block pb-4 border-b border-border/50 last:border-0 last:pb-0">
+                                    <h4 className="text-sm font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors line-clamp-2 leading-tight">
+                                        {art.display_title || art.title}
+                                    </h4>
+                                    <p className="text-[10px] font-bold text-muted-foreground mt-1 line-clamp-1 opacity-70">
+                                        Par {art.author || "L'équipe Label Moto"}
+                                    </p>
+                                </Link>
+                            ))
+                        )}
+                        {(!isArticlesListLoading && otherArticles.length === 0) && (
+                            <p className="text-xs italic text-muted-foreground font-medium">D'autres guides arrivent bientôt !</p>
+                        )}
+                    </div>
+                    <div className="mt-8">
+                        <Button asChild variant="ghost" className="w-full h-auto py-4 rounded-full border-2 border-dashed border-muted-foreground/20 hover:border-brand/50 hover:bg-brand/5 text-[9px] font-black uppercase tracking-widest transition-all">
+                            <Link href="/info">Voir tous les conseils <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                        </Button>
+                    </div>
+                </div>
               </div>
             </aside>
           </div>
