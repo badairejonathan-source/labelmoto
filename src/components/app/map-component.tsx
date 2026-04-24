@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -100,6 +101,17 @@ const MapComponent = ({
     map.on('click', onMapClick);
     map.on('dragstart', () => onUserInteraction?.());
 
+    // Application immédiate du padding au montage
+    const panX = leftPadding / 2;
+    const panY = bottomPadding / 3;
+    if (panX !== 0 || panY !== 0) {
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.panBy([-panX, panY], { animate: false });
+        }
+      }, 100);
+    }
+
     return () => {
       map.off();
       map.remove();
@@ -142,22 +154,21 @@ const MapComponent = ({
     const map = mapRef.current;
     if (!map || isUpdatingFromProps.current) return;
 
-    // To prevent the "jumping" behavior when user is dragging, 
-    // we only setView if the target center is significantly different from current center
     const currentMapCenter = map.getCenter();
     const threshold = 0.0001;
-    if (Math.abs(currentMapCenter.lat - center[0]) < threshold && Math.abs(currentMapCenter.lng - center[1]) < threshold && Math.abs(map.getZoom() - zoom) < 0.1) {
-      return;
-    }
+    
+    // On force la mise à jour si les coordonnées sont différentes OU si le padding a changé
+    const centerChanged = Math.abs(currentMapCenter.lat - center[0]) > threshold || Math.abs(currentMapCenter.lng - center[1]) > threshold;
+    const zoomChanged = Math.abs(map.getZoom() - zoom) > 0.1;
+
+    if (!centerChanged && !zoomChanged) return;
 
     isUpdatingFromProps.current = true;
     map.setView(center, zoom, { animate: true });
     
-    // Application des décalages pour le centrage visuel uniquement lors d'un changement de centre/zoom programmatique
     const panX = leftPadding / 2;
     const panY = bottomPadding / 3;
     if (panX !== 0 || panY !== 0) {
-      // Small delay to allow setView to complete before panning
       setTimeout(() => {
         if (mapRef.current) {
           mapRef.current.panBy([-panX, panY], { animate: true });

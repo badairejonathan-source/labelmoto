@@ -86,10 +86,11 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.603354, 1.888334]);
+  // Centre géographique de la France optimisé visuellement
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.6, 2.2]);
   const [mapZoom, setMapZoom] = useState(6);
   
-  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.603354, 1.888334]);
+  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.6, 2.2]);
   
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -125,11 +126,10 @@ function MapPageComponent() {
   
   useEffect(() => { 
     setMounted(true); 
-    // Optimisation TBT : On attend que l'UI soit prête avant d'injecter la carte
     const timer = setTimeout(() => setShowMap(true), 300);
     if (isMobile && !latParam) {
-      setMapCenter([46.603354, 1.888334]);
-      setMapZoom(5.5);
+      setMapCenter([46.6, 2.2]);
+      setMapZoom(5.8);
     }
     return () => clearTimeout(timer);
   }, [isMobile, latParam]);
