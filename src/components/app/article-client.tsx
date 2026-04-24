@@ -69,6 +69,8 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('hornet 750') || t.includes('cb750')) return 'honda-cb750-hornet-2023-plus';
   if (t.includes('gsx-8s')) return 'suzuki-gsx-8s-2023-plus';
   if (t.includes('z900 a2')) return 'kawasaki-z900-a2-2020-plus';
+  if (t.includes('g 310 r')) return 'bmw-g-310-r-2016-plus';
+  if (t.includes('f900r')) return 'bmw-f900r-2020-plus';
   return null;
 };
 
