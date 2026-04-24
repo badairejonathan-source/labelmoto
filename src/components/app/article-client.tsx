@@ -58,7 +58,7 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('z650')) return 'kawasaki-z650-2020-plus';
   if (t.includes('cb500 hornet') || t.includes('cb500f')) return 'honda-cb500f-2022-plus';
   if (t.includes('tracer 7')) return 'yamaha-tracer-7-2021-plus';
-  if (t.includes('nx500') || t.includes('cb500x')) return 'honda-nx500-2024-plus';
+  if (t.includes('nx500')) return 'honda-nx500-2024-plus';
   if (t.includes('r7')) return 'yamaha-r7-2022-plus';
   if (t.includes('cbr500r')) return 'honda-cbr500r-2022-plus';
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
@@ -109,10 +109,9 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   const otherArticles = useMemo(() => {
     if (!allArticles) return [];
-    // On exclut l'article actuel et l'article d'index d'entretien s'il existe
     return allArticles
         .filter(a => a.id !== id && a.id !== 'entretien-moto-intervalles-prix-conseils-par-modele')
-        .sort(() => 0.5 - Math.random()) // Un peu d'aléatoire pour le dynamisme
+        .sort(() => 0.5 - Math.random())
         .slice(0, 5);
   }, [allArticles, id]);
 
@@ -302,7 +301,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
     const faq = section.faq || section.faqs;
 
-    const isBudgetNote = section.note && (section.note.includes("budget global") || section.note.includes("coût réel"));
+    const isBudgetNote = (section.note && (section.note.includes("budget global") || section.note.includes("coût réel"))) || (sectionId.includes("budget"));
     const isAssuranceNote = section.note && (section.note.includes("Assurance") || section.note.includes("formule"));
     const isGabaritNote = section.note && (section.note.includes("gabarit") || section.note.includes("tailles"));
 
@@ -329,12 +328,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
         
-        {section.note && (
+        {(section.note || isBudgetNote) && (
           <>
             {isBudgetNote ? (
               <InternalLinkCard 
-                title="Calculer mon budget réel"
-                description="Consultez notre guide complet sur le coût réel d'une moto par mois : assurance, essence, entretien."
+                title="Combien coûte une moto par mois ?"
+                description="Découvrez notre guide complet sur le budget réel : assurance, entretien, essence et imprévus."
                 link="/info/combien-coute-vraiment-une-moto-par-mois"
                 icon={Wallet}
               />
@@ -352,11 +351,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 link="/info/quelle-moto-choisir-selon-sa-taille"
                 icon={Bike}
               />
-            ) : (
+            ) : section.note ? (
               <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
                 {fixText(section.note)}
               </div>
-            )}
+            ) : null}
           </>
         )}
       </div>
@@ -456,7 +455,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   </CardContent>
                 </Card>
 
-                {/* Listing rapide des autres articles */}
                 <div className="bg-muted/30 rounded-[2.5rem] p-8 border border-border/50">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-6 flex items-center gap-2">
                         <FileText className="h-3.5 w-3.5 text-brand" /> À LIRE AUSSI
