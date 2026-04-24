@@ -63,6 +63,12 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('cbr500r')) return 'honda-cbr500r-2022-plus';
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
   if (t.includes('cmx500') || t.includes('rebel 500')) return 'honda-cmx500-rebel';
+  if (t.includes('v-strom 650')) return 'suzuki-v-strom-650-2017-plus';
+  if (t.includes('transalp') || t.includes('xl750')) return 'honda-xl750-transalp-2023-plus';
+  if (t.includes('450 mt') || t.includes('450mt')) return 'cfmoto-450-mt-2024-plus';
+  if (t.includes('hornet 750') || t.includes('cb750')) return 'honda-cb750-hornet-2023-plus';
+  if (t.includes('gsx-8s')) return 'suzuki-gsx-8s-2023-plus';
+  if (t.includes('z900 a2')) return 'kawasaki-z900-a2-2020-plus';
   return null;
 };
 
@@ -119,7 +125,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
-    if (articleId.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+    if (articleId.includes('entretien') || articleId.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
@@ -200,7 +206,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   {(card.type || card.profile || card.subtitle) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile || card.subtitle}</p>}
                   {formula && (
                     <div className="mt-2 bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-flex items-center gap-1 shadow-sm">
-                      <CheckCircle2 className="h-3 w-3" /> Formule conseillée : {formula}
+                      <CheckCircle2 className="h-3 v-3" /> Formule conseillée : {formula}
                     </div>
                   )}
                 </div>
