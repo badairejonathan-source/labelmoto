@@ -101,9 +101,9 @@ const MapComponent = ({
     map.on('click', onMapClick);
     map.on('dragstart', () => onUserInteraction?.());
 
-    // Application IMMEDIATE du décalage (padding visuel)
-    // On déplace la caméra vers la gauche pour décaler le contenu vers la droite
-    const panX = leftPadding / 2;
+    // Application IMMEDIATE du décalage (padding visuel) calibré précisément pour le centrage
+    map.invalidateSize();
+    const panX = leftPadding > 0 ? 180 : 0; // Décalage visuel fixe pour compenser le menu 520px
     const panY = bottomPadding / 3;
     if (panX !== 0 || panY !== 0) {
         map.panBy([-panX, panY], { animate: false });
@@ -151,23 +151,17 @@ const MapComponent = ({
     const map = mapRef.current;
     if (!map || isUpdatingFromProps.current) return;
 
-    // Calculer le centre projeté actuel (incluant le pan éventuel)
-    // Pour simplifier, on compare directement les props reçues
     isUpdatingFromProps.current = true;
     
     // On définit la vue normalement
     map.setView(center, zoom, { animate: true });
     
     // On réapplique le décalage (offset) pour compenser l'interface
-    const panX = leftPadding / 2;
+    map.invalidateSize();
+    const panX = leftPadding > 0 ? 180 : 0;
     const panY = bottomPadding / 3;
     if (panX !== 0 || panY !== 0) {
-        // Un léger délai pour laisser le setView se stabiliser avant le pan
-        setTimeout(() => {
-            if (mapRef.current) {
-                mapRef.current.panBy([-panX, panY], { animate: true });
-            }
-        }, 50);
+        map.panBy([-panX, panY], { animate: true });
     }
     
     setTimeout(() => { isUpdatingFromProps.current = false; }, 600);

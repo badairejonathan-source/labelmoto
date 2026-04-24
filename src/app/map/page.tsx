@@ -86,9 +86,9 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // Centre géographique de la France optimisé (Bourges area)
+  // Centre exact de la France calibré pour l'ouverture
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.2276, 2.2137]);
-  const [mapZoom, setMapZoom] = useState(6.2);
+  const [mapZoom, setMapZoom] = useState(6.0);
   
   const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.2276, 2.2137]);
   
