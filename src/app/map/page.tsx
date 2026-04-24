@@ -86,11 +86,11 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // Centre géographique de la France optimisé visuellement
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.6, 2.2]);
-  const [mapZoom, setMapZoom] = useState(6);
+  // Centre géographique de la France optimisé (Bourges area)
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.2276, 2.2137]);
+  const [mapZoom, setMapZoom] = useState(6.2);
   
-  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.6, 2.2]);
+  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.2276, 2.2137]);
   
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -126,9 +126,9 @@ function MapPageComponent() {
   
   useEffect(() => { 
     setMounted(true); 
-    const timer = setTimeout(() => setShowMap(true), 300);
+    const timer = setTimeout(() => setShowMap(true), 100);
     if (isMobile && !latParam) {
-      setMapCenter([46.6, 2.2]);
+      setMapCenter([46.2276, 2.2137]);
       setMapZoom(5.8);
     }
     return () => clearTimeout(timer);

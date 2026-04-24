@@ -101,15 +101,12 @@ const MapComponent = ({
     map.on('click', onMapClick);
     map.on('dragstart', () => onUserInteraction?.());
 
-    // Application immédiate du padding au montage
+    // Application IMMEDIATE du décalage (padding visuel)
+    // On déplace la caméra vers la gauche pour décaler le contenu vers la droite
     const panX = leftPadding / 2;
     const panY = bottomPadding / 3;
     if (panX !== 0 || panY !== 0) {
-      setTimeout(() => {
-        if (mapRef.current) {
-          mapRef.current.panBy([-panX, panY], { animate: false });
-        }
-      }, 100);
+        map.panBy([-panX, panY], { animate: false });
     }
 
     return () => {
@@ -154,26 +151,23 @@ const MapComponent = ({
     const map = mapRef.current;
     if (!map || isUpdatingFromProps.current) return;
 
-    const currentMapCenter = map.getCenter();
-    const threshold = 0.0001;
-    
-    // On force la mise à jour si les coordonnées sont différentes OU si le padding a changé
-    const centerChanged = Math.abs(currentMapCenter.lat - center[0]) > threshold || Math.abs(currentMapCenter.lng - center[1]) > threshold;
-    const zoomChanged = Math.abs(map.getZoom() - zoom) > 0.1;
-
-    if (!centerChanged && !zoomChanged) return;
-
+    // Calculer le centre projeté actuel (incluant le pan éventuel)
+    // Pour simplifier, on compare directement les props reçues
     isUpdatingFromProps.current = true;
+    
+    // On définit la vue normalement
     map.setView(center, zoom, { animate: true });
     
+    // On réapplique le décalage (offset) pour compenser l'interface
     const panX = leftPadding / 2;
     const panY = bottomPadding / 3;
     if (panX !== 0 || panY !== 0) {
-      setTimeout(() => {
-        if (mapRef.current) {
-          mapRef.current.panBy([-panX, panY], { animate: true });
-        }
-      }, 50);
+        // Un léger délai pour laisser le setView se stabiliser avant le pan
+        setTimeout(() => {
+            if (mapRef.current) {
+                mapRef.current.panBy([-panX, panY], { animate: true });
+            }
+        }, 50);
     }
     
     setTimeout(() => { isUpdatingFromProps.current = false; }, 600);
