@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -53,6 +52,17 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
   });
 };
 
+/**
+ * Calcule le centre décalé pour compenser l'interface (panneau latéral)
+ * sans provoquer de sauts visuels lors du zoom.
+ */
+const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number]): L.LatLng => {
+  const zoom = map.getZoom();
+  const centerPoint = map.project(latlng, zoom);
+  const targetPoint = L.point(centerPoint.x + offsetPixels[0], centerPoint.y + offsetPixels[1]);
+  return map.unproject(targetPoint, zoom);
+};
+
 const MapComponent = ({
   dealerships, center, zoom, hoveredDealershipId, selectedDealershipId,
   onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
@@ -69,17 +79,25 @@ const MapComponent = ({
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
+    // On crée la carte avec le centre décalé dès le départ
     const map = L.map(containerRef.current, {
       minZoom: 5,
       zoomSnap: 0.1,
       fadeAnimation: true,
       zoomControl: false,
-    }).setView(center, zoom);
+    });
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap France',
       maxZoom: 20
     }).addTo(map);
+
+    // Positionnement initial précis avec offset (compensation du menu 520px)
+    map.setView(center, zoom);
+    if (leftPadding > 0 || bottomPadding > 0) {
+        const offsetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6]);
+        map.setView(offsetCenter, zoom, { animate: false });
+    }
 
     const clusterGroup = L.markerClusterGroup({
       chunkedLoading: true,
@@ -101,14 +119,6 @@ const MapComponent = ({
     map.on('click', onMapClick);
     map.on('dragstart', () => onUserInteraction?.());
 
-    // Application IMMEDIATE du décalage (padding visuel) calibré précisément pour le centrage
-    map.invalidateSize();
-    const panX = leftPadding > 0 ? 180 : 0; // Décalage visuel fixe pour compenser le menu 520px
-    const panY = bottomPadding / 3;
-    if (panX !== 0 || panY !== 0) {
-        map.panBy([-panX, panY], { animate: false });
-    }
-
     return () => {
       map.off();
       map.remove();
@@ -116,6 +126,7 @@ const MapComponent = ({
     };
   }, []);
 
+  // Mise à jour des marqueurs
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
@@ -147,26 +158,32 @@ const MapComponent = ({
     clusterGroup.addLayers(newMarkers);
   }, [dealerships, hoveredDealershipId, selectedDealershipId, zoom]);
 
+  // Synchronisation avec les changements de props (recherche, sélection)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || isUpdatingFromProps.current) return;
 
-    isUpdatingFromProps.current = true;
-    
-    // On définit la vue normalement
-    map.setView(center, zoom, { animate: true });
-    
-    // On réapplique le décalage (offset) pour compenser l'interface
-    map.invalidateSize();
-    const panX = leftPadding > 0 ? 180 : 0;
-    const panY = bottomPadding / 3;
-    if (panX !== 0 || panY !== 0) {
-        map.panBy([-panX, panY], { animate: true });
+    const currentCenter = map.getCenter();
+    const dist = Math.sqrt(Math.pow(currentCenter.lat - center[0], 2) + Math.pow(currentCenter.lng - center[1], 2));
+
+    // On n'intervient que si le changement est significatif (ex: recherche, clic carte)
+    // Cela évite le saut vers la droite lors du scroll/zoom manuel
+    if (dist > 0.0001 || map.getZoom() !== zoom) {
+        isUpdatingFromProps.current = true;
+        
+        // Calcul du centre visuel décalé
+        let targetCenter: L.LatLngExpression = center;
+        if (leftPadding > 0 || bottomPadding > 0) {
+            targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6]);
+        }
+        
+        map.setView(targetCenter, zoom, { animate: true });
+        
+        setTimeout(() => { isUpdatingFromProps.current = false; }, 600);
     }
-    
-    setTimeout(() => { isUpdatingFromProps.current = false; }, 600);
   }, [center, zoom, bottomPadding, leftPadding]);
 
+  // Localisation utilisateur
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;

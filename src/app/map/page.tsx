@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -86,11 +85,11 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // Centre exact de la France calibré pour l'ouverture
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.2276, 2.2137]);
-  const [mapZoom, setMapZoom] = useState(6.0);
+  // Centre calibré pour correspondre à la photo (Centre de la France légèrement ajusté)
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
+  const [mapZoom, setMapZoom] = useState(6.2);
   
-  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.2276, 2.2137]);
+  const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.5, 2.2]);
   
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -127,12 +126,8 @@ function MapPageComponent() {
   useEffect(() => { 
     setMounted(true); 
     const timer = setTimeout(() => setShowMap(true), 100);
-    if (isMobile && !latParam) {
-      setMapCenter([46.2276, 2.2137]);
-      setMapZoom(5.8);
-    }
     return () => clearTimeout(timer);
-  }, [isMobile, latParam]);
+  }, []);
 
   useEffect(() => {
     if (latParam && lngParam) {
@@ -202,10 +197,10 @@ function MapPageComponent() {
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
     setMapBoundsStr(bounds.toBBoxString()); 
+    // On ne met à jour mapCenter que si l'interaction vient de l'utilisateur
     if (selectionSource === null) {
-      setMapCenter(newCenter);
       setSortingAnchor(newCenter);
-      setMapZoom(newZoom);
+      // On évite de mettre à jour mapCenter ici pour ne pas déclencher le re-pan de MapComponent
     }
   }, [selectionSource]);
   
