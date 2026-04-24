@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -441,11 +440,11 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <div className="flex flex-1 justify-center px-1 md:px-4 relative z-10 min-w-0">
-                <div className="bg-white px-1 py-1 md:px-6 md:py-3 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-xs md:max-w-md lg:max-w-none overflow-hidden">
-                    <p className="text-[7px] xs:text-[9px] sm:text-xs md:text-lg font-black uppercase tracking-tight text-foreground leading-tight">
+                <div className="bg-white px-2 py-1.5 md:px-8 md:py-4 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-xs md:max-w-md lg:max-w-none overflow-hidden flex flex-col justify-center items-center">
+                    <p className="text-[7px] xs:text-[9px] sm:text-xs md:text-sm lg:text-base font-black uppercase tracking-wider text-foreground leading-tight">
                         TROUVER UNE CONCESSION ?
                     </p>
-                    <p className="text-[9px] xs:text-[11px] sm:text-sm md:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
+                    <p className="text-[9px] xs:text-[11px] sm:text-sm md:text-lg lg:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
                         FINI LA GALÈRE.
                     </p>
                 </div>
