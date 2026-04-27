@@ -14,7 +14,7 @@ const inter = Inter({
   display: 'swap',
 });
 
-// C'est ici que vous modifiez les métadonnées globales du site
+// Métadonnées globales du site
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
   alternates: {
@@ -31,11 +31,11 @@ export const metadata: Metadata = {
   publisher: "Label Moto",
   icons: {
     icon: [
-      { url: '/favicon.ico' }, // Assurez-vous que ce fichier existe dans /public
-      { url: '/icon.png', type: 'image/png' },
+      { url: '/images/favicon.ico' }, // Chemin corrigé d'après votre capture
+      { url: '/images/favicon.webp', type: 'image/webp' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png' },
+      { url: '/images/logo-moto.webp' }, // Utilisation du logo comme icône Apple par défaut
     ],
   },
   openGraph: {
