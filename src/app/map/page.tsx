@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -17,6 +18,10 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
+import locationsData from '@/data/locations.json';
+import brandLogos from '@/data/brand-logos';
+
+const brandsList = Object.keys(brandLogos);
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -85,7 +90,6 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // Centre calibré pour correspondre à la photo (Centre de la France légèrement ajusté)
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
   const [mapZoom, setMapZoom] = useState(6.2);
   
@@ -165,29 +169,83 @@ function MapPageComponent() {
   useEffect(() => {
     const processSearch = async () => {
         let results = [...allDealerships];
-        if (activeFilter) { results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')); }
-        if (submittedSearchTerm.trim() !== '') {
-            const lower = submittedSearchTerm.toLowerCase().trim();
-            const finalLower = lower.replace(/[\s-]/g, '');
-            if (/^\d{5}$/.test(finalLower)) {
-                const coords = await getCityCoordinates(finalLower);
-                if (coords) { 
-                  setMapCenter(coords); 
-                  setSortingAnchor(coords); 
-                  setMapZoom(13); 
-                  setSelectionSource('external');
-                  results = results.filter(d => d.address?.includes(finalLower)); 
+        
+        // 1. Filtrage Global (Catégorie)
+        if (activeFilter) { 
+            results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')); 
+        }
+
+        const term = submittedSearchTerm.trim().toLowerCase();
+        if (term !== '') {
+            const words = term.split(/\s+/);
+            let brandFilter: string | null = null;
+            let deptFilter: string | null = null;
+            let zipFilter: string | null = null;
+            let otherTerms: string[] = [];
+
+            // Analyse sémantique de la requête
+            for (const word of words) {
+                if (/^\d{5}$/.test(word)) {
+                    zipFilter = word;
+                } else if (/^(\d{1,2}|2[ab])$/i.test(word)) {
+                    deptFilter = word.padStart(2, '0').toUpperCase();
+                } else {
+                    const matchedBrand = brandsList.find(b => 
+                        b.toLowerCase() === word || 
+                        b.toLowerCase().includes(word)
+                    );
+                    if (matchedBrand) brandFilter = matchedBrand;
+                    else otherTerms.push(word);
                 }
-            } else {
-                const cityCoords = await getCityCoordinatesByName(lower);
-                if (cityCoords) { 
-                  setMapCenter(cityCoords); 
-                  setSortingAnchor(cityCoords); 
-                  setMapZoom(12); 
-                  setSelectionSource('external');
-                }
-                else results = results.filter(d => d.title?.toLowerCase().includes(lower) || d.address?.toLowerCase().includes(lower));
             }
+
+            // --- Actions de Positionnement Carte ---
+            let coordsFound = false;
+
+            if (zipFilter) {
+                const coords = await getCityCoordinates(zipFilter);
+                if (coords) {
+                    setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); setSelectionSource('external');
+                    coordsFound = true;
+                }
+            } else if (deptFilter) {
+                const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFilter!));
+                if (deptKey) {
+                    const info = (locationsData as any)[deptKey];
+                    setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external');
+                    coordsFound = true;
+                }
+            } else if (otherTerms.length > 0) {
+                const cityCoords = await getCityCoordinatesByName(otherTerms.join(' '));
+                if (cityCoords) {
+                    setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); setSelectionSource('external');
+                    coordsFound = true;
+                }
+            }
+
+            // --- Filtrage des Résultats ---
+            if (brandFilter) {
+                const lowerBrand = brandFilter.toLowerCase();
+                results = results.filter(d => {
+                    const dealerBrands = Array.isArray(d.brands) ? d.brands.map(b => b.toLowerCase()) : [];
+                    const title = (d.title || '').toLowerCase();
+                    return dealerBrands.includes(lowerBrand) || title.includes(lowerBrand);
+                });
+            }
+
+            if (zipFilter || deptFilter) {
+                const target = zipFilter || deptFilter;
+                results = results.filter(d => d.address?.includes(target!));
+            }
+
+            if (otherTerms.length > 0 && !coordsFound) {
+                const residual = otherTerms.join(' ');
+                results = results.filter(d => 
+                    (d.title || '').toLowerCase().includes(residual) || 
+                    (d.address || '').toLowerCase().includes(residual)
+                );
+            }
+            
             setShowDesktopPanel(true);
         }
         setFilteredDealerships(results);
@@ -197,14 +255,15 @@ function MapPageComponent() {
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
     setMapBoundsStr(bounds.toBBoxString()); 
-    // On ne met à jour mapCenter que si l'interaction vient de l'utilisateur
     if (selectionSource === null) {
       setSortingAnchor(newCenter);
-      // On évite de mettre à jour mapCenter ici pour ne pas déclencher le re-pan de MapComponent
+      setMapZoom(newZoom);
     }
   }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
+    // Règle de priorité utilisateur (Req 5) : 
+    // On affiche toujours ce qui est dans les bounds actuels si l'utilisateur navigue (Zoom >= 8 ou recherche active)
     if (mapZoom < 8 && submittedSearchTerm.trim() === '') {
         return [];
     }

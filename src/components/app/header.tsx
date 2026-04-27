@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -256,35 +257,44 @@ const Header: React.FC<HeaderProps> = ({
     const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
     const results: Suggestion[] = [];
 
-    const matchingCities: { name: string; dept: string; lat: number; lng: number }[] = [];
+    // 1. Départements par numéro ou nom (Req 2)
     Object.entries(locationsData).forEach(([dept, info]) => {
+        const deptNum = dept.split(' - ')[0];
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
-        if (normalizedDept.includes(normalizedTerm)) {
-            results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 700 });
+        if (deptNum.startsWith(normalizedTerm) || normalizedDept.includes(normalizedTerm)) {
+            results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 900 });
         }
+        
         info.cities.forEach(city => {
             const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
             if (normalizedCity.includes(normalizedTerm)) {
-                matchingCities.push({ name: city, dept: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1] });
                 results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1], zoom: 12, score: 650 });
             }
         });
     });
 
+    // 2. Marques (Req 1)
+    brandsList.forEach(brand => {
+        const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
+        if (normalizedBrand.includes(normalizedTerm)) {
+            results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1100 });
+        }
+    });
+
+    // 3. Concessionnaires (Req 4)
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
         const normalizedTitle = title.replace(/[\s-]/g, '');
         let score = 0;
+        
+        // Match CP exact (Priorité Req 3)
         const isNumeric = /^\d{5}$/.test(lowerTerm);
-        if (isNumeric && lowerTerm.length >= 2) {
-            const zipMatch = address.match(/\b\d{5}\b/);
-            if (zipMatch && zipMatch[0].startsWith(lowerTerm)) score = 1300;
-        }
+        if (isNumeric && address.includes(lowerTerm)) score = 1300;
+        
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
-        const belongsToMatchingCity = matchingCities.some(city => address.includes(city.name.toLowerCase()));
-        if (belongsToMatchingCity) score = Math.max(score, 1150);
         if (address.includes(lowerTerm)) score = Math.max(score, 1100);
+        
         if (lowerTerm.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
             if (dist === 1) score = Math.max(score, 1050);
@@ -293,29 +303,11 @@ const Header: React.FC<HeaderProps> = ({
         if (score > 0) results.push({ ...d, score });
     });
 
-    const sortedBrands = [...brandsList].sort((a, b) => b.length - a.length);
-    let bestBrandMatch: string | null = null;
-    sortedBrands.forEach(brand => {
-        const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-        if (normalizedBrand === normalizedTerm) {
-            results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1150 });
-            bestBrandMatch = brand;
-        } else if (normalizedBrand.startsWith(normalizedTerm)) {
-            results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 900 });
-            if (!bestBrandMatch) bestBrandMatch = brand;
-        }
-    });
-
     const finalSuggestions = results
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
     setSuggestions(finalSuggestions.slice(0, 30));
-    if (bestBrandMatch && bestBrandMatch.toLowerCase().replace(/[\s-]/g, '').startsWith(normalizedTerm)) {
-        setPrediction(searchTerm + bestBrandMatch.substring(searchTerm.length));
-    } else {
-        setPrediction('');
-    }
   }, [searchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
@@ -325,6 +317,7 @@ const Header: React.FC<HeaderProps> = ({
     setShowSuggestions(false);
     setIsFocused(false);
     setPrediction('');
+    
     const queryParams = new URLSearchParams();
     if (suggestion.lat && suggestion.lng) {
         queryParams.set('lat', suggestion.lat.toString());
@@ -359,12 +352,6 @@ const Header: React.FC<HeaderProps> = ({
 
   const searchInput = (
     <div className="relative flex-1" ref={suggestionsRef}>
-      {prediction && searchTerm && (
-        <div className="absolute inset-0 px-4 md:px-8 py-2 flex items-center pointer-events-none overflow-hidden whitespace-pre">
-            <span className="text-sm md:text-base text-transparent select-none">{searchTerm}</span>
-            <span className="text-sm md:text-base text-muted-foreground/40 select-none">{prediction.substring(searchTerm.length)}</span>
-        </div>
-      )}
       <Input 
         type="search" 
         placeholder={placeholderText} 
@@ -380,7 +367,6 @@ const Header: React.FC<HeaderProps> = ({
         autoComplete="off" 
       />
       
-      {/* Indicateur de chargement discret pendant le lazy-fetch */}
       {isDataLoading && (
         <div className="absolute top-1/2 right-20 md:right-28 -translate-y-1/2 z-20">
             <Loader2 className="h-4 w-4 animate-spin text-brand/40" />
