@@ -31,13 +31,13 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.googleapis.com',
+        hostname: '**.googleapis.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: '*.googleusercontent.com',
+        hostname: '**.googleusercontent.com',
         port: '',
         pathname: '/**',
       },

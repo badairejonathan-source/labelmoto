@@ -7,6 +7,9 @@ export interface Dealership {
   phoneNumber: string;
   email: string;
   imgUrl: string;
+  img_url?: string;
+  image_url?: string;
+  imageUrl?: string;
   mardi: string;
   mercredi: string;
   jeudi: string;

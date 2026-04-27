@@ -64,18 +64,29 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
   const actualImgUrl = useMemo(() => {
-    // Liste exhaustive des champs d'image possibles dans Firestore
+    // Analyse approfondie des champs d'image possibles dans Firestore
     const candidate = 
       dealership.imgUrl || 
+      dealership.img_url ||
       dealership.imageUrl || 
+      dealership.image_url ||
       dealership.photoUrl || 
+      dealership.photo_url ||
       dealership.coverUrl ||
       dealership.image ||
       dealership.photo ||
-      dealership.placeImageUrl;
+      dealership.placeImageUrl ||
+      dealership.img;
       
-    if (candidate && typeof candidate === 'string' && candidate.trim().startsWith('http')) {
-      return candidate.trim();
+    if (candidate && typeof candidate === 'string') {
+      let url = candidate.trim();
+      // On force le HTTPS pour éviter les blocages de Next.js
+      if (url.startsWith('//')) url = `https:${url}`;
+      if (url.startsWith('http:')) url = url.replace('http:', 'https:');
+      
+      if (url.startsWith('https')) {
+        return url;
+      }
     }
     return "";
   }, [dealership]);
@@ -164,6 +175,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   className="object-contain"
                   quality={100}
                   priority
+                  unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
                   sizes="95vw"
                 />
               )}
@@ -204,7 +216,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     fill 
                     className="object-cover transition-transform group-hover:brightness-110 duration-700" 
                     sizes="(max-width: 768px) 160px, 200px"
-                    unoptimized={actualImgUrl.includes('googleusercontent.com')}
+                    unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
                     <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
