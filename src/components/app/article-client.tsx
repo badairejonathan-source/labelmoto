@@ -304,7 +304,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const isBudgetNote = (section.note && (section.note.includes("budget global") || section.note.includes("coût réel"))) || (sectionId.includes("budget"));
     const isAssuranceNote = (section.note && (section.note.includes("Assurance") || section.note.includes("formule"))) || (sectionId.includes("assurance"));
     const isGabaritNote = (section.note && (section.note.includes("gabarit") || section.note.includes("tailles"))) || (sectionId.includes("taille") || sectionId.includes("hauteur"));
-    const isOccasionNote = (sectionId.includes("occasion") || sectionId.includes("erreurs"));
 
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
@@ -329,7 +328,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
         
-        {(section.note || isBudgetNote || isAssuranceNote || isGabaritNote || isOccasionNote) && (
+        {(section.note || isBudgetNote || isAssuranceNote || isGabaritNote) && (
           <>
             {isBudgetNote ? (
               <InternalLinkCard 
@@ -351,13 +350,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 description="Le guide complet par gabarit pour trouver la hauteur de selle idéale."
                 link="/info/quelle-moto-choisir-selon-sa-taille"
                 icon={Bike}
-              />
-            ) : isOccasionNote ? (
-               <InternalLinkCard 
-                title="Achat d'occasion : évitez les pièges"
-                description="Notre guide complet pour bien inspecter une moto d'occasion et sécuriser votre achat."
-                link="/info/achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
-                icon={AlertTriangle}
               />
             ) : section.note ? (
               <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
