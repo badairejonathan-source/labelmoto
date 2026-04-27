@@ -65,7 +65,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
   const actualImgUrl = useMemo(() => {
-    // Priorité absolue aux champs vus dans la DB
     const keys = [
       'imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 
       'coverUrl', 'image', 'photo', 'placeImageUrl', 'img'
@@ -73,7 +72,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     
     let candidate = "";
     
-    // 1. Scan direct (racine du document)
     for (const key of keys) {
       if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].length > 10) {
         candidate = dealership[key];
@@ -81,7 +79,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
       }
     }
     
-    // 2. Scan imbriqué (certains imports Google enrichis)
     if (!candidate) {
         const subFolders = ['google_data', 'metadata', 'info', 'details'];
         for (const folder of subFolders) {
@@ -97,24 +94,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     }
 
     if (candidate) {
-      let url = candidate.trim();
-      
-      // Nettoyage des caractères invisibles/spéciaux qui cassent les URLs
-      url = url.replace(/[\u200B-\u200D\uFEFF]/g, '');
-
-      // Correction protocole relative
-      if (url.startsWith('//')) {
-          url = `https:${url}`;
-      } else if (!url.startsWith('http')) {
-          // Forçage HTTPS pour les domaines Google connus
+      let url = candidate.trim().replace(/[\u200B-\u200D\uFEFF]/g, '');
+      if (url.startsWith('//')) url = `https:${url}`;
+      else if (!url.startsWith('http')) {
           if (url.includes('googleusercontent.com') || url.includes('googleapis.com')) {
               url = `https://${url}`;
           }
       }
-      
-      // Force HTTPS final
       if (url.startsWith('http:')) url = url.replace('http:', 'https:');
-      
       return url;
     }
     return "";
@@ -132,7 +119,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
     const { id, ...dataToMove } = dealership;
     const cleanData = JSON.parse(JSON.stringify(dataToMove));
-    
     cleanData.quarantinedAt = new Date().toISOString();
     cleanData.quarantineSource = 'manual_admin_action';
     cleanData.status = 'QUARANTINED';
@@ -236,8 +222,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         <div className="flex items-stretch min-h-[130px] md:min-h-[150px]">
           <div className="flex flex-1 flex-row items-stretch">
             <div 
-              className="relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
-              onClick={(e) => { e.stopPropagation(); setIsZoomDialogOpen(true); }}
+              className={cn(
+                "relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30",
+                actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default"
+              )}
+              onClick={(e) => { 
+                if (actualImgUrl && !imgError) {
+                  e.stopPropagation(); 
+                  setIsZoomDialogOpen(true); 
+                }
+              }}
             >
               {actualImgUrl && !imgError ? (
                 <>
@@ -256,7 +250,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   </div>
                 </>
               ) : (
-                <div className="flex h-full items-center justify-center opacity-20 p-4"><LabelMotoLogo noBubble /></div>
+                <div className="flex h-full items-center justify-center opacity-20 p-4">
+                  <LabelMotoLogo noBubble noLink />
+                </div>
               )}
             </div>
             <div className="flex flex-col justify-center flex-1 p-3 md:p-5 cursor-pointer" onClick={onClick}>
