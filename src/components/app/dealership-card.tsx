@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -63,9 +64,19 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
   const actualImgUrl = useMemo(() => {
-    if (dealership.imgUrl && dealership.imgUrl.trim() !== '') return dealership.imgUrl;
-    if (dealership.imageUrl && dealership.imageUrl.trim() !== '') return dealership.imageUrl;
-    if (dealership.photoUrl && dealership.photoUrl.trim() !== '') return dealership.photoUrl;
+    // Liste exhaustive des champs d'image possibles dans Firestore
+    const candidate = 
+      dealership.imgUrl || 
+      dealership.imageUrl || 
+      dealership.photoUrl || 
+      dealership.coverUrl ||
+      dealership.image ||
+      dealership.photo ||
+      dealership.placeImageUrl;
+      
+    if (candidate && typeof candidate === 'string' && candidate.trim().startsWith('http')) {
+      return candidate.trim();
+    }
     return "";
   }, [dealership]);
 
@@ -193,6 +204,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     fill 
                     className="object-cover transition-transform group-hover:brightness-110 duration-700" 
                     sizes="(max-width: 768px) 160px, 200px"
+                    unoptimized={actualImgUrl.includes('googleusercontent.com')}
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
                     <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />

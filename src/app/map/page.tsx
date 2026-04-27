@@ -56,6 +56,7 @@ const getCityCoordinates = async (postalCode: string): Promise<[number, number] 
     const data = await response.json();
     if (data.length > 0) {
       const { coordinates } = data[0].centre;
+      // API returns [lng, lat], Leaflet needs [lat, lng]
       return [coordinates[1], coordinates[0]];
     }
     return null;
@@ -262,7 +263,7 @@ function MapPageComponent() {
   }, [selectionSource]);
   
   const dealershipsToDisplay = useMemo(() => {
-    // Règle de priorité utilisateur (Req 5) : 
+    // Règle de priorité utilisateur : 
     // On affiche toujours ce qui est dans les bounds actuels si l'utilisateur navigue (Zoom >= 8 ou recherche active)
     if (mapZoom < 8 && submittedSearchTerm.trim() === '') {
         return [];

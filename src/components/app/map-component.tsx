@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -56,11 +57,11 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
  * Calcule le centre décalé pour compenser l'interface (panneau latéral)
  * sans provoquer de sauts visuels lors du zoom.
  */
-const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number]): L.LatLng => {
-  const zoom = map.getZoom();
-  const centerPoint = map.project(latlng, zoom);
+const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
+  const z = targetZoom ?? map.getZoom();
+  const centerPoint = map.project(latlng, z);
   const targetPoint = L.point(centerPoint.x + offsetPixels[0], centerPoint.y + offsetPixels[1]);
-  return map.unproject(targetPoint, zoom);
+  return map.unproject(targetPoint, z);
 };
 
 const MapComponent = ({
@@ -79,7 +80,6 @@ const MapComponent = ({
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    // On crée la carte avec le centre décalé dès le départ
     const map = L.map(containerRef.current, {
       minZoom: 5,
       zoomSnap: 0.1,
@@ -92,12 +92,12 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    // Positionnement initial précis avec offset (compensation du menu 520px)
-    map.setView(center, zoom);
+    // Positionnement initial précis avec offset
+    let initialCenter: L.LatLngExpression = center;
     if (leftPadding > 0 || bottomPadding > 0) {
-        const offsetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6]);
-        map.setView(offsetCenter, zoom, { animate: false });
+        initialCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
     }
+    map.setView(initialCenter, zoom, { animate: false });
 
     const clusterGroup = L.markerClusterGroup({
       chunkedLoading: true,
@@ -164,21 +164,21 @@ const MapComponent = ({
     if (!map || isUpdatingFromProps.current) return;
 
     const currentCenter = map.getCenter();
+    // On calcule la distance pour savoir si le mouvement vient d'une interaction manuelle ou d'un changement de props
     const dist = Math.sqrt(Math.pow(currentCenter.lat - center[0], 2) + Math.pow(currentCenter.lng - center[1], 2));
 
-    // On n'intervient que si le changement est significatif (ex: recherche, clic carte)
-    // Cela évite le saut vers la droite lors du scroll/zoom manuel
-    if (dist > 0.0001 || map.getZoom() !== zoom) {
+    // Si changement de props significatif (recherche par CP, clic sur carte), on déplace
+    if (dist > 0.0001 || Math.abs(map.getZoom() - zoom) > 0.1) {
         isUpdatingFromProps.current = true;
         
-        // Calcul du centre visuel décalé
         let targetCenter: L.LatLngExpression = center;
         if (leftPadding > 0 || bottomPadding > 0) {
-            targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6]);
+            targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
         }
         
         map.setView(targetCenter, zoom, { animate: true });
         
+        // On libère le verrou après l'animation
         setTimeout(() => { isUpdatingFromProps.current = false; }, 600);
     }
   }, [center, zoom, bottomPadding, leftPadding]);
