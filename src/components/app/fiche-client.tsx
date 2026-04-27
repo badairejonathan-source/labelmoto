@@ -154,6 +154,18 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     };
   }, [fiche, selectedVariantIndex, modelId]);
 
+  const relatedModels = useMemo(() => {
+    const pool = [
+      { id: 'kawasaki-z650-2020-plus', name: 'Kawasaki Z650', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070' },
+      { id: 'suzuki-gsx-8s-2023-plus', name: 'Suzuki GSX-8S', image: 'https://images.unsplash.com/photo-1615172282427-9a57ef2d142e?q=80&w=2070' },
+      { id: 'honda-cb500f-2022-plus', name: 'Honda Hornet 500', image: 'https://images.unsplash.com/photo-1558981359-219d6364c9c8?q=80&w=2070' },
+      { id: 'honda-cb750-hornet-2023-plus', name: 'Honda Hornet 750', image: 'https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?q=80&w=2070' },
+      { id: 'yamaha-mt-07-2021-plus', name: 'Yamaha MT-07', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=2070' },
+      { id: 'suzuki-sv650-2016-plus', name: 'Suzuki SV650', image: 'https://images.unsplash.com/photo-1558981424-a3163a39bc59?q=80&w=2070' }
+    ];
+    return pool.filter(m => m.id !== modelId).sort(() => 0.5 - Math.random()).slice(0, 3);
+  }, [modelId]);
+
   if (isLoading) return (
     <div className="min-h-screen bg-background">
         <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
@@ -185,7 +197,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-10">
-            {/* HERO SECTION - REPRODUCTION FIDÈLE DU DESIGN ORIGINAL */}
+            {/* HERO SECTION */}
             <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[420px] flex flex-col justify-end">
                 <div className="absolute inset-0 z-0">
                     <Image 
@@ -249,7 +261,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </div>
             )}
 
-            {/* DATA CARDS - DESIGN ORIGINAL CÔTE À CÔTE AVEC POINTILLÉS */}
+            {/* DATA CARDS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-card">
                     <CardHeader className="bg-brand/[0.03] py-5 border-b border-brand/10">
@@ -325,7 +337,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </AccordionItem>
             </Accordion>
 
-            {/* GUIDE ENTRETIEN & PRIX - DESIGN AVEC TITRE SOULIGNÉ ET TABLEAU À EN-TÊTE ORANGE */}
+            {/* GUIDE ENTRETIEN & PRIX */}
             <section id="service" className="scroll-mt-28 space-y-12 pt-16 border-t-2 border-dashed border-muted">
                 <div className="text-center space-y-6">
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground leading-none">GUIDE ENTRETIEN & PRIX</h2>
@@ -435,6 +447,30 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     </div>
                   </div>
                 )}
+
+                {/* MODÈLES ÉQUIVALENTS */}
+                <section className="pt-12 space-y-8">
+                    <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
+                        <Bike className="h-8 w-8 text-brand" /> MODÈLES ÉQUIVALENTS
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {relatedModels.map((m) => (
+                            <Link key={m.id} href={`/fiches/${m.id}?from=${modelId}`} className="group block bg-card rounded-2xl overflow-hidden shadow-lg border border-border/50 hover:border-brand transition-all transform hover:-translate-y-1">
+                                <div className="relative aspect-video overflow-hidden">
+                                    <Image src={m.image} alt={m.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    <div className="absolute bottom-4 left-4">
+                                        <p className="text-white font-black uppercase tracking-tight text-lg">{m.name}</p>
+                                    </div>
+                                </div>
+                                <div className="p-4 flex items-center justify-between">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand">Voir la fiche</span>
+                                    <ChevronRight className="h-4 w-4 text-brand" />
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
 
                 {/* CONCLUSION EXPERTE */}
                 <div className="mt-20 pt-10 border-t-4 border-dashed border-muted relative flex flex-col md:flex-row items-center gap-8 bg-muted/10 p-10 rounded-[3rem]">
