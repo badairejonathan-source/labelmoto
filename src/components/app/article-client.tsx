@@ -301,9 +301,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
     const faq = section.faq || section.faqs;
 
-    const isBudgetNote = (section.note && (section.note.includes("budget global") || section.note.includes("coût réel"))) || (sectionId.includes("budget"));
-    const isAssuranceNote = (section.note && (section.note.includes("Assurance") || section.note.includes("formule"))) || (sectionId.includes("assurance"));
-    const isGabaritNote = (section.note && (section.note.includes("gabarit") || section.note.includes("tailles"))) || (sectionId.includes("taille") || sectionId.includes("hauteur"));
+    // Détecter si on est déjà dans l'article concerné pour ne pas afficher le lien
+    const isBudgetArticle = id === 'combien-coute-vraiment-une-moto-par-mois';
+    const isAssuranceArticle = id === 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil';
+    const isGabaritArticle = id === 'quelle-moto-choisir-selon-sa-taille';
+
+    const isBudgetNote = !isBudgetArticle && ((section.note && (section.note.includes("budget global") || section.note.includes("coût réel"))) || (sectionId.includes("budget")));
+    const isAssuranceNote = !isAssuranceArticle && ((section.note && (section.note.includes("Assurance") || section.note.includes("formule"))) || (sectionId.includes("assurance")));
+    const isGabaritNote = !isGabaritArticle && ((section.note && (section.note.includes("gabarit") || section.note.includes("tailles"))) || (sectionId.includes("taille") || sectionId.includes("hauteur")));
 
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
