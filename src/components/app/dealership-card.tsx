@@ -42,6 +42,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const [newRating, setNewRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const { user } = useUser();
   const firestore = useFirestore();
@@ -64,29 +65,45 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
   const actualImgUrl = useMemo(() => {
-    // Analyse approfondie des champs d'image possibles dans Firestore
-    const candidate = 
-      dealership.imgUrl || 
-      dealership.img_url ||
-      dealership.imageUrl || 
-      dealership.image_url ||
-      dealership.photoUrl || 
-      dealership.photo_url ||
-      dealership.coverUrl ||
-      dealership.image ||
-      dealership.photo ||
-      dealership.placeImageUrl ||
-      dealership.img;
-      
-    if (candidate && typeof candidate === 'string') {
+    const keys = [
+      'imgUrl', 'img_url', 'imageUrl', 'image_url', 'photoUrl', 'photo_url', 
+      'coverUrl', 'image', 'photo', 'placeImageUrl', 'img'
+    ];
+    
+    let candidate = "";
+    
+    // Scan direct
+    for (const key of keys) {
+      if (dealership[key] && typeof dealership[key] === 'string') {
+        candidate = dealership[key];
+        break;
+      }
+    }
+    
+    // Scan imbriqué (cas fréquent pour les données Google enrichies)
+    if (!candidate) {
+        const nested = dealership.google_data || dealership.metadata || {};
+        for (const key of keys) {
+            if (nested[key] && typeof nested[key] === 'string') {
+                candidate = nested[key];
+                break;
+            }
+        }
+    }
+
+    if (candidate) {
       let url = candidate.trim();
-      // On force le HTTPS pour éviter les blocages de Next.js
-      if (url.startsWith('//')) url = `https:${url}`;
+      
+      // Fix : Si l'URL commence directement par "lh3" ou "google", on ajoute le protocole
+      if (!url.startsWith('http') && (url.includes('googleusercontent.com') || url.includes('lh3.'))) {
+          if (url.startsWith('//')) url = `https:${url}`;
+          else url = `https://${url}`;
+      }
+      
+      // Force HTTPS pour Next.js
       if (url.startsWith('http:')) url = url.replace('http:', 'https:');
       
-      if (url.startsWith('https')) {
-        return url;
-      }
+      return url;
     }
     return "";
   }, [dealership]);
@@ -167,7 +184,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               <X className="h-6 w-6" />
             </button>
             <div className="relative w-full h-full">
-              {actualImgUrl && (
+              {actualImgUrl && !imgError && (
                 <Image 
                   src={actualImgUrl} 
                   alt={dealership.title}
@@ -177,6 +194,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   priority
                   unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
                   sizes="95vw"
+                  onError={() => setImgError(true)}
                 />
               )}
             </div>
@@ -208,7 +226,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
               className="relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 cursor-zoom-in group/img"
               onClick={(e) => { e.stopPropagation(); setIsZoomDialogOpen(true); }}
             >
-              {actualImgUrl ? (
+              {actualImgUrl && !imgError ? (
                 <>
                   <Image 
                     src={actualImgUrl} 
@@ -217,13 +235,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     className="object-cover transition-transform group-hover:brightness-110 duration-700" 
                     sizes="(max-width: 768px) 160px, 200px"
                     unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
+                    onError={() => setImgError(true)}
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
                     <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
                   </div>
                 </>
               ) : (
-                <div className="flex h-full items-center justify-center opacity-20 p-4"><LabelMotoLogo /></div>
+                <div className="flex h-full items-center justify-center opacity-20 p-4"><LabelMotoLogo noBubble /></div>
               )}
             </div>
             <div className="flex flex-col justify-center flex-1 p-3 md:p-5 cursor-pointer" onClick={onClick}>
