@@ -65,42 +65,54 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
 
   const actualImgUrl = useMemo(() => {
+    // Priorité absolue aux champs vus dans la DB
     const keys = [
-      'imgUrl', 'img_url', 'imageUrl', 'image_url', 'photoUrl', 'photo_url', 
+      'imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 
       'coverUrl', 'image', 'photo', 'placeImageUrl', 'img'
     ];
     
     let candidate = "";
     
-    // Scan direct
+    // 1. Scan direct (racine du document)
     for (const key of keys) {
-      if (dealership[key] && typeof dealership[key] === 'string') {
+      if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].length > 10) {
         candidate = dealership[key];
         break;
       }
     }
     
-    // Scan imbriqué (cas fréquent pour les données Google enrichies)
+    // 2. Scan imbriqué (certains imports Google enrichis)
     if (!candidate) {
-        const nested = dealership.google_data || dealership.metadata || {};
-        for (const key of keys) {
-            if (nested[key] && typeof nested[key] === 'string') {
-                candidate = nested[key];
-                break;
+        const subFolders = ['google_data', 'metadata', 'info', 'details'];
+        for (const folder of subFolders) {
+            const nested = dealership[folder] || {};
+            for (const key of keys) {
+                if (nested[key] && typeof nested[key] === 'string' && nested[key].length > 10) {
+                    candidate = nested[key];
+                    break;
+                }
             }
+            if (candidate) break;
         }
     }
 
     if (candidate) {
       let url = candidate.trim();
       
-      // Fix : Si l'URL commence directement par "lh3" ou "google", on ajoute le protocole
-      if (!url.startsWith('http') && (url.includes('googleusercontent.com') || url.includes('lh3.'))) {
-          if (url.startsWith('//')) url = `https:${url}`;
-          else url = `https://${url}`;
+      // Nettoyage des caractères invisibles/spéciaux qui cassent les URLs
+      url = url.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
+      // Correction protocole relative
+      if (url.startsWith('//')) {
+          url = `https:${url}`;
+      } else if (!url.startsWith('http')) {
+          // Forçage HTTPS pour les domaines Google connus
+          if (url.includes('googleusercontent.com') || url.includes('googleapis.com')) {
+              url = `https://${url}`;
+          }
       }
       
-      // Force HTTPS pour Next.js
+      // Force HTTPS final
       if (url.startsWith('http:')) url = url.replace('http:', 'https:');
       
       return url;
@@ -195,6 +207,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
                   sizes="95vw"
                   onError={() => setImgError(true)}
+                  referrerPolicy="no-referrer"
                 />
               )}
             </div>
@@ -236,6 +249,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     sizes="(max-width: 768px) 160px, 200px"
                     unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
                     onError={() => setImgError(true)}
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
                     <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
