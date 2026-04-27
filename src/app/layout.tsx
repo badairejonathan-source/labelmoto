@@ -14,24 +14,29 @@ const inter = Inter({
   display: 'swap',
 });
 
+// C'est ici que vous modifiez les métadonnées globales du site
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
   alternates: {
     canonical: '/',
   },
   title: {
-    default: "Label Moto - L'annuaire intelligent des motards dans toute la france",
+    default: "Label Moto - L'annuaire intelligent des motards (Concessions & Ateliers)",
     template: "%s | Label Moto"
   },
-  description: "Trouvez les meilleures concessions et ateliers dans toute la France. Guides d'entretien, fiches techniques gratuites et conseils permis A2 pour tous les motards.",
-  keywords: ["moto", "concessionnaire moto Paris", "atelier moto Île-de-France", "entretien moto", "permis A2", "fiche technique moto", "assurance moto", "révision moto prix"],
+  description: "Trouvez les meilleures concessions et ateliers moto en France. Guides d'entretien, fiches techniques gratuites et conseils pour motards débutants et expérimentés.",
+  keywords: ["moto", "concessionnaire moto", "atelier moto", "entretien moto", "fiche technique moto", "permis A2", "révision moto prix"],
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
   publisher: "Label Moto",
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/favicon.ico' }, // Assurez-vous que ce fichier existe dans /public
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png' },
+    ],
   },
   openGraph: {
     type: "website",
@@ -39,7 +44,7 @@ export const metadata: Metadata = {
     url: "https://labelmoto.fr",
     siteName: "Label Moto",
     title: "Label Moto - L'annuaire intelligent des motards",
-    description: "Le compagnon de route indispensable pour tout motard en France. Guides d'achat A2 et fiches techniques gratuites.",
+    description: "Le compagnon de route indispensable pour tout motard en France. Trouver un pro n'a jamais été aussi simple.",
     images: [
       {
         url: "/images/logo-moto.webp",
