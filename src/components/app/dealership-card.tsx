@@ -4,9 +4,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn, Clock } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn, Clock, Store } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
-import LabelMotoLogo from './logo';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -73,7 +72,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     let candidate = "";
     
     for (const key of keys) {
-      if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].length > 10) {
+      if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].trim().length > 10) {
         candidate = dealership[key];
         break;
       }
@@ -84,7 +83,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
         for (const folder of subFolders) {
             const nested = dealership[folder] || {};
             for (const key of keys) {
-                if (nested[key] && typeof nested[key] === 'string' && nested[key].length > 10) {
+                if (nested[key] && typeof nested[key] === 'string' && nested[key].trim().length > 10) {
                     candidate = nested[key];
                     break;
                 }
@@ -223,7 +222,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
           <div className="flex flex-1 flex-row items-stretch">
             <div 
               className={cn(
-                "relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30",
+                "relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 flex items-center justify-center",
                 actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default"
               )}
               onClick={(e) => { 
@@ -250,8 +249,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   </div>
                 </>
               ) : (
-                <div className="flex h-full items-center justify-center opacity-20 p-4">
-                  <LabelMotoLogo noBubble noLink />
+                <div className="flex flex-col items-center gap-2 opacity-20">
+                  <Store className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />
                 </div>
               )}
             </div>
