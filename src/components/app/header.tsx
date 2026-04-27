@@ -289,11 +289,24 @@ const Header: React.FC<HeaderProps> = ({
         let score = 0;
         
         // Match CP exact (Priorité Req 3)
-        const isNumeric = /^\d{5}$/.test(lowerTerm);
-        if (isNumeric && address.includes(lowerTerm)) score = 1300;
+        const isNumeric = /^\d+$/.test(lowerTerm);
+        if (isNumeric && lowerTerm.length === 5 && address.includes(lowerTerm)) score = 1300;
         
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
-        if (address.includes(lowerTerm)) score = Math.max(score, 1100);
+        
+        // REQUÊTE UTILISATEUR : On ignore le numéro de rue si c'est un chiffre court (Dpt)
+        const isShortNumber = /^\d{1,2}$/.test(lowerTerm);
+        if (address.includes(lowerTerm)) {
+            if (isShortNumber) {
+                // Si c'est un numéro court, on ne valide que si c'est le début du code postal (ex: "75")
+                const zipMatch = address.match(/\b\d{5}\b/);
+                if (zipMatch && zipMatch[0].startsWith(lowerTerm.padStart(2, '0'))) {
+                    score = Math.max(score, 1100);
+                }
+            } else {
+                score = Math.max(score, 1100);
+            }
+        }
         
         if (lowerTerm.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);

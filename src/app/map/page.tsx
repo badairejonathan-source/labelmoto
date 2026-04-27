@@ -234,9 +234,16 @@ function MapPageComponent() {
                 });
             }
 
-            if (zipFilter || deptFilter) {
-                const target = zipFilter || deptFilter;
-                results = results.filter(d => d.address?.includes(target!));
+            // REQUÊTE UTILISATEUR : Filtrage strict par département pour éviter les numéros de rue
+            if (zipFilter) {
+                results = results.filter(d => d.address?.includes(zipFilter!));
+            } else if (deptFilter) {
+                results = results.filter(d => {
+                    const address = d.address || '';
+                    const zipMatch = address.match(/\b\d{5}\b/);
+                    // On ne valide que si le code postal (5 chiffres) commence par le numéro de département
+                    return zipMatch ? zipMatch[0].startsWith(deptFilter!) : false;
+                });
             }
 
             if (otherTerms.length > 0 && !coordsFound) {
