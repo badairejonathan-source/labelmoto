@@ -155,16 +155,53 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   }, [fiche, selectedVariantIndex, modelId]);
 
   const relatedModels = useMemo(() => {
+    if (!displayData) return [];
+    
+    // Extraction du chiffre de la cylindrée (ex: "649 cm³" -> 649)
+    const displacementStr = displayData.engine.displacement || "";
+    const currentCC = parseInt(displacementStr.replace(/[^0-9]/g, ''));
+    
     const pool = [
-      { id: 'kawasaki-z650-2020-plus', name: 'Kawasaki Z650', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070' },
-      { id: 'suzuki-gsx-8s-2023-plus', name: 'Suzuki GSX-8S', image: 'https://images.unsplash.com/photo-1615172282427-9a57ef2d142e?q=80&w=2070' },
-      { id: 'honda-cb500f-2022-plus', name: 'Honda Hornet 500', image: 'https://images.unsplash.com/photo-1558981359-219d6364c9c8?q=80&w=2070' },
-      { id: 'honda-cb750-hornet-2023-plus', name: 'Honda Hornet 750', image: 'https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?q=80&w=2070' },
-      { id: 'yamaha-mt-07-2021-plus', name: 'Yamaha MT-07', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=2070' },
-      { id: 'suzuki-sv650-2016-plus', name: 'Suzuki SV650', image: 'https://images.unsplash.com/photo-1558981424-a3163a39bc59?q=80&w=2070' }
+      { id: 'kawasaki-z650-2020-plus', name: 'Kawasaki Z650', cc: 649 },
+      { id: 'suzuki-gsx-8s-2023-plus', name: 'Suzuki GSX-8S', cc: 776 },
+      { id: 'honda-cb500f-2022-plus', name: 'Honda Hornet 500', cc: 471 },
+      { id: 'honda-cb750-hornet-2023-plus', name: 'Honda Hornet 750', cc: 755 },
+      { id: 'yamaha-mt-07-2021-plus', name: 'Yamaha MT-07', cc: 689 },
+      { id: 'suzuki-sv650-2016-plus', name: 'Suzuki SV650', cc: 645 },
+      { id: 'triumph-trident-660-2021-plus', name: 'Triumph Trident 660', cc: 660 },
+      { id: 'kawasaki-z900-2020-plus', name: 'Kawasaki Z900', cc: 948 },
+      { id: 'yamaha-mt-09-2021-plus', name: 'Yamaha MT-09', cc: 890 },
+      { id: 'bmw-f900r-2020-plus', name: 'BMW F 900 R', cc: 895 },
+      { id: 'honda-cb1000r-2021-plus', name: 'Honda CB1000R', cc: 998 },
+      { id: 'yamaha-mt-03-2020-plus', name: 'Yamaha MT-03', cc: 321 },
+      { id: 'bmw-g310r-2021-plus', name: 'BMW G 310 R', cc: 313 },
+      { id: 'ktm-390-duke-2024-plus', name: 'KTM 390 Duke', cc: 399 },
+      { id: 'kawasaki-z500-2024-plus', name: 'Kawasaki Z500', cc: 451 },
+      { id: 'yamaha-mt-10-2022-plus', name: 'Yamaha MT-10', cc: 998 },
+      { id: 'suzuki-gsx-s1000-2021-plus', name: 'Suzuki GSX-S 1000', cc: 999 }
     ];
-    return pool.filter(m => m.id !== modelId).sort(() => 0.5 - Math.random()).slice(0, 3);
-  }, [modelId]);
+
+    if (isNaN(currentCC)) {
+        return pool.sort(() => 0.5 - Math.random()).slice(0, 4);
+    }
+
+    let minCC, maxCC;
+    if (currentCC <= 550) {
+      minCC = 300;
+      maxCC = 650;
+    } else if (currentCC <= 800) {
+      minCC = 600;
+      maxCC = 950;
+    } else {
+      minCC = 700;
+      maxCC = 1300;
+    }
+
+    return pool
+      .filter(m => m.id !== modelId && m.cc >= minCC && m.cc <= maxCC)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 4);
+  }, [modelId, displayData]);
 
   if (isLoading) return (
     <div className="min-h-screen bg-background">
@@ -453,19 +490,15 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
                         <Bike className="h-8 w-8 text-brand" /> MODÈLES ÉQUIVALENTS
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {relatedModels.map((m) => (
-                            <Link key={m.id} href={`/fiches/${m.id}?from=${modelId}`} className="group block bg-card rounded-2xl overflow-hidden shadow-lg border border-border/50 hover:border-brand transition-all transform hover:-translate-y-1">
-                                <div className="relative aspect-video overflow-hidden">
-                                    <Image src={m.image} alt={m.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                    <div className="absolute bottom-4 left-4">
-                                        <p className="text-white font-black uppercase tracking-tight text-lg">{m.name}</p>
-                                    </div>
+                            <Link key={m.id} href={`/fiches/${m.id}?from=${modelId}`} className="group flex items-center justify-between p-6 bg-card rounded-2xl border-2 border-muted hover:border-brand hover:shadow-xl transition-all">
+                                <div className="flex flex-col">
+                                    <span className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{m.name}</span>
+                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{m.cc} cm³</span>
                                 </div>
-                                <div className="p-4 flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand">Voir la fiche</span>
-                                    <ChevronRight className="h-4 w-4 text-brand" />
+                                <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-all shadow-sm">
+                                    <ChevronRight className="h-5 w-5" />
                                 </div>
                             </Link>
                         ))}
