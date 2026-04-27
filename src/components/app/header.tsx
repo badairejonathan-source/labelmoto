@@ -253,9 +253,27 @@ const Header: React.FC<HeaderProps> = ({
         return;
     }
 
-    const lowerTerm = searchTerm.toLowerCase().trim();
-    const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
+    let lowerTerm = searchTerm.toLowerCase().trim();
+
+    // --- REGLE PARIS ARRONDISSEMENTS SUGGESTIONS ---
+    const parisArrMatch = lowerTerm.match(/paris\s*(\d{1,2})/i);
     const results: Suggestion[] = [];
+    
+    if (parisArrMatch) {
+        const arrNum = parseInt(parisArrMatch[1]);
+        if (arrNum >= 1 && arrNum <= 20) {
+            const cp = `750${arrNum.toString().padStart(2, '0')}`;
+            results.push({
+                type: 'city',
+                label: `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
+                subLabel: cp,
+                score: 2000 // Priorité maximale
+            });
+            lowerTerm = cp; // On traite la suite comme une recherche CP
+        }
+    }
+
+    const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
 
     // 1. Départements par numéro ou nom (Req 2)
     Object.entries(locationsData).forEach(([dept, info]) => {

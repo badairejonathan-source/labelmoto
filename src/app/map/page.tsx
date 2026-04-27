@@ -176,7 +176,17 @@ function MapPageComponent() {
             results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')); 
         }
 
-        const term = submittedSearchTerm.trim().toLowerCase();
+        let term = submittedSearchTerm.trim().toLowerCase();
+
+        // --- REGLE PARIS ARRONDISSEMENTS ---
+        const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
+        if (parisArrMatch) {
+            const arrNum = parseInt(parisArrMatch[1]);
+            if (arrNum >= 1 && arrNum <= 20) {
+                term = `750${arrNum.toString().padStart(2, '0')}`;
+            }
+        }
+
         if (term !== '') {
             const words = term.split(/\s+/);
             let brandFilter: string | null = null;
