@@ -55,7 +55,6 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
 
 /**
  * Calcule le centre décalé pour compenser l'interface (panneau latéral)
- * sans provoquer de sauts visuels lors du zoom.
  */
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
   const z = targetZoom ?? map.getZoom();
@@ -76,6 +75,10 @@ const MapComponent = ({
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
+  
+  // Références pour détecter les changements de props réels vs retours de mouvement de carte
+  const lastTargetCenter = useRef<[number, number]>(center);
+  const lastTargetZoom = useRef<number>(zoom);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -92,7 +95,7 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    // Positionnement initial précis avec offset
+    // Positionnement initial
     let initialCenter: L.LatLngExpression = center;
     if (leftPadding > 0 || bottomPadding > 0) {
         initialCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
@@ -117,7 +120,7 @@ const MapComponent = ({
 
     map.on('moveend zoomend', handleMove);
     map.on('click', onMapClick);
-    map.on('dragstart', () => onUserInteraction?.());
+    map.on('dragstart zoomstart', () => onUserInteraction?.());
 
     return () => {
       map.off();
@@ -136,12 +139,13 @@ const MapComponent = ({
 
     if (!dealerships || dealerships.length === 0) return;
 
+    const currentZoom = mapRef.current.getZoom();
     const newMarkers: L.Marker[] = [];
     dealerships.forEach((dealer) => {
       if (!dealer.latitude || !dealer.longitude) return;
 
       const marker = L.marker([Number(dealer.latitude), Number(dealer.longitude)], {
-        icon: createIcon(dealer, dealer.id === hoveredDealershipId, dealer.id === selectedDealershipId, mapRef.current!.getZoom())
+        icon: createIcon(dealer, dealer.id === hoveredDealershipId, dealer.id === selectedDealershipId, currentZoom)
       });
 
       marker.on('click', (e) => {
@@ -158,30 +162,37 @@ const MapComponent = ({
     clusterGroup.addLayers(newMarkers);
   }, [dealerships, hoveredDealershipId, selectedDealershipId, zoom]);
 
-  // Synchronisation avec les changements de props (recherche, sélection)
+  // Synchronisation intelligente avec les changements de props
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || isUpdatingFromProps.current) return;
+    if (!map) return;
 
-    const currentCenter = map.getCenter();
-    // On calcule la distance pour savoir si le mouvement vient d'une interaction manuelle ou d'un changement de props
-    const dist = Math.sqrt(Math.pow(currentCenter.lat - center[0], 2) + Math.pow(currentCenter.lng - center[1], 2));
+    // On vérifie si la commande vient d'un changement de props externe réel
+    const centerChanged = center[0] !== lastTargetCenter.current[0] || center[1] !== lastTargetCenter.current[1];
+    const zoomChanged = zoom !== lastTargetZoom.current;
 
-    // Si changement de props significatif (recherche par CP, clic sur carte), on déplace
-    if (dist > 0.0001 || Math.abs(map.getZoom() - zoom) > 0.1) {
+    if (centerChanged || zoomChanged) {
         isUpdatingFromProps.current = true;
         
+        lastTargetCenter.current = center;
+        lastTargetZoom.current = zoom;
+
         let targetCenter: L.LatLngExpression = center;
         if (leftPadding > 0 || bottomPadding > 0) {
             targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
         }
         
-        map.setView(targetCenter, zoom, { animate: true });
+        // Utilisation de flyTo pour plus de fluidité sur les changements de coordonnées
+        if (centerChanged) {
+            map.flyTo(targetCenter, zoom, { duration: 0.8 });
+        } else {
+            map.setZoom(zoom, { animate: true });
+        }
         
         // On libère le verrou après l'animation
-        setTimeout(() => { isUpdatingFromProps.current = false; }, 600);
+        setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     }
-  }, [center, zoom, bottomPadding, leftPadding]);
+  }, [center, zoom, leftPadding, bottomPadding]);
 
   // Localisation utilisateur
   useEffect(() => {
