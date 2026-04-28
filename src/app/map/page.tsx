@@ -197,7 +197,7 @@ function MapPageComponent() {
 
             if (zipFilter) {
                 const coords = await getCityCoordinates(zipFilter);
-                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(13); setSelectionSource('external'); }
+                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }
             } else if (deptFilter) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFilter!));
                 if (deptKey) {
@@ -267,7 +267,7 @@ function MapPageComponent() {
   const handleCardClick = useCallback((dealership: Dealership) => { 
     setSelectedDealershipId(dealership.id); setSelectionSource('card'); 
     if (dealership.latitude && dealership.longitude) { 
-      setMapCenter([dealership.latitude, dealership.longitude]); setMapZoom(14); 
+      setMapCenter([dealership.latitude, dealership.longitude]); setMapZoom(12); 
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
@@ -275,7 +275,7 @@ function MapPageComponent() {
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); setSelectionSource('marker');
     const dealer = allDealerships.find(d => d.id === id); 
-    if (dealer && dealer.latitude && dealer.longitude) { setMapCenter([dealer.latitude, dealer.longitude]); setSortingAnchor([dealer.latitude, dealer.longitude]); setMapZoom(14); } 
+    if (dealer && dealer.latitude && dealer.longitude) { setMapCenter([dealer.latitude, dealer.longitude]); setSortingAnchor([dealer.latitude, dealer.longitude]); setMapZoom(12); } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile, allDealerships]);
 
@@ -347,7 +347,7 @@ function MapPageComponent() {
             leftPadding={isMobile ? 0 : leftPadding} 
             isLocating={isLocating} 
             onLocateEnd={() => setIsLoadingLocating(false)} 
-            onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); setSelectionSource('external'); }} 
+            onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }} 
             />
         ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/10"><Loader2 className="h-10 w-10 animate-spin text-brand/20" /></div>
