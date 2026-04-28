@@ -387,9 +387,9 @@ const Header: React.FC<HeaderProps> = ({
         type="search" 
         placeholder={placeholderText} 
         className={cn(
-            "pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 relative z-10 font-black transition-all",
+            "pr-24 md:pr-32 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 relative z-10 font-black transition-all",
             isMapPage ? "h-11 md:h-14 text-xs md:text-base" : "h-12 md:h-14 text-xs md:text-base",
-            !isMapPage && "md:pr-[90px]"
+            !isMapPage && "md:pr-[110px]"
         )}
         value={searchTerm} 
         onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
@@ -399,12 +399,12 @@ const Header: React.FC<HeaderProps> = ({
       />
       
       {isDataLoading && (
-        <div className="absolute top-1/2 right-20 md:right-28 -translate-y-1/2 z-20">
+        <div className="absolute top-1/2 right-24 md:right-32 -translate-y-1/2 z-20">
             <Loader2 className="h-4 w-4 animate-spin text-brand/40" />
         </div>
       )}
 
-      {searchTerm && !isDataLoading && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-12 md:right-20 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button"><X className="h-4 w-4" /></button>)}
+      {searchTerm && !isDataLoading && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-24 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button"><X className="h-4 w-4" /></button>)}
       <Button 
         type="submit" 
         size="icon" 
