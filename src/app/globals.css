@@ -145,25 +145,35 @@
     border: none !important;
   }
 
-  /* AJOUT : Style optimisé pour les étiquettes des marqueurs */
+  /* AJOUT : Style qualitatif et épuré pour les étiquettes des marqueurs */
   .marker-label {
     position: absolute;
-    left: 36px;
+    left: 28px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 10px;
-    font-weight: 900;
-    color: #1a237e; /* Bleu foncé pour le contraste */
+    font-size: 9px;
+    font-weight: 700;
+    color: #475569; /* Slate 600 - Plus doux */
     white-space: nowrap;
     pointer-events: none;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    text-shadow: 
-        -1.5px -1.5px 0 #fff,  
-         1.5px -1.5px 0 #fff,
-        -1.5px  1.5px 0 #fff,
-         1.5px  1.5px 0 #fff,
-         0px 2px 4px rgba(0,0,0,0.3);
-    transition: opacity 0.2s ease;
+    letter-spacing: 0.02em;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.9); /* Pill blanche semi-transparente */
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+  }
+
+  /* État actif pour le survol ou la sélection */
+  .marker-label.active {
+    font-size: 10px;
+    font-weight: 900;
+    color: #1a237e; /* Deep Blue pour la sélection */
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 0 1.5px #1a237e;
+    z-index: 1000;
+    transform: translateY(-50%) scale(1.05);
   }
 }

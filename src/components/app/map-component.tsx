@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -31,31 +30,32 @@ interface MapComponentProps {
 const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean, currentZoom: number) => {
   const scale = isHovered || isSelected ? 1.2 : 1;
   const color = isSelected || isHovered ? '#f97316' : '#ea580c';
-  const showLabel = currentZoom >= 13.5;
+  
+  // LOGIQUE QUALITATIVE : 
+  // On affiche le label automatiquement seulement à partir du zoom 14.5
+  // MAIS on l'affiche toujours si la concession est survolée ou sélectionnée
+  const showLabel = currentZoom >= 14.5 || isSelected || isHovered;
 
   const iconHtml = `
     <div style="display: flex; align-items: center; position: relative;">
       <div style="transform: scale(${scale}); transition: transform 0.2s ease-out;">
-        <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="28" height="36" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M16 0C7.16 0 0 7.16 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.16 24.84 0 16 0Z" fill="${color}"/>
           <circle cx="16" cy="16" r="6" fill="white"/>
         </svg>
       </div>
-      ${showLabel ? `<div class="marker-label">${dealership.title}</div>` : ''}
+      ${showLabel ? `<div class="marker-label ${isSelected || isHovered ? 'active' : ''}">${dealership.title}</div>` : ''}
     </div>
   `;
 
   return L.divIcon({
     html: iconHtml,
     className: 'custom-marker',
-    iconSize: [32, 40],
-    iconAnchor: [16, 40]
+    iconSize: [28, 36],
+    iconAnchor: [14, 36]
   });
 };
 
-/**
- * Calcule le centre décalé pour compenser l'interface (panneau latéral)
- */
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
   const z = targetZoom ?? map.getZoom();
   const centerPoint = map.project(latlng, z);
@@ -76,7 +76,6 @@ const MapComponent = ({
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
   
-  // Références pour détecter les changements de props réels vs retours de mouvement de carte
   const lastTargetCenter = useRef<[number, number]>(center);
   const lastTargetZoom = useRef<number>(zoom);
 
@@ -95,7 +94,6 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    // Positionnement initial
     let initialCenter: L.LatLngExpression = center;
     if (leftPadding > 0 || bottomPadding > 0) {
         initialCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
@@ -129,7 +127,6 @@ const MapComponent = ({
     };
   }, []);
 
-  // Mise à jour des marqueurs
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
@@ -162,12 +159,10 @@ const MapComponent = ({
     clusterGroup.addLayers(newMarkers);
   }, [dealerships, hoveredDealershipId, selectedDealershipId, zoom]);
 
-  // Synchronisation intelligente avec les changements de props
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // On vérifie si la commande vient d'un changement de props externe réel
     const centerChanged = center[0] !== lastTargetCenter.current[0] || center[1] !== lastTargetCenter.current[1];
     const zoomChanged = zoom !== lastTargetZoom.current;
 
@@ -182,19 +177,16 @@ const MapComponent = ({
             targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
         }
         
-        // Utilisation de flyTo pour plus de fluidité sur les changements de coordonnées
         if (centerChanged) {
             map.flyTo(targetCenter, zoom, { duration: 0.8 });
         } else {
             map.setZoom(zoom, { animate: true });
         }
         
-        // On libère le verrou après l'animation
         setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     }
   }, [center, zoom, leftPadding, bottomPadding]);
 
-  // Localisation utilisateur
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
