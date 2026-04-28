@@ -113,7 +113,7 @@ function MapPageComponent() {
   const { width, height } = useWindowSize();
   const isMobile = mounted && width !== undefined && width < 1024;
 
-  const leftPadding = isMobile ? 0 : 520;
+  const leftPadding = isMobile ? 0 : 540;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? (height || 800) - 160 : (drawerHeight === 'half' ? (height || 800) / 2 : 110)) : 0;
   
   useEffect(() => { 
@@ -161,6 +161,8 @@ function MapPageComponent() {
         }
 
         let term = submittedSearchTerm.trim().toLowerCase();
+        
+        // Regle Paris
         const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisArrMatch) {
             const arrNum = parseInt(parisArrMatch[1]);
@@ -303,37 +305,9 @@ function MapPageComponent() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background flex flex-col md:flex-row">
-      {/* Panneau Liste Desktop */}
-      {!isMobile && (
-        <aside className="w-[520px] h-full flex flex-col bg-background border-r border-border/50 shadow-2xl z-[100] relative overflow-hidden">
-            <div className="p-6 border-b border-border/50 bg-white/50 backdrop-blur-sm shrink-0">
-                <div className="flex items-center justify-between gap-3 w-full mb-6">
-                    <div className="w-44"><LabelMotoLogo /></div>
-                    <UserMenu />
-                </div>
-                
-                <Header 
-                    searchTerm={searchTerm} 
-                    onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                    onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
-                    activeFilter={activeFilter} 
-                    onFilterChange={setActiveFilter} 
-                    variant="map"
-                />
-
-                <div className="flex items-center justify-center gap-6 w-full mt-6">
-                    <button onClick={() => setActiveFilter('shopping')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white")}><Bike className="h-5 w-5" /><span className="text-[8px] font-black uppercase mt-0.5">Concession</span></button>
-                    <button onClick={() => setActiveFilter(null)} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === null ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white")}><Home className="h-5 w-5" /><span className="text-[8px] font-black uppercase mt-0.5">Tout</span></button>
-                    <button onClick={() => setActiveFilter('service')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white")}><Wrench className="h-5 w-5" /><span className="text-[8px] font-black uppercase mt-0.5">Atelier</span></button>
-                </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                {listContent}
-            </div>
-        </aside>
-      )}
-
-      <div className="flex-1 relative h-full">
+      
+      {/* Background Map */}
+      <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
             <MapComponent 
             dealerships={filteredDealerships} 
@@ -348,7 +322,7 @@ function MapPageComponent() {
             onMapClick={handleUserMapInteraction} 
             onUserInteraction={handleUserMapInteraction} 
             bottomPadding={bottomPadding} 
-            leftPadding={0} // Offset géré par le flex-row
+            leftPadding={isMobile ? 0 : leftPadding} 
             isLocating={isLocating} 
             onLocateEnd={() => setIsLoadingLocating(false)} 
             onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(14); setSelectionSource('external'); }} 
@@ -356,30 +330,86 @@ function MapPageComponent() {
         ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/10"><Loader2 className="h-10 w-10 animate-spin text-brand/20" /></div>
         )}
-
-        {/* Header Mobile Uniquement */}
-        {isMobile && (
-          <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none">
-            <div className="pointer-events-auto">
-              <Header 
-                  searchTerm={searchTerm} 
-                  onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
-                  onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
-                  activeFilter={activeFilter} 
-                  onFilterChange={setActiveFilter} 
-              />
-            </div>
-          </div>
-        )}
-
-        <button 
-          className="absolute right-6 bottom-32 md:bottom-10 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
-          onClick={() => setIsLoadingLocating(true)} 
-          aria-label="Me localiser"
-        >
-          <Compass className="h-7 w-7 md:h-8 md:w-8" />
-        </button>
       </div>
+
+      {/* Panneau Flottant Desktop */}
+      {!isMobile && (
+        <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[100] border border-white/40 overflow-hidden">
+            <div className="p-8 pb-4 shrink-0">
+                <div className="flex items-center justify-between gap-4 w-full mb-8">
+                    <div className="w-40"><LabelMotoLogo noBubble noLink /></div>
+                    <div className="flex flex-col items-center justify-center text-center px-2">
+                        <p className="text-[10px] font-black uppercase tracking-tight text-foreground leading-none">
+                            TROUVER UNE CONCESSION ?
+                        </p>
+                        <p className="text-[12px] font-black italic text-brand mt-1 leading-none tracking-tighter">
+                            FINI LA GALÈRE.
+                        </p>
+                    </div>
+                    <UserMenu />
+                </div>
+
+                <div className="flex items-center justify-center gap-8 w-full py-4 mb-6">
+                    <button onClick={() => setActiveFilter('shopping')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}>
+                        <Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+                        <span className="text-[8px] font-black uppercase mt-0.5">Concession</span>
+                    </button>
+                    <button onClick={() => setActiveFilter(null)} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === null ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}>
+                        <Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} />
+                        <span className="text-[8px] font-black uppercase mt-0.5">Tout</span>
+                    </button>
+                    <button onClick={() => setActiveFilter('service')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}>
+                        <Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} />
+                        <span className="text-[8px] font-black uppercase mt-0.5">Atelier</span>
+                    </button>
+                </div>
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-border/50 to-transparent mb-4" />
+            </div>
+            <div className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">
+                {listContent}
+            </div>
+        </aside>
+      )}
+
+      {/* Floating Search Bar (Desktop) */}
+      {!isMobile && (
+        <div className="absolute top-8 right-8 left-[580px] z-[100] flex justify-end pointer-events-none">
+            <div className="w-full max-w-2xl pointer-events-auto">
+                <Header 
+                    searchTerm={searchTerm} 
+                    onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+                    onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
+                    activeFilter={activeFilter} 
+                    onFilterChange={setActiveFilter} 
+                    variant="map"
+                    hideUserMenu={true}
+                />
+            </div>
+        </div>
+      )}
+
+      {/* Mobile Floating Header */}
+      {isMobile && (
+        <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none">
+          <div className="pointer-events-auto">
+            <Header 
+                searchTerm={searchTerm} 
+                onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} 
+                onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} 
+                activeFilter={activeFilter} 
+                onFilterChange={setActiveFilter} 
+            />
+          </div>
+        </div>
+      )}
+
+      <button 
+        className="absolute right-6 bottom-32 md:bottom-10 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" 
+        onClick={() => setIsLoadingLocating(true)} 
+        aria-label="Me localiser"
+      >
+        <Compass className="h-7 w-7 md:h-8 md:w-8" />
+      </button>
 
       {/* Drawer Mobile */}
       {isMobile && (
