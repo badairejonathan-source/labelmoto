@@ -104,6 +104,8 @@ function MapPageComponent() {
   const { firestore } = useFirebase();
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const touchStartY = useRef<number>(0);
+  const listContainerRef = useRef<HTMLDivElement>(null);
+
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
     if (filterParam === 'service') return 'service';
     if (filterParam === 'shopping') return 'shopping';
@@ -121,6 +123,13 @@ function MapPageComponent() {
     const timer = setTimeout(() => setShowMap(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Effet pour remonter la liste tout en haut lors d'une sélection sur la carte
+  useEffect(() => {
+    if (selectedDealershipId && listContainerRef.current) {
+      listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [selectedDealershipId]);
 
   useEffect(() => {
     if (latParam && lngParam) {
@@ -239,8 +248,21 @@ function MapPageComponent() {
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLat); 
     }
-    return results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b)).slice(0, 20);
-  }, [filteredDealerships, mapBoundsStr, sortingAnchor, mapZoom, submittedSearchTerm]);
+    
+    // Tri par distance par rapport à l'ancre (centre de la carte)
+    results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
+
+    // LOGIQUE DE REMONTÉE : Si un ID est sélectionné, on le place tout en haut de la liste
+    if (selectedDealershipId) {
+      const selectedIndex = results.findIndex(d => d.id === selectedDealershipId);
+      if (selectedIndex > 0) {
+        const [selectedItem] = results.splice(selectedIndex, 1);
+        results.unshift(selectedItem);
+      }
+    }
+
+    return results.slice(0, 20);
+  }, [filteredDealerships, mapBoundsStr, sortingAnchor, mapZoom, submittedSearchTerm, selectedDealershipId]);
 
   const handleCardClick = useCallback((dealership: Dealership) => { 
     setSelectedDealershipId(dealership.id); setSelectionSource('card'); 
@@ -365,7 +387,7 @@ function MapPageComponent() {
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-border/50 to-transparent mb-4" />
             </div>
-            <div className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">
+            <div ref={listContainerRef} className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">
                 {listContent}
             </div>
         </aside>
@@ -429,7 +451,7 @@ function MapPageComponent() {
               </div>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto px-3 custom-scrollbar">{listContent}</div>
+          <div ref={listContainerRef} className="flex-1 overflow-y-auto px-3 custom-scrollbar">{listContent}</div>
         </div>
       )}
     </div>
