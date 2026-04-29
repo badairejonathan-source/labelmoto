@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -359,7 +358,7 @@ function MapPageComponent() {
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[100] border border-white/40 overflow-hidden">
             <div className="p-8 pb-4 shrink-0">
                 <div className="flex items-center justify-between gap-4 w-full mb-8">
-                    <div className="w-40"><LabelMotoLogo noBubble noLink /></div>
+                    <div className="w-40"><LabelMotoLogo noBubble /></div>
                     <div className="flex flex-col items-center justify-center text-center px-2">
                         <p className="text-[10px] font-black uppercase tracking-tight text-foreground leading-none">
                             TROUVER UNE CONCESSION ?
