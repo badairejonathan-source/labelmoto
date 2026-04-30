@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -40,7 +39,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -223,12 +221,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     </div>
                   </a>
                 )}
-                {isAssociation ? (
-                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showDetails ? "bg-indigo-600 border-white text-white scale-110" : "bg-indigo-50 border-transparent text-indigo-600 hover:bg-indigo-100")} onClick={(e) => { e.stopPropagation(); setShowDetails(!showDetails); }}>
-                    <Info className="h-4 w-4 md:h-5 md:w-5" />
-                    <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Détails</span>
-                  </button>
-                ) : (
+                {!isAssociation && (
                   <>
                     <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showHours ? "bg-brand border-white text-white scale-110" : "bg-brand/10 border-transparent text-brand hover:bg-brand/20")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}>
                       <Clock className="h-4 w-4 md:h-5 md:w-5" />
@@ -264,9 +257,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             </div>
           </div>
           
-          {(showHours || showReviews || showDetails) && (
+          {(showHours || showReviews) && (
             <div className="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
-              <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); setShowDetails(false); }} className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+              <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); }} className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
               
               {showHours && (
                 <div className="space-y-1 w-full max-w-xs mx-auto">
@@ -286,52 +279,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     {(!approvedComments || approvedComments.length === 0) && <p className="text-[10px] text-muted-foreground text-center py-4">Aucun avis publié pour le moment.</p>}
                   </div>
                   <Button size="sm" className="w-full bg-blue-600 text-[9px] uppercase font-black" onClick={(e) => { e.stopPropagation(); setIsReviewDialogOpen(true); }}>Donner mon avis</Button>
-                </div>
-              )}
-
-              {showDetails && (
-                <div className="h-full flex flex-col max-w-xs mx-auto w-full pt-6 overflow-y-auto custom-scrollbar">
-                  <div className="space-y-4">
-                    {dealership.associationType && (
-                      <div className="space-y-1">
-                        <span className="text-[8px] font-black uppercase text-indigo-600 tracking-widest">Type</span>
-                        <p className="text-xs font-bold leading-tight">{dealership.associationType}</p>
-                      </div>
-                    )}
-                    {dealership.activities && dealership.activities.length > 0 && (
-                      <div className="space-y-1">
-                        <span className="text-[8px] font-black uppercase text-indigo-600 tracking-widest">Activités</span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {dealership.activities.map((act, i) => <Badge key={i} variant="outline" className="text-[8px] h-4 py-0 font-bold border-indigo-100 bg-indigo-50/30 text-indigo-700">{act}</Badge>)}
-                        </div>
-                      </div>
-                    )}
-                    {dealership.email && (
-                      <div className="flex items-center gap-2 mt-2">
-                        <Mail className="h-3 w-3 text-indigo-600" />
-                        <a href={`mailto:${dealership.email}`} className="text-xs font-bold hover:underline truncate">{dealership.email}</a>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3 pt-2">
-                      {dealership.facebookUrl && (
-                        <a href={dealership.facebookUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                          <Facebook className="h-4 w-4" />
-                        </a>
-                      )}
-                      {dealership.instagramUrl && (
-                        <a href={dealership.instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-pink-100 text-pink-600 hover:bg-pink-600 hover:text-white transition-all shadow-sm">
-                          <Instagram className="h-4 w-4" />
-                        </a>
-                      )}
-                    </div>
-                    {dealership.sourceUrl && (
-                      <div className="pt-2">
-                        <a href={dealership.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[8px] font-black uppercase text-muted-foreground hover:text-indigo-600 flex items-center gap-1">
-                          <ExternalLink className="h-2 w-2" /> Source officielle
-                        </a>
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>
