@@ -153,11 +153,11 @@ function MapPageComponent() {
     setIsLoading(true);
     
     // Listen to both collections
-    const collections = ['concessions', 'associations'];
+    const collectionsList = ['concessions', 'associations'];
     const unsubscribers: (() => void)[] = [];
     const resultsMap: Record<string, Dealership[]> = {};
 
-    collections.forEach(colName => {
+    collectionsList.forEach(colName => {
       const colRef = collection(firestore, colName);
       const unsub = onSnapshot(colRef, (snapshot) => {
         resultsMap[colName] = snapshot.docs.map(doc => ({
@@ -186,18 +186,32 @@ function MapPageComponent() {
   useEffect(() => {
     const processSearch = async () => {
         let results = [...allDealerships];
+        let term = submittedSearchTerm.trim().toLowerCase();
+
+        // --- DETECTION INTENTION ASSOCIATION ---
+        const assoKeywords = ["association", "associations", "asso"];
+        const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
         
-        // Logical filtering
-        if (activeFilter) { 
+        if (foundAssoKeyword) {
+            // On active le filtre si ce n'est pas déjà fait
+            if (activeFilter !== 'association') {
+                setActiveFilter('association');
+            }
+            // On nettoie le terme pour la suite du traitement géographique
+            term = term.replace(foundAssoKeyword, '').trim();
+        }
+
+        // On utilise le filtre actif (qui a pu être mis à jour par l'intention ci-dessus)
+        const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
+        
+        if (currentFilter) { 
             results = results.filter(d => {
-                if (activeFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
-                if (activeFilter === 'service') return d.appSection === 'service' || d.appSection === 'both';
-                if (activeFilter === 'association') return d.appSection === 'association' || d.category === 'Association motarde';
+                if (currentFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
+                if (currentFilter === 'service') return d.appSection === 'service' || d.appSection === 'both';
+                if (currentFilter === 'association') return d.appSection === 'association' || d.category === 'Association motarde';
                 return true;
             });
         }
-
-        let term = submittedSearchTerm.trim().toLowerCase();
         
         const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisArrMatch) {

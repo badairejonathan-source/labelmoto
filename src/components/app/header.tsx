@@ -48,8 +48,8 @@ interface HeaderProps {
     onSearchTermChange: (value: string) => void;
     onSearch: () => void;
     className?: string;
-    activeFilter?: 'shopping' | 'service' | null;
-    onFilterChange?: (filter: 'shopping' | 'service' | null) => void;
+    activeFilter?: 'shopping' | 'service' | 'association' | null;
+    onFilterChange?: (filter: 'shopping' | 'service' | 'association' | null) => void;
     placeholderText?: string;
     variant?: 'default' | 'map';
     hideUserMenu?: boolean;
@@ -255,8 +255,16 @@ const Header: React.FC<HeaderProps> = ({
 
     let lowerTerm = searchTerm.toLowerCase().trim();
 
+    // --- DETECTION INTENTION ASSOCIATION ---
+    const assoKeywords = ["association", "associations", "asso"];
+    const foundAssoKeyword = assoKeywords.find(k => lowerTerm.includes(k));
+    let searchPart = lowerTerm;
+    if (foundAssoKeyword) {
+        searchPart = lowerTerm.replace(foundAssoKeyword, '').trim();
+    }
+
     // --- REGLE PARIS ARRONDISSEMENTS SUGGESTIONS ---
-    const parisArrMatch = lowerTerm.match(/paris\s*(\d{1,2})/i);
+    const parisArrMatch = searchPart.match(/paris\s*(\d{1,2})/i);
     const results: Suggestion[] = [];
     
     if (parisArrMatch) {
@@ -265,39 +273,56 @@ const Header: React.FC<HeaderProps> = ({
             const cp = `750${arrNum.toString().padStart(2, '0')}`;
             results.push({
                 type: 'city',
-                label: `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
+                label: foundAssoKeyword ? `Associations : Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}` : `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
                 subLabel: cp,
                 score: 2000 // Priorité maximale
             });
-            lowerTerm = cp; // On traite la suite comme une recherche CP
+            searchPart = cp; // On traite la suite comme une recherche CP
         }
     }
 
-    const normalizedTerm = lowerTerm.replace(/[\s-]/g, '');
+    const normalizedTerm = searchPart.replace(/[\s-]/g, '');
 
     // 1. Départements par numéro ou nom (Req 2)
     Object.entries(locationsData).forEach(([dept, info]) => {
         const deptNum = dept.split(' - ')[0];
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
         if (deptNum.startsWith(normalizedTerm) || normalizedDept.includes(normalizedTerm)) {
-            results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 900 });
+            results.push({ 
+                type: 'dept', 
+                label: foundAssoKeyword ? `Associations : ${dept}` : dept, 
+                lat: info.center[0], 
+                lng: info.center[1], 
+                zoom: 9, 
+                score: 900 
+            });
         }
         
         info.cities.forEach(city => {
             const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
             if (normalizedCity.includes(normalizedTerm)) {
-                results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1], zoom: 12, score: 650 });
+                results.push({ 
+                    type: 'city', 
+                    label: foundAssoKeyword ? `Associations à ${city}` : city, 
+                    subLabel: dept.split(' - ')[0], 
+                    lat: info.center[0], 
+                    lng: info.center[1], 
+                    zoom: 12, 
+                    score: 650 
+                });
             }
         });
     });
 
     // 2. Marques (Req 1)
-    brandsList.forEach(brand => {
-        const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-        if (normalizedBrand.includes(normalizedTerm)) {
-            results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1100 });
-        }
-    });
+    if (!foundAssoKeyword) {
+        brandsList.forEach(brand => {
+            const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
+            if (normalizedBrand.includes(normalizedTerm)) {
+                results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1100 });
+            }
+        });
+    }
 
     // 3. Concessionnaires (Req 4)
     allDealers.forEach(d => {
@@ -307,18 +332,18 @@ const Header: React.FC<HeaderProps> = ({
         let score = 0;
         
         // Match CP exact (Priorité Req 3)
-        const isNumeric = /^\d+$/.test(lowerTerm);
-        if (isNumeric && lowerTerm.length === 5 && address.includes(lowerTerm)) score = 1300;
+        const isNumeric = /^\d+$/.test(searchPart);
+        if (isNumeric && searchPart.length === 5 && address.includes(searchPart)) score = 1300;
         
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
         
         // REQUÊTE UTILISATEUR : On ignore le numéro de rue si c'est un chiffre court (Dpt)
-        const isShortNumber = /^\d{1,2}$/.test(lowerTerm);
-        if (address.includes(lowerTerm)) {
+        const isShortNumber = /^\d{1,2}$/.test(searchPart);
+        if (address.includes(searchPart)) {
             if (isShortNumber) {
                 // Si c'est un numéro court, on ne valide que si c'est le début du code postal (ex: "75")
                 const zipMatch = address.match(/\b\d{5}\b/);
-                if (zipMatch && zipMatch[0].startsWith(lowerTerm.padStart(2, '0'))) {
+                if (zipMatch && zipMatch[0].startsWith(searchPart.padStart(2, '0'))) {
                     score = Math.max(score, 1100);
                 }
             } else {
@@ -326,7 +351,7 @@ const Header: React.FC<HeaderProps> = ({
             }
         }
         
-        if (lowerTerm.length > 3) {
+        if (searchPart.length > 3) {
             const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
             if (dist === 1) score = Math.max(score, 1050);
         }
@@ -376,7 +401,7 @@ const Header: React.FC<HeaderProps> = ({
     } else if (e.key === 'Enter') executeSearch();
   };
 
-  const handleTabClick = (filter: 'shopping' | 'service' | null) => {
+  const handleTabClick = (filter: 'shopping' | 'service' | 'association' | null) => {
     if (onFilterChange) onFilterChange(filter);
     else router.push(`/map${filter ? `?filter=${filter}` : ''}`);
   };
