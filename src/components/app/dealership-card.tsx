@@ -131,6 +131,33 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     ? `https://www.google.com/maps/dir/?api=1&destination=${dealership.latitude},${dealership.longitude}`
     : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dealership.title + ' ' + dealership.address)}`;
 
+  const renderLinkButton = (url: string, label: string) => {
+    if (!url) return null;
+    
+    const isFacebook = url.toLowerCase().includes('facebook.com');
+    const isInstagram = url.toLowerCase().includes('instagram.com');
+    
+    let Icon = Globe;
+    let buttonLabel = label;
+    
+    if (isFacebook) {
+      Icon = Facebook;
+      buttonLabel = "FB";
+    } else if (isInstagram) {
+      Icon = Instagram;
+      buttonLabel = "Insta";
+    }
+
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+        <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white")}>
+          <Icon className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")} />
+          <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")}>{buttonLabel}</span>
+        </div>
+      </a>
+    );
+  };
+
   return (
     <>
       <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
@@ -213,14 +240,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     </div>
                   </a>
                 )}
-                {dealership.website && (
-                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white")}>
-                      <Globe className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")} />
-                      <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")}>Web</span>
-                    </div>
-                  </a>
-                )}
+                
+                {renderLinkButton(dealership.website, "Web")}
+                {renderLinkButton(dealership.facebookUrl, "FB")}
+                {renderLinkButton(dealership.instagramUrl, "Insta")}
+
                 {!isAssociation && (
                   <>
                     <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showHours ? "bg-brand border-white text-white scale-110" : "bg-brand/10 border-transparent text-brand hover:bg-brand/20")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}>
