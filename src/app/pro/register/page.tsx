@@ -322,14 +322,14 @@ function RegisterProContent() {
                                     <h4 className="font-black uppercase tracking-tight text-sm flex items-center gap-2"><Store className="h-4 w-4 text-brand"/> Informations principales</h4>
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <FormField control={form.control} name="name" render={({ field }) => (
-                                            <FormItem><FormLabel>Nom de l'établissement</FormLabel><FormControl><Input placeholder="Moto Passion 75" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                            <FormItem><FormLabel>Nom de l'établissement (obligatoire)</FormLabel><FormControl><Input placeholder="Moto Passion 75" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
                                         <FormField control={form.control} name="category" render={({ field }) => (
-                                            <FormItem><FormLabel>Catégorie principale</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="font-bold"><SelectValue placeholder="Catégorie" /></SelectTrigger></FormControl><SelectContent><SelectItem value="concession">Concession</SelectItem><SelectItem value="atelier">Atelier</SelectItem><SelectItem value="concession-atelier">Concession + Atelier</SelectItem><SelectItem value="association">Association Motarde</SelectItem><SelectItem value="accessoiriste">Accessoiriste</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                            <FormItem><FormLabel>Catégorie principale (obligatoire)</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="font-bold"><SelectValue placeholder="Catégorie" /></SelectTrigger></FormControl><SelectContent><SelectItem value="concession">Concession</SelectItem><SelectItem value="atelier">Atelier</SelectItem><SelectItem value="concession-atelier">Concession + Atelier</SelectItem><SelectItem value="association">Association Motarde</SelectItem><SelectItem value="accessoiriste">Accessoiriste</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                                         )} />
                                     </div>
                                     <FormField control={form.control} name="address" render={({ field }) => (
-                                        <FormItem><FormLabel>Adresse complète</FormLabel><FormControl><Textarea placeholder="123 Rue de la Moto, 75001 Paris" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                        <FormItem><FormLabel>Adresse complète (obligatoire)</FormLabel><FormControl><Textarea placeholder="123 Rue de la Moto, 75001 Paris" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
                                     )} />
                                 </div>
 
@@ -337,7 +337,7 @@ function RegisterProContent() {
                                     <h4 className="font-black uppercase tracking-tight text-sm flex items-center gap-2">📱 Coordonnées</h4>
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <FormField control={form.control} name="phone" render={({ field }) => (
-                                            <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input placeholder="01 23 45 67 89" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                            <FormItem><FormLabel>Téléphone (obligatoire)</FormLabel><FormControl><Input placeholder="01 23 45 67 89" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
                                         <FormField control={form.control} name="email" render={({ field }) => (
                                             <FormItem><FormLabel>Email (obligatoire)</FormLabel><FormControl><Input placeholder="contact@etablissement.com" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
