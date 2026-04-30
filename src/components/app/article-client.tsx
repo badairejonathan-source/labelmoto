@@ -126,7 +126,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (articleId.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
-    if (articleId.includes('entretien') || articleId.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+    if (articleId.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
@@ -292,6 +292,47 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     );
   };
 
+  const renderCta = (cta: any, key: string) => {
+    if (!cta) return null;
+    const title = cta.title;
+    const text = cta.text;
+    const label = cta.label || "Aperçu map";
+    const targetSlug = cta.target_slug;
+
+    // Logique de redirection : si slug spécifique aux assos, on ajoute le filtre
+    let href = "/map";
+    if (targetSlug === 'carte-associations-moto') {
+        href = "/map?filter=association";
+    }
+
+    return (
+      <div key={key} className="my-10">
+        <Card className="border-2 border-brand/20 bg-brand/[0.02] shadow-xl rounded-[2.5rem] overflow-hidden group/cta">
+          <CardHeader className="p-8 pb-4">
+            <CardTitle className="text-2xl font-black uppercase tracking-tighter text-foreground group-hover/cta:text-brand transition-colors">
+              {title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-8 pb-8">
+            <p className="text-base font-bold text-muted-foreground leading-relaxed mb-6">
+              {text}
+            </p>
+            <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="relative w-full md:w-64 aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0">
+                    <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" />
+                </div>
+                <Button asChild className="w-full md:w-auto bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                    <Link href={href} className="flex items-center gap-2">
+                        {label} <Map className="h-4 w-4" />
+                    </Link>
+                </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   const renderSection = (section: any, idx: number, key?: string) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
@@ -300,6 +341,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const strengths = section.strengths || section.advantages || section.pros || section.points_forts;
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
     const faq = section.faq || section.faqs;
+    const cta = section.cta;
 
     // Détecter si on est déjà dans l'article concerné pour ne pas afficher le lien
     const isBudgetArticle = id === 'combien-coute-vraiment-une-moto-par-mois';
@@ -329,6 +371,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
         {faq && renderFaq(faq, `faq-${sectionId}`)}
+        {cta && renderCta(cta, `cta-${sectionId}`)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
