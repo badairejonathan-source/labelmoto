@@ -1,3 +1,4 @@
+
 export interface Dealership {
   id: string;
   placeUrl: string;
@@ -22,7 +23,18 @@ export interface Dealership {
   position?: [number, number];
   rating?: string;
   category?: string;
-  appSection?: 'shopping' | 'service' | 'both';
+  appSection?: 'shopping' | 'service' | 'both' | 'association';
   brands?: string[];
-  [key: string]: any; // Index signature
+  // Association specific fields
+  emails?: string[];
+  facebookUrl?: string;
+  instagramUrl?: string;
+  allPhoneNumbers?: string[];
+  associationType?: string;
+  activities?: string[];
+  targetAudience?: string[];
+  sourceUrl?: string;
+  verificationStatus?: string;
+  info?: string;
+  [key: string]: any;
 }

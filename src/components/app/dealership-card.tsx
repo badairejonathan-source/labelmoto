@@ -4,7 +4,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn, Clock, Store } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Mail, Info, ShieldCheck, ExternalLink } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
@@ -15,6 +15,7 @@ import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { deleteDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
@@ -29,6 +30,8 @@ const categoryDisplay: { [key: string]: string } = {
   'atelier': 'Atelier',
   'concession-atelier': 'Concession & Atelier',
   'accessoiriste': 'Accessoiriste',
+  'association': 'Association motarde',
+  'Association motarde': 'Association motarde',
   'autre': 'Autre',
 };
 
@@ -37,6 +40,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,6 +54,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   useEffect(() => { setMounted(true); }, []);
 
   const isAdmin = mounted && !!user && user.uid === ADMIN_UID;
+  const isAssociation = dealership.appSection === 'association' || dealership.category === 'Association motarde';
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
@@ -61,23 +66,17 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
-  const categoryLabel = categoryDisplay[dealership.category?.toLowerCase() || ''] || dealership.category;
+  const categoryLabel = categoryDisplay[dealership.category || ''] || dealership.category;
 
   const actualImgUrl = useMemo(() => {
-    const keys = [
-      'imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 
-      'coverUrl', 'image', 'photo', 'placeImageUrl', 'img'
-    ];
-    
+    const keys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 'coverUrl', 'image', 'photo', 'placeImageUrl', 'img'];
     let candidate = "";
-    
     for (const key of keys) {
       if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].trim().length > 10) {
         candidate = dealership[key];
         break;
       }
     }
-    
     if (!candidate) {
         const subFolders = ['google_data', 'metadata', 'info', 'details'];
         for (const folder of subFolders) {
@@ -91,7 +90,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             if (candidate) break;
         }
     }
-
     if (candidate) {
       let url = candidate.trim().replace(/[\u200B-\u200D\uFEFF]/g, '');
       if (url.startsWith('//')) url = `https:${url}`;
@@ -110,22 +108,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     if (!firestore) return null;
     return collection(firestore, 'concessions', dealership.id, 'comments');
   }, [firestore, dealership.id])).data;
-
-  const handleQuarantine = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isAdmin || !firestore) return;
-    if (!window.confirm(`Mettre "${dealership.title}" en quarantaine ?`)) return;
-
-    const { id, ...dataToMove } = dealership;
-    const cleanData = JSON.parse(JSON.stringify(dataToMove));
-    cleanData.quarantinedAt = new Date().toISOString();
-    cleanData.quarantineSource = 'manual_admin_action';
-    cleanData.status = 'QUARANTINED';
-
-    setDocumentNonBlocking(doc(firestore, 'a_verifier', id), cleanData, { merge: true });
-    deleteDocumentNonBlocking(doc(firestore, 'concessions', id));
-    toast({ title: "Fiche mise en quarantaine" });
-  };
 
   const handleRatingSubmit = () => {
     if (!user || !firestore) return;
@@ -170,30 +152,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none">
-          <DialogHeader className="sr-only">
-            <DialogTitle>Zoom sur {dealership.title}</DialogTitle>
-          </DialogHeader>
+          <DialogHeader className="sr-only"><DialogTitle>Zoom sur {dealership.title}</DialogTitle></DialogHeader>
           <div className="relative w-full h-full flex items-center justify-center">
-            <button 
-              onClick={() => setIsZoomDialogOpen(false)}
-              className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white transition-colors"
-            >
-              <X className="h-6 w-6" />
-            </button>
+            <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white transition-colors"><X className="h-6 w-6" /></button>
             <div className="relative w-full h-full">
               {actualImgUrl && !imgError && (
-                <Image 
-                  src={actualImgUrl} 
-                  alt={dealership.title}
-                  fill
-                  className="object-contain"
-                  quality={100}
-                  priority
-                  unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
-                  sizes="95vw"
-                  onError={() => setImgError(true)}
-                  referrerPolicy="no-referrer"
-                />
+                <Image src={actualImgUrl} alt={dealership.title} fill className="object-contain" quality={100} priority unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')} sizes="95vw" onError={() => setImgError(true)} referrerPolicy="no-referrer" />
               )}
             </div>
           </div>
@@ -201,114 +165,85 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
       </Dialog>
 
       <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all group", className)}>
-        {isAdmin && (
-          <button 
-            onClick={handleQuarantine} 
-            className="absolute top-2 right-2 z-50 p-1.5 md:p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive hover:text-white transition-colors shadow-sm"
-            title="Mettre en quarantaine"
-          >
-            <ShieldAlert className="h-3.5 w-3.5 md:h-4 w-4" />
-          </button>
+        {!isAssociation && (
+          <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black">
+            <div className="flex flex-col items-center leading-none">
+              <span className="text-xs md:text-sm">{rating > 0 ? rating.toFixed(1) : "—"}</span>
+              <Star className="h-2 w-2 fill-white" />
+            </div>
+          </div>
         )}
 
-        <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black">
-          <div className="flex flex-col items-center leading-none">
-            <span className="text-xs md:text-sm">{rating > 0 ? rating.toFixed(1) : "—"}</span>
-            <Star className="h-2 w-2 fill-white" />
+        {isAssociation && (
+          <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-indigo-600 rounded-full text-white shadow-lg border-2 border-white">
+            <Users className="h-5 w-5" />
           </div>
-        </div>
+        )}
         
         <div className="flex items-stretch min-h-[130px] md:min-h-[150px]">
           <div className="flex flex-1 flex-row items-stretch">
-            <div 
-              className={cn(
-                "relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 flex items-center justify-center",
-                actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default"
-              )}
-              onClick={(e) => { 
-                if (actualImgUrl && !imgError) {
-                  e.stopPropagation(); 
-                  setIsZoomDialogOpen(true); 
-                }
-              }}
-            >
+            <div className={cn("relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 flex items-center justify-center", actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default")} onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}>
               {actualImgUrl && !imgError ? (
                 <>
-                  <Image 
-                    src={actualImgUrl} 
-                    alt={dealership.title} 
-                    fill 
-                    className="object-cover transition-transform group-hover:brightness-110 duration-700" 
-                    sizes="(max-width: 768px) 160px, 200px"
-                    unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')}
-                    onError={() => setImgError(true)}
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
-                    <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
-                  </div>
+                  <Image src={actualImgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:brightness-110 duration-700" sizes="(max-width: 768px) 160px, 200px" unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')} onError={() => setImgError(true)} referrerPolicy="no-referrer" />
+                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all"><ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" /></div>
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2 opacity-20">
-                  <Store className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />
+                  {isAssociation ? <Users className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" /> : <Store className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />}
                 </div>
               )}
             </div>
+
             <div className="flex flex-col justify-center flex-1 p-3 md:p-5 cursor-pointer" onClick={onClick}>
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-black text-sm md:text-xl uppercase leading-tight truncate">{dealership.title}</h3>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-brand text-[9px] md:text-xs font-black uppercase tracking-widest">{categoryLabel}</span>
+                <span className={cn("text-[9px] md:text-xs font-black uppercase tracking-widest", isAssociation ? "text-indigo-600" : "text-brand")}>{categoryLabel}</span>
+                {isAssociation && dealership.verificationStatus && (
+                  <Badge variant="outline" className="text-[7px] h-4 border-indigo-200 text-indigo-700 bg-indigo-50 font-bold uppercase py-0">{dealership.verificationStatus}</Badge>
+                )}
               </div>
               
               <div className="flex flex-nowrap items-center gap-2 md:gap-4 mt-3 overflow-x-auto no-scrollbar">
                 {dealership.phoneNumber && (
                   <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
-                      <Phone className="h-4 w-4 md:h-5 md:w-5 text-brand group-hover/btn:text-white mb-0.5" />
-                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Appel</span>
+                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white")}>
+                      <Phone className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")} />
+                      <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")}>Appel</span>
                     </div>
                   </a>
                 )}
                 {dealership.website && (
                   <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-                    <div className="h-16 w-16 rounded-full bg-brand/10 flex flex-col items-center justify-center border-2 border-transparent group-hover/btn:bg-brand group-hover/btn:border-white transition-all shadow-lg">
-                      <Globe className="h-4 w-4 md:h-5 md:w-5 text-brand group-hover/btn:text-white mb-0.5" />
-                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter text-brand group-hover/btn:text-white">Web</span>
+                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white")}>
+                      <Globe className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")} />
+                      <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")}>Web</span>
                     </div>
                   </a>
                 )}
-                <button 
-                  className={cn(
-                    "h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", 
-                    showHours ? "bg-brand border-white text-white scale-110" : "bg-brand/10 border-transparent text-brand hover:bg-brand/20"
-                  )} 
-                  onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}
-                >
-                  <Clock className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Horaires</span>
-                </button>
-                <button 
-                  className={cn(
-                    "h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", 
-                    showReviews ? "bg-blue-600 border-white text-white scale-110" : "bg-blue-500/10 border-transparent text-blue-500 hover:bg-blue-50"
-                  )} 
-                  onClick={(e) => { e.stopPropagation(); setShowReviews(!showReviews); setShowHours(false); }}
-                >
-                  <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Avis</span>
-                </button>
+                {isAssociation ? (
+                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showDetails ? "bg-indigo-600 border-white text-white scale-110" : "bg-indigo-50 border-transparent text-indigo-600 hover:bg-indigo-100")} onClick={(e) => { e.stopPropagation(); setShowDetails(!showDetails); }}>
+                    <Info className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Détails</span>
+                  </button>
+                ) : (
+                  <>
+                    <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showHours ? "bg-brand border-white text-white scale-110" : "bg-brand/10 border-transparent text-brand hover:bg-brand/20")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}>
+                      <Clock className="h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Horaires</span>
+                    </button>
+                    <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showReviews ? "bg-blue-600 border-white text-white scale-110" : "bg-blue-500/10 border-transparent text-blue-500 hover:bg-blue-50")} onClick={(e) => { e.stopPropagation(); setShowReviews(!showReviews); setShowHours(false); }}>
+                      <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Avis</span>
+                    </button>
+                  </>
+                )}
               </div>
               
               <div className="mt-3 border-t border-dashed pt-2">
-                <a 
-                  href={navigationUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="inline-flex items-center gap-3 bg-brand text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm hover:bg-brand/90 transition-all max-w-full"
-                  onClick={(e) => { e.stopPropagation(); }}
-                >
+                <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm transition-all max-w-full", isAssociation ? "bg-indigo-600 hover:bg-indigo-700" : "bg-brand hover:bg-brand/90")} onClick={(e) => { e.stopPropagation(); }}>
                   <MapPin className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
                   <div className="flex flex-col items-start leading-tight text-left">
                     {(() => {
@@ -329,14 +264,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
             </div>
           </div>
           
-          {(showHours || showReviews) && (
+          {(showHours || showReviews || showDetails) && (
             <div className="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
-              <button 
-                onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); }}
-                className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); setShowDetails(false); }} className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+              
               {showHours && (
                 <div className="space-y-1 w-full max-w-xs mx-auto">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
@@ -347,6 +278,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   ))}
                 </div>
               )}
+
               {showReviews && (
                 <div className="h-full flex flex-col max-w-xs mx-auto w-full pt-4">
                   <div className="flex-1 overflow-y-auto space-y-2 mb-4 pr-1 scrollbar-thin">
@@ -354,6 +286,52 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     {(!approvedComments || approvedComments.length === 0) && <p className="text-[10px] text-muted-foreground text-center py-4">Aucun avis publié pour le moment.</p>}
                   </div>
                   <Button size="sm" className="w-full bg-blue-600 text-[9px] uppercase font-black" onClick={(e) => { e.stopPropagation(); setIsReviewDialogOpen(true); }}>Donner mon avis</Button>
+                </div>
+              )}
+
+              {showDetails && (
+                <div className="h-full flex flex-col max-w-xs mx-auto w-full pt-6 overflow-y-auto custom-scrollbar">
+                  <div className="space-y-4">
+                    {dealership.associationType && (
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-black uppercase text-indigo-600 tracking-widest">Type</span>
+                        <p className="text-xs font-bold leading-tight">{dealership.associationType}</p>
+                      </div>
+                    )}
+                    {dealership.activities && dealership.activities.length > 0 && (
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-black uppercase text-indigo-600 tracking-widest">Activités</span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {dealership.activities.map((act, i) => <Badge key={i} variant="outline" className="text-[8px] h-4 py-0 font-bold border-indigo-100 bg-indigo-50/30 text-indigo-700">{act}</Badge>)}
+                        </div>
+                      </div>
+                    )}
+                    {dealership.email && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Mail className="h-3 w-3 text-indigo-600" />
+                        <a href={`mailto:${dealership.email}`} className="text-xs font-bold hover:underline truncate">{dealership.email}</a>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3 pt-2">
+                      {dealership.facebookUrl && (
+                        <a href={dealership.facebookUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                          <Facebook className="h-4 w-4" />
+                        </a>
+                      )}
+                      {dealership.instagramUrl && (
+                        <a href={dealership.instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-pink-100 text-pink-600 hover:bg-pink-600 hover:text-white transition-all shadow-sm">
+                          <Instagram className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                    {dealership.sourceUrl && (
+                      <div className="pt-2">
+                        <a href={dealership.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[8px] font-black uppercase text-muted-foreground hover:text-indigo-600 flex items-center gap-1">
+                          <ExternalLink className="h-2 w-2" /> Source officielle
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

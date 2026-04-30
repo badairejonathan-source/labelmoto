@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -7,7 +8,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X, Home, Bike, Wrench } from 'lucide-react';
+import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X, Home, Bike, Wrench, Users } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -105,9 +106,10 @@ function MapPageComponent() {
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
-  const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | null>(() => {
+  const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | null>(() => {
     if (filterParam === 'service') return 'service';
     if (filterParam === 'shopping') return 'shopping';
+    if (filterParam === 'association') return 'association';
     return null;
   });
 
@@ -123,7 +125,6 @@ function MapPageComponent() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Effet pour remonter la liste tout en haut lors d'une sélection sur la carte
   useEffect(() => {
     if (selectedDealershipId && listContainerRef.current) {
       listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
@@ -150,27 +151,54 @@ function MapPageComponent() {
   useEffect(() => {
     if (!firestore || !mounted) return;
     setIsLoading(true);
-    const dealershipsRef = collection(firestore, 'concessions');
-    return onSnapshot(dealershipsRef, (snapshot) => {
-        const results = snapshot.docs.map(doc => ({
-            id: doc.id, ...doc.data(),
-            latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
-            longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+    
+    // Listen to both collections
+    const collections = ['concessions', 'associations'];
+    const unsubscribers: (() => void)[] = [];
+    const resultsMap: Record<string, Dealership[]> = {};
+
+    collections.forEach(colName => {
+      const colRef = collection(firestore, colName);
+      const unsub = onSnapshot(colRef, (snapshot) => {
+        resultsMap[colName] = snapshot.docs.map(doc => ({
+          id: doc.id,
+          firestoreCollection: colName,
+          ...doc.data(),
+          latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
+          longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
         } as Dealership));
-        setAllDealerships(results); setIsLoading(false);
-    }, () => setIsLoading(false));
+
+        // Merge all results
+        const merged = Object.values(resultsMap).flat();
+        setAllDealerships(merged);
+        setIsLoading(false);
+      }, () => {
+        resultsMap[colName] = [];
+        const merged = Object.values(resultsMap).flat();
+        setAllDealerships(merged);
+      });
+      unsubscribers.push(unsub);
+    });
+
+    return () => unsubscribers.forEach(unsub => unsub());
   }, [firestore, mounted]);
 
   useEffect(() => {
     const processSearch = async () => {
         let results = [...allDealerships];
+        
+        // Logical filtering
         if (activeFilter) { 
-            results = results.filter(d => activeFilter === 'shopping' ? (d.appSection === 'shopping' || d.appSection === 'both') : (d.appSection === 'service' || d.appSection === 'both')); 
+            results = results.filter(d => {
+                if (activeFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
+                if (activeFilter === 'service') return d.appSection === 'service' || d.appSection === 'both';
+                if (activeFilter === 'association') return d.appSection === 'association' || d.category === 'Association motarde';
+                return true;
+            });
         }
 
         let term = submittedSearchTerm.trim().toLowerCase();
         
-        // Regle Paris
         const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisArrMatch) {
             const arrNum = parseInt(parisArrMatch[1]);
@@ -248,10 +276,8 @@ function MapPageComponent() {
         results = results.filter(d => d.latitude && d.longitude && d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLat); 
     }
     
-    // Tri par distance par rapport à l'ancre (centre de la carte)
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
 
-    // LOGIQUE DE REMONTÉE : Si un ID est sélectionné, on le place tout en haut de la liste
     if (selectedDealershipId) {
       const selectedIndex = results.findIndex(d => d.id === selectedDealershipId);
       if (selectedIndex > 0) {
@@ -327,7 +353,6 @@ function MapPageComponent() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background flex flex-col md:flex-row">
       
-      {/* Background Map */}
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
             <MapComponent 
@@ -353,7 +378,6 @@ function MapPageComponent() {
         )}
       </div>
 
-      {/* Panneau Flottant Desktop */}
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[100] border border-white/40 overflow-hidden">
             <div className="p-8 pb-4 shrink-0">
@@ -370,7 +394,7 @@ function MapPageComponent() {
                     <UserMenu />
                 </div>
 
-                <div className="flex items-center justify-center gap-8 w-full py-4 mb-6">
+                <div className="flex items-center justify-center gap-4 w-full py-4 mb-6">
                     <button onClick={() => setActiveFilter('shopping')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}>
                         <Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
                         <span className="text-[8px] font-black uppercase mt-0.5">Concession</span>
@@ -383,6 +407,10 @@ function MapPageComponent() {
                         <Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} />
                         <span className="text-[8px] font-black uppercase mt-0.5">Atelier</span>
                     </button>
+                    <button onClick={() => setActiveFilter('association')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-indigo-600/40" : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/20 hover:scale-105")}>
+                        <Users className={cn("h-6 w-6", activeFilter === 'association' ? "text-white" : "text-indigo-600")} />
+                        <span className="text-[8px] font-black uppercase mt-0.5 text-center leading-tight">Asso moto</span>
+                    </button>
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-border/50 to-transparent mb-4" />
             </div>
@@ -392,7 +420,6 @@ function MapPageComponent() {
         </aside>
       )}
 
-      {/* Floating Search Bar (Desktop) */}
       {!isMobile && (
         <div className="absolute top-8 right-8 left-[580px] z-[100] flex justify-end pointer-events-none">
             <div className="w-full max-w-2xl pointer-events-auto">
@@ -409,7 +436,6 @@ function MapPageComponent() {
         </div>
       )}
 
-      {/* Mobile Floating Header */}
       {isMobile && (
         <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none">
           <div className="pointer-events-auto">
@@ -432,7 +458,6 @@ function MapPageComponent() {
         <Compass className="h-7 w-7 md:h-8 md:w-8" />
       </button>
 
-      {/* Drawer Mobile */}
       {isMobile && (
         <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t flex flex-col z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[110px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-160px)]')}>
           <div 
@@ -442,11 +467,12 @@ function MapPageComponent() {
           >
             <div className="relative w-full flex flex-col items-center pt-3 pb-1"><div className="w-12 h-1.5 bg-muted rounded-full mb-2" /></div>
             <div className="px-5 pt-2 pb-6 border-b border-border/50">
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-2">
                 <button onClick={() => setActiveFilter('shopping')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2", activeFilter === 'shopping' ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Bike className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5">Concession</span></button>
                 <button onClick={() => setActiveFilter(null)} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2", activeFilter === null ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Home className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5">Tout</span></button>
                 <button onClick={() => setActiveFilter('service')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2", activeFilter === 'service' ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Wrench className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5">Atelier</span></button>
-                <button className="ml-2 rounded-full h-10 w-10 flex items-center justify-center hover:bg-muted" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>{drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}</button>
+                <button onClick={() => setActiveFilter('association')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2", activeFilter === 'association' ? "bg-indigo-600 text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Users className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5 text-center leading-none">Asso</span></button>
+                <button className="ml-1 rounded-full h-10 w-10 flex items-center justify-center hover:bg-muted" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>{drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}</button>
               </div>
             </div>
           </div>
