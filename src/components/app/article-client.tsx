@@ -98,14 +98,16 @@ const InternalLinkCard = ({ title, description, link, icon: Icon }: any) => (
 export default function ArticleClient({ id, showHeader = true, children }: { id: string, showHeader?: boolean, children?: React.ReactNode }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useUser();
 
   const firestore = useFirestore();
   const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // Listing des autres articles pour la sidebar
   const articlesListRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
   const { data: allArticles, isLoading: isArticlesListLoading } = useCollection(articlesListRef);
+
+  const registerLink = user ? "/pro/register" : "/login";
 
   const otherArticles = useMemo(() => {
     if (!allArticles) return [];
@@ -299,10 +301,15 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const label = cta.label || "Aperçu map";
     const targetSlug = cta.target_slug;
 
-    // Logique de redirection : si slug spécifique aux assos, on ajoute le filtre
     let href = "/map";
     if (targetSlug === 'carte-associations-moto') {
         href = "/map?filter=association";
+    }
+
+    // Gestion du bouton de référencement pour les associations
+    const isRegistrationCta = label.toLowerCase().includes('ajouter mon association');
+    if (isRegistrationCta) {
+      href = registerLink;
     }
 
     return (
@@ -318,12 +325,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {text}
             </p>
             <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="relative w-full md:w-64 aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0">
-                    <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" />
-                </div>
+                {!isRegistrationCta && (
+                  <div className="relative w-full md:w-64 aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0">
+                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" />
+                  </div>
+                )}
                 <Button asChild className="w-full md:w-auto bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
                     <Link href={href} className="flex items-center gap-2">
-                        {label} <Map className="h-4 w-4" />
+                        {label} {isRegistrationCta ? <ArrowRight className="h-4 w-4" /> : <Map className="h-4 w-4" />}
                     </Link>
                 </Button>
             </div>
@@ -343,7 +352,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const faq = section.faq || section.faqs;
     const cta = section.cta;
 
-    // Détecter si on est déjà dans l'article concerné pour ne pas afficher le lien
     const isBudgetArticle = id === 'combien-coute-vraiment-une-moto-par-mois';
     const isAssuranceArticle = id === 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil';
     const isGabaritArticle = id === 'quelle-moto-choisir-selon-sa-taille';

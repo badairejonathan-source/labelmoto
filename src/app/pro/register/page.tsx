@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -25,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, CheckCircle, Store, AlertCircle, Search, Send, MapPin } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle, Store, AlertCircle, Search, Send, MapPin, Users } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import brandLogos from '@/data/brand-logos';
@@ -45,7 +44,7 @@ const detailedDayHoursSchema = z.object({
 
 const submissionSchema = z.object({
   name: z.string().min(3, { message: "Le nom de l'établissement est requis." }),
-  category: z.enum(['concession', 'atelier', 'accessoiriste', 'concession-atelier', 'autre'], { required_error: 'La catégorie est requise.' }),
+  category: z.enum(['concession', 'atelier', 'accessoiriste', 'concession-atelier', 'association', 'autre'], { required_error: 'La catégorie est requise.' }),
   address: z.string().min(10, { message: "Une adresse complète est requise (numéro, rue, code postal, ville)." }),
   phone: z.string().min(10, { message: "Un numéro de téléphone valide est requis." }),
   email: z.string().min(1, { message: "L'adresse e-mail est obligatoire." }).email({ message: "Veuillez entrer une adresse e-mail valide." }),
@@ -83,7 +82,6 @@ function RegisterProContent() {
   const { toast } = useToast();
   const { firestore } = useFirebase();
 
-  // Augmenté à 3000 pour la cohérence avec le Header
   const dealersQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'concessions'), limit(3000));
@@ -132,7 +130,6 @@ function RegisterProContent() {
             const normalizedAddress = address.replace(/[\s-]/g, '');
             let score = 0;
 
-            // 1. Match Code Postal (Priorité Absolue)
             const isNumeric = /^\d+$/.test(lower);
             if (isNumeric && lower.length >= 2) {
                 const zipMatch = address.match(/\b\d{5}\b/);
@@ -141,25 +138,20 @@ function RegisterProContent() {
                 }
             }
 
-            // 2. Match Exact Nom
             if (normalizedLabel === normalizedTerm) score = Math.max(score, 1200);
             
-            // 3. Match Ville & Adresse : ESSENTIEL pour trouver tous les dealers d'une ville
             if (address.includes(lower) || normalizedAddress.includes(normalizedTerm)) {
                 score = Math.max(score, 1150);
             }
 
-            // 4. Typo Tolerance (Distance de Levenshtein)
             if (normalizedTerm.length > 3) {
                 const dist = levenshteinDistance(normalizedTerm, normalizedLabel);
                 if (dist === 1) score = Math.max(score, 1050);
                 else if (dist === 2 && normalizedTerm.length > 6) score = Math.max(score, 950);
             }
 
-            // 5. Prefix Match
             if (normalizedLabel.startsWith(normalizedTerm)) score = Math.max(score, 1000);
             
-            // 6. Keyword Overlap
             const titleWords = label.split(/\s+/).filter(w => w.length > 1);
             const matches = termWords.filter(tw => titleWords.some(twTitle => twTitle.includes(tw) || levenshteinDistance(tw, twTitle) <= 1));
             if (matches.length > 0) {
@@ -329,7 +321,7 @@ function RegisterProContent() {
                                             <FormItem><FormLabel>Nom de l'établissement</FormLabel><FormControl><Input placeholder="Moto Passion 75" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
                                         <FormField control={form.control} name="category" render={({ field }) => (
-                                            <FormItem><FormLabel>Catégorie principale</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="font-bold"><SelectValue placeholder="Catégorie" /></SelectTrigger></FormControl><SelectContent><SelectItem value="concession">Concession</SelectItem><SelectItem value="atelier">Atelier</SelectItem><SelectItem value="concession-atelier">Concession + Atelier</SelectItem><SelectItem value="accessoiriste">Accessoiriste</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                            <FormItem><FormLabel>Catégorie principale</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="font-bold"><SelectValue placeholder="Catégorie" /></SelectTrigger></FormControl><SelectContent><SelectItem value="concession">Concession</SelectItem><SelectItem value="atelier">Atelier</SelectItem><SelectItem value="concession-atelier">Concession + Atelier</SelectItem><SelectItem value="association">Association Motarde</SelectItem><SelectItem value="accessoiriste">Accessoiriste</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                                         )} />
                                     </div>
                                     <FormField control={form.control} name="address" render={({ field }) => (
