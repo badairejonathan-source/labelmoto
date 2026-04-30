@@ -49,6 +49,8 @@ const submissionSchema = z.object({
   phone: z.string().min(10, { message: "Un numéro de téléphone valide est requis." }),
   email: z.string().min(1, { message: "L'adresse e-mail est obligatoire." }).email({ message: "Veuillez entrer une adresse e-mail valide." }),
   website: z.string().url({ message: "Veuillez entrer une URL valide (ex: https://...)" }).optional().or(z.literal('')),
+  facebookUrl: z.string().url({ message: "URL Facebook invalide" }).optional().or(z.literal('')),
+  instagramUrl: z.string().url({ message: "URL Instagram invalide" }).optional().or(z.literal('')),
   placeUrl: z.string().url({ message: "Veuillez entrer une URL Google Maps valide." }).optional().or(z.literal('')),
   imgUrl: z.any().optional(),
   primaryBrand: z.string().optional(),
@@ -101,7 +103,7 @@ function RegisterProContent() {
   const form = useForm<SubmissionFormValues>({
     resolver: zodResolver(submissionSchema),
     defaultValues: {
-      name: '', address: '', phone: '', email: '', website: '', placeUrl: '', imgUrl: null, primaryBrand: '', secondaryBrands: [], description: '',
+      name: '', address: '', phone: '', email: '', website: '', facebookUrl: '', instagramUrl: '', placeUrl: '', imgUrl: null, primaryBrand: '', secondaryBrands: [], description: '',
       horaires: {
         lundi: { morningOpen: 'Fermé', morningClose: 'Fermé', afternoonOpen: 'Fermé', afternoonClose: 'Fermé' },
         mardi: { morningOpen: '09:00', morningClose: '12:00', afternoonOpen: '14:00', afternoonClose: '19:00' },
@@ -196,6 +198,8 @@ function RegisterProContent() {
       phoneNumber: data.phone,
       email: data.email,
       website: data.website || '',
+      facebookUrl: data.facebookUrl || '',
+      instagramUrl: data.instagramUrl || '',
       placeUrl: data.placeUrl || '',
       description: data.description || '',
       submittedAt: serverTimestamp(),
@@ -337,6 +341,15 @@ function RegisterProContent() {
                                         )} />
                                         <FormField control={form.control} name="email" render={({ field }) => (
                                             <FormItem><FormLabel>Email (obligatoire)</FormLabel><FormControl><Input placeholder="contact@etablissement.com" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="website" render={({ field }) => (
+                                            <FormItem><FormLabel>Site internet</FormLabel><FormControl><Input placeholder="https://www.monsite.fr" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="facebookUrl" render={({ field }) => (
+                                            <FormItem><FormLabel>Facebook</FormLabel><FormControl><Input placeholder="https://facebook.com/mapage" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="instagramUrl" render={({ field }) => (
+                                            <FormItem><FormLabel>Instagram</FormLabel><FormControl><Input placeholder="https://instagram.com/moncompte" className="font-bold" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
                                     </div>
                                 </div>
