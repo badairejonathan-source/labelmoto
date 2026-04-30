@@ -122,6 +122,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
 
+    if (articleId.includes('association') || title.includes('association')) return "/images/article-motars-association.png";
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
     if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";

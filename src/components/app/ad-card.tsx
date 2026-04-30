@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -26,6 +25,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     const id = article.id?.toLowerCase() || '';
     const title = (article.title || '').toLowerCase();
 
+    if (id.includes('association') || title.includes('association')) return "/images/article-motars-association.png";
     if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
     if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
     if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";

@@ -21,9 +21,22 @@ export default function LandingPage() {
     const firestore = useFirestore();
     const articlesQuery = useMemoFirebase(() => {
         if (!firestore) return null;
-        return query(collection(firestore, 'articles'), limit(3));
+        // On récupère un peu plus que 3 pour pouvoir filtrer les associations
+        return query(collection(firestore, 'articles'), limit(10));
     }, [firestore]);
     const { data: featuredArticles, isLoading: isArticlesLoading } = useCollection(articlesQuery);
+
+    const displayArticles = React.useMemo(() => {
+        if (!featuredArticles) return [];
+        // Filtrage pour exclure les articles liés aux associations de la section "Objectif A2"
+        return featuredArticles
+            .filter(a => {
+                const id = a.id.toLowerCase();
+                const title = (a.display_title || a.title || "").toLowerCase();
+                return !id.includes('association') && !title.includes('association') && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
+            })
+            .slice(0, 3);
+    }, [featuredArticles]);
 
     const proRegisterLink = user ? "/pro/register" : "/login";
 
@@ -39,6 +52,7 @@ export default function LandingPage() {
         const id = (article.id || '').toLowerCase();
         const title = (article.display_title || article.title || "").toLowerCase();
         
+        if (id.includes('association') || title.includes('association')) return "/images/article-motars-association.png";
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
@@ -133,7 +147,7 @@ export default function LandingPage() {
                                     </div>
                                 ))
                             ) : (
-                                featuredArticles?.map((article, idx) => (
+                                displayArticles?.map((article, idx) => (
                                     <Link key={article.id} href={`/info/${article.id}`} className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1">
                                         <div className="relative aspect-video overflow-hidden bg-muted">
                                             <Image 
