@@ -1,3 +1,4 @@
+
 import { Metadata } from 'next';
 import ArticleClient from '@/components/app/article-client';
 
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title: title,
       description: `Guide pratique Label Moto : ${title}`,
       url: `https://labelmoto.fr/info/${id}`,
-      images: [{ url: "/images/logo-moto.png?v=6", alt: title }],
+      images: [{ url: "/images/logo-moto.webp", alt: title }],
     },
   };
 }
