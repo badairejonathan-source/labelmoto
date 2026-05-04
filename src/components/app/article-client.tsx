@@ -195,7 +195,25 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (!scheduleData) return null;
     
     const title = scheduleData.title || "Programme & Horaires";
-    const days = scheduleData.days || (Array.isArray(scheduleData) ? scheduleData : []);
+    
+    // Normalisation des jours : accepte un tableau d'objets ou un objet de jours
+    let days = [];
+    if (Array.isArray(scheduleData.days)) {
+      days = scheduleData.days;
+    } else if (Array.isArray(scheduleData)) {
+      days = scheduleData;
+    } else if (typeof scheduleData === 'object') {
+      // Cas où scheduleData est un objet { "Vendredi": [...], "Samedi": [...] }
+      const possibleDays = scheduleData.days || scheduleData;
+      if (typeof possibleDays === 'object' && !Array.isArray(possibleDays)) {
+          days = Object.entries(possibleDays).map(([label, sessions]) => ({
+              label,
+              sessions: Array.isArray(sessions) ? sessions : []
+          }));
+      }
+    }
+
+    if (days.length === 0) return null;
 
     return (
       <div key={key} className="my-10">
@@ -207,30 +225,32 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           </CardHeader>
           <CardContent className="p-0">
             {days.map((day: any, dIdx: number) => {
-              const dayLabel = day.day || day.label || "";
-              const sessions = day.sessions || (Array.isArray(day.items) ? day.items : []);
+              const dayLabel = day.day || day.label || day.title || "";
+              const sessions = day.sessions || (Array.isArray(day.items) ? day.items : (Array.isArray(day) ? day : []));
               
+              if (!Array.isArray(sessions) || sessions.length === 0) return null;
+
               return (
                 <div key={dIdx} className="border-b last:border-0 border-muted/50">
                   {dayLabel && (
-                    <div className="bg-muted/30 px-8 py-3">
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">{dayLabel}</p>
+                    <div className="bg-muted/30 px-8 py-4">
+                      <p className="text-[12px] font-black uppercase tracking-[0.3em] text-brand">{dayLabel}</p>
                     </div>
                   )}
                   <div className="divide-y divide-muted/30">
                     {sessions.map((session: any, sIdx: number) => {
                       const time = getRobustValue(session, ['time', 'heure', 'h']);
-                      const label = getRobustValue(session, ['label', 'event', 'session', 'titre']);
+                      const label = getRobustValue(session, ['label', 'event', 'session', 'titre', 'name']);
                       const type = session.type || "";
                       
                       return (
-                        <div key={sIdx} className="px-8 py-5 flex items-center gap-6 group hover:bg-muted/10 transition-colors">
-                          <div className="shrink-0 w-20">
-                            <span className="text-lg font-black text-foreground">{time}</span>
+                        <div key={sIdx} className="px-8 py-6 flex items-center gap-6 group hover:bg-muted/10 transition-colors">
+                          <div className="shrink-0 w-24">
+                            <span className="text-xl font-black text-foreground">{time}</span>
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-bold text-foreground leading-tight uppercase tracking-tight">{label}</p>
-                            {type && <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1 block">{type}</span>}
+                            <p className="text-base font-bold text-foreground leading-tight uppercase tracking-tight">{label}</p>
+                            {type && <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1 block">{type}</span>}
                           </div>
                         </div>
                       );
@@ -266,7 +286,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   {(card.type || card.profile || card.subtitle) && <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">{card.type || card.profile || card.subtitle}</p>}
                   {formula && (
                     <div className="mt-2 bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-flex items-center gap-1 shadow-sm">
-                      <CheckCircle2 className="h-3 v-3" /> Formule conseillée : {formula}
+                      <CheckCircle2 className="h-3 w-3" /> Formule conseillée : {formula}
                     </div>
                   )}
                 </div>
@@ -353,20 +373,20 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   const renderCta = (cta: any, key: string) => {
     if (!cta) return null;
-    const label = cta.label || "Aperçu map";
-    const targetSlug = cta.target_slug;
-    const title = cta.title;
-    const text = cta.text;
+    const label = cta.label || "Voir l'info";
+    const targetSlug = cta.target_slug || cta.target;
+    const title = cta.title || "";
+    const text = cta.text || "";
 
     const isAssociationCta = targetSlug === 'carte-associations-moto' || label.toLowerCase().includes('association');
-    if (!isAssociationCta) return null;
+    const isRegistrationCta = label.toLowerCase().includes('ajouter mon association') || label.toLowerCase().includes('inscrire');
 
-    let href = "/map";
+    let href = targetSlug ? (targetSlug.startsWith('http') ? targetSlug : `/info/${targetSlug}`) : "/map";
+    
     if (targetSlug === 'carte-associations-moto') {
         href = "/map?filter=association";
     }
 
-    const isRegistrationCta = label.toLowerCase().includes('ajouter mon association');
     if (isRegistrationCta) {
       href = registerLink;
     }
@@ -375,23 +395,27 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       <div key={key} className="my-10">
         <Card className="border-2 border-brand/20 bg-brand/[0.02] shadow-xl rounded-[2.5rem] overflow-hidden group/cta">
           <CardHeader className="p-8 pb-4">
-            <CardTitle className="text-2xl font-black uppercase tracking-tighter text-foreground group-hover/cta:text-brand transition-colors">
-              {title}
-            </CardTitle>
+            {title && (
+                <CardTitle className="text-2xl font-black uppercase tracking-tighter text-foreground group-hover/cta:text-brand transition-colors">
+                {title}
+                </CardTitle>
+            )}
           </CardHeader>
           <CardContent className="px-8 pb-8">
-            <p className="text-base font-bold text-muted-foreground leading-relaxed mb-6">
-              {text}
-            </p>
+            {text && (
+                <p className="text-base font-bold text-muted-foreground leading-relaxed mb-6">
+                {text}
+                </p>
+            )}
             <div className="flex flex-col md:flex-row items-center gap-6">
-                {!isRegistrationCta && (
+                {isAssociationCta && !isRegistrationCta && (
                   <div className="relative w-full md:w-64 aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0">
                       <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" />
                   </div>
                 )}
                 <Button asChild className="w-full md:w-auto bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
                     <Link href={href} className="flex items-center gap-2">
-                        {label} {isRegistrationCta ? <ArrowRight className="h-4 w-4" /> : <Map className="h-4 w-4" />}
+                        {label} {targetSlug?.includes('map') || isAssociationCta ? <Map className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                     </Link>
                 </Button>
             </div>
@@ -424,6 +448,10 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
+        
+        {/* Affichage du programme s'il est contenu dans une section */}
+        {schedule && renderSchedule(schedule, `schedule-${sectionId}`)}
+        
         {(strengths || weaknesses) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
                 <Card className="border-2 border-green-100 bg-green-50/10 overflow-hidden shadow-sm rounded-3xl">
@@ -438,7 +466,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         )}
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
-        {schedule && renderSchedule(schedule, `schedule-${sectionId}`)}
         {faq && renderFaq(faq, `faq-${sectionId}`)}
         {cta && renderCta(cta, `cta-${sectionId}`)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
@@ -500,6 +527,9 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
+  // Vérification de la présence d'un programme à la racine de l'article
+  const rootSchedule = article.schedule_card || article.schedule;
+
   return (
     <div className="min-h-screen relative bg-background">
       {showHeader && <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />}
@@ -534,6 +564,9 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {article.intro && Array.isArray(article.intro) && (
                 <div className="my-8 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-lg leading-relaxed text-foreground font-black">{p}</p>))}</div>
               )}
+
+              {/* Affichage du programme s'il est défini au niveau racine */}
+              {rootSchedule && renderSchedule(rootSchedule, "root-schedule")}
               
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
                 <div className="my-8 p-8 bg-brand/5 rounded-[2rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
