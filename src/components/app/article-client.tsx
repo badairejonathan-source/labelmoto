@@ -14,7 +14,8 @@ import {
   Zap,
   Wallet,
   HelpCircle,
-  Clock
+  Clock,
+  MapPin
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -200,7 +201,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const broadcast = scheduleData.broadcast || "";
     const note = scheduleData.note || "";
     
-    // Normalisation des jours : accepte un tableau d'objets ou un objet de jours
+    // Coordonnées du circuit Bugatti pour le bouton carte
+    const CIRCUIT_BUGATTI_COORDS = { lat: 47.9546, lng: 0.2078 };
+    const googleMapsUrl = "https://maps.app.goo.gl/nuDwNWpyQLEp7boF8";
+
+    // Normalisation des jours
     let days = [];
     if (Array.isArray(scheduleData.items)) {
       days = scheduleData.items;
@@ -277,46 +282,75 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           )}
 
           <CardContent className="p-0">
-            {filteredDays.map((day: any, dIdx: number) => {
-              return (
-                <div key={dIdx} className="border-b last:border-0 border-muted/50">
-                  {day.dayLabel && (
-                    <div className="bg-muted/30 px-8 py-4">
-                      <p className="text-[12px] font-black uppercase tracking-[0.3em] text-brand">{day.dayLabel}</p>
-                    </div>
-                  )}
-                  <div className="divide-y divide-muted/30">
-                    {day.filteredSessions.map((session: any, sIdx: number) => {
-                      const time = getRobustValue(session, ['time', 'heure', 'h']);
-                      const label = getRobustValue(session, ['label', 'event', 'session', 'titre', 'name']);
-                      const type = session.type || "";
-                      
-                      return (
-                        <div key={sIdx} className="px-8 py-6 flex items-center gap-6 group hover:bg-muted/10 transition-colors">
-                          <div className="shrink-0 w-28 md:w-36">
-                            <span className="text-base md:text-xl font-black text-foreground">{time}</span>
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm md:text-base font-bold text-foreground leading-tight uppercase tracking-tight group-hover:text-brand transition-colors">{label}</p>
-                            {type && <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1 block">{type}</span>}
-                          </div>
-                        </div>
-                      );
-                    })}
+            {filteredDays.map((day: any, dIdx: number) => (
+              <div key={dIdx} className="border-b last:border-0 border-muted/50">
+                {day.dayLabel && (
+                  <div className="bg-muted/30 px-8 py-4">
+                    <p className="text-[12px] font-black uppercase tracking-[0.3em] text-brand">{day.dayLabel}</p>
                   </div>
+                )}
+                <div className="divide-y divide-muted/30">
+                  {day.filteredSessions.map((session: any, sIdx: number) => {
+                    const time = getRobustValue(session, ['time', 'heure', 'h']);
+                    const label = getRobustValue(session, ['label', 'event', 'session', 'titre', 'name']);
+                    const type = session.type || "";
+                    
+                    return (
+                      <div key={sIdx} className="px-8 py-6 flex items-center gap-6 group hover:bg-muted/10 transition-colors">
+                        <div className="shrink-0 w-28 md:w-36">
+                          <span className="text-base md:text-xl font-black text-foreground">{time}</span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm md:text-base font-bold text-foreground leading-tight uppercase tracking-tight group-hover:text-brand transition-colors">{label}</p>
+                          {type && <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1 block">{type}</span>}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ))}
             
             {filteredDays.length === 0 && (
               <div className="py-20 text-center text-muted-foreground italic font-medium px-8">
                 Aucune session trouvée pour la catégorie "{scheduleFilter}".
               </div>
             )}
+
+            {/* Section Localisation */}
+            <div className="bg-muted/50 p-8 border-t border-muted">
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                    <div className="shrink-0 w-full md:w-48 aspect-square relative rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted group/map">
+                        <Image src="/images/apercucartezoom.webp" alt="Carte" fill className="object-cover transition-transform group-hover/map:scale-110" />
+                        <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+                            <MapPin className="h-8 w-8 text-white drop-shadow-lg" />
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-4 text-center md:text-left">
+                        <div>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Localisation de l'événement</h4>
+                            <p className="text-lg font-black text-foreground uppercase tracking-tight leading-tight">Circuit Bugatti - Le Mans</p>
+                            <p className="text-xs font-bold text-muted-foreground mt-1">Place Luigi Chinetti, 72000 Le Mans, France</p>
+                        </div>
+                        <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                            <Button asChild size="sm" className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] rounded-full px-6">
+                                <Link href={`/map?lat=${CIRCUIT_BUGATTI_COORDS.lat}&lng=${CIRCUIT_BUGATTI_COORDS.lng}&zoom=14&search=Circuit Bugatti`}>
+                                    <Map className="mr-2 h-3.5 w-3.5" /> Voir sur notre carte
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline" size="sm" className="bg-white hover:bg-muted border-muted-foreground/20 font-black uppercase text-[10px] rounded-full px-6">
+                                <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLink className="mr-2 h-3.5 w-3.5" /> Google Maps
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
           </CardContent>
           
           {note && (
-            <CardFooter className="bg-muted/50 p-6 md:p-8">
+            <CardFooter className="bg-muted/50 p-6 md:p-8 border-t border-muted/50">
                 <div className="flex items-start gap-3">
                     <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                     <p className="text-[10px] md:text-xs font-medium text-muted-foreground italic leading-relaxed">{note}</p>
