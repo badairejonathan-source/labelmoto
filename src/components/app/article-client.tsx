@@ -297,17 +297,21 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   const renderCta = (cta: any, key: string) => {
     if (!cta) return null;
-    const title = cta.title;
-    const text = cta.text;
     const label = cta.label || "Aperçu map";
     const targetSlug = cta.target_slug;
+    const title = cta.title;
+    const text = cta.text;
+
+    // On ne rend que les CTAs liés aux associations (Aperçu Map)
+    // Les autres sont désormais gérés par InternalLinkCard pour plus de cohérence
+    const isAssociationCta = targetSlug === 'carte-associations-moto' || label.toLowerCase().includes('association');
+    if (!isAssociationCta) return null;
 
     let href = "/map";
     if (targetSlug === 'carte-associations-moto') {
         href = "/map?filter=association";
     }
 
-    // Gestion du bouton de référencement pour les associations
     const isRegistrationCta = label.toLowerCase().includes('ajouter mon association');
     if (isRegistrationCta) {
       href = registerLink;
