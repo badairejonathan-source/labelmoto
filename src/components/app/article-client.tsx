@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -203,11 +202,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const broadcast = scheduleData.broadcast || "";
     const note = scheduleData.note || "";
     
-    // Coordonnées du circuit Bugatti pour le bouton carte
     const CIRCUIT_BUGATTI_COORDS = { lat: 47.9546, lng: 0.2078 };
-    const googleMapsUrl = "https://maps.app.goo.gl/nuDwNWpyQLEp7boF8";
 
-    // Normalisation des jours
     let days = [];
     if (Array.isArray(scheduleData.items)) {
       days = scheduleData.items;
@@ -227,7 +223,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     if (days.length === 0) return null;
 
-    // Filtrage des jours et sessions
     const categories = ['TOUT', 'MOTOGP', 'MOTO2', 'MOTO3'];
     const filteredDays = days.map((day: any) => {
         const dayLabel = day.day || day.label || day.title || "";
@@ -256,7 +251,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             </div>
           </CardHeader>
           
-          {/* Barre de filtrage par catégorie */}
           <div className="bg-muted/30 px-8 py-4 flex flex-wrap gap-2 border-b border-muted/50">
             {categories.map(cat => (
               <Button 
@@ -319,7 +313,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               </div>
             )}
 
-            {/* Section Localisation */}
             <div className="bg-muted/50 p-8 border-t border-muted">
                 <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="shrink-0 w-full md:w-48 aspect-square relative rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted group/map">
@@ -339,11 +332,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                                 <Link href={`/map?lat=${CIRCUIT_BUGATTI_COORDS.lat}&lng=${CIRCUIT_BUGATTI_COORDS.lng}&zoom=14&selectedId=circuit-bugatti-le-mans&search=Circuit Bugatti`}>
                                     <Map className="mr-2 h-3.5 w-3.5" /> Voir sur notre carte
                                 </Link>
-                            </Button>
-                            <Button asChild variant="outline" size="sm" className="bg-white hover:bg-muted border-muted-foreground/20 font-black uppercase text-[10px] rounded-full px-6">
-                                <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
-                                    <ExternalLink className="mr-2 h-3.5 w-3.5" /> Google Maps
-                                </a>
                             </Button>
                         </div>
                     </div>
@@ -548,7 +536,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         
-        {/* Affichage du programme s'il est contenu dans une section */}
         {schedule && renderSchedule(schedule, `schedule-${sectionId}`)}
         
         {(strengths || weaknesses) && (
@@ -626,7 +613,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
-  // Vérification de la présence d'un programme à la racine de l'article
   const rootSchedule = article.schedule_card || article.schedule;
 
   return (
@@ -664,7 +650,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 <div className="my-8 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-lg leading-relaxed text-foreground font-black">{p}</p>))}</div>
               )}
 
-              {/* Affichage du programme s'il est défini au niveau racine */}
               {rootSchedule && renderSchedule(rootSchedule, "root-schedule")}
               
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
