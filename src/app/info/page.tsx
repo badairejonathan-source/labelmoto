@@ -77,7 +77,20 @@ function InfoPageComponent() {
     const filteredArticles = useMemo(() => {
         if (!allArticles) return [];
         const EXCLUDED_ARTICLE_ID = 'entretien-moto-intervalles-prix-conseils-par-modele';
-        return allArticles.filter(a => a.id !== EXCLUDED_ARTICLE_ID);
+        
+        return [...allArticles]
+            .filter(a => a.id !== EXCLUDED_ARTICLE_ID)
+            .sort((a, b) => {
+                const getTime = (doc: any) => {
+                    const val = doc.publishedAt || doc.date || doc.submittedAt;
+                    if (!val) return 0;
+                    if (typeof val.toMillis === 'function') return val.toMillis();
+                    if (val.seconds) return val.seconds * 1000;
+                    const d = new Date(val);
+                    return isNaN(d.getTime()) ? 0 : d.getTime();
+                };
+                return getTime(b) - getTime(a);
+            });
     }, [allArticles]);
 
     return (

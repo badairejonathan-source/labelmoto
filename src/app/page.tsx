@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -23,18 +22,30 @@ export default function LandingPage() {
     const articlesQuery = useMemoFirebase(() => {
         if (!firestore) return null;
         // On récupère un peu plus que 3 pour pouvoir filtrer les associations
-        return query(collection(firestore, 'articles'), limit(10));
+        return query(collection(firestore, 'articles'), limit(20));
     }, [firestore]);
     const { data: featuredArticles, isLoading: isArticlesLoading } = useCollection(articlesQuery);
 
     const displayArticles = React.useMemo(() => {
         if (!featuredArticles) return [];
         // Filtrage pour exclure les articles liés aux associations de la section "Objectif A2"
-        return featuredArticles
+        // ET Tri par date
+        return [...featuredArticles]
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
                 return !id.includes('association') && !title.includes('association') && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
+            })
+            .sort((a, b) => {
+                const getTime = (doc: any) => {
+                    const val = doc.publishedAt || doc.date || doc.submittedAt;
+                    if (!val) return 0;
+                    if (typeof val.toMillis === 'function') return val.toMillis();
+                    if (val.seconds) return val.seconds * 1000;
+                    const d = new Date(val);
+                    return isNaN(d.getTime()) ? 0 : d.getTime();
+                };
+                return getTime(b) - getTime(a);
             })
             .slice(0, 3);
     }, [featuredArticles]);
