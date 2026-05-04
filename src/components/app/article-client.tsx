@@ -70,6 +70,7 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('gsx-8s')) return 'suzuki-gsx-8s-2023-plus';
   if (t.includes('z900 a2')) return 'kawasaki-z900-a2-2020-plus';
   if (t.includes('g 310 r') || t.includes('g310r')) return 'bmw-g310r-2021-plus';
+  if (t.includes('g 310 gs') || t.includes('g310gs')) return 'bmw-g310gs-2021-plus';
   if (t.includes('f900r')) return 'bmw-f900r-2020-plus';
   return null;
 };
