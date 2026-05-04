@@ -128,6 +128,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const title = (article.display_title || article.title || "").toLowerCase();
 
     if (articleId.includes('association') || title.includes('association')) return "/images/article-motars-association.webp";
+    if (articleId.includes('motogp') || articleId.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
     if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
@@ -407,13 +408,13 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   {strengths && Array.isArray(strengths) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Avantages</div>
-                      <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-green-500">•</span> {s}</li>))}</ul>
+                      <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-green-500">•</span> {s}</li>))}</ul>
                     </div>
                   )}
                   {weaknesses && Array.isArray(weaknesses) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
-                      <ul className="list-none space-y-1">{weaknesses.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-orange-500">•</span> {s}</li>))}</ul>
+                      <ul className="list-none space-y-1">{weaknesses.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-orange-500">•</span> {s}</li>))}</ul>
                     </div>
                   )}
                 </div>

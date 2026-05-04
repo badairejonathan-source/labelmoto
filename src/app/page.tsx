@@ -65,6 +65,7 @@ export default function LandingPage() {
         const title = (article.display_title || article.title || "").toLowerCase();
         
         if (id.includes('association') || title.includes('association')) return placeholderData.articles.association.src;
+        if (id.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
