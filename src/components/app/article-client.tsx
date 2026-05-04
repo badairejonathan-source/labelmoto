@@ -13,7 +13,8 @@ import {
   Bike,
   Zap,
   Wallet,
-  HelpCircle
+  HelpCircle,
+  Clock
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -190,6 +191,60 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     );
   };
 
+  const renderSchedule = (scheduleData: any, key: string) => {
+    if (!scheduleData) return null;
+    
+    const title = scheduleData.title || "Programme & Horaires";
+    const days = scheduleData.days || (Array.isArray(scheduleData) ? scheduleData : []);
+
+    return (
+      <div key={key} className="my-10">
+        <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
+          <CardHeader className="bg-primary text-white p-8">
+            <CardTitle className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
+              <Clock className="h-6 w-6" /> {title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {days.map((day: any, dIdx: number) => {
+              const dayLabel = day.day || day.label || "";
+              const sessions = day.sessions || (Array.isArray(day.items) ? day.items : []);
+              
+              return (
+                <div key={dIdx} className="border-b last:border-0 border-muted/50">
+                  {dayLabel && (
+                    <div className="bg-muted/30 px-8 py-3">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">{dayLabel}</p>
+                    </div>
+                  )}
+                  <div className="divide-y divide-muted/30">
+                    {sessions.map((session: any, sIdx: number) => {
+                      const time = getRobustValue(session, ['time', 'heure', 'h']);
+                      const label = getRobustValue(session, ['label', 'event', 'session', 'titre']);
+                      const type = session.type || "";
+                      
+                      return (
+                        <div key={sIdx} className="px-8 py-5 flex items-center gap-6 group hover:bg-muted/10 transition-colors">
+                          <div className="shrink-0 w-20">
+                            <span className="text-lg font-black text-foreground">{time}</span>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-bold text-foreground leading-tight uppercase tracking-tight">{label}</p>
+                            {type && <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1 block">{type}</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   const renderCards = (cards: any[], keyPrefix: string) => {
     if (!cards || cards.length === 0) return null;
     return (
@@ -303,8 +358,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const title = cta.title;
     const text = cta.text;
 
-    // On ne rend que les CTAs liés aux associations (Aperçu Map)
-    // Les autres sont désormais gérés par InternalLinkCard pour plus de cohérence
     const isAssociationCta = targetSlug === 'carte-associations-moto' || label.toLowerCase().includes('association');
     if (!isAssociationCta) return null;
 
@@ -357,6 +410,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const weaknesses = section.weaknesses || section.limits || section.watch_out || section.cons || section.points_vigilance;
     const faq = section.faq || section.faqs;
     const cta = section.cta;
+    const schedule = section.schedule_card || section.schedule;
 
     const isBudgetArticle = id === 'combien-coute-vraiment-une-moto-par-mois';
     const isAssuranceArticle = id === 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil';
@@ -384,6 +438,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         )}
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
+        {schedule && renderSchedule(schedule, `schedule-${sectionId}`)}
         {faq && renderFaq(faq, `faq-${sectionId}`)}
         {cta && renderCta(cta, `cta-${sectionId}`)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
