@@ -8,7 +8,7 @@ import DealershipCard from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X, Home, Bike, Wrench, Users } from 'lucide-react';
+import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, X, Home, Bike, Wrench, Users, Flag } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -22,6 +22,31 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 
 const brandsList = Object.keys(brandLogos);
+
+// Établissement spécial pour le Circuit Bugatti
+const CIRCUIT_BUGATTI: Dealership = {
+  id: 'circuit-bugatti-le-mans',
+  placeUrl: 'https://maps.app.goo.gl/nuDwNWpyQLEp7boF8',
+  title: 'Circuit Bugatti - Le Mans',
+  address: 'Place Luigi Chinetti, 72000 Le Mans, France',
+  website: 'https://www.lemans.org/',
+  phoneNumber: '02 43 40 24 24',
+  email: 'pole@lemans.org',
+  imgUrl: '/images/apercucartezoom.webp',
+  mardi: '09:00 - 18:00',
+  mercredi: '09:00 - 18:00',
+  jeudi: '09:00 - 18:00',
+  vendredi: '09:00 - 18:00',
+  samedi: '09:00 - 18:00',
+  dimanche: '09:00 - 18:00',
+  lundi: '09:00 - 18:00',
+  latitude: 47.9546,
+  longitude: 0.2078,
+  rating: '5.0',
+  category: 'Circuit',
+  appSection: 'both',
+  brands: ['Événements Sportifs'],
+};
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -168,13 +193,13 @@ function MapPageComponent() {
           longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
         } as Dealership));
 
-        // Merge all results
-        const merged = Object.values(resultsMap).flat();
+        // Merge all results + hardcoded specials
+        const merged = [CIRCUIT_BUGATTI, ...Object.values(resultsMap).flat()];
         setAllDealerships(merged);
         setIsLoading(false);
       }, () => {
         resultsMap[colName] = [];
-        const merged = Object.values(resultsMap).flat();
+        const merged = [CIRCUIT_BUGATTI, ...Object.values(resultsMap).flat()];
         setAllDealerships(merged);
       });
       unsubscribers.push(unsub);

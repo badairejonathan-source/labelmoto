@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -15,7 +16,8 @@ import {
   Wallet,
   HelpCircle,
   Clock,
-  MapPin
+  MapPin,
+  Flag
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -334,7 +336,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                         </div>
                         <div className="flex flex-wrap justify-center md:justify-start gap-3">
                             <Button asChild size="sm" className="bg-brand hover:bg-brand/90 font-black uppercase text-[10px] rounded-full px-6">
-                                <Link href={`/map?lat=${CIRCUIT_BUGATTI_COORDS.lat}&lng=${CIRCUIT_BUGATTI_COORDS.lng}&zoom=14&search=Circuit Bugatti`}>
+                                <Link href={`/map?lat=${CIRCUIT_BUGATTI_COORDS.lat}&lng=${CIRCUIT_BUGATTI_COORDS.lng}&zoom=14&selectedId=circuit-bugatti-le-mans&search=Circuit Bugatti`}>
                                     <Map className="mr-2 h-3.5 w-3.5" /> Voir sur notre carte
                                 </Link>
                             </Button>
