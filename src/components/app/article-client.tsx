@@ -100,6 +100,7 @@ const InternalLinkCard = ({ title, description, link, icon: Icon }: any) => (
 export default function ArticleClient({ id, showHeader = true, children }: { id: string, showHeader?: boolean, children?: React.ReactNode }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [scheduleFilter, setScheduleFilter] = useState('TOUT');
   const { user } = useUser();
 
   const firestore = useFirestore();
@@ -219,6 +220,23 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     if (days.length === 0) return null;
 
+    // Filtrage des jours et sessions
+    const categories = ['TOUT', 'MOTOGP', 'MOTO2', 'MOTO3'];
+    const filteredDays = days.map((day: any) => {
+        const dayLabel = day.day || day.label || day.title || "";
+        const rawSessions = day.sessions || (Array.isArray(day.items) ? day.items : (Array.isArray(day) ? day : []));
+        
+        const filteredSessions = rawSessions.filter((session: any) => {
+            if (scheduleFilter === 'TOUT') return true;
+            const sessionName = getRobustValue(session, ['name', 'label', 'event', 'session', 'titre', 'name']).toLowerCase();
+            const target = scheduleFilter.toLowerCase().replace(/\s/g, '');
+            const normalizedName = sessionName.replace(/\s/g, '');
+            return normalizedName.includes(target);
+        });
+
+        return { dayLabel, filteredSessions };
+    }).filter(day => day.filteredSessions.length > 0);
+
     return (
       <div key={key} className="my-10">
         <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
@@ -231,8 +249,26 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             </div>
           </CardHeader>
           
+          {/* Barre de filtrage par catégorie */}
+          <div className="bg-muted/30 px-8 py-4 flex flex-wrap gap-2 border-b border-muted/50">
+            {categories.map(cat => (
+              <Button 
+                key={cat}
+                variant={scheduleFilter === cat ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setScheduleFilter(cat)}
+                className={cn(
+                  "rounded-full font-black uppercase text-[10px] h-8 px-5 transition-all",
+                  scheduleFilter === cat ? "bg-brand text-white shadow-lg border-brand" : "bg-white text-muted-foreground hover:border-brand/50"
+                )}
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
+
           {broadcast && (
-            <div className="bg-brand/10 border-y border-brand/20 px-8 py-4 flex items-center gap-3">
+            <div className="bg-brand/10 border-b border-brand/20 px-8 py-4 flex items-center gap-3">
                 <Zap className="h-4 w-4 text-brand shrink-0" />
                 <p className="text-xs font-black uppercase tracking-tight text-foreground">
                     <span className="text-brand">DIFFUSION TV :</span> {broadcast}
@@ -241,21 +277,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           )}
 
           <CardContent className="p-0">
-            {days.map((day: any, dIdx: number) => {
-              const dayLabel = day.day || day.label || day.title || "";
-              const sessions = day.sessions || (Array.isArray(day.items) ? day.items : (Array.isArray(day) ? day : []));
-              
-              if (!Array.isArray(sessions) || sessions.length === 0) return null;
-
+            {filteredDays.map((day: any, dIdx: number) => {
               return (
                 <div key={dIdx} className="border-b last:border-0 border-muted/50">
-                  {dayLabel && (
+                  {day.dayLabel && (
                     <div className="bg-muted/30 px-8 py-4">
-                      <p className="text-[12px] font-black uppercase tracking-[0.3em] text-brand">{dayLabel}</p>
+                      <p className="text-[12px] font-black uppercase tracking-[0.3em] text-brand">{day.dayLabel}</p>
                     </div>
                   )}
                   <div className="divide-y divide-muted/30">
-                    {sessions.map((session: any, sIdx: number) => {
+                    {day.filteredSessions.map((session: any, sIdx: number) => {
                       const time = getRobustValue(session, ['time', 'heure', 'h']);
                       const label = getRobustValue(session, ['label', 'event', 'session', 'titre', 'name']);
                       const type = session.type || "";
@@ -276,6 +307,12 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 </div>
               );
             })}
+            
+            {filteredDays.length === 0 && (
+              <div className="py-20 text-center text-muted-foreground italic font-medium px-8">
+                Aucune session trouvée pour la catégorie "{scheduleFilter}".
+              </div>
+            )}
           </CardContent>
           
           {note && (
@@ -597,7 +634,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
                 <div className="my-8 p-8 bg-brand/5 rounded-[2rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={150} height={48} /></div>
-                  <div className="flex items-center gap-3 mb-6"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.3em] m-0 text-muted-foreground">Au sommaire :</h2></div>
+                  <div className="flex items-center gap-3 mb-6"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.5em] m-0 text-muted-foreground">Au sommaire :</h2></div>
                   <nav><ul className="space-y-4">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-base font-black text-foreground hover:text-brand transition-all"><div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-3.5 w-3.5" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span></a></li>); })}</ul></nav>
                 </div>
               )}
