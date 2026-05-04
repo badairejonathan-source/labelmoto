@@ -359,7 +359,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     const isBudgetNote = !isBudgetArticle && ((section.note && (section.note.includes("budget global") || section.note.includes("coût réel"))) || (sectionId.includes("budget")));
     const isAssuranceNote = !isAssuranceArticle && ((section.note && (section.note.includes("Assurance") || section.note.includes("formule"))) || (sectionId.includes("assurance")));
-    const isGabaritNote = !isGabaritArticle && ((section.note && (section.note.includes("gabarit") || section.note.includes("tailles"))) || (sectionId.includes("taille") || sectionId.includes("hauteur")));
+    const isGabaritNote = !isGabaritArticle && ((section.note && (section.note.includes("gabarit") || section.note.includes("tailles"))) || (sectionId.includes("taille") || sectionId.includes("hauteur") || sectionId.includes("gabarit")));
 
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
