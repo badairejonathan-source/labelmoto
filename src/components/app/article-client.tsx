@@ -195,16 +195,20 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (!scheduleData) return null;
     
     const title = scheduleData.title || "Programme & Horaires";
+    const subtitle = scheduleData.subtitle || "";
+    const broadcast = scheduleData.broadcast || "";
+    const note = scheduleData.note || "";
     
     // Normalisation des jours : accepte un tableau d'objets ou un objet de jours
     let days = [];
-    if (Array.isArray(scheduleData.days)) {
+    if (Array.isArray(scheduleData.items)) {
+      days = scheduleData.items;
+    } else if (Array.isArray(scheduleData.days)) {
       days = scheduleData.days;
     } else if (Array.isArray(scheduleData)) {
       days = scheduleData;
     } else if (typeof scheduleData === 'object') {
-      // Cas où scheduleData est un objet { "Vendredi": [...], "Samedi": [...] }
-      const possibleDays = scheduleData.days || scheduleData;
+      const possibleDays = scheduleData.days || scheduleData.items || scheduleData;
       if (typeof possibleDays === 'object' && !Array.isArray(possibleDays)) {
           days = Object.entries(possibleDays).map(([label, sessions]) => ({
               label,
@@ -218,11 +222,24 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     return (
       <div key={key} className="my-10">
         <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
-          <CardHeader className="bg-primary text-white p-8">
-            <CardTitle className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
-              <Clock className="h-6 w-6" /> {title}
-            </CardTitle>
+          <CardHeader className="bg-primary text-white p-8 pb-6">
+            <div className="flex flex-col gap-2">
+                <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
+                    <Clock className="h-6 w-6 md:h-8 md:w-8" /> {title}
+                </CardTitle>
+                {subtitle && <p className="text-xs md:text-sm font-bold opacity-80 uppercase tracking-widest">{subtitle}</p>}
+            </div>
           </CardHeader>
+          
+          {broadcast && (
+            <div className="bg-brand/10 border-y border-brand/20 px-8 py-4 flex items-center gap-3">
+                <Zap className="h-4 w-4 text-brand shrink-0" />
+                <p className="text-xs font-black uppercase tracking-tight text-foreground">
+                    <span className="text-brand">DIFFUSION TV :</span> {broadcast}
+                </p>
+            </div>
+          )}
+
           <CardContent className="p-0">
             {days.map((day: any, dIdx: number) => {
               const dayLabel = day.day || day.label || day.title || "";
@@ -245,11 +262,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                       
                       return (
                         <div key={sIdx} className="px-8 py-6 flex items-center gap-6 group hover:bg-muted/10 transition-colors">
-                          <div className="shrink-0 w-24">
-                            <span className="text-xl font-black text-foreground">{time}</span>
+                          <div className="shrink-0 w-28 md:w-36">
+                            <span className="text-base md:text-xl font-black text-foreground">{time}</span>
                           </div>
                           <div className="flex-1">
-                            <p className="text-base font-bold text-foreground leading-tight uppercase tracking-tight">{label}</p>
+                            <p className="text-sm md:text-base font-bold text-foreground leading-tight uppercase tracking-tight group-hover:text-brand transition-colors">{label}</p>
                             {type && <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1 block">{type}</span>}
                           </div>
                         </div>
@@ -260,6 +277,15 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               );
             })}
           </CardContent>
+          
+          {note && (
+            <CardFooter className="bg-muted/50 p-6 md:p-8">
+                <div className="flex items-start gap-3">
+                    <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <p className="text-[10px] md:text-xs font-medium text-muted-foreground italic leading-relaxed">{note}</p>
+                </div>
+            </CardFooter>
+          )}
         </Card>
       </div>
     );
