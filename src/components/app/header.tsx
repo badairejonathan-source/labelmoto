@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store, X } from 'lucide-react';
@@ -115,6 +115,7 @@ export const UserMenu = () => {
                 width={80} 
                 height={80} 
                 className="h-full w-full object-contain" 
+                decoding="async"
               />
             )}
           </div>
@@ -148,6 +149,7 @@ export const UserMenu = () => {
                                 height={44} 
                                 className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" 
                                 loading="lazy"
+                                decoding="async"
                             />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Entretien</span>
@@ -161,6 +163,7 @@ export const UserMenu = () => {
                                 height={44} 
                                 className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" 
                                 loading="lazy"
+                                decoding="async"
                             />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Conseils</span>
@@ -227,6 +230,9 @@ const Header: React.FC<HeaderProps> = ({
   const [isDataLoading, setIsDataLoading] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
+  // Optimisation Mobile : On déferre le calcul des suggestions pour garder l'input fluide
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+
   const isMapPage = pathname === '/map';
   const isMobile = mounted && width !== undefined && width < 1024;
   const isCompactPage = pathname === '/info' || pathname.startsWith('/info/') || pathname === '/entretien' || pathname.startsWith('/fiches/');
@@ -264,13 +270,13 @@ const Header: React.FC<HeaderProps> = ({
   }, [firestore, mounted, isFocused]);
 
   useEffect(() => {
-    if (searchTerm.trim().length < 1) {
+    if (deferredSearchTerm.trim().length < 1) {
         setSuggestions([]);
         setPrediction('');
         return;
     }
 
-    let lowerTerm = searchTerm.toLowerCase().trim();
+    let lowerTerm = deferredSearchTerm.toLowerCase().trim();
     const assoKeywords = ["association", "associations", "asso"];
     const foundAssoKeyword = assoKeywords.find(k => lowerTerm.includes(k));
     let searchPart = lowerTerm;
@@ -372,7 +378,7 @@ const Header: React.FC<HeaderProps> = ({
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
     setSuggestions(finalSuggestions.slice(0, 30));
-  }, [searchTerm, allDealers]);
+  }, [deferredSearchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
     let searchTermToUse = suggestion.label;
@@ -524,6 +530,7 @@ const Header: React.FC<HeaderProps> = ({
                                       height={44} 
                                       className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" 
                                       loading="lazy"
+                                      decoding="async"
                                     />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
@@ -540,6 +547,7 @@ const Header: React.FC<HeaderProps> = ({
                                       height={44} 
                                       className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" 
                                       loading="lazy"
+                                      decoding="async"
                                     />
                                     <span className="sr-only">Conseils</span>
                                 </Link>

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
       { url: '/images/favicon.webp', type: 'image/webp' },
     ],
     apple: [
-      { url: '/images/favicon.webp' }, // Utilisation d'une version légère pour l'icône Apple plutôt que la bannière complète
+      { url: '/images/favicon.webp' }, 
     ],
   },
   openGraph: {
@@ -80,6 +80,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning className={inter.variable}>
+      <head>
+        {/* Pré-connexions pour accélérer les ressources critiques */}
+        <link rel="preconnect" href="https://firestore.googleapis.com" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+      </head>
       <body className={cn("bg-background font-sans antialiased", inter.className)}>
         <FirebaseClientProvider>
           {children}

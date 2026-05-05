@@ -56,7 +56,21 @@ export default function LandingPage() {
                 onSearch={handleSearch}
                 placeholderText="Recherche par departement, ville, marque, nom..."
             />
-            <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
+            
+            {/* Filigrane Logo - Optimisé: décodage asynchrone et chargement lazy pour le watermark */}
+            <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
+                <Image 
+                    src="/images/logo-moto.webp" 
+                    alt="" 
+                    width={600} 
+                    height={192} 
+                    className="opacity-[0.03] rotate-[-15deg]" 
+                    loading="lazy"
+                    decoding="async"
+                />
+            </div>
+
+            <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
               <div className="max-w-6xl mx-auto">
                 {/* Hero Section - Stable et prioritaire */}
                 <div className="relative mb-24 md:mb-48 overflow-visible min-h-[320px] md:min-h-[480px]">
@@ -68,6 +82,7 @@ export default function LandingPage() {
                             className="object-cover opacity-40" 
                             priority 
                             fetchPriority="high"
+                            decoding="async"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 1200px, 1280px"
                         />
                     </div>
@@ -91,6 +106,7 @@ export default function LandingPage() {
                                             fill 
                                             className="rounded-2xl border-4 border-white shadow-2xl object-cover" 
                                             sizes="(max-width: 768px) 176px, 330px" 
+                                            decoding="async"
                                         />
                                     </div>
                                 </Link>
