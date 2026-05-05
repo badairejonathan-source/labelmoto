@@ -27,8 +27,8 @@ const getArticleCategories = (article: any) => {
     const title = (article.display_title || article.title || "").toLowerCase();
     const cats: string[] = [];
     
-    // PERMIS A2 : Tout ce qui touche aux débutants, à l'occasion et à l'assurance
-    if (id.includes('a2') || id.includes('occasion') || id.includes('assurance') || title.includes('a2')) {
+    // PERMIS A2 : Tout ce qui touche aux débutants, à l'occasion, à l'assurance et au gabarit
+    if (id.includes('a2') || id.includes('occasion') || id.includes('assurance') || id.includes('taille') || title.includes('a2') || title.includes('taille') || title.includes('gabarit')) {
         cats.push('A2');
     }
     
@@ -42,10 +42,13 @@ const getArticleCategories = (article: any) => {
         cats.push('BUDGET');
     }
     
-    // CONSEILS : Guides techniques, gabarit, réglementation (ZFE)
-    if (cats.length === 0 || id.includes('taille') || id.includes('zfe') || id.includes('hauteur')) {
+    // CONSEILS : Guides techniques, gabarit, réglementation (ZFE), entretien
+    if (id.includes('taille') || id.includes('zfe') || id.includes('hauteur') || id.includes('entretien') || id.includes('revision')) {
         cats.push('TIPS');
     }
+
+    // Sécurité : si aucune catégorie n'est détectée
+    if (cats.length === 0) cats.push('TIPS');
     
     return cats;
 };
@@ -63,7 +66,7 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
         if (id.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
-        if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+        if (id.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
         
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         
