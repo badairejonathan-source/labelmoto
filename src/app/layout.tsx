@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/app/footer";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
-import { GoogleAnalytics } from '@next/third-parties/google';
 import CookieConsent from "@/components/app/cookie-consent";
 
 const inter = Inter({ 
@@ -101,8 +100,6 @@ export default function RootLayout({
           <Footer />
           <Toaster />
         </FirebaseClientProvider>
-        
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
       </body>
     </html>
   );
