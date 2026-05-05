@@ -9,8 +9,8 @@ let auth: Auth;
 let firestore: Firestore;
 
 /**
- * Robust Firebase initialization for both Client and Server environments.
- * Prevents multiple initializations and ensures exports are valid.
+ * Robust Firebase initialization.
+ * Now strictly returns the App instance. Services are initialized lazily.
  */
 export function initializeFirebase() {
   if (getApps().length > 0) {
@@ -18,23 +18,34 @@ export function initializeFirebase() {
   } else {
     firebaseApp = initializeApp(firebaseConfig);
   }
+  return { firebaseApp };
+}
 
+/**
+ * Lazy getter for Auth instance.
+ */
+export function getAuthInstance() {
   if (!auth) {
+    const { firebaseApp } = initializeFirebase();
     auth = getAuth(firebaseApp);
   }
-  
+  return auth;
+}
+
+/**
+ * Lazy getter for Firestore instance.
+ */
+export function getFirestoreInstance() {
   if (!firestore) {
-    // Use initializeFirestore with forced long polling for better connectivity
-    // in cloud-based development environments.
+    const { firebaseApp } = initializeFirebase();
     firestore = initializeFirestore(firebaseApp, {
       experimentalForceLongPolling: true,
     });
   }
-
-  return { firebaseApp, auth, firestore };
+  return firestore;
 }
 
-// Ensure exports match what is expected by providers and other hooks
+// Export specific hooks and utilities
 export { useFirebase, useAuth, useFirestore, useFirebaseApp, useMemoFirebase, useUser } from './provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';

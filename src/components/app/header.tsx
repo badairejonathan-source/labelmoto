@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -27,8 +26,6 @@ import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
 import useWindowSize from '@/hooks/use-window-size';
 
 const brandsList = Object.keys(brandLogos);
-
-// Cache global pour éviter de re-télécharger 3000 documents à chaque changement de page
 let globalDealersCache: Suggestion[] | null = null;
 
 interface Suggestion {
@@ -56,7 +53,7 @@ interface HeaderProps {
 }
 
 export const UserMenu = () => {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading, activateAuth } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
   const pathname = usePathname();
@@ -69,12 +66,11 @@ export const UserMenu = () => {
 
   const isMapPage = pathname === '/map';
   const isMobile = mounted && width !== undefined && width < 1024;
-  
   const showGuides = isMobile || isMapPage;
 
+  // Profiles are now conditional on user
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
-
   const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
   const { data: proProfile } = useDoc(proRef);
 
@@ -88,18 +84,18 @@ export const UserMenu = () => {
     }
   };
 
-  if (!mounted || isUserLoading) {
-    return (
-      <div className="h-[62px] w-[62px] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-brand" />
-      </div>
-    );
-  }
+  const handleOpenMenu = () => {
+    activateAuth(); // Trigger Auth load on demand
+  };
 
+  if (!mounted) return null;
+
+  // We show a placeholder state if auth is not yet active or loading
   const trigger = (
     <Button 
       variant="ghost" 
       aria-label="Menu utilisateur"
+      onClick={handleOpenMenu}
       className="relative h-[62px] w-[62px] md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
     >
       <div className="relative h-full w-full flex items-center justify-center pointer-events-none">
@@ -112,7 +108,11 @@ export const UserMenu = () => {
           </Avatar>
         ) : (
           <div className="h-[48px] w-[48px] md:h-[54px] md:w-[54px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
-            <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
+            {isUserLoading ? (
+              <Loader2 className="h-6 w-6 animate-spin text-brand" />
+            ) : (
+              <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
+            )}
           </div>
         )}
         
@@ -125,7 +125,7 @@ export const UserMenu = () => {
   );
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(open) => open && handleOpenMenu()}>
       <DropdownMenuTrigger asChild>
         {trigger}
       </DropdownMenuTrigger>
@@ -217,7 +217,6 @@ const Header: React.FC<HeaderProps> = ({
     setMounted(true);
   }, []);
 
-  // Optimisation TBT : On ne télécharge les établissements que si l'utilisateur focus la barre de recherche
   useEffect(() => {
     const fetchDealers = async () => {
         if (!firestore || globalDealersCache || !isFocused) return;
@@ -254,8 +253,6 @@ const Header: React.FC<HeaderProps> = ({
     }
 
     let lowerTerm = searchTerm.toLowerCase().trim();
-
-    // --- DETECTION INTENTION ASSOCIATION ---
     const assoKeywords = ["association", "associations", "asso"];
     const foundAssoKeyword = assoKeywords.find(k => lowerTerm.includes(k));
     let searchPart = lowerTerm;
@@ -263,7 +260,6 @@ const Header: React.FC<HeaderProps> = ({
         searchPart = lowerTerm.replace(foundAssoKeyword, '').trim();
     }
 
-    // --- REGLE PARIS ARRONDISSEMENTS SUGGESTIONS ---
     const parisArrMatch = searchPart.match(/paris\s*(\d{1,2})/i);
     const results: Suggestion[] = [];
     
@@ -275,15 +271,14 @@ const Header: React.FC<HeaderProps> = ({
                 type: 'city',
                 label: foundAssoKeyword ? `Associations : Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}` : `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
                 subLabel: cp,
-                score: 2000 // Priorité maximale
+                score: 2000
             });
-            searchPart = cp; // On traite la suite comme une recherche CP
+            searchPart = cp;
         }
     }
 
     const normalizedTerm = searchPart.replace(/[\s-]/g, '');
 
-    // 1. Départements par numéro ou nom (Req 2)
     Object.entries(locationsData).forEach(([dept, info]) => {
         const deptNum = dept.split(' - ')[0];
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
@@ -314,7 +309,6 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 2. Marques (Req 1)
     if (!foundAssoKeyword) {
         brandsList.forEach(brand => {
             const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
@@ -324,24 +318,20 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
-    // 3. Concessionnaires (Req 4)
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
         const normalizedTitle = title.replace(/[\s-]/g, '');
         let score = 0;
         
-        // Match CP exact (Priorité Req 3)
         const isNumeric = /^\d+$/.test(searchPart);
         if (isNumeric && searchPart.length === 5 && address.includes(searchPart)) score = 1300;
         
         if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
         
-        // REQUÊTE UTILISATEUR : On ignore le numéro de rue si c'est un chiffre court (Dpt)
         const isShortNumber = /^\d{1,2}$/.test(searchPart);
         if (address.includes(searchPart)) {
             if (isShortNumber) {
-                // Si c'est un numéro court, on ne valide que si c'est le début du code postal (ex: "75")
                 const zipMatch = address.match(/\b\d{5}\b/);
                 if (zipMatch && zipMatch[0].startsWith(searchPart.padStart(2, '0'))) {
                     score = Math.max(score, 1100);
@@ -465,8 +455,6 @@ const Header: React.FC<HeaderProps> = ({
       )}
     </div>
   );
-
-  if (!mounted) return null;
 
   return (
     <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
