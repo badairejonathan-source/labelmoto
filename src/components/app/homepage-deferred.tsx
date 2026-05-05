@@ -142,14 +142,27 @@ export default function HomepageDeferred() {
                                         className="object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     />
+                                    
+                                    {/* Badge NOUVEAU en haut à droite */}
+                                    <div className="absolute top-6 right-6 z-20">
+                                        <span className="bg-white/95 backdrop-blur-sm text-brand px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border border-brand/20 animate-bounce-subtle">
+                                            Nouveau
+                                        </span>
+                                    </div>
+
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                                     <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full">
-                                        <span className={cn(
-                                            "inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 shadow-lg",
-                                            isAsso ? "bg-indigo-600 text-white animate-pulse" : "bg-brand text-white"
-                                        )}>
-                                            {isAsso ? 'COMMUNAUTÉ' : 'À LA UNE'}
-                                        </span>
+                                        <div className="flex flex-wrap gap-2 mb-3">
+                                            <span className={cn(
+                                                "inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg",
+                                                isAsso ? "bg-indigo-600 text-white animate-pulse" : "bg-brand text-white"
+                                            )}>
+                                                {isAsso ? 'COMMUNAUTÉ' : 'À LA UNE'}
+                                            </span>
+                                            <span className="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg bg-white/20 backdrop-blur-md text-white border border-white/30">
+                                                INFOS NEWS
+                                            </span>
+                                        </div>
                                         <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand transition-colors">
                                             {article.display_title || article.title}
                                         </h3>
@@ -288,6 +301,16 @@ export default function HomepageDeferred() {
                 </div>
               </div>
             </section>
+
+            <style jsx global>{`
+                @keyframes bounce-subtle {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-3px); }
+                }
+                .animate-bounce-subtle {
+                    animation: bounce-subtle 2s infinite ease-in-out;
+                }
+            `}</style>
         </div>
     );
 }
