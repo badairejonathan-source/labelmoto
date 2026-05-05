@@ -20,10 +20,8 @@ const Footer = () => {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
-  // Masquer le footer uniquement sur la page de la carte
   if (pathname === '/map') return null;
 
-  // Gestion de l'hydratation (évite les bugs entre serveur et client)
   const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
   const isAdmin = mounted && user && user.uid === ADMIN_UID;
 
@@ -31,72 +29,68 @@ const Footer = () => {
     <footer className="bg-muted/30 border-t border-border/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-sm">
         
-        {/* Grille de navigation principale */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-12">
           <div>
-            <h3 className="font-semibold text-foreground mb-4">À propos de Label Moto</h3>
+            <h3 className="font-semibold text-foreground mb-4 uppercase text-xs tracking-wider">À propos de Label Moto</h3>
             <ul className="space-y-3">
-              <li><Link href="/about" className="text-muted-foreground hover:text-brand transition-colors">À propos</Link></li>
-              <li><Link href="/selection" className="text-muted-foreground hover:text-brand transition-colors">Sélection Label Moto</Link></li>
-              <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors">Contactez-nous</Link></li>
+              <li><Link href="/about" className="text-muted-foreground hover:text-brand transition-colors font-medium">À propos</Link></li>
+              <li><Link href="/selection" className="text-muted-foreground hover:text-brand transition-colors font-medium">Sélection Label Moto</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors font-medium">Contactez-nous</Link></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Explorez</h3>
+            <h3 className="font-semibold text-foreground mb-4 uppercase text-xs tracking-wider">Explorez</h3>
             <ul className="space-y-3">
-              <li><Link href="/info" className="text-muted-foreground hover:text-brand transition-colors">Conseils & Articles</Link></li>
-              <li><Link href="/map" className="text-muted-foreground hover:text-brand transition-colors">Trouver un pro</Link></li>
-              <li><Link href="/entretien" className="text-muted-foreground hover:text-brand transition-colors">Entretien & Révisions</Link></li>
+              <li><Link href="/info" className="text-muted-foreground hover:text-brand transition-colors font-medium">Conseils & Articles</Link></li>
+              <li><Link href="/map" className="text-muted-foreground hover:text-brand transition-colors font-medium">Trouver un pro</Link></li>
+              <li><Link href="/entretien" className="text-muted-foreground hover:text-brand transition-colors font-medium">Entretien & Révisions</Link></li>
             </ul>
           </div>
           
           <div className="col-span-2 md:col-span-1">
-            <h3 className="font-semibold text-foreground mb-4">Espace Professionnel</h3>
+            <h3 className="font-semibold text-foreground mb-4 uppercase text-xs tracking-wider">Espace Professionnel</h3>
             <ul className="space-y-3">
-              <li><Link href={proRegisterLink} className="text-muted-foreground hover:text-brand transition-colors">Inscrire votre établissement</Link></li>
+              <li><Link href={proRegisterLink} className="text-muted-foreground hover:text-brand transition-colors font-medium">Inscrire votre établissement</Link></li>
               {isAdmin && (
-                <li><Link href="/admin" className="text-brand hover:opacity-80 font-bold">Espace Admin</Link></li>
+                <li><Link href="/admin" className="text-brand hover:opacity-80 font-bold uppercase tracking-widest text-xs">Espace Admin</Link></li>
               )}
-              <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors">Faire de la publicité</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors font-medium">Faire de la publicité</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Section Bas de page : Logo, Copyright et Réseaux Sociaux */}
         <div className="border-t border-border/50 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* Logo et Copyright empilés sur mobile, alignés sur desktop */}
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
               <div className="w-48 sm:w-56 shrink-0">
                 <LabelMotoLogo noBubble />
               </div>
               {currentYear && (
-                <p className="text-[10px] sm:text-xs text-muted-foreground font-medium whitespace-nowrap">
+                <p className="text-[11px] sm:text-xs text-muted-foreground font-bold whitespace-nowrap">
                   &copy; {currentYear} Label Moto. Tous droits réservés.
                 </p>
               )}
             </div>
             
-            {/* Réseaux Sociaux */}
             <div className="flex items-center space-x-6">
-              <Facebook className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
-              <Twitter className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
+              <span className="sr-only">Réseaux sociaux</span>
+              <button disabled aria-label="Facebook (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30"><Facebook className="h-5 w-5" /></button>
+              <button disabled aria-label="Twitter (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30"><Twitter className="h-5 w-5" /></button>
               <Link 
                 href="https://www.instagram.com/labelmoto.fr/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                aria-label="Instagram" 
+                aria-label="Suivez-nous sur Instagram" 
                 className="text-muted-foreground hover:text-brand transition-colors"
               >
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Youtube className="h-5 w-5 text-muted-foreground cursor-not-allowed opacity-50" />
+              <button disabled aria-label="Youtube (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30"><Youtube className="h-5 w-5" /></button>
             </div>
           </div>
 
-          {/* Liens légaux bas de page */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-8 text-[10px] sm:text-xs font-medium border-t border-dashed border-border/50 pt-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-8 text-[11px] sm:text-xs font-bold border-t border-dashed border-border/50 pt-6">
             <Link href="/terms" className="text-muted-foreground hover:text-brand transition-colors">Conditions d'utilisation</Link>
             <Link href="/privacy" className="text-muted-foreground hover:text-brand transition-colors">Confidentialité & Cookies</Link>
             <Link href="/legal" className="text-muted-foreground hover:text-brand transition-colors">Mentions Légales</Link>

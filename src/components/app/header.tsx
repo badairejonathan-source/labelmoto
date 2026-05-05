@@ -68,7 +68,6 @@ export const UserMenu = () => {
   const isMobile = mounted && width !== undefined && width < 1024;
   const showGuides = isMobile || isMapPage;
 
-  // Profiles are now conditional on user
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
   const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
@@ -85,12 +84,11 @@ export const UserMenu = () => {
   };
 
   const handleOpenMenu = () => {
-    activateAuth(); // Trigger Auth load on demand
+    activateAuth();
   };
 
   if (!mounted) return null;
 
-  // We show a placeholder state if auth is not yet active or loading
   const trigger = (
     <Button 
       variant="ghost" 
@@ -135,13 +133,13 @@ export const UserMenu = () => {
             <div className="mb-6">
                 <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted-foreground text-center mb-4 pt-2">G U I D E</p>
                 <div className="border-2 border-dashed border-gray-100 rounded-[2rem] p-6 flex justify-around items-center bg-gray-50/50">
-                    <Link href="/entretien" className="flex flex-col items-center gap-3 group">
+                    <Link href="/entretien" className="flex flex-col items-center gap-3 group" aria-label="Consulter le guide entretien">
                         <div className="h-14 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
                             <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-brand">Entretien</span>
                     </Link>
-                    <Link href="/info" className="flex flex-col items-center gap-3 group">
+                    <Link href="/info" className="flex flex-col items-center gap-3 group" aria-label="Consulter les conseils">
                         <div className="h-14 w-16 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-transparent group-hover:bg-brand group-hover:border-white transition-all transform group-active:scale-95">
                             <Image src="/images/icon-conseils.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" />
                         </div>
@@ -401,6 +399,7 @@ const Header: React.FC<HeaderProps> = ({
       <Input 
         type="search" 
         placeholder={placeholderText} 
+        aria-label={placeholderText}
         className={cn(
             "pr-24 md:pr-32 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 relative z-10 font-black transition-all",
             isMapPage ? "h-11 md:h-14 text-xs md:text-base" : "h-12 md:h-14 text-xs md:text-base",
@@ -419,10 +418,11 @@ const Header: React.FC<HeaderProps> = ({
         </div>
       )}
 
-      {searchTerm && !isDataLoading && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-24 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button"><X className="h-4 w-4" /></button>)}
+      {searchTerm && !isDataLoading && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-24 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button" aria-label="Effacer la recherche"><X className="h-4 w-4" /></button>)}
       <Button 
         type="submit" 
         size="icon" 
+        aria-label="Lancer la recherche"
         className={cn(
             "absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg transition-transform", 
             isMapPage 
@@ -441,13 +441,13 @@ const Header: React.FC<HeaderProps> = ({
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-3 bg-background border rounded-[2rem] shadow-2xl z-[1600] max-h-[60vh] overflow-y-auto py-3 animate-in fade-in slide-in-from-top-2 duration-200">
           {suggestions.map((s, idx) => (
-            <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group transition-all" onClick={() => handleSuggestionClick(s)}>
+            <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group transition-all" onClick={() => handleSuggestionClick(s)} aria-label={`Suggestion : ${s.label} ${s.subLabel || ''}`}>
               <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
                 {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-black text-foreground truncate uppercase tracking-tight">{s.label}</span>
-                {s.subLabel && <span className="text-[9px] text-muted-foreground truncate uppercase font-black tracking-[0.2em]">{s.subLabel}</span>}
+                {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-[0.2em]">{s.subLabel}</span>}
               </div>
             </button>
           ))}
@@ -471,10 +471,10 @@ const Header: React.FC<HeaderProps> = ({
             
             <div className="flex flex-1 justify-center px-1 md:px-4 relative z-10 min-w-0">
                 <div className="bg-white px-2 py-1.5 md:px-8 md:py-4 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-xs md:max-w-md lg:max-w-none overflow-hidden flex flex-col justify-center items-center">
-                    <p className="text-[7px] xs:text-[9px] sm:text-xs md:text-sm lg:text-base font-black uppercase tracking-wider text-foreground leading-tight">
+                    <p className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm lg:text-base font-black uppercase tracking-wider text-foreground leading-tight">
                         TROUVER UNE CONCESSION ?
                     </p>
-                    <p className="text-[9px] xs:text-[11px] sm:text-sm md:text-lg lg:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
+                    <p className="text-[10px] xs:text-[12px] sm:text-sm md:text-lg lg:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
                         FINI LA GALÈRE.
                     </p>
                 </div>
@@ -493,24 +493,24 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
                 {!isMapPage && (
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[8px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
                         <div className="flex flex-col items-center gap-1.5 shrink-0">
                             <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
-                                <Link href="/entretien" className="flex items-center justify-center h-full w-full">
+                                <Link href="/entretien" className="flex items-center justify-center h-full w-full" aria-label="Fiches entretien">
                                     <Image src="/images/icon-entretienrevision.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Entretien</span>
                                 </Link>
                             </Button>
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
                         </div>
                         <div className="flex flex-col items-center gap-1.5 shrink-0">
                             <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
-                                <Link href="/info" className="flex items-center justify-center h-full w-full">
+                                <Link href="/info" className="flex items-center justify-center h-full w-full" aria-label="Conseils pratiques">
                                     <Image src="/images/icon-conseils.webp" alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" />
                                     <span className="sr-only">Conseils</span>
                                 </Link>
                             </Button>
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
                         </div>
                     </div>
                 )}
@@ -523,6 +523,7 @@ const Header: React.FC<HeaderProps> = ({
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick('shopping')} 
+                    aria-label="Filtrer par concessions"
                     className={cn(
                         "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'shopping' 
@@ -531,11 +532,12 @@ const Header: React.FC<HeaderProps> = ({
                     )}
                 >
                     <Bike className={cn("h-7 w-7 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[9px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
+                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
                 </Button>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick(null)} 
+                    aria-label="Afficher tout"
                     className={cn(
                         "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === null 
@@ -544,11 +546,12 @@ const Header: React.FC<HeaderProps> = ({
                     )}
                 >
                     <Home className={cn("h-7 w-7 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Tout</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Tout</span>
                 </Button>
                 <Button 
                     variant="ghost" 
                     onClick={() => handleTabClick('service')} 
+                    aria-label="Filtrer par ateliers"
                     className={cn(
                         "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
                         activeFilter === 'service' 
@@ -557,7 +560,7 @@ const Header: React.FC<HeaderProps> = ({
                     )}
                 >
                     <Wrench className={cn("h-7 w-7 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Atelier</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Atelier</span>
                 </Button>
             </nav>
         </div>

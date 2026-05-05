@@ -67,16 +67,15 @@
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
     
-    /* MODIFICATION : On passe de 53% à 42% de luminosité pour le contraste */
+    /* MODIFICATION : On passe de 53% à 42% de luminosité pour le contraste WCAG AA */
     --accent: 25 95% 42%;
-    --accent-foreground: 0 0% 100%; /* Blanc pur pour maximiser le contraste */
+    --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     
-    /* MODIFICATION : On accorde la bague de focus et la couleur de marque */
     --ring: 25 95% 42%;
     --radius: 0.5rem;
     --brand: 25 95% 42%;
@@ -86,7 +85,6 @@
     --sidebar-foreground: 211 62% 16%;
     --sidebar-border: 211 62% 16%;
     
-    /* MODIFICATION : On ajuste aussi les couleurs du sidebar */
     --sidebar-accent: 25 95% 42%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-ring: 25 95% 42%;
@@ -106,7 +104,6 @@
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
 
-    /* MODIFICATION : Luminosité à 42% et blanc pur pour le texte */
     --accent: 25 95% 42%;
     --accent-foreground: 0 0% 100%;
     
@@ -135,7 +132,6 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Filtre pour une carte lumineuse et épurée */
   .leaflet-container .leaflet-tile-pane {
     filter: saturate(0.7) brightness(1.06) contrast(0.95);
   }
@@ -145,32 +141,30 @@
     border: none !important;
   }
 
-  /* AJOUT : Style qualitatif et épuré pour les étiquettes des marqueurs */
   .marker-label {
     position: absolute;
     left: 28px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
-    color: #475569; /* Slate 600 - Plus doux */
+    color: #475569;
     white-space: nowrap;
     pointer-events: none;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     padding: 2px 8px;
-    background: rgba(255, 255, 255, 0.9); /* Pill blanche semi-transparente */
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 100;
   }
 
-  /* État actif pour le survol ou la sélection */
   .marker-label.active {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 900;
-    color: #1a237e; /* Deep Blue pour la sélection */
+    color: #1a237e;
     background: white;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 0 1.5px #1a237e;
     z-index: 1000;
