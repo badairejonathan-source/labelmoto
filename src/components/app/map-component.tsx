@@ -1,9 +1,9 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import '@/app/map.css'; // Importation des styles personnalisés de la carte en Lazy Loading
 import React, { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
