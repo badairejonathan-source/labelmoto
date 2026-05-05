@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/app/header';
-import { FileText, CheckCircle, ArrowRight } from 'lucide-react';
+import { FileText, CheckCircle, ArrowRight, Zap } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
@@ -21,32 +21,48 @@ export default function LandingPage() {
     const firestore = useFirestore();
     const articlesQuery = useMemoFirebase(() => {
         if (!firestore) return null;
-        // On récupère un peu plus que 3 pour pouvoir filtrer et trier
         return query(collection(firestore, 'articles'), limit(20));
     }, [firestore]);
     const { data: featuredArticles, isLoading: isArticlesLoading } = useCollection(articlesQuery);
 
-    const displayArticles = React.useMemo(() => {
+    // Fonction de tri commune
+    const sortArticlesByDate = (a: any, b: any) => {
+        const getTime = (doc: any) => {
+            const val = doc.publishedAt || doc.date || doc.submittedAt || doc.updatedAt;
+            if (!val) return 0;
+            if (typeof val.toMillis === 'function') return val.toMillis();
+            if (typeof val === 'object' && val.seconds !== undefined) return val.seconds * 1000;
+            const d = new Date(val);
+            return isNaN(d.getTime()) ? 0 : d.getTime();
+        };
+        return getTime(b) - getTime(a);
+    };
+
+    // Articles d'actualité / événements
+    const newsArticles = React.useMemo(() => {
         if (!featuredArticles) return [];
-        // Filtrage pour exclure les articles liés aux associations et le guide d'entretien principal
-        // ET Tri par date décroissante
         return [...featuredArticles]
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
-                return !id.includes('association') && !title.includes('association') && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
+                // On cible les événements et le sport
+                return (id.includes('motogp') || id.includes('gp-france') || id.includes('event')) && !id.includes('association');
             })
-            .sort((a, b) => {
-                const getTime = (doc: any) => {
-                    const val = doc.publishedAt || doc.date || doc.submittedAt || doc.updatedAt;
-                    if (!val) return 0;
-                    if (typeof val.toMillis === 'function') return val.toMillis();
-                    if (typeof val === 'object' && val.seconds !== undefined) return val.seconds * 1000;
-                    const d = new Date(val);
-                    return isNaN(d.getTime()) ? 0 : d.getTime();
-                };
-                return getTime(b) - getTime(a);
+            .sort(sortArticlesByDate)
+            .slice(0, 2);
+    }, [featuredArticles]);
+
+    // Articles pour le filtre A2 (sans les news)
+    const a2Articles = React.useMemo(() => {
+        if (!featuredArticles) return [];
+        return [...featuredArticles]
+            .filter(a => {
+                const id = a.id.toLowerCase();
+                const title = (a.display_title || a.title || "").toLowerCase();
+                const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event');
+                return !id.includes('association') && !title.includes('association') && id !== 'entretien-moto-intervalles-prix-conseils-par-modele' && !isNews;
             })
+            .sort(sortArticlesByDate)
             .slice(0, 3);
     }, [featuredArticles]);
 
@@ -72,7 +88,7 @@ export default function LandingPage() {
         if (id.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
-        if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+        if (id.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
         
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         
@@ -89,6 +105,7 @@ export default function LandingPage() {
             />
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
+                {/* Hero Section */}
                 <div className="relative mb-24 md:mb-48">
                     <div className="absolute inset-0 rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl">
                          <Image 
@@ -140,7 +157,39 @@ export default function LandingPage() {
                         </ul>
                     </div>
                 </section>
+
+                {/* NOUVELLE SECTION ACTU */}
+                {newsArticles.length > 0 && (
+                    <section className="mt-16 md:mt-24">
+                        <div className="flex items-center gap-3 mb-8 px-4">
+                            <div className="bg-brand/10 p-2 rounded-lg">
+                                <Zap className="h-6 w-6 text-brand" />
+                            </div>
+                            <h2 className="text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter leading-none">ACTU</h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {newsArticles.map((article) => (
+                                <Link key={article.id} href={`/info/${article.id}`} className="group relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden shadow-xl border-2 border-brand/10 bg-black">
+                                    <Image 
+                                        src={getArticleImage(article)} 
+                                        alt={article.display_title || article.title} 
+                                        fill 
+                                        className="object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full">
+                                        <span className="inline-block bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-3">À LA UNE</span>
+                                        <h3 className="text-xl md:text-3xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand transition-colors">
+                                            {article.display_title || article.title}
+                                        </h3>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                )}
                 
+                {/* SECTION A2 NETTOYÉE */}
                 <section className="mt-16 md:mt-24">
                     <div className="bg-muted/50 rounded-[2.5rem] p-8 border-2 border-brand shadow-xl relative overflow-hidden">
                         <div className="text-center mb-10"><h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter leading-none">Objectif A2 : Roulez bien accompagnés.</h2><p className="text-base text-muted-foreground max-w-3xl mx-auto font-medium">De l’achat de votre première bécane au choix du bon garage, nos dossiers spéciaux vous aident à éviter les pièges.</p></div>
@@ -160,7 +209,7 @@ export default function LandingPage() {
                                     </div>
                                 ))
                             ) : (
-                                displayArticles?.map((article, idx) => (
+                                a2Articles?.map((article, idx) => (
                                     <Link key={article.id} href={`/info/${article.id}`} className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1">
                                         <div className="relative aspect-video overflow-hidden bg-muted">
                                             <Image 
