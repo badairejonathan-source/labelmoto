@@ -11,6 +11,7 @@ const inter = Inter({
   subsets: ["latin"], 
   variable: "--font-sans",
   display: 'swap',
+  adjustFontFallback: true,
 });
 
 // Métadonnées globales du site
@@ -30,11 +31,11 @@ export const metadata: Metadata = {
   publisher: "Label Moto",
   icons: {
     icon: [
-      { url: '/images/favicon.ico' }, // Chemin corrigé d'après votre capture
+      { url: '/images/favicon.ico' },
       { url: '/images/favicon.webp', type: 'image/webp' },
     ],
     apple: [
-      { url: '/images/logo-moto.webp' }, // Utilisation du logo comme icône Apple par défaut
+      { url: '/images/favicon.webp' }, // Utilisation d'une version légère pour l'icône Apple plutôt que la bannière complète
     ],
   },
   openGraph: {
