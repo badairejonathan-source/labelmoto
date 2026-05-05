@@ -105,20 +105,23 @@ export default function LandingPage() {
             />
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* Hero Section */}
-                <div className="relative mb-24 md:mb-48">
-                    <div className="absolute inset-0 rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl">
+                {/* Hero Section - Optimized for LCP and CLS */}
+                <div className="relative mb-24 md:mb-48 overflow-visible">
+                    {/* Background Container: Strictly reserved space */}
+                    <div className="absolute inset-0 rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl z-0">
                          <Image 
                             src="/images/motardnuitlandinfpage1.webp" 
                             alt="Label Moto Hero" 
                             fill 
-                            className="object-cover z-0 opacity-40" 
+                            className="object-cover opacity-40" 
                             priority 
-                            sizes="(max-width: 1280px) 100vw, 1280px"
+                            fetchPriority="high"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 1200px, 1280px"
                         />
                     </div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8 text-white p-6 md:p-12 pt-16 md:pt-20 min-h-[250px] md:min-h-[450px]">
+                    {/* Content: Stable min-height to prevent jumping */}
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8 text-white p-6 md:p-12 pt-16 md:pt-20 min-h-[320px] md:min-h-[480px]">
                         <div className="md:w-1/2 text-center md:text-left relative z-20">
                             <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 uppercase leading-[1.1]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
                                 Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics
@@ -128,10 +131,17 @@ export default function LandingPage() {
                             </p>
                         </div>
                          <div className="w-full md:w-1/2 flex justify-center md:justify-end relative z-10">
+                             {/* Map Preview: transform used to avoid pushing parent container height (CLS) */}
                              <div className="relative transform translate-y-12 md:translate-y-20 md:translate-x-12 lg:translate-x-16 group">
                                 <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
                                     <div className="relative w-44 h-44 md:w-[330px] md:h-[330px]">
-                                        <Image src={hero.mapPreview.src} alt="Aperçu de la carte" fill className="rounded-2xl border-4 border-white shadow-2xl object-cover" sizes="(max-width: 768px) 176px, 330px" priority />
+                                        <Image 
+                                            src={hero.mapPreview.src} 
+                                            alt="Aperçu de la carte" 
+                                            fill 
+                                            className="rounded-2xl border-4 border-white shadow-2xl object-cover" 
+                                            sizes="(max-width: 768px) 176px, 330px" 
+                                        />
                                     </div>
                                 </Link>
                                 <div className="absolute -left-6 md:-left-24 top-1/2 -translate-y-1/2 z-50">
@@ -257,7 +267,7 @@ export default function LandingPage() {
                         <Image src="/images/motardcotesudlandingpage1.webp" alt="Ne perdez plus votre temps" fill className="object-cover z-0 opacity-30" sizes="(max-width: 1280px) 100vw, 1280px" />
                         <div className="relative z-10 p-10 md:p-16 w-full">
                             <div className="max-w-4xl mx-auto text-center text-white">
-                                <h2 className="text-3xl md:text-5xl font-black mb-8 uppercase tracking-tighter leading-none" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>🚦 Ne perdez plus votre temps dans les recherches.</h2>
+                                <h2 className="text-3xl md:text-5 font-black mb-8 uppercase tracking-tighter leading-none" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>🚦 Ne perdez plus votre temps dans les recherches.</h2>
                                 <div className="space-y-6 text-base md:text-lg text-gray-200 font-medium leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
                                     <p>Parce que chaque minute passée à chercher un garage est une minute de moins à pencher dans les virages, nous avons créé LABEL MOTO. Notre mission : rendre votre vie de motard plus fluide, plus connectée et surtout, plus fiable.</p>
                                     <p>Trouvez en un clic votre future bécane, réservez un essai en concession, ou dénichez le préparateur qui saura sublimer votre machine. Que ce soit pour un entretien de routine ou l’équipement de votre vie, accédez uniquement à des professionnels sélectionnés.</p>
