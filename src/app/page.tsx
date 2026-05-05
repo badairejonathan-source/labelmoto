@@ -11,6 +11,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { useRouter } from 'next/navigation';
 import { collection, query, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 export default function LandingPage() {
     const router = useRouter();
@@ -38,18 +39,18 @@ export default function LandingPage() {
         return getTime(b) - getTime(a);
     };
 
-    // Articles d'actualité / événements
+    // Articles d'actualité / événements + Associations récentes
     const newsArticles = React.useMemo(() => {
         if (!featuredArticles) return [];
         return [...featuredArticles]
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
-                // On cible les événements et le sport
-                return (id.includes('motogp') || id.includes('gp-france') || id.includes('event')) && !id.includes('association');
+                // On cible les événements, le sport et les associations
+                return (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association'));
             })
             .sort(sortArticlesByDate)
-            .slice(0, 2);
+            .slice(0, 3);
     }, [featuredArticles]);
 
     // Articles pour le filtre A2 (sans les news)
@@ -59,8 +60,8 @@ export default function LandingPage() {
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
-                const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event');
-                return !id.includes('association') && !title.includes('association') && id !== 'entretien-moto-intervalles-prix-conseils-par-modele' && !isNews;
+                const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association');
+                return !isNews && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
             })
             .sort(sortArticlesByDate)
             .slice(0, 3);
@@ -168,7 +169,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* NOUVELLE SECTION ACTU */}
+                {/* SECTION ACTU - Mise à jour avec les associations */}
                 {newsArticles.length > 0 && (
                     <section className="mt-16 md:mt-24">
                         <div className="flex items-center gap-3 mb-8 px-4">
@@ -177,29 +178,45 @@ export default function LandingPage() {
                             </div>
                             <h2 className="text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter leading-none">ACTU</h2>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {newsArticles.map((article) => (
-                                <Link key={article.id} href={`/info/${article.id}`} className="group relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden shadow-xl border-2 border-brand/10 bg-black">
-                                    <Image 
-                                        src={getArticleImage(article)} 
-                                        alt={article.display_title || article.title} 
-                                        fill 
-                                        className="object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                                    <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full">
-                                        <span className="inline-block bg-brand text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-3">À LA UNE</span>
-                                        <h3 className="text-xl md:text-3xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand transition-colors">
-                                            {article.display_title || article.title}
-                                        </h3>
-                                    </div>
-                                </Link>
-                            ))}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {newsArticles.map((article, idx) => {
+                                const isAsso = article.id.toLowerCase().includes('association');
+                                return (
+                                    <Link 
+                                        key={article.id} 
+                                        href={`/info/${article.id}`} 
+                                        className={cn(
+                                            "group relative aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-xl border-2 bg-black transition-all duration-500 hover:shadow-brand/20",
+                                            isAsso ? "border-indigo-600/30 md:col-span-2 lg:col-span-1" : "border-brand/10",
+                                            idx === 0 && newsArticles.length === 1 ? "md:col-span-2 lg:col-span-3 aspect-[21/9]" : ""
+                                        )}
+                                    >
+                                        <Image 
+                                            src={getArticleImage(article)} 
+                                            alt={article.display_title || article.title} 
+                                            fill 
+                                            className="object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                                        <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full">
+                                            <span className={cn(
+                                                "inline-block px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-3 shadow-lg",
+                                                isAsso ? "bg-indigo-600 text-white animate-pulse" : "bg-brand text-white"
+                                            )}>
+                                                {isAsso ? 'COMMUNAUTÉ' : 'À LA UNE'}
+                                            </span>
+                                            <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand transition-colors">
+                                                {article.display_title || article.title}
+                                            </h3>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </section>
                 )}
                 
-                {/* SECTION A2 NETTOYÉE */}
+                {/* SECTION A2 */}
                 <section className="mt-16 md:mt-24">
                     <div className="bg-muted/50 rounded-[2.5rem] p-8 border-2 border-brand shadow-xl relative overflow-hidden">
                         <div className="text-center mb-10"><h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter leading-none">Objectif A2 : Roulez bien accompagnés.</h2><p className="text-base text-muted-foreground max-w-3xl mx-auto font-medium">De l’achat de votre première bécane au choix du bon garage, nos dossiers spéciaux vous aident à éviter les pièges.</p></div>
