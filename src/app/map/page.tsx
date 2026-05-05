@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -12,7 +11,7 @@ import { Compass, Loader2, Star, ChevronUp, ChevronDown, Sparkles, FileText, Map
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import type { LatLngBounds } from 'leaflet';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -20,10 +19,10 @@ import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
+import { toast } from '@/hooks/use-toast';
 
 const brandsList = Object.keys(brandLogos);
 
-// Établissement spécial pour le Circuit Bugatti
 const CIRCUIT_BUGATTI: Dealership = {
   id: 'circuit-bugatti-le-mans',
   placeUrl: 'https://maps.app.goo.gl/nuDwNWpyQLEp7boF8',
@@ -173,39 +172,44 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
+  // OPTIMISATION: Passage de onSnapshot à getDocs pour économiser le quota
   useEffect(() => {
     if (!firestore || !mounted) return;
     setIsLoading(true);
     
-    // Listen to both collections
-    const collectionsList = ['concessions', 'associations'];
-    const unsubscribers: (() => void)[] = [];
-    const resultsMap: Record<string, Dealership[]> = {};
+    const fetchData = async () => {
+      try {
+        const collectionsList = ['concessions', 'associations'];
+        const resultsMap: Record<string, Dealership[]> = {};
 
-    collectionsList.forEach(colName => {
-      const colRef = collection(firestore, colName);
-      const unsub = onSnapshot(colRef, (snapshot) => {
-        resultsMap[colName] = snapshot.docs.map(doc => ({
-          id: doc.id,
-          firestoreCollection: colName,
-          ...doc.data(),
-          latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
-          longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
-        } as Dealership));
+        for (const colName of collectionsList) {
+          const snapshot = await getDocs(collection(firestore, colName));
+          resultsMap[colName] = snapshot.docs.map(doc => ({
+            id: doc.id,
+            firestoreCollection: colName,
+            ...doc.data(),
+            latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
+            longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+          } as Dealership));
+        }
 
-        // Merge all results + hardcoded specials
         const merged = [CIRCUIT_BUGATTI, ...Object.values(resultsMap).flat()];
         setAllDealerships(merged);
+      } catch (err: any) {
+        console.error("Erreur lors de la récupération des points:", err);
+        if (err.code === 'resource-exhausted') {
+          toast({
+            variant: "destructive",
+            title: "Quota Firestore dépassé",
+            description: "La plateforme a atteint sa limite quotidienne gratuite. Les données seront de nouveau disponibles demain.",
+          });
+        }
+      } finally {
         setIsLoading(false);
-      }, () => {
-        resultsMap[colName] = [];
-        const merged = [CIRCUIT_BUGATTI, ...Object.values(resultsMap).flat()];
-        setAllDealerships(merged);
-      });
-      unsubscribers.push(unsub);
-    });
+      }
+    };
 
-    return () => unsubscribers.forEach(unsub => unsub());
+    fetchData();
   }, [firestore, mounted]);
 
   useEffect(() => {
@@ -213,20 +217,16 @@ function MapPageComponent() {
         let results = [...allDealerships];
         let term = submittedSearchTerm.trim().toLowerCase();
 
-        // --- DETECTION INTENTION ASSOCIATION ---
         const assoKeywords = ["association", "associations", "asso"];
         const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
         
         if (foundAssoKeyword) {
-            // On active le filtre si ce n'est pas déjà fait
             if (activeFilter !== 'association') {
                 setActiveFilter('association');
             }
-            // On nettoie le terme pour la suite du traitement géographique
             term = term.replace(foundAssoKeyword, '').trim();
         }
 
-        // On utilise le filtre actif (qui a pu être mis à jour par l'intention ci-dessus)
         const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
         
         if (currentFilter) { 
