@@ -6,12 +6,31 @@ import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/app/header';
-import { Loader2, Map, FileText, ChevronRight, Home } from 'lucide-react';
+import { Loader2, Map, FileText, ChevronRight, Home, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+
+const CATEGORIES = [
+    { id: 'ALL', label: 'TOUT' },
+    { id: 'A2', label: 'PERMIS A2' },
+    { id: 'EVENT', label: 'ÉVÉNEMENTS' },
+    { id: 'BUDGET', label: 'ACHAT & BUDGET' },
+    { id: 'TIPS', label: 'CONSEILS' }
+];
+
+const getArticleCategory = (article: any) => {
+    const id = (article.id || '').toLowerCase();
+    const title = (article.display_title || article.title || "").toLowerCase();
+    
+    if (id.includes('a2')) return 'A2';
+    if (id.includes('motogp') || id.includes('gp-france') || id.includes('event')) return 'EVENT';
+    if (id.includes('budget') || id.includes('assurance') || id.includes('occasion') || id.includes('prix')) return 'BUDGET';
+    return 'TIPS';
+};
 
 const ArticleCard = ({ article, priority = false }: { article: any, priority?: boolean }) => {
     const imageUrl = React.useMemo(() => {
@@ -65,6 +84,8 @@ function InfoPageComponent() {
     const router = useRouter();
     const searchParam = searchParams.get('search');
     const [searchTerm, setSearchTerm] = useState(searchParam || '');
+    const [activeCategory, setActiveCategory] = useState('ALL');
+    
     const firestore = useFirestore();
     const articlesRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
     const { data: allArticles, isLoading } = useCollection(articlesRef);
@@ -80,7 +101,11 @@ function InfoPageComponent() {
         const EXCLUDED_ARTICLE_ID = 'entretien-moto-intervalles-prix-conseils-par-modele';
         
         return [...allArticles]
-            .filter(a => a.id !== EXCLUDED_ARTICLE_ID)
+            .filter(a => {
+                if (a.id === EXCLUDED_ARTICLE_ID) return false;
+                if (activeCategory === 'ALL') return true;
+                return getArticleCategory(a) === activeCategory;
+            })
             .sort((a, b) => {
                 const getTime = (doc: any) => {
                     const val = doc.publishedAt || doc.date || doc.submittedAt || doc.updatedAt;
@@ -90,10 +115,9 @@ function InfoPageComponent() {
                     const d = new Date(val);
                     return isNaN(d.getTime()) ? 0 : d.getTime();
                 };
-                // Tri décroissant (plus récent en premier)
                 return getTime(b) - getTime(a);
             });
-    }, [allArticles]);
+    }, [allArticles, activeCategory]);
 
     return (
         <div className="bg-background min-h-screen relative">
@@ -112,7 +136,31 @@ function InfoPageComponent() {
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
                 <div className="max-w-6xl mx-auto">
                     <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-20 md:pt-28"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
-                    <div className="text-center mb-12"><h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">Conseils pratiques</h1><div className="mt-4 w-20 h-1.5 bg-brand mx-auto rounded-full" /></div>
+                    
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">Conseils pratiques</h1>
+                        <div className="mt-4 w-20 h-1.5 bg-brand mx-auto rounded-full" />
+                    </div>
+
+                    {/* FILTRES CATEGORIES */}
+                    <div className="flex flex-wrap justify-center gap-3 mb-12">
+                        {CATEGORIES.map((cat) => (
+                            <Button
+                                key={cat.id}
+                                variant={activeCategory === cat.id ? 'default' : 'outline'}
+                                onClick={() => setActiveCategory(cat.id)}
+                                className={cn(
+                                    "rounded-full font-black uppercase text-[10px] tracking-widest h-10 px-6 transition-all shadow-md",
+                                    activeCategory === cat.id 
+                                        ? "bg-brand text-white border-brand scale-105" 
+                                        : "bg-white text-muted-foreground hover:border-brand/50 hover:text-brand"
+                                )}
+                            >
+                                {cat.label}
+                            </Button>
+                        ))}
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
                         <div className="md:col-span-8">
                             {isLoading ? (
@@ -138,7 +186,8 @@ function InfoPageComponent() {
                                     ))}
                                     {filteredArticles.length === 0 && (
                                         <div className="text-center text-muted-foreground py-20 border-2 border-dashed rounded-3xl bg-muted/10">
-                                            <p className="text-lg font-black uppercase tracking-tighter">Aucun article trouvé.</p>
+                                            <p className="text-lg font-black uppercase tracking-tighter">Aucun article dans cette catégorie.</p>
+                                            <Button variant="ghost" onClick={() => setActiveCategory('ALL')} className="mt-4 font-black uppercase text-xs tracking-widest text-brand">Voir tous les articles</Button>
                                         </div>
                                     )}
                                 </>
@@ -162,6 +211,15 @@ function InfoPageComponent() {
                                         </Button>
                                     </CardFooter>
                                 </Card>
+
+                                <div className="bg-muted/30 p-8 rounded-[2.5rem] border-2 border-dashed border-muted-foreground/10 text-center">
+                                    <Sparkles className="h-8 w-8 text-brand mx-auto mb-4 opacity-50" />
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-foreground mb-2">Entretien & Fiches</h3>
+                                    <p className="text-[10px] font-bold text-muted-foreground leading-relaxed mb-6">Accédez aux périodicités et budgets de révision par modèle.</p>
+                                    <Button asChild variant="outline" className="w-full rounded-full border-brand text-brand hover:bg-brand/10 font-black uppercase text-[9px] tracking-widest">
+                                        <Link href="/entretien">Consulter le catalogue</Link>
+                                    </Button>
+                                </div>
                             </div>
                         </aside>
                     </div>
