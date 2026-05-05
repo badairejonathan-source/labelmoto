@@ -8,11 +8,30 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/app/header';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import { useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Squelette de chargement structuré pour éviter le CLS lors de l'import dynamique
+const HomepageSkeleton = () => (
+    <div className="space-y-24 mt-16 md:mt-32">
+        {/* Section Pourquoi choisir */}
+        <div className="bg-muted/10 rounded-[2.5rem] h-[300px] animate-pulse" />
+        {/* Section Actu */}
+        <div className="space-y-8">
+            <Skeleton className="h-10 w-48 rounded-lg ml-4" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <Skeleton className="aspect-video rounded-[2.5rem]" />
+                <Skeleton className="aspect-video rounded-[2.5rem]" />
+                <Skeleton className="aspect-video rounded-[2.5rem]" />
+            </div>
+        </div>
+        {/* Section A2 */}
+        <div className="bg-muted/10 rounded-[2.5rem] h-[500px] animate-pulse" />
+    </div>
+);
 
 // Chargement dynamique des sections sous la ligne de flottaison
-// ssr: true permet de conserver le SEO tout en séparant le JS du bundle initial
 const HomepageDeferred = dynamic(() => import('@/components/app/homepage-deferred'), {
-    loading: () => <div className="min-h-screen animate-pulse bg-muted/10 rounded-[2.5rem] mt-16" />,
+    loading: () => <HomepageSkeleton />,
     ssr: true
 });
 
@@ -39,8 +58,8 @@ export default function LandingPage() {
             />
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
-                {/* Hero Section - Gardée dans le bundle principal car c'est le LCP */}
-                <div className="relative mb-24 md:mb-48 overflow-visible">
+                {/* Hero Section - Stable et prioritaire */}
+                <div className="relative mb-24 md:mb-48 overflow-visible min-h-[320px] md:min-h-[480px]">
                     <div className="absolute inset-0 rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl z-0">
                          <Image 
                             src="/images/motardnuitlandinfpage1.webp" 
@@ -53,7 +72,7 @@ export default function LandingPage() {
                         />
                     </div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8 text-white p-6 md:p-12 pt-16 md:pt-20 min-h-[320px] md:min-h-[480px]">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8 text-white p-6 md:p-12 pt-16 md:pt-20">
                         <div className="md:w-1/2 text-center md:text-left relative z-20">
                             <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 uppercase leading-[1.1]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
                                 Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics
@@ -87,7 +106,7 @@ export default function LandingPage() {
                     </div>
                 </div>
 
-                {/* Toutes les sections suivantes sont chargées dans un bundle séparé */}
+                {/* Sections chargées en différé avec skeleton structurel pour éliminer le CLS */}
                 <HomepageDeferred />
               </div>
             </main>

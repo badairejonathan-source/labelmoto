@@ -15,7 +15,6 @@ export default function HomepageDeferred() {
     const { user } = useUser();
     const firestore = useFirestore();
     
-    // Les requêtes Firestore sont maintenant isolées dans ce composant différé
     const articlesQuery = useMemoFirebase(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'articles'), limit(20));
@@ -78,9 +77,9 @@ export default function HomepageDeferred() {
     };
 
     return (
-        <>
-            <section className="mt-16 md:mt-32">
-                <div className="bg-muted/50 rounded-[2.5rem] p-6 md:p-8 border border-border/50 backdrop-blur-sm shadow-sm">
+        <div className="space-y-16 md:space-y-32">
+            <section>
+                <div className="bg-muted/50 rounded-[2.5rem] p-6 md:p-8 border border-border/50 backdrop-blur-sm shadow-sm min-h-[300px]">
                     <h2 className="text-2xl md:text-5xl font-black text-foreground mb-8 text-center uppercase tracking-tighter">Pourquoi choisir LABEL MOTO</h2>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
                         <li className="flex items-start gap-4"><CheckCircle className="h-6 w-6 text-brand shrink-0 mt-1" /><div><h3 className="font-black uppercase tracking-tight text-lg mb-1">Gain de temps</h3><p className="text-sm text-muted-foreground leading-relaxed">Recherche simplifiée, centralisez vos besoins. Localisation, type de moto, expertise spécifique.</p></div></li>
@@ -92,14 +91,14 @@ export default function HomepageDeferred() {
             </section>
 
             {newsArticles.length > 0 && (
-                <section className="mt-16 md:mt-24">
+                <section>
                     <div className="flex items-center gap-3 mb-8 px-4">
                         <div className="bg-brand/10 p-2 rounded-lg">
                             <Zap className="h-6 w-6 text-brand" />
                         </div>
                         <h2 className="text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter leading-none">ACTU</h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[250px]">
                         {newsArticles.map((article, idx) => {
                             const isAsso = article.id.toLowerCase().includes('association');
                             return (
@@ -108,8 +107,7 @@ export default function HomepageDeferred() {
                                     href={`/info/${article.id}`} 
                                     className={cn(
                                         "group relative aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-xl border-2 bg-black transition-all duration-500 hover:shadow-brand/20",
-                                        isAsso ? "border-indigo-600/30 md:col-span-2 lg:col-span-1" : "border-brand/10",
-                                        idx === 0 && newsArticles.length === 1 ? "md:col-span-2 lg:col-span-3 aspect-[21/9]" : ""
+                                        isAsso ? "border-indigo-600/30 md:col-span-2 lg:col-span-1" : "border-brand/10"
                                     )}
                                 >
                                     <Image 
@@ -138,26 +136,23 @@ export default function HomepageDeferred() {
                 </section>
             )}
             
-            <section className="mt-16 md:mt-24">
-                <div className="bg-muted/50 rounded-[2.5rem] p-8 border-2 border-brand shadow-xl relative overflow-hidden">
+            <section>
+                <div className="bg-muted/50 rounded-[2.5rem] p-8 border-2 border-brand shadow-xl relative overflow-hidden min-h-[600px]">
                     <div className="text-center mb-10"><h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter leading-none">Objectif A2 : Roulez bien accompagnés.</h2><p className="text-base text-muted-foreground max-w-3xl mx-auto font-medium">De l’achat de votre première bécane au choix du bon garage, nos dossiers spéciaux vous aident à éviter les pièges.</p></div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {isArticlesLoading ? (
                             Array.from({ length: 3 }).map((_, i) => (
-                                <div key={i} className="bg-card rounded-2xl overflow-hidden shadow-md border border-border/50 h-full flex flex-col">
+                                <div key={i} className="bg-card rounded-2xl overflow-hidden shadow-md border border-border/50 h-[380px] flex flex-col">
                                     <Skeleton className="aspect-video w-full" />
                                     <div className="p-6 space-y-4">
                                         <Skeleton className="h-3 w-24 rounded-full" />
                                         <Skeleton className="h-8 w-full rounded-md" />
-                                        <div className="space-y-2">
-                                          <Skeleton className="h-4 w-full" />
-                                          <Skeleton className="h-4 w-3/4" />
-                                        </div>
+                                        <Skeleton className="h-20 w-full rounded-md" />
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            a2Articles?.map((article, idx) => (
+                            a2Articles?.map((article) => (
                                 <Link key={article.id} href={`/info/${article.id}`} className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1">
                                     <div className="relative aspect-video overflow-hidden bg-muted">
                                         <Image 
@@ -197,9 +192,19 @@ export default function HomepageDeferred() {
                 </div>
             </section>
 
-            <section className="mt-16 md:mt-24"><div className="bg-muted/50 rounded-[2.5rem] p-10 text-center border border-border/50 backdrop-blur-sm shadow-sm"><h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter">Maîtrisez votre budget entretien.</h2><p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8 font-medium"><span className="font-black text-foreground">Anticipez vos dépenses en quelques clics.</span> Accédez au budget moyen et aux points de contrôle de votre modèle.</p><Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase tracking-widest text-xs px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95"><Link href="/entretien">Calculer mon budget entretien</Link></Button></div></section>
+            <section>
+                <div className="bg-muted/50 rounded-[2.5rem] p-10 text-center border border-border/50 backdrop-blur-sm shadow-sm min-h-[250px]">
+                    <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter">Maîtrisez votre budget entretien.</h2>
+                    <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8 font-medium">
+                        <span className="font-black text-foreground">Anticipez vos dépenses en quelques clics.</span> Accédez au budget moyen et aux points de contrôle de votre modèle.
+                    </p>
+                    <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase tracking-widest text-xs px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
+                        <Link href="/entretien">Calculer mon budget entretien</Link>
+                    </Button>
+                </div>
+            </section>
 
-            <section className="mt-16 md:mt-24">
+            <section>
                 <div className="relative rounded-[2.5rem] overflow-hidden bg-black shadow-2xl min-h-[300px] flex items-center">
                     <Image src="/images/motardcotesudlandingpage1.webp" alt="Ne perdez plus votre temps" fill className="object-cover z-0 opacity-30" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
                     <div className="relative z-10 p-10 md:p-16 w-full">
@@ -215,9 +220,9 @@ export default function HomepageDeferred() {
                 </div>
             </section>
 
-            <section className="mt-20 md:mt-32 pb-12">
-              <div className="bg-white rounded-[2.5rem] overflow-hidden border border-border/50 shadow-2xl relative group">
-                <div className="flex flex-col lg:flex-row min-h-[350px]">
+            <section className="pb-12">
+              <div className="bg-white rounded-[2.5rem] overflow-hidden border border-border/50 shadow-2xl relative group min-h-[350px]">
+                <div className="flex flex-col lg:flex-row h-full">
                   <div className="hidden lg:flex w-20 bg-muted/30 border-r border-border/50 items-center justify-center py-8 shrink-0"><span className="text-2xl font-black text-brand/10 tracking-[0.4em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>Espace Pro</span></div>
                   <div className="flex-grow flex flex-col lg:flex-row items-center p-8 md:p-12 gap-8 lg:gap-16">
                     <div className="flex-1 text-center lg:text-left"><h2 className="text-3xl md:text-5xl font-black text-foreground leading-[0.9] mb-6 uppercase tracking-tighter">Pros & Associations, rejoignez le réseau Label Moto.</h2><p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">Créez votre fiche, gagnez en visibilité auprès des motards de votre région.</p><div className="flex flex-col gap-4 items-center lg:items-start"><Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href={proRegisterLink}>🔘 Créer la fiche de mon établissement</Link></Button><Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto"><Link href="/map?mode=pro_edit">🔘 Modifier une fiche existante</Link></Button></div></div>
@@ -226,6 +231,6 @@ export default function HomepageDeferred() {
                 </div>
               </div>
             </section>
-        </>
+        </div>
     );
 }
