@@ -26,9 +26,10 @@ const getArticleCategory = (article: any) => {
     const id = (article.id || '').toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
     
-    if (id.includes('a2')) return 'A2';
+    // On considère que les guides d'occasion sont prioritaires pour le Permis A2
+    if (id.includes('a2') || id.includes('occasion')) return 'A2';
     if (id.includes('motogp') || id.includes('gp-france') || id.includes('event')) return 'EVENT';
-    if (id.includes('budget') || id.includes('assurance') || id.includes('occasion') || id.includes('prix')) return 'BUDGET';
+    if (id.includes('budget') || id.includes('assurance') || id.includes('prix')) return 'BUDGET';
     return 'TIPS';
 };
 
