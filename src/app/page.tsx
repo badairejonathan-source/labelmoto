@@ -21,15 +21,15 @@ export default function LandingPage() {
     const firestore = useFirestore();
     const articlesQuery = useMemoFirebase(() => {
         if (!firestore) return null;
-        // On récupère un peu plus que 3 pour pouvoir filtrer les associations
+        // On récupère un peu plus que 3 pour pouvoir filtrer et trier
         return query(collection(firestore, 'articles'), limit(20));
     }, [firestore]);
     const { data: featuredArticles, isLoading: isArticlesLoading } = useCollection(articlesQuery);
 
     const displayArticles = React.useMemo(() => {
         if (!featuredArticles) return [];
-        // Filtrage pour exclure les articles liés aux associations de la section "Objectif A2"
-        // ET Tri par date
+        // Filtrage pour exclure les articles liés aux associations et le guide d'entretien principal
+        // ET Tri par date décroissante
         return [...featuredArticles]
             .filter(a => {
                 const id = a.id.toLowerCase();
@@ -38,10 +38,10 @@ export default function LandingPage() {
             })
             .sort((a, b) => {
                 const getTime = (doc: any) => {
-                    const val = doc.publishedAt || doc.date || doc.submittedAt;
+                    const val = doc.publishedAt || doc.date || doc.submittedAt || doc.updatedAt;
                     if (!val) return 0;
                     if (typeof val.toMillis === 'function') return val.toMillis();
-                    if (val.seconds) return val.seconds * 1000;
+                    if (typeof val === 'object' && val.seconds !== undefined) return val.seconds * 1000;
                     const d = new Date(val);
                     return isNaN(d.getTime()) ? 0 : d.getTime();
                 };

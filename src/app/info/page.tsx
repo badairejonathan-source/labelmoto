@@ -83,13 +83,14 @@ function InfoPageComponent() {
             .filter(a => a.id !== EXCLUDED_ARTICLE_ID)
             .sort((a, b) => {
                 const getTime = (doc: any) => {
-                    const val = doc.publishedAt || doc.date || doc.submittedAt;
+                    const val = doc.publishedAt || doc.date || doc.submittedAt || doc.updatedAt;
                     if (!val) return 0;
                     if (typeof val.toMillis === 'function') return val.toMillis();
-                    if (val.seconds) return val.seconds * 1000;
+                    if (typeof val === 'object' && val.seconds !== undefined) return val.seconds * 1000;
                     const d = new Date(val);
                     return isNaN(d.getTime()) ? 0 : d.getTime();
                 };
+                // Tri décroissant (plus récent en premier)
                 return getTime(b) - getTime(a);
             });
     }, [allArticles]);
