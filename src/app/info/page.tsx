@@ -27,8 +27,19 @@ const getArticleCategories = (article: any) => {
     const title = (article.display_title || article.title || "").toLowerCase();
     const cats: string[] = [];
     
-    // PERMIS A2 : Tout ce qui touche aux débutants, à l'occasion, à l'assurance et au gabarit
-    if (id.includes('a2') || id.includes('occasion') || id.includes('assurance') || id.includes('taille') || title.includes('a2') || title.includes('taille') || title.includes('gabarit')) {
+    // PERMIS A2 : Tout ce qui touche aux débutants, à l'occasion, à l'assurance, au gabarit et au budget
+    if (
+        id.includes('a2') || 
+        id.includes('occasion') || 
+        id.includes('assurance') || 
+        id.includes('taille') || 
+        id.includes('budget') || 
+        title.includes('a2') || 
+        title.includes('taille') || 
+        title.includes('gabarit') ||
+        title.includes('débutant') ||
+        id.includes('combien-coute')
+    ) {
         cats.push('A2');
     }
     
