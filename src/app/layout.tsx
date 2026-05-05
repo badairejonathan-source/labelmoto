@@ -79,20 +79,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning className={inter.variable}>
-      <head>
-        <link 
-          rel="stylesheet" 
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
-        />
-        <link 
-          rel="stylesheet" 
-          href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" 
-        />
-        <link 
-          rel="stylesheet" 
-          href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" 
-        />
-      </head>
       <body className={cn("bg-background font-sans antialiased", inter.className)}>
         <FirebaseClientProvider>
           {children}
