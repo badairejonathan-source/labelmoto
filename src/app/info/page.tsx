@@ -22,15 +22,32 @@ const CATEGORIES = [
     { id: 'TIPS', label: 'CONSEILS' }
 ];
 
-const getArticleCategory = (article: any) => {
+const getArticleCategories = (article: any) => {
     const id = (article.id || '').toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
+    const cats: string[] = [];
     
-    // On considère que les guides d'occasion sont prioritaires pour le Permis A2
-    if (id.includes('a2') || id.includes('occasion')) return 'A2';
-    if (id.includes('motogp') || id.includes('gp-france') || id.includes('event')) return 'EVENT';
-    if (id.includes('budget') || id.includes('assurance') || id.includes('prix')) return 'BUDGET';
-    return 'TIPS';
+    // PERMIS A2 : Tout ce qui touche aux débutants, à l'occasion et à l'assurance
+    if (id.includes('a2') || id.includes('occasion') || id.includes('assurance') || title.includes('a2')) {
+        cats.push('A2');
+    }
+    
+    // ÉVÉNEMENTS : Sport, circuits, rassemblements
+    if (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('circuit')) {
+        cats.push('EVENT');
+    }
+    
+    // ACHAT & BUDGET : Tout ce qui touche au portefeuille
+    if (id.includes('budget') || id.includes('assurance') || id.includes('prix') || id.includes('occasion')) {
+        cats.push('BUDGET');
+    }
+    
+    // CONSEILS : Guides techniques, gabarit, réglementation (ZFE)
+    if (cats.length === 0 || id.includes('taille') || id.includes('zfe') || id.includes('hauteur')) {
+        cats.push('TIPS');
+    }
+    
+    return cats;
 };
 
 const ArticleCard = ({ article, priority = false }: { article: any, priority?: boolean }) => {
@@ -105,7 +122,7 @@ function InfoPageComponent() {
             .filter(a => {
                 if (a.id === EXCLUDED_ARTICLE_ID) return false;
                 if (activeCategory === 'ALL') return true;
-                return getArticleCategory(a) === activeCategory;
+                return getArticleCategories(a).includes(activeCategory);
             })
             .sort((a, b) => {
                 const getTime = (doc: any) => {
