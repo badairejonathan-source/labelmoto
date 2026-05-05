@@ -159,9 +159,6 @@ export default function HomepageDeferred() {
                                             )}>
                                                 {isAsso ? 'COMMUNAUTÉ' : 'À LA UNE'}
                                             </span>
-                                            <span className="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg bg-white/20 backdrop-blur-md text-white border border-white/30">
-                                                INFOS NEWS
-                                            </span>
                                         </div>
                                         <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand transition-colors">
                                             {article.display_title || article.title}
