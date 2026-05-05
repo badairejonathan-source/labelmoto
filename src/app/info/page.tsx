@@ -18,7 +18,6 @@ const CATEGORIES = [
     { id: 'ALL', label: 'TOUT' },
     { id: 'A2', label: 'PERMIS A2' },
     { id: 'EVENT', label: 'ÉVÉNEMENTS' },
-    { id: 'BUDGET', label: 'ACHAT & BUDGET' },
     { id: 'TIPS', label: 'CONSEILS' }
 ];
 
@@ -46,11 +45,6 @@ const getArticleCategories = (article: any) => {
     // ÉVÉNEMENTS : Sport, circuits, rassemblements
     if (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('circuit')) {
         cats.push('EVENT');
-    }
-    
-    // ACHAT & BUDGET : Tout ce qui touche au portefeuille
-    if (id.includes('budget') || id.includes('assurance') || id.includes('prix') || id.includes('occasion')) {
-        cats.push('BUDGET');
     }
     
     // CONSEILS : Guides techniques, gabarit, réglementation (ZFE), entretien
