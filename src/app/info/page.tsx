@@ -47,8 +47,17 @@ const getArticleCategories = (article: any) => {
         cats.push('EVENT');
     }
     
-    // CONSEILS : Guides techniques, gabarit, réglementation (ZFE), entretien
-    if (id.includes('taille') || id.includes('zfe') || id.includes('hauteur') || id.includes('entretien') || id.includes('revision')) {
+    // CONSEILS : Guides techniques, gabarit, réglementation (ZFE), entretien + guides d'achat/assurance par demande utilisateur
+    if (
+        id.includes('taille') || 
+        id.includes('zfe') || 
+        id.includes('hauteur') || 
+        id.includes('entretien') || 
+        id.includes('revision') ||
+        id.includes('assurance') || 
+        id.includes('occasion') || 
+        id.includes('combien-coute')
+    ) {
         cats.push('TIPS');
     }
 
