@@ -124,6 +124,7 @@ function MapPageComponent() {
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
+  const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Verrouillage de chargement pour éviter les requêtes concurrentes identiques
   const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
@@ -261,7 +262,7 @@ function MapPageComponent() {
     }
   }, [mounted, activeFilter, submittedSearchTerm, fetchPointsWithCache]);
 
-  // Recherche & Filtrage sécurisés par AbortController
+  // Recherche & Filtrage sécurisés par AbortController + Debounce
   useEffect(() => {
     const controller = new AbortController();
     
@@ -333,8 +334,15 @@ function MapPageComponent() {
         }
     };
     
-    processSearch();
-    return () => controller.abort();
+    // Debounce de la recherche (300ms) pour économiser les API Géo
+    const timer = setTimeout(() => {
+        processSearch();
+    }, 300);
+
+    return () => {
+        clearTimeout(timer);
+        controller.abort();
+    };
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
   const ZOOM_THRESHOLD = 8.5;
@@ -456,18 +464,26 @@ function MapPageComponent() {
   );
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
-    setMapBoundsStr(bounds.toBBoxString()); 
+    // On met à jour les états visuels immédiats
     setMapZoom(newZoom);
     setMapCenter(newCenter);
     setIsMapMoving(false);
 
-    // Ne mettre à jour l'ancre de tri que si le déplacement est significatif (> 1km au zoom 12)
-    const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
-    const threshold = newZoom > 12 ? 0.001 : 0.01;
+    // On debounce la mise à jour des bounds et de l'ancre de tri (300ms) 
+    // pour éviter de recalculer les filtres à chaque micro-mouvement.
+    if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
     
-    if (selectionSource === null && distSq > threshold) {
-      setSortingAnchor(newCenter);
-    }
+    mapUpdateTimerRef.current = setTimeout(() => {
+        setMapBoundsStr(bounds.toBBoxString()); 
+
+        // Ne mettre à jour l'ancre de tri que si le déplacement est significatif (> 1km au zoom 12)
+        const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
+        const threshold = newZoom > 12 ? 0.001 : 0.01;
+        
+        if (selectionSource === null && distSq > threshold) {
+          setSortingAnchor(newCenter);
+        }
+    }, 300);
   }, [selectionSource, sortingAnchor]);
 
   if (!mounted || width === undefined) return <div className="flex h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
