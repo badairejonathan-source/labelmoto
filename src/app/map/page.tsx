@@ -359,7 +359,7 @@ function MapPageComponent() {
     setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
-      setMapZoom(12); 
+      setMapZoom(prev => Math.max(prev, 12)); 
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
@@ -371,7 +371,7 @@ function MapPageComponent() {
     if (point) { 
       setMapCenter([point.latitude, point.longitude]); 
       setSortingAnchor([point.latitude, point.longitude]); 
-      setMapZoom(12); 
+      setMapZoom(prev => Math.max(prev, 12)); 
     } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile, allPoints]);
