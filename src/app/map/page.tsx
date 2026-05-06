@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -110,7 +111,6 @@ function MapPageComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
   
-  // Cache en mémoire pour les fiches complètes (évite les re-lectures Firestore sur la même session)
   const [detailCache, setDetailCache] = useState<Record<string, Dealership>>({});
   
   const { firestore } = useFirebase();
@@ -167,7 +167,6 @@ function MapPageComponent() {
   const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
     if (!firestore || loadedCollections.has(colName)) return;
 
-    // Tentative de récupération depuis sessionStorage pour économiser les quotas Firestore en dev/test
     const storageKey = `cache_points_${colName}`;
     try {
       const cached = sessionStorage.getItem(storageKey);
@@ -211,7 +210,6 @@ function MapPageComponent() {
         return next;
       });
 
-      // Sauvegarde dans sessionStorage
       try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
 
     } catch (err: any) {
@@ -315,6 +313,7 @@ function MapPageComponent() {
 
   const ZOOM_THRESHOLD = 8.5;
 
+  // Optimisation Expert : Préchargement spatial (Buffer de 20%)
   const pointsForMap = useMemo(() => {
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
         return allPoints;
@@ -323,7 +322,23 @@ function MapPageComponent() {
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
-        results = results.filter(d => d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLat); 
+        
+        // Calcul du buffer de préchargement (20% de marge autour du viewport)
+        const dLat = maxLat - minLat;
+        const dLng = maxLng - minLng;
+        const buffer = 0.20; 
+
+        const paddedMinLat = minLat - dLat * buffer;
+        const paddedMaxLat = maxLat + dLat * buffer;
+        const paddedMinLng = minLng - dLng * buffer;
+        const paddedMaxLng = maxLng + dLng * buffer;
+
+        results = results.filter(d => 
+            d.latitude >= paddedMinLat && 
+            d.latitude <= paddedMaxLat && 
+            d.longitude >= paddedMinLng && 
+            d.longitude <= paddedMaxLng
+        ); 
     }
     return results;
   }, [allPoints, filteredPoints, mapBoundsStr, mapZoom, submittedSearchTerm]);
@@ -357,7 +372,6 @@ function MapPageComponent() {
     setSelectionSource(null);
   }, [isMobile]);
 
-  // Fonction pour mettre en cache une fiche complète reçue des enfants
   const onDetailLoaded = useCallback((data: Dealership) => {
     if (!data.id) return;
     setDetailCache(prev => ({ ...prev, [data.id]: data }));
