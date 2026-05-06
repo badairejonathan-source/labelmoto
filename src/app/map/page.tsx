@@ -104,6 +104,7 @@ function MapPageComponent() {
   const [mapZoom, setMapZoom] = useState(6.2);
   const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.5, 2.2]);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
+  const [isMapMoving, setIsMapMoving] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
@@ -161,7 +162,6 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  // CHARGEMENT INITIAL (Points légers uniquement)
   useEffect(() => {
     if (!firestore || !mounted || loadedCollections.has('concessions')) return;
     
@@ -196,7 +196,6 @@ function MapPageComponent() {
     fetchInitialPoints();
   }, [firestore, mounted]);
 
-  // CHARGEMENT DIFFÉRÉ DES ASSOCIATIONS ET RELAIS (Points légers)
   useEffect(() => {
     if (!firestore || !mounted) return;
 
@@ -303,34 +302,29 @@ function MapPageComponent() {
     processSearch();
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
-  // LOGIQUE DE CHARGEMENT INTELLIGENT DES POINTS
-  // Seuil de zoom pour le basculement entre Clusters Globaux et Points Visibles
   const ZOOM_THRESHOLD = 8.5;
 
   const pointsForMap = useMemo(() => {
-    // Vue large : on envoie tout pour permettre le clustering Leaflet
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
         return allPoints;
     }
 
-    // Vue zoomée ou Recherche active : on ne charge que ce qui est visible
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
-        results = results.filter(d => d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng); 
+        results = results.filter(d => d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLat); 
     }
     return results;
   }, [allPoints, filteredPoints, mapBoundsStr, mapZoom, submittedSearchTerm]);
 
   const pointsToDisplay = useMemo(() => {
-    // Dans la liste latérale, on n'affiche rien si on est trop dézoomé sans recherche
+    if (isMapMoving) return [];
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return [];
     
-    // On prend les points visibles calculés pour la carte et on les trie/limite pour la liste
     let results = [...pointsForMap];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
     return results.slice(0, 50);
-  }, [pointsForMap, sortingAnchor, mapZoom, submittedSearchTerm]);
+  }, [pointsForMap, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
     setSelectedDealershipId(id); setSelectionSource('card'); 
@@ -364,7 +358,7 @@ function MapPageComponent() {
         </div>
       ) : (
         <>
-            {pointsToDisplay.length === 0 && submittedSearchTerm === '' && mapZoom < ZOOM_THRESHOLD && (
+            {(pointsToDisplay.length === 0 && !isMapMoving) && submittedSearchTerm === '' && mapZoom < ZOOM_THRESHOLD && (
                 <div className="space-y-4 pt-2">
                     <div className="bg-brand/5 border-2 border-brand/20 p-6 rounded-[2rem] shadow-sm mb-4">
                         <div className="flex items-center gap-2 mb-4"><Sparkles className="h-5 w-5 text-brand animate-pulse" /><h3 className="text-sm font-black uppercase tracking-widest text-foreground">Guides & Conseils</h3></div>
@@ -374,7 +368,14 @@ function MapPageComponent() {
                 </div>
             )}
 
-            {pointsToDisplay.map((point, index) => (
+            {isMapMoving && (
+              <div className="text-center py-20 animate-pulse">
+                <Loader2 className="h-10 w-10 mx-auto mb-4 text-brand animate-spin" />
+                <p className="font-black uppercase tracking-widest text-[9px] text-muted-foreground">Mise à jour de la zone...</p>
+              </div>
+            )}
+
+            {!isMapMoving && pointsToDisplay.map((point, index) => (
                 <React.Fragment key={point.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
                         <DealershipCard point={point} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} />
@@ -383,7 +384,7 @@ function MapPageComponent() {
                 </React.Fragment>
             ))}
 
-            {pointsToDisplay.length === 0 && (submittedSearchTerm !== '' || mapZoom >= ZOOM_THRESHOLD) && !isLoading && (
+            {pointsToDisplay.length === 0 && !isMapMoving && (submittedSearchTerm !== '' || mapZoom >= ZOOM_THRESHOLD) && !isLoading && (
                 <div className="text-center py-20 opacity-50"><MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" /><p className="font-black uppercase tracking-widest text-xs">Aucun établissement dans cette zone</p></div>
             )}
         </>
@@ -393,11 +394,17 @@ function MapPageComponent() {
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
     setMapBoundsStr(bounds.toBBoxString()); 
-    if (selectionSource === null) {
+    setMapZoom(newZoom);
+    setMapCenter(newCenter);
+    setIsMapMoving(false);
+
+    const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
+    const threshold = newZoom > 12 ? 0.001 : 0.01;
+    
+    if (selectionSource === null && distSq > threshold) {
       setSortingAnchor(newCenter);
-      setMapZoom(newZoom);
     }
-  }, [selectionSource]);
+  }, [selectionSource, sortingAnchor]);
 
   if (!mounted || width === undefined) return <div className="flex h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
@@ -416,7 +423,7 @@ function MapPageComponent() {
             onMarkerMouseOut={() => setHoveredDealershipId(null)} 
             onMapChange={handleMapChange} 
             onMapClick={handleUserMapInteraction} 
-            onUserInteraction={handleUserMapInteraction} 
+            onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} 
             bottomPadding={bottomPadding} 
             leftPadding={isMobile ? 0 : leftPadding} 
             isLocating={isLocating} 

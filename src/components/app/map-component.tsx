@@ -118,13 +118,15 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
+    map.on('movestart zoomstart', () => onUserInteraction?.());
+
     map.on('moveend zoomend', () => {
       if (!isUpdatingFromProps.current && map) {
         onMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
       }
     });
+
     map.on('click', onMapClick);
-    map.on('dragstart zoomstart', () => onUserInteraction?.());
 
     return () => {
       map.off();
@@ -164,8 +166,9 @@ const MapComponent = ({
     const map = mapRef.current;
     if (!map) return;
 
-    const centerChanged = center[0] !== lastTargetCenter.current[0] || center[1] !== lastTargetCenter.current[1];
-    const zoomChanged = zoom !== lastTargetZoom.current;
+    const centerChanged = Math.abs(center[0] - lastTargetCenter.current[0]) > 0.0001 || 
+                          Math.abs(center[1] - lastTargetCenter.current[1]) > 0.0001;
+    const zoomChanged = Math.abs(zoom - lastTargetZoom.current) > 0.01;
 
     if (centerChanged || zoomChanged) {
         isUpdatingFromProps.current = true;
