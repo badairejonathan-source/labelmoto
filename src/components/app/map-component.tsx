@@ -84,6 +84,7 @@ const MapComponent = ({
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const isUpdatingFromProps = useRef(false);
   
+  // Trackers pour éviter les "battements" de transitions concurrentes
   const lastTargetCenter = useRef<[number, number]>(center);
   const lastTargetZoom = useRef<number>(zoom);
 
@@ -121,6 +122,7 @@ const MapComponent = ({
     map.on('movestart zoomstart', () => onUserInteraction?.());
 
     map.on('moveend zoomend', () => {
+      // On ne renvoie le changement au parent que si ce n'est pas une mise à jour pilotée par les props
       if (!isUpdatingFromProps.current && map) {
         onMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
       }
@@ -135,6 +137,7 @@ const MapComponent = ({
     };
   }, []);
 
+  // Mise à jour des marqueurs (synchronisation des points)
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
@@ -162,6 +165,7 @@ const MapComponent = ({
     clusterGroup.addLayers(markers);
   }, [points, hoveredId, selectedId, zoom]);
 
+  // Synchronisation pilotée par les PROPS (depuis la barre de recherche ou la sélection)
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -180,13 +184,16 @@ const MapComponent = ({
             targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
         }
         
+        // flyTo est asynchrone et gère naturellement l'interruption par une nouvelle cible
         if (centerChanged) map.flyTo(targetCenter, zoom, { duration: 0.8 });
         else map.setZoom(zoom, { animate: true });
         
+        // On libère le verrou après la durée estimée de la transition
         setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     }
   }, [center, zoom, leftPadding, bottomPadding]);
 
+  // Géolocalisation sécurisée
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;

@@ -125,6 +125,7 @@ function MapPageComponent() {
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
+  // Verrouillage de chargement pour éviter les requêtes concurrentes identiques
   const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
   const [loadingCollections, setLoadingCollections] = useState<Set<string>>(new Set());
 
@@ -174,6 +175,7 @@ function MapPageComponent() {
   const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
     if (!firestore || loadedCollections.has(colName) || loadingCollections.has(colName)) return;
 
+    // Tentative de récupération depuis le cache de session
     const storageKey = `cache_points_${colName}`;
     try {
       const cached = sessionStorage.getItem(storageKey);
@@ -189,6 +191,7 @@ function MapPageComponent() {
       }
     } catch (e) { /* ignore cache error */ }
 
+    // Verrouillage de la requête
     setIsLoading(true);
     setLoadingCollections(prev => new Set(prev).add(colName));
     
@@ -215,6 +218,7 @@ function MapPageComponent() {
       
       setLoadedCollections(prev => new Set(prev).add(colName));
 
+      // Stockage en cache de session pour éviter les lectures Firestore au rafraîchissement
       try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
 
     } catch (err: any) {
@@ -257,6 +261,7 @@ function MapPageComponent() {
     }
   }, [mounted, activeFilter, submittedSearchTerm, fetchPointsWithCache]);
 
+  // Recherche & Filtrage sécurisés par AbortController
   useEffect(() => {
     const controller = new AbortController();
     
@@ -264,6 +269,7 @@ function MapPageComponent() {
         let results = [...allPoints];
         let term = submittedSearchTerm.trim().toLowerCase();
 
+        // Détection intelligente du mot-clé association
         const assoKeywords = ["association", "associations", "asso"];
         const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
         
@@ -302,6 +308,7 @@ function MapPageComponent() {
                 else otherTerms.push(word);
             }
 
+            // Ordre de priorité : Code Postal > Département > Nom de ville/établissement
             if (zipFilter) {
                 const coords = await getCityCoordinates(zipFilter, controller.signal);
                 if (controller.signal.aborted) return;
@@ -341,6 +348,7 @@ function MapPageComponent() {
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
         
+        // Extension de 20% autour de la zone visible pour la fluidité (buffer)
         const dLat = maxLat - minLat;
         const dLng = maxLng - minLng;
         const buffer = 0.20; 
@@ -453,6 +461,7 @@ function MapPageComponent() {
     setMapCenter(newCenter);
     setIsMapMoving(false);
 
+    // Ne mettre à jour l'ancre de tri que si le déplacement est significatif (> 1km au zoom 12)
     const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
     const threshold = newZoom > 12 ? 0.001 : 0.01;
     
