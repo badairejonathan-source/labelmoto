@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -29,7 +28,179 @@ interface MapComponentProps {
   onLocationFound?: (coords: [number, number]) => void;
 }
 
-// Fonction de création d'icône mémoisable et stable
+// Calcule un centre géographique qui place le point d'intérêt dans la zone visible
+// (en tenant compte de la barre latérale et des drawers mobiles)
+const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
+  const z = targetZoom ?? map.getZoom();
+  const centerPoint = map.project(latlng, z);
+  const targetPoint = L.point(centerPoint.x + offsetPixels[0], centerPoint.y + offsetPixels[1]);
+  return map.unproject(targetPoint, z);
+};
+
+const MapComponent = ({
+  points, center, zoom, hoveredId, selectedId,
+  onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
+  onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
+  onLocationFound = () => {},
+}: MapComponentProps) => {
+  
+  const mapRef = useRef<L.Map | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
+  const markerMapRef = useRef<Record<string, L.Marker>>({});
+  
+  // Flag critique pour éviter la dérive infinie
+  const isUpdatingFromProps = useRef(false);
+  const lastSetTarget = useRef<string>("");
+
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
+
+    const map = L.map(containerRef.current, {
+      minZoom: 5,
+      zoomSnap: 0.1,
+      fadeAnimation: true,
+      zoomControl: false,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap France',
+      maxZoom: 20
+    }).addTo(map);
+
+    // Position initiale
+    map.setView(center, zoom, { animate: false });
+
+    const clusterGroup = L.markerClusterGroup({
+      chunkedLoading: true,
+      maxClusterRadius: 50,
+      disableClusteringAtZoom: 13
+    });
+    
+    map.addLayer(clusterGroup);
+    clusterGroupRef.current = clusterGroup;
+    mapRef.current = map;
+
+    map.on('movestart zoomstart', () => {
+      // Si le mouvement ne vient pas du code, on prévient le parent
+      if (!isUpdatingFromProps.current) {
+        onUserInteraction?.();
+      }
+    });
+
+    map.on('moveend zoomend', () => {
+      if (map && !isUpdatingFromProps.current) {
+        onMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
+      }
+    });
+
+    map.on('click', onMapClick);
+
+    return () => {
+      map.off();
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  // Mise à jour des marqueurs
+  useEffect(() => {
+    const clusterGroup = clusterGroupRef.current;
+    if (!clusterGroup || !mapRef.current) return;
+
+    clusterGroup.clearLayers();
+    markerMapRef.current = {};
+
+    if (!points || points.length === 0) return;
+
+    const currentZoom = mapRef.current.getZoom();
+    const markers: L.Marker[] = points.map((point) => {
+      const isHovered = point.id === hoveredId;
+      const isSelected = point.id === selectedId;
+
+      const marker = L.marker([point.latitude, point.longitude], {
+        icon: createIcon(point, isHovered, isSelected, currentZoom)
+      });
+
+      marker.on('click', (e) => {
+        L.DomEvent.stopPropagation(e);
+        onMarkerClick(point.id);
+      });
+      marker.on('mouseover', () => onMarkerMouseOver(point.id));
+      marker.on('mouseout', onMarkerMouseOut);
+
+      markerMapRef.current[point.id] = marker;
+      return marker;
+    });
+
+    clusterGroup.addLayers(markers);
+  }, [points]); 
+
+  // Mise à jour visuelle des marqueurs (Hover/Selection)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !points) return;
+    const currentZoom = map.getZoom();
+
+    points.forEach(point => {
+      const marker = markerMapRef.current[point.id];
+      if (marker) {
+        const isHovered = point.id === hoveredId;
+        const isSelected = point.id === selectedId;
+        marker.setIcon(createIcon(point, isHovered, isSelected, currentZoom));
+        
+        if (isSelected || isHovered) marker.setZIndexOffset(1000);
+        else marker.setZIndexOffset(0);
+      }
+    });
+  }, [hoveredId, selectedId, zoom]); 
+
+  // Gestion du centre et du zoom pilotés par les props (Recherche, Clic Liste)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const targetKey = `${center[0]},${center[1]},${zoom},${leftPadding},${bottomPadding}`;
+    if (lastSetTarget.current === targetKey) return;
+
+    const currentCenter = map.getCenter();
+    const dist = Math.sqrt(Math.pow(currentCenter.lat - center[0], 2) + Math.pow(currentCenter.lng - center[1], 2));
+    const zoomDiff = Math.abs(map.getZoom() - zoom);
+
+    if (dist > 0.0001 || zoomDiff > 0.05) {
+      isUpdatingFromProps.current = true;
+      lastSetTarget.current = targetKey;
+
+      let finalCenter: L.LatLngExpression = center;
+      if (leftPadding > 0 || bottomPadding > 0) {
+        // Applique l'offset visuel pour ne pas être sous la sidebar
+        finalCenter = getOffsettedCenter(map, center, [-(leftPadding / 3), bottomPadding / 6], zoom);
+      }
+
+      map.flyTo(finalCenter, zoom, { duration: 0.8 });
+      
+      // On déverrouille après l'animation
+      setTimeout(() => {
+        isUpdatingFromProps.current = false;
+      }, 1000);
+    }
+  }, [center, zoom, leftPadding, bottomPadding]);
+
+  // Géolocalisation
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !isLocating) return;
+    map.once('locationfound', (e) => {
+      onLocationFound([e.latlng.lat, e.latlng.lng]);
+      onLocateEnd();
+    });
+    map.once('locationerror', () => onLocateEnd());
+    map.locate({ setView: true, maxZoom: 14 });
+  }, [isLocating]);
+
+  return <div ref={containerRef} className="w-full h-full min-h-0 bg-muted/10" />;
+};
+
 const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, currentZoom: number) => {
   const scale = isHovered || isSelected ? 1.2 : 1;
   const isAssociation = point.appSection === 'association';
@@ -64,166 +235,6 @@ const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, cu
     iconSize: [28, 36],
     iconAnchor: [14, 36]
   });
-};
-
-const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
-  const z = targetZoom ?? map.getZoom();
-  const centerPoint = map.project(latlng, z);
-  const targetPoint = L.point(centerPoint.x + offsetPixels[0], centerPoint.y + offsetPixels[1]);
-  return map.unproject(targetPoint, z);
-};
-
-const MapComponent = ({
-  points, center, zoom, hoveredId, selectedId,
-  onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
-  onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
-  onLocationFound = () => {},
-}: MapComponentProps) => {
-  
-  const mapRef = useRef<L.Map | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
-  const markerMapRef = useRef<Record<string, L.Marker>>({});
-  const isUpdatingFromProps = useRef(false);
-  
-  const lastTargetCenter = useRef<[number, number]>(center);
-  const lastTargetZoom = useRef<number>(zoom);
-
-  // INITIALISATION STABLE DE LA CARTE
-  useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
-
-    const map = L.map(containerRef.current, {
-      minZoom: 5,
-      zoomSnap: 0.1,
-      fadeAnimation: true,
-      zoomControl: false,
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap France',
-      maxZoom: 20
-    }).addTo(map);
-
-    let initialCenter: L.LatLngExpression = center;
-    if (leftPadding > 0 || bottomPadding > 0) {
-        initialCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
-    }
-    map.setView(initialCenter, zoom, { animate: false });
-
-    const clusterGroup = L.markerClusterGroup({
-      chunkedLoading: true,
-      maxClusterRadius: 50,
-      disableClusteringAtZoom: 13
-    });
-    
-    map.addLayer(clusterGroup);
-    clusterGroupRef.current = clusterGroup;
-    mapRef.current = map;
-
-    map.on('movestart zoomstart', () => onUserInteraction?.());
-    map.on('moveend zoomend', () => {
-      if (map) {
-        onMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
-      }
-    });
-    map.on('click', onMapClick);
-
-    return () => {
-      map.off();
-      map.remove();
-      mapRef.current = null;
-    };
-  }, []);
-
-  // MISE À JOUR DES MARQUEURS (Uniquement si points change)
-  useEffect(() => {
-    const clusterGroup = clusterGroupRef.current;
-    if (!clusterGroup || !mapRef.current) return;
-
-    clusterGroup.clearLayers();
-    markerMapRef.current = {};
-
-    if (!points || points.length === 0) return;
-
-    const currentZoom = mapRef.current.getZoom();
-    const markers: L.Marker[] = points.map((point) => {
-      const marker = L.marker([point.latitude, point.longitude], {
-        icon: createIcon(point, point.id === hoveredId, point.id === selectedId, currentZoom)
-      });
-
-      marker.on('click', (e) => {
-        L.DomEvent.stopPropagation(e);
-        onMarkerClick(point.id);
-      });
-      marker.on('mouseover', () => onMarkerMouseOver(point.id));
-      marker.on('mouseout', onMarkerMouseOut);
-
-      markerMapRef.current[point.id] = marker;
-      return marker;
-    });
-
-    clusterGroup.addLayers(markers);
-  }, [points]); 
-
-  // MISE À JOUR DU STYLE (Hover/Sélection) SANS RECRÉER LES CLUSTERS
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !points) return;
-    const currentZoom = map.getZoom();
-
-    points.forEach(point => {
-      const marker = markerMapRef.current[point.id];
-      if (marker) {
-        const isHovered = point.id === hoveredId;
-        const isSelected = point.id === selectedId;
-        const newIcon = createIcon(point, isHovered, isSelected, currentZoom);
-        
-        marker.setIcon(newIcon);
-        
-        if (isSelected || isHovered) marker.setZIndexOffset(1000);
-        else marker.setZIndexOffset(0);
-      }
-    });
-  }, [hoveredId, selectedId, zoom]); 
-
-  // NAVIGATION PILOTÉE PAR LES PROPS
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const centerChanged = Math.abs(center[0] - lastTargetCenter.current[0]) > 0.0001 || 
-                          Math.abs(center[1] - lastTargetCenter.current[1]) > 0.0001;
-    const zoomChanged = Math.abs(zoom - lastTargetZoom.current) > 0.01;
-
-    if (centerChanged || zoomChanged) {
-        isUpdatingFromProps.current = true;
-        lastTargetCenter.current = center;
-        lastTargetZoom.current = zoom;
-        let targetCenter: L.LatLngExpression = center;
-        if (leftPadding > 0 || bottomPadding > 0) {
-            targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
-        }
-        if (centerChanged) map.flyTo(targetCenter, zoom, { duration: 0.8 });
-        else map.setZoom(zoom, { animate: true });
-        
-        // On libère le flag après l'animation
-        setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
-    }
-  }, [center, zoom, leftPadding, bottomPadding]);
-
-  // GÉOLOCALISATION
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !isLocating) return;
-    map.once('locationfound', (e) => {
-      onLocationFound([e.latlng.lat, e.latlng.lng]);
-      onLocateEnd();
-    });
-    map.once('locationerror', () => onLocateEnd());
-    map.locate({ setView: true, maxZoom: 14 });
-  }, [isLocating]);
-
-  return <div ref={containerRef} className="w-full h-full min-h(0) bg-muted/10" />;
 };
 
 export default memo(MapComponent);
