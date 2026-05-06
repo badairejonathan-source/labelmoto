@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -192,7 +191,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
                 {dealership?.website ? (
                   <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0 animate-in slide-in-from-left-2 duration-400">
-                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : "bg-brand/10")}>
+                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10")}>
                       <Globe className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Web</span>
                     </div>
                   </a>
