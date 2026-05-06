@@ -4,7 +4,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Utensils } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Utensils, Loader2 } from 'lucide-react';
 import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface DealershipCardProps {
   point: MapPoint;
+  isSelected?: boolean;
   onClick?: () => void;
   className?: string;
 }
@@ -33,7 +34,7 @@ const categoryDisplay: { [key: string]: string } = {
   'relais': 'Relais Motard',
 };
 
-const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, className }) => {
+const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = false, onClick, className }) => {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
@@ -47,11 +48,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // CHARGEMENT À LA DEMANDE (Lazy Load de la fiche complète)
+  // OPTIMISATION CRITIQUE : La fiche complète n'est demandée à Firestore QUE SI la carte est sélectionnée
   const docRef = useMemoFirebase(() => {
+    if (!isSelected) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
     return doc(firestore, col, point.id);
-  }, [firestore, point.id, point.appSection]);
+  }, [firestore, point.id, point.appSection, isSelected]);
   
   const { data: dealership, isLoading } = useDoc<Dealership>(docRef);
 
@@ -66,6 +68,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
   const activeUserProfile = proProfile || stdProfile;
   const currentPseudo = activeUserProfile?.pseudo || activeUserProfile?.displayName || user?.displayName || user?.email?.split('@')[0] || 'Anonyme';
 
+  // Utilisation des données légères du point si dealership n'est pas encore chargé
   const ratingValue = dealership?.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[point.category] || point.category;
@@ -78,11 +81,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
     }
     return "";
   }, [dealership]);
-
-  const approvedComments = useCollection(useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'concessions', point.id, 'comments');
-  }, [firestore, point.id])).data;
 
   const handleRatingSubmit = () => {
     if (!user || !firestore) return;
@@ -105,19 +103,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
   };
 
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${point.latitude},${point.longitude}`;
-
-  if (isLoading) {
-    return (
-      <Card className={cn("p-4 flex gap-4 animate-pulse", className)}>
-        <Skeleton className="h-24 w-24 rounded-lg shrink-0" />
-        <div className="flex-1 space-y-3">
-          <Skeleton className="h-5 w-3/4" />
-          <Skeleton className="h-3 w-1/2" />
-          <Skeleton className="h-10 w-full rounded-full" />
-        </div>
-      </Card>
-    );
-  }
 
   return (
     <>
@@ -150,10 +135,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
       </Dialog>
 
       <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all group", className)}>
-        {!isAssociation && !isRelais && (
-          <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black">
+        {/* Rating badge : seulement si chargé et > 0 */}
+        {!isAssociation && !isRelais && rating > 0 && (
+          <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black animate-in fade-in duration-300">
             <div className="flex flex-col items-center leading-none">
-              <span className="text-xs md:text-sm">{rating > 0 ? rating.toFixed(1) : "—"}</span>
+              <span className="text-xs md:text-sm">{rating.toFixed(1)}</span>
               <Star className="h-2 w-2 fill-white" />
             </div>
           </div>
@@ -161,8 +147,14 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
 
         <div className="flex items-stretch min-h-[130px] md:min-h-[150px]">
           <div className="flex flex-1 flex-row items-stretch">
+            {/* Zone Image / Icône */}
             <div className={cn("relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 flex items-center justify-center", actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default")} onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}>
-              {actualImgUrl && !imgError ? (
+              {isLoading ? (
+                <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-brand/40" />
+                    <span className="text-[7px] font-black uppercase text-muted-foreground">Chargement...</span>
+                </div>
+              ) : actualImgUrl && !imgError ? (
                 <>
                   <Image src={actualImgUrl} alt={point.title} fill className="object-cover transition-transform group-hover:brightness-110 duration-700" onError={() => setImgError(true)} referrerPolicy="no-referrer" />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all"><ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" /></div>
@@ -174,34 +166,46 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
               )}
             </div>
 
+            {/* Zone Texte */}
             <div className="flex flex-col justify-center flex-1 p-3 md:p-5 cursor-pointer" onClick={onClick}>
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-black text-sm md:text-xl uppercase leading-tight truncate">{point.title}</h3>
               </div>
               <span className={cn("text-[9px] md:text-xs font-black uppercase tracking-widest mb-3", isAssociation ? "text-indigo-600" : (isRelais ? "text-amber-600" : "text-brand"))}>{categoryLabel}</span>
               
-              <div className="flex flex-nowrap items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar">
-                {dealership?.phoneNumber && (
-                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+              {/* Actions rapides : Téléphone et Web ne s'affichent que si chargés */}
+              <div className="flex flex-nowrap items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar min-h-[64px]">
+                {dealership?.phoneNumber ? (
+                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0 animate-in slide-in-from-left-2 duration-300">
                     <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
                       <Phone className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Appel</span>
                     </div>
                   </a>
-                )}
-                {dealership?.website && (
-                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+                ) : isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null}
+
+                {dealership?.website ? (
+                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0 animate-in slide-in-from-left-2 duration-400">
                     <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : "bg-brand/10")}>
                       <Globe className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Web</span>
                     </div>
                   </a>
-                )}
-                {!isAssociation && !isRelais && (
-                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
+                ) : isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null}
+
+                {isSelected && dealership && !isAssociation && !isRelais && (
+                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0 animate-in zoom-in duration-300", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
                     <Clock className="h-4 w-4" /><span className="text-[6px] font-black uppercase mt-1">Horaires</span>
                   </button>
                 )}
+                
+                {/* Message incitatif si non sélectionné */}
+                {!isSelected && (
+                    <div className="flex flex-col justify-center py-2 opacity-40">
+                        <span className="text-[7px] font-black uppercase tracking-widest text-muted-foreground">Cliquez pour les détails</span>
+                    </div>
+                )}
               </div>
               
+              {/* Adresse / Itinéraire */}
               <div className="mt-3 border-t border-dashed pt-2">
                 <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm", isAssociation ? "bg-indigo-600" : (isRelais ? "bg-amber-600" : "bg-brand"))} onClick={(e) => e.stopPropagation()}>
                   <MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{dealership?.address || "Calculer l'itinéraire"}</span>
@@ -210,9 +214,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, classNa
             </div>
           </div>
           
+          {/* Overlay Horaires */}
           {(showHours || showReviews) && (
-            <div className="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm border-r p-4 flex flex-col justify-center shadow-2xl">
-              <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); }} className="absolute top-2 right-2 p-1"><X className="h-5 w-5" /></button>
+            <div className="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm border-r p-4 flex flex-col justify-center shadow-2xl animate-in fade-in duration-200">
+              <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); }} className="absolute top-2 right-2 p-1 hover:bg-muted rounded-full transition-colors"><X className="h-5 w-5" /></button>
               {showHours && dealership && (
                 <div className="space-y-1 w-full max-w-xs mx-auto">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (

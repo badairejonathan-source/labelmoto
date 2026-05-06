@@ -4,7 +4,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import DealershipCard from '@/components/app/header'; // Note: Potential import issue in original, but keeping structure
 import DealershipCardItem from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { MapPoint } from '@/lib/types';
@@ -115,7 +114,6 @@ function MapPageComponent() {
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
-  // CACHE SYSTEM: Tracks which collections are already in memory to avoid redundant Firestore requests
   const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
@@ -161,14 +159,12 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  // Optimized fetch function using memory cache
   const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
     if (!firestore || loadedCollections.has(colName)) return;
 
     setIsLoading(true);
     try {
       const colRef = collection(firestore, colName);
-      // We load only lightweight fields for the map (points architecture)
       const snapshot = await getDocs(query(colRef, limit(4000)));
       const points: MapPoint[] = snapshot.docs.map(doc => {
         const data = doc.data();
@@ -183,7 +179,6 @@ function MapPageComponent() {
       }).filter(p => p.latitude !== 0 && !isNaN(p.latitude));
 
       setAllPoints(prev => {
-        // Double security: avoid duplicate IDs in cache
         const existingIds = new Set(prev.map(p => p.id));
         const uniqueNewPoints = points.filter(p => !existingIds.has(p.id));
         return [...prev, ...uniqueNewPoints];
@@ -203,14 +198,12 @@ function MapPageComponent() {
     }
   }, [firestore, loadedCollections]);
 
-  // Initial load: Concessions (Core data)
   useEffect(() => {
     if (mounted && !loadedCollections.has('concessions')) {
         fetchPointsWithCache('concessions', 'both');
     }
   }, [mounted, fetchPointsWithCache, loadedCollections]);
 
-  // Lazy load on filter or search: Associations & Relais
   useEffect(() => {
     if (!mounted) return;
 
@@ -225,7 +218,6 @@ function MapPageComponent() {
     }
   }, [mounted, activeFilter, submittedSearchTerm, fetchPointsWithCache]);
 
-  // MEMORY CACHE PROCESSING: Filter already loaded points locally
   useEffect(() => {
     const processSearch = async () => {
         let results = [...allPoints];
@@ -250,7 +242,6 @@ function MapPageComponent() {
                 return true;
             });
         } else {
-            // Default view: only concessions/shops/services
             results = results.filter(d => 
                 d.appSection === 'shopping' || 
                 d.appSection === 'service' || 
@@ -367,7 +358,12 @@ function MapPageComponent() {
             {!isMapMoving && pointsToDisplay.map((point, index) => (
                 <React.Fragment key={point.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
-                        <DealershipCardItem point={point} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} />
+                        <DealershipCardItem 
+                          point={point} 
+                          isSelected={point.id === selectedDealershipId}
+                          onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} 
+                          className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} 
+                        />
                     </div>
                     {(index + 1) % 4 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 4) % ads.length]} /></div>)}
                 </React.Fragment>
