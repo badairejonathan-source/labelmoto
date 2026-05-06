@@ -34,6 +34,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /relais/{relaisId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /motorcycle_sheets/{modelId} {
       allow read: if true;
       allow write: if isAdmin();
