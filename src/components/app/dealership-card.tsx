@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Mail, Info, ShieldCheck, ExternalLink } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Mail, Info, ShieldCheck, ExternalLink, Utensils } from 'lucide-react';
 import type { Dealership } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
@@ -31,6 +32,7 @@ const categoryDisplay: { [key: string]: string } = {
   'accessoiriste': 'Accessoiriste',
   'association': 'Association motarde',
   'Association motarde': 'Association motarde',
+  'relais': 'Relais Motard',
   'autre': 'Autre',
 };
 
@@ -53,6 +55,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
   const isAdmin = mounted && !!user && user.uid === ADMIN_UID;
   const isAssociation = dealership.appSection === 'association' || dealership.category === 'Association motarde';
+  const isRelais = dealership.appSection === 'relais';
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
@@ -64,7 +67,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
   const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
-  const categoryLabel = categoryDisplay[dealership.category || ''] || dealership.category;
+  const categoryLabel = categoryDisplay[dealership.category || ''] || (isRelais ? 'Relais Motard' : dealership.category);
 
   const actualImgUrl = useMemo(() => {
     const keys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 'coverUrl', 'image', 'photo', 'placeImageUrl', 'img'];
@@ -150,9 +153,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
     return (
       <a href={url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-        <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white")}>
-          <Icon className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")} />
-          <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")}>{buttonLabel}</span>
+        <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : (isRelais ? "bg-amber-50 group-hover/btn:bg-amber-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white"))}>
+          <Icon className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))} />
+          <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))}>{buttonLabel}</span>
         </div>
       </a>
     );
@@ -190,7 +193,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
       </Dialog>
 
       <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all group", className)}>
-        {!isAssociation && (
+        {!isAssociation && !isRelais && (
           <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black">
             <div className="flex flex-col items-center leading-none">
               <span className="text-xs md:text-sm">{rating > 0 ? rating.toFixed(1) : "—"}</span>
@@ -199,9 +202,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
           </div>
         )}
 
-        {isAssociation && (
-          <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-indigo-600 rounded-full text-white shadow-lg border-2 border-white">
-            <Users className="h-5 w-5" />
+        {(isAssociation || isRelais) && (
+          <div className={cn("absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 rounded-full text-white shadow-lg border-2 border-white", isAssociation ? "bg-indigo-600" : "bg-amber-600")}>
+            {isAssociation ? <Users className="h-5 w-5" /> : <Utensils className="h-5 w-5" />}
           </div>
         )}
         
@@ -215,7 +218,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2 opacity-20">
-                  {isAssociation ? <Users className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" /> : <Store className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />}
+                  {isAssociation ? <Users className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" /> : (isRelais ? <Utensils className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" /> : <Store className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />)}
                 </div>
               )}
             </div>
@@ -225,18 +228,23 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 <h3 className="font-black text-sm md:text-xl uppercase leading-tight truncate">{dealership.title}</h3>
               </div>
               <div className="flex items-center gap-3">
-                <span className={cn("text-[9px] md:text-xs font-black uppercase tracking-widest", isAssociation ? "text-indigo-600" : "text-brand")}>{categoryLabel}</span>
+                <span className={cn("text-[9px] md:text-xs font-black uppercase tracking-widest", isAssociation ? "text-indigo-600" : (isRelais ? "text-amber-600" : "text-brand"))}>{categoryLabel}</span>
                 {isAssociation && dealership.verificationStatus && (
                   <Badge variant="outline" className="text-[7px] h-4 border-indigo-200 text-indigo-700 bg-indigo-50 font-bold uppercase py-0">{dealership.verificationStatus}</Badge>
+                )}
+                {isRelais && dealership.rating && (
+                  <Badge variant="outline" className="text-[8px] h-4 border-amber-200 text-amber-700 bg-amber-50 font-bold uppercase py-0 flex items-center gap-0.5">
+                    <Star className="h-2 w-2 fill-amber-600" /> {dealership.rating}
+                  </Badge>
                 )}
               </div>
               
               <div className="flex flex-nowrap items-center gap-2 md:gap-4 mt-3 overflow-x-auto no-scrollbar">
-                {dealership.phoneNumber && (
-                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white")}>
-                      <Phone className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")} />
-                      <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white")}>Appel</span>
+                {(dealership.phoneNumber || dealership.pnoneNumber) && (
+                  <a href={`tel:${dealership.phoneNumber || dealership.pnoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : (isRelais ? "bg-amber-50 group-hover/btn:bg-amber-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white"))}>
+                      <Phone className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))} />
+                      <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))}>Appel</span>
                     </div>
                   </a>
                 )}
@@ -245,7 +253,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                 {renderLinkButton(dealership.facebookUrl, "FB")}
                 {renderLinkButton(dealership.instagramUrl, "Insta")}
 
-                {!isAssociation && (
+                {!isAssociation && !isRelais && (
                   <>
                     <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showHours ? "bg-brand border-white text-white scale-110" : "bg-brand/10 border-transparent text-brand hover:bg-brand/20")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}>
                       <Clock className="h-4 w-4 md:h-5 md:w-5" />
@@ -257,10 +265,17 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                     </button>
                   </>
                 )}
+                
+                {isRelais && (
+                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showHours ? "bg-amber-600 border-white text-white scale-110" : "bg-amber-50 border-transparent text-amber-600 hover:bg-amber-100")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
+                    <Clock className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Heures</span>
+                  </button>
+                )}
               </div>
               
               <div className="mt-3 border-t border-dashed pt-2">
-                <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm transition-all max-w-full", isAssociation ? "bg-indigo-600 hover:bg-indigo-700" : "bg-brand hover:bg-brand/90")} onClick={(e) => { e.stopPropagation(); }}>
+                <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm transition-all max-w-full", isAssociation ? "bg-indigo-600 hover:bg-indigo-700" : (isRelais ? "bg-amber-600 hover:bg-amber-700" : "bg-brand hover:bg-brand/90"))} onClick={(e) => { e.stopPropagation(); }}>
                   <MapPin className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
                   <div className="flex flex-col items-start leading-tight text-left">
                     {(() => {
@@ -290,7 +305,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
                     <div key={d} className="flex justify-between items-center text-[10px] font-bold border-b border-dashed border-muted last:border-0 pb-0.5">
                       <span className="capitalize text-muted-foreground">{d}</span>
-                      <span className="text-brand text-right">{dealership[d] || 'Fermé'}</span>
+                      <span className={cn("text-right", isRelais ? "text-amber-600" : "text-brand")}>{dealership[d] || 'Fermé'}</span>
                     </div>
                   ))}
                 </div>

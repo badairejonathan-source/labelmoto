@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store, X } from 'lucide-react';
+import { Search, Loader2, User as UserIcon, Home, Bike, Wrench, Menu, MapPin, Store, X, Utensils, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -45,8 +46,8 @@ interface HeaderProps {
     onSearchTermChange: (value: string) => void;
     onSearch: () => void;
     className?: string;
-    activeFilter?: 'shopping' | 'service' | 'association' | null;
-    onFilterChange?: (filter: 'shopping' | 'service' | 'association' | null) => void;
+    activeFilter?: 'shopping' | 'service' | 'association' | 'relais' | null;
+    onFilterChange?: (filter: 'shopping' | 'service' | 'association' | 'relais' | null) => void;
     placeholderText?: string;
     variant?: 'default' | 'map';
     hideUserMenu?: boolean;
@@ -415,7 +416,7 @@ const Header: React.FC<HeaderProps> = ({
     } else if (e.key === 'Enter') executeSearch();
   };
 
-  const handleTabClick = (filter: 'shopping' | 'service' | 'association' | null) => {
+  const handleTabClick = (filter: 'shopping' | 'service' | 'association' | 'relais' | null) => {
     if (onFilterChange) onFilterChange(filter);
     else router.push(`/map${filter ? `?filter=${filter}` : ''}`);
   };
@@ -559,7 +560,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-6 md:gap-6 relative z-50",
+              "flex items-center justify-center gap-4 md:gap-6 relative z-50",
               isMapPage ? "hidden" : (isCompactPage ? "-mb-24 md:-mb-20" : "-mb-16 md:-mb-10")
             )}>
                 <Button 
@@ -603,6 +604,20 @@ const Header: React.FC<HeaderProps> = ({
                 >
                     <Wrench className={cn("h-7 w-7 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Atelier</span>
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => handleTabClick('relais')} 
+                    aria-label="Filtrer par relais motards"
+                    className={cn(
+                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
+                        activeFilter === 'relais' 
+                          ? "bg-amber-600 text-white border-white scale-110 z-10 shadow-amber-600/40" 
+                          : "bg-white text-muted-foreground border-transparent hover:bg-amber-600 hover:text-white hover:border-white"
+                    )}
+                >
+                    <Utensils className={cn("h-7 w-7 transition-colors", activeFilter === 'relais' ? "text-white" : "text-amber-600 group-hover:text-white")} />
+                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Relais</span>
                 </Button>
             </nav>
         </div>

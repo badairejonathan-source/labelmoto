@@ -6,6 +6,7 @@ export interface Dealership {
   address: string;
   website: string;
   phoneNumber: string;
+  pnoneNumber?: string; // Support for typo in some data
   email: string;
   imgUrl: string;
   img_url?: string;
@@ -23,7 +24,7 @@ export interface Dealership {
   position?: [number, number];
   rating?: string;
   category?: string;
-  appSection?: 'shopping' | 'service' | 'both' | 'association';
+  appSection?: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   brands?: string[];
   // Association specific fields
   emails?: string[];
@@ -36,5 +37,8 @@ export interface Dealership {
   sourceUrl?: string;
   verificationStatus?: string;
   info?: string;
+  // Relais specific
+  reviewCount?: number;
+  plusCode?: string;
   [key: string]: any;
 }

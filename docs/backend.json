@@ -46,6 +46,24 @@
         "appSection": { "type": "string", "enum": ["association"] }
       }
     },
+    "Relais": {
+      "title": "Relais",
+      "type": "object",
+      "description": "Représente un relais motard (bar, hôtel, restaurant).",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "address": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "pnoneNumber": { "type": "string" },
+        "website": { "type": "string" },
+        "rating": { "type": "string" },
+        "reviewCount": { "type": "number" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "appSection": { "type": "string", "enum": ["relais"] }
+      }
+    },
     "TechnicalSheet": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "TechnicalSheet",
@@ -147,6 +165,10 @@
     "/associations/{associationId}": {
       "schema": { "$ref": "#/backend/entities/Association" },
       "description": "Liste des associations motardes."
+    },
+    "/relais/{relaisId}": {
+      "schema": { "$ref": "#/backend/entities/Relais" },
+      "description": "Liste des relais motards (bars, hôtels)."
     },
     "/motorcycle_sheets/{modelId}": {
       "schema": { "$ref": "#/backend/entities/TechnicalSheet" },

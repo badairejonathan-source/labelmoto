@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -32,6 +33,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
   const scale = isHovered || isSelected ? 1.2 : 1;
   
   const isAssociation = dealership.appSection === 'association' || dealership.category === 'Association motarde';
+  const isRelais = dealership.appSection === 'relais';
   
   // Default colors
   let color = isSelected || isHovered ? '#f97316' : '#ea580c';
@@ -39,6 +41,8 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
   // Association colors (Indigo/Purple)
   if (isAssociation) {
     color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
+  } else if (isRelais) {
+    color = isSelected || isHovered ? '#f59e0b' : '#d97706';
   }
 
   const showLabel = currentZoom >= 14.5 || isSelected || isHovered;
@@ -50,7 +54,9 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
           <path d="M16 0C7.16 0 0 7.16 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.16 24.84 0 16 0Z" fill="${color}"/>
           ${isAssociation 
             ? `<path d="M16 10C14.3431 10 13 11.3431 13 13C13 14.6569 14.3431 16 16 16C17.6569 16 19 14.6569 19 13C19 11.3431 17.6569 10 16 10ZM16 18C13.3333 18 8 19.3333 8 22V24H24V22C24 19.3333 18.6667 18 16 18Z" fill="white"/>`
-            : `<circle cx="16" cy="16" r="6" fill="white"/>`
+            : (isRelais 
+               ? `<path d="M11 10h10v2H11v-2zm0 4h10v2H11v-2zm-3 8c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v4H8v-4zm2-10V8c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2h2v2H8v-2h2z" fill="white"/>`
+               : `<circle cx="16" cy="16" r="6" fill="white"/>`)
           }
         </svg>
       </div>
@@ -209,7 +215,7 @@ const MapComponent = ({
     map.locate({ setView: true, maxZoom: 14 });
   }, [isLocating]);
 
-  return <div ref={containerRef} className="w-full h-full min-h-0 bg-muted/10" />;
+  return <div ref={containerRef} className="w-full h-full min-h(0) bg-muted/10" />;
 };
 
 export default memo(MapComponent);
