@@ -136,6 +136,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (articleId.includes('occasion') || articleId.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (articleId.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
     if (articleId.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+    if (articleId.includes('relais')) return "/images/article-relais-motards.webp";
     
     if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";

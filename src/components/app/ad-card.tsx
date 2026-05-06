@@ -34,6 +34,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
     if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
     if (id.includes('entretien') || title.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+    if (id.includes('relais')) return "/images/article-relais-motards.webp";
     
     if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
     return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";

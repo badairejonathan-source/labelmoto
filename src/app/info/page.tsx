@@ -56,7 +56,8 @@ const getArticleCategories = (article: any) => {
         id.includes('revision') ||
         id.includes('assurance') || 
         id.includes('occasion') || 
-        id.includes('combien-coute')
+        id.includes('combien-coute') ||
+        id.includes('relais')
     ) {
         cats.push('TIPS');
     }
@@ -81,6 +82,7 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
         if (id.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+        if (id.includes('relais')) return "/images/article-relais-motards.webp";
         
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         
