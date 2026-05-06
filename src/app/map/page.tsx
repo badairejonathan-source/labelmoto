@@ -173,7 +173,13 @@ function MapPageComponent() {
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
   const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
-    if (!firestore || loadedCollections.has(colName) || loadingCollections.has(colName)) return;
+    if (!firestore) return;
+    
+    // Si déjà chargé ou en cours, on s'assure juste que isLoading est faux si c'est la collection principale
+    if (loadedCollections.has(colName) || loadingCollections.has(colName)) {
+      if (colName === 'concessions') setIsLoading(false);
+      return;
+    }
 
     const storageKey = `cache_points_${colName}`;
     try {

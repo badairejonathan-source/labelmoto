@@ -123,7 +123,7 @@ const MapComponent = ({
 
     map.on('movestart zoomstart', () => onUserInteraction?.());
     map.on('moveend zoomend', () => {
-      if (!isUpdatingFromProps.current && map) {
+      if (map) {
         onMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
       }
     });
@@ -164,7 +164,7 @@ const MapComponent = ({
     });
 
     clusterGroup.addLayers(markers);
-  }, [points]); // Dépendance uniquement sur les points DATA
+  }, [points]); 
 
   // MISE À JOUR DU STYLE (Hover/Sélection) SANS RECRÉER LES CLUSTERS
   useEffect(() => {
@@ -179,15 +179,13 @@ const MapComponent = ({
         const isSelected = point.id === selectedId;
         const newIcon = createIcon(point, isHovered, isSelected, currentZoom);
         
-        // Leaflet setIcon est bien plus rapide que de supprimer/recréer
         marker.setIcon(newIcon);
         
-        // Z-Index priority for selection
         if (isSelected || isHovered) marker.setZIndexOffset(1000);
         else marker.setZIndexOffset(0);
       }
     });
-  }, [hoveredId, selectedId, zoom]); // Trigger sur les états visuels
+  }, [hoveredId, selectedId, zoom]); 
 
   // NAVIGATION PILOTÉE PAR LES PROPS
   useEffect(() => {
@@ -207,6 +205,8 @@ const MapComponent = ({
         }
         if (centerChanged) map.flyTo(targetCenter, zoom, { duration: 0.8 });
         else map.setZoom(zoom, { animate: true });
+        
+        // On libère le flag après l'animation
         setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     }
   }, [center, zoom, leftPadding, bottomPadding]);
