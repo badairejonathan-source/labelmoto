@@ -25,6 +25,8 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
 import useWindowSize from '@/hooks/use-window-size';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: Suggestion[] | null = null;
@@ -39,18 +41,6 @@ interface Suggestion {
     id?: string;
     brand?: string;
     score?: number;
-}
-
-interface HeaderProps {
-    searchTerm: string;
-    onSearchTermChange: (value: string) => void;
-    onSearch: () => void;
-    className?: string;
-    activeFilter?: 'shopping' | 'service' | 'association' | 'relais' | null;
-    onFilterChange?: (filter: 'shopping' | 'service' | 'association' | 'relais' | null) => void;
-    placeholderText?: string;
-    variant?: 'default' | 'map';
-    hideUserMenu?: boolean;
 }
 
 export const UserMenu = () => {
@@ -246,8 +236,9 @@ const Header: React.FC<HeaderProps> = ({
     const fetchDealers = async () => {
         if (!firestore || globalDealersCache || !isFocused) return;
         setIsDataLoading(true);
+        const concessionsRef = collection(firestore, 'concessions');
         try {
-            const q = query(collection(firestore, 'concessions'), limit(3000));
+            const q = query(concessionsRef, limit(3000));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => ({
                 type: 'dealer',
@@ -261,8 +252,13 @@ const Header: React.FC<HeaderProps> = ({
             }));
             globalDealersCache = dealers;
             setAllDealers(dealers);
-        } catch (e) {
-            console.error("Erreur suggestions dealers:", e);
+        } catch (e: any) {
+            if (e.code === 'permission-denied') {
+              errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: concessionsRef.path,
+                operation: 'list'
+              }));
+            }
         } finally {
             setIsDataLoading(false);
         }

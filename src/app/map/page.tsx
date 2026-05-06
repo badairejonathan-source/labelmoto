@@ -21,6 +21,8 @@ import LabelMotoLogo from '@/components/app/logo';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { toast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const brandsList = Object.keys(brandLogos);
 
@@ -185,22 +187,32 @@ function MapPageComponent() {
         const resultsMap: Record<string, Dealership[]> = {};
 
         for (const colName of collectionsList) {
-          const snapshot = await getDocs(collection(firestore, colName));
-          resultsMap[colName] = snapshot.docs.map(doc => ({
-            id: doc.id,
-            firestoreCollection: colName,
-            ...doc.data(),
-            latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
-            longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
-            phoneNumber: doc.data().phoneNumber || doc.data().pnoneNumber, // Handle typo
-            appSection: colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : doc.data().appSection)
-          } as Dealership));
+          const colRef = collection(firestore, colName);
+          try {
+            const snapshot = await getDocs(colRef);
+            resultsMap[colName] = snapshot.docs.map(doc => ({
+              id: doc.id,
+              firestoreCollection: colName,
+              ...doc.data(),
+              latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
+              longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+              phoneNumber: doc.data().phoneNumber || doc.data().pnoneNumber, // Handle typo
+              appSection: colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : doc.data().appSection)
+            } as Dealership));
+          } catch (err: any) {
+            if (err.code === 'permission-denied') {
+              errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: colRef.path,
+                operation: 'list'
+              }));
+            }
+            throw err; // Re-throw to be caught by outer catch
+          }
         }
 
         const merged = [CIRCUIT_BUGATTI, ...Object.values(resultsMap).flat()];
         setAllDealerships(merged);
       } catch (err: any) {
-        console.error("Erreur lors de la récupération des points:", err);
         if (err.code === 'resource-exhausted') {
           toast({
             variant: "destructive",
