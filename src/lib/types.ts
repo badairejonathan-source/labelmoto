@@ -1,4 +1,13 @@
 
+export interface MapPoint {
+  id: string;
+  latitude: number;
+  longitude: number;
+  category: string;
+  appSection: 'shopping' | 'service' | 'both' | 'association' | 'relais';
+  title: string;
+}
+
 export interface Dealership {
   id: string;
   placeUrl: string;

@@ -4,23 +4,22 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, ShieldAlert, ChevronLeft, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Mail, Info, ShieldCheck, ExternalLink, Utensils } from 'lucide-react';
-import type { Dealership } from '@/lib/types';
+import { MapPin, Star, Phone, Globe, MessageSquare, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Utensils } from 'lucide-react';
+import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useUser, useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { deleteDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-
-const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DealershipCardProps {
-  dealership: Dealership;
+  point: MapPoint;
   onClick?: () => void;
   className?: string;
 }
@@ -31,12 +30,10 @@ const categoryDisplay: { [key: string]: string } = {
   'concession-atelier': 'Concession & Atelier',
   'accessoiriste': 'Accessoiriste',
   'association': 'Association motarde',
-  'Association motarde': 'Association motarde',
   'relais': 'Relais Motard',
-  'autre': 'Autre',
 };
 
-const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, className }) => {
+const DealershipCard: React.FC<DealershipCardProps> = ({ point, onClick, className }) => {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
   const [showHours, setShowHours] = useState(false);
@@ -44,18 +41,22 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  useEffect(() => { setMounted(true); }, []);
+  // CHARGEMENT À LA DEMANDE (Lazy Load de la fiche complète)
+  const docRef = useMemoFirebase(() => {
+    const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
+    return doc(firestore, col, point.id);
+  }, [firestore, point.id, point.appSection]);
+  
+  const { data: dealership, isLoading } = useDoc<Dealership>(docRef);
 
-  const isAdmin = mounted && !!user && user.uid === ADMIN_UID;
-  const isAssociation = dealership.appSection === 'association' || dealership.category === 'Association motarde';
-  const isRelais = dealership.appSection === 'relais';
+  const isAssociation = point.appSection === 'association';
+  const isRelais = point.appSection === 'relais';
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
@@ -65,50 +66,23 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
   const activeUserProfile = proProfile || stdProfile;
   const currentPseudo = activeUserProfile?.pseudo || activeUserProfile?.displayName || user?.displayName || user?.email?.split('@')[0] || 'Anonyme';
 
-  const ratingValue = dealership.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
+  const ratingValue = dealership?.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
-  const categoryLabel = categoryDisplay[dealership.category || ''] || (isRelais ? 'Relais Motard' : dealership.category);
+  const categoryLabel = categoryDisplay[point.category] || point.category;
 
   const actualImgUrl = useMemo(() => {
-    const keys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 'coverUrl', 'image', 'photo', 'placeImageUrl', 'img'];
-    let candidate = "";
+    if (!dealership) return "";
+    const keys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 'img'];
     for (const key of keys) {
-      if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].trim().length > 10) {
-        candidate = dealership[key];
-        break;
-      }
-    }
-    if (!candidate) {
-        const subFolders = ['google_data', 'metadata', 'info', 'details'];
-        for (const folder of subFolders) {
-            const nested = dealership[folder] || {};
-            for (const key of keys) {
-                if (nested[key] && typeof nested[key] === 'string' && nested[key].trim().length > 10) {
-                    candidate = nested[key];
-                    break;
-                }
-            }
-            if (candidate) break;
-        }
-    }
-    if (candidate) {
-      let url = candidate.trim().replace(/[\u200B-\u200D\uFEFF]/g, '');
-      if (url.startsWith('//')) url = `https:${url}`;
-      else if (!url.startsWith('http')) {
-          if (url.includes('googleusercontent.com') || url.includes('googleapis.com')) {
-              url = `https://${url}`;
-          }
-      }
-      if (url.startsWith('http:')) url = url.replace('http:', 'https:');
-      return url;
+      if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].length > 10) return dealership[key];
     }
     return "";
   }, [dealership]);
 
   const approvedComments = useCollection(useMemoFirebase(() => {
     if (!firestore) return null;
-    return collection(firestore, 'concessions', dealership.id, 'comments');
-  }, [firestore, dealership.id])).data;
+    return collection(firestore, 'concessions', point.id, 'comments');
+  }, [firestore, point.id])).data;
 
   const handleRatingSubmit = () => {
     if (!user || !firestore) return;
@@ -117,8 +91,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     addDocumentNonBlocking(collection(firestore, 'pending_comments'), {
         userId: user.uid,
         userName: currentPseudo,
-        dealershipId: dealership.id,
-        dealershipName: dealership.title,
+        dealershipId: point.id,
+        dealershipName: point.title,
         content: newComment,
         rating: newRating,
         date: serverTimestamp(),
@@ -130,42 +104,26 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
     setIsReviewDialogOpen(false);
   };
 
-  const navigationUrl = (dealership.latitude && dealership.longitude)
-    ? `https://www.google.com/maps/dir/?api=1&destination=${dealership.latitude},${dealership.longitude}`
-    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dealership.title + ' ' + dealership.address)}`;
+  const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${point.latitude},${point.longitude}`;
 
-  const renderLinkButton = (url: string, label: string) => {
-    if (!url) return null;
-    
-    const isFacebook = url.toLowerCase().includes('facebook.com');
-    const isInstagram = url.toLowerCase().includes('instagram.com');
-    
-    let Icon = Globe;
-    let buttonLabel = label;
-    
-    if (isFacebook) {
-      Icon = Facebook;
-      buttonLabel = "FB";
-    } else if (isInstagram) {
-      Icon = Instagram;
-      buttonLabel = "Insta";
-    }
-
+  if (isLoading) {
     return (
-      <a href={url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-        <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : (isRelais ? "bg-amber-50 group-hover/btn:bg-amber-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white"))}>
-          <Icon className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))} />
-          <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))}>{buttonLabel}</span>
+      <Card className={cn("p-4 flex gap-4 animate-pulse", className)}>
+        <Skeleton className="h-24 w-24 rounded-lg shrink-0" />
+        <div className="flex-1 space-y-3">
+          <Skeleton className="h-5 w-3/4" />
+          <Skeleton className="h-3 w-1/2" />
+          <Skeleton className="h-10 w-full rounded-full" />
         </div>
-      </a>
+      </Card>
     );
-  };
+  }
 
   return (
     <>
       <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Avis sur {dealership.title}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Avis sur {point.title}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div className="flex justify-center gap-2">
               {[1, 2, 3, 4, 5].map((s) => (
@@ -180,12 +138,11 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
 
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none">
-          <DialogHeader className="sr-only"><DialogTitle>Zoom sur {dealership.title}</DialogTitle></DialogHeader>
           <div className="relative w-full h-full flex items-center justify-center">
-            <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white transition-colors"><X className="h-6 w-6" /></button>
+            <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white"><X className="h-6 w-6" /></button>
             <div className="relative w-full h-full">
               {actualImgUrl && !imgError && (
-                <Image src={actualImgUrl} alt={dealership.title} fill className="object-contain" quality={100} priority unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')} sizes="95vw" onError={() => setImgError(true)} referrerPolicy="no-referrer" />
+                <Image src={actualImgUrl} alt={point.title} fill className="object-contain" onError={() => setImgError(true)} referrerPolicy="no-referrer" />
               )}
             </div>
           </div>
@@ -202,105 +159,61 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
           </div>
         )}
 
-        {(isAssociation || isRelais) && (
-          <div className={cn("absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 rounded-full text-white shadow-lg border-2 border-white", isAssociation ? "bg-indigo-600" : "bg-amber-600")}>
-            {isAssociation ? <Users className="h-5 w-5" /> : <Utensils className="h-5 w-5" />}
-          </div>
-        )}
-        
         <div className="flex items-stretch min-h-[130px] md:min-h-[150px]">
           <div className="flex flex-1 flex-row items-stretch">
             <div className={cn("relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 flex items-center justify-center", actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default")} onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}>
               {actualImgUrl && !imgError ? (
                 <>
-                  <Image src={actualImgUrl} alt={dealership.title} fill className="object-cover transition-transform group-hover:brightness-110 duration-700" sizes="(max-width: 768px) 160px, 200px" unoptimized={actualImgUrl.includes('googleusercontent.com') || actualImgUrl.includes('googleapis.com')} onError={() => setImgError(true)} referrerPolicy="no-referrer" />
+                  <Image src={actualImgUrl} alt={point.title} fill className="object-cover transition-transform group-hover:brightness-110 duration-700" onError={() => setImgError(true)} referrerPolicy="no-referrer" />
                   <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all"><ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" /></div>
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2 opacity-20">
-                  {isAssociation ? <Users className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" /> : (isRelais ? <Utensils className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" /> : <Store className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />)}
+                  {isAssociation ? <Users className="h-10 w-10 text-muted-foreground" /> : (isRelais ? <Utensils className="h-10 w-10 text-muted-foreground" /> : <Store className="h-10 w-10 text-muted-foreground" />)}
                 </div>
               )}
             </div>
 
             <div className="flex flex-col justify-center flex-1 p-3 md:p-5 cursor-pointer" onClick={onClick}>
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-black text-sm md:text-xl uppercase leading-tight truncate">{dealership.title}</h3>
+                <h3 className="font-black text-sm md:text-xl uppercase leading-tight truncate">{point.title}</h3>
               </div>
-              <div className="flex items-center gap-3">
-                <span className={cn("text-[9px] md:text-xs font-black uppercase tracking-widest", isAssociation ? "text-indigo-600" : (isRelais ? "text-amber-600" : "text-brand"))}>{categoryLabel}</span>
-                {isAssociation && dealership.verificationStatus && (
-                  <Badge variant="outline" className="text-[7px] h-4 border-indigo-200 text-indigo-700 bg-indigo-50 font-bold uppercase py-0">{dealership.verificationStatus}</Badge>
-                )}
-                {isRelais && dealership.rating && (
-                  <Badge variant="outline" className="text-[8px] h-4 border-amber-200 text-amber-700 bg-amber-50 font-bold uppercase py-0 flex items-center gap-0.5">
-                    <Star className="h-2 w-2 fill-amber-600" /> {dealership.rating}
-                  </Badge>
-                )}
-              </div>
+              <span className={cn("text-[9px] md:text-xs font-black uppercase tracking-widest mb-3", isAssociation ? "text-indigo-600" : (isRelais ? "text-amber-600" : "text-brand"))}>{categoryLabel}</span>
               
-              <div className="flex flex-nowrap items-center gap-2 md:gap-4 mt-3 overflow-x-auto no-scrollbar">
-                {(dealership.phoneNumber || dealership.pnoneNumber) && (
-                  <a href={`tel:${dealership.phoneNumber || dealership.pnoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center border-2 border-transparent transition-all shadow-lg", isAssociation ? "bg-indigo-50 group-hover/btn:bg-indigo-600 group-hover/btn:border-white" : (isRelais ? "bg-amber-50 group-hover/btn:bg-amber-600 group-hover/btn:border-white" : "bg-brand/10 group-hover/btn:bg-brand group-hover/btn:border-white"))}>
-                      <Phone className={cn("h-4 w-4 md:h-5 md:w-5 mb-0.5", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))} />
-                      <span className={cn("text-[6px] md:text-[7px] font-black uppercase tracking-tighter", isAssociation ? "text-indigo-600 group-hover/btn:text-white" : (isRelais ? "text-amber-600 group-hover/btn:text-white" : "text-brand group-hover/btn:text-white"))}>Appel</span>
+              <div className="flex flex-nowrap items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar">
+                {dealership?.phoneNumber && (
+                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
+                      <Phone className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Appel</span>
                     </div>
                   </a>
                 )}
-                
-                {renderLinkButton(dealership.website, "Web")}
-                {renderLinkButton(dealership.facebookUrl, "FB")}
-                {renderLinkButton(dealership.instagramUrl, "Insta")}
-
-                {!isAssociation && !isRelais && (
-                  <>
-                    <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showHours ? "bg-brand border-white text-white scale-110" : "bg-brand/10 border-transparent text-brand hover:bg-brand/20")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); setShowReviews(false); }}>
-                      <Clock className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Horaires</span>
-                    </button>
-                    <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showReviews ? "bg-blue-600 border-white text-white scale-110" : "bg-blue-500/10 border-transparent text-blue-500 hover:bg-blue-50")} onClick={(e) => { e.stopPropagation(); setShowReviews(!showReviews); setShowHours(false); }}>
-                      <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Avis</span>
-                    </button>
-                  </>
+                {dealership?.website && (
+                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : "bg-brand/10")}>
+                      <Globe className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Web</span>
+                    </div>
+                  </a>
                 )}
-                
-                {isRelais && (
-                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg border-2 shrink-0", showHours ? "bg-amber-600 border-white text-white scale-110" : "bg-amber-50 border-transparent text-amber-600 hover:bg-amber-100")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
-                    <Clock className="h-4 w-4 md:h-5 md:w-5" />
-                    <span className="text-[6px] md:text-[7px] font-black uppercase tracking-tighter leading-none mt-1">Heures</span>
+                {!isAssociation && !isRelais && (
+                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
+                    <Clock className="h-4 w-4" /><span className="text-[6px] font-black uppercase mt-1">Horaires</span>
                   </button>
                 )}
               </div>
               
               <div className="mt-3 border-t border-dashed pt-2">
-                <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm transition-all max-w-full", isAssociation ? "bg-indigo-600 hover:bg-indigo-700" : (isRelais ? "bg-amber-600 hover:bg-amber-700" : "bg-brand hover:bg-brand/90"))} onClick={(e) => { e.stopPropagation(); }}>
-                  <MapPin className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
-                  <div className="flex flex-col items-start leading-tight text-left">
-                    {(() => {
-                      const parts = dealership.address.split(',');
-                      if (parts.length > 1) {
-                        return (
-                          <>
-                            <span className="truncate w-full">{parts[0].trim()}</span>
-                            <span className="opacity-80 font-bold truncate w-full">{parts.slice(1).join(',').trim()}</span>
-                          </>
-                        );
-                      }
-                      return <span className="truncate">{dealership.address}</span>;
-                    })()}
-                  </div>
+                <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm", isAssociation ? "bg-indigo-600" : (isRelais ? "bg-amber-600" : "bg-brand"))} onClick={(e) => e.stopPropagation()}>
+                  <MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{dealership?.address || "Calculer l'itinéraire"}</span>
                 </a>
               </div>
             </div>
           </div>
           
           {(showHours || showReviews) && (
-            <div className="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm border-r animate-in slide-in-from-right duration-300 p-4 flex flex-col justify-center overflow-hidden shadow-2xl">
-              <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); }} className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
-              
-              {showHours && (
+            <div className="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm border-r p-4 flex flex-col justify-center shadow-2xl">
+              <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); }} className="absolute top-2 right-2 p-1"><X className="h-5 w-5" /></button>
+              {showHours && dealership && (
                 <div className="space-y-1 w-full max-w-xs mx-auto">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
                     <div key={d} className="flex justify-between items-center text-[10px] font-bold border-b border-dashed border-muted last:border-0 pb-0.5">
@@ -308,16 +221,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ dealership, onClick, cl
                       <span className={cn("text-right", isRelais ? "text-amber-600" : "text-brand")}>{dealership[d] || 'Fermé'}</span>
                     </div>
                   ))}
-                </div>
-              )}
-
-              {showReviews && (
-                <div className="h-full flex flex-col max-w-xs mx-auto w-full pt-4">
-                  <div className="flex-1 overflow-y-auto space-y-2 mb-4 pr-1 scrollbar-thin">
-                    {approvedComments?.map(c => <div key={c.id} className="bg-muted/30 p-2 rounded text-[10px]"><div className="flex justify-between font-bold"><span>{c.userName}</span><span>{c.rating}/5</span></div><p className="italic">"{c.content}"</p></div>)}
-                    {(!approvedComments || approvedComments.length === 0) && <p className="text-[10px] text-muted-foreground text-center py-4">Aucun avis publié pour le moment.</p>}
-                  </div>
-                  <Button size="sm" className="w-full bg-blue-600 text-[9px] uppercase font-black" onClick={(e) => { e.stopPropagation(); setIsReviewDialogOpen(true); }}>Donner mon avis</Button>
                 </div>
               )}
             </div>

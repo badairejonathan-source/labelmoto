@@ -4,18 +4,18 @@
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import '@/app/map.css'; // Importation des styles personnalisés de la carte en Lazy Loading
+import '@/app/map.css';
 import React, { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
-import type { Dealership } from '@/lib/types';
+import type { MapPoint } from '@/lib/types';
 
 interface MapComponentProps {
-  dealerships: Dealership[];
+  points: MapPoint[];
   center: [number, number];
   zoom: number;
-  hoveredDealershipId: string | null;
-  selectedDealershipId: string | null;
+  hoveredId: string | null;
+  selectedId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver: (id: string) => void;
   onMarkerMouseOut: () => void;
@@ -29,21 +29,14 @@ interface MapComponentProps {
   onLocationFound?: (coords: [number, number]) => void;
 }
 
-const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: boolean, currentZoom: number) => {
+const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, currentZoom: number) => {
   const scale = isHovered || isSelected ? 1.2 : 1;
+  const isAssociation = point.appSection === 'association';
+  const isRelais = point.appSection === 'relais';
   
-  const isAssociation = dealership.appSection === 'association' || dealership.category === 'Association motarde';
-  const isRelais = dealership.appSection === 'relais';
-  
-  // Default colors
   let color = isSelected || isHovered ? '#f97316' : '#ea580c';
-  
-  // Association colors (Indigo/Purple)
-  if (isAssociation) {
-    color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
-  } else if (isRelais) {
-    color = isSelected || isHovered ? '#f59e0b' : '#d97706';
-  }
+  if (isAssociation) color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
+  else if (isRelais) color = isSelected || isHovered ? '#f59e0b' : '#d97706';
 
   const showLabel = currentZoom >= 14.5 || isSelected || isHovered;
 
@@ -60,7 +53,7 @@ const createIcon = (dealership: Dealership, isHovered: boolean, isSelected: bool
           }
         </svg>
       </div>
-      ${showLabel ? `<div class="marker-label ${isSelected || isHovered ? 'active' : ''}">${dealership.title}</div>` : ''}
+      ${showLabel ? `<div class="marker-label ${isSelected || isHovered ? 'active' : ''}">${point.title}</div>` : ''}
     </div>
   `;
 
@@ -80,7 +73,7 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: 
 };
 
 const MapComponent = ({
-  dealerships, center, zoom, hoveredDealershipId, selectedDealershipId,
+  points, center, zoom, hoveredId, selectedId,
   onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
@@ -89,7 +82,6 @@ const MapComponent = ({
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
-  const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const isUpdatingFromProps = useRef(false);
   
   const lastTargetCenter = useRef<[number, number]>(center);
@@ -126,13 +118,11 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    const handleMove = () => {
+    map.on('moveend zoomend', () => {
       if (!isUpdatingFromProps.current && map) {
         onMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
       }
-    };
-
-    map.on('moveend zoomend', handleMove);
+    });
     map.on('click', onMapClick);
     map.on('dragstart zoomstart', () => onUserInteraction?.());
 
@@ -148,32 +138,27 @@ const MapComponent = ({
     if (!clusterGroup || !mapRef.current) return;
 
     clusterGroup.clearLayers();
-    markersRef.current.clear();
 
-    if (!dealerships || dealerships.length === 0) return;
+    if (!points || points.length === 0) return;
 
     const currentZoom = mapRef.current.getZoom();
-    const newMarkers: L.Marker[] = [];
-    dealerships.forEach((dealer) => {
-      if (!dealer.latitude || !dealer.longitude) return;
-
-      const marker = L.marker([Number(dealer.latitude), Number(dealer.longitude)], {
-        icon: createIcon(dealer, dealer.id === hoveredDealershipId, dealer.id === selectedDealershipId, currentZoom)
+    const markers: L.Marker[] = points.map((point) => {
+      const marker = L.marker([point.latitude, point.longitude], {
+        icon: createIcon(point, point.id === hoveredId, point.id === selectedId, currentZoom)
       });
 
       marker.on('click', (e) => {
         L.DomEvent.stopPropagation(e);
-        onMarkerClick(dealer.id);
+        onMarkerClick(point.id);
       });
-      marker.on('mouseover', () => onMarkerMouseOver(dealer.id));
+      marker.on('mouseover', () => onMarkerMouseOver(point.id));
       marker.on('mouseout', onMarkerMouseOut);
 
-      markersRef.current.set(dealer.id, marker);
-      newMarkers.push(marker);
+      return marker;
     });
 
-    clusterGroup.addLayers(newMarkers);
-  }, [dealerships, hoveredDealershipId, selectedDealershipId, zoom]);
+    clusterGroup.addLayers(markers);
+  }, [points, hoveredId, selectedId, zoom]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -184,7 +169,6 @@ const MapComponent = ({
 
     if (centerChanged || zoomChanged) {
         isUpdatingFromProps.current = true;
-        
         lastTargetCenter.current = center;
         lastTargetZoom.current = zoom;
 
@@ -193,11 +177,8 @@ const MapComponent = ({
             targetCenter = getOffsettedCenter(map, center, [-(leftPadding / 2.8), bottomPadding / 6], zoom);
         }
         
-        if (centerChanged) {
-            map.flyTo(targetCenter, zoom, { duration: 0.8 });
-        } else {
-            map.setZoom(zoom, { animate: true });
-        }
+        if (centerChanged) map.flyTo(targetCenter, zoom, { duration: 0.8 });
+        else map.setZoom(zoom, { animate: true });
         
         setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     }
