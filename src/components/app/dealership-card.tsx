@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, memo } from 'react';
@@ -124,6 +123,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Photo de {point.title}</DialogTitle>
+          </DialogHeader>
           <div className="relative w-full h-full flex items-center justify-center">
             <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white"><X className="h-6 w-6" /></button>
             <div className="relative w-full h-full">
