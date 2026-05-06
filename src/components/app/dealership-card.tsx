@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, memo } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, X, ZoomIn, Clock, Store, Users, Utensils, Loader2 } from 'lucide-react';
@@ -48,7 +49,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // On n'active le hook Firestore que si la fiche est sélectionnée ET n'est pas déjà dans le cache parent
   const docRef = useMemoFirebase(() => {
     if (!isSelected || cachedData) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
@@ -56,11 +56,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   }, [firestore, point.id, point.appSection, isSelected, cachedData]);
   
   const { data: fetchedData, isLoading } = useDoc<Dealership>(docRef);
-
-  // La donnée à afficher est soit le cache parent, soit la donnée fraîchement récupérée
   const dealership = cachedData || fetchedData;
 
-  // Remonter la donnée au parent dès qu'elle est récupérée pour le cache de session
   useEffect(() => {
     if (fetchedData && onDataLoaded && !cachedData) {
       onDataLoaded(fetchedData);
@@ -87,9 +84,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
     if (!user || !firestore) return;
     if (newComment.trim().length < 5) return;
     setIsSubmitting(true);
-    
     const activeUserProfile = user.displayName || user.email?.split('@')[0] || 'Anonyme';
-
     addDocumentNonBlocking(collection(firestore, 'pending_comments'), {
         userId: user.uid,
         userName: activeUserProfile,
@@ -140,7 +135,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
       <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all group", className)}>
         {!isAssociation && !isRelais && rating > 0 && (
-          <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black animate-in fade-in duration-300">
+          <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black">
             <div className="flex flex-col items-center leading-none">
               <span className="text-xs md:text-sm">{rating.toFixed(1)}</span>
               <Star className="h-2 w-2 fill-white" />
@@ -176,7 +171,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
               
               <div className="flex flex-nowrap items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar min-h-[64px]">
                 {dealership?.phoneNumber ? (
-                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0 animate-in slide-in-from-left-2 duration-300">
+                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
                     <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
                       <Phone className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Appel</span>
                     </div>
@@ -184,7 +179,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                 ) : (isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null)}
 
                 {dealership?.website ? (
-                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0 animate-in slide-in-from-left-2 duration-400">
+                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
                     <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
                       <Globe className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Web</span>
                     </div>
@@ -192,7 +187,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                 ) : (isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null)}
 
                 {isSelected && dealership && !isAssociation && !isRelais && (
-                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0 animate-in zoom-in duration-300", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
+                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
                     <Clock className="h-4 w-4" /><span className="text-[6px] font-black uppercase mt-1">Horaires</span>
                   </button>
                 )}
@@ -233,4 +228,4 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   );
 };
 
-export default DealershipCard;
+export default memo(DealershipCard);

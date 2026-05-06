@@ -126,7 +126,6 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Verrouillage de chargement pour éviter les requêtes concurrentes identiques
   const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
   const [loadingCollections, setLoadingCollections] = useState<Set<string>>(new Set());
 
@@ -176,7 +175,6 @@ function MapPageComponent() {
   const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
     if (!firestore || loadedCollections.has(colName) || loadingCollections.has(colName)) return;
 
-    // Tentative de récupération depuis le cache de session
     const storageKey = `cache_points_${colName}`;
     try {
       const cached = sessionStorage.getItem(storageKey);
@@ -192,7 +190,6 @@ function MapPageComponent() {
       }
     } catch (e) { /* ignore cache error */ }
 
-    // Verrouillage de la requête
     setIsLoading(true);
     setLoadingCollections(prev => new Set(prev).add(colName));
     
@@ -218,19 +215,12 @@ function MapPageComponent() {
       });
       
       setLoadedCollections(prev => new Set(prev).add(colName));
-
-      // Stockage en cache de session pour éviter les lectures Firestore au rafraîchissement
       try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
-
     } catch (err: any) {
       if (err.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));
       } else if (err.code === 'resource-exhausted') {
-        toast({
-          variant: "destructive",
-          title: "Quota Firestore dépassé",
-          description: "Le service est temporairement indisponible (limite gratuite atteinte). Réessayez demain.",
-        });
+        toast({ variant: "destructive", title: "Quota Firestore dépassé", description: "Le service est temporairement indisponible." });
       }
     } finally {
       setIsLoading(false);
@@ -250,37 +240,27 @@ function MapPageComponent() {
 
   useEffect(() => {
     if (!mounted) return;
-
     const lowerSearch = submittedSearchTerm.toLowerCase();
-    
     if (activeFilter === 'association' || lowerSearch.includes('association') || lowerSearch.includes('asso')) {
         fetchPointsWithCache('associations', 'association');
     }
-    
     if (activeFilter === 'relais' || lowerSearch.includes('relais') || lowerSearch.includes('hotel') || lowerSearch.includes('bar')) {
         fetchPointsWithCache('relais', 'relais');
     }
   }, [mounted, activeFilter, submittedSearchTerm, fetchPointsWithCache]);
 
-  // Recherche & Filtrage sécurisés par AbortController + Debounce
   useEffect(() => {
     const controller = new AbortController();
-    
     const processSearch = async () => {
         let results = [...allPoints];
         let term = submittedSearchTerm.trim().toLowerCase();
-
-        // Détection intelligente du mot-clé association
         const assoKeywords = ["association", "associations", "asso"];
         const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
-        
         if (foundAssoKeyword) {
             if (activeFilter !== 'association') setActiveFilter('association');
             term = term.replace(foundAssoKeyword, '').trim();
         }
-
         const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
-        
         if (currentFilter) { 
             results = results.filter(d => {
                 if (currentFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
@@ -290,26 +270,18 @@ function MapPageComponent() {
                 return true;
             });
         } else {
-            results = results.filter(d => 
-                d.appSection === 'shopping' || 
-                d.appSection === 'service' || 
-                d.appSection === 'both'
-            );
+            results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
         }
-        
         if (term !== '') {
             const words = term.split(/\s+/);
             let deptFilter: string | null = null;
             let zipFilter: string | null = null;
             let otherTerms: string[] = [];
-
             for (const word of words) {
                 if (/^\d{5}$/.test(word)) zipFilter = word;
                 else if (/^(\d{1,2}|2[ab])$/i.test(word)) deptFilter = word.padStart(2, '0').toUpperCase();
                 else otherTerms.push(word);
             }
-
-            // Ordre de priorité : Code Postal > Département > Nom de ville/établissement
             if (zipFilter) {
                 const coords = await getCityCoordinates(zipFilter, controller.signal);
                 if (controller.signal.aborted) return;
@@ -325,53 +297,29 @@ function MapPageComponent() {
                 if (controller.signal.aborted) return;
                 if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); setSelectionSource('external'); }
             }
-
             results = results.filter(d => (d.title || '').toLowerCase().includes(term));
         }
-        
-        if (!controller.signal.aborted) {
-          setFilteredPoints(results);
-        }
+        if (!controller.signal.aborted) setFilteredPoints(results);
     };
-    
-    // Debounce de la recherche (300ms) pour économiser les API Géo
-    const timer = setTimeout(() => {
-        processSearch();
-    }, 300);
-
-    return () => {
-        clearTimeout(timer);
-        controller.abort();
-    };
+    const timer = setTimeout(() => { processSearch(); }, 300);
+    return () => { clearTimeout(timer); controller.abort(); };
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
   const ZOOM_THRESHOLD = 8.5;
 
   const pointsForMap = useMemo(() => {
-    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
-        return allPoints;
-    }
-
+    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return allPoints;
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
-        
-        // Extension de 20% autour de la zone visible pour la fluidité (buffer)
         const dLat = maxLat - minLat;
         const dLng = maxLng - minLng;
         const buffer = 0.20; 
-
         const paddedMinLat = minLat - dLat * buffer;
         const paddedMaxLat = maxLat + dLat * buffer;
         const paddedMinLng = minLng - dLng * buffer;
         const paddedMaxLng = maxLng + dLng * buffer;
-
-        results = results.filter(d => 
-            d.latitude >= paddedMinLat && 
-            d.latitude <= paddedMaxLat && 
-            d.longitude >= paddedMinLng && 
-            d.longitude <= paddedMaxLng
-        ); 
+        results = results.filter(d => d.latitude >= paddedMinLat && d.latitude <= paddedMaxLat && d.longitude >= paddedMinLng && d.longitude <= paddedMaxLng); 
     }
     return results;
   }, [allPoints, filteredPoints, mapBoundsStr, mapZoom, submittedSearchTerm]);
@@ -379,24 +327,31 @@ function MapPageComponent() {
   const pointsToDisplay = useMemo(() => {
     if (isMapMoving) return [];
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return [];
-    
     let results = [...pointsForMap];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
     return results.slice(0, 50);
   }, [pointsForMap, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
 
+  // STABILISATION DES CALLBACKS
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
-    setSelectedDealershipId(id); setSelectionSource('card'); 
+    setSelectedDealershipId(id); 
+    setSelectionSource('card'); 
     if (lat && lng) { 
-      setMapCenter([lat, lng]); setMapZoom(12); 
+      setMapCenter([lat, lng]); 
+      setMapZoom(12); 
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
 
   const handleMarkerClick = useCallback((id: string) => { 
-    setSelectedDealershipId(id); setSelectionSource('marker');
+    setSelectedDealershipId(id); 
+    setSelectionSource('marker');
     const point = allPoints.find(d => d.id === id); 
-    if (point) { setMapCenter([point.latitude, point.longitude]); setSortingAnchor([point.latitude, point.longitude]); setMapZoom(12); } 
+    if (point) { 
+      setMapCenter([point.latitude, point.longitude]); 
+      setSortingAnchor([point.latitude, point.longitude]); 
+      setMapZoom(12); 
+    } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile, allPoints]);
 
@@ -408,6 +363,29 @@ function MapPageComponent() {
   const onDetailLoaded = useCallback((data: Dealership) => {
     if (!data.id) return;
     setDetailCache(prev => ({ ...prev, [data.id]: data }));
+  }, []);
+
+  const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
+    setMapZoom(newZoom);
+    setMapCenter(newCenter);
+    setIsMapMoving(false);
+    if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
+    mapUpdateTimerRef.current = setTimeout(() => {
+        setMapBoundsStr(bounds.toBBoxString()); 
+        const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
+        const threshold = newZoom > 12 ? 0.001 : 0.01;
+        if (selectionSource === null && distSq > threshold) {
+          setSortingAnchor(newCenter);
+        }
+    }, 300);
+  }, [selectionSource, sortingAnchor]);
+
+  const handleLocateEnd = useCallback(() => setIsLoadingLocating(false), []);
+  const handleLocationFound = useCallback((coords: [number, number]) => { 
+    setMapCenter(coords); 
+    setSortingAnchor(coords); 
+    setMapZoom(12); 
+    setSelectionSource('external'); 
   }, []);
 
   const listContent = (
@@ -431,14 +409,11 @@ function MapPageComponent() {
                     <div className="p-8 border-2 border-dashed rounded-[2.5rem] text-center bg-muted/5"><FileText className="h-10 w-10 text-muted-foreground mx-auto mb-4 opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-snug">Plus de 3000 établissements référencés.<br/><span className="text-brand">Zoomez sur la carte pour les afficher.</span></p></div>
                 </div>
             )}
-
             {isMapMoving && (
               <div className="text-center py-20 animate-pulse">
-                <Loader2 className="h-10 w-10 mx-auto mb-4 text-brand animate-spin" />
-                <p className="font-black uppercase tracking-widest text-[9px] text-muted-foreground">Mise à jour de la zone...</p>
+                <Loader2 className="h-10 w-10 mx-auto mb-4 text-brand animate-spin" /><p className="font-black uppercase tracking-widest text-[9px] text-muted-foreground">Mise à jour de la zone...</p>
               </div>
             )}
-
             {!isMapMoving && pointsToDisplay.map((point, index) => (
                 <React.Fragment key={point.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
@@ -454,7 +429,6 @@ function MapPageComponent() {
                     {(index + 1) % 4 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 4) % ads.length]} /></div>)}
                 </React.Fragment>
             ))}
-
             {pointsToDisplay.length === 0 && !isMapMoving && (submittedSearchTerm !== '' || mapZoom >= ZOOM_THRESHOLD) && !isLoading && (
                 <div className="text-center py-20 opacity-50"><MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" /><p className="font-black uppercase tracking-widest text-xs">Aucun établissement dans cette zone</p></div>
             )}
@@ -463,29 +437,6 @@ function MapPageComponent() {
     </div>
   );
 
-  const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
-    // On met à jour les états visuels immédiats
-    setMapZoom(newZoom);
-    setMapCenter(newCenter);
-    setIsMapMoving(false);
-
-    // On debounce la mise à jour des bounds et de l'ancre de tri (300ms) 
-    // pour éviter de recalculer les filtres à chaque micro-mouvement.
-    if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
-    
-    mapUpdateTimerRef.current = setTimeout(() => {
-        setMapBoundsStr(bounds.toBBoxString()); 
-
-        // Ne mettre à jour l'ancre de tri que si le déplacement est significatif (> 1km au zoom 12)
-        const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
-        const threshold = newZoom > 12 ? 0.001 : 0.01;
-        
-        if (selectionSource === null && distSq > threshold) {
-          setSortingAnchor(newCenter);
-        }
-    }, 300);
-  }, [selectionSource, sortingAnchor]);
-
   if (!mounted || width === undefined) return <div className="flex h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
   return (
@@ -493,22 +444,22 @@ function MapPageComponent() {
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
             <MapComponent 
-            points={pointsForMap} 
-            center={mapCenter} 
-            zoom={mapZoom} 
-            hoveredId={hoveredDealershipId} 
-            selectedId={selectedDealershipId} 
-            onMarkerClick={handleMarkerClick} 
-            onMarkerMouseOver={setHoveredDealershipId} 
-            onMarkerMouseOut={() => setHoveredDealershipId(null)} 
-            onMapChange={handleMapChange} 
-            onMapClick={handleUserMapInteraction} 
-            onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} 
-            bottomPadding={bottomPadding} 
-            leftPadding={isMobile ? 0 : leftPadding} 
-            isLocating={isLocating} 
-            onLocateEnd={() => setIsLoadingLocating(false)} 
-            onLocationFound={(coords) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }} 
+              points={pointsForMap} 
+              center={mapCenter} 
+              zoom={mapZoom} 
+              hoveredId={hoveredDealershipId} 
+              selectedId={selectedDealershipId} 
+              onMarkerClick={handleMarkerClick} 
+              onMarkerMouseOver={setHoveredDealershipId} 
+              onMarkerMouseOut={() => setHoveredDealershipId(null)} 
+              onMapChange={handleMapChange} 
+              onMapClick={handleUserMapInteraction} 
+              onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} 
+              bottomPadding={bottomPadding} 
+              leftPadding={isMobile ? 0 : leftPadding} 
+              isLocating={isLocating} 
+              onLocateEnd={handleLocateEnd} 
+              onLocationFound={handleLocationFound} 
             />
         ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/10"><Loader2 className="h-10 w-10 animate-spin text-brand/20" /></div>
