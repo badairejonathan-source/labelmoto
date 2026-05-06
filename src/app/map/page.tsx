@@ -57,9 +57,9 @@ const getDistanceSq = (anchor: [number, number], point: MapPoint) => {
     return dx * dx + dy * dy;
 };
 
-const getCityCoordinates = async (postalCode: string): Promise<[number, number] | null> => {
+const getCityCoordinates = async (postalCode: string, signal?: AbortSignal): Promise<[number, number] | null> => {
   try {
-    const response = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre`);
+    const response = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre`, { signal });
     if (!response.ok) return null;
     const data = await response.json();
     if (data.length > 0) {
@@ -67,12 +67,15 @@ const getCityCoordinates = async (postalCode: string): Promise<[number, number] 
       return [coordinates[1], coordinates[0]];
     }
     return null;
-  } catch (error) { return null; }
+  } catch (error: any) { 
+    if (error.name === 'AbortError') return null;
+    return null; 
+  }
 };
 
-const getCityCoordinatesByName = async (cityName: string): Promise<[number, number] | null> => {
+const getCityCoordinatesByName = async (cityName: string, signal?: AbortSignal): Promise<[number, number] | null> => {
   try {
-    const response = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(cityName)}&fields=centre&boost=population&limit=1`);
+    const response = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(cityName)}&fields=centre&boost=population&limit=1`, { signal });
     if (!response.ok) return null;
     const data = await response.json();
     if (data.length > 0) {
@@ -80,7 +83,10 @@ const getCityCoordinatesByName = async (cityName: string): Promise<[number, numb
       return [coordinates[1], coordinates[0]];
     }
     return null;
-  } catch (error) { return null; }
+  } catch (error: any) { 
+    if (error.name === 'AbortError') return null;
+    return null; 
+  }
 };
 
 function MapPageComponent() {
@@ -120,6 +126,7 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
 
   const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
+  const [loadingCollections, setLoadingCollections] = useState<Set<string>>(new Set());
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -165,7 +172,7 @@ function MapPageComponent() {
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
   const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
-    if (!firestore || loadedCollections.has(colName)) return;
+    if (!firestore || loadedCollections.has(colName) || loadingCollections.has(colName)) return;
 
     const storageKey = `cache_points_${colName}`;
     try {
@@ -183,6 +190,8 @@ function MapPageComponent() {
     } catch (e) { /* ignore cache error */ }
 
     setIsLoading(true);
+    setLoadingCollections(prev => new Set(prev).add(colName));
+    
     try {
       const colRef = collection(firestore, colName);
       const snapshot = await getDocs(query(colRef, limit(4000)));
@@ -204,11 +213,7 @@ function MapPageComponent() {
         return [...prev, ...uniqueNewPoints];
       });
       
-      setLoadedCollections(prev => {
-        const next = new Set(prev);
-        next.add(colName);
-        return next;
-      });
+      setLoadedCollections(prev => new Set(prev).add(colName));
 
       try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
 
@@ -224,8 +229,13 @@ function MapPageComponent() {
       }
     } finally {
       setIsLoading(false);
+      setLoadingCollections(prev => {
+        const next = new Set(prev);
+        next.delete(colName);
+        return next;
+      });
     }
-  }, [firestore, loadedCollections, toast]);
+  }, [firestore, loadedCollections, loadingCollections, toast]);
 
   useEffect(() => {
     if (mounted && !loadedCollections.has('concessions')) {
@@ -248,6 +258,8 @@ function MapPageComponent() {
   }, [mounted, activeFilter, submittedSearchTerm, fetchPointsWithCache]);
 
   useEffect(() => {
+    const controller = new AbortController();
+    
     const processSearch = async () => {
         let results = [...allPoints];
         let term = submittedSearchTerm.trim().toLowerCase();
@@ -291,7 +303,8 @@ function MapPageComponent() {
             }
 
             if (zipFilter) {
-                const coords = await getCityCoordinates(zipFilter);
+                const coords = await getCityCoordinates(zipFilter, controller.signal);
+                if (controller.signal.aborted) return;
                 if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }
             } else if (deptFilter) {
                 const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFilter!));
@@ -300,20 +313,25 @@ function MapPageComponent() {
                     setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external');
                 }
             } else if (otherTerms.length > 0) {
-                const cityCoords = await getCityCoordinatesByName(otherTerms.join(' '));
+                const cityCoords = await getCityCoordinatesByName(otherTerms.join(' '), controller.signal);
+                if (controller.signal.aborted) return;
                 if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); setSelectionSource('external'); }
             }
 
             results = results.filter(d => (d.title || '').toLowerCase().includes(term));
         }
-        setFilteredPoints(results);
+        
+        if (!controller.signal.aborted) {
+          setFilteredPoints(results);
+        }
     };
+    
     processSearch();
+    return () => controller.abort();
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
   const ZOOM_THRESHOLD = 8.5;
 
-  // Optimisation Expert : Préchargement spatial (Buffer de 20%)
   const pointsForMap = useMemo(() => {
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
         return allPoints;
@@ -323,7 +341,6 @@ function MapPageComponent() {
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
         
-        // Calcul du buffer de préchargement (20% de marge autour du viewport)
         const dLat = maxLat - minLat;
         const dLng = maxLng - minLng;
         const buffer = 0.20; 
