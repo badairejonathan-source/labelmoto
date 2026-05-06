@@ -180,13 +180,16 @@ function MapPageComponent() {
       const cached = sessionStorage.getItem(storageKey);
       if (cached) {
         const points = JSON.parse(cached);
-        setAllPoints(prev => {
-          const existingIds = new Set(prev.map(p => p.id));
-          const uniqueNewPoints = points.filter((p: MapPoint) => !existingIds.has(p.id));
-          return [...prev, ...uniqueNewPoints];
-        });
-        setLoadedCollections(prev => new Set(prev).add(colName));
-        return;
+        if (points && Array.isArray(points) && points.length > 0) {
+          setAllPoints(prev => {
+            const existingIds = new Set(prev.map(p => p.id));
+            const uniqueNewPoints = points.filter((p: MapPoint) => !existingIds.has(p.id));
+            return [...prev, ...uniqueNewPoints];
+          });
+          setLoadedCollections(prev => new Set(prev).add(colName));
+          setIsLoading(false);
+          return;
+        }
       }
     } catch (e) { /* ignore cache error */ }
 
@@ -195,7 +198,7 @@ function MapPageComponent() {
     
     try {
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(4000)));
+      const snapshot = await getDocs(query(colRef, limit(3500)));
       const points: MapPoint[] = snapshot.docs.map(doc => {
         const data = doc.data();
         return {
@@ -208,14 +211,16 @@ function MapPageComponent() {
         };
       }).filter(p => p.latitude !== 0 && !isNaN(p.latitude));
 
-      setAllPoints(prev => {
-        const existingIds = new Set(prev.map(p => p.id));
-        const uniqueNewPoints = points.filter(p => !existingIds.has(p.id));
-        return [...prev, ...uniqueNewPoints];
-      });
-      
-      setLoadedCollections(prev => new Set(prev).add(colName));
-      try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
+      if (points.length > 0) {
+        setAllPoints(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNewPoints = points.filter(p => !existingIds.has(p.id));
+          return [...prev, ...uniqueNewPoints];
+        });
+        
+        setLoadedCollections(prev => new Set(prev).add(colName));
+        try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
+      }
     } catch (err: any) {
       if (err.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));

@@ -50,6 +50,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const { toast } = useToast();
 
   const docRef = useMemoFirebase(() => {
+    // Ne télécharge que si c'est sélectionné et qu'on n'a pas encore de cache
     if (!isSelected || cachedData) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
     return doc(firestore, col, point.id);
@@ -73,6 +74,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
   const actualImgUrl = useMemo(() => {
     if (!dealership) return "";
+    // On cherche l'URL dans tous les champs possibles par robustesse
     const keys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 'img'];
     for (const key of keys) {
       if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].length > 10) return dealership[key];
@@ -186,13 +188,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                   </a>
                 ) : (isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null)}
 
-                {isSelected && dealership && !isAssociation && !isRelais && (
+                {dealership && !isAssociation && !isRelais && (
                   <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
                     <Clock className="h-4 w-4" /><span className="text-[6px] font-black uppercase mt-1">Horaires</span>
                   </button>
                 )}
                 
-                {!isSelected && (
+                {!dealership && (
                     <div className="flex flex-col justify-center py-2 opacity-40">
                         <span className="text-[7px] font-black uppercase tracking-widest text-muted-foreground">Cliquez pour les détails</span>
                     </div>
