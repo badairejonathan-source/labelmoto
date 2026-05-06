@@ -39,7 +39,8 @@ export default function HomepageDeferred() {
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
-                return (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association'));
+                // On inclut les relais motards dans l'actu
+                return (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association') || id.includes('relais'));
             })
             .sort(sortArticlesByDate)
             .slice(0, 3);
@@ -51,7 +52,7 @@ export default function HomepageDeferred() {
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
-                const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association');
+                const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association') || id.includes('relais');
                 return !isNews && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
             })
             .sort(sortArticlesByDate)
@@ -72,6 +73,8 @@ export default function HomepageDeferred() {
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
         if (id.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
+        if (id.includes('relais')) return "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop";
+        
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     };
@@ -125,6 +128,7 @@ export default function HomepageDeferred() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[250px]">
                         {newsArticles.map((article) => {
                             const isAsso = article.id.toLowerCase().includes('association');
+                            const isRelais = article.id.toLowerCase().includes('relais');
                             return (
                                 <Link 
                                     key={article.id} 
@@ -132,7 +136,7 @@ export default function HomepageDeferred() {
                                     aria-label={`Lire l'article : ${article.display_title || article.title}`}
                                     className={cn(
                                         "group relative aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-xl border-2 bg-black transition-all duration-500 hover:shadow-brand/20",
-                                        isAsso ? "border-indigo-600/30 md:col-span-2 lg:col-span-1" : "border-brand/10"
+                                        isAsso ? "border-indigo-600/30 md:col-span-2 lg:col-span-1" : (isRelais ? "border-amber-600/30" : "border-brand/10")
                                     )}
                                 >
                                     <Image 
@@ -155,9 +159,9 @@ export default function HomepageDeferred() {
                                         <div className="flex flex-wrap gap-2 mb-3">
                                             <span className={cn(
                                                 "inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg",
-                                                isAsso ? "bg-indigo-600 text-white animate-pulse" : "bg-brand text-white"
+                                                isAsso ? "bg-indigo-600 text-white animate-pulse" : (isRelais ? "bg-amber-600 text-white" : "bg-brand text-white")
                                             )}>
-                                                {isAsso ? 'COMMUNAUTÉ' : 'À LA UNE'}
+                                                {isAsso ? 'COMMUNAUTÉ' : (isRelais ? 'RELAIS MOTARDS' : 'À LA UNE')}
                                             </span>
                                         </div>
                                         <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand transition-colors">
