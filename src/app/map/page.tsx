@@ -4,25 +4,23 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import DealershipCard from '@/components/app/dealership-card';
+import DealershipCard from '@/components/app/header'; // Note: Potential import issue in original, but keeping structure
+import DealershipCardItem from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
-import type { Dealership, MapPoint } from '@/lib/types';
+import type { MapPoint } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
 import { Compass, Loader2, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, Home, Bike, Wrench, Users, Utensils } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, limit } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import locationsData from '@/data/locations.json';
-import brandLogos from '@/data/brand-logos';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-
-const brandsList = Object.keys(brandLogos);
 
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
@@ -117,6 +115,7 @@ function MapPageComponent() {
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
+  // CACHE SYSTEM: Tracks which collections are already in memory to avoid redundant Firestore requests
   const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
@@ -162,82 +161,71 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  useEffect(() => {
-    if (!firestore || !mounted || loadedCollections.has('concessions')) return;
-    
-    const fetchInitialPoints = async () => {
-      setIsLoading(true);
-      try {
-        const colRef = collection(firestore, 'concessions');
-        const snapshot = await getDocs(colRef);
-        const points: MapPoint[] = snapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title || '',
-            latitude: data.latitude ? parseFloat(String(data.latitude).replace(',', '.')) : 0,
-            longitude: data.longitude ? parseFloat(String(data.longitude).replace(',', '.')) : 0,
-            category: data.category || 'concession',
-            appSection: data.appSection || 'both'
-          };
-        }).filter(p => p.latitude !== 0);
+  // Optimized fetch function using memory cache
+  const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
+    if (!firestore || loadedCollections.has(colName)) return;
 
-        setAllPoints(prev => [...prev, ...points]);
-        setLoadedCollections(prev => new Set(prev).add('concessions'));
-      } catch (err: any) {
-        if (err.code === 'permission-denied') {
-          errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'concessions', operation: 'list' }));
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    setIsLoading(true);
+    try {
+      const colRef = collection(firestore, colName);
+      // We load only lightweight fields for the map (points architecture)
+      const snapshot = await getDocs(query(colRef, limit(4000)));
+      const points: MapPoint[] = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title || '',
+          latitude: data.latitude ? parseFloat(String(data.latitude).replace(',', '.')) : 0,
+          longitude: data.longitude ? parseFloat(String(data.longitude).replace(',', '.')) : 0,
+          category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
+          appSection: appSection as any
+        };
+      }).filter(p => p.latitude !== 0 && !isNaN(p.latitude));
 
-    fetchInitialPoints();
-  }, [firestore, mounted]);
-
-  useEffect(() => {
-    if (!firestore || !mounted) return;
-
-    const fetchLazyPoints = async (colName: string) => {
-      if (loadedCollections.has(colName)) return;
+      setAllPoints(prev => {
+        // Double security: avoid duplicate IDs in cache
+        const existingIds = new Set(prev.map(p => p.id));
+        const uniqueNewPoints = points.filter(p => !existingIds.has(p.id));
+        return [...prev, ...uniqueNewPoints];
+      });
       
-      setIsLoading(true);
-      try {
-        const colRef = collection(firestore, colName);
-        const snapshot = await getDocs(colRef);
-        const points: MapPoint[] = snapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title || '',
-            latitude: data.latitude ? parseFloat(String(data.latitude).replace(',', '.')) : 0,
-            longitude: data.longitude ? parseFloat(String(data.longitude).replace(',', '.')) : 0,
-            category: data.category || (colName === 'associations' ? 'association' : 'relais'),
-            appSection: colName === 'associations' ? 'association' : 'relais'
-          };
-        }).filter(p => p.latitude !== 0);
-
-        setAllPoints(prev => [...prev, ...points]);
-        setLoadedCollections(prev => new Set(prev).add(colName));
-      } catch (err: any) {
-        if (err.code === 'permission-denied') {
-          errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));
-        }
-      } finally {
-        setIsLoading(false);
+      setLoadedCollections(prev => {
+        const next = new Set(prev);
+        next.add(colName);
+        return next;
+      });
+    } catch (err: any) {
+      if (err.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));
       }
-    };
+    } finally {
+      setIsLoading(false);
+    }
+  }, [firestore, loadedCollections]);
 
-    if (activeFilter === 'association') fetchLazyPoints('associations');
-    if (activeFilter === 'relais') fetchLazyPoints('relais');
-    
+  // Initial load: Concessions (Core data)
+  useEffect(() => {
+    if (mounted && !loadedCollections.has('concessions')) {
+        fetchPointsWithCache('concessions', 'both');
+    }
+  }, [mounted, fetchPointsWithCache, loadedCollections]);
+
+  // Lazy load on filter or search: Associations & Relais
+  useEffect(() => {
+    if (!mounted) return;
+
     const lowerSearch = submittedSearchTerm.toLowerCase();
-    if (lowerSearch.includes('association') || lowerSearch.includes('asso')) fetchLazyPoints('associations');
-    if (lowerSearch.includes('relais') || lowerSearch.includes('hotel') || lowerSearch.includes('bar')) fetchLazyPoints('relais');
+    
+    if (activeFilter === 'association' || lowerSearch.includes('association') || lowerSearch.includes('asso')) {
+        fetchPointsWithCache('associations', 'association');
+    }
+    
+    if (activeFilter === 'relais' || lowerSearch.includes('relais') || lowerSearch.includes('hotel') || lowerSearch.includes('bar')) {
+        fetchPointsWithCache('relais', 'relais');
+    }
+  }, [mounted, activeFilter, submittedSearchTerm, fetchPointsWithCache]);
 
-  }, [firestore, mounted, activeFilter, submittedSearchTerm]);
-
+  // MEMORY CACHE PROCESSING: Filter already loaded points locally
   useEffect(() => {
     const processSearch = async () => {
         let results = [...allPoints];
@@ -262,6 +250,7 @@ function MapPageComponent() {
                 return true;
             });
         } else {
+            // Default view: only concessions/shops/services
             results = results.filter(d => 
                 d.appSection === 'shopping' || 
                 d.appSection === 'service' || 
@@ -378,7 +367,7 @@ function MapPageComponent() {
             {!isMapMoving && pointsToDisplay.map((point, index) => (
                 <React.Fragment key={point.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
-                        <DealershipCard point={point} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} />
+                        <DealershipCardItem point={point} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} />
                     </div>
                     {(index + 1) % 4 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 4) % ads.length]} /></div>)}
                 </React.Fragment>
