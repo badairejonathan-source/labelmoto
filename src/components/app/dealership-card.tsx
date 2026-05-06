@@ -3,18 +3,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, MessageSquare, X, ZoomIn, Clock, Store, Users, Facebook, Instagram, Utensils, Loader2 } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, X, ZoomIn, Clock, Store, Users, Utensils, Loader2 } from 'lucide-react';
 import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface DealershipCardProps {
@@ -61,7 +60,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   // La donnée à afficher est soit le cache parent, soit la donnée fraîchement récupérée
   const dealership = cachedData || fetchedData;
 
-  // Remonter la donnée au parent dès qu'elle est récupérée
+  // Remonter la donnée au parent dès qu'elle est récupérée pour le cache de session
   useEffect(() => {
     if (fetchedData && onDataLoaded && !cachedData) {
       onDataLoaded(fetchedData);
@@ -70,14 +69,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
-
-  const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
-  const { data: stdProfile } = useDoc(stdRef);
-  const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
-  const { data: proProfile } = useDoc(proRef);
-
-  const activeUserProfile = proProfile || stdProfile;
-  const currentPseudo = activeUserProfile?.pseudo || activeUserProfile?.displayName || user?.displayName || user?.email?.split('@')[0] || 'Anonyme';
 
   const ratingValue = dealership?.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
@@ -96,9 +87,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
     if (!user || !firestore) return;
     if (newComment.trim().length < 5) return;
     setIsSubmitting(true);
+    
+    const activeUserProfile = user.displayName || user.email?.split('@')[0] || 'Anonyme';
+
     addDocumentNonBlocking(collection(firestore, 'pending_comments'), {
         userId: user.uid,
-        userName: currentPseudo,
+        userName: activeUserProfile,
         dealershipId: point.id,
         dealershipName: point.title,
         content: newComment,
@@ -187,15 +181,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                       <Phone className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Appel</span>
                     </div>
                   </a>
-                ) : isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null}
+                ) : (isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null)}
 
                 {dealership?.website ? (
                   <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0 animate-in slide-in-from-left-2 duration-400">
-                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10")}>
+                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
                       <Globe className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Web</span>
                     </div>
                   </a>
-                ) : isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null}
+                ) : (isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null)}
 
                 {isSelected && dealership && !isAssociation && !isRelais && (
                   <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0 animate-in zoom-in duration-300", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
