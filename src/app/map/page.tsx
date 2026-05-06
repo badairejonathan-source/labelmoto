@@ -323,8 +323,15 @@ function MapPageComponent() {
   const ZOOM_THRESHOLD = 8.5;
 
   const pointsForMap = useMemo(() => {
-    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return allPoints;
+    // On doit toujours partir des points filtrés par catégorie/recherche
     let results = [...filteredPoints];
+    
+    // Si on est à bas zoom et sans recherche textuelle, on renvoie tous les points filtrés 
+    // (pour les clusters nationaux) sans filtrer par la zone de l'écran.
+    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
+      return results;
+    }
+
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
         const dLat = maxLat - minLat;
@@ -337,7 +344,7 @@ function MapPageComponent() {
         results = results.filter(d => d.latitude >= paddedMinLat && d.latitude <= paddedMaxLat && d.longitude >= paddedMinLng && d.longitude <= paddedMaxLng); 
     }
     return results;
-  }, [allPoints, filteredPoints, mapBoundsStr, mapZoom, submittedSearchTerm]);
+  }, [filteredPoints, mapBoundsStr, mapZoom, submittedSearchTerm]);
 
   const pointsToDisplay = useMemo(() => {
     if (isMapMoving) return [];
