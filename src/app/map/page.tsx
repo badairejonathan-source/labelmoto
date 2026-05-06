@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
-import type { MapPoint } from '@/lib/types';
+import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
 import { Compass, Loader2, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, Home, Bike, Wrench, Users, Utensils } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
@@ -20,6 +20,7 @@ import LabelMotoLogo from '@/components/app/logo';
 import locationsData from '@/data/locations.json';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { useToast } from '@/hooks/use-toast';
 
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
@@ -109,7 +110,12 @@ function MapPageComponent() {
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
+  
+  // Cache en mémoire pour les fiches complètes (évite les re-lectures Firestore sur la même session)
+  const [detailCache, setDetailCache] = useState<Record<string, Dealership>>({});
+  
   const { firestore } = useFirebase();
+  const { toast } = useToast();
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
@@ -162,6 +168,22 @@ function MapPageComponent() {
   const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
     if (!firestore || loadedCollections.has(colName)) return;
 
+    // Tentative de récupération depuis sessionStorage pour économiser les quotas Firestore en dev/test
+    const storageKey = `cache_points_${colName}`;
+    try {
+      const cached = sessionStorage.getItem(storageKey);
+      if (cached) {
+        const points = JSON.parse(cached);
+        setAllPoints(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNewPoints = points.filter((p: MapPoint) => !existingIds.has(p.id));
+          return [...prev, ...uniqueNewPoints];
+        });
+        setLoadedCollections(prev => new Set(prev).add(colName));
+        return;
+      }
+    } catch (e) { /* ignore cache error */ }
+
     setIsLoading(true);
     try {
       const colRef = collection(firestore, colName);
@@ -189,14 +211,24 @@ function MapPageComponent() {
         next.add(colName);
         return next;
       });
+
+      // Sauvegarde dans sessionStorage
+      try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
+
     } catch (err: any) {
       if (err.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));
+      } else if (err.code === 'resource-exhausted') {
+        toast({
+          variant: "destructive",
+          title: "Quota Firestore dépassé",
+          description: "Le service est temporairement indisponible (limite gratuite atteinte). Réessayez demain.",
+        });
       }
     } finally {
       setIsLoading(false);
     }
-  }, [firestore, loadedCollections]);
+  }, [firestore, loadedCollections, toast]);
 
   useEffect(() => {
     if (mounted && !loadedCollections.has('concessions')) {
@@ -326,6 +358,12 @@ function MapPageComponent() {
     setSelectionSource(null);
   }, [isMobile]);
 
+  // Fonction pour mettre en cache une fiche complète reçue des enfants
+  const onDetailLoaded = useCallback((data: Dealership) => {
+    if (!data.id) return;
+    setDetailCache(prev => ({ ...prev, [data.id]: data }));
+  }, []);
+
   const listContent = (
     <div className="space-y-3 pb-20 custom-scrollbar">
       {isLoading ? (
@@ -363,6 +401,8 @@ function MapPageComponent() {
                           isSelected={point.id === selectedDealershipId}
                           onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} 
                           className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} 
+                          cachedData={detailCache[point.id]}
+                          onDataLoaded={onDetailLoaded}
                         />
                     </div>
                     {(index + 1) % 4 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 4) % ads.length]} /></div>)}
