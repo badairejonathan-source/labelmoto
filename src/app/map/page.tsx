@@ -112,7 +112,7 @@ function MapPageComponent() {
   const zoomParam = searchParams.get('zoom');
   const selectedIdParam = searchParams.get('selectedId');
 
-  const [allDealerships, setAllDealerships] = useState<Dealership[]>([]);
+  const [allDealerships, setAllDealerships] = useState<Dealership[]>([CIRCUIT_BUGATTI]);
   const [filteredDealerships, setFilteredDealerships] = useState<Dealership[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
@@ -132,6 +132,9 @@ function MapPageComponent() {
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
+
+  // État pour suivre quelles collections sont déjà chargées
+  const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -176,57 +179,80 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  // OPTIMISATION: Passage de onSnapshot à getDocs pour économiser le quota
+  // CHARGEMENT INITIAL (Concessions uniquement)
   useEffect(() => {
-    if (!firestore || !mounted) return;
-    setIsLoading(true);
+    if (!firestore || !mounted || loadedCollections.has('concessions')) return;
     
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
+      setIsLoading(true);
       try {
-        const collectionsList = ['concessions', 'associations', 'relais'];
-        const resultsMap: Record<string, Dealership[]> = {};
+        const colRef = collection(firestore, 'concessions');
+        const snapshot = await getDocs(colRef);
+        const concessions = snapshot.docs.map(doc => ({
+          id: doc.id,
+          firestoreCollection: 'concessions',
+          ...doc.data(),
+          latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
+          longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+          phoneNumber: doc.data().phoneNumber || doc.data().pnoneNumber,
+          appSection: doc.data().appSection || 'both'
+        } as Dealership));
 
-        for (const colName of collectionsList) {
-          const colRef = collection(firestore, colName);
-          try {
-            const snapshot = await getDocs(colRef);
-            resultsMap[colName] = snapshot.docs.map(doc => ({
-              id: doc.id,
-              firestoreCollection: colName,
-              ...doc.data(),
-              latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
-              longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
-              phoneNumber: doc.data().phoneNumber || doc.data().pnoneNumber, // Handle typo
-              appSection: colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : doc.data().appSection)
-            } as Dealership));
-          } catch (err: any) {
-            if (err.code === 'permission-denied') {
-              errorEmitter.emit('permission-error', new FirestorePermissionError({
-                path: colRef.path,
-                operation: 'list'
-              }));
-            }
-            throw err; // Re-throw to be caught by outer catch
-          }
-        }
-
-        const merged = [CIRCUIT_BUGATTI, ...Object.values(resultsMap).flat()];
-        setAllDealerships(merged);
+        setAllDealerships(prev => [...prev, ...concessions]);
+        setLoadedCollections(prev => new Set(prev).add('concessions'));
       } catch (err: any) {
-        if (err.code === 'resource-exhausted') {
-          toast({
-            variant: "destructive",
-            title: "Quota Firestore dépassé",
-            description: "La plateforme a atteint sa limite quotidienne gratuite. Les données seront de nouveau disponibles demain.",
-          });
+        if (err.code === 'permission-denied') {
+          errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'concessions', operation: 'list' }));
         }
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchInitialData();
   }, [firestore, mounted]);
+
+  // CHARGEMENT DIFFÉRÉ DES ASSOCIATIONS ET RELAIS
+  useEffect(() => {
+    if (!firestore || !mounted) return;
+
+    const fetchLazyCollection = async (colName: string) => {
+      if (loadedCollections.has(colName)) return;
+      
+      setIsLoading(true);
+      try {
+        const colRef = collection(firestore, colName);
+        const snapshot = await getDocs(colRef);
+        const items = snapshot.docs.map(doc => ({
+          id: doc.id,
+          firestoreCollection: colName,
+          ...doc.data(),
+          latitude: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
+          longitude: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
+          phoneNumber: doc.data().phoneNumber || doc.data().pnoneNumber,
+          appSection: colName === 'associations' ? 'association' : 'relais'
+        } as Dealership));
+
+        setAllDealerships(prev => [...prev, ...items]);
+        setLoadedCollections(prev => new Set(prev).add(colName));
+      } catch (err: any) {
+        if (err.code === 'permission-denied') {
+          errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (activeFilter === 'association') fetchLazyCollection('associations');
+    if (activeFilter === 'relais') fetchLazyCollection('relais');
+    
+    // Si la recherche contient des mots clés spécifiques, on charge aussi
+    const lowerSearch = submittedSearchTerm.toLowerCase();
+    if (lowerSearch.includes('association') || lowerSearch.includes('asso')) fetchLazyCollection('associations');
+    if (lowerSearch.includes('relais') || lowerSearch.includes('hotel') || lowerSearch.includes('bar')) fetchLazyCollection('relais');
+
+  }, [firestore, mounted, activeFilter, submittedSearchTerm]);
 
   useEffect(() => {
     const processSearch = async () => {
@@ -245,14 +271,23 @@ function MapPageComponent() {
 
         const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
         
+        // LOGIQUE DE FILTRE : On exclut associations et relais si le filtre n'est pas actif
         if (currentFilter) { 
             results = results.filter(d => {
                 if (currentFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
                 if (currentFilter === 'service') return d.appSection === 'service' || d.appSection === 'both';
-                if (currentFilter === 'association') return d.appSection === 'association' || d.category === 'Association motarde';
+                if (currentFilter === 'association') return d.appSection === 'association';
                 if (currentFilter === 'relais') return d.appSection === 'relais';
                 return true;
             });
+        } else {
+            // Par défaut (null), on ne montre QUE les concessions (shopping/service/both)
+            // Cela masque automatiquement les associations et relais de la vue "Tout"
+            results = results.filter(d => 
+                d.appSection === 'shopping' || 
+                d.appSection === 'service' || 
+                d.appSection === 'both'
+            );
         }
         
         const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
@@ -412,7 +447,7 @@ function MapPageComponent() {
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
             <MapComponent 
-            dealerships={filteredDealerships} 
+            dealerships={dealershipsToDisplay} 
             center={mapCenter} 
             zoom={mapZoom} 
             hoveredDealershipId={hoveredDealershipId} 
