@@ -303,18 +303,34 @@ function MapPageComponent() {
     processSearch();
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
-  const pointsToDisplay = useMemo(() => {
-    if (mapZoom < 8 && submittedSearchTerm.trim() === '') return [];
+  // LOGIQUE DE CHARGEMENT INTELLIGENT DES POINTS
+  // Seuil de zoom pour le basculement entre Clusters Globaux et Points Visibles
+  const ZOOM_THRESHOLD = 8.5;
+
+  const pointsForMap = useMemo(() => {
+    // Vue large : on envoie tout pour permettre le clustering Leaflet
+    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
+        return allPoints;
+    }
+
+    // Vue zoomée ou Recherche active : on ne charge que ce qui est visible
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
         results = results.filter(d => d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng); 
     }
-    
-    results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
+    return results;
+  }, [allPoints, filteredPoints, mapBoundsStr, mapZoom, submittedSearchTerm]);
 
+  const pointsToDisplay = useMemo(() => {
+    // Dans la liste latérale, on n'affiche rien si on est trop dézoomé sans recherche
+    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return [];
+    
+    // On prend les points visibles calculés pour la carte et on les trie/limite pour la liste
+    let results = [...pointsForMap];
+    results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
     return results.slice(0, 50);
-  }, [filteredPoints, mapBoundsStr, sortingAnchor, mapZoom, submittedSearchTerm]);
+  }, [pointsForMap, sortingAnchor, mapZoom, submittedSearchTerm]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
     setSelectedDealershipId(id); setSelectionSource('card'); 
@@ -348,7 +364,7 @@ function MapPageComponent() {
         </div>
       ) : (
         <>
-            {pointsToDisplay.length === 0 && submittedSearchTerm === '' && mapZoom < 8 && (
+            {pointsToDisplay.length === 0 && submittedSearchTerm === '' && mapZoom < ZOOM_THRESHOLD && (
                 <div className="space-y-4 pt-2">
                     <div className="bg-brand/5 border-2 border-brand/20 p-6 rounded-[2rem] shadow-sm mb-4">
                         <div className="flex items-center gap-2 mb-4"><Sparkles className="h-5 w-5 text-brand animate-pulse" /><h3 className="text-sm font-black uppercase tracking-widest text-foreground">Guides & Conseils</h3></div>
@@ -361,14 +377,13 @@ function MapPageComponent() {
             {pointsToDisplay.map((point, index) => (
                 <React.Fragment key={point.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
-                        {/* Pour l'étape 1, DealershipCard affichera des squelettes ou des infos limitées */}
                         <DealershipCard point={point} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} />
                     </div>
                     {(index + 1) % 4 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 4) % ads.length]} /></div>)}
                 </React.Fragment>
             ))}
 
-            {pointsToDisplay.length === 0 && (submittedSearchTerm !== '' || mapZoom >= 8) && !isLoading && (
+            {pointsToDisplay.length === 0 && (submittedSearchTerm !== '' || mapZoom >= ZOOM_THRESHOLD) && !isLoading && (
                 <div className="text-center py-20 opacity-50"><MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" /><p className="font-black uppercase tracking-widest text-xs">Aucun établissement dans cette zone</p></div>
             )}
         </>
@@ -387,11 +402,11 @@ function MapPageComponent() {
   if (!mounted || width === undefined) return <div className="flex h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-background flex flex-col md:flex-row">
+    <div className="relative w-full h-screen overflow-hidden bg-background flex flex-col md:row">
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
             <MapComponent 
-            points={allPoints} 
+            points={pointsForMap} 
             center={mapCenter} 
             zoom={mapZoom} 
             hoveredId={hoveredDealershipId} 
@@ -477,7 +492,7 @@ function MapPageComponent() {
               <div className="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar pb-1">
                 <button onClick={() => setActiveFilter('shopping')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'shopping' ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Bike className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5">Vente</span></button>
                 <button onClick={() => setActiveFilter(null)} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === null ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Home className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5">Tout</span></button>
-                <button onClick={() => setActiveFilter('service')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'service' ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Wrench className="h-5 w-5" /><span className="text-[7px) font-black uppercase mt-0.5">Atelier</span></button>
+                <button onClick={() => setActiveFilter('service')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'service' ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Wrench className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5">Atelier</span></button>
                 <button onClick={() => setActiveFilter('association')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'association' ? "bg-indigo-600 text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Users className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5 text-center leading-none">Asso</span></button>
                 <button onClick={() => setActiveFilter('relais')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'relais' ? "bg-amber-600 text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Utensils className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5 text-center leading-none">Relais</span></button>
                 <button className="ml-1 rounded-full h-10 w-10 flex items-center justify-center hover:bg-muted shrink-0" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>{drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}</button>
