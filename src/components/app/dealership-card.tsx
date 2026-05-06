@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, memo } from 'react';
@@ -49,7 +50,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const { toast } = useToast();
 
   const docRef = useMemoFirebase(() => {
-    // Ne télécharge que si c'est sélectionné et qu'on n'a pas encore de cache
     if (!isSelected || cachedData) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
     return doc(firestore, col, point.id);
@@ -73,11 +73,32 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
   const actualImgUrl = useMemo(() => {
     if (!dealership) return "";
-    // On cherche l'URL dans tous les champs possibles par robustesse
-    const keys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 'img'];
+    
+    // Liste de clés classées par probabilité de succès
+    const keys = [
+      'imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 
+      'img', 'photo', 'url', 'cover', 'thumbnail'
+    ];
+
     for (const key of keys) {
-      if (dealership[key] && typeof dealership[key] === 'string' && dealership[key].length > 10) return dealership[key];
+      const val = dealership[key];
+      if (val && typeof val === 'string' && val.startsWith('http')) {
+        return val;
+      }
     }
+
+    // Recherche récursive simple dans les objets de premier niveau (pour les structures imbriquées type Google)
+    for (const key in dealership) {
+      const val = dealership[key];
+      if (val && typeof val === 'object' && !Array.isArray(val)) {
+        for (const subKey of keys) {
+          if (val[subKey] && typeof val[subKey] === 'string' && val[subKey].startsWith('http')) {
+            return val[subKey];
+          }
+        }
+      }
+    }
+
     return "";
   }, [dealership]);
 
@@ -130,7 +151,15 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
             <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white"><X className="h-6 w-6" /></button>
             <div className="relative w-full h-full">
               {actualImgUrl && !imgError && (
-                <Image src={actualImgUrl} alt={point.title} fill className="object-contain" onError={() => setImgError(true)} referrerPolicy="no-referrer" />
+                <Image 
+                  src={actualImgUrl} 
+                  alt={point.title} 
+                  fill 
+                  className="object-contain" 
+                  onError={() => setImgError(true)} 
+                  referrerPolicy="no-referrer"
+                  unoptimized // Souvent nécessaire pour les URLs avec tokens expirables de Google
+                />
               )}
             </div>
           </div>
@@ -149,7 +178,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
         <div className="flex items-stretch min-h-[130px] md:min-h-[150px]">
           <div className="flex flex-1 flex-row items-stretch">
-            <div className={cn("relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 flex items-center justify-center", actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default")} onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}>
+            <div 
+              className={cn(
+                "relative w-40 sm:w-40 md:w-52 overflow-hidden border-r bg-muted/30 flex items-center justify-center", 
+                actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default"
+              )} 
+              onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}
+            >
               {isLoading ? (
                 <div className="flex flex-col items-center gap-2">
                     <Loader2 className="h-6 w-6 animate-spin text-brand/40" />
@@ -157,8 +192,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                 </div>
               ) : actualImgUrl && !imgError ? (
                 <>
-                  <Image src={actualImgUrl} alt={point.title} fill className="object-cover transition-transform group-hover:brightness-110 duration-700" onError={() => setImgError(true)} referrerPolicy="no-referrer" />
-                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all"><ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" /></div>
+                  <Image 
+                    src={actualImgUrl} 
+                    alt={point.title} 
+                    fill 
+                    className="object-cover transition-transform group-hover:brightness-110 duration-700" 
+                    onError={() => setImgError(true)} 
+                    referrerPolicy="no-referrer"
+                    sizes="(max-width: 768px) 160px, 210px"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 flex items-center justify-center transition-all">
+                    <ZoomIn className="text-white opacity-0 group-hover/img:opacity-100 h-6 w-6" />
+                  </div>
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2 opacity-20">
