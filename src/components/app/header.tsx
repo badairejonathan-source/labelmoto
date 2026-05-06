@@ -43,6 +43,18 @@ interface Suggestion {
     score?: number;
 }
 
+interface HeaderProps {
+    searchTerm: string;
+    onSearchTermChange: (term: string) => void;
+    onSearch: () => void;
+    className?: string;
+    activeFilter?: 'shopping' | 'service' | 'association' | 'relais' | null;
+    onFilterChange?: (filter: 'shopping' | 'service' | 'association' | 'relais' | null) => void;
+    placeholderText?: string;
+    variant?: 'default' | 'map';
+    hideUserMenu?: boolean;
+}
+
 export const UserMenu = () => {
   const { user, isUserLoading, activateAuth } = useUser();
   const auth = useAuth();
@@ -221,7 +233,6 @@ const Header: React.FC<HeaderProps> = ({
   const [isDataLoading, setIsDataLoading] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Optimisation Mobile : On déferre le calcul des suggestions pour garder l'input fluide
   const deferredSearchTerm = useDeferredValue(searchTerm);
 
   const isMapPage = pathname === '/map';
@@ -556,65 +567,83 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             
             <nav className={cn(
-              "flex items-center justify-center gap-4 md:gap-6 relative z-50",
+              "flex flex-wrap items-center justify-center gap-4 md:gap-8 relative z-50",
               isMapPage ? "hidden" : (isCompactPage ? "-mb-24 md:-mb-20" : "-mb-16 md:-mb-10")
             )}>
-                <Button 
-                    variant="ghost" 
-                    onClick={() => handleTabClick('shopping')} 
-                    aria-label="Filtrer par concessions"
-                    className={cn(
-                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
-                        activeFilter === 'shopping' 
-                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
-                    )}
-                >
-                    <Bike className={cn("h-7 w-7 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Concession</span>
-                </Button>
-                <Button 
-                    variant="ghost" 
-                    onClick={() => handleTabClick(null)} 
-                    aria-label="Afficher tout"
-                    className={cn(
-                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
-                        activeFilter === null 
-                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
-                    )}
-                >
-                    <Home className={cn("h-7 w-7 transition-colors", activeFilter === null ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Tout</span>
-                </Button>
-                <Button 
-                    variant="ghost" 
-                    onClick={() => handleTabClick('service')} 
-                    aria-label="Filtrer par ateliers"
-                    className={cn(
-                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
-                        activeFilter === 'service' 
-                          ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-brand hover:text-white hover:border-white"
-                    )}
-                >
-                    <Wrench className={cn("h-7 w-7 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand group-hover:text-white")} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] mt-1 transition-colors">Atelier</span>
-                </Button>
-                <Button 
-                    variant="ghost" 
-                    onClick={() => handleTabClick('relais')} 
-                    aria-label="Filtrer par relais motards"
-                    className={cn(
-                        "h-[72px] w-[72px] md:h-[80px] md:w-[80px] p-0 rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all group border-[5px]",
-                        activeFilter === 'relais' 
-                          ? "bg-amber-600 text-white border-white scale-110 z-10 shadow-amber-600/40" 
-                          : "bg-white text-muted-foreground border-transparent hover:bg-amber-600 hover:text-white hover:border-white"
-                    )}
-                >
-                    <Utensils className={cn("h-7 w-7 transition-colors", activeFilter === 'relais' ? "text-white" : "text-amber-600 group-hover:text-white")} />
-                    <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1 transition-colors">Relais</span>
-                </Button>
+                {/* Groupe Commerce */}
+                <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick('shopping')} 
+                        className={cn(
+                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
+                            activeFilter === 'shopping' 
+                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                            : "bg-white text-muted-foreground border-transparent hover:border-brand/30"
+                        )}
+                    >
+                        <Bike className={cn("h-6 w-6 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+                        <span className="text-[9px] font-black uppercase tracking-tighter leading-none mt-1">Concession</span>
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick(null)} 
+                        className={cn(
+                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
+                            activeFilter === null 
+                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                            : "bg-white text-muted-foreground border-transparent hover:border-brand/30"
+                        )}
+                    >
+                        <Home className={cn("h-6 w-6 transition-colors", activeFilter === null ? "text-white" : "text-brand")} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.1em] mt-1">Tout</span>
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick('service')} 
+                        className={cn(
+                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
+                            activeFilter === 'service' 
+                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                            : "bg-white text-muted-foreground border-transparent hover:border-brand/30"
+                        )}
+                    >
+                        <Wrench className={cn("h-6 w-6 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand")} />
+                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Atelier</span>
+                    </Button>
+                </div>
+
+                <div className="hidden md:block w-px h-12 bg-border/50" />
+
+                {/* Groupe Communauté */}
+                <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick('association')} 
+                        className={cn(
+                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
+                            activeFilter === 'association' 
+                            ? "bg-indigo-600 text-white border-white scale-110 z-10 shadow-indigo-600/40" 
+                            : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/30"
+                        )}
+                    >
+                        <Users className={cn("h-6 w-6 transition-colors", activeFilter === 'association' ? "text-white" : "text-indigo-600")} />
+                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Asso</span>
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => handleTabClick('relais')} 
+                        className={cn(
+                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
+                            activeFilter === 'relais' 
+                            ? "bg-amber-600 text-white border-white scale-110 z-10 shadow-amber-600/40" 
+                            : "bg-white text-muted-foreground border-transparent hover:border-amber-600/30"
+                        )}
+                    >
+                        <Utensils className={cn("h-6 w-6 transition-colors", activeFilter === 'relais' ? "text-white" : "text-amber-600")} />
+                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Relais</span>
+                    </Button>
+                </div>
             </nav>
         </div>
       </div>
