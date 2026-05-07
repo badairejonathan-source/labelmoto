@@ -409,13 +409,13 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   {strengths && Array.isArray(strengths) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Avantages</div>
-                      <ul className="list-none space-y-1">{strengths.map((s: string, i: number) => (<li key={`${keyPrefix}-s-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-green-500">•</span> {s}</li>))}</ul>
+                      <ul className="list-none space-y-1">{strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (<li key={`${keyPrefix}-s-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-green-500">•</span> {s}</li>))}</ul>
                     </div>
                   )}
                   {weaknesses && Array.isArray(weaknesses) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
-                      <ul className="list-none space-y-1">{weaknesses.map((s: string, i: number) => (<li key={`${keyPrefix}-w-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-orange-500">•</span> {s}</li>))}</ul>
+                      <ul className="list-none space-y-1">{weaknesses && Array.isArray(weaknesses) && weaknesses.map((s: string, j: number) => (<li key={`${keyPrefix}-w-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-orange-500">•</span> {s}</li>))}</ul>
                     </div>
                   )}
                 </div>
@@ -469,7 +469,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
     const isAssociationCta = targetSlug === 'carte-associations-moto' || label.toLowerCase().includes('association');
     const isRelaisCta = targetSlug === 'carte-relais-motards' || label.toLowerCase().includes('relais');
-    const isRegistrationCta = label.toLowerCase().includes('ajouter mon association') || label.toLowerCase().includes('inscrire');
+    const isRegistrationCta = label.toLowerCase().includes('ajouter mon association') || label.toLowerCase().includes('inscrire') || label.toLowerCase().includes('ajouter une adresse');
 
     let href = targetSlug ? (targetSlug.startsWith('http') ? targetSlug : `/info/${targetSlug}`) : "/map";
     

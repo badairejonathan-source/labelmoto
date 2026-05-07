@@ -118,7 +118,7 @@ export default function HomepageDeferred() {
             </section>
 
             {newsArticles.length > 0 && (
-                <section aria-labelledby="actu-title">
+                <section aria-labelledby="actu-title" className="bg-muted/10 border-2 border-muted p-6 md:p-12 rounded-[2.5rem] shadow-inner">
                     <div className="flex items-center gap-3 mb-8 px-4">
                         <div className="bg-brand/10 p-2 rounded-lg">
                             <Zap className="h-6 w-6 text-brand" aria-hidden="true" />
