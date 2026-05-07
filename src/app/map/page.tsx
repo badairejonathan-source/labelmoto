@@ -12,7 +12,7 @@ import { Compass, Loader2, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, H
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
-import { collection, getDocs, query, limit } from "firebase/firestore";
+import { collection, getDocs, query, limit, where, orderBy, startAt, endAt } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
@@ -30,6 +30,8 @@ const CIRCUIT_BUGATTI: MapPoint = {
   category: 'Circuit',
   appSection: 'both',
 };
+
+const ZOOM_THRESHOLD = 8.5;
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -101,9 +103,7 @@ function MapPageComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
   
-  // Cache en mémoire pour les détails déjà chargés
   const [detailCache, setDetailCache] = useState<Record<string, Dealership>>({});
-  
   const { firestore } = useFirebase();
   const { toast } = useToast();
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
@@ -111,8 +111,9 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [loadedCollections, setLoadedCollections] = useState<Set<string>>(new Set());
-  const [loadingCollections, setLoadingCollections] = useState<Set<string>>(new Set());
+  // Tracking des zones géographiques chargées (latitudes)
+  const fetchedLatBands = useRef<Set<number>>(new Set());
+  const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -143,7 +144,9 @@ function MapPageComponent() {
   useEffect(() => {
     if (latParam && lngParam) {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
-        setMapCenter(pos); setSortingAnchor(pos); setMapZoom(prev => Math.max(prev, 12)); 
+        setMapCenter(pos); 
+        setSortingAnchor(pos); 
+        if (mapZoom < 12) setMapZoom(12);
         setSelectionSource('external');
     }
     if (selectedIdParam) {
@@ -157,112 +160,166 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  const fetchPointsWithCache = useCallback(async (colName: string, appSection: string) => {
+  /**
+   * Extrait les MapPoints d'un snapshot Firestore de manière robuste
+   */
+  const processSnapshot = useCallback((snapshot: any, colName: string, appSection: string) => {
+    return snapshot.docs.map((doc: any) => {
+      const data = doc.data();
+      const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
+      
+      let lat = 0;
+      let lng = 0;
+      try {
+        if (data.latitude !== undefined) lat = parseFloat(String(data.latitude).replace(',', '.'));
+        else if (data.lat !== undefined) lat = parseFloat(String(data.lat).replace(',', '.'));
+        else if (data.location?.lat !== undefined) lat = parseFloat(String(data.location.lat).replace(',', '.'));
+        else if (data.position?.latitude !== undefined) lat = parseFloat(String(data.position.latitude).replace(',', '.'));
+        
+        if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
+        else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
+        else if (data.location?.lng !== undefined) lng = parseFloat(String(data.location.lng).replace(',', '.'));
+        else if (data.position?.longitude !== undefined) lng = parseFloat(String(data.position.longitude).replace(',', '.'));
+      } catch (e) {}
+
+      let previewImg = "";
+      const imgKeys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url'];
+      for(const k of imgKeys) { if(data[k] && typeof data[k] === 'string') { previewImg = data[k]; break; } }
+
+      return {
+        id: doc.id,
+        title: title,
+        latitude: lat,
+        longitude: lng,
+        category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
+        appSection: appSection as any,
+        imgUrl: previewImg,
+        rating: data.rating
+      };
+    }).filter((p: any) => p.latitude !== 0 && !isNaN(p.latitude));
+  }, []);
+
+  /**
+   * Chargement initial d'un échantillon pour les clusters France
+   */
+  useEffect(() => {
+    const fetchInitialSample = async () => {
+      if (!firestore || !mounted) return;
+      setIsLoading(true);
+      try {
+        const colRef = collection(firestore, 'concessions');
+        // On charge un échantillon limité pour la vue globale
+        const snapshot = await getDocs(query(colRef, limit(800)));
+        const points = processSnapshot(snapshot, 'concessions', 'both');
+        
+        points.forEach((p: MapPoint) => masterPointsMap.current.set(p.id, p));
+        setAllPoints(Array.from(masterPointsMap.current.values()));
+      } catch (err: any) {
+        console.error("Initial sample fetch error", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchInitialSample();
+  }, [firestore, mounted, processSnapshot]);
+
+  /**
+   * Chargement par Viewport (Bandes de latitude)
+   */
+  const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds) => {
     if (!firestore) return;
-    if (loadedCollections.has(colName) || loadingCollections.has(colName)) {
-      if (colName === 'concessions') setIsLoading(false);
-      return;
+    
+    const south = bounds.getSouth();
+    const north = bounds.getNorth();
+    const west = bounds.getWest();
+    const east = bounds.getEast();
+
+    // On divise la France en bandes de 0.5 degré de latitude pour éviter de recharger trop souvent
+    const latStart = Math.floor(south * 2) / 2;
+    const latEnd = Math.ceil(north * 2) / 2;
+
+    const newBands: number[] = [];
+    for (let l = latStart; l <= latEnd; l += 0.5) {
+      if (!fetchedLatBands.current.has(l)) {
+        newBands.push(l);
+      }
     }
 
-    const storageKey = `cache_points_v2_${colName}`;
-    try {
-      const cached = sessionStorage.getItem(storageKey);
-      if (cached) {
-        const points = JSON.parse(cached);
-        if (points && Array.isArray(points) && points.length > 0) {
-          setAllPoints(prev => {
-            const existingIds = new Set(prev.map(p => p.id));
-            const uniqueNewPoints = points.filter((p: MapPoint) => !existingIds.has(p.id));
-            return [...prev, ...uniqueNewPoints];
-          });
-          setLoadedCollections(prev => new Set(prev).add(colName));
-          if (colName === 'concessions') setIsLoading(false);
-          return;
-        }
-      }
-    } catch (e) { /* ignore cache error */ }
+    if (newBands.length === 0) return;
 
-    if (colName === 'concessions') setIsLoading(true);
-    setLoadingCollections(prev => new Set(prev).add(colName));
+    // Pour chaque nouvelle bande de latitude, on fait une requête
+    // Note: Firestore limite les requêtes. On traite les bandes 2 par 2.
+    setIsLoading(true);
+    try {
+      const colRef = collection(firestore, 'concessions');
+      const promises = newBands.map(band => {
+        fetchedLatBands.current.add(band);
+        return getDocs(query(
+          colRef, 
+          orderBy('latitude'), 
+          startAt(band), 
+          endAt(band + 0.5),
+          limit(1000)
+        ));
+      });
+
+      const snapshots = await Promise.all(promises);
+      let addedCount = 0;
+
+      snapshots.forEach(snap => {
+        const points = processSnapshot(snap, 'concessions', 'both');
+        points.forEach((p: MapPoint) => {
+          // Filtrage longitude client-side pour la précision
+          if (p.longitude >= west - 0.2 && p.longitude <= east + 0.2) {
+             if (!masterPointsMap.current.has(p.id)) {
+                masterPointsMap.current.set(p.id, p);
+                addedCount++;
+             }
+          }
+        });
+      });
+
+      if (addedCount > 0) {
+        setAllPoints(Array.from(masterPointsMap.current.values()));
+      }
+    } catch (err: any) {
+      console.error("Geofenced fetch error", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [firestore, processSnapshot]);
+
+  /**
+   * Fetch additionnel pour les collections secondaires (Asso / Relais)
+   */
+  const fetchSecondaryData = useCallback(async (colName: string, appSection: string) => {
+    if (!firestore || fetchedLatBands.current.has(-999 + (colName === 'relais' ? 1 : 0))) return;
     
     try {
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(10000)));
-      const points: MapPoint[] = snapshot.docs.map(doc => {
-        const data = doc.data();
-        const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
-        
-        let lat = 0;
-        let lng = 0;
-        try {
-          if (data.latitude !== undefined) lat = parseFloat(String(data.latitude).replace(',', '.'));
-          else if (data.lat !== undefined) lat = parseFloat(String(data.lat).replace(',', '.'));
-          else if (data.location?.lat !== undefined) lat = parseFloat(String(data.location.lat).replace(',', '.'));
-          else if (data.position?.latitude !== undefined) lat = parseFloat(String(data.position.latitude).replace(',', '.'));
-          
-          if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
-          else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
-          else if (data.location?.lng !== undefined) lng = parseFloat(String(data.location.lng).replace(',', '.'));
-          else if (data.position?.longitude !== undefined) lng = parseFloat(String(data.position.longitude).replace(',', '.'));
-        } catch (e) {}
-
-        // Extraction de l'image pour le Preview (Couche 2)
-        let previewImg = "";
-        const imgKeys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url'];
-        for(const k of imgKeys) { if(data[k] && typeof data[k] === 'string') { previewImg = data[k]; break; } }
-
-        return {
-          id: doc.id,
-          title: title,
-          latitude: lat,
-          longitude: lng,
-          category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
-          appSection: appSection as any,
-          imgUrl: previewImg,
-          rating: data.rating
-        };
-      }).filter(p => p.latitude !== 0 && !isNaN(p.latitude));
-
-      if (points.length > 0) {
-        setAllPoints(prev => {
-          const existingIds = new Set(prev.map(p => p.id));
-          const uniqueNewPoints = points.filter(p => !existingIds.has(p.id));
-          return [...prev, ...uniqueNewPoints];
-        });
-        setLoadedCollections(prev => new Set(prev).add(colName));
-        try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
-      }
-    } catch (err: any) {
-      if (err.code === 'permission-denied') {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));
-      }
-    } finally {
-      if (colName === 'concessions') setIsLoading(false);
-      setLoadingCollections(prev => {
-        const next = new Set(prev);
-        next.delete(colName);
-        return next;
-      });
-    }
-  }, [firestore, loadedCollections, loadingCollections]);
-
-  useEffect(() => {
-    if (mounted && !loadedCollections.has('concessions')) {
-        fetchPointsWithCache('concessions', 'both');
-    }
-  }, [mounted, fetchPointsWithCache, loadedCollections]);
+      const snapshot = await getDocs(query(colRef, limit(2000)));
+      const points = processSnapshot(snapshot, colName, appSection);
+      
+      points.forEach((p: MapPoint) => masterPointsMap.current.set(p.id, p));
+      setAllPoints(Array.from(masterPointsMap.current.values()));
+      fetchedLatBands.current.add(-999 + (colName === 'relais' ? 1 : 0));
+    } catch (e) {}
+  }, [firestore, processSnapshot]);
 
   useEffect(() => {
     if (!mounted) return;
     const lowerSearch = submittedSearchTerm.toLowerCase();
     if (activeFilter === 'association' || lowerSearch.includes('association') || lowerSearch.includes('asso')) {
-        fetchPointsWithCache('associations', 'association');
+        fetchSecondaryData('associations', 'association');
     }
     if (activeFilter === 'relais' || lowerSearch.includes('relais') || lowerSearch.includes('hotel') || lowerSearch.includes('bar')) {
-        fetchPointsWithCache('relais', 'relais');
+        fetchSecondaryData('relais', 'relais');
     }
-  }, [mounted, activeFilter, submittedSearchTerm, fetchPointsWithCache]);
+  }, [mounted, activeFilter, submittedSearchTerm, fetchSecondaryData]);
 
+  /**
+   * Logique de recherche et filtrage (Client-side)
+   */
   useEffect(() => {
     const controller = new AbortController();
     const processSearch = async () => {
@@ -320,7 +377,7 @@ function MapPageComponent() {
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
             if (coords && !controller.signal.aborted) {
-                setMapCenter(coords); setSortingAnchor(coords); setMapZoom(prev => Math.max(prev, 12)); setSelectionSource('external');
+                setMapCenter(coords); setSortingAnchor(coords); if (mapZoom < 12) setMapZoom(12); setSelectionSource('external');
             }
         } else if (deptFound) {
             const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFound!));
@@ -340,11 +397,11 @@ function MapPageComponent() {
 
     const timer = setTimeout(() => { processSearch(); }, 300);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [submittedSearchTerm, allPoints, activeFilter]);
+  }, [submittedSearchTerm, allPoints, activeFilter, mapZoom]);
 
-  const ZOOM_THRESHOLD = 8.5;
-
-  // Filtrage intelligent par Viewport pour la carte ET la liste
+  /**
+   * Filtrage Viewport (pour la liste)
+   */
   const pointsInViewport = useMemo(() => {
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
@@ -359,7 +416,7 @@ function MapPageComponent() {
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return [];
     let results = [...pointsInViewport];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
-    return results.slice(0, 40); // Limite le DOM à 40 éléments pour la performance
+    return results.slice(0, 40);
   }, [pointsInViewport, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
@@ -367,22 +424,22 @@ function MapPageComponent() {
     setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
-      setMapZoom(prev => Math.max(prev, 12)); 
+      if (mapZoom < 12) setMapZoom(12); 
       if (isMobile) setDrawerHeight('half'); 
     } 
-  }, [isMobile]);
+  }, [isMobile, mapZoom]);
 
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); 
     setSelectionSource('marker');
-    const point = allPoints.find(d => d.id === id); 
+    const point = masterPointsMap.current.get(id); 
     if (point) { 
       setMapCenter([point.latitude, point.longitude]); 
       setSortingAnchor([point.latitude, point.longitude]); 
-      setMapZoom(prev => Math.max(prev, 12)); 
+      if (mapZoom < 12) setMapZoom(12); 
     } 
     if (isMobile) setDrawerHeight('half'); 
-  }, [isMobile, allPoints]);
+  }, [isMobile, mapZoom]);
 
   const handleUserMapInteraction = useCallback(() => { 
     if (isMobile) setDrawerHeight('collapsed'); 
@@ -399,14 +456,19 @@ function MapPageComponent() {
     setMapCenter(newCenter);
     setIsMapMoving(false);
     if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
+    
     mapUpdateTimerRef.current = setTimeout(() => {
         setMapBoundsStr(bounds.toBBoxString()); 
         const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
         if (selectionSource === null && distSq > 0.01) {
           setSortingAnchor(newCenter);
         }
+        // Déclenchement du chargement géographique si zoom suffisant
+        if (newZoom >= ZOOM_THRESHOLD) {
+          fetchPointsInViewport(bounds);
+        }
     }, 300);
-  }, [selectionSource, sortingAnchor]);
+  }, [selectionSource, sortingAnchor, fetchPointsInViewport]);
 
   const handleLocateEnd = useCallback(() => setIsLoadingLocating(false), []);
   const handleLocationFound = useCallback((coords: [number, number]) => { 
@@ -418,7 +480,7 @@ function MapPageComponent() {
 
   const listContent = (
     <div className="space-y-3 pb-20 custom-scrollbar">
-      {isLoading ? (
+      {isLoading && pointsToDisplay.length === 0 ? (
         <div className="space-y-4 pt-4">
             {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="flex gap-4 p-4 border rounded-xl animate-pulse bg-card">
