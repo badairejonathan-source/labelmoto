@@ -101,6 +101,7 @@ function MapPageComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
   
+  // Cache en mémoire pour les détails déjà chargés
   const [detailCache, setDetailCache] = useState<Record<string, Dealership>>({});
   
   const { firestore } = useFirebase();
@@ -352,13 +353,16 @@ function MapPageComponent() {
 
   const ZOOM_THRESHOLD = 8.5;
 
+  // Filtrage intelligent par Viewport : on ne garde que ce qui est visible sur la carte
   const pointsForMap = useMemo(() => {
     let results = [...filteredPoints];
     
+    // Si on est à bas zoom et sans recherche, Leaflet s'occupe des clusters, pas besoin de filtrer
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
       return results;
     }
 
+    // Sinon, on filtre strictement par les limites de la carte pour la performance
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
         const dLat = maxLat - minLat;
@@ -386,7 +390,6 @@ function MapPageComponent() {
     setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
-      // Conserver le zoom s'il est déjà précis
       setMapZoom(prev => Math.max(prev, 12)); 
       if (isMobile) setDrawerHeight('half'); 
     } 
@@ -409,6 +412,7 @@ function MapPageComponent() {
     setSelectionSource(null);
   }, [isMobile]);
 
+  // Callback quand une fiche a chargé ses détails : on la met en cache
   const onDetailLoaded = useCallback((data: Dealership) => {
     if (!data.id) return;
     setDetailCache(prev => ({ ...prev, [data.id]: data }));

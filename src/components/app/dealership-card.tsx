@@ -49,6 +49,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  // On ne charge les détails que si l'élément est sélectionné OU s'il n'est pas déjà en cache
   const docRef = useMemoFirebase(() => {
     if (!isSelected || cachedData) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
@@ -58,6 +59,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const { data: fetchedData, isLoading } = useDoc<Dealership>(docRef);
   const dealership = cachedData || fetchedData;
 
+  // Si on vient de charger les détails, on informe le parent pour la mise en cache
   useEffect(() => {
     if (fetchedData && onDataLoaded && !cachedData) {
       onDataLoaded(fetchedData);
@@ -158,7 +160,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                   className="object-contain" 
                   onError={() => setImgError(true)} 
                   referrerPolicy="no-referrer"
-                  unoptimized // Souvent nécessaire pour les URLs avec tokens expirables de Google
+                  unoptimized 
                 />
               )}
             </div>
