@@ -56,23 +56,24 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   const pathname = usePathname();
   
   // State to track if we should actually load/listen to Auth
+  // Initialized to false to keep Auth out of the critical path
   const [isAuthActive, setIsAuthActive] = useState(false);
   
   const [userAuthState, setUserAuthState] = useState<UserAuthState>({
     user: null,
-    isUserLoading: false, // Default to false if not active
+    isUserLoading: false, 
     userError: null,
   });
 
-  // Lazy initialize firestore when provider mounts (often needed for content)
+  // Lazy initialize firestore when provider mounts (often needed for public content)
   const firestore = useMemo(() => getFirestoreInstance(), []);
 
-  // Function to manually trigger auth loading
+  // Function to manually trigger auth loading (e.g. on button click)
   const activateAuth = () => {
     if (!isAuthActive) setIsAuthActive(true);
   };
 
-  // Auto-activate auth on non-public routes
+  // Auto-activate auth on non-public routes to ensure session is ready
   useEffect(() => {
     const privateRoutes = ['/account', '/admin', '/login', '/pro/register'];
     if (privateRoutes.some(route => pathname?.startsWith(route))) {
@@ -126,7 +127,6 @@ export const useFirebase = (): FirebaseServicesAndUser => {
   const context = useContext(FirebaseContext);
   if (context === undefined) throw new Error('useFirebase must be used within a FirebaseProvider.');
   
-  // If useFirebase is called, we assume the component needs services, so we lazy init but don't force Auth check
   return {
     firebaseApp: context.firebaseApp!,
     firestore: context.firestore || getFirestoreInstance(),

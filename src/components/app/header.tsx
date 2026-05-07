@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -87,6 +86,7 @@ export const UserMenu = () => {
   };
 
   const handleOpenMenu = () => {
+    // This is the trigger to wake up Firebase Auth from the critical path
     activateAuth();
   };
 
@@ -249,14 +249,12 @@ const Header: React.FC<HeaderProps> = ({
         setIsDataLoading(true);
         const concessionsRef = collection(firestore, 'concessions');
         try {
-            // Augmentation de la limite pour couvrir plus de fiches
             const q = query(concessionsRef, limit(10000));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => {
                 const data = doc.data();
                 const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
                 
-                // Robust extraction of coordinates
                 let lat = data.latitude !== undefined ? data.latitude : data.lat;
                 let lng = data.longitude !== undefined ? data.longitude : data.lng;
                 if (data.location?.lat !== undefined) { lat = data.location.lat; lng = data.location.lng; }
@@ -305,7 +303,6 @@ const Header: React.FC<HeaderProps> = ({
 
     const results: Suggestion[] = [];
     
-    // Logic for Paris arrondissements
     const parisArrMatch = searchPart.match(/paris\s*(\d{1,2})/i);
     if (parisArrMatch) {
         const arrNum = parseInt(parisArrMatch[1]);
@@ -323,7 +320,6 @@ const Header: React.FC<HeaderProps> = ({
 
     const normalizedTerm = searchPart.replace(/[\s-]/g, '');
 
-    // Location search (Departments / Cities)
     Object.entries(locationsData).forEach(([dept, info]) => {
         const deptNum = dept.split(' - ')[0];
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
@@ -363,7 +359,6 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
-    // Dealer suggestions
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -586,7 +581,6 @@ const Header: React.FC<HeaderProps> = ({
               "flex flex-wrap items-center justify-center gap-4 md:gap-8 relative z-50",
               isMapPage ? "hidden" : (isCompactPage ? "-mb-24 md:-mb-20" : "-mb-16 md:-mb-10")
             )}>
-                {/* Groupe Commerce */}
                 <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
                     <Button 
                         variant="ghost" 
@@ -631,7 +625,6 @@ const Header: React.FC<HeaderProps> = ({
 
                 <div className="hidden md:block w-px h-12 bg-border/50" />
 
-                {/* Groupe Communauté */}
                 <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
                     <Button 
                         variant="ghost" 
