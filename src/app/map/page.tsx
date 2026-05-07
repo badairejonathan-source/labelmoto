@@ -32,6 +32,7 @@ const CIRCUIT_BUGATTI: MapPoint = {
 };
 
 const ZOOM_THRESHOLD = 8.5;
+const MAX_POINTS_IN_MEMORY = 5000;
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -146,7 +147,6 @@ function MapPageComponent() {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); 
         setSortingAnchor(pos); 
-        // Ne dezoom pas si on est déjà plus proche
         if (mapZoom < 12) setMapZoom(12);
         setSelectionSource('external');
     }
@@ -161,9 +161,6 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  /**
-   * Extrait les MapPoints d'un snapshot Firestore de manière robuste
-   */
   const processSnapshot = useCallback((snapshot: any, colName: string, appSection: string) => {
     return snapshot.docs.map((doc: any) => {
       const data = doc.data();
@@ -187,7 +184,6 @@ function MapPageComponent() {
       } catch (e) {}
 
       let previewImg = "";
-      // Recherche exhaustive de l'image
       const imgKeys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url'];
       for(const k of imgKeys) { 
         if(data[k] && typeof data[k] === 'string' && data[k].startsWith('http')) { 
@@ -195,8 +191,6 @@ function MapPageComponent() {
           break; 
         } 
       }
-      
-      // Recherche dans les objets imbriqués (ex: data.details.image)
       if (!previewImg && data.details && typeof data.details === 'object') {
         for(const k of imgKeys) {
             if (data.details[k] && typeof data.details[k] === 'string') {
@@ -220,8 +214,27 @@ function MapPageComponent() {
   }, []);
 
   /**
-   * Chargement initial (Vue France)
-   * On augmente la limite à 3000 pour que les clusters soient plus "vrais" dès le début
+   * Nettoyage de la mémoire si trop de points sont chargés
+   */
+  const pruneMemory = useCallback(() => {
+    if (masterPointsMap.current.size > MAX_POINTS_IN_MEMORY) {
+      const center = mapCenter;
+      const sortedPoints = Array.from(masterPointsMap.current.values())
+        .map(p => ({ id: p.id, dist: getDistanceSq(center, p) }))
+        .sort((a, b) => b.dist - a.dist);
+      
+      const toRemove = sortedPoints.slice(0, 1000);
+      toRemove.forEach(p => masterPointsMap.current.delete(p.id));
+      
+      // On réinitialise les bandes de latitude pour forcer le rechargement si on y retourne
+      fetchedLatBands.current.clear();
+      setAllPoints(Array.from(masterPointsMap.current.values()));
+    }
+  }, [mapCenter]);
+
+  /**
+   * Chargement initial minimal (Vue France)
+   * On réduit à 300 points pour une réactivité maximale au démarrage.
    */
   useEffect(() => {
     const fetchInitialSample = async () => {
@@ -229,8 +242,7 @@ function MapPageComponent() {
       setIsLoading(true);
       try {
         const colRef = collection(firestore, 'concessions');
-        // 3000 points = ~750 Ko, parfaitement acceptable pour un chargement initial France
-        const snapshot = await getDocs(query(colRef, limit(3000)));
+        const snapshot = await getDocs(query(colRef, limit(300)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
         
         points.forEach((p: MapPoint) => masterPointsMap.current.set(p.id, p));
@@ -245,7 +257,7 @@ function MapPageComponent() {
   }, [firestore, mounted, processSnapshot]);
 
   /**
-   * Chargement par Viewport (Bandes de latitude)
+   * Chargement par Viewport (Grille de latitude)
    */
   const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds) => {
     if (!firestore) return;
@@ -255,7 +267,7 @@ function MapPageComponent() {
     const west = bounds.getWest();
     const east = bounds.getEast();
 
-    // On divise la France en bandes de 0.5 degré de latitude
+    // Découpage en bandes de 0.5 degré
     const latStart = Math.floor(south * 2) / 2;
     const latEnd = Math.ceil(north * 2) / 2;
 
@@ -288,7 +300,8 @@ function MapPageComponent() {
       snapshots.forEach(snap => {
         const points = processSnapshot(snap, 'concessions', 'both');
         points.forEach((p: MapPoint) => {
-          if (p.longitude >= west - 0.2 && p.longitude <= east + 0.2) {
+          // Filtrage longitude client-side car Firestore limite à une seule plage
+          if (p.longitude >= west - 0.5 && p.longitude <= east + 0.5) {
              if (!masterPointsMap.current.has(p.id)) {
                 masterPointsMap.current.set(p.id, p);
                 addedCount++;
@@ -299,19 +312,21 @@ function MapPageComponent() {
 
       if (addedCount > 0) {
         setAllPoints(Array.from(masterPointsMap.current.values()));
+        pruneMemory();
       }
     } catch (err: any) {
       console.error("Geofenced fetch error", err);
     } finally {
       setIsLoading(false);
     }
-  }, [firestore, processSnapshot]);
+  }, [firestore, processSnapshot, pruneMemory]);
 
   /**
-   * Fetch additionnel pour les collections secondaires
+   * Chargement des collections secondaires (Associations/Relais)
    */
   const fetchSecondaryData = useCallback(async (colName: string, appSection: string) => {
-    if (!firestore || fetchedLatBands.current.has(-999 + (colName === 'relais' ? 1 : 0))) return;
+    const bandId = -999 + (colName === 'relais' ? 1 : 0);
+    if (!firestore || fetchedLatBands.current.has(bandId)) return;
     
     try {
       const colRef = collection(firestore, colName);
@@ -320,7 +335,7 @@ function MapPageComponent() {
       
       points.forEach((p: MapPoint) => masterPointsMap.current.set(p.id, p));
       setAllPoints(Array.from(masterPointsMap.current.values()));
-      fetchedLatBands.current.add(-999 + (colName === 'relais' ? 1 : 0));
+      fetchedLatBands.current.add(bandId);
     } catch (e) {}
   }, [firestore, processSnapshot]);
 
@@ -336,7 +351,7 @@ function MapPageComponent() {
   }, [mounted, activeFilter, submittedSearchTerm, fetchSecondaryData]);
 
   /**
-   * Logique de recherche intelligente (Paris, Dept, CP)
+   * Logique de recherche (Paris, Dépt, CP)
    */
   useEffect(() => {
     const controller = new AbortController();
@@ -376,7 +391,6 @@ function MapPageComponent() {
         let deptFound: string | null = null;
         let otherText: string[] = [];
 
-        // Détection Paris 1-20
         const parisMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisMatch) {
             const num = parseInt(parisMatch[1]);
@@ -418,9 +432,6 @@ function MapPageComponent() {
     return () => { clearTimeout(timer); controller.abort(); };
   }, [submittedSearchTerm, allPoints, activeFilter, mapZoom]);
 
-  /**
-   * Filtrage Viewport (pour la liste)
-   */
   const pointsInViewport = useMemo(() => {
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
@@ -443,7 +454,6 @@ function MapPageComponent() {
     setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
-      // Garde le zoom actuel si on est déjà plus proche que 12
       if (mapZoom < 12) setMapZoom(12); 
       if (isMobile) setDrawerHeight('half'); 
     } 
