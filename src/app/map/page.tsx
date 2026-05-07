@@ -31,8 +31,11 @@ const CIRCUIT_BUGATTI: MapPoint = {
   appSection: 'both',
 };
 
+// CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE
 const ZOOM_THRESHOLD = 8.5;
-const MAX_POINTS_IN_MEMORY = 5000;
+const GRID_SIZE = 0.5; // Taille d'une tranche géographique (en degrés)
+const MAX_ACTIVE_ZONES = 15; // Nombre maximum de tranches de latitude conservées en mémoire
+const OVERVIEW_LIMIT = 300; // Points "Overview" pour la vue France
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -112,9 +115,13 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Tracking des zones géographiques chargées (latitudes)
-  const fetchedLatBands = useRef<Set<number>>(new Set());
+  // --- ARCHITECTURE DE DONNÉES GÉO-SPATIALES ---
+  // masterPointsMap : Stockage centralisé id -> MapPoint
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
+  // overviewIds : IDs des points "France" qui ne sont jamais supprimés (Overview)
+  const overviewIds = useRef<Set<string>>(new Set());
+  // loadedLatZones : Map latIndex -> Set(pointIds) pour permettre le pruning par zone
+  const loadedLatZones = useRef<Map<number, Set<string>>>(new Map());
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -171,34 +178,14 @@ function MapPageComponent() {
       try {
         if (data.latitude !== undefined) lat = parseFloat(String(data.latitude).replace(',', '.'));
         else if (data.lat !== undefined) lat = parseFloat(String(data.lat).replace(',', '.'));
-        else if (data.location?.lat !== undefined) lat = parseFloat(String(data.location.lat).replace(',', '.'));
-        else if (data.position?.latitude !== undefined) lat = parseFloat(String(data.position.latitude).replace(',', '.'));
-        else if (data.position && Array.isArray(data.position)) { lat = data.position[0]; lng = data.position[1]; }
+        else if (data.location?.lat !== undefined) lat = data.location.lat;
+        else if (data.position?.latitude !== undefined) lat = data.position.latitude;
         
-        if (lng === 0) {
-            if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
-            else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
-            else if (data.location?.lng !== undefined) lng = parseFloat(String(data.location.lng).replace(',', '.'));
-            else if (data.position?.longitude !== undefined) lng = parseFloat(String(data.position.longitude).replace(',', '.'));
-        }
+        if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
+        else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
+        else if (data.location?.lng !== undefined) lng = data.location.lng;
+        else if (data.position?.longitude !== undefined) lng = data.position.longitude;
       } catch (e) {}
-
-      let previewImg = "";
-      const imgKeys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url'];
-      for(const k of imgKeys) { 
-        if(data[k] && typeof data[k] === 'string' && data[k].startsWith('http')) { 
-          previewImg = data[k]; 
-          break; 
-        } 
-      }
-      if (!previewImg && data.details && typeof data.details === 'object') {
-        for(const k of imgKeys) {
-            if (data.details[k] && typeof data.details[k] === 'string') {
-                previewImg = data.details[k];
-                break;
-            }
-        }
-      }
 
       return {
         id: doc.id,
@@ -207,34 +194,50 @@ function MapPageComponent() {
         longitude: lng,
         category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
         appSection: appSection as any,
-        imgUrl: previewImg,
+        imgUrl: data.imgUrl || data.imageUrl || data.photoUrl || "",
         rating: data.rating
       };
     }).filter((p: any) => p.latitude !== 0 && !isNaN(p.latitude));
   }, []);
 
   /**
-   * Nettoyage de la mémoire si trop de points sont chargés
+   * PRUNING SPATIAL : Supprime les zones trop éloignées pour libérer la mémoire.
+   * On garde les tranches actives autour du centre actuel.
    */
   const pruneMemory = useCallback(() => {
-    if (masterPointsMap.current.size > MAX_POINTS_IN_MEMORY) {
-      const center = mapCenter;
-      const sortedPoints = Array.from(masterPointsMap.current.values())
-        .map(p => ({ id: p.id, dist: getDistanceSq(center, p) }))
-        .sort((a, b) => b.dist - a.dist);
-      
-      const toRemove = sortedPoints.slice(0, 1000);
-      toRemove.forEach(p => masterPointsMap.current.delete(p.id));
-      
-      // On réinitialise les bandes de latitude pour forcer le rechargement si on y retourne
-      fetchedLatBands.current.clear();
-      setAllPoints(Array.from(masterPointsMap.current.values()));
-    }
+    if (loadedLatZones.current.size <= MAX_ACTIVE_ZONES) return;
+
+    const currentLat = mapCenter[0];
+    const centerIndex = Math.floor(currentLat / GRID_SIZE);
+    
+    // On trie les zones par distance du centre
+    const sortedZones = Array.from(loadedLatZones.current.keys())
+      .map(index => ({ index, dist: Math.abs(index - centerIndex) }))
+      .sort((a, b) => b.dist - a.dist);
+
+    // On supprime les tranches les plus éloignées (Least Useful)
+    const zonesToDropCount = loadedLatZones.current.size - MAX_ACTIVE_ZONES;
+    const zonesToDrop = sortedZones.slice(0, zonesToDropCount);
+
+    zonesToDrop.forEach(zone => {
+      const pointIds = loadedLatZones.current.get(zone.index);
+      if (pointIds) {
+        pointIds.forEach(id => {
+          // On ne supprime JAMAIS les points de l'overview initiale
+          if (!overviewIds.current.has(id)) {
+            masterPointsMap.current.delete(id);
+          }
+        });
+      }
+      loadedLatZones.current.delete(zone.index);
+    });
+
+    setAllPoints(Array.from(masterPointsMap.current.values()));
   }, [mapCenter]);
 
   /**
-   * Chargement initial minimal (Vue France)
-   * On réduit à 300 points pour une réactivité maximale au démarrage.
+   * CHARGEMENT INITIAL (Overview France)
+   * Charge un échantillon permanent pour les clusters de haut niveau.
    */
   useEffect(() => {
     const fetchInitialSample = async () => {
@@ -242,13 +245,16 @@ function MapPageComponent() {
       setIsLoading(true);
       try {
         const colRef = collection(firestore, 'concessions');
-        const snapshot = await getDocs(query(colRef, limit(300)));
+        const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
         
-        points.forEach((p: MapPoint) => masterPointsMap.current.set(p.id, p));
+        points.forEach((p: MapPoint) => {
+          masterPointsMap.current.set(p.id, p);
+          overviewIds.current.add(p.id);
+        });
         setAllPoints(Array.from(masterPointsMap.current.values()));
       } catch (err: any) {
-        console.error("Initial sample fetch error", err);
+        console.error("Overview fetch error", err);
       } finally {
         setIsLoading(false);
       }
@@ -257,7 +263,7 @@ function MapPageComponent() {
   }, [firestore, mounted, processSnapshot]);
 
   /**
-   * Chargement par Viewport (Grille de latitude)
+   * CHARGEMENT PAR VIEWPORT (Grid-based LAT Bands)
    */
   const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds) => {
     if (!firestore) return;
@@ -267,29 +273,30 @@ function MapPageComponent() {
     const west = bounds.getWest();
     const east = bounds.getEast();
 
-    // Découpage en bandes de 0.5 degré
-    const latStart = Math.floor(south * 2) / 2;
-    const latEnd = Math.ceil(north * 2) / 2;
+    // Détermination des tranches de latitude à charger
+    const latStart = Math.floor(south / GRID_SIZE);
+    const latEnd = Math.floor(north / GRID_SIZE);
 
-    const newBands: number[] = [];
-    for (let l = latStart; l <= latEnd; l += 0.5) {
-      if (!fetchedLatBands.current.has(l)) {
-        newBands.push(l);
+    const missingIndices: number[] = [];
+    for (let i = latStart; i <= latEnd; i++) {
+      if (!loadedLatZones.current.has(i)) {
+        missingIndices.push(i);
       }
     }
 
-    if (newBands.length === 0) return;
+    if (missingIndices.length === 0) return;
 
     setIsLoading(true);
     try {
       const colRef = collection(firestore, 'concessions');
-      const promises = newBands.map(band => {
-        fetchedLatBands.current.add(band);
+      const promises = missingIndices.map(index => {
+        const minLat = index * GRID_SIZE;
+        const maxLat = (index + 1) * GRID_SIZE;
         return getDocs(query(
           colRef, 
           orderBy('latitude'), 
-          startAt(band), 
-          endAt(band + 0.5),
+          startAt(minLat), 
+          endAt(maxLat),
           limit(1000)
         ));
       });
@@ -297,17 +304,24 @@ function MapPageComponent() {
       const snapshots = await Promise.all(promises);
       let addedCount = 0;
 
-      snapshots.forEach(snap => {
+      snapshots.forEach((snap, i) => {
+        const index = missingIndices[i];
         const points = processSnapshot(snap, 'concessions', 'both');
+        const tranchePointIds = new Set<string>();
+
         points.forEach((p: MapPoint) => {
-          // Filtrage longitude client-side car Firestore limite à une seule plage
-          if (p.longitude >= west - 0.5 && p.longitude <= east + 0.5) {
+          // Filtrage longitude client-side (contrainte Firestore)
+          if (p.longitude >= west - 1 && p.longitude <= east + 1) {
              if (!masterPointsMap.current.has(p.id)) {
                 masterPointsMap.current.set(p.id, p);
                 addedCount++;
              }
+             tranchePointIds.add(p.id);
           }
         });
+        
+        // On enregistre la zone même si elle est vide pour ne pas la re-requêter
+        loadedLatZones.current.set(index, tranchePointIds);
       });
 
       if (addedCount > 0) {
@@ -315,78 +329,66 @@ function MapPageComponent() {
         pruneMemory();
       }
     } catch (err: any) {
-      console.error("Geofenced fetch error", err);
+      console.error("Viewport fetch error", err);
     } finally {
       setIsLoading(false);
     }
   }, [firestore, processSnapshot, pruneMemory]);
 
   /**
-   * Chargement des collections secondaires (Associations/Relais)
+   * CHARGEMENT SECONDAIRE (Asso/Relais)
    */
   const fetchSecondaryData = useCallback(async (colName: string, appSection: string) => {
-    const bandId = -999 + (colName === 'relais' ? 1 : 0);
-    if (!firestore || fetchedLatBands.current.has(bandId)) return;
+    // On utilise un index négatif arbitraire pour marquer ces données "globales"
+    const bandId = colName === 'relais' ? -1001 : -1002;
+    if (!firestore || loadedLatZones.current.has(bandId)) return;
     
     try {
       const colRef = collection(firestore, colName);
       const snapshot = await getDocs(query(colRef, limit(2000)));
       const points = processSnapshot(snapshot, colName, appSection);
       
-      points.forEach((p: MapPoint) => masterPointsMap.current.set(p.id, p));
+      points.forEach((p: MapPoint) => {
+        masterPointsMap.current.set(p.id, p);
+        overviewIds.current.add(p.id); // On les garde aussi en overview pour la fluidité
+      });
       setAllPoints(Array.from(masterPointsMap.current.values()));
-      fetchedLatBands.current.add(bandId);
+      loadedLatZones.current.set(bandId, new Set(points.map((p: any) => p.id)));
     } catch (e) {}
   }, [firestore, processSnapshot]);
 
   useEffect(() => {
     if (!mounted) return;
     const lowerSearch = submittedSearchTerm.toLowerCase();
-    if (activeFilter === 'association' || lowerSearch.includes('association') || lowerSearch.includes('asso')) {
+    if (activeFilter === 'association' || lowerSearch.includes('asso')) {
         fetchSecondaryData('associations', 'association');
     }
-    if (activeFilter === 'relais' || lowerSearch.includes('relais') || lowerSearch.includes('hotel') || lowerSearch.includes('bar')) {
+    if (activeFilter === 'relais' || lowerSearch.includes('relais')) {
         fetchSecondaryData('relais', 'relais');
     }
   }, [mounted, activeFilter, submittedSearchTerm, fetchSecondaryData]);
 
   /**
-   * Logique de recherche (Paris, Dépt, CP)
+   * LOGIQUE DE RECHERCHE
    */
   useEffect(() => {
     const controller = new AbortController();
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
         if (term === '') {
-            if (activeFilter === null) {
-              setFilteredPoints(allPoints.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both'));
-            } else {
-              setFilteredPoints(allPoints.filter(p => p.appSection === activeFilter));
-            }
+            setFilteredPoints(allPoints.filter(p => activeFilter ? p.appSection === activeFilter : (p.appSection !== 'association' && p.appSection !== 'relais')));
             return;
         }
 
         let results = [...allPoints];
-        const assoKeywords = ["association", "associations", "asso"];
-        const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
-        if (foundAssoKeyword) {
-            if (activeFilter !== 'association') setActiveFilter('association');
-            term = term.replace(foundAssoKeyword, '').trim();
-        }
-        
-        const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
+        const currentFilter = activeFilter;
         if (currentFilter) { 
-            results = results.filter(d => {
-                if (currentFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
-                if (currentFilter === 'service') return d.appSection === 'service' || d.appSection === 'both';
-                if (currentFilter === 'association') return d.appSection === 'association';
-                if (currentFilter === 'relais') return d.appSection === 'relais';
-                return true;
-            });
+            results = results.filter(d => d.appSection === currentFilter || d.appSection === 'both');
         } else {
             results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
         }
 
+        // Détection CP / Dept / Paris
         let zipFound: string | null = null;
         let deptFound: string | null = null;
         let otherText: string[] = [];
@@ -410,7 +412,7 @@ function MapPageComponent() {
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
             if (coords && !controller.signal.aborted) {
-                setMapCenter(coords); setSortingAnchor(coords); if (mapZoom < 12) setMapZoom(12); setSelectionSource('external');
+                setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external');
             }
         } else if (deptFound) {
             const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFound!));
@@ -430,7 +432,7 @@ function MapPageComponent() {
 
     const timer = setTimeout(() => { processSearch(); }, 300);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [submittedSearchTerm, allPoints, activeFilter, mapZoom]);
+  }, [submittedSearchTerm, allPoints, activeFilter]);
 
   const pointsInViewport = useMemo(() => {
     let results = [...filteredPoints];
@@ -442,8 +444,7 @@ function MapPageComponent() {
   }, [filteredPoints, mapBoundsStr]);
 
   const pointsToDisplay = useMemo(() => {
-    if (isMapMoving) return [];
-    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return [];
+    if (isMapMoving || (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '')) return [];
     let results = [...pointsInViewport];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
     return results.slice(0, 40);
@@ -525,12 +526,11 @@ function MapPageComponent() {
                         <div className="flex items-center gap-2 mb-4"><Sparkles className="h-5 w-5 text-brand animate-pulse" /><h3 className="text-sm font-black uppercase tracking-widest text-foreground">Guides & Conseils</h3></div>
                         <div className="space-y-4">{ads.map((ad, idx) => <AdCard key={ad.id} article={ad} isPublicity={idx === 0} />)}</div>
                     </div>
-                    <div className="p-8 border-2 border-dashed rounded-[2.5rem] text-center bg-muted/5"><FileText className="h-10 w-10 text-muted-foreground mx-auto mb-4 opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-snug">Plus de 3000 établissements référencés.<br/><span className="text-brand">Zoomez sur la carte pour les afficher.</span></p></div>
                 </div>
             )}
             {isMapMoving && (
               <div className="text-center py-20 animate-pulse">
-                <Loader2 className="h-10 w-10 mx-auto mb-4 text-brand animate-spin" /><p className="font-black uppercase tracking-widest text-[9px] text-muted-foreground">Mise à jour de la zone...</p>
+                <Loader2 className="h-10 w-10 mx-auto mb-4 text-brand animate-spin" /><p className="font-black uppercase tracking-widest text-[9px] text-muted-foreground">Exploration...</p>
               </div>
             )}
             {!isMapMoving && pointsToDisplay.map((point, index) => (
