@@ -73,22 +73,6 @@ const getCityCoordinates = async (postalCode: string, signal?: AbortSignal): Pro
   }
 };
 
-const getCityCoordinatesByName = async (cityName: string, signal?: AbortSignal): Promise<[number, number] | null> => {
-  try {
-    const response = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(cityName)}&fields=centre&boost=population&limit=1`, { signal });
-    if (!response.ok) return null;
-    const data = await response.json();
-    if (data.length > 0) {
-      const { coordinates } = data[0].centre;
-      return [coordinates[1], coordinates[0]];
-    }
-    return null;
-  } catch (error: any) { 
-    if (error.name === 'AbortError') return null;
-    return null; 
-  }
-};
-
 function MapPageComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -202,14 +186,35 @@ function MapPageComponent() {
     
     try {
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(3500)));
+      // Augmentation de la limite à 10 000 pour ne rien rater
+      const snapshot = await getDocs(query(colRef, limit(10000)));
       const points: MapPoint[] = snapshot.docs.map(doc => {
         const data = doc.data();
+        
+        // Extraction robuste du titre
+        const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
+        
+        // Extraction robuste des coordonnées (gère lat/latitude et les types string/number/geopoint)
+        let lat = 0;
+        let lng = 0;
+
+        try {
+          if (data.latitude !== undefined) lat = parseFloat(String(data.latitude).replace(',', '.'));
+          else if (data.lat !== undefined) lat = parseFloat(String(data.lat).replace(',', '.'));
+          else if (data.location?.lat !== undefined) lat = parseFloat(String(data.location.lat).replace(',', '.'));
+          else if (data.position?.latitude !== undefined) lat = parseFloat(String(data.position.latitude).replace(',', '.'));
+          
+          if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
+          else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
+          else if (data.location?.lng !== undefined) lng = parseFloat(String(data.location.lng).replace(',', '.'));
+          else if (data.position?.longitude !== undefined) lng = parseFloat(String(data.position.longitude).replace(',', '.'));
+        } catch (e) { /* silent parse error */ }
+
         return {
           id: doc.id,
-          title: data.title || '',
-          latitude: data.latitude ? parseFloat(String(data.latitude).replace(',', '.')) : 0,
-          longitude: data.longitude ? parseFloat(String(data.longitude).replace(',', '.')) : 0,
+          title: title,
+          latitude: lat,
+          longitude: lng,
           category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
           appSection: appSection as any
         };
@@ -263,13 +268,18 @@ function MapPageComponent() {
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
         if (term === '') {
-            setFilteredPoints(allPoints);
+            // Toujours filtrer Asso/Relais de la vue "Tout" par défaut
+            if (activeFilter === null) {
+              setFilteredPoints(allPoints.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both'));
+            } else {
+              setFilteredPoints(allPoints.filter(p => p.appSection === activeFilter));
+            }
             return;
         }
 
         let results = [...allPoints];
         
-        // Handle Asso/Relais keywords in term
+        // Intelligence de recherche
         const assoKeywords = ["association", "associations", "asso"];
         const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
         if (foundAssoKeyword) {
@@ -279,7 +289,6 @@ function MapPageComponent() {
         
         const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
         
-        // Initial filtering by section/category
         if (currentFilter) { 
             results = results.filter(d => {
                 if (currentFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
@@ -292,12 +301,10 @@ function MapPageComponent() {
             results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
         }
 
-        // Parse for Location Intent (Zip, Dept, Paris Arr)
         let zipFound: string | null = null;
         let deptFound: string | null = null;
         let otherText: string[] = [];
 
-        // Special case: Paris XX arrondissement
         const parisMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisMatch) {
             const num = parseInt(parisMatch[1]);
@@ -307,7 +314,6 @@ function MapPageComponent() {
             }
         }
 
-        // Parse words for Zip or Dept
         const words = term.split(/\s+/).filter(w => w.length > 0);
         for (const word of words) {
             if (/^\d{5}$/.test(word)) {
@@ -319,7 +325,6 @@ function MapPageComponent() {
             }
         }
 
-        // Apply Location centering
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
             if (coords && !controller.signal.aborted) {
@@ -333,7 +338,6 @@ function MapPageComponent() {
             }
         }
 
-        // Apply title filtering only if there are remaining keywords
         if (otherText.length > 0) {
             const filterStr = otherText.join(' ');
             results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr));
@@ -382,6 +386,7 @@ function MapPageComponent() {
     setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
+      // Conserver le zoom s'il est déjà précis
       setMapZoom(prev => Math.max(prev, 12)); 
       if (isMobile) setDrawerHeight('half'); 
     } 

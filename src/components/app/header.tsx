@@ -249,18 +249,29 @@ const Header: React.FC<HeaderProps> = ({
         setIsDataLoading(true);
         const concessionsRef = collection(firestore, 'concessions');
         try {
-            const q = query(concessionsRef, limit(3000));
+            // Augmentation de la limite pour couvrir plus de fiches
+            const q = query(concessionsRef, limit(10000));
             const snapshot = await getDocs(q);
-            const dealers: Suggestion[] = snapshot.docs.map(doc => ({
-                type: 'dealer',
-                label: doc.data().title || '',
-                subLabel: doc.data().address || '',
-                lat: doc.data().latitude ? parseFloat(String(doc.data().latitude).replace(',', '.')) : undefined,
-                lng: doc.data().longitude ? parseFloat(String(doc.data().longitude).replace(',', '.')) : undefined,
-                zoom: 14,
-                id: doc.id,
-                brand: Array.isArray(doc.data().brands) ? doc.data().brands[0] : undefined
-            }));
+            const dealers: Suggestion[] = snapshot.docs.map(doc => {
+                const data = doc.data();
+                const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
+                
+                // Robust extraction of coordinates
+                let lat = data.latitude !== undefined ? data.latitude : data.lat;
+                let lng = data.longitude !== undefined ? data.longitude : data.lng;
+                if (data.location?.lat !== undefined) { lat = data.location.lat; lng = data.location.lng; }
+
+                return {
+                    type: 'dealer',
+                    label: title,
+                    subLabel: data.address || '',
+                    lat: lat ? parseFloat(String(lat).replace(',', '.')) : undefined,
+                    lng: lng ? parseFloat(String(lng).replace(',', '.')) : undefined,
+                    zoom: 14,
+                    id: doc.id,
+                    brand: Array.isArray(data.brands) ? data.brands[0] : undefined
+                };
+            });
             globalDealersCache = dealers;
             setAllDealers(dealers);
         } catch (e: any) {
@@ -306,7 +317,6 @@ const Header: React.FC<HeaderProps> = ({
                 subLabel: cp,
                 score: 2000
             });
-            // Re-point searchPart to CP for remaining checks if needed
             searchPart = cp;
         }
     }
