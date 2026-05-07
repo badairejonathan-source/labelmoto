@@ -15,7 +15,6 @@ import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface DealershipCardProps {
   point: MapPoint;
@@ -49,17 +48,16 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // On ne charge les détails que si l'élément est sélectionné OU s'il n'est pas déjà en cache
+  // COUCHE 3 : FULL DATA - Chargé uniquement si sélectionné
   const docRef = useMemoFirebase(() => {
     if (!isSelected || cachedData) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
     return doc(firestore, col, point.id);
   }, [firestore, point.id, point.appSection, isSelected, cachedData]);
   
-  const { data: fetchedData, isLoading } = useDoc<Dealership>(docRef);
-  const dealership = cachedData || fetchedData;
+  const { data: fetchedData, isLoading: isDetailLoading } = useDoc<Dealership>(docRef);
+  const fullDetails = cachedData || fetchedData;
 
-  // Si on vient de charger les détails, on informe le parent pour la mise en cache
   useEffect(() => {
     if (fetchedData && onDataLoaded && !cachedData) {
       onDataLoaded(fetchedData);
@@ -69,40 +67,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
 
-  const ratingValue = dealership?.rating ? parseFloat(String(dealership.rating).replace(',', '.')) : 0;
+  // COUCHE 2 : PREVIEW DATA - On utilise les données du point pour l'affichage de base
+  const ratingValue = parseFloat(String(point.rating || fullDetails?.rating || 0).replace(',', '.'));
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[point.category] || point.category;
 
-  const actualImgUrl = useMemo(() => {
-    if (!dealership) return "";
-    
-    // Liste de clés classées par probabilité de succès
-    const keys = [
-      'imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url', 
-      'img', 'photo', 'url', 'cover', 'thumbnail'
-    ];
-
-    for (const key of keys) {
-      const val = dealership[key];
-      if (val && typeof val === 'string' && val.startsWith('http')) {
-        return val;
-      }
-    }
-
-    // Recherche récursive simple dans les objets de premier niveau (pour les structures imbriquées type Google)
-    for (const key in dealership) {
-      const val = dealership[key];
-      if (val && typeof val === 'object' && !Array.isArray(val)) {
-        for (const subKey of keys) {
-          if (val[subKey] && typeof val[subKey] === 'string' && val[subKey].startsWith('http')) {
-            return val[subKey];
-          }
-        }
-      }
-    }
-
-    return "";
-  }, [dealership]);
+  // L'URL de l'image est d'abord cherchée dans le point (Preview)
+  const actualImgUrl = point.imgUrl || fullDetails?.imgUrl || fullDetails?.imageUrl || "";
 
   const handleRatingSubmit = () => {
     if (!user || !firestore) return;
@@ -187,12 +158,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
               )} 
               onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}
             >
-              {isLoading ? (
-                <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-6 w-6 animate-spin text-brand/40" />
-                    <span className="text-[7px] font-black uppercase text-muted-foreground">Chargement...</span>
-                </div>
-              ) : actualImgUrl && !imgError ? (
+              {actualImgUrl && !imgError ? (
                 <>
                   <Image 
                     src={actualImgUrl} 
@@ -221,38 +187,44 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
               <span className={cn("text-[9px] md:text-xs font-black uppercase tracking-widest mb-3", isAssociation ? "text-indigo-600" : (isRelais ? "text-amber-600" : "text-brand"))}>{categoryLabel}</span>
               
               <div className="flex flex-nowrap items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar min-h-[64px]">
-                {dealership?.phoneNumber ? (
-                  <a href={`tel:${dealership.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
-                      <Phone className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Appel</span>
-                    </div>
-                  </a>
-                ) : (isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null)}
+                {isSelected && isDetailLoading ? (
+                    <div className="flex gap-4"><Skeleton className="h-16 w-16 rounded-full" /><Skeleton className="h-16 w-16 rounded-full" /></div>
+                ) : (
+                    <>
+                        {fullDetails?.phoneNumber && (
+                        <a href={`tel:${fullDetails.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+                            <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
+                            <Phone className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Appel</span>
+                            </div>
+                        </a>
+                        )}
 
-                {dealership?.website ? (
-                  <a href={dealership.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
-                    <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
-                      <Globe className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Web</span>
-                    </div>
-                  </a>
-                ) : (isSelected && isLoading ? <Skeleton className="h-16 w-16 rounded-full shrink-0" /> : null)}
+                        {fullDetails?.website && (
+                        <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="group/btn shrink-0">
+                            <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
+                            <Globe className="h-4 w-4 text-brand mb-0.5" /><span className="text-[6px] font-black uppercase">Web</span>
+                            </div>
+                        </a>
+                        )}
 
-                {dealership && !isAssociation && !isRelais && (
-                  <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
-                    <Clock className="h-4 w-4" /><span className="text-[6px] font-black uppercase mt-1">Horaires</span>
-                  </button>
-                )}
-                
-                {!dealership && (
-                    <div className="flex flex-col justify-center py-2 opacity-40">
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted-foreground">Cliquez pour les détails</span>
-                    </div>
+                        {fullDetails && !isAssociation && !isRelais && (
+                        <button className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-2 shrink-0", showHours ? "bg-brand text-white" : "bg-brand/10 text-brand")} onClick={(e) => { e.stopPropagation(); setShowHours(!showHours); }}>
+                            <Clock className="h-4 w-4" /><span className="text-[6px] font-black uppercase mt-1">Horaires</span>
+                        </button>
+                        )}
+                        
+                        {!isSelected && (
+                            <div className="flex flex-col justify-center py-2 opacity-40">
+                                <span className="text-[7px] font-black uppercase tracking-widest text-muted-foreground">Cliquez pour les détails</span>
+                            </div>
+                        )}
+                    </>
                 )}
               </div>
               
               <div className="mt-3 border-t border-dashed pt-2">
                 <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase shadow-sm", isAssociation ? "bg-indigo-600" : (isRelais ? "bg-amber-600" : "bg-brand"))} onClick={(e) => e.stopPropagation()}>
-                  <MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{dealership?.address || "Calculer l'itinéraire"}</span>
+                  <MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{fullDetails?.address || "Calculer l'itinéraire"}</span>
                 </a>
               </div>
             </div>
@@ -261,12 +233,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
           {(showHours || showReviews) && (
             <div className="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm border-r p-4 flex flex-col justify-center shadow-2xl animate-in fade-in duration-200">
               <button onClick={(e) => { e.stopPropagation(); setShowHours(false); setShowReviews(false); }} className="absolute top-2 right-2 p-1 hover:bg-muted rounded-full transition-colors"><X className="h-5 w-5" /></button>
-              {showHours && dealership && (
+              {showHours && fullDetails && (
                 <div className="space-y-1 w-full max-w-xs mx-auto">
                   {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(d => (
                     <div key={d} className="flex justify-between items-center text-[10px] font-bold border-b border-dashed border-muted last:border-0 pb-0.5">
                       <span className="capitalize text-muted-foreground">{d}</span>
-                      <span className={cn("text-right", isRelais ? "text-amber-600" : "text-brand")}>{dealership[d] || 'Fermé'}</span>
+                      <span className={cn("text-right", isRelais ? "text-amber-600" : "text-brand")}>{fullDetails[d] || 'Fermé'}</span>
                     </div>
                   ))}
                 </div>

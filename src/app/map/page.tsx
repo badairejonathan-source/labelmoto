@@ -143,7 +143,7 @@ function MapPageComponent() {
   useEffect(() => {
     if (latParam && lngParam) {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
-        setMapCenter(pos); setSortingAnchor(pos); setMapZoom(zoomParam ? parseInt(zoomParam) : 12);
+        setMapCenter(pos); setSortingAnchor(pos); setMapZoom(prev => Math.max(prev, 12)); 
         setSelectionSource('external');
     }
     if (selectedIdParam) {
@@ -164,7 +164,7 @@ function MapPageComponent() {
       return;
     }
 
-    const storageKey = `cache_points_${colName}`;
+    const storageKey = `cache_points_v2_${colName}`;
     try {
       const cached = sessionStorage.getItem(storageKey);
       if (cached) {
@@ -187,18 +187,13 @@ function MapPageComponent() {
     
     try {
       const colRef = collection(firestore, colName);
-      // Augmentation de la limite à 10 000 pour ne rien rater
       const snapshot = await getDocs(query(colRef, limit(10000)));
       const points: MapPoint[] = snapshot.docs.map(doc => {
         const data = doc.data();
-        
-        // Extraction robuste du titre
         const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
         
-        // Extraction robuste des coordonnées (gère lat/latitude et les types string/number/geopoint)
         let lat = 0;
         let lng = 0;
-
         try {
           if (data.latitude !== undefined) lat = parseFloat(String(data.latitude).replace(',', '.'));
           else if (data.lat !== undefined) lat = parseFloat(String(data.lat).replace(',', '.'));
@@ -209,7 +204,12 @@ function MapPageComponent() {
           else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
           else if (data.location?.lng !== undefined) lng = parseFloat(String(data.location.lng).replace(',', '.'));
           else if (data.position?.longitude !== undefined) lng = parseFloat(String(data.position.longitude).replace(',', '.'));
-        } catch (e) { /* silent parse error */ }
+        } catch (e) {}
+
+        // Extraction de l'image pour le Preview (Couche 2)
+        let previewImg = "";
+        const imgKeys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url'];
+        for(const k of imgKeys) { if(data[k] && typeof data[k] === 'string') { previewImg = data[k]; break; } }
 
         return {
           id: doc.id,
@@ -217,7 +217,9 @@ function MapPageComponent() {
           latitude: lat,
           longitude: lng,
           category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
-          appSection: appSection as any
+          appSection: appSection as any,
+          imgUrl: previewImg,
+          rating: data.rating
         };
       }).filter(p => p.latitude !== 0 && !isNaN(p.latitude));
 
@@ -227,15 +229,12 @@ function MapPageComponent() {
           const uniqueNewPoints = points.filter(p => !existingIds.has(p.id));
           return [...prev, ...uniqueNewPoints];
         });
-        
         setLoadedCollections(prev => new Set(prev).add(colName));
         try { sessionStorage.setItem(storageKey, JSON.stringify(points)); } catch (e) {}
       }
     } catch (err: any) {
       if (err.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colName, operation: 'list' }));
-      } else if (err.code === 'resource-exhausted') {
-        toast({ variant: "destructive", title: "Quota Firestore dépassé", description: "Le service est temporairement indisponible." });
       }
     } finally {
       if (colName === 'concessions') setIsLoading(false);
@@ -245,7 +244,7 @@ function MapPageComponent() {
         return next;
       });
     }
-  }, [firestore, loadedCollections, loadingCollections, toast]);
+  }, [firestore, loadedCollections, loadingCollections]);
 
   useEffect(() => {
     if (mounted && !loadedCollections.has('concessions')) {
@@ -269,7 +268,6 @@ function MapPageComponent() {
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
         if (term === '') {
-            // Toujours filtrer Asso/Relais de la vue "Tout" par défaut
             if (activeFilter === null) {
               setFilteredPoints(allPoints.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both'));
             } else {
@@ -279,8 +277,6 @@ function MapPageComponent() {
         }
 
         let results = [...allPoints];
-        
-        // Intelligence de recherche
         const assoKeywords = ["association", "associations", "asso"];
         const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
         if (foundAssoKeyword) {
@@ -289,7 +285,6 @@ function MapPageComponent() {
         }
         
         const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
-        
         if (currentFilter) { 
             results = results.filter(d => {
                 if (currentFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
@@ -317,19 +312,15 @@ function MapPageComponent() {
 
         const words = term.split(/\s+/).filter(w => w.length > 0);
         for (const word of words) {
-            if (/^\d{5}$/.test(word)) {
-                zipFound = word;
-            } else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) {
-                deptFound = word.padStart(2, '0').toUpperCase();
-            } else {
-                otherText.push(word);
-            }
+            if (/^\d{5}$/.test(word)) zipFound = word;
+            else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
+            else otherText.push(word);
         }
 
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
             if (coords && !controller.signal.aborted) {
-                setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external');
+                setMapCenter(coords); setSortingAnchor(coords); setMapZoom(prev => Math.max(prev, 12)); setSelectionSource('external');
             }
         } else if (deptFound) {
             const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFound!));
@@ -353,37 +344,23 @@ function MapPageComponent() {
 
   const ZOOM_THRESHOLD = 8.5;
 
-  // Filtrage intelligent par Viewport : on ne garde que ce qui est visible sur la carte
-  const pointsForMap = useMemo(() => {
+  // Filtrage intelligent par Viewport pour la carte ET la liste
+  const pointsInViewport = useMemo(() => {
     let results = [...filteredPoints];
-    
-    // Si on est à bas zoom et sans recherche, Leaflet s'occupe des clusters, pas besoin de filtrer
-    if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
-      return results;
-    }
-
-    // Sinon, on filtre strictement par les limites de la carte pour la performance
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
-        const dLat = maxLat - minLat;
-        const dLng = maxLng - minLng;
-        const buffer = 0.20; 
-        const paddedMinLat = minLat - dLat * buffer;
-        const paddedMaxLat = maxLat + dLat * buffer;
-        const paddedMinLng = minLng - dLng * buffer;
-        const paddedMaxLng = maxLng + dLng * buffer;
-        results = results.filter(d => d.latitude >= paddedMinLat && d.latitude <= paddedMaxLat && d.longitude >= paddedMinLng && d.longitude <= paddedMaxLng); 
+        results = results.filter(d => d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng); 
     }
     return results;
-  }, [filteredPoints, mapBoundsStr, mapZoom, submittedSearchTerm]);
+  }, [filteredPoints, mapBoundsStr]);
 
   const pointsToDisplay = useMemo(() => {
     if (isMapMoving) return [];
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') return [];
-    let results = [...pointsForMap];
+    let results = [...pointsInViewport];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
-    return results.slice(0, 50);
-  }, [pointsForMap, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
+    return results.slice(0, 40); // Limite le DOM à 40 éléments pour la performance
+  }, [pointsInViewport, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
     setSelectedDealershipId(id); 
@@ -412,7 +389,6 @@ function MapPageComponent() {
     setSelectionSource(null);
   }, [isMobile]);
 
-  // Callback quand une fiche a chargé ses détails : on la met en cache
   const onDetailLoaded = useCallback((data: Dealership) => {
     if (!data.id) return;
     setDetailCache(prev => ({ ...prev, [data.id]: data }));
@@ -426,8 +402,7 @@ function MapPageComponent() {
     mapUpdateTimerRef.current = setTimeout(() => {
         setMapBoundsStr(bounds.toBBoxString()); 
         const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
-        const threshold = newZoom > 12 ? 0.001 : 0.01;
-        if (selectionSource === null && distSq > threshold) {
+        if (selectionSource === null && distSq > 0.01) {
           setSortingAnchor(newCenter);
         }
     }, 300);
@@ -479,7 +454,7 @@ function MapPageComponent() {
                           onDataLoaded={onDetailLoaded}
                         />
                     </div>
-                    {(index + 1) % 4 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 4) % ads.length]} /></div>)}
+                    {(index + 1) % 5 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 5) % ads.length]} /></div>)}
                 </React.Fragment>
             ))}
             {pointsToDisplay.length === 0 && !isMapMoving && (submittedSearchTerm !== '' || mapZoom >= ZOOM_THRESHOLD) && !isLoading && (
@@ -497,7 +472,7 @@ function MapPageComponent() {
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
             <MapComponent 
-              points={pointsForMap} 
+              points={filteredPoints} 
               center={mapCenter} 
               zoom={mapZoom} 
               hoveredId={hoveredDealershipId} 

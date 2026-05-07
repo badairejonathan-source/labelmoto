@@ -6,6 +6,9 @@ export interface MapPoint {
   category: string;
   appSection: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   title: string;
+  // Données de preview incluses pour éviter les fetchs inutiles dans la liste
+  imgUrl?: string;
+  rating?: string | number;
 }
 
 export interface Dealership {
