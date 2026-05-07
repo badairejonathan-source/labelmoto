@@ -292,9 +292,10 @@ const Header: React.FC<HeaderProps> = ({
         searchPart = lowerTerm.replace(foundAssoKeyword, '').trim();
     }
 
-    const parisArrMatch = searchPart.match(/paris\s*(\d{1,2})/i);
     const results: Suggestion[] = [];
     
+    // Logic for Paris arrondissements
+    const parisArrMatch = searchPart.match(/paris\s*(\d{1,2})/i);
     if (parisArrMatch) {
         const arrNum = parseInt(parisArrMatch[1]);
         if (arrNum >= 1 && arrNum <= 20) {
@@ -305,12 +306,14 @@ const Header: React.FC<HeaderProps> = ({
                 subLabel: cp,
                 score: 2000
             });
+            // Re-point searchPart to CP for remaining checks if needed
             searchPart = cp;
         }
     }
 
     const normalizedTerm = searchPart.replace(/[\s-]/g, '');
 
+    // Location search (Departments / Cities)
     Object.entries(locationsData).forEach(([dept, info]) => {
         const deptNum = dept.split(' - ')[0];
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
@@ -350,6 +353,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
+    // Dealer suggestions
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -391,6 +395,8 @@ const Header: React.FC<HeaderProps> = ({
   const handleSuggestionClick = (suggestion: Suggestion) => {
     let searchTermToUse = suggestion.label;
     if (suggestion.type === 'brand-only') searchTermToUse = suggestion.brand || suggestion.label;
+    if (suggestion.type === 'city' && suggestion.subLabel && suggestion.subLabel.startsWith('750')) searchTermToUse = suggestion.label;
+    
     onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
     setIsFocused(false);

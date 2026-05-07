@@ -261,12 +261,17 @@ function MapPageComponent() {
   useEffect(() => {
     const controller = new AbortController();
     const processSearch = async () => {
-        let results = [...allPoints];
         let term = submittedSearchTerm.trim().toLowerCase();
+        if (term === '') {
+            setFilteredPoints(allPoints);
+            return;
+        }
+
+        let results = [...allPoints];
         
+        // Handle Asso/Relais keywords in term
         const assoKeywords = ["association", "associations", "asso"];
         const foundAssoKeyword = assoKeywords.find(k => term.includes(k));
-        
         if (foundAssoKeyword) {
             if (activeFilter !== 'association') setActiveFilter('association');
             term = term.replace(foundAssoKeyword, '').trim();
@@ -274,6 +279,7 @@ function MapPageComponent() {
         
         const currentFilter = foundAssoKeyword ? 'association' : activeFilter;
         
+        // Initial filtering by section/category
         if (currentFilter) { 
             results = results.filter(d => {
                 if (currentFilter === 'shopping') return d.appSection === 'shopping' || d.appSection === 'both';
@@ -283,39 +289,59 @@ function MapPageComponent() {
                 return true;
             });
         } else {
-            // Le filtre "Tout" regroupe Concessions et Ateliers, exclut les Assos/Relais
             results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
         }
 
-        if (term !== '') {
-            const words = term.split(/\s+/);
-            let deptFilter: string | null = null;
-            let zipFilter: string | null = null;
-            let otherTerms: string[] = [];
-            for (const word of words) {
-                if (/^\d{5}$/.test(word)) zipFilter = word;
-                else if (/^(\d{1,2}|2[ab])$/i.test(word)) deptFilter = word.padStart(2, '0').toUpperCase();
-                else otherTerms.push(word);
+        // Parse for Location Intent (Zip, Dept, Paris Arr)
+        let zipFound: string | null = null;
+        let deptFound: string | null = null;
+        let otherText: string[] = [];
+
+        // Special case: Paris XX arrondissement
+        const parisMatch = term.match(/paris\s*(\d{1,2})/i);
+        if (parisMatch) {
+            const num = parseInt(parisMatch[1]);
+            if (num >= 1 && num <= 20) {
+                zipFound = `750${num.toString().padStart(2, '0')}`;
+                term = term.replace(parisMatch[0], '').trim();
             }
-            if (zipFilter) {
-                const coords = await getCityCoordinates(zipFilter, controller.signal);
-                if (controller.signal.aborted) return;
-                if (coords) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }
-            } else if (deptFilter) {
-                const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFilter!));
-                if (deptKey) {
-                    const info = (locationsData as any)[deptKey];
-                    setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external');
-                }
-            } else if (otherTerms.length > 0) {
-                const cityCoords = await getCityCoordinatesByName(otherTerms.join(' '), controller.signal);
-                if (controller.signal.aborted) return;
-                if (cityCoords) { setMapCenter(cityCoords); setSortingAnchor(cityCoords); setMapZoom(12); setSelectionSource('external'); }
-            }
-            results = results.filter(d => (d.title || '').toLowerCase().includes(term));
         }
+
+        // Parse words for Zip or Dept
+        const words = term.split(/\s+/).filter(w => w.length > 0);
+        for (const word of words) {
+            if (/^\d{5}$/.test(word)) {
+                zipFound = word;
+            } else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) {
+                deptFound = word.padStart(2, '0').toUpperCase();
+            } else {
+                otherText.push(word);
+            }
+        }
+
+        // Apply Location centering
+        if (zipFound) {
+            const coords = await getCityCoordinates(zipFound, controller.signal);
+            if (coords && !controller.signal.aborted) {
+                setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external');
+            }
+        } else if (deptFound) {
+            const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFound!));
+            if (deptKey) {
+                const info = (locationsData as any)[deptKey];
+                setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external');
+            }
+        }
+
+        // Apply title filtering only if there are remaining keywords
+        if (otherText.length > 0) {
+            const filterStr = otherText.join(' ');
+            results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr));
+        }
+
         if (!controller.signal.aborted) setFilteredPoints(results);
     };
+
     const timer = setTimeout(() => { processSearch(); }, 300);
     return () => { clearTimeout(timer); controller.abort(); };
   }, [submittedSearchTerm, allPoints, activeFilter]);
@@ -323,11 +349,8 @@ function MapPageComponent() {
   const ZOOM_THRESHOLD = 8.5;
 
   const pointsForMap = useMemo(() => {
-    // On doit toujours partir des points filtrés par catégorie/recherche
     let results = [...filteredPoints];
     
-    // Si on est à bas zoom et sans recherche textuelle, on renvoie tous les points filtrés 
-    // (pour les clusters nationaux) sans filtrer par la zone de l'écran.
     if (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '') {
       return results;
     }
