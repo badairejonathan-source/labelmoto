@@ -11,30 +11,35 @@
 
 .marker-label {
   position: absolute;
-  left: 28px;
+  left: 32px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 10px;
-  font-weight: 700;
-  color: #475569;
-  white-space: nowrap;
+  font-size: 9px;
+  font-weight: 800;
+  color: #334155;
+  white-space: normal; /* Autorise le retour à la ligne */
+  width: max-content;
+  max-width: 160px; /* Limite la largeur pour éviter de sortir du champ */
+  line-height: 1.15;
   pointer-events: none;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  padding: 2px 8px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+  letter-spacing: 0.01em;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), 0 0 0 1px rgba(0,0,0,0.05);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
+  text-align: left;
 }
 
 .marker-label.active {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
-  color: #1a237e;
+  color: #1e3a8a;
   background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 0 1.5px #1a237e;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1), 0 0 0 2px #1e3a8a;
   z-index: 1000;
   transform: translateY(-50%) scale(1.05);
+  max-width: 200px;
 }
