@@ -146,6 +146,7 @@ function MapPageComponent() {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); 
         setSortingAnchor(pos); 
+        // Ne dezoom pas si on est déjà plus proche
         if (mapZoom < 12) setMapZoom(12);
         setSelectionSource('external');
     }
@@ -175,16 +176,35 @@ function MapPageComponent() {
         else if (data.lat !== undefined) lat = parseFloat(String(data.lat).replace(',', '.'));
         else if (data.location?.lat !== undefined) lat = parseFloat(String(data.location.lat).replace(',', '.'));
         else if (data.position?.latitude !== undefined) lat = parseFloat(String(data.position.latitude).replace(',', '.'));
+        else if (data.position && Array.isArray(data.position)) { lat = data.position[0]; lng = data.position[1]; }
         
-        if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
-        else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
-        else if (data.location?.lng !== undefined) lng = parseFloat(String(data.location.lng).replace(',', '.'));
-        else if (data.position?.longitude !== undefined) lng = parseFloat(String(data.position.longitude).replace(',', '.'));
+        if (lng === 0) {
+            if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
+            else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
+            else if (data.location?.lng !== undefined) lng = parseFloat(String(data.location.lng).replace(',', '.'));
+            else if (data.position?.longitude !== undefined) lng = parseFloat(String(data.position.longitude).replace(',', '.'));
+        }
       } catch (e) {}
 
       let previewImg = "";
-      const imgKeys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url'];
-      for(const k of imgKeys) { if(data[k] && typeof data[k] === 'string') { previewImg = data[k]; break; } }
+      // Recherche exhaustive de l'image
+      const imgKeys = ['imgUrl', 'imageUrl', 'photoUrl', 'img_url', 'image_url', 'photo_url'];
+      for(const k of imgKeys) { 
+        if(data[k] && typeof data[k] === 'string' && data[k].startsWith('http')) { 
+          previewImg = data[k]; 
+          break; 
+        } 
+      }
+      
+      // Recherche dans les objets imbriqués (ex: data.details.image)
+      if (!previewImg && data.details && typeof data.details === 'object') {
+        for(const k of imgKeys) {
+            if (data.details[k] && typeof data.details[k] === 'string') {
+                previewImg = data.details[k];
+                break;
+            }
+        }
+      }
 
       return {
         id: doc.id,
@@ -200,7 +220,8 @@ function MapPageComponent() {
   }, []);
 
   /**
-   * Chargement initial d'un échantillon pour les clusters France
+   * Chargement initial (Vue France)
+   * On augmente la limite à 3000 pour que les clusters soient plus "vrais" dès le début
    */
   useEffect(() => {
     const fetchInitialSample = async () => {
@@ -208,8 +229,8 @@ function MapPageComponent() {
       setIsLoading(true);
       try {
         const colRef = collection(firestore, 'concessions');
-        // On charge un échantillon limité pour la vue globale
-        const snapshot = await getDocs(query(colRef, limit(800)));
+        // 3000 points = ~750 Ko, parfaitement acceptable pour un chargement initial France
+        const snapshot = await getDocs(query(colRef, limit(3000)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
         
         points.forEach((p: MapPoint) => masterPointsMap.current.set(p.id, p));
@@ -234,7 +255,7 @@ function MapPageComponent() {
     const west = bounds.getWest();
     const east = bounds.getEast();
 
-    // On divise la France en bandes de 0.5 degré de latitude pour éviter de recharger trop souvent
+    // On divise la France en bandes de 0.5 degré de latitude
     const latStart = Math.floor(south * 2) / 2;
     const latEnd = Math.ceil(north * 2) / 2;
 
@@ -247,8 +268,6 @@ function MapPageComponent() {
 
     if (newBands.length === 0) return;
 
-    // Pour chaque nouvelle bande de latitude, on fait une requête
-    // Note: Firestore limite les requêtes. On traite les bandes 2 par 2.
     setIsLoading(true);
     try {
       const colRef = collection(firestore, 'concessions');
@@ -269,7 +288,6 @@ function MapPageComponent() {
       snapshots.forEach(snap => {
         const points = processSnapshot(snap, 'concessions', 'both');
         points.forEach((p: MapPoint) => {
-          // Filtrage longitude client-side pour la précision
           if (p.longitude >= west - 0.2 && p.longitude <= east + 0.2) {
              if (!masterPointsMap.current.has(p.id)) {
                 masterPointsMap.current.set(p.id, p);
@@ -290,7 +308,7 @@ function MapPageComponent() {
   }, [firestore, processSnapshot]);
 
   /**
-   * Fetch additionnel pour les collections secondaires (Asso / Relais)
+   * Fetch additionnel pour les collections secondaires
    */
   const fetchSecondaryData = useCallback(async (colName: string, appSection: string) => {
     if (!firestore || fetchedLatBands.current.has(-999 + (colName === 'relais' ? 1 : 0))) return;
@@ -318,7 +336,7 @@ function MapPageComponent() {
   }, [mounted, activeFilter, submittedSearchTerm, fetchSecondaryData]);
 
   /**
-   * Logique de recherche et filtrage (Client-side)
+   * Logique de recherche intelligente (Paris, Dept, CP)
    */
   useEffect(() => {
     const controller = new AbortController();
@@ -358,6 +376,7 @@ function MapPageComponent() {
         let deptFound: string | null = null;
         let otherText: string[] = [];
 
+        // Détection Paris 1-20
         const parisMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisMatch) {
             const num = parseInt(parisMatch[1]);
@@ -424,6 +443,7 @@ function MapPageComponent() {
     setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
+      // Garde le zoom actuel si on est déjà plus proche que 12
       if (mapZoom < 12) setMapZoom(12); 
       if (isMobile) setDrawerHeight('half'); 
     } 
@@ -463,7 +483,6 @@ function MapPageComponent() {
         if (selectionSource === null && distSq > 0.01) {
           setSortingAnchor(newCenter);
         }
-        // Déclenchement du chargement géographique si zoom suffisant
         if (newZoom >= ZOOM_THRESHOLD) {
           fetchPointsInViewport(bounds);
         }
