@@ -152,7 +152,7 @@ function MapPageComponent() {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); 
         setSortingAnchor(pos); 
-        if (mapZoom < 12) setMapZoom(12);
+        setMapZoom(prev => Math.max(prev, 12));
         setSelectionSource('external');
     }
     if (selectedIdParam) {
@@ -328,7 +328,7 @@ function MapPageComponent() {
     
     try {
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT / 2)));
+      const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT)));
       const points = processSnapshot(snapshot, colName, appSection);
       
       points.forEach((p: MapPoint) => { 
@@ -389,10 +389,21 @@ function MapPageComponent() {
         
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
-            if (coords && !controller.signal.aborted) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }
+            if (coords && !controller.signal.aborted) { 
+              setMapCenter(coords); 
+              setSortingAnchor(coords); 
+              setMapZoom(prev => Math.max(prev, 12)); 
+              setSelectionSource('external'); 
+            }
         } else if (deptFound) {
             const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFound!));
-            if (deptKey) { const info = (locationsData as any)[deptKey]; setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external'); }
+            if (deptKey) { 
+              const info = (locationsData as any)[deptKey]; 
+              setMapCenter(info.center); 
+              setSortingAnchor(info.center); 
+              setMapZoom(9); 
+              setSelectionSource('external'); 
+            }
         }
         
         if (otherText.length > 0) { 
@@ -426,15 +437,23 @@ function MapPageComponent() {
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
     setSelectedDealershipId(id); setSelectionSource('card'); 
-    if (lat && lng) { setMapCenter([lat, lng]); if (mapZoom < 12) setMapZoom(12); if (isMobile) setDrawerHeight('half'); } 
-  }, [isMobile, mapZoom]);
+    if (lat && lng) { 
+      setMapCenter([lat, lng]); 
+      setMapZoom(prev => Math.max(prev, 12)); 
+      if (isMobile) setDrawerHeight('half'); 
+    } 
+  }, [isMobile]);
 
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); setSelectionSource('marker');
     const point = masterPointsMap.current.get(id); 
-    if (point) { setMapCenter([point.latitude, point.longitude]); setSortingAnchor([point.latitude, point.longitude]); if (mapZoom < 12) setMapZoom(12); } 
+    if (point) { 
+      setMapCenter([point.latitude, point.longitude]); 
+      setSortingAnchor([point.latitude, point.longitude]); 
+      setMapZoom(prev => Math.max(prev, 12)); 
+    } 
     if (isMobile) setDrawerHeight('half'); 
-  }, [isMobile, mapZoom]);
+  }, [isMobile]);
 
   const handleUserMapInteraction = useCallback(() => { if (isMobile) setDrawerHeight('collapsed'); setSelectionSource(null); }, [isMobile]);
   
@@ -454,7 +473,12 @@ function MapPageComponent() {
   }, [selectionSource, fetchPointsInViewport]);
 
   const handleLocateEnd = useCallback(() => setIsLoadingLocating(false), []);
-  const handleLocationFound = useCallback((coords: [number, number]) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }, []);
+  const handleLocationFound = useCallback((coords: [number, number]) => { 
+    setMapCenter(coords); 
+    setSortingAnchor(coords); 
+    setMapZoom(prev => Math.max(prev, 12)); 
+    setSelectionSource('external'); 
+  }, []);
 
   const listContent = (
     <div className="space-y-3 pb-20 custom-scrollbar">
@@ -511,7 +535,7 @@ function MapPageComponent() {
                     <UserMenu />
                 </div>
                 <div className="space-y-6 mb-6">
-                    <div className="flex flex-col items-center"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-3">Pros & Services</p><div className="flex items-center justify-center gap-3"><button onClick={() => setActiveFilter('shopping')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Vente</span></button><button onClick={() => setActiveFilter(null)} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === null ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Tout</span></button><button onClick={() => setActiveFilter('service')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Atelier</span></button></div></div>
+                    <div className="flex flex-col items-center"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-3">Pros & Services</p><div className="flex items-center justify-center gap-3"><button onClick={() => setActiveFilter('shopping')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Vente</span></button><button onClick={() => setActiveFilter(null)} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === null ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Tout</span></button><button onClick={() => setActiveFilter('service')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} /><span className="text-[8px) font-black uppercase mt-0.5">Atelier</span></button></div></div>
                     <div className="flex flex-col items-center"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-3">Communauté</p><div className="flex items-center justify-center gap-6"><button onClick={() => setActiveFilter('association')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-indigo-600/40" : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/20 hover:scale-105")}><Users className={cn("h-6 w-6", activeFilter === 'association' ? "text-white" : "text-indigo-600")} /><span className="text-[8px] font-black uppercase mt-0.5 text-center leading-tight">Asso</span></button><button onClick={() => setActiveFilter('relais')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-amber-600/40" : "bg-white text-muted-foreground border-transparent hover:border-amber-600/20 hover:scale-105")}><Utensils className={cn("h-6 w-6", activeFilter === 'relais' ? "text-white" : "text-amber-600")} /><span className="text-[8px] font-black uppercase mt-0.5 text-center leading-tight">Relais</span></button></div></div>
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-border/50 to-transparent mb-4" />
@@ -540,7 +564,7 @@ function MapPageComponent() {
                     <button onClick={() => setActiveFilter('service')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'service' ? "bg-brand text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Wrench className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5">Atelier</span></button>
                     <div className="w-px h-8 bg-border/50 shrink-0 mx-1" />
                     <button onClick={() => setActiveFilter('association')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'association' ? "bg-indigo-600 text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Users className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5 text-center leading-none">Asso</span></button>
-                    <button onClick={() => setActiveFilter('relais')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'relais' ? "bg-amber-600 text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Utensils className="h-5 w-5" /><span className="text-[7px] font-black uppercase mt-0.5 text-center leading-none">Relais</span></button>
+                    <button onClick={() => setActiveFilter('relais')} className={cn("h-14 w-14 rounded-full flex flex-col items-center justify-center shadow-sm border-2 shrink-0", activeFilter === 'relais' ? "bg-amber-600 text-white border-white" : "bg-white text-muted-foreground border-transparent")}><Utensils className="h-5 w-5" /><span className="text-[7px) font-black uppercase mt-0.5 text-center leading-none">Relais</span></button>
                     <button className="ml-1 rounded-full h-10 w-10 flex items-center justify-center hover:bg-muted shrink-0" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : 'collapsed')}>{drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}</button>
                 </div>
               </div>
