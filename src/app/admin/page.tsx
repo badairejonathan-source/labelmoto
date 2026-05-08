@@ -382,12 +382,12 @@ export default function AdminPage() {
                 <Card className="border-2 border-indigo-200">
                     <CardHeader className="bg-indigo-50">
                         <CardTitle className="text-indigo-900 flex items-center gap-2"><Database className="h-6 w-6" /> Migration Géo-Spatiale (Geohash)</CardTitle>
-                        <CardDescription>Cette opération calcule un Geohash pour chaque établissement. Indispensable pour la performance de la carte interactive.</CardDescription>
+                        <CardTitle className="text-xs uppercase font-black text-indigo-700 mt-1">Obligatoire pour la performance de la carte</CardTitle>
                     </CardHeader>
                     <CardContent className="py-8 space-y-6">
                         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
                             <p className="text-sm font-bold text-amber-900 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Attention :</p>
-                            <p className="text-xs text-amber-800 mt-1">L'opération peut prendre quelques minutes si vous avez des milliers de documents. Ne fermez pas la fenêtre.</p>
+                            <p className="text-xs text-amber-800 mt-1">L'opération va recalculer le Geohash de chaque établissement. Cela peut prendre quelques minutes si vous avez des milliers de documents. Ne fermez pas la fenêtre.</p>
                         </div>
                         
                         {isMigrating && (
