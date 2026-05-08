@@ -57,13 +57,8 @@ export function encodeGeohash(lat: number, lng: number, precision: number = 9): 
  */
 export function getGeohashCells(south: number, west: number, north: number, east: number, precision: number = 4): string[] {
   const hashes = new Set<string>();
-  
-  // Le pas (step) doit être plus petit que la taille de la cellule pour ne rien rater.
-  // Précision 4 (20km) -> pas de 0.15 deg (~16km)
-  // Précision 5 (5km) -> pas de 0.04 deg (~4.4km)
   const step = precision === 4 ? 0.15 : 0.04;
 
-  // On boucle avec une marge de sécurité pour inclure les bords
   for (let lat = south - step/2; lat <= north + step; lat += step) {
     for (let lng = west - step/2; lng <= east + step; lng += step) {
       const safeLat = Math.min(89.9, Math.max(-89.9, lat));
@@ -73,4 +68,32 @@ export function getGeohashCells(south: number, west: number, north: number, east
   }
   
   return Array.from(hashes);
+}
+
+/**
+ * Extrait et valide des coordonnées numériques depuis un objet de données hétérogène.
+ */
+export function extractValidCoordinates(data: any): { lat: number; lng: number } | null {
+  if (!data) return null;
+
+  let lat: number | null = null;
+  let lng: number | null = null;
+
+  const rawLat = data.latitude ?? data.lat ?? data.location?.lat;
+  const rawLng = data.longitude ?? data.lng ?? data.location?.lng;
+
+  if (rawLat !== undefined && rawLat !== null) {
+    lat = typeof rawLat === 'number' ? rawLat : parseFloat(String(rawLat).replace(',', '.'));
+  }
+  if (rawLng !== undefined && rawLng !== null) {
+    lng = typeof rawLng === 'number' ? rawLng : parseFloat(String(rawLng).replace(',', '.'));
+  }
+
+  if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
+    if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      return { lat, lng };
+    }
+  }
+
+  return null;
 }

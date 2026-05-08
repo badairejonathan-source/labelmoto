@@ -1,24 +1,22 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFirebase } from '@/firebase';
-import { collection, query, limit, startAfter, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { collection, query, limit, startAfter, getDocs, writeBatch, doc, onSnapshot, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2, Database, Zap, Terminal, ListChecks } from 'lucide-react';
+import { Loader2, CheckCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2, Database, Zap, Terminal } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from '@/lib/utils';
-import { encodeGeohash } from '@/lib/geohash';
+import { encodeGeohash, extractValidCoordinates } from '@/lib/geohash';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -31,7 +29,6 @@ interface Submission {
   phoneNumber?: string;
   email?: string;
   website?: string;
-  placeUrl?: string;
   category: 'concession' | 'atelier' | 'accessoiriste' | 'concession-atelier' | 'association' | 'autre';
   brands?: string[];
   description?: string;
@@ -41,6 +38,7 @@ interface Submission {
   status?: string;
   latitude?: number;
   longitude?: number;
+  [key: string]: any;
 }
 
 interface UserComment {
@@ -64,10 +62,9 @@ export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [quarantineSubmissions, setQuarantineSubmissions] = useState<Submission[]>([]);
   const [pendingComments, setPendingComments] = useState<UserComment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   
-  // Migration state
   const [isMigrating, setIsMigrating] = useState(false);
   const [migrationProgress, setMigrationProgress] = useState(0);
   const [migrationLogs, setMigrationLogs] = useState<string[]>([]);
@@ -86,6 +83,30 @@ export default function AdminPage() {
     }
   }, [user, isUserLoading, router]);
 
+  // ÉCOUTEURS TEMPS RÉEL POUR LA MODÉRATION
+  useEffect(() => {
+    if (!firestore || !user || user.uid !== ADMIN_UID) return;
+
+    const unsubSubmissions = onSnapshot(query(collection(firestore, 'pending_concessions'), orderBy('submittedAt', 'desc')), (snap) => {
+      setSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
+      setIsLoadingData(false);
+    });
+
+    const unsubComments = onSnapshot(query(collection(firestore, 'pending_comments'), orderBy('date', 'desc')), (snap) => {
+      setPendingComments(snap.docs.map(d => ({ id: d.id, ...d.data() } as UserComment)));
+    });
+
+    const unsubQuarantine = onSnapshot(query(collection(firestore, 'a_verifier'), orderBy('submittedAt', 'desc')), (snap) => {
+      setQuarantineSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
+    });
+
+    return () => {
+      unsubSubmissions();
+      unsubComments();
+      unsubQuarantine();
+    };
+  }, [firestore, user]);
+
   const addLog = (msg: string) => {
     setMigrationLogs(prev => [...prev.slice(-49), `> ${new Date().toLocaleTimeString()} : ${msg}`]);
   };
@@ -96,9 +117,6 @@ export default function AdminPage() {
     }
   }, [migrationLogs]);
 
-  /**
-   * MIGRATION GÉO-SPATIALE SÉCURISÉE ET IDEMPOTENTE
-   */
   const runGeohashMigration = async () => {
     if (!firestore || isMigrating) return;
     if (!window.confirm("La migration va analyser tous les documents et ne mettra à jour que ceux dont le Geohash est absent ou incorrect. Continuer ?")) return;
@@ -135,42 +153,25 @@ export default function AdminPage() {
           for (const docSnapshot of snapshot.docs) {
             currentStats.scanned++;
             const data = docSnapshot.data();
-            let lat: number | null = null;
-            let lng: number | null = null;
+            const coords = extractValidCoordinates(data);
 
-            const rawLat = data.latitude ?? data.lat ?? data.location?.lat;
-            const rawLng = data.longitude ?? data.lng ?? data.location?.lng;
-
-            if (rawLat !== undefined && rawLat !== null) {
-              lat = typeof rawLat === 'number' ? rawLat : parseFloat(String(rawLat).replace(',', '.'));
-            }
-            if (rawLng !== undefined && rawLng !== null) {
-              lng = typeof rawLng === 'number' ? rawLng : parseFloat(String(rawLng).replace(',', '.'));
-            }
-
-            if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
-              if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-                const calculatedHash = encodeGeohash(lat, lng, 9);
-                
-                // IDEMPOTENCE : On ne met à jour que si nécessaire
-                if (data.geohash !== calculatedHash || data.latitude !== lat || data.longitude !== lng) {
-                  batch.update(docSnapshot.ref, { 
-                    geohash: calculatedHash, 
-                    latitude: lat, 
-                    longitude: lng 
-                  });
-                  updatesInBatch++;
-                  currentStats.updated++;
-                } else {
-                  currentStats.ignored++;
-                }
+            if (coords) {
+              const calculatedHash = encodeGeohash(coords.lat, coords.lng, 9);
+              
+              if (data.geohash !== calculatedHash || data.latitude !== coords.lat || data.longitude !== coords.lng) {
+                batch.update(docSnapshot.ref, { 
+                  geohash: calculatedHash, 
+                  latitude: coords.lat, 
+                  longitude: coords.lng 
+                });
+                updatesInBatch++;
+                currentStats.updated++;
               } else {
-                currentStats.errors++;
-                addLog(`Coordonnées hors limites pour ${data.title || docSnapshot.id}`);
+                currentStats.ignored++;
               }
             } else {
               currentStats.errors++;
-              addLog(`Coordonnées manquantes pour ${data.title || docSnapshot.id}`);
+              addLog(`Coordonnées invalides pour ${data.title || docSnapshot.id}`);
             }
           }
 
@@ -183,13 +184,12 @@ export default function AdminPage() {
           setStats({ ...currentStats });
           setMigrationProgress(prev => Math.min(prev + 5, 95));
         }
-        addLog(`Collection ${colName} traitée.`);
       }
 
       setMigrationProgress(100);
       setStats({ ...currentStats });
       addLog(`MIGRATION TERMINÉE.`);
-      toast({ title: "Migration réussie !", description: `${currentStats.updated} documents mis à jour.` });
+      toast({ title: "Migration réussie !" });
     } catch (e: any) {
       addLog(`ERREUR CRITIQUE : ${e.message}`);
       toast({ title: "Erreur de migration", variant: "destructive" });
@@ -202,28 +202,36 @@ export default function AdminPage() {
     if (!firestore) return;
     setProcessingId(submission.id);
     
-    const { id, quarantinedAt, quarantineSource, status, ...data } = submission as any;
+    // 1. Nettoyage des métadonnées de soumission
+    const { id, quarantinedAt, quarantineSource, status, submittedAt, requestType, ...cleanData } = submission as any;
 
-    // AUTOMATISATION : Calcul du geohash lors de l'approbation si les coordonnées existent
-    let geohash = data.geohash || "";
-    if (data.latitude && data.longitude && !geohash) {
-        try {
-            geohash = encodeGeohash(data.latitude, data.longitude, 9);
-        } catch (e) {}
+    // 2. AUTOMATISATION : Calcul et validation des coordonnées + geohash
+    const coords = extractValidCoordinates(cleanData);
+    let geohash = cleanData.geohash || "";
+    let finalLat = cleanData.latitude;
+    let finalLng = cleanData.longitude;
+
+    if (coords) {
+      geohash = encodeGeohash(coords.lat, coords.lng, 9);
+      finalLat = coords.lat;
+      finalLng = coords.lng;
     }
 
-    const newConcession = {
-      ...data,
+    const targetCollection = cleanData.appSection === 'association' ? 'associations' : (cleanData.appSection === 'relais' ? 'relais' : 'concessions');
+
+    const finalDocument = {
+      ...cleanData,
+      latitude: finalLat,
+      longitude: finalLng,
       geohash,
-      appSection: data.category?.includes('concession') ? 'both' : 'service',
-      rating: data.rating || '0',
-      imgUrl: data.imgUrl || '',
+      appSection: cleanData.appSection || (cleanData.category?.includes('concession') ? 'both' : 'service'),
+      updatedAt: new Date().toISOString()
     };
 
-    setDocumentNonBlocking(doc(firestore, 'concessions', submission.id), newConcession, {});
+    setDocumentNonBlocking(doc(firestore, targetCollection, submission.id), finalDocument, { merge: true });
     deleteDocumentNonBlocking(doc(firestore, fromCollection, submission.id));
 
-    toast({ title: 'Action réussie !', description: `${submission.title} est maintenant public.` });
+    toast({ title: 'Action réussie !', description: `${submission.title} est maintenant public et indexé.` });
     setProcessingId(null);
   };
 
@@ -288,15 +296,17 @@ export default function AdminPage() {
                 ⚠️ Quarantaine {quarantineSubmissions.length > 0 && <Badge variant="destructive" className="ml-2">{quarantineSubmissions.length}</Badge>}
             </TabsTrigger>
             <TabsTrigger value="maintenance" className="rounded-full font-bold text-indigo-600 text-xs">
-                <Database className="mr-2 h-4 w-4" /> Outils
+                <Database className="mr-2 h-4 w-4" /> Maintenance
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
-            {submissions.length === 0 ? (
+            {isLoadingData ? (
+                <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>
+            ) : submissions.length === 0 ? (
               <div className="text-center py-20 bg-background rounded-2xl border-2 border-dashed">
                 <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
-                <h2 className="text-xl font-bold">Aucune demande pro</h2>
+                <h2 className="text-xl font-bold">Tout est à jour !</h2>
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -305,19 +315,16 @@ export default function AdminPage() {
                     <CardHeader>
                       <CardTitle className="text-lg">{sub.title}</CardTitle>
                       <CardDescription>Soumis {formatDate(sub.submittedAt)}</CardDescription>
+                      <Badge variant="outline" className="w-fit mt-1">{sub.requestType || 'CRÉATION'}</Badge>
                     </CardHeader>
                     <CardContent className="flex-grow space-y-2 text-sm">
                       <p><strong>Adresse:</strong> {sub.address}</p>
-                      <p><strong>Tél:</strong> {sub.phoneNumber}</p>
-                      {sub.brands && <div className="flex flex-wrap gap-1 mt-2">{sub.brands.map(b => <Badge key={b} variant="outline">{b}</Badge>)}</div>}
+                      {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
+                      {sub.description && <p className="italic text-muted-foreground bg-muted/50 p-2 rounded mt-2">{sub.description}</p>}
                     </CardContent>
                     <CardFooter className="flex gap-2 justify-end bg-muted/20 p-4 border-t">
-                      <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'pending_concessions')} disabled={processingId === sub.id} className="text-destructive">
-                        Refuser
-                      </Button>
-                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'pending_concessions')} disabled={processingId === sub.id} className="bg-brand">
-                        Approuver
-                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'pending_concessions')} disabled={processingId === sub.id} className="text-destructive">Refuser</Button>
+                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'pending_concessions')} disabled={processingId === sub.id} className="bg-brand">Approuver & Indexer</Button>
                     </CardFooter>
                   </Card>
                 ))}
@@ -329,7 +336,7 @@ export default function AdminPage() {
             {pendingComments.length === 0 ? (
               <div className="text-center py-20 bg-background rounded-2xl border-2 border-dashed">
                 <MessageSquare className="mx-auto h-12 w-12 text-blue-500 mb-4" />
-                <h2 className="text-xl font-bold">Aucun commentaire à modérer</h2>
+                <h2 className="text-xl font-bold">Aucun commentaire en attente</h2>
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -354,12 +361,8 @@ export default function AdminPage() {
                       <p className="text-[10px] text-muted-foreground mt-2">{formatDate(comment.date)}</p>
                     </CardContent>
                     <CardFooter className="flex gap-2 justify-end bg-muted/20 p-4 border-t">
-                      <Button variant="outline" size="sm" onClick={() => handleReject(comment.id, 'pending_comments')} disabled={processingId === comment.id} className="text-destructive">
-                        Supprimer
-                      </Button>
-                      <Button size="sm" onClick={() => handleApproveComment(comment)} disabled={processingId === comment.id} className="bg-blue-600 hover:bg-blue-700">
-                        Publier
-                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleReject(comment.id, 'pending_comments')} disabled={processingId === comment.id} className="text-destructive">Supprimer</Button>
+                      <Button size="sm" onClick={() => handleApproveComment(comment)} disabled={processingId === comment.id} className="bg-blue-600 hover:bg-blue-700">Publier</Button>
                     </CardFooter>
                   </Card>
                 ))}
@@ -378,27 +381,17 @@ export default function AdminPage() {
                 {quarantineSubmissions.map(sub => (
                   <Card key={sub.id} className="flex flex-col border-l-4 border-l-destructive">
                     <CardHeader>
-                      <CardTitle className="text-lg flex justify-between items-center">
-                        {sub.title}
-                        {sub.quarantineSource === 'manual_admin_action' ? <ShieldAlert className="h-5 w-5 text-destructive" /> : <AlertTriangle className="h-5 w-5 text-orange-500" />}
-                      </CardTitle>
-                      <CardDescription>
-                        {sub.quarantineSource === 'manual_admin_action' ? 'Modéré manuellement' : 'Auto-détecté'} - {formatDate(sub.quarantinedAt || sub.submittedAt)}
-                      </CardDescription>
+                      <CardTitle className="text-lg">{sub.title}</CardTitle>
+                      <CardDescription>{sub.quarantineSource === 'manual_admin_action' ? 'Modéré manuellement' : 'Auto-détecté'} - {formatDate(sub.quarantinedAt || sub.submittedAt)}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-grow space-y-2 text-sm italic text-muted-foreground">
                       <div className="bg-muted/30 p-3 rounded-lg text-xs not-italic text-foreground">
                         <p><strong>Adresse:</strong> {sub.address}</p>
-                        {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
                       </div>
                     </CardContent>
                     <CardFooter className="flex gap-2 justify-end bg-muted/20 p-4 border-t">
-                      <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'a_verifier')} disabled={processingId === sub.id} className="text-destructive">
-                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                      </Button>
-                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'a_verifier')} disabled={processingId === sub.id} className="bg-brand">
-                        <ShieldCheck className="mr-2 h-4 w-4" /> Réintégrer
-                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'a_verifier')} disabled={processingId === sub.id} className="text-destructive"><Trash2 className="mr-2 h-4 w-4" /> Supprimer</Button>
+                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'a_verifier')} disabled={processingId === sub.id} className="bg-brand"><ShieldCheck className="mr-2 h-4 w-4" /> Réintégrer & Indexer</Button>
                     </CardFooter>
                   </Card>
                 ))}
