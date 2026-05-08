@@ -167,7 +167,7 @@ function MapPageComponent() {
     }
   }, [latParam, lngParam, zoomParam, selectedIdParam, searchParam]);
 
-  const processSnapshot = useCallback((snapshot: any, colName: string, appSection: string) => {
+  const processSnapshot = useCallback((snapshot: any, colName: string, defaultAppSection: string) => {
     return snapshot.docs.map((doc: any) => {
       const data = doc.data();
       const coords = extractValidCoordinates(data);
@@ -181,7 +181,8 @@ function MapPageComponent() {
         latitude: coords.lat,
         longitude: coords.lng,
         category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
-        appSection: appSection as any,
+        // On privilégie l'appSection stockée en base si elle existe
+        appSection: data.appSection || (defaultAppSection as any),
         imgUrl: data.imgUrl || data.imageUrl || data.photoUrl || "",
         rating: data.rating,
         geohash: data.geohash
@@ -354,15 +355,30 @@ function MapPageComponent() {
     const controller = new AbortController();
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
+        
+        // --- LOGIQUE DE FILTRAGE PAR COUCHE / COLLECTION ---
+        // On commence par filtrer allPoints selon la collection active
+        let results = [...allPoints];
+        
+        if (activeFilter === 'association') {
+            results = results.filter(p => p.appSection === 'association');
+        } else if (activeFilter === 'relais') {
+            results = results.filter(p => p.appSection === 'relais');
+        } else if (activeFilter === 'shopping') {
+            results = results.filter(p => p.appSection === 'shopping' || p.appSection === 'both');
+        } else if (activeFilter === 'service') {
+            results = results.filter(p => p.appSection === 'service' || p.appSection === 'both');
+        } else {
+            // "Tout" : On affiche UNIQUEMENT les concessions/ateliers (données pros)
+            results = results.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
+        }
+
         if (term === '') {
-            setFilteredPoints(allPoints.filter(p => activeFilter ? (p.appSection === activeFilter || p.appSection === 'both') : (p.appSection !== 'association' && p.appSection !== 'relais')));
+            setFilteredPoints(results);
             return;
         }
         
-        let results = [...allPoints];
-        if (activeFilter) results = results.filter(d => d.appSection === activeFilter || d.appSection === 'both');
-        else results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
-        
+        // --- LOGIQUE DE RECHERCHE ---
         let zipFound: string | null = null, deptFound: string | null = null, otherText: string[] = [];
         const words = term.split(/\s+/).filter(w => w.length > 0);
         
