@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -29,7 +28,11 @@ interface MapComponentProps {
   onLocationFound?: (coords: [number, number]) => void;
 }
 
-// Calcule un centre géographique qui place le point d'intérêt dans la zone visible
+/**
+ * Calcule un centre géographique qui place le point d'intérêt au centre de la zone visible.
+ * Sur Desktop : Décale vers la gauche de la moitié du padding gauche (sidebar).
+ * Sur Mobile : Décale vers le bas de la moitié du padding bas (drawer).
+ */
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
   const z = targetZoom ?? map.getZoom();
   const centerPoint = map.project(latlng, z);
@@ -176,8 +179,13 @@ const MapComponent = ({
       lastSetTarget.current = targetKey;
 
       let finalCenter: L.LatLngExpression = center;
+      
+      // LOGIQUE DE CENTRAGE RELATIF :
+      // On décale le point cible pour qu'il tombe au centre de la zone blanche (non couverte par l'UI)
       if (leftPadding > 0 || bottomPadding > 0) {
-        finalCenter = getOffsettedCenter(map, center, [-(leftPadding / 3), bottomPadding / 6], zoom);
+        // -leftPadding/2 pousse le point vers la droite (zone visible sur desktop)
+        // bottomPadding/2 pousse le point vers le haut (zone visible sur mobile)
+        finalCenter = getOffsettedCenter(map, center, [-(leftPadding / 2), bottomPadding / 2], zoom);
       }
 
       map.flyTo(finalCenter, zoom, { duration: 0.8 });
