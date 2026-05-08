@@ -34,8 +34,8 @@ const CIRCUIT_BUGATTI: MapPoint = {
 
 // CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE 2D (GEOHASH)
 const ZOOM_THRESHOLD = 8.5;
-const MAX_ACTIVE_CELLS = 150; // Augmenté pour éviter les disparitions brusques
-const OVERVIEW_LIMIT = 1500; // Augmenté pour une vue France plus riche au départ
+const MAX_ACTIVE_CELLS = 150; 
+const OVERVIEW_LIMIT = 1500; 
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -115,11 +115,9 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // STABILISATION DES REQUETES
   const fetchCounter = useRef(0);
   const currentVisibleHashes = useRef<Set<string>>(new Set());
 
-  // --- ARCHITECTURE GÉO-SPATIALE 2D (CELLULES GEOHASH) ---
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
   const overviewIds = useRef<Set<string>>(new Set());
   const loadedCells = useRef<Map<string, Set<string>>>(new Map()); 
@@ -191,9 +189,6 @@ function MapPageComponent() {
     }).filter(Boolean) as MapPoint[];
   }, []);
 
-  /**
-   * DIAGNOSTIC CHIFFRÉ DU PIPELINE
-   */
   const logDiagnostic = useCallback(() => {
     if (process.env.NODE_ENV !== 'development' && !window.location.search.includes('debug=true')) return;
     
@@ -202,48 +197,35 @@ function MapPageComponent() {
       overviewPoints: overviewIds.current.size,
       activeGeohashCells: loadedCells.current.size,
       currentlyVisibleMarkers: filteredPoints.length,
-      currentZoom: mapZoom
+      currentZoom: mapZoom.toFixed(1)
     };
     
-    console.group(`📍 Map Pipeline Diagnostic - ${new Date().toLocaleTimeString()}`);
+    console.group(`📍 Map Diagnostic - ${new Date().toLocaleTimeString()}`);
     console.table(stats);
     console.log("Détail du cache loadedCells:", Array.from(loadedCells.current.keys()));
     console.groupEnd();
   }, [filteredPoints.length, mapZoom]);
 
-  /**
-   * PRUNING SPATIAL 2D OPTIMISÉ : Protège les cellules visibles.
-   */
   const pruneMemory = useCallback(() => {
     if (loadedCells.current.size <= MAX_ACTIVE_CELLS) return;
-
     const [centerLat, centerLng] = mapCenter;
-    
     const cellDistances = Array.from(loadedCells.current.entries()).map(([hash, pointIds]) => {
-      // Protection : on ne purge jamais ce qui est actuellement à l'écran
       if (currentVisibleHashes.current.has(hash)) return { hash, distSq: -1 };
-
       let cellLat = centerLat, cellLng = centerLng;
       const firstId = Array.from(pointIds)[0];
       const p = masterPointsMap.current.get(firstId);
       if (p) { cellLat = p.latitude; cellLng = p.longitude; }
-      
       const distSq = Math.pow(cellLat - centerLat, 2) + Math.pow(cellLng - centerLng, 2);
       return { hash, distSq };
     });
-
-    // On trie par distance décroissante (les plus loin en premier), en ignorant les protégés (-1)
     cellDistances.sort((a, b) => b.distSq - a.distSq);
-
     const cellsToDrop = cellDistances.filter(c => c.distSq !== -1).slice(0, Math.max(0, loadedCells.current.size - MAX_ACTIVE_CELLS));
-
     if (cellsToDrop.length > 0) {
-      console.log(`🧹 Pruning ${cellsToDrop.length} cells...`);
+      console.log(`🧹 Nettoyage de ${cellsToDrop.length} cellules mémoire...`);
       cellsToDrop.forEach(({ hash }) => {
         const pointIds = loadedCells.current.get(hash);
         if (pointIds) {
           pointIds.forEach(id => {
-            // Uniquement si le point n'est pas dans l'Overview
             if (!overviewIds.current.has(id)) masterPointsMap.current.delete(id);
           });
         }
@@ -253,127 +235,76 @@ function MapPageComponent() {
     }
   }, [mapCenter]);
 
-  /**
-   * CHARGEMENT INITIAL (Overview)
-   */
   useEffect(() => {
     const fetchInitialSample = async () => {
       if (!firestore || !mounted) return;
       setIsLoading(true);
       try {
-        console.log(`🌍 Fetching initial overview (limit ${OVERVIEW_LIMIT})...`);
+        console.log(`🌍 Chargement initial de la vue France (limite ${OVERVIEW_LIMIT})...`);
         const colRef = collection(firestore, 'concessions');
         const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
-        
         points.forEach((p: MapPoint) => {
           masterPointsMap.current.set(p.id, p);
           overviewIds.current.add(p.id);
         });
         setAllPoints(Array.from(masterPointsMap.current.values()));
-        console.log(`✅ Loaded ${points.length} overview points.`);
-      } catch (err) {
-        console.error("Overview load error:", err);
-      } finally {
-        setIsLoading(false);
-      }
+        console.log(`✅ Base France chargée : ${points.length} points.`);
+      } catch (err) { console.error("Erreur de chargement initial:", err); } finally { setIsLoading(false); }
     };
     fetchInitialSample();
   }, [firestore, mounted, processSnapshot]);
 
-  /**
-   * CHARGEMENT PAR VIEWPORT (Geohash Adaptive Precision)
-   */
   const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds, currentZoom: number) => {
     if (!firestore || currentZoom < ZOOM_THRESHOLD) return;
-    
-    // PRECISION ADAPTATIVE : Plus on zoome, plus on est fin pour économiser Firestore
     const precision = currentZoom >= 12 ? 5 : 4;
-    
-    const south = bounds.getSouth(), north = bounds.getNorth();
-    const west = bounds.getWest(), east = bounds.getEast();
-
+    const south = bounds.getSouth(), north = bounds.getNorth(), west = bounds.getWest(), east = bounds.getEast();
     const targetHashes = getGeohashCells(south, west, north, east, precision);
     currentVisibleHashes.current = new Set(targetHashes);
-    
-    // On ignore les cellules déjà en cache (en tenant compte de la précision dans la clé)
     const missingHashes = targetHashes.filter(h => !loadedCells.current.has(`${precision}:${h}`));
     if (missingHashes.length === 0) return;
-
-    // On limite pour éviter de saturer Firestore (augmenté à 16 pour couvrir plus large)
     const hashesToQuery = missingHashes.slice(0, 16);
-
     const requestId = ++fetchCounter.current;
     setIsLoading(true);
-    
     try {
-      console.log(`🛰️ Geohash Query (prec ${precision}): charging ${hashesToQuery.length} new cells...`);
+      console.log(`🛰️ Requête Géo (precision ${precision}) : exploration de ${hashesToQuery.length} nouvelles cellules...`);
       const colRef = collection(firestore, 'concessions');
       const promises = hashesToQuery.map(hash => {
-        return getDocs(query(
-          colRef, 
-          orderBy('geohash'), 
-          startAt(hash), 
-          endAt(hash + '\uf8ff'),
-          limit(200) // Limite par cellule
-        ));
+        return getDocs(query(colRef, orderBy('geohash'), startAt(hash), endAt(hash + '\uf8ff'), limit(200)));
       });
-
       const snapshots = await Promise.all(promises);
-      
-      // Sécurité : on ignore si une nouvelle requête a été lancée entre temps
       if (requestId !== fetchCounter.current) return;
-
       let addedCount = 0;
       snapshots.forEach((snap, i) => {
         const hash = hashesToQuery[i];
         const points = processSnapshot(snap, 'concessions', 'both');
         const cellPointIds = new Set<string>();
-
         points.forEach((p: MapPoint) => {
-             if (!masterPointsMap.current.has(p.id)) {
-                masterPointsMap.current.set(p.id, p);
-                addedCount++;
-             }
+             if (!masterPointsMap.current.has(p.id)) { masterPointsMap.current.set(p.id, p); addedCount++; }
              cellPointIds.add(p.id);
         });
         loadedCells.current.set(`${precision}:${hash}`, cellPointIds);
       });
-
       if (addedCount > 0) {
-        console.log(`➕ Added ${addedCount} new points from geohash queries.`);
+        console.log(`➕ Fusion de ${addedCount} nouveaux points dans la mémoire vive.`);
         setAllPoints(Array.from(masterPointsMap.current.values()));
         pruneMemory();
       }
-    } catch (err) {
-      console.error("Geoquery error:", err);
-    } finally {
-      if (requestId === fetchCounter.current) setIsLoading(false);
-    }
+    } catch (err) { console.error("Erreur GeoQuery:", err); } finally { if (requestId === fetchCounter.current) setIsLoading(false); }
   }, [firestore, processSnapshot, pruneMemory]);
 
-  /**
-   * CHARGEMENT SECONDAIRE (Asso/Relais)
-   */
   const fetchSecondaryData = useCallback(async (colName: string, appSection: string) => {
     const bandId = colName === 'relais' ? 'meta:relais' : 'meta:associations';
     if (!firestore || loadedCells.current.has(bandId)) return;
-    
     try {
-      console.log(`👥 Fetching secondary data: ${colName}...`);
+      console.log(`👥 Chargement des données secondaires : ${colName}...`);
       const colRef = collection(firestore, colName);
       const snapshot = await getDocs(query(colRef, limit(1000)));
       const points = processSnapshot(snapshot, colName, appSection);
-      
-      points.forEach((p: MapPoint) => {
-        if (!masterPointsMap.current.has(p.id)) {
-          masterPointsMap.current.set(p.id, p);
-          overviewIds.current.add(p.id); 
-        }
-      });
+      points.forEach((p: MapPoint) => { if (!masterPointsMap.current.has(p.id)) { masterPointsMap.current.set(p.id, p); overviewIds.current.add(p.id); } });
       setAllPoints(Array.from(masterPointsMap.current.values()));
       loadedCells.current.set(bandId, new Set(points.map((p: any) => p.id)));
-      console.log(`✅ Loaded ${points.length} points for ${colName}.`);
+      console.log(`✅ ${points.length} établissements chargés (${colName}).`);
     } catch (e) {}
   }, [firestore, processSnapshot]);
 
@@ -384,23 +315,17 @@ function MapPageComponent() {
     if (activeFilter === 'relais' || lowerSearch.includes('relais')) fetchSecondaryData('relais', 'relais');
   }, [mounted, activeFilter, submittedSearchTerm, fetchSecondaryData]);
 
-  /**
-   * LOGIQUE DE RECHERCHE
-   */
   useEffect(() => {
     const controller = new AbortController();
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
         if (term === '') {
-            setFilteredPoints(allPoints.filter(p => activeFilter ? p.appSection === activeFilter : (p.appSection !== 'association' && p.appSection !== 'relais')));
+            setFilteredPoints(allPoints.filter(p => activeFilter ? (p.appSection === activeFilter || p.appSection === 'both') : (p.appSection !== 'association' && p.appSection !== 'relais')));
             return;
         }
-
         let results = [...allPoints];
         if (activeFilter) results = results.filter(d => d.appSection === activeFilter || d.appSection === 'both');
         else results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
-
-        // Détection CP / Dept
         let zipFound: string | null = null, deptFound: string | null = null, otherText: string[] = [];
         const words = term.split(/\s+/).filter(w => w.length > 0);
         for (const word of words) {
@@ -408,34 +333,20 @@ function MapPageComponent() {
             else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
             else otherText.push(word);
         }
-
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
-            if (coords && !controller.signal.aborted) {
-                setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external');
-            }
+            if (coords && !controller.signal.aborted) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }
         } else if (deptFound) {
             const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFound!));
-            if (deptKey) {
-                const info = (locationsData as any)[deptKey];
-                setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external');
-            }
+            if (deptKey) { const info = (locationsData as any)[deptKey]; setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external'); }
         }
-
-        if (otherText.length > 0) {
-            const filterStr = otherText.join(' ');
-            results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr));
-        }
+        if (otherText.length > 0) { const filterStr = otherText.join(' '); results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr)); }
         if (!controller.signal.aborted) setFilteredPoints(results);
     };
-
     const timer = setTimeout(() => { processSearch(); }, 300);
     return () => { clearTimeout(timer); controller.abort(); };
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
-  /**
-   * FILTRAGE VIEWPORT (Faux Positifs Geohash)
-   */
   const pointsInViewport = useMemo(() => {
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
@@ -445,16 +356,13 @@ function MapPageComponent() {
     return results;
   }, [filteredPoints, mapBoundsStr]);
 
-  // Déclencher le log diagnostic après chaque mise à jour du filtrage
-  useEffect(() => {
-    logDiagnostic();
-  }, [pointsInViewport, logDiagnostic]);
+  useEffect(() => { logDiagnostic(); }, [pointsInViewport, logDiagnostic]);
 
   const pointsToDisplay = useMemo(() => {
     if (isMapMoving || (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '')) return [];
     let results = [...pointsInViewport];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
-    return results.slice(0, 100); // Augmenté pour la liste
+    return results.slice(0, 100); 
   }, [pointsInViewport, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
@@ -470,13 +378,10 @@ function MapPageComponent() {
   }, [isMobile, mapZoom]);
 
   const handleUserMapInteraction = useCallback(() => { if (isMobile) setDrawerHeight('collapsed'); setSelectionSource(null); }, [isMobile]);
-
   const onDetailLoaded = useCallback((data: Dealership) => { if (!data.id) return; setDetailCache(prev => ({ ...prev, [data.id]: data })); }, []);
-
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
     setMapZoom(newZoom); setMapCenter(newCenter); setIsMapMoving(false);
     if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
-    
     mapUpdateTimerRef.current = setTimeout(() => {
         setMapBoundsStr(bounds.toBBoxString()); 
         if (selectionSource === null) setSortingAnchor(newCenter);
@@ -533,7 +438,6 @@ function MapPageComponent() {
             <div className="w-full h-full flex items-center justify-center bg-muted/10"><Loader2 className="h-10 w-10 animate-spin text-brand/20" /></div>
         )}
       </div>
-
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[100] border border-white/40 overflow-hidden">
             <div className="p-8 pb-4 shrink-0">
@@ -551,19 +455,15 @@ function MapPageComponent() {
             <div ref={listContainerRef} className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">{listContent}</div>
         </aside>
       )}
-
       {!isMobile && (
         <div className="absolute top-8 right-8 left-[580px] z-[100] flex justify-end pointer-events-none">
             <div className="w-full max-w-2xl pointer-events-auto"><Header searchTerm={searchTerm} onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} activeFilter={activeFilter} onFilterChange={setActiveFilter} variant="map" hideUserMenu={true} /></div>
         </div>
       )}
-
       {isMobile && (
         <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none"><div className="pointer-events-auto"><Header searchTerm={searchTerm} onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} activeFilter={activeFilter} onFilterChange={setActiveFilter} /></div></div>
       )}
-
       <button className="absolute right-6 bottom-32 md:bottom-10 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser"><Compass className="h-7 w-7 md:h-8 md:w-8" /></button>
-
       {isMobile && (
         <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t flex flex-col z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[110px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-160px)]')}>
           <div onTouchStart={(e) => { touchStartY.current = e.touches[0].clientY; }} onTouchEnd={(e) => { const diff = touchStartY.current - e.changedTouches[0].clientY; if (Math.abs(diff) > 40) setDrawerHeight(diff > 0 ? (drawerHeight === 'collapsed' ? 'half' : 'full') : (drawerHeight === 'full' ? 'half' : 'collapsed')); }} className="cursor-grab active:cursor-grabbing bg-white rounded-t-[2.5rem] shrink-0">
