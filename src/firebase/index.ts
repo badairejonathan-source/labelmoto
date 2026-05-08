@@ -1,7 +1,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, Firestore } from 'firebase/firestore';
+import { initializeFirestore, Firestore, getFirestore } from 'firebase/firestore';
 
 // Singleton instances
 let firebaseApp: FirebaseApp;
@@ -38,9 +38,15 @@ export function getAuthInstance() {
 export function getFirestoreInstance() {
   if (!firestore) {
     const { firebaseApp } = initializeFirebase();
-    firestore = initializeFirestore(firebaseApp, {
-      experimentalForceLongPolling: true,
-    });
+    try {
+      // Configuration robuste pour les environnements avec proxys/firewalls
+      firestore = initializeFirestore(firebaseApp, {
+        experimentalForceLongPolling: true,
+      });
+    } catch (err) {
+      // Fallback si déjà initialisé par ailleurs
+      firestore = getFirestore(firebaseApp);
+    }
   }
   return firestore;
 }

@@ -1,14 +1,18 @@
 // src/lib/firebase.ts
-import { initializeFirebase } from "@/firebase/index";
+import { getFirestoreInstance, initializeFirebase } from "@/firebase/index";
 
 /**
  * Robust Firebase initialization for server-side utilities (like sitemap).
  * Reuses the central logic from @/firebase to avoid double initialization and environment errors.
  */
-const services = initializeFirebase();
+const { firebaseApp } = initializeFirebase();
 
 export const getFirebaseServices = () => {
-  return services;
+  return { 
+    firebaseApp, 
+    firestore: getFirestoreInstance() 
+  };
 };
 
-export const db = services.firestore;
+// Export correct db instance using the singleton getter
+export const db = getFirestoreInstance();
