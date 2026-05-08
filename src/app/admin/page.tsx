@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -57,7 +58,7 @@ interface UserComment {
 interface MigrationStats {
   scanned: number;
   updated: number;
-  ignored: number;
+  alreadyOk: number;
   errors: number;
   noGeohash: number;
   invalidCoords: number;
@@ -139,15 +140,15 @@ export default function AdminPage() {
     mode === 'MIGRATE' ? setIsMigrating(true) : setIsAuditing(true);
     setMigrationProgress(0);
     setMigrationLogs([]);
-    setStats({ scanned: 0, updated: 0, ignored: 0, errors: 0, noGeohash: 0, invalidCoords: 0 });
-    addLog(`INITIALISATION : Mode ${mode}...`);
+    setStats({ scanned: 0, updated: 0, alreadyOk: 0, errors: 0, noGeohash: 0, invalidCoords: 0 });
+    addLog(`INITIALISATION : Mode ${mode.toUpperCase()} lancé...`);
     
     try {
       const collectionsToProcess = ['concessions', 'associations', 'relais'];
-      let currentStats = { scanned: 0, updated: 0, ignored: 0, errors: 0, noGeohash: 0, invalidCoords: 0 };
+      let currentStats = { scanned: 0, updated: 0, alreadyOk: 0, errors: 0, noGeohash: 0, invalidCoords: 0 };
 
       for (const colName of collectionsToProcess) {
-        addLog(`COLLECTION : ${colName.toUpperCase()}...`);
+        addLog(`SCAN COLLECTION : ${colName.toUpperCase()}...`);
         let lastDocSnapshot = null;
         let hasMore = true;
         const PAGE_SIZE = 50; 
@@ -196,18 +197,19 @@ export default function AdminPage() {
                     updatedAt: new Date().toISOString()
                   });
                   updatesInBatch++;
+                  currentStats.updated++;
+                } else {
+                    // En mode Audit, on compte ce qui "serait" mis à jour
+                    currentStats.noGeohash++; 
                 }
-                currentStats.updated++;
               } else {
-                currentStats.ignored++;
+                currentStats.alreadyOk++;
               }
             } else {
               currentStats.invalidCoords++;
               currentStats.errors++;
-              if (currentStats.invalidCoords < 20) {
-                addLog(`[COORD_ERROR] ID: ${docSnapshot.id} - Données: ${JSON.stringify(data.latitude || 'null')}/${JSON.stringify(data.longitude || 'null')}`);
-              } else if (currentStats.invalidCoords === 20) {
-                addLog(`[COORD_ERROR] Trop d'erreurs, masquage des IDs suivants...`);
+              if (currentStats.invalidCoords < 50) {
+                addLog(`[COORD_ERROR] ID: ${docSnapshot.id} (${data.title || 'Sans titre'}) - Coordonnées manquantes ou invalides.`);
               }
             }
           }
@@ -220,11 +222,8 @@ export default function AdminPage() {
             } catch (commitErr: any) {
               addLog(`!!! ERREUR CRITIQUE COMMIT !!! : ${commitErr.message}`);
               currentStats.errors += updatesInBatch;
-              // On arrête la migration sur cette collection si le commit échoue (pb de quota ou permission)
               hasMore = false;
             }
-          } else if (mode === 'MIGRATE') {
-             // addLog(`SKIP : Rien à modifier dans ce lot.`);
           }
 
           lastDocSnapshot = snapshot.docs[snapshot.docs.length - 1];
@@ -233,7 +232,7 @@ export default function AdminPage() {
           if (snapshot.docs.length < PAGE_SIZE) {
             hasMore = false;
           } else {
-            await new Promise(r => setTimeout(r, 150)); // Délai de sécurité
+            await new Promise(r => setTimeout(r, 100)); // Pause pour laisser respirer le thread principal
             setMigrationProgress(prev => Math.min(prev + 1, 99));
           }
         }
@@ -241,7 +240,7 @@ export default function AdminPage() {
 
       setMigrationProgress(100);
       setStats({ ...currentStats });
-      addLog(`TERMINÉ : ${mode} fini avec succès.`);
+      addLog(`TERMINÉ : L'opération ${mode} est finie.`);
       toast({ title: `${mode} terminé` });
     } catch (e: any) {
       addLog(`!!! ERREUR SYSTÈME !!! : ${e.message}`);
@@ -407,7 +406,7 @@ export default function AdminPage() {
                     <Card className="border-2 border-indigo-200 overflow-hidden">
                         <CardHeader className="bg-indigo-50 border-b border-indigo-100"><CardTitle className="text-indigo-900 flex items-center gap-2"><Database className="h-6 w-6" /> Maintenance Géo-Spatiale</CardTitle></CardHeader>
                         <CardContent className="py-6 space-y-4">
-                            <p className="text-xs text-indigo-800 leading-relaxed">Cet outil synchronise les Geohashes pour garantir la visibilité sur la carte.</p>
+                            <p className="text-xs text-indigo-800 leading-relaxed">Outils de synchronisation pour garantir la visibilité sur la carte.</p>
                             <div className="flex flex-col gap-2">
                                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => runDatabaseTask('MIGRATE')} disabled={isMigrating || isAuditing}>{isMigrating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Migration...</> : <><Zap className="mr-2 h-4 w-4" /> Lancer la migration</>}</Button>
                                 <Button variant="outline" className="w-full h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => runDatabaseTask('AUDIT')} disabled={isMigrating || isAuditing}>{isAuditing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Audit...</> : <><BarChart3 className="mr-2 h-4 w-4" /> Lancer l'audit</>}</Button>
@@ -416,14 +415,14 @@ export default function AdminPage() {
                     </Card>
 
                     <Card className="border-2 border-green-200">
-                        <CardHeader className="bg-green-50 border-b border-green-100"><CardTitle className="text-green-900 flex items-center gap-2"><BarChart3 className="h-6 w-6" /> Statistiques de la base</CardTitle></CardHeader>
+                        <CardHeader className="bg-green-50 border-b border-green-100"><CardTitle className="text-green-900 flex items-center gap-2"><BarChart3 className="h-6 w-6" /> État Réel de la Base</CardTitle></CardHeader>
                         <CardContent className="py-6">
                             {stats ? (
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1"><p className="text-[10px] font-black text-muted-foreground uppercase">Total Scannés</p><p className="text-xl font-black">{stats.scanned}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-green-700 uppercase">Corrects / OK</p><p className="text-xl font-black text-green-600">{stats.ignored}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-red-700 uppercase">Mis à jour</p><p className="text-xl font-black text-indigo-600">{stats.updated}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-orange-700 uppercase">Coord. Invalides</p><p className="text-xl font-black text-orange-600">{stats.invalidCoords}</p></div>
+                                    <div className="space-y-1"><p className="text-[10px] font-black text-green-700 uppercase">Indexés (OK)</p><p className="text-xl font-black text-green-600">{stats.alreadyOk}</p></div>
+                                    <div className="space-y-1"><p className="text-[10px] font-black text-indigo-700 uppercase">Mis à jour (Lot)</p><p className="text-xl font-black text-indigo-600">{stats.updated}</p></div>
+                                    <div className="space-y-1"><p className="text-[10px] font-black text-orange-700 uppercase">Invalides / Erreurs</p><p className="text-xl font-black text-orange-600">{stats.invalidCoords}</p></div>
                                 </div>
                             ) : (
                                 <div className="text-center py-6 opacity-30 italic text-sm">Lancez une tâche pour voir les chiffres</div>
@@ -435,13 +434,13 @@ export default function AdminPage() {
                 {(isMigrating || isAuditing || migrationLogs.length > 0) && (
                     <div className="space-y-4">
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-1">
-                            <span>Progression</span>
+                            <span>Progression du scan</span>
                             <span>{migrationProgress}%</span>
                         </div>
                         <Progress value={migrationProgress} className="h-2 bg-indigo-100" />
                         
                         <Card className="bg-black border-none shadow-inner rounded-xl overflow-hidden">
-                            <CardHeader className="py-3 px-4 border-b border-white/10 bg-zinc-900"><CardTitle className="text-[10px] font-black text-white/50 uppercase tracking-widest flex items-center gap-2"><Terminal className="h-3 w-3" /> Console de logs (IDs invalides listés ici)</CardTitle></CardHeader>
+                            <CardHeader className="py-3 px-4 border-b border-white/10 bg-zinc-900"><CardTitle className="text-[10px] font-black text-white/50 uppercase tracking-widest flex items-center gap-2"><Terminal className="h-3 w-3" /> Console de logs</CardTitle></CardHeader>
                             <ScrollArea className="h-80 p-4">
                                 <div className="space-y-1 font-mono text-[10px] md:text-xs">
                                     {migrationLogs.map((log, i) => (
