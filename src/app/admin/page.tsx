@@ -151,7 +151,7 @@ export default function AdminPage() {
         addLog(`SCAN COLLECTION : ${colName.toUpperCase()}...`);
         let lastDocSnapshot = null;
         let hasMore = true;
-        const PAGE_SIZE = 50; 
+        const PAGE_SIZE = 100; 
 
         while (hasMore) {
           let q;
@@ -175,20 +175,24 @@ export default function AdminPage() {
             const data = docSnapshot.data();
             const coords = extractValidCoordinates(data);
 
-            if (!data.geohash) currentStats.noGeohash++;
-
             if (coords) {
               const calculatedHash = encodeGeohash(coords.lat, coords.lng, 9);
               
+              // Comparaison intelligente : on vérifie si le hash existant est un préfixe valide du calculé
+              // Cela gère les différences de précision (9 vs 10 caractères)
+              const existingHash = data.geohash;
+              const hashesMatch = typeof existingHash === 'string' && 
+                                 (existingHash.startsWith(calculatedHash) || calculatedHash.startsWith(existingHash.substring(0, 9)));
+
+              // Vérification de la dérive des coordonnées stockées vs coordonnées détectées
               const currentLat = typeof data.latitude === 'number' ? data.latitude : parseFloat(String(data.latitude || 0).replace(',', '.'));
               const currentLng = typeof data.longitude === 'number' ? data.longitude : parseFloat(String(data.longitude || 0).replace(',', '.'));
+              const coordsMatch = Math.abs(currentLat - coords.lat) < 0.00001 && 
+                                 Math.abs(currentLng - coords.lng) < 0.00001;
 
-              const needsUpdate = !data.geohash || 
-                                 data.geohash !== calculatedHash || 
-                                 Math.abs(currentLat - coords.lat) > 0.00001 || 
-                                 Math.abs(currentLng - coords.lng) > 0.00001;
+              const isCorrectlyIndexed = hashesMatch && coordsMatch;
 
-              if (needsUpdate) {
+              if (!isCorrectlyIndexed) {
                 if (mode === 'MIGRATE') {
                   batch.update(docSnapshot.ref, { 
                     geohash: calculatedHash, 
@@ -199,8 +203,7 @@ export default function AdminPage() {
                   updatesInBatch++;
                   currentStats.updated++;
                 } else {
-                    // En mode Audit, on compte ce qui "serait" mis à jour
-                    currentStats.noGeohash++; 
+                  currentStats.noGeohash++; 
                 }
               } else {
                 currentStats.alreadyOk++;
@@ -232,7 +235,8 @@ export default function AdminPage() {
           if (snapshot.docs.length < PAGE_SIZE) {
             hasMore = false;
           } else {
-            await new Promise(r => setTimeout(r, 100)); // Pause pour laisser respirer le thread principal
+            // Petite pause pour éviter de bloquer l'UI
+            await new Promise(r => setTimeout(r, 50));
             setMigrationProgress(prev => Math.min(prev + 1, 99));
           }
         }
@@ -418,11 +422,17 @@ export default function AdminPage() {
                         <CardHeader className="bg-green-50 border-b border-green-100"><CardTitle className="text-green-900 flex items-center gap-2"><BarChart3 className="h-6 w-6" /> État Réel de la Base</CardTitle></CardHeader>
                         <CardContent className="py-6">
                             {stats ? (
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-6">
                                     <div className="space-y-1"><p className="text-[10px] font-black text-muted-foreground uppercase">Total Scannés</p><p className="text-xl font-black">{stats.scanned}</p></div>
                                     <div className="space-y-1"><p className="text-[10px] font-black text-green-700 uppercase">Indexés (OK)</p><p className="text-xl font-black text-green-600">{stats.alreadyOk}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-indigo-700 uppercase">Mis à jour (Lot)</p><p className="text-xl font-black text-indigo-600">{stats.updated}</p></div>
+                                    <div className="space-y-1"><p className="text-[10px] font-black text-indigo-700 uppercase">À indexer</p><p className="text-xl font-black text-indigo-600">{stats.noGeohash}</p></div>
                                     <div className="space-y-1"><p className="text-[10px] font-black text-orange-700 uppercase">Invalides / Erreurs</p><p className="text-xl font-black text-orange-600">{stats.invalidCoords}</p></div>
+                                    {stats.updated > 0 && (
+                                      <div className="col-span-2 pt-2 border-t border-dashed">
+                                        <p className="text-[10px] font-black text-indigo-900 uppercase">Mises à jour effectuées (session)</p>
+                                        <p className="text-xl font-black text-indigo-700">{stats.updated}</p>
+                                      </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="text-center py-6 opacity-30 italic text-sm">Lancez une tâche pour voir les chiffres</div>
