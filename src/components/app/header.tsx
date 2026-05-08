@@ -86,7 +86,6 @@ export const UserMenu = () => {
   };
 
   const handleOpenMenu = () => {
-    // This is the trigger to wake up Firebase Auth from the critical path
     activateAuth();
   };
 
@@ -294,6 +293,8 @@ const Header: React.FC<HeaderProps> = ({
     }
 
     let lowerTerm = deferredSearchTerm.toLowerCase().trim();
+    
+    // Détection de mot-clé association
     const assoKeywords = ["association", "associations", "asso"];
     const foundAssoKeyword = assoKeywords.find(k => lowerTerm.includes(k));
     let searchPart = lowerTerm;
@@ -303,6 +304,7 @@ const Header: React.FC<HeaderProps> = ({
 
     const results: Suggestion[] = [];
     
+    // 1. DÉTECTION PARIS ARRONDISSEMENTS
     const parisArrMatch = searchPart.match(/paris\s*(\d{1,2})/i);
     if (parisArrMatch) {
         const arrNum = parseInt(parisArrMatch[1]);
@@ -312,17 +314,20 @@ const Header: React.FC<HeaderProps> = ({
                 type: 'city',
                 label: foundAssoKeyword ? `Associations : Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}` : `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
                 subLabel: cp,
-                score: 2000
+                score: 2000 // Priorité maximale
             });
-            searchPart = cp;
+            // On peut aussi chercher le code postal correspondant dans locationsData si besoin
+            searchPart = cp; // On réoriente la recherche sur le CP
         }
     }
 
     const normalizedTerm = searchPart.replace(/[\s-]/g, '');
 
+    // 2. DÉTECTION DÉPARTEMENTS ET VILLES
     Object.entries(locationsData).forEach(([dept, info]) => {
         const deptNum = dept.split(' - ')[0];
         const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
+        
         if (deptNum.startsWith(normalizedTerm) || normalizedDept.includes(normalizedTerm)) {
             results.push({ 
                 type: 'dept', 
@@ -350,6 +355,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
+    // 3. DÉTECTION MARQUES (si pas de mot-clé association)
     if (!foundAssoKeyword) {
         brandsList.forEach(brand => {
             const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
@@ -359,6 +365,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
+    // 4. DÉTECTION ÉTABLISSEMENTS (DEALERS)
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -387,6 +394,7 @@ const Header: React.FC<HeaderProps> = ({
             if (dist === 1) score = Math.max(score, 1050);
         }
         if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
+        
         if (score > 0) results.push({ ...d, score });
     });
 

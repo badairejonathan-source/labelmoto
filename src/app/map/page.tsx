@@ -34,7 +34,13 @@ const CIRCUIT_BUGATTI: MapPoint = {
 // CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE MODE B
 const ZOOM_THRESHOLD = 8.0; 
 const MAX_ACTIVE_CELLS = 150; 
-const OVERVIEW_LIMIT = 6000; // Couvre 100% de la base actuelle pour des clusters exacts
+const OVERVIEW_LIMIT = 6000; 
+
+const MOTORCYCLE_BRANDS = [
+  'honda', 'yamaha', 'bmw', 'kawasaki', 'suzuki', 'ducati', 'ktm', 'triumph', 
+  'harley-davidson', 'harley', 'royal enfield', 'cfmoto', 'piaggio', 'peugeot', 
+  'aprilia', 'moto guzzi', 'indian', 'husqvarna', 'benelli', 'mash', 'voge'
+];
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -180,11 +186,11 @@ function MapPageComponent() {
         latitude: coords.lat,
         longitude: coords.lng,
         category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
-        // On privilégie l'appSection stockée en base si elle existe
         appSection: data.appSection || (defaultAppSection as any),
         imgUrl: data.imgUrl || data.imageUrl || data.photoUrl || "",
         rating: data.rating,
-        geohash: data.geohash
+        geohash: data.geohash,
+        brands: Array.isArray(data.brands) ? data.brands : (data.primaryBrand ? [data.primaryBrand] : [])
       };
     }).filter(Boolean) as MapPoint[];
   }, []);
@@ -249,7 +255,6 @@ function MapPageComponent() {
       if (!firestore || !mounted) return;
       setIsLoading(true);
       try {
-        console.log(`🌍 Chargement de la vue France complète (limite ${OVERVIEW_LIMIT})...`);
         const colRef = collection(firestore, 'concessions');
         const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
@@ -260,7 +265,6 @@ function MapPageComponent() {
         });
         
         setAllPoints(Array.from(masterPointsMap.current.values()));
-        console.log(`✅ Base France chargée : ${points.length} points.`);
       } catch (err) { 
         console.error("Erreur de chargement initial:", err); 
       } finally { 
@@ -355,10 +359,21 @@ function MapPageComponent() {
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
         
-        // --- LOGIQUE DE FILTRAGE PAR COUCHE / COLLECTION ---
-        // On commence par filtrer allPoints selon la collection active
+        // 1. EXTRACTION DES FILTRES
         let results = [...allPoints];
         
+        // Détection de la marque
+        let detectedBrand: string | null = null;
+        for (const brand of MOTORCYCLE_BRANDS) {
+            if (term.includes(brand)) {
+                detectedBrand = brand;
+                // On retire la marque du terme pour ne garder que la partie géo
+                term = term.replace(brand, '').trim();
+                break;
+            }
+        }
+
+        // Filtre de collection (Couches)
         if (activeFilter === 'association') {
             results = results.filter(p => p.appSection === 'association');
         } else if (activeFilter === 'relais') {
@@ -368,8 +383,16 @@ function MapPageComponent() {
         } else if (activeFilter === 'service') {
             results = results.filter(p => p.appSection === 'service' || p.appSection === 'both');
         } else {
-            // "Tout" : On affiche UNIQUEMENT les concessions/ateliers (données pros)
             results = results.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
+        }
+
+        // Filtre de marque si détecté
+        if (detectedBrand) {
+            results = results.filter(p => {
+                const brands = (p as any).brands || [];
+                return brands.some((b: string) => b.toLowerCase().includes(detectedBrand!)) || 
+                       p.title.toLowerCase().includes(detectedBrand!);
+            });
         }
 
         if (term === '') {
@@ -377,14 +400,20 @@ function MapPageComponent() {
             return;
         }
         
-        // --- LOGIQUE DE RECHERCHE ---
-        let zipFound: string | null = null, deptFound: string | null = null, otherText: string[] = [];
-        const words = term.split(/\s+/).filter(w => w.length > 0);
+        // 2. RÉSOLUTION GÉOGRAPHIQUE
+        let zipFound: string | null = null, deptFound: string | null = null, cityFound: string | null = null;
         
-        for (const word of words) {
-            if (/^\d{5}$/.test(word)) zipFound = word;
-            else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
-            else otherText.push(word);
+        // Pattern Paris Arrondissements
+        const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
+        if (parisArrMatch) {
+            zipFound = `750${parisArrMatch[1].padStart(2, '0')}`;
+        } else {
+            const words = term.split(/\s+/).filter(w => w.length > 0);
+            for (const word of words) {
+                if (/^\d{5}$/.test(word)) zipFound = word;
+                else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
+                else cityFound = term; // On garde le terme complet pour la recherche texte
+            }
         }
         
         if (zipFound) {
@@ -392,7 +421,7 @@ function MapPageComponent() {
             if (coords && !controller.signal.aborted) { 
               setMapCenter(coords); 
               setSortingAnchor(coords); 
-              setMapZoom(prev => Math.max(prev, 12)); 
+              setMapZoom(13); 
               setSelectionSource('external'); 
             }
         } else if (deptFound) {
@@ -404,11 +433,16 @@ function MapPageComponent() {
               setMapZoom(9); 
               setSelectionSource('external'); 
             }
-        }
-        
-        if (otherText.length > 0) { 
-          const filterStr = otherText.join(' '); 
-          results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr)); 
+        } else if (cityFound) {
+            // Recherche par texte dans les titres si pas de CP/Dept
+            results = results.filter(d => (d.title || '').toLowerCase().includes(cityFound!));
+            if (results.length > 0) {
+                const first = results[0];
+                setMapCenter([first.latitude, first.longitude]);
+                setSortingAnchor([first.latitude, first.longitude]);
+                setMapZoom(12);
+                setSelectionSource('external');
+            }
         }
         
         if (!controller.signal.aborted) setFilteredPoints(results);
@@ -439,7 +473,7 @@ function MapPageComponent() {
     setSelectedDealershipId(id); setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
-      setMapZoom(prev => Math.max(prev, 12)); 
+      setMapZoom(prev => Math.max(prev, 13)); 
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
@@ -450,7 +484,7 @@ function MapPageComponent() {
     if (point) { 
       setMapCenter([point.latitude, point.longitude]); 
       setSortingAnchor([point.latitude, point.longitude]); 
-      setMapZoom(prev => Math.max(prev, 12)); 
+      setMapZoom(prev => Math.max(prev, 13)); 
     } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile]);
@@ -476,7 +510,7 @@ function MapPageComponent() {
   const handleLocationFound = useCallback((coords: [number, number]) => { 
     setMapCenter(coords); 
     setSortingAnchor(coords); 
-    setMapZoom(prev => Math.max(prev, 12)); 
+    setMapZoom(prev => Math.max(prev, 13)); 
     setSelectionSource('external'); 
   }, []);
 
