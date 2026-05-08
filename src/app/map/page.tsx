@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -20,7 +21,7 @@ import locationsData from '@/data/locations.json';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useToast } from '@/hooks/use-toast';
-import { getGeohashCells } from '@/lib/geohash';
+import { getGeohashCells, extractValidCoordinates } from '@/lib/geohash';
 
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
@@ -33,8 +34,8 @@ const CIRCUIT_BUGATTI: MapPoint = {
 
 // CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE 2D (GEOHASH)
 const ZOOM_THRESHOLD = 8.5;
-const MAX_ACTIVE_CELLS = 50; // Nombre de cellules conservées en mémoire
-const OVERVIEW_LIMIT = 400; 
+const MAX_ACTIVE_CELLS = 150; // Augmenté pour éviter les disparitions brusques
+const OVERVIEW_LIMIT = 1500; // Augmenté pour une vue France plus riche au départ
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -171,27 +172,44 @@ function MapPageComponent() {
   const processSnapshot = useCallback((snapshot: any, colName: string, appSection: string) => {
     return snapshot.docs.map((doc: any) => {
       const data = doc.data();
+      const coords = extractValidCoordinates(data);
+      if (!coords) return null;
+
       const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
-      
-      let lat = 0, lng = 0;
-      try {
-        lat = typeof data.latitude === 'number' ? data.latitude : parseFloat(String(data.latitude || data.lat || data.location?.lat || 0).replace(',', '.'));
-        lng = typeof data.longitude === 'number' ? data.longitude : parseFloat(String(data.longitude || data.lng || data.location?.lng || 0).replace(',', '.'));
-      } catch (e) {}
 
       return {
         id: doc.id,
         title: title,
-        latitude: lat,
-        longitude: lng,
+        latitude: coords.lat,
+        longitude: coords.lng,
         category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
         appSection: appSection as any,
         imgUrl: data.imgUrl || data.imageUrl || data.photoUrl || "",
         rating: data.rating,
         geohash: data.geohash
       };
-    }).filter((p: any) => p.latitude !== 0 && !isNaN(p.latitude));
+    }).filter(Boolean) as MapPoint[];
   }, []);
+
+  /**
+   * DIAGNOSTIC CHIFFRÉ DU PIPELINE
+   */
+  const logDiagnostic = useCallback(() => {
+    if (process.env.NODE_ENV !== 'development' && !window.location.search.includes('debug=true')) return;
+    
+    const stats = {
+      totalInMaster: masterPointsMap.current.size,
+      overviewPoints: overviewIds.current.size,
+      activeGeohashCells: loadedCells.current.size,
+      currentlyVisibleMarkers: filteredPoints.length,
+      currentZoom: mapZoom
+    };
+    
+    console.group(`📍 Map Pipeline Diagnostic - ${new Date().toLocaleTimeString()}`);
+    console.table(stats);
+    console.log("Détail du cache loadedCells:", Array.from(loadedCells.current.keys()));
+    console.groupEnd();
+  }, [filteredPoints.length, mapZoom]);
 
   /**
    * PRUNING SPATIAL 2D OPTIMISÉ : Protège les cellules visibles.
@@ -220,10 +238,12 @@ function MapPageComponent() {
     const cellsToDrop = cellDistances.filter(c => c.distSq !== -1).slice(0, Math.max(0, loadedCells.current.size - MAX_ACTIVE_CELLS));
 
     if (cellsToDrop.length > 0) {
+      console.log(`🧹 Pruning ${cellsToDrop.length} cells...`);
       cellsToDrop.forEach(({ hash }) => {
         const pointIds = loadedCells.current.get(hash);
         if (pointIds) {
           pointIds.forEach(id => {
+            // Uniquement si le point n'est pas dans l'Overview
             if (!overviewIds.current.has(id)) masterPointsMap.current.delete(id);
           });
         }
@@ -241,6 +261,7 @@ function MapPageComponent() {
       if (!firestore || !mounted) return;
       setIsLoading(true);
       try {
+        console.log(`🌍 Fetching initial overview (limit ${OVERVIEW_LIMIT})...`);
         const colRef = collection(firestore, 'concessions');
         const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
@@ -250,7 +271,10 @@ function MapPageComponent() {
           overviewIds.current.add(p.id);
         });
         setAllPoints(Array.from(masterPointsMap.current.values()));
-      } catch (err) {} finally {
+        console.log(`✅ Loaded ${points.length} overview points.`);
+      } catch (err) {
+        console.error("Overview load error:", err);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -261,7 +285,7 @@ function MapPageComponent() {
    * CHARGEMENT PAR VIEWPORT (Geohash Adaptive Precision)
    */
   const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds, currentZoom: number) => {
-    if (!firestore) return;
+    if (!firestore || currentZoom < ZOOM_THRESHOLD) return;
     
     // PRECISION ADAPTATIVE : Plus on zoome, plus on est fin pour économiser Firestore
     const precision = currentZoom >= 12 ? 5 : 4;
@@ -272,16 +296,18 @@ function MapPageComponent() {
     const targetHashes = getGeohashCells(south, west, north, east, precision);
     currentVisibleHashes.current = new Set(targetHashes);
     
-    const missingHashes = targetHashes.filter(h => !loadedCells.current.has(h));
+    // On ignore les cellules déjà en cache (en tenant compte de la précision dans la clé)
+    const missingHashes = targetHashes.filter(h => !loadedCells.current.has(`${precision}:${h}`));
     if (missingHashes.length === 0) return;
 
-    // On limite pour éviter de saturer Firestore sur des vues trop larges
-    const hashesToQuery = missingHashes.slice(0, 12);
+    // On limite pour éviter de saturer Firestore (augmenté à 16 pour couvrir plus large)
+    const hashesToQuery = missingHashes.slice(0, 16);
 
     const requestId = ++fetchCounter.current;
     setIsLoading(true);
     
     try {
+      console.log(`🛰️ Geohash Query (prec ${precision}): charging ${hashesToQuery.length} new cells...`);
       const colRef = collection(firestore, 'concessions');
       const promises = hashesToQuery.map(hash => {
         return getDocs(query(
@@ -289,7 +315,7 @@ function MapPageComponent() {
           orderBy('geohash'), 
           startAt(hash), 
           endAt(hash + '\uf8ff'),
-          limit(400)
+          limit(200) // Limite par cellule
         ));
       });
 
@@ -311,10 +337,11 @@ function MapPageComponent() {
              }
              cellPointIds.add(p.id);
         });
-        loadedCells.current.set(hash, cellPointIds);
+        loadedCells.current.set(`${precision}:${hash}`, cellPointIds);
       });
 
       if (addedCount > 0) {
+        console.log(`➕ Added ${addedCount} new points from geohash queries.`);
         setAllPoints(Array.from(masterPointsMap.current.values()));
         pruneMemory();
       }
@@ -333,16 +360,20 @@ function MapPageComponent() {
     if (!firestore || loadedCells.current.has(bandId)) return;
     
     try {
+      console.log(`👥 Fetching secondary data: ${colName}...`);
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(1500)));
+      const snapshot = await getDocs(query(colRef, limit(1000)));
       const points = processSnapshot(snapshot, colName, appSection);
       
       points.forEach((p: MapPoint) => {
-        masterPointsMap.current.set(p.id, p);
-        overviewIds.current.add(p.id); 
+        if (!masterPointsMap.current.has(p.id)) {
+          masterPointsMap.current.set(p.id, p);
+          overviewIds.current.add(p.id); 
+        }
       });
       setAllPoints(Array.from(masterPointsMap.current.values()));
       loadedCells.current.set(bandId, new Set(points.map((p: any) => p.id)));
+      console.log(`✅ Loaded ${points.length} points for ${colName}.`);
     } catch (e) {}
   }, [firestore, processSnapshot]);
 
@@ -414,11 +445,16 @@ function MapPageComponent() {
     return results;
   }, [filteredPoints, mapBoundsStr]);
 
+  // Déclencher le log diagnostic après chaque mise à jour du filtrage
+  useEffect(() => {
+    logDiagnostic();
+  }, [pointsInViewport, logDiagnostic]);
+
   const pointsToDisplay = useMemo(() => {
     if (isMapMoving || (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '')) return [];
     let results = [...pointsInViewport];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
-    return results.slice(0, 40);
+    return results.slice(0, 100); // Augmenté pour la liste
   }, [pointsInViewport, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
@@ -475,7 +511,7 @@ function MapPageComponent() {
                     <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
                         <DealershipCardItem point={point} isSelected={point.id === selectedDealershipId} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} cachedData={detailCache[point.id]} onDataLoaded={onDetailLoaded} />
                     </div>
-                    {(index + 1) % 5 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 5) % ads.length]} /></div>)}
+                    {(index + 1) % 8 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 8) % ads.length]} /></div>)}
                 </React.Fragment>
             ))}
             {pointsToDisplay.length === 0 && !isMapMoving && (submittedSearchTerm !== '' || mapZoom >= ZOOM_THRESHOLD) && !isLoading && (
