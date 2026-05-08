@@ -149,13 +149,17 @@ export default function AdminPage() {
 
       for (const colName of collectionsToProcess) {
         addLog(`Traitement de la collection : ${colName.toUpperCase()}`);
-        let lastDoc = null;
+        let lastDocSnapshot = null;
         let hasMore = true;
+        const PAGE_SIZE = 50; // Taille de lot plus petite pour plus de stabilité
 
         while (hasMore) {
-          const q = lastDoc 
-            ? query(collection(firestore, colName), startAfter(lastDoc), limit(100))
-            : query(collection(firestore, colName), limit(100));
+          let q;
+          if (lastDocSnapshot) {
+            q = query(collection(firestore, colName), orderBy('__name__'), startAfter(lastDocSnapshot), limit(PAGE_SIZE));
+          } else {
+            q = query(collection(firestore, colName), orderBy('__name__'), limit(PAGE_SIZE));
+          }
 
           const snapshot = await getDocs(q);
           if (snapshot.empty) {
@@ -176,7 +180,16 @@ export default function AdminPage() {
             if (coords) {
               const calculatedHash = encodeGeohash(coords.lat, coords.lng, 9);
               
-              if (data.geohash !== calculatedHash || data.latitude !== coords.lat || data.longitude !== coords.lng) {
+              const currentLat = typeof data.latitude === 'number' ? data.latitude : parseFloat(String(data.latitude || 0).replace(',', '.'));
+              const currentLng = typeof data.longitude === 'number' ? data.longitude : parseFloat(String(data.longitude || 0).replace(',', '.'));
+
+              // Vérification de la nécessité de mise à jour (tolérance sur les flottants)
+              const needsUpdate = !data.geohash || 
+                                 data.geohash !== calculatedHash || 
+                                 Math.abs(currentLat - coords.lat) > 0.00001 || 
+                                 Math.abs(currentLng - coords.lng) > 0.00001;
+
+              if (needsUpdate) {
                 if (mode === 'MIGRATE') {
                   batch.update(docSnapshot.ref, { 
                     geohash: calculatedHash, 
@@ -193,18 +206,29 @@ export default function AdminPage() {
             } else {
               currentStats.invalidCoords++;
               currentStats.errors++;
-              addLog(`ERREUR: Coordonnées invalides pour [${docSnapshot.id}] ${data.title || 'Sans titre'}`);
             }
           }
 
           if (updatesInBatch > 0 && mode === 'MIGRATE') {
-            await batch.commit();
-            addLog(`Lot de ${updatesInBatch} écritures validé.`);
+            try {
+              await batch.commit();
+              addLog(`${colName}: Lot de ${updatesInBatch} écritures validé.`);
+            } catch (commitErr: any) {
+              addLog(`ERREUR COMMIT: ${commitErr.message}`);
+              currentStats.errors += updatesInBatch;
+            }
           }
 
-          lastDoc = snapshot.docs[snapshot.docs.length - 1];
+          lastDocSnapshot = snapshot.docs[snapshot.docs.length - 1];
           setStats({ ...currentStats });
-          setMigrationProgress(prev => Math.min(prev + 5, 98));
+          
+          if (snapshot.docs.length < PAGE_SIZE) {
+            hasMore = false;
+          } else {
+            // Petit délai pour laisser respirer l'UI et les quotas
+            await new Promise(r => setTimeout(r, 100));
+            setMigrationProgress(prev => Math.min(prev + 1, 98));
+          }
         }
       }
 
