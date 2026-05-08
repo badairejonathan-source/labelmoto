@@ -200,28 +200,38 @@ function MapPageComponent() {
 
   /**
    * PRUNING SPATIAL 2D : Libère la mémoire des cellules trop éloignées.
+   * Utilise désormais une vraie logique de distance par rapport au centre.
    */
   const pruneMemory = useCallback(() => {
     if (loadedCells.current.size <= MAX_ACTIVE_CELLS) return;
 
-    const currentPos = mapCenter;
+    const [centerLat, centerLng] = mapCenter;
     
-    // On trie les cellules par distance euclidienne réelle
-    const sortedCells = Array.from(loadedCells.current.keys())
-      .map(hash => {
-        // Approximation centre du hash pour la distance (optionnel car on peut faire plus simple)
-        // On reste simple : si le hash n'est pas dans le voisinage actuel, on purge.
-        return { hash, dist: 0 }; // Placeholder pour tri plus fin si besoin
-      });
+    // On trie les cellules par distance euclidienne par rapport au centre de la carte
+    // On estime le centre de la cellule par la moyenne des points qu'elle contient (suffisant pour le tri)
+    const cellDistances = Array.from(loadedCells.current.entries()).map(([hash, pointIds]) => {
+      let cellLat = centerLat, cellLng = centerLng;
+      // On prend le premier point de la cellule pour avoir une idée de sa position
+      const firstId = Array.from(pointIds)[0];
+      const p = masterPointsMap.current.get(firstId);
+      if (p) {
+        cellLat = p.latitude;
+        cellLng = p.longitude;
+      }
+      const distSq = Math.pow(cellLat - centerLat, 2) + Math.pow(cellLng - centerLng, 2);
+      return { hash, distSq };
+    });
 
-    // On purge les plus anciennes si on dépasse la limite (LIFO simple ici)
+    cellDistances.sort((a, b) => b.distSq - a.distSq); // Les plus loin en premier
+
     const cellsToDropCount = loadedCells.current.size - MAX_ACTIVE_CELLS;
-    const cellsToDrop = Array.from(loadedCells.current.keys()).slice(0, cellsToDropCount);
+    const cellsToDrop = cellDistances.slice(0, cellsToDropCount);
 
-    cellsToDrop.forEach(hash => {
+    cellsToDrop.forEach(({ hash }) => {
       const pointIds = loadedCells.current.get(hash);
       if (pointIds) {
         pointIds.forEach(id => {
+          // On ne supprime que si le point n'est pas protégé par l'overview
           if (!overviewIds.current.has(id)) {
             masterPointsMap.current.delete(id);
           }
@@ -270,7 +280,7 @@ function MapPageComponent() {
     const west = bounds.getWest();
     const east = bounds.getEast();
 
-    // Détermination des cellules Geohash à charger
+    // Détermination des cellules Geohash à charger (Précision 4 = ~20km)
     const targetHashes = getGeohashCells(south, west, north, east, GEOHASH_PRECISION);
     const missingHashes = targetHashes.filter(h => !loadedCells.current.has(h));
 
@@ -316,11 +326,7 @@ function MapPageComponent() {
         pruneMemory();
       }
     } catch (err: any) {
-      // Fallback Latitude Band si Geohash n'est pas encore indexé
-      if (err.message?.includes('index')) {
-          console.warn("Geohash index missing, falling back to Latitude Bands...");
-          // Logique de fallback vers latIndex si nécessaire
-      }
+      console.error("Geoquery error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -420,6 +426,10 @@ function MapPageComponent() {
     return () => { clearTimeout(timer); controller.abort(); };
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
+  /**
+   * FILTRAGE VIEWPORT (Faux Positifs Geohash)
+   * Cette étape garantit que seuls les points réellement dans l'écran sont affichés.
+   */
   const pointsInViewport = useMemo(() => {
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
