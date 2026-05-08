@@ -33,9 +33,8 @@ const CIRCUIT_BUGATTI: MapPoint = {
 
 // CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE 2D (GEOHASH)
 const ZOOM_THRESHOLD = 8.5;
-const GEOHASH_PRECISION = 4; // Cellules de ~20km x 20km
-const MAX_ACTIVE_CELLS = 40; // Nombre de cellules 2D conservées en mémoire (Couverture massive)
-const OVERVIEW_LIMIT = 300; 
+const MAX_ACTIVE_CELLS = 50; // Nombre de cellules conservées en mémoire
+const OVERVIEW_LIMIT = 400; 
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -114,11 +113,15 @@ function MapPageComponent() {
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // STABILISATION DES REQUETES
+  const fetchCounter = useRef(0);
+  const currentVisibleHashes = useRef<Set<string>>(new Set());
 
   // --- ARCHITECTURE GÉO-SPATIALE 2D (CELLULES GEOHASH) ---
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
   const overviewIds = useRef<Set<string>>(new Set());
-  const loadedCells = useRef<Map<string, Set<string>>>(new Map()); // geohashPrefix -> Set of Point IDs
+  const loadedCells = useRef<Map<string, Set<string>>>(new Map()); 
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -170,18 +173,10 @@ function MapPageComponent() {
       const data = doc.data();
       const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
       
-      let lat = 0;
-      let lng = 0;
+      let lat = 0, lng = 0;
       try {
-        if (data.latitude !== undefined) lat = parseFloat(String(data.latitude).replace(',', '.'));
-        else if (data.lat !== undefined) lat = parseFloat(String(data.lat).replace(',', '.'));
-        else if (data.location?.lat !== undefined) lat = data.location.lat;
-        else if (data.position?.latitude !== undefined) lat = data.position.latitude;
-        
-        if (data.longitude !== undefined) lng = parseFloat(String(data.longitude).replace(',', '.'));
-        else if (data.lng !== undefined) lng = parseFloat(String(data.lng).replace(',', '.'));
-        else if (data.location?.lng !== undefined) lng = data.location.lng;
-        else if (data.position?.longitude !== undefined) lng = data.position.longitude;
+        lat = typeof data.latitude === 'number' ? data.latitude : parseFloat(String(data.latitude || data.lat || data.location?.lat || 0).replace(',', '.'));
+        lng = typeof data.longitude === 'number' ? data.longitude : parseFloat(String(data.longitude || data.lng || data.location?.lng || 0).replace(',', '.'));
       } catch (e) {}
 
       return {
@@ -199,52 +194,47 @@ function MapPageComponent() {
   }, []);
 
   /**
-   * PRUNING SPATIAL 2D : Libère la mémoire des cellules trop éloignées.
-   * Utilise désormais une vraie logique de distance par rapport au centre.
+   * PRUNING SPATIAL 2D OPTIMISÉ : Protège les cellules visibles.
    */
   const pruneMemory = useCallback(() => {
     if (loadedCells.current.size <= MAX_ACTIVE_CELLS) return;
 
     const [centerLat, centerLng] = mapCenter;
     
-    // On trie les cellules par distance euclidienne par rapport au centre de la carte
-    // On estime le centre de la cellule par la moyenne des points qu'elle contient (suffisant pour le tri)
     const cellDistances = Array.from(loadedCells.current.entries()).map(([hash, pointIds]) => {
+      // Protection : on ne purge jamais ce qui est actuellement à l'écran
+      if (currentVisibleHashes.current.has(hash)) return { hash, distSq: -1 };
+
       let cellLat = centerLat, cellLng = centerLng;
-      // On prend le premier point de la cellule pour avoir une idée de sa position
       const firstId = Array.from(pointIds)[0];
       const p = masterPointsMap.current.get(firstId);
-      if (p) {
-        cellLat = p.latitude;
-        cellLng = p.longitude;
-      }
+      if (p) { cellLat = p.latitude; cellLng = p.longitude; }
+      
       const distSq = Math.pow(cellLat - centerLat, 2) + Math.pow(cellLng - centerLng, 2);
       return { hash, distSq };
     });
 
-    cellDistances.sort((a, b) => b.distSq - a.distSq); // Les plus loin en premier
+    // On trie par distance décroissante (les plus loin en premier), en ignorant les protégés (-1)
+    cellDistances.sort((a, b) => b.distSq - a.distSq);
 
-    const cellsToDropCount = loadedCells.current.size - MAX_ACTIVE_CELLS;
-    const cellsToDrop = cellDistances.slice(0, cellsToDropCount);
+    const cellsToDrop = cellDistances.filter(c => c.distSq !== -1).slice(0, Math.max(0, loadedCells.current.size - MAX_ACTIVE_CELLS));
 
-    cellsToDrop.forEach(({ hash }) => {
-      const pointIds = loadedCells.current.get(hash);
-      if (pointIds) {
-        pointIds.forEach(id => {
-          // On ne supprime que si le point n'est pas protégé par l'overview
-          if (!overviewIds.current.has(id)) {
-            masterPointsMap.current.delete(id);
-          }
-        });
-      }
-      loadedCells.current.delete(hash);
-    });
-
-    setAllPoints(Array.from(masterPointsMap.current.values()));
+    if (cellsToDrop.length > 0) {
+      cellsToDrop.forEach(({ hash }) => {
+        const pointIds = loadedCells.current.get(hash);
+        if (pointIds) {
+          pointIds.forEach(id => {
+            if (!overviewIds.current.has(id)) masterPointsMap.current.delete(id);
+          });
+        }
+        loadedCells.current.delete(hash);
+      });
+      setAllPoints(Array.from(masterPointsMap.current.values()));
+    }
   }, [mapCenter]);
 
   /**
-   * CHARGEMENT INITIAL (Overview Permanente)
+   * CHARGEMENT INITIAL (Overview)
    */
   useEffect(() => {
     const fetchInitialSample = async () => {
@@ -260,9 +250,7 @@ function MapPageComponent() {
           overviewIds.current.add(p.id);
         });
         setAllPoints(Array.from(masterPointsMap.current.values()));
-      } catch (err: any) {
-        console.error("Overview fetch error", err);
-      } finally {
+      } catch (err) {} finally {
         setIsLoading(false);
       }
     };
@@ -270,26 +258,29 @@ function MapPageComponent() {
   }, [firestore, mounted, processSnapshot]);
 
   /**
-   * CHARGEMENT PAR VIEWPORT (Architecture 2D Geohash Native)
+   * CHARGEMENT PAR VIEWPORT (Geohash Adaptive Precision)
    */
-  const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds) => {
+  const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds, currentZoom: number) => {
     if (!firestore) return;
     
-    const south = bounds.getSouth();
-    const north = bounds.getNorth();
-    const west = bounds.getWest();
-    const east = bounds.getEast();
+    // PRECISION ADAPTATIVE : Plus on zoome, plus on est fin pour économiser Firestore
+    const precision = currentZoom >= 12 ? 5 : 4;
+    
+    const south = bounds.getSouth(), north = bounds.getNorth();
+    const west = bounds.getWest(), east = bounds.getEast();
 
-    // Détermination des cellules Geohash à charger (Précision 4 = ~20km)
-    const targetHashes = getGeohashCells(south, west, north, east, GEOHASH_PRECISION);
+    const targetHashes = getGeohashCells(south, west, north, east, precision);
+    currentVisibleHashes.current = new Set(targetHashes);
+    
     const missingHashes = targetHashes.filter(h => !loadedCells.current.has(h));
-
     if (missingHashes.length === 0) return;
 
-    // On limite à 9 requêtes parallèles max pour éviter de saturer Firestore
-    const hashesToQuery = missingHashes.slice(0, 9);
+    // On limite pour éviter de saturer Firestore sur des vues trop larges
+    const hashesToQuery = missingHashes.slice(0, 12);
 
+    const requestId = ++fetchCounter.current;
     setIsLoading(true);
+    
     try {
       const colRef = collection(firestore, 'concessions');
       const promises = hashesToQuery.map(hash => {
@@ -298,13 +289,16 @@ function MapPageComponent() {
           orderBy('geohash'), 
           startAt(hash), 
           endAt(hash + '\uf8ff'),
-          limit(500)
+          limit(400)
         ));
       });
 
       const snapshots = await Promise.all(promises);
-      let addedCount = 0;
+      
+      // Sécurité : on ignore si une nouvelle requête a été lancée entre temps
+      if (requestId !== fetchCounter.current) return;
 
+      let addedCount = 0;
       snapshots.forEach((snap, i) => {
         const hash = hashesToQuery[i];
         const points = processSnapshot(snap, 'concessions', 'both');
@@ -317,7 +311,6 @@ function MapPageComponent() {
              }
              cellPointIds.add(p.id);
         });
-        
         loadedCells.current.set(hash, cellPointIds);
       });
 
@@ -325,10 +318,10 @@ function MapPageComponent() {
         setAllPoints(Array.from(masterPointsMap.current.values()));
         pruneMemory();
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Geoquery error:", err);
     } finally {
-      setIsLoading(false);
+      if (requestId === fetchCounter.current) setIsLoading(false);
     }
   }, [firestore, processSnapshot, pruneMemory]);
 
@@ -341,7 +334,7 @@ function MapPageComponent() {
     
     try {
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(2000)));
+      const snapshot = await getDocs(query(colRef, limit(1500)));
       const points = processSnapshot(snapshot, colName, appSection);
       
       points.forEach((p: MapPoint) => {
@@ -373,27 +366,11 @@ function MapPageComponent() {
         }
 
         let results = [...allPoints];
-        const currentFilter = activeFilter;
-        if (currentFilter) { 
-            results = results.filter(d => d.appSection === currentFilter || d.appSection === 'both');
-        } else {
-            results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
-        }
+        if (activeFilter) results = results.filter(d => d.appSection === activeFilter || d.appSection === 'both');
+        else results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
 
-        // Détection CP / Dept / Paris
-        let zipFound: string | null = null;
-        let deptFound: string | null = null;
-        let otherText: string[] = [];
-
-        const parisMatch = term.match(/paris\s*(\d{1,2})/i);
-        if (parisMatch) {
-            const num = parseInt(parisMatch[1]);
-            if (num >= 1 && num <= 20) {
-                zipFound = `750${num.toString().padStart(2, '0')}`;
-                term = term.replace(parisMatch[0], '').trim();
-            }
-        }
-
+        // Détection CP / Dept
+        let zipFound: string | null = null, deptFound: string | null = null, otherText: string[] = [];
         const words = term.split(/\s+/).filter(w => w.length > 0);
         for (const word of words) {
             if (/^\d{5}$/.test(word)) zipFound = word;
@@ -418,7 +395,6 @@ function MapPageComponent() {
             const filterStr = otherText.join(' ');
             results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr));
         }
-
         if (!controller.signal.aborted) setFilteredPoints(results);
     };
 
@@ -428,7 +404,6 @@ function MapPageComponent() {
 
   /**
    * FILTRAGE VIEWPORT (Faux Positifs Geohash)
-   * Cette étape garantit que seuls les points réellement dans l'écran sont affichés.
    */
   const pointsInViewport = useMemo(() => {
     let results = [...filteredPoints];
@@ -447,73 +422,39 @@ function MapPageComponent() {
   }, [pointsInViewport, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
-    setSelectedDealershipId(id); 
-    setSelectionSource('card'); 
-    if (lat && lng) { 
-      setMapCenter([lat, lng]); 
-      if (mapZoom < 12) setMapZoom(12); 
-      if (isMobile) setDrawerHeight('half'); 
-    } 
+    setSelectedDealershipId(id); setSelectionSource('card'); 
+    if (lat && lng) { setMapCenter([lat, lng]); if (mapZoom < 12) setMapZoom(12); if (isMobile) setDrawerHeight('half'); } 
   }, [isMobile, mapZoom]);
 
   const handleMarkerClick = useCallback((id: string) => { 
-    setSelectedDealershipId(id); 
-    setSelectionSource('marker');
+    setSelectedDealershipId(id); setSelectionSource('marker');
     const point = masterPointsMap.current.get(id); 
-    if (point) { 
-      setMapCenter([point.latitude, point.longitude]); 
-      setSortingAnchor([point.latitude, point.longitude]); 
-      if (mapZoom < 12) setMapZoom(12); 
-    } 
+    if (point) { setMapCenter([point.latitude, point.longitude]); setSortingAnchor([point.latitude, point.longitude]); if (mapZoom < 12) setMapZoom(12); } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile, mapZoom]);
 
-  const handleUserMapInteraction = useCallback(() => { 
-    if (isMobile) setDrawerHeight('collapsed'); 
-    setSelectionSource(null);
-  }, [isMobile]);
+  const handleUserMapInteraction = useCallback(() => { if (isMobile) setDrawerHeight('collapsed'); setSelectionSource(null); }, [isMobile]);
 
-  const onDetailLoaded = useCallback((data: Dealership) => {
-    if (!data.id) return;
-    setDetailCache(prev => ({ ...prev, [data.id]: data }));
-  }, []);
+  const onDetailLoaded = useCallback((data: Dealership) => { if (!data.id) return; setDetailCache(prev => ({ ...prev, [data.id]: data })); }, []);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
-    setMapZoom(newZoom);
-    setMapCenter(newCenter);
-    setIsMapMoving(false);
+    setMapZoom(newZoom); setMapCenter(newCenter); setIsMapMoving(false);
     if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
     
     mapUpdateTimerRef.current = setTimeout(() => {
         setMapBoundsStr(bounds.toBBoxString()); 
-        const distSq = getDistanceSq(sortingAnchor, { latitude: newCenter[0], longitude: newCenter[1] } as any);
-        if (selectionSource === null && distSq > 0.01) {
-          setSortingAnchor(newCenter);
-        }
-        if (newZoom >= ZOOM_THRESHOLD) {
-          fetchPointsInViewport(bounds);
-        }
+        if (selectionSource === null) setSortingAnchor(newCenter);
+        if (newZoom >= ZOOM_THRESHOLD) fetchPointsInViewport(bounds, newZoom);
     }, 300);
-  }, [selectionSource, sortingAnchor, fetchPointsInViewport]);
+  }, [selectionSource, fetchPointsInViewport]);
 
   const handleLocateEnd = useCallback(() => setIsLoadingLocating(false), []);
-  const handleLocationFound = useCallback((coords: [number, number]) => { 
-    setMapCenter(coords); 
-    setSortingAnchor(coords); 
-    setMapZoom(12); 
-    setSelectionSource('external'); 
-  }, []);
+  const handleLocationFound = useCallback((coords: [number, number]) => { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }, []);
 
   const listContent = (
     <div className="space-y-3 pb-20 custom-scrollbar">
       {isLoading && pointsToDisplay.length === 0 ? (
-        <div className="space-y-4 pt-4">
-            {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex gap-4 p-4 border rounded-xl animate-pulse bg-card">
-                    <Skeleton className="h-24 w-24 rounded-lg shrink-0" /><div className="flex-1 space-y-3"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-3 w-1/2" /><Skeleton className="h-10 w-full rounded-full" /></div>
-                </div>
-            ))}
-        </div>
+        <div className="space-y-4 pt-4">{Array.from({ length: 5 }).map((_, i) => (<div key={i} className="flex gap-4 p-4 border rounded-xl animate-pulse bg-card"><Skeleton className="h-24 w-24 rounded-lg shrink-0" /><div className="flex-1 space-y-3"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-3 w-1/2" /><Skeleton className="h-10 w-full rounded-full" /></div></div>))}</div>
       ) : (
         <>
             {(pointsToDisplay.length === 0 && !isMapMoving) && submittedSearchTerm === '' && mapZoom < ZOOM_THRESHOLD && (
@@ -532,14 +473,7 @@ function MapPageComponent() {
             {!isMapMoving && pointsToDisplay.map((point, index) => (
                 <React.Fragment key={point.id}>
                     <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
-                        <DealershipCardItem 
-                          point={point} 
-                          isSelected={point.id === selectedDealershipId}
-                          onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} 
-                          className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} 
-                          cachedData={detailCache[point.id]}
-                          onDataLoaded={onDetailLoaded}
-                        />
+                        <DealershipCardItem point={point} isSelected={point.id === selectedDealershipId} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} cachedData={detailCache[point.id]} onDataLoaded={onDetailLoaded} />
                     </div>
                     {(index + 1) % 5 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 5) % ads.length]} /></div>)}
                 </React.Fragment>
@@ -558,24 +492,7 @@ function MapPageComponent() {
     <div className="relative w-full h-screen overflow-hidden bg-background flex flex-col md:row">
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
-            <MapComponent 
-              points={filteredPoints} 
-              center={mapCenter} 
-              zoom={mapZoom} 
-              hoveredId={hoveredDealershipId} 
-              selectedId={selectedDealershipId} 
-              onMarkerClick={handleMarkerClick} 
-              onMarkerMouseOver={setHoveredDealershipId} 
-              onMarkerMouseOut={() => setHoveredDealershipId(null)} 
-              onMapChange={handleMapChange} 
-              onMapClick={handleUserMapInteraction} 
-              onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} 
-              bottomPadding={bottomPadding} 
-              leftPadding={isMobile ? 0 : leftPadding} 
-              isLocating={isLocating} 
-              onLocateEnd={handleLocateEnd} 
-              onLocationFound={handleLocationFound} 
-            />
+            <MapComponent points={filteredPoints} center={mapCenter} zoom={mapZoom} hoveredId={hoveredDealershipId} selectedId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} bottomPadding={bottomPadding} leftPadding={isMobile ? 0 : leftPadding} isLocating={isLocating} onLocateEnd={handleLocateEnd} onLocationFound={handleLocationFound} />
         ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/10"><Loader2 className="h-10 w-10 animate-spin text-brand/20" /></div>
         )}
@@ -586,68 +503,30 @@ function MapPageComponent() {
             <div className="p-8 pb-4 shrink-0">
                 <div className="flex items-center justify-between gap-4 w-full mb-8">
                     <div className="w-40"><LabelMotoLogo noBubble /></div>
-                    <div className="flex flex-col items-center justify-center text-center px-2">
-                        <p className="text-[10px] font-black uppercase tracking-tight text-foreground leading-none">TROUVER UNE CONCESSION ?</p>
-                        <p className="text-[12px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p>
-                    </div>
+                    <div className="flex flex-col items-center justify-center text-center px-2"><p className="text-[10px] font-black uppercase tracking-tight text-foreground leading-none">TROUVER UNE CONCESSION ?</p><p className="text-[12px] font-black italic text-brand mt-1 leading-none tracking-tighter">FINI LA GALÈRE.</p></div>
                     <UserMenu />
                 </div>
-                
                 <div className="space-y-6 mb-6">
-                    <div className="flex flex-col items-center">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-3">Pros & Services</p>
-                        <div className="flex items-center justify-center gap-3">
-                            <button onClick={() => setActiveFilter('shopping')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}>
-                                <Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Vente</span>
-                            </button>
-                            <button onClick={() => setActiveFilter(null)} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === null ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}>
-                                <Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Tout</span>
-                            </button>
-                            <button onClick={() => setActiveFilter('service')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}>
-                                <Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Atelier</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div className="flex flex-col items-center">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-3">Communauté</p>
-                        <div className="flex items-center justify-center gap-6">
-                            <button onClick={() => setActiveFilter('association')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-indigo-600/40" : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/20 hover:scale-105")}>
-                                <Users className={cn("h-6 w-6", activeFilter === 'association' ? "text-white" : "text-indigo-600")} /><span className="text-[8px] font-black uppercase mt-0.5 text-center leading-tight">Asso</span>
-                            </button>
-                            <button onClick={() => setActiveFilter('relais')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-amber-600/40" : "bg-white text-muted-foreground border-transparent hover:border-amber-600/20 hover:scale-105")}>
-                                <Utensils className={cn("h-6 w-6", activeFilter === 'relais' ? "text-white" : "text-amber-600")} /><span className="text-[8px] font-black uppercase mt-0.5 text-center leading-tight">Relais</span>
-                            </button>
-                        </div>
-                    </div>
+                    <div className="flex flex-col items-center"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-3">Pros & Services</p><div className="flex items-center justify-center gap-3"><button onClick={() => setActiveFilter('shopping')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Bike className={cn("h-6 w-6", activeFilter === 'shopping' ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Vente</span></button><button onClick={() => setActiveFilter(null)} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === null ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Home className={cn("h-6 w-6", activeFilter === null ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Tout</span></button><button onClick={() => setActiveFilter('service')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/20 hover:scale-105")}><Wrench className={cn("h-6 w-6", activeFilter === 'service' ? "text-white" : "text-brand")} /><span className="text-[8px] font-black uppercase mt-0.5">Atelier</span></button></div></div>
+                    <div className="flex flex-col items-center"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-3">Communauté</p><div className="flex items-center justify-center gap-6"><button onClick={() => setActiveFilter('association')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-indigo-600/40" : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/20 hover:scale-105")}><Users className={cn("h-6 w-6", activeFilter === 'association' ? "text-white" : "text-indigo-600")} /><span className="text-[8px] font-black uppercase mt-0.5 text-center leading-tight">Asso</span></button><button onClick={() => setActiveFilter('relais')} className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all border-[3px]", activeFilter === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-amber-600/40" : "bg-white text-muted-foreground border-transparent hover:border-amber-600/20 hover:scale-105")}><Utensils className={cn("h-6 w-6", activeFilter === 'relais' ? "text-white" : "text-amber-600")} /><span className="text-[8px] font-black uppercase mt-0.5 text-center leading-tight">Relais</span></button></div></div>
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-border/50 to-transparent mb-4" />
             </div>
-            <div ref={listContainerRef} className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">
-                {listContent}
-            </div>
+            <div ref={listContainerRef} className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">{listContent}</div>
         </aside>
       )}
 
       {!isMobile && (
         <div className="absolute top-8 right-8 left-[580px] z-[100] flex justify-end pointer-events-none">
-            <div className="w-full max-w-2xl pointer-events-auto">
-                <Header searchTerm={searchTerm} onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} activeFilter={activeFilter} onFilterChange={setActiveFilter} variant="map" hideUserMenu={true} />
-            </div>
+            <div className="w-full max-w-2xl pointer-events-auto"><Header searchTerm={searchTerm} onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} activeFilter={activeFilter} onFilterChange={setActiveFilter} variant="map" hideUserMenu={true} /></div>
         </div>
       )}
 
       {isMobile && (
-        <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none">
-          <div className="pointer-events-auto">
-            <Header searchTerm={searchTerm} onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-          </div>
-        </div>
+        <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none"><div className="pointer-events-auto"><Header searchTerm={searchTerm} onSearchTermChange={(val) => { setSearchTerm(val); if (val.trim() === '') setSubmittedSearchTerm(''); }} onSearch={() => { setSubmittedSearchTerm(searchTerm); setSelectionSource('external'); }} activeFilter={activeFilter} onFilterChange={setActiveFilter} /></div></div>
       )}
 
-      <button className="absolute right-6 bottom-32 md:bottom-10 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser">
-        <Compass className="h-7 w-7 md:h-8 md:w-8" />
-      </button>
+      <button className="absolute right-6 bottom-32 md:bottom-10 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-brand hover:text-white" onClick={() => setIsLoadingLocating(true)} aria-label="Me localiser"><Compass className="h-7 w-7 md:h-8 md:w-8" /></button>
 
       {isMobile && (
         <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out border-t flex flex-col z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[110px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-160px)]')}>

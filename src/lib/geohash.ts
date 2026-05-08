@@ -49,19 +49,28 @@ export function encodeGeohash(lat: number, lng: number, precision: number = 9): 
 
 /**
  * Calcule les Geohashes nécessaires pour couvrir un rectangle (viewport).
- * @param bounds Bounds de la carte (Leaflet)
+ * @param south Latitude sud
+ * @param west Longitude ouest
+ * @param north Latitude nord
+ * @param east Longitude est
  * @param precision Longueur du hash (4 = ~20km, 5 = ~5km)
  */
 export function getGeohashCells(south: number, west: number, north: number, east: number, precision: number = 4): string[] {
   const hashes = new Set<string>();
-  // On échantillonne la zone pour trouver les prefixes uniques
-  // Pour la précision 4, un pas de 0.2 degré est suffisant pour ne rater aucune cellule
-  const step = precision === 4 ? 0.2 : 0.05;
+  
+  // Le pas (step) doit être plus petit que la taille de la cellule pour ne rien rater.
+  // Précision 4 (20km) -> pas de 0.15 deg (~16km)
+  // Précision 5 (5km) -> pas de 0.04 deg (~4.4km)
+  const step = precision === 4 ? 0.15 : 0.04;
 
-  for (let lat = south; lat <= north + step; lat += step) {
-    for (let lng = west; lng <= east + step; lng += step) {
-      hashes.add(encodeGeohash(Math.min(90, Math.max(-90, lat)), Math.min(180, Math.max(-180, lng)), precision));
+  // On boucle avec une marge de sécurité pour inclure les bords
+  for (let lat = south - step/2; lat <= north + step; lat += step) {
+    for (let lng = west - step/2; lng <= east + step; lng += step) {
+      const safeLat = Math.min(89.9, Math.max(-89.9, lat));
+      const safeLng = Math.min(179.9, Math.max(-179.9, lng));
+      hashes.add(encodeGeohash(safeLat, safeLng, precision));
     }
   }
+  
   return Array.from(hashes);
 }
