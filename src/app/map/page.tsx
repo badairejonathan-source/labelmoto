@@ -33,7 +33,7 @@ const CIRCUIT_BUGATTI: MapPoint = {
 
 // CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE
 const ZOOM_THRESHOLD = 8.5;
-const GRID_SIZE = 0.5; // Taille d'une tranche géographique (en degrés)
+const GRID_SIZE = 0.5; // Taille d'une cellule géographique (en degrés)
 const MAX_ACTIVE_ZONES = 15; // Nombre maximum de tranches de latitude conservées en mémoire
 const OVERVIEW_LIMIT = 300; // Points "Overview" pour la vue France
 
@@ -115,12 +115,10 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // --- ARCHITECTURE DE DONNÉES GÉO-SPATIALES ---
-  // masterPointsMap : Stockage centralisé id -> MapPoint
+  // --- ARCHITECTURE DE DONNÉES GÉO-SPATIALES (V2 : GRID 2D) ---
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
-  // overviewIds : IDs des points "France" qui ne sont jamais supprimés (Overview)
   const overviewIds = useRef<Set<string>>(new Set());
-  // loadedLatZones : Map latIndex -> Set(pointIds) pour permettre le pruning par zone
+  // loadedLatZones : On garde le suivi par tranches de latitude pour Firestore
   const loadedLatZones = useRef<Map<number, Set<string>>>(new Map());
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
