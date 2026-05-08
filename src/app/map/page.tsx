@@ -32,10 +32,10 @@ const CIRCUIT_BUGATTI: MapPoint = {
   appSection: 'both',
 };
 
-// CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE 2D (GEOHASH)
-const ZOOM_THRESHOLD = 8.0; // Seuil d'activation du Geohash
+// CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE MODE B
+const ZOOM_THRESHOLD = 8.0; 
 const MAX_ACTIVE_CELLS = 150; 
-const OVERVIEW_LIMIT = 6000; // Augmenté pour couvrir 100% de la base actuelle (5192 points)
+const OVERVIEW_LIMIT = 6000; // Couvre 100% de la base actuelle pour des clusters exacts
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -202,31 +202,40 @@ function MapPageComponent() {
     
     console.group(`📍 Map Diagnostic - ${new Date().toLocaleTimeString()}`);
     console.table(stats);
-    console.log("Détail du cache loadedCells:", Array.from(loadedCells.current.keys()));
     console.groupEnd();
   }, [filteredPoints.length, mapZoom]);
 
   const pruneMemory = useCallback(() => {
     if (loadedCells.current.size <= MAX_ACTIVE_CELLS) return;
     const [centerLat, centerLng] = mapCenter;
-    const cellDistances = Array.from(loadedCells.current.entries()).map(([hash, pointIds]) => {
+    
+    const cellEntries = Array.from(loadedCells.current.entries());
+    const cellDistances = cellEntries.map(([hash, pointIds]) => {
       if (currentVisibleHashes.current.has(hash)) return { hash, distSq: -1 };
+      
       let cellLat = centerLat, cellLng = centerLng;
       const firstId = Array.from(pointIds)[0];
       const p = masterPointsMap.current.get(firstId);
       if (p) { cellLat = p.latitude; cellLng = p.longitude; }
+      
       const distSq = Math.pow(cellLat - centerLat, 2) + Math.pow(cellLng - centerLng, 2);
       return { hash, distSq };
     });
+
     cellDistances.sort((a, b) => b.distSq - a.distSq);
-    const cellsToDrop = cellDistances.filter(c => c.distSq !== -1).slice(0, Math.max(0, loadedCells.current.size - MAX_ACTIVE_CELLS));
+    
+    const cellsToDrop = cellDistances
+      .filter(c => c.distSq !== -1)
+      .slice(0, Math.max(0, loadedCells.current.size - MAX_ACTIVE_CELLS));
+
     if (cellsToDrop.length > 0) {
-      console.log(`🧹 Nettoyage de ${cellsToDrop.length} cellules mémoire...`);
       cellsToDrop.forEach(({ hash }) => {
         const pointIds = loadedCells.current.get(hash);
         if (pointIds) {
           pointIds.forEach(id => {
-            if (!overviewIds.current.has(id)) masterPointsMap.current.delete(id);
+            if (!overviewIds.current.has(id)) {
+              masterPointsMap.current.delete(id);
+            }
           });
         }
         loadedCells.current.delete(hash);
@@ -242,70 +251,95 @@ function MapPageComponent() {
       try {
         console.log(`🌍 Chargement de la vue France complète (limite ${OVERVIEW_LIMIT})...`);
         const colRef = collection(firestore, 'concessions');
-        // On charge massivement pour avoir des clusters exacts
         const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
+        
         points.forEach((p: MapPoint) => {
           masterPointsMap.current.set(p.id, p);
           overviewIds.current.add(p.id);
         });
+        
         setAllPoints(Array.from(masterPointsMap.current.values()));
         console.log(`✅ Base France chargée : ${points.length} points.`);
-      } catch (err) { console.error("Erreur de chargement initial:", err); } finally { setIsLoading(false); }
+      } catch (err) { 
+        console.error("Erreur de chargement initial:", err); 
+      } finally { 
+        setIsLoading(false); 
+      }
     };
     fetchInitialSample();
   }, [firestore, mounted, processSnapshot]);
 
   const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds, currentZoom: number) => {
     if (!firestore || currentZoom < ZOOM_THRESHOLD) return;
+    
     const precision = currentZoom >= 12 ? 5 : 4;
     const south = bounds.getSouth(), north = bounds.getNorth(), west = bounds.getWest(), east = bounds.getEast();
     const targetHashes = getGeohashCells(south, west, north, east, precision);
-    currentVisibleHashes.current = new Set(targetHashes);
+    
+    currentVisibleHashes.current = new Set(targetHashes.map(h => `${precision}:${h}`));
+    
     const missingHashes = targetHashes.filter(h => !loadedCells.current.has(`${precision}:${h}`));
     if (missingHashes.length === 0) return;
+
     const hashesToQuery = missingHashes.slice(0, 16);
     const requestId = ++fetchCounter.current;
+    
     setIsLoading(true);
     try {
-      console.log(`🛰️ Requête Géo (precision ${precision}) : exploration de ${hashesToQuery.length} nouvelles cellules...`);
       const colRef = collection(firestore, 'concessions');
       const promises = hashesToQuery.map(hash => {
         return getDocs(query(colRef, orderBy('geohash'), startAt(hash), endAt(hash + '\uf8ff'), limit(200)));
       });
+      
       const snapshots = await Promise.all(promises);
       if (requestId !== fetchCounter.current) return;
+
       let addedCount = 0;
       snapshots.forEach((snap, i) => {
         const hash = hashesToQuery[i];
         const points = processSnapshot(snap, 'concessions', 'both');
         const cellPointIds = new Set<string>();
+        
         points.forEach((p: MapPoint) => {
-             if (!masterPointsMap.current.has(p.id)) { masterPointsMap.current.set(p.id, p); addedCount++; }
+             if (!masterPointsMap.current.has(p.id)) { 
+               masterPointsMap.current.set(p.id, p); 
+               addedCount++; 
+             }
              cellPointIds.add(p.id);
         });
         loadedCells.current.set(`${precision}:${hash}`, cellPointIds);
       });
+
       if (addedCount > 0) {
-        console.log(`➕ Fusion de ${addedCount} nouveaux points dans la mémoire vive.`);
         setAllPoints(Array.from(masterPointsMap.current.values()));
         pruneMemory();
       }
-    } catch (err) { console.error("Erreur GeoQuery:", err); } finally { if (requestId === fetchCounter.current) setIsLoading(false); }
+    } catch (err) { 
+      console.error("Erreur GeoQuery:", err); 
+    } finally { 
+      if (requestId === fetchCounter.current) setIsLoading(false); 
+    }
   }, [firestore, processSnapshot, pruneMemory]);
 
   const fetchSecondaryData = useCallback(async (colName: string, appSection: string) => {
     const bandId = colName === 'relais' ? 'meta:relais' : 'meta:associations';
     if (!firestore || loadedCells.current.has(bandId)) return;
+    
     try {
-      console.log(`👥 Chargement des données secondaires : ${colName}...`);
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(2000))); // Augmenté pour les assos/relais
+      const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT / 2)));
       const points = processSnapshot(snapshot, colName, appSection);
-      points.forEach((p: MapPoint) => { if (!masterPointsMap.current.has(p.id)) { masterPointsMap.current.set(p.id, p); overviewIds.current.add(p.id); } });
+      
+      points.forEach((p: MapPoint) => { 
+        if (!masterPointsMap.current.has(p.id)) { 
+          masterPointsMap.current.set(p.id, p); 
+          overviewIds.current.add(p.id); 
+        } 
+      });
+      
       setAllPoints(Array.from(masterPointsMap.current.values()));
       loadedCells.current.set(bandId, new Set(points.map((p: any) => p.id)));
-      console.log(`✅ ${points.length} établissements chargés (${colName}).`);
     } catch (e) {}
   }, [firestore, processSnapshot]);
 
@@ -324,16 +358,20 @@ function MapPageComponent() {
             setFilteredPoints(allPoints.filter(p => activeFilter ? (p.appSection === activeFilter || p.appSection === 'both') : (p.appSection !== 'association' && p.appSection !== 'relais')));
             return;
         }
+        
         let results = [...allPoints];
         if (activeFilter) results = results.filter(d => d.appSection === activeFilter || d.appSection === 'both');
         else results = results.filter(d => d.appSection === 'shopping' || d.appSection === 'service' || d.appSection === 'both');
+        
         let zipFound: string | null = null, deptFound: string | null = null, otherText: string[] = [];
         const words = term.split(/\s+/).filter(w => w.length > 0);
+        
         for (const word of words) {
             if (/^\d{5}$/.test(word)) zipFound = word;
             else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
             else otherText.push(word);
         }
+        
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
             if (coords && !controller.signal.aborted) { setMapCenter(coords); setSortingAnchor(coords); setMapZoom(12); setSelectionSource('external'); }
@@ -341,7 +379,12 @@ function MapPageComponent() {
             const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptFound!));
             if (deptKey) { const info = (locationsData as any)[deptKey]; setMapCenter(info.center); setSortingAnchor(info.center); setMapZoom(9); setSelectionSource('external'); }
         }
-        if (otherText.length > 0) { const filterStr = otherText.join(' '); results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr)); }
+        
+        if (otherText.length > 0) { 
+          const filterStr = otherText.join(' '); 
+          results = results.filter(d => (d.title || '').toLowerCase().includes(filterStr)); 
+        }
+        
         if (!controller.signal.aborted) setFilteredPoints(results);
     };
     const timer = setTimeout(() => { processSearch(); }, 300);
@@ -379,7 +422,12 @@ function MapPageComponent() {
   }, [isMobile, mapZoom]);
 
   const handleUserMapInteraction = useCallback(() => { if (isMobile) setDrawerHeight('collapsed'); setSelectionSource(null); }, [isMobile]);
-  const onDetailLoaded = useCallback((data: Dealership) => { if (!data.id) return; setDetailCache(prev => ({ ...prev, [data.id]: data })); }, []);
+  
+  const onDetailLoaded = useCallback((data: Dealership) => { 
+    if (!data.id) return; 
+    setDetailCache(prev => ({ ...prev, [data.id]: data })); 
+  }, []);
+
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
     setMapZoom(newZoom); setMapCenter(newCenter); setIsMapMoving(false);
     if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);

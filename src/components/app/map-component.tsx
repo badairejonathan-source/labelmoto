@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -29,7 +30,6 @@ interface MapComponentProps {
 }
 
 // Calcule un centre géographique qui place le point d'intérêt dans la zone visible
-// (en tenant compte de la barre latérale et des drawers mobiles)
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
   const z = targetZoom ?? map.getZoom();
   const centerPoint = map.project(latlng, z);
@@ -49,7 +49,6 @@ const MapComponent = ({
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markerMapRef = useRef<Record<string, L.Marker>>({});
   
-  // Flag critique pour éviter la dérive infinie
   const isUpdatingFromProps = useRef(false);
   const lastSetTarget = useRef<string>("");
 
@@ -68,13 +67,16 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    // Position initiale
     map.setView(center, zoom, { animate: false });
 
+    // OPTIMISATION MOBILE : chunkedLoading permet de ne pas bloquer le thread principal
     const clusterGroup = L.markerClusterGroup({
       chunkedLoading: true,
       maxClusterRadius: 50,
-      disableClusteringAtZoom: 13
+      disableClusteringAtZoom: 13,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true
     });
     
     map.addLayer(clusterGroup);
@@ -82,10 +84,7 @@ const MapComponent = ({
     mapRef.current = map;
 
     map.on('movestart zoomstart', () => {
-      // Si le mouvement ne vient pas du code, on prévient le parent
-      if (!isUpdatingFromProps.current) {
-        onUserInteraction?.();
-      }
+      if (!isUpdatingFromProps.current) onUserInteraction?.();
     });
 
     map.on('moveend zoomend', () => {
@@ -103,7 +102,7 @@ const MapComponent = ({
     };
   }, []);
 
-  // Mise à jour des marqueurs
+  // Mise à jour massive des marqueurs (Mode B)
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
@@ -136,7 +135,7 @@ const MapComponent = ({
     clusterGroup.addLayers(markers);
   }, [points]); 
 
-  // Mise à jour visuelle des marqueurs (Hover/Selection)
+  // Mise à jour visuelle fine (Hover/Selection)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !points) return;
@@ -147,7 +146,13 @@ const MapComponent = ({
       if (marker) {
         const isHovered = point.id === hoveredId;
         const isSelected = point.id === selectedId;
-        marker.setIcon(createIcon(point, isHovered, isSelected, currentZoom));
+        const currentIcon = marker.getIcon();
+        const newIcon = createIcon(point, isHovered, isSelected, currentZoom);
+        
+        // On ne change l'icône que si nécessaire pour la fluidité
+        if ((isSelected || isHovered) || (currentIcon as any).options?.className?.includes('active')) {
+          marker.setIcon(newIcon);
+        }
         
         if (isSelected || isHovered) marker.setZIndexOffset(1000);
         else marker.setZIndexOffset(0);
@@ -155,7 +160,6 @@ const MapComponent = ({
     });
   }, [hoveredId, selectedId, zoom]); 
 
-  // Gestion du centre et du zoom pilotés par les props (Recherche, Clic Liste)
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -173,20 +177,17 @@ const MapComponent = ({
 
       let finalCenter: L.LatLngExpression = center;
       if (leftPadding > 0 || bottomPadding > 0) {
-        // Applique l'offset visuel pour ne pas être sous la sidebar
         finalCenter = getOffsettedCenter(map, center, [-(leftPadding / 3), bottomPadding / 6], zoom);
       }
 
       map.flyTo(finalCenter, zoom, { duration: 0.8 });
       
-      // On déverrouille après l'animation
       setTimeout(() => {
         isUpdatingFromProps.current = false;
       }, 1000);
     }
   }, [center, zoom, leftPadding, bottomPadding]);
 
-  // Géolocalisation
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
