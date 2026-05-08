@@ -33,9 +33,9 @@ const CIRCUIT_BUGATTI: MapPoint = {
 };
 
 // CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE 2D (GEOHASH)
-const ZOOM_THRESHOLD = 8.5;
+const ZOOM_THRESHOLD = 8.0; // Seuil d'activation du Geohash
 const MAX_ACTIVE_CELLS = 150; 
-const OVERVIEW_LIMIT = 1500; 
+const OVERVIEW_LIMIT = 6000; // Augmenté pour couvrir 100% de la base actuelle (5192 points)
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -240,8 +240,9 @@ function MapPageComponent() {
       if (!firestore || !mounted) return;
       setIsLoading(true);
       try {
-        console.log(`🌍 Chargement initial de la vue France (limite ${OVERVIEW_LIMIT})...`);
+        console.log(`🌍 Chargement de la vue France complète (limite ${OVERVIEW_LIMIT})...`);
         const colRef = collection(firestore, 'concessions');
+        // On charge massivement pour avoir des clusters exacts
         const snapshot = await getDocs(query(colRef, limit(OVERVIEW_LIMIT)));
         const points = processSnapshot(snapshot, 'concessions', 'both');
         points.forEach((p: MapPoint) => {
@@ -299,7 +300,7 @@ function MapPageComponent() {
     try {
       console.log(`👥 Chargement des données secondaires : ${colName}...`);
       const colRef = collection(firestore, colName);
-      const snapshot = await getDocs(query(colRef, limit(1000)));
+      const snapshot = await getDocs(query(colRef, limit(2000))); // Augmenté pour les assos/relais
       const points = processSnapshot(snapshot, colName, appSection);
       points.forEach((p: MapPoint) => { if (!masterPointsMap.current.has(p.id)) { masterPointsMap.current.set(p.id, p); overviewIds.current.add(p.id); } });
       setAllPoints(Array.from(masterPointsMap.current.values()));
@@ -359,11 +360,11 @@ function MapPageComponent() {
   useEffect(() => { logDiagnostic(); }, [pointsInViewport, logDiagnostic]);
 
   const pointsToDisplay = useMemo(() => {
-    if (isMapMoving || (mapZoom < ZOOM_THRESHOLD && submittedSearchTerm === '')) return [];
+    if (isMapMoving) return [];
     let results = [...pointsInViewport];
     results.sort((a, b) => getDistanceSq(sortingAnchor, a) - getDistanceSq(sortingAnchor, b));
     return results.slice(0, 100); 
-  }, [pointsInViewport, sortingAnchor, mapZoom, submittedSearchTerm, isMapMoving]);
+  }, [pointsInViewport, sortingAnchor, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
     setSelectedDealershipId(id); setSelectionSource('card'); 
