@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useFirebase } from '@/firebase';
-import { collection, onSnapshot, doc, getDocs, serverTimestamp, writeBatch, query, limit } from 'firebase/firestore';
+import { collection, query, limit, startAfter, getDocs, writeBatch, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, XCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2, Database, Zap } from 'lucide-react';
+import { Loader2, CheckCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2, Database, Zap, Terminal } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import { formatDistanceToNow } from 'date-fns';
@@ -20,6 +20,7 @@ import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/no
 import { cn } from '@/lib/utils';
 import { encodeGeohash } from '@/lib/geohash';
 import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
@@ -60,7 +61,8 @@ export default function AdminPage() {
   // Migration state
   const [isMigrating, setIsMigrating] = useState(false);
   const [migrationProgress, setMigrationProgress] = useState(0);
-  const [migrationTotal, setMigrationTotal] = useState(0);
+  const [migrationLogs, setMigrationLogs] = useState<string[]>([]);
+  const logEndRef = useRef<HTMLDivElement>(null);
 
   const { firestore, user, isUserLoading } = useFirebase();
   const { toast } = useToast();
@@ -74,49 +76,113 @@ export default function AdminPage() {
     }
   }, [user, isUserLoading, router]);
 
+  const addLog = (msg: string) => {
+    console.log(`[Migration] ${msg}`);
+    setMigrationLogs(prev => [...prev.slice(-49), `> ${new Date().toLocaleTimeString()} : ${msg}`]);
+  };
+
   useEffect(() => {
-    if (!firestore || !user || user.uid !== ADMIN_UID) return;
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [migrationLogs]);
 
-    // Submissions Pro standards
-    const submissionsRef = collection(firestore, 'pending_concessions');
-    const unsubSubmissions = onSnapshot(submissionsRef, 
-      (snapshot) => {
-        setSubmissions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission)));
-        setIsLoading(false);
-      },
-      async () => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: submissionsRef.path, operation: 'list' }));
+  /**
+   * MIGRATION GÉO-SPATIALE PAR FLUX (STREAMING)
+   * Traite les documents par blocs de 100 pour éviter les timeouts réseau.
+   */
+  const runGeohashMigration = async () => {
+    if (!firestore || isMigrating) return;
+    if (!window.confirm("Cette opération va recalculer les Geohashes de tous les établissements en mode sécurisé (paginé). Continuer ?")) return;
+
+    setIsMigrating(true);
+    setMigrationProgress(0);
+    setMigrationLogs([]);
+    addLog("Démarrage de la migration globale...");
+    
+    try {
+      const collectionsToMigrate = ['concessions', 'associations', 'relais'];
+      let totalUpdated = 0;
+
+      for (const colName of collectionsToMigrate) {
+        addLog(`Analyse de la collection : ${colName.toUpperCase()}`);
+        let lastDoc = null;
+        let hasMore = true;
+        let colCount = 0;
+
+        while (hasMore) {
+          const q = lastDoc 
+            ? query(collection(firestore, colName), startAfter(lastDoc), limit(100))
+            : query(collection(firestore, colName), limit(100));
+
+          const snapshot = await getDocs(q);
+          if (snapshot.empty) {
+            hasMore = false;
+            continue;
+          }
+
+          addLog(`Traitement d'un lot de ${snapshot.size} documents...`);
+          const batch = writeBatch(firestore);
+          let updatesInBatch = 0;
+
+          for (const docSnapshot of snapshot.docs) {
+            const data = docSnapshot.data();
+            let lat: number | null = null;
+            let lng: number | null = null;
+
+            const rawLat = data.latitude ?? data.lat ?? data.location?.lat;
+            const rawLng = data.longitude ?? data.lng ?? data.location?.lng;
+
+            if (rawLat !== undefined && rawLat !== null) {
+              lat = typeof rawLat === 'number' ? rawLat : parseFloat(String(rawLat).replace(',', '.'));
+            }
+            if (rawLng !== undefined && rawLng !== null) {
+              lng = typeof rawLng === 'number' ? rawLng : parseFloat(String(rawLng).replace(',', '.'));
+            }
+
+            if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
+              if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                const hash = encodeGeohash(lat, lng, 9);
+                batch.update(docSnapshot.ref, { 
+                  geohash: hash, 
+                  latitude: lat, 
+                  longitude: lng 
+                });
+                updatesInBatch++;
+              }
+            }
+            colCount++;
+          }
+
+          if (updatesInBatch > 0) {
+            await batch.commit();
+            totalUpdated += updatesInBatch;
+          }
+
+          lastDoc = snapshot.docs[snapshot.docs.length - 1];
+          addLog(`Progression collection ${colName} : ${colCount} traités.`);
+          
+          // Simulation d'une barre de progression basée sur les collections
+          setMigrationProgress(prev => Math.min(prev + 10, 95));
+        }
+        addLog(`Collection ${colName} terminée.`);
       }
-    );
 
-    // Submissions en Quarantaine
-    const quarantineRef = collection(firestore, 'a_verifier');
-    const unsubQuarantine = onSnapshot(quarantineRef, 
-      (snapshot) => {
-        setQuarantineSubmissions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission)));
-      },
-      async () => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: quarantineRef.path, operation: 'list' }));
-      }
-    );
-
-    // Commentaires en attente
-    const commentsRef = collection(firestore, 'pending_comments');
-    const unsubComments = onSnapshot(commentsRef, 
-      (snapshot) => {
-        setPendingComments(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserComment)));
-      },
-      async () => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: commentsRef.path, operation: 'list' }));
-      }
-    );
-
-    return () => {
-      unsubSubmissions();
-      unsubQuarantine();
-      unsubComments();
-    };
-  }, [firestore, user]);
+      setMigrationProgress(100);
+      addLog(`MIGRATION RÉUSSIE : ${totalUpdated} documents mis à jour au total.`);
+      toast({ title: "Migration terminée !", description: `${totalUpdated} établissements mis à jour.` });
+    } catch (e: any) {
+      console.error("Migration Error:", e);
+      addLog(`ERREUR CRITIQUE : ${e.message}`);
+      toast({ 
+        title: "Erreur de migration", 
+        description: "Vérifiez les logs de la console.",
+        variant: "destructive" 
+      });
+    } finally {
+      setIsMigrating(false);
+    }
+  };
 
   const handleApproveSubmission = (submission: Submission, fromCollection: 'pending_concessions' | 'a_verifier') => {
     if (!firestore) return;
@@ -157,113 +223,6 @@ export default function AdminPage() {
     setProcessingId(null);
   };
 
-  /**
-   * MIGRATION GÉO-SPATIALE : Calcule les Geohashes pour tous les établissements.
-   * Optimisé pour être extrêmement robuste sur l'extraction des coordonnées.
-   */
-  const runGeohashMigration = async () => {
-    if (!firestore || isMigrating) return;
-    if (!window.confirm("Cette opération va recalculer les Geohashes de tous les établissements. Continuer ?")) return;
-
-    setIsMigrating(true);
-    setMigrationProgress(0);
-    
-    try {
-      const collectionsToMigrate = ['concessions', 'associations', 'relais'];
-      let globalProcessedCount = 0;
-      let globalUpdateCount = 0;
-
-      // Phase 1 : Calcul du total global
-      let totalToProcess = 0;
-      const collectionSnapshots = [];
-      
-      for (const colName of collectionsToMigrate) {
-        const snap = await getDocs(collection(firestore, colName));
-        totalToProcess += snap.size;
-        collectionSnapshots.push({ name: colName, docs: snap.docs });
-      }
-      
-      setMigrationTotal(totalToProcess);
-
-      if (totalToProcess === 0) {
-        toast({ title: "Aucune donnée à migrer." });
-        setIsMigrating(false);
-        return;
-      }
-
-      // Phase 2 : Traitement par lots
-      for (const colData of collectionSnapshots) {
-        let batch = writeBatch(firestore);
-        let batchCount = 0;
-
-        for (const docSnapshot of colData.docs) {
-          const data = docSnapshot.data();
-          
-          // Extraction robuste de la latitude
-          let lat: number | null = null;
-          let lng: number | null = null;
-
-          const rawLat = data.latitude ?? data.lat ?? data.location?.lat;
-          const rawLng = data.longitude ?? data.lng ?? data.location?.lng;
-
-          if (rawLat !== undefined && rawLat !== null) {
-            lat = typeof rawLat === 'number' ? rawLat : parseFloat(String(rawLat).replace(',', '.'));
-          }
-          if (rawLng !== undefined && rawLng !== null) {
-            lng = typeof rawLng === 'number' ? rawLng : parseFloat(String(rawLng).replace(',', '.'));
-          }
-
-          // Validation et mise à jour
-          if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
-            // Sécurité : bornes géographiques
-            if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-              const hash = encodeGeohash(lat, lng, 9);
-              batch.update(docSnapshot.ref, { 
-                geohash: hash, 
-                latitude: lat, 
-                longitude: lng 
-              });
-              batchCount++;
-              globalUpdateCount++;
-            }
-          }
-          
-          globalProcessedCount++;
-          
-          // Mise à jour de la progression
-          setMigrationProgress(Math.floor((globalProcessedCount / totalToProcess) * 100));
-
-          // Commit automatique si limite Firestore atteinte (500)
-          if (batchCount >= 450) {
-            await batch.commit();
-            batch = writeBatch(firestore);
-            batchCount = 0;
-          }
-        }
-        
-        // Finalisation de la collection
-        if (batchCount > 0) {
-          await batch.commit();
-        }
-      }
-
-      toast({ 
-        title: "Migration terminée !", 
-        description: `${globalUpdateCount} établissements mis à jour sur ${totalToProcess} analysés.` 
-      });
-    } catch (e: any) {
-      console.error("Migration Error:", e);
-      toast({ 
-        title: "Erreur de migration", 
-        description: e.message || "Vérifiez votre connexion ou vos droits admin.",
-        variant: "destructive" 
-      });
-    } finally {
-      setIsMigrating(false);
-      setMigrationProgress(100);
-    }
-  };
-
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'Date inconnue';
     const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
@@ -296,17 +255,17 @@ export default function AdminPage() {
       <main className="container mx-auto p-4 md:p-8">
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-8 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full">
-            <TabsTrigger value="pending" className="rounded-full font-bold">
-                Demandes Pros {submissions.length > 0 && <Badge className="ml-2 bg-brand">{submissions.length}</Badge>}
+            <TabsTrigger value="pending" className="rounded-full font-bold text-xs">
+                Pros {submissions.length > 0 && <Badge className="ml-2 bg-brand">{submissions.length}</Badge>}
             </TabsTrigger>
-            <TabsTrigger value="comments" className="rounded-full font-bold">
-                Commentaires {pendingComments.length > 0 && <Badge className="ml-2 bg-blue-50">{pendingComments.length}</Badge>}
+            <TabsTrigger value="comments" className="rounded-full font-bold text-xs">
+                Avis {pendingComments.length > 0 && <Badge className="ml-2 bg-blue-500">{pendingComments.length}</Badge>}
             </TabsTrigger>
-            <TabsTrigger value="quarantine" className="rounded-full font-bold text-destructive">
-                Quarantaine {quarantineSubmissions.length > 0 && <Badge variant="destructive" className="ml-2">{quarantineSubmissions.length}</Badge>}
+            <TabsTrigger value="quarantine" className="rounded-full font-bold text-destructive text-xs">
+                ⚠️ Quarantaine {quarantineSubmissions.length > 0 && <Badge variant="destructive" className="ml-2">{quarantineSubmissions.length}</Badge>}
             </TabsTrigger>
-            <TabsTrigger value="maintenance" className="rounded-full font-bold text-indigo-600">
-                <Database className="mr-2 h-4 w-4" /> Maintenance
+            <TabsTrigger value="maintenance" className="rounded-full font-bold text-indigo-600 text-xs">
+                <Database className="mr-2 h-4 w-4" /> Outils
             </TabsTrigger>
           </TabsList>
 
@@ -408,18 +367,11 @@ export default function AdminPage() {
                       <div className="bg-muted/30 p-3 rounded-lg text-xs not-italic text-foreground">
                         <p><strong>Adresse:</strong> {sub.address}</p>
                         {sub.phoneNumber && <p><strong>Tél:</strong> {sub.phoneNumber}</p>}
-                        {sub.email && <p><strong>Email:</strong> {sub.email}</p>}
                       </div>
-                      {sub.description && (
-                        <div className="mt-2 p-2 border-l-2 border-muted">
-                            <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">Description / Motif :</p>
-                            "{sub.description}"
-                        </div>
-                      )}
                     </CardContent>
                     <CardFooter className="flex gap-2 justify-end bg-muted/20 p-4 border-t">
                       <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'a_verifier')} disabled={processingId === sub.id} className="text-destructive">
-                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer définitivement
+                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                       </Button>
                       <Button size="sm" onClick={() => handleApproveSubmission(sub, 'a_verifier')} disabled={processingId === sub.id} className="bg-brand">
                         <ShieldCheck className="mr-2 h-4 w-4" /> Réintégrer
@@ -432,37 +384,66 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="maintenance">
-             <div className="max-w-2xl mx-auto space-y-6">
-                <Card className="border-2 border-indigo-200">
-                    <CardHeader className="bg-indigo-50">
-                        <CardTitle className="text-indigo-900 flex items-center gap-2"><Database className="h-6 w-6" /> Migration Géo-Spatiale (Geohash)</CardTitle>
-                        <CardTitle className="text-xs uppercase font-black text-indigo-700 mt-1">Obligatoire pour la performance de la carte</CardTitle>
+             <div className="max-w-3xl mx-auto space-y-6">
+                <Card className="border-2 border-indigo-200 overflow-hidden">
+                    <CardHeader className="bg-indigo-50 border-b border-indigo-100">
+                        <CardTitle className="text-indigo-900 flex items-center gap-2"><Database className="h-6 w-6" /> Migration Géo-Spatiale</CardTitle>
+                        <p className="text-xs font-black text-indigo-700 uppercase tracking-widest mt-1 italic">Optimisation des performances cartographiques</p>
                     </CardHeader>
-                    <CardContent className="py-8 space-y-6">
-                        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
-                            <p className="text-sm font-bold text-amber-900 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Attention :</p>
-                            <p className="text-xs text-amber-800 mt-1">L'opération va recalculer le Geohash de chaque établissement. Cela peut prendre quelques minutes si vous avez des milliers de documents. Ne fermez pas la fenêtre.</p>
+                    <CardContent className="py-8 space-y-8">
+                        <div className="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl">
+                            <p className="text-sm font-black text-amber-900 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> IMPORTANT :</p>
+                            <p className="text-xs text-amber-800 mt-2 leading-relaxed">
+                                La migration s'effectue désormais en mode <strong>sécurisé par flux</strong>. Elle traite les établissements par blocs de 100 pour éviter les erreurs de connexion. 
+                                <br/><br/>
+                                <strong>Laissez cette fenêtre ouverte jusqu'à la fin de l'opération.</strong>
+                            </p>
                         </div>
                         
-                        {isMigrating && (
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-indigo-600">
-                                    <span>Traitement en cours...</span>
+                        {(isMigrating || migrationLogs.length > 0) && (
+                            <div className="space-y-4">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-1">
+                                    <span>{isMigrating ? "Traitement en cours..." : "Opération terminée"}</span>
                                     <span>{migrationProgress}%</span>
                                 </div>
-                                <Progress value={migrationProgress} className="h-2 bg-indigo-100" />
+                                <Progress value={migrationProgress} className="h-3 bg-indigo-100" />
+                                
+                                <Card className="bg-black border-none shadow-inner rounded-xl">
+                                    <CardHeader className="py-3 px-4 border-b border-white/10">
+                                        <CardTitle className="text-[10px] font-black text-white/50 uppercase tracking-widest flex items-center gap-2">
+                                            <Terminal className="h-3 w-3" /> Console d'exécution
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <ScrollArea className="h-48 p-4">
+                                        <div className="space-y-1 font-mono text-[10px] md:text-xs">
+                                            {migrationLogs.map((log, i) => (
+                                                <p key={i} className={cn(
+                                                    "leading-tight",
+                                                    log.includes('RÉUSSIE') ? "text-green-400 font-bold" : 
+                                                    log.includes('ERREUR') ? "text-red-400 font-bold" : "text-indigo-200/70"
+                                                )}>
+                                                    {log}
+                                                </p>
+                                            ))}
+                                            <div ref={logEndRef} />
+                                        </div>
+                                    </ScrollArea>
+                                </Card>
                             </div>
                         )}
 
                         <Button 
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 h-14 font-black uppercase tracking-widest text-xs shadow-xl"
+                            className={cn(
+                                "w-full h-16 font-black uppercase tracking-widest text-xs shadow-xl transition-all",
+                                isMigrating ? "bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98]"
+                            )}
                             onClick={runGeohashMigration}
                             disabled={isMigrating}
                         >
                             {isMigrating ? (
-                              <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Traitement des données...</>
+                              <><Loader2 className="mr-3 h-6 w-6 animate-spin" /> Migration en cours... {migrationProgress}%</>
                             ) : (
-                              <><Zap className="mr-2 h-5 w-5" /> Lancer la migration Geohash</>
+                              <><Zap className="mr-3 h-6 w-6" /> Lancer la migration Geohash</>
                             )}
                         </Button>
                     </CardContent>
