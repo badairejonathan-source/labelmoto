@@ -57,6 +57,10 @@ export function encodeGeohash(lat: number, lng: number, precision: number = 9): 
  */
 export function getGeohashCells(south: number, west: number, north: number, east: number, precision: number = 4): string[] {
   const hashes = new Set<string>();
+  
+  // Échantillonnage adapté à la précision demandée
+  // Précision 4 (~20km) : pas de 0.15 degré
+  // Précision 5 (~5km) : pas de 0.04 degré
   const step = precision === 4 ? 0.15 : 0.04;
 
   for (let lat = south - step/2; lat <= north + step; lat += step) {
@@ -72,6 +76,7 @@ export function getGeohashCells(south: number, west: number, north: number, east
 
 /**
  * Extrait et valide des coordonnées numériques depuis un objet de données hétérogène.
+ * Gère les types string, number, les virgules et les objets imbriqués.
  */
 export function extractValidCoordinates(data: any): { lat: number; lng: number } | null {
   if (!data) return null;
@@ -90,6 +95,7 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
   }
 
   if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
+    // Vérification des bornes géographiques valides
     if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       return { lat, lng };
     }

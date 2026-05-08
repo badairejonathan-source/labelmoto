@@ -38,6 +38,9 @@ interface Submission {
   status?: string;
   latitude?: number;
   longitude?: number;
+  originalDealershipId?: string;
+  requestType?: 'CREATION' | 'MODIFICATION';
+  appSection?: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   [key: string]: any;
 }
 
@@ -83,22 +86,31 @@ export default function AdminPage() {
     }
   }, [user, isUserLoading, router]);
 
-  // ÉCOUTEURS TEMPS RÉEL POUR LA MODÉRATION
   useEffect(() => {
     if (!firestore || !user || user.uid !== ADMIN_UID) return;
 
-    const unsubSubmissions = onSnapshot(query(collection(firestore, 'pending_concessions'), orderBy('submittedAt', 'desc')), (snap) => {
-      setSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
-      setIsLoadingData(false);
-    });
+    // ÉCOUTEURS LIMITÉS ET TRIÉS POUR L'EFFICACITÉ
+    const unsubSubmissions = onSnapshot(
+      query(collection(firestore, 'pending_concessions'), orderBy('submittedAt', 'desc'), limit(50)), 
+      (snap) => {
+        setSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
+        setIsLoadingData(false);
+      }
+    );
 
-    const unsubComments = onSnapshot(query(collection(firestore, 'pending_comments'), orderBy('date', 'desc')), (snap) => {
-      setPendingComments(snap.docs.map(d => ({ id: d.id, ...d.data() } as UserComment)));
-    });
+    const unsubComments = onSnapshot(
+      query(collection(firestore, 'pending_comments'), orderBy('date', 'desc'), limit(50)), 
+      (snap) => {
+        setPendingComments(snap.docs.map(d => ({ id: d.id, ...d.data() } as UserComment)));
+      }
+    );
 
-    const unsubQuarantine = onSnapshot(query(collection(firestore, 'a_verifier'), orderBy('submittedAt', 'desc')), (snap) => {
-      setQuarantineSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
-    });
+    const unsubQuarantine = onSnapshot(
+      query(collection(firestore, 'a_verifier'), orderBy('submittedAt', 'desc'), limit(50)), 
+      (snap) => {
+        setQuarantineSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
+      }
+    );
 
     return () => {
       unsubSubmissions();
@@ -138,8 +150,8 @@ export default function AdminPage() {
 
         while (hasMore) {
           const q = lastDoc 
-            ? query(collection(firestore, colName), startAfter(lastDoc), limit(50))
-            : query(collection(firestore, colName), limit(50));
+            ? query(collection(firestore, colName), startAfter(lastDoc), limit(100))
+            : query(collection(firestore, colName), limit(100));
 
           const snapshot = await getDocs(q);
           if (snapshot.empty) {
@@ -202,33 +214,38 @@ export default function AdminPage() {
     if (!firestore) return;
     setProcessingId(submission.id);
     
-    // 1. Nettoyage des métadonnées de soumission
-    const { id, quarantinedAt, quarantineSource, status, submittedAt, requestType, ...cleanData } = submission as any;
+    // 1. Nettoyage et identification de la cible
+    const { id, quarantinedAt, quarantineSource, status, submittedAt, requestType, originalDealershipId, ...cleanData } = submission as any;
 
     // 2. AUTOMATISATION : Calcul et validation des coordonnées + geohash
     const coords = extractValidCoordinates(cleanData);
-    let geohash = cleanData.geohash || "";
-    let finalLat = cleanData.latitude;
-    let finalLng = cleanData.longitude;
+    let geohashUpdates: any = {};
 
     if (coords) {
-      geohash = encodeGeohash(coords.lat, coords.lng, 9);
-      finalLat = coords.lat;
-      finalLng = coords.lng;
+      geohashUpdates = {
+        latitude: coords.lat,
+        longitude: coords.lng,
+        geohash: encodeGeohash(coords.lat, coords.lng, 9)
+      };
     }
 
+    // Détermination de la collection cible
     const targetCollection = cleanData.appSection === 'association' ? 'associations' : (cleanData.appSection === 'relais' ? 'relais' : 'concessions');
+    
+    // Si c'est une modification, on utilise l'ID original, sinon l'ID de la soumission
+    const targetId = requestType === 'MODIFICATION' && originalDealershipId ? originalDealershipId : submission.id;
 
     const finalDocument = {
       ...cleanData,
-      latitude: finalLat,
-      longitude: finalLng,
-      geohash,
+      ...geohashUpdates,
       appSection: cleanData.appSection || (cleanData.category?.includes('concession') ? 'both' : 'service'),
       updatedAt: new Date().toISOString()
     };
 
-    setDocumentNonBlocking(doc(firestore, targetCollection, submission.id), finalDocument, { merge: true });
+    // Écriture finale
+    setDocumentNonBlocking(doc(firestore, targetCollection, targetId), finalDocument, { merge: true });
+    
+    // Suppression de la demande
     deleteDocumentNonBlocking(doc(firestore, fromCollection, submission.id));
 
     toast({ title: 'Action réussie !', description: `${submission.title} est maintenant public et indexé.` });
@@ -315,7 +332,7 @@ export default function AdminPage() {
                     <CardHeader>
                       <CardTitle className="text-lg">{sub.title}</CardTitle>
                       <CardDescription>Soumis {formatDate(sub.submittedAt)}</CardDescription>
-                      <Badge variant="outline" className="w-fit mt-1">{sub.requestType || 'CRÉATION'}</Badge>
+                      <Badge variant={sub.requestType === 'MODIFICATION' ? 'brand' : 'outline'} className="w-fit mt-1">{sub.requestType || 'CRÉATION'}</Badge>
                     </CardHeader>
                     <CardContent className="flex-grow space-y-2 text-sm">
                       <p><strong>Adresse:</strong> {sub.address}</p>
