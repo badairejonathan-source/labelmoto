@@ -1,4 +1,3 @@
-
 export interface MapPoint {
   id: string;
   latitude: number;
@@ -6,6 +5,7 @@ export interface MapPoint {
   category: string;
   appSection: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   title: string;
+  geohash?: string;
   // Données de preview incluses pour éviter les fetchs inutiles dans la liste
   imgUrl?: string;
   rating?: string | number;
@@ -24,6 +24,7 @@ export interface Dealership {
   img_url?: string;
   image_url?: string;
   imageUrl?: string;
+  geohash?: string;
   mardi: string;
   mercredi: string;
   jeudi: string;

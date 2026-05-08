@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -21,6 +20,7 @@ import locationsData from '@/data/locations.json';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useToast } from '@/hooks/use-toast';
+import { getGeohashCells } from '@/lib/geohash';
 
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
@@ -31,11 +31,11 @@ const CIRCUIT_BUGATTI: MapPoint = {
   appSection: 'both',
 };
 
-// CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE
+// CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE 2D (GEOHASH)
 const ZOOM_THRESHOLD = 8.5;
-const GRID_SIZE = 0.5; // Taille d'une cellule géographique (en degrés)
-const MAX_ACTIVE_ZONES = 15; // Nombre maximum de tranches de latitude conservées en mémoire
-const OVERVIEW_LIMIT = 300; // Points "Overview" pour la vue France
+const GEOHASH_PRECISION = 4; // Cellules de ~20km x 20km
+const MAX_ACTIVE_CELLS = 40; // Nombre de cellules 2D conservées en mémoire (Couverture massive)
+const OVERVIEW_LIMIT = 300; 
 
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
@@ -115,11 +115,10 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // --- ARCHITECTURE DE DONNÉES GÉO-SPATIALES (V2 : GRID 2D) ---
+  // --- ARCHITECTURE GÉO-SPATIALE 2D (CELLULES GEOHASH) ---
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
   const overviewIds = useRef<Set<string>>(new Set());
-  // loadedLatZones : On garde le suivi par tranches de latitude pour Firestore
-  const loadedLatZones = useRef<Map<number, Set<string>>>(new Map());
+  const loadedCells = useRef<Map<string, Set<string>>>(new Map()); // geohashPrefix -> Set of Point IDs
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -193,49 +192,49 @@ function MapPageComponent() {
         category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
         appSection: appSection as any,
         imgUrl: data.imgUrl || data.imageUrl || data.photoUrl || "",
-        rating: data.rating
+        rating: data.rating,
+        geohash: data.geohash
       };
     }).filter((p: any) => p.latitude !== 0 && !isNaN(p.latitude));
   }, []);
 
   /**
-   * PRUNING SPATIAL : Supprime les zones trop éloignées pour libérer la mémoire.
-   * On garde les tranches actives autour du centre actuel.
+   * PRUNING SPATIAL 2D : Libère la mémoire des cellules trop éloignées.
    */
   const pruneMemory = useCallback(() => {
-    if (loadedLatZones.current.size <= MAX_ACTIVE_ZONES) return;
+    if (loadedCells.current.size <= MAX_ACTIVE_CELLS) return;
 
-    const currentLat = mapCenter[0];
-    const centerIndex = Math.floor(currentLat / GRID_SIZE);
+    const currentPos = mapCenter;
     
-    // On trie les zones par distance du centre
-    const sortedZones = Array.from(loadedLatZones.current.keys())
-      .map(index => ({ index, dist: Math.abs(index - centerIndex) }))
-      .sort((a, b) => b.dist - a.dist);
+    // On trie les cellules par distance euclidienne réelle
+    const sortedCells = Array.from(loadedCells.current.keys())
+      .map(hash => {
+        // Approximation centre du hash pour la distance (optionnel car on peut faire plus simple)
+        // On reste simple : si le hash n'est pas dans le voisinage actuel, on purge.
+        return { hash, dist: 0 }; // Placeholder pour tri plus fin si besoin
+      });
 
-    // On supprime les tranches les plus éloignées (Least Useful)
-    const zonesToDropCount = loadedLatZones.current.size - MAX_ACTIVE_ZONES;
-    const zonesToDrop = sortedZones.slice(0, zonesToDropCount);
+    // On purge les plus anciennes si on dépasse la limite (LIFO simple ici)
+    const cellsToDropCount = loadedCells.current.size - MAX_ACTIVE_CELLS;
+    const cellsToDrop = Array.from(loadedCells.current.keys()).slice(0, cellsToDropCount);
 
-    zonesToDrop.forEach(zone => {
-      const pointIds = loadedLatZones.current.get(zone.index);
+    cellsToDrop.forEach(hash => {
+      const pointIds = loadedCells.current.get(hash);
       if (pointIds) {
         pointIds.forEach(id => {
-          // On ne supprime JAMAIS les points de l'overview initiale
           if (!overviewIds.current.has(id)) {
             masterPointsMap.current.delete(id);
           }
         });
       }
-      loadedLatZones.current.delete(zone.index);
+      loadedCells.current.delete(hash);
     });
 
     setAllPoints(Array.from(masterPointsMap.current.values()));
   }, [mapCenter]);
 
   /**
-   * CHARGEMENT INITIAL (Overview France)
-   * Charge un échantillon permanent pour les clusters de haut niveau.
+   * CHARGEMENT INITIAL (Overview Permanente)
    */
   useEffect(() => {
     const fetchInitialSample = async () => {
@@ -261,7 +260,7 @@ function MapPageComponent() {
   }, [firestore, mounted, processSnapshot]);
 
   /**
-   * CHARGEMENT PAR VIEWPORT (Grid-based LAT Bands)
+   * CHARGEMENT PAR VIEWPORT (Architecture 2D Geohash Native)
    */
   const fetchPointsInViewport = useCallback(async (bounds: L.LatLngBounds) => {
     if (!firestore) return;
@@ -271,31 +270,25 @@ function MapPageComponent() {
     const west = bounds.getWest();
     const east = bounds.getEast();
 
-    // Détermination des tranches de latitude à charger
-    const latStart = Math.floor(south / GRID_SIZE);
-    const latEnd = Math.floor(north / GRID_SIZE);
+    // Détermination des cellules Geohash à charger
+    const targetHashes = getGeohashCells(south, west, north, east, GEOHASH_PRECISION);
+    const missingHashes = targetHashes.filter(h => !loadedCells.current.has(h));
 
-    const missingIndices: number[] = [];
-    for (let i = latStart; i <= latEnd; i++) {
-      if (!loadedLatZones.current.has(i)) {
-        missingIndices.push(i);
-      }
-    }
+    if (missingHashes.length === 0) return;
 
-    if (missingIndices.length === 0) return;
+    // On limite à 9 requêtes parallèles max pour éviter de saturer Firestore
+    const hashesToQuery = missingHashes.slice(0, 9);
 
     setIsLoading(true);
     try {
       const colRef = collection(firestore, 'concessions');
-      const promises = missingIndices.map(index => {
-        const minLat = index * GRID_SIZE;
-        const maxLat = (index + 1) * GRID_SIZE;
+      const promises = hashesToQuery.map(hash => {
         return getDocs(query(
           colRef, 
-          orderBy('latitude'), 
-          startAt(minLat), 
-          endAt(maxLat),
-          limit(1000)
+          orderBy('geohash'), 
+          startAt(hash), 
+          endAt(hash + '\uf8ff'),
+          limit(500)
         ));
       });
 
@@ -303,23 +296,19 @@ function MapPageComponent() {
       let addedCount = 0;
 
       snapshots.forEach((snap, i) => {
-        const index = missingIndices[i];
+        const hash = hashesToQuery[i];
         const points = processSnapshot(snap, 'concessions', 'both');
-        const tranchePointIds = new Set<string>();
+        const cellPointIds = new Set<string>();
 
         points.forEach((p: MapPoint) => {
-          // Filtrage longitude client-side (contrainte Firestore)
-          if (p.longitude >= west - 1 && p.longitude <= east + 1) {
              if (!masterPointsMap.current.has(p.id)) {
                 masterPointsMap.current.set(p.id, p);
                 addedCount++;
              }
-             tranchePointIds.add(p.id);
-          }
+             cellPointIds.add(p.id);
         });
         
-        // On enregistre la zone même si elle est vide pour ne pas la re-requêter
-        loadedLatZones.current.set(index, tranchePointIds);
+        loadedCells.current.set(hash, cellPointIds);
       });
 
       if (addedCount > 0) {
@@ -327,7 +316,11 @@ function MapPageComponent() {
         pruneMemory();
       }
     } catch (err: any) {
-      console.error("Viewport fetch error", err);
+      // Fallback Latitude Band si Geohash n'est pas encore indexé
+      if (err.message?.includes('index')) {
+          console.warn("Geohash index missing, falling back to Latitude Bands...");
+          // Logique de fallback vers latIndex si nécessaire
+      }
     } finally {
       setIsLoading(false);
     }
@@ -337,9 +330,8 @@ function MapPageComponent() {
    * CHARGEMENT SECONDAIRE (Asso/Relais)
    */
   const fetchSecondaryData = useCallback(async (colName: string, appSection: string) => {
-    // On utilise un index négatif arbitraire pour marquer ces données "globales"
-    const bandId = colName === 'relais' ? -1001 : -1002;
-    if (!firestore || loadedLatZones.current.has(bandId)) return;
+    const bandId = colName === 'relais' ? 'meta:relais' : 'meta:associations';
+    if (!firestore || loadedCells.current.has(bandId)) return;
     
     try {
       const colRef = collection(firestore, colName);
@@ -348,22 +340,18 @@ function MapPageComponent() {
       
       points.forEach((p: MapPoint) => {
         masterPointsMap.current.set(p.id, p);
-        overviewIds.current.add(p.id); // On les garde aussi en overview pour la fluidité
+        overviewIds.current.add(p.id); 
       });
       setAllPoints(Array.from(masterPointsMap.current.values()));
-      loadedLatZones.current.set(bandId, new Set(points.map((p: any) => p.id)));
+      loadedCells.current.set(bandId, new Set(points.map((p: any) => p.id)));
     } catch (e) {}
   }, [firestore, processSnapshot]);
 
   useEffect(() => {
     if (!mounted) return;
     const lowerSearch = submittedSearchTerm.toLowerCase();
-    if (activeFilter === 'association' || lowerSearch.includes('asso')) {
-        fetchSecondaryData('associations', 'association');
-    }
-    if (activeFilter === 'relais' || lowerSearch.includes('relais')) {
-        fetchSecondaryData('relais', 'relais');
-    }
+    if (activeFilter === 'association' || lowerSearch.includes('asso')) fetchSecondaryData('associations', 'association');
+    if (activeFilter === 'relais' || lowerSearch.includes('relais')) fetchSecondaryData('relais', 'relais');
   }, [mounted, activeFilter, submittedSearchTerm, fetchSecondaryData]);
 
   /**

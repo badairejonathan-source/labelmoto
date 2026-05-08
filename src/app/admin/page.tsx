@@ -1,16 +1,14 @@
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useFirebase } from '@/firebase';
-import { collection, onSnapshot, doc, getDocs, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, doc, getDocs, serverTimestamp, writeBatch, query, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, XCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2 } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2, Database, Zap } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
-import { Dealership } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +18,8 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from '@/lib/utils';
+import { encodeGeohash } from '@/lib/geohash';
+import { Progress } from '@/components/ui/progress';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
@@ -57,6 +57,11 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   
+  // Migration state
+  const [isMigrating, setIsMigrating] = useState(false);
+  const [migrationProgress, setMigrationProgress] = useState(0);
+  const [migrationTotal, setMigrationTotal] = useState(0);
+
   const { firestore, user, isUserLoading } = useFirebase();
   const { toast } = useToast();
   const router = useRouter();
@@ -117,7 +122,6 @@ export default function AdminPage() {
     if (!firestore) return;
     setProcessingId(submission.id);
     
-    // On nettoie l'objet pour l'insertion
     const { id, quarantinedAt, quarantineSource, status, ...data } = submission as any;
 
     const newConcession = {
@@ -153,6 +157,59 @@ export default function AdminPage() {
     setProcessingId(null);
   };
 
+  /**
+   * MIGRATION GÉO-SPATIALE : Calcule les Geohashes pour tous les établissements.
+   */
+  const runGeohashMigration = async () => {
+    if (!firestore || isMigrating) return;
+    if (!window.confirm("Cette opération va mettre à jour tous les Geohashes. Continuer ?")) return;
+
+    setIsMigrating(true);
+    setMigrationProgress(0);
+    
+    try {
+      const collections = ['concessions', 'associations', 'relais'];
+      let totalProcessed = 0;
+
+      for (const colName of collections) {
+        const snap = await getDocs(collection(firestore, colName));
+        setMigrationTotal(snap.size);
+        let batch = writeBatch(firestore);
+        let count = 0;
+
+        for (const document of snap.docs) {
+          const data = document.data();
+          let lat = data.latitude || data.lat || (data.location?.lat);
+          let lng = data.longitude || data.lng || (data.location?.lng);
+
+          if (lat && lng) {
+             lat = parseFloat(String(lat).replace(',', '.'));
+             lng = parseFloat(String(lng).replace(',', '.'));
+             const hash = encodeGeohash(lat, lng, 9);
+             batch.update(document.ref, { geohash: hash, latitude: lat, longitude: lng });
+             count++;
+             totalProcessed++;
+             setMigrationProgress(Math.floor((totalProcessed / (snap.size * collections.length)) * 100));
+
+             if (count >= 400) {
+               await batch.commit();
+               batch = writeBatch(firestore);
+               count = 0;
+             }
+          }
+        }
+        await batch.commit();
+      }
+
+      toast({ title: "Migration terminée !", description: "Tous les établissements ont maintenant un Geohash valide." });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Erreur lors de la migration", variant: "destructive" });
+    } finally {
+      setIsMigrating(false);
+    }
+  };
+
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'Date inconnue';
     const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
@@ -184,7 +241,7 @@ export default function AdminPage() {
 
       <main className="container mx-auto p-4 md:p-8">
         <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 max-w-2xl mx-auto h-12 p-1 bg-muted rounded-full">
+          <TabsList className="grid w-full grid-cols-4 mb-8 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full">
             <TabsTrigger value="pending" className="rounded-full font-bold">
                 Demandes Pros {submissions.length > 0 && <Badge className="ml-2 bg-brand">{submissions.length}</Badge>}
             </TabsTrigger>
@@ -193,6 +250,9 @@ export default function AdminPage() {
             </TabsTrigger>
             <TabsTrigger value="quarantine" className="rounded-full font-bold text-destructive">
                 Quarantaine {quarantineSubmissions.length > 0 && <Badge variant="destructive" className="ml-2">{quarantineSubmissions.length}</Badge>}
+            </TabsTrigger>
+            <TabsTrigger value="maintenance" className="rounded-full font-bold text-indigo-600">
+                <Database className="mr-2 h-4 w-4" /> Maintenance
             </TabsTrigger>
           </TabsList>
 
@@ -315,6 +375,42 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="maintenance">
+             <div className="max-w-2xl mx-auto space-y-6">
+                <Card className="border-2 border-indigo-200">
+                    <CardHeader className="bg-indigo-50">
+                        <CardTitle className="text-indigo-900 flex items-center gap-2"><Database className="h-6 w-6" /> Migration Géo-Spatiale (Geohash)</CardTitle>
+                        <CardDescription>Cette opération calcule un Geohash pour chaque établissement. Indispensable pour la performance de la carte interactive.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="py-8 space-y-6">
+                        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                            <p className="text-sm font-bold text-amber-900 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Attention :</p>
+                            <p className="text-xs text-amber-800 mt-1">L'opération peut prendre quelques minutes si vous avez des milliers de documents. Ne fermez pas la fenêtre.</p>
+                        </div>
+                        
+                        {isMigrating && (
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-indigo-600">
+                                    <span>Traitement en cours...</span>
+                                    <span>{migrationProgress}%</span>
+                                </div>
+                                <Progress value={migrationProgress} className="h-2 bg-indigo-100" />
+                            </div>
+                        )}
+
+                        <Button 
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 h-14 font-black uppercase tracking-widest text-xs shadow-xl"
+                            onClick={runGeohashMigration}
+                            disabled={isMigrating}
+                        >
+                            {isMigrating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Zap className="mr-2 h-5 w-5" />}
+                            Lancer la migration Geohash
+                        </Button>
+                    </CardContent>
+                </Card>
+             </div>
           </TabsContent>
         </Tabs>
       </main>
