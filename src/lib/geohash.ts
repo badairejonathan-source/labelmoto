@@ -59,8 +59,6 @@ export function getGeohashCells(south: number, west: number, north: number, east
   const hashes = new Set<string>();
   
   // Échantillonnage adapté à la précision demandée
-  // Précision 4 (~20km) : pas de 0.15 degré
-  // Précision 5 (~5km) : pas de 0.04 degré
   const step = precision === 4 ? 0.15 : 0.04;
 
   for (let lat = south - step/2; lat <= north + step; lat += step) {
@@ -84,19 +82,22 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
   let lat: number | null = null;
   let lng: number | null = null;
 
-  const rawLat = data.latitude ?? data.lat ?? data.location?.lat;
-  const rawLng = data.longitude ?? data.lng ?? data.location?.lng;
+  // Recherche multi-champs pour compatibilité historique
+  const rawLat = data.latitude ?? data.lat ?? data.location?.lat ?? data.pos?.lat ?? data.position?.[0];
+  const rawLng = data.longitude ?? data.lng ?? data.location?.lng ?? data.pos?.lng ?? data.position?.[1];
 
-  if (rawLat !== undefined && rawLat !== null) {
+  if (rawLat !== undefined && rawLat !== null && rawLat !== "") {
     lat = typeof rawLat === 'number' ? rawLat : parseFloat(String(rawLat).replace(',', '.'));
   }
-  if (rawLng !== undefined && rawLng !== null) {
+  if (rawLng !== undefined && rawLng !== null && rawLng !== "") {
     lng = typeof rawLng === 'number' ? rawLng : parseFloat(String(rawLng).replace(',', '.'));
   }
 
   if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
     // Vérification des bornes géographiques valides
     if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      // Évite les coordonnées 0,0 qui sont souvent des erreurs de saisie
+      if (Math.abs(lat) < 0.0001 && Math.abs(lng) < 0.0001) return null;
       return { lat, lng };
     }
   }

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -123,7 +122,7 @@ export default function AdminPage() {
   }, [firestore, user]);
 
   const addLog = (msg: string) => {
-    setMigrationLogs(prev => [...prev.slice(-99), `> ${new Date().toLocaleTimeString()} : ${msg}`]);
+    setMigrationLogs(prev => [...prev.slice(-199), `> ${new Date().toLocaleTimeString()} : ${msg}`]);
   };
 
   useEffect(() => {
@@ -135,23 +134,23 @@ export default function AdminPage() {
   const runDatabaseTask = async (mode: 'AUDIT' | 'MIGRATE') => {
     if (!firestore || isMigrating || isAuditing) return;
     
-    if (mode === 'MIGRATE' && !window.confirm("La migration va mettre à jour les Geohashes. Continuer ?")) return;
+    if (mode === 'MIGRATE' && !window.confirm("ATTENTION : La migration va modifier physiquement les documents dans Firestore. Voulez-vous continuer ?")) return;
 
     mode === 'MIGRATE' ? setIsMigrating(true) : setIsAuditing(true);
     setMigrationProgress(0);
     setMigrationLogs([]);
     setStats({ scanned: 0, updated: 0, ignored: 0, errors: 0, noGeohash: 0, invalidCoords: 0 });
-    addLog(`Démarrage de la tâche : ${mode}...`);
+    addLog(`INITIALISATION : Mode ${mode}...`);
     
     try {
       const collectionsToProcess = ['concessions', 'associations', 'relais'];
       let currentStats = { scanned: 0, updated: 0, ignored: 0, errors: 0, noGeohash: 0, invalidCoords: 0 };
 
       for (const colName of collectionsToProcess) {
-        addLog(`Traitement de la collection : ${colName.toUpperCase()}`);
+        addLog(`COLLECTION : ${colName.toUpperCase()}...`);
         let lastDocSnapshot = null;
         let hasMore = true;
-        const PAGE_SIZE = 50; // Taille de lot plus petite pour plus de stabilité
+        const PAGE_SIZE = 50; 
 
         while (hasMore) {
           let q;
@@ -183,7 +182,6 @@ export default function AdminPage() {
               const currentLat = typeof data.latitude === 'number' ? data.latitude : parseFloat(String(data.latitude || 0).replace(',', '.'));
               const currentLng = typeof data.longitude === 'number' ? data.longitude : parseFloat(String(data.longitude || 0).replace(',', '.'));
 
-              // Vérification de la nécessité de mise à jour (tolérance sur les flottants)
               const needsUpdate = !data.geohash || 
                                  data.geohash !== calculatedHash || 
                                  Math.abs(currentLat - coords.lat) > 0.00001 || 
@@ -206,17 +204,27 @@ export default function AdminPage() {
             } else {
               currentStats.invalidCoords++;
               currentStats.errors++;
+              if (currentStats.invalidCoords < 20) {
+                addLog(`[COORD_ERROR] ID: ${docSnapshot.id} - Données: ${JSON.stringify(data.latitude || 'null')}/${JSON.stringify(data.longitude || 'null')}`);
+              } else if (currentStats.invalidCoords === 20) {
+                addLog(`[COORD_ERROR] Trop d'erreurs, masquage des IDs suivants...`);
+              }
             }
           }
 
           if (updatesInBatch > 0 && mode === 'MIGRATE') {
             try {
+              addLog(`COMMIT : Envoi d'un lot de ${updatesInBatch} modifications...`);
               await batch.commit();
-              addLog(`${colName}: Lot de ${updatesInBatch} écritures validé.`);
+              addLog(`SUCCÈS : Lot validé sur Firestore.`);
             } catch (commitErr: any) {
-              addLog(`ERREUR COMMIT: ${commitErr.message}`);
+              addLog(`!!! ERREUR CRITIQUE COMMIT !!! : ${commitErr.message}`);
               currentStats.errors += updatesInBatch;
+              // On arrête la migration sur cette collection si le commit échoue (pb de quota ou permission)
+              hasMore = false;
             }
+          } else if (mode === 'MIGRATE') {
+             // addLog(`SKIP : Rien à modifier dans ce lot.`);
           }
 
           lastDocSnapshot = snapshot.docs[snapshot.docs.length - 1];
@@ -225,20 +233,19 @@ export default function AdminPage() {
           if (snapshot.docs.length < PAGE_SIZE) {
             hasMore = false;
           } else {
-            // Petit délai pour laisser respirer l'UI et les quotas
-            await new Promise(r => setTimeout(r, 100));
-            setMigrationProgress(prev => Math.min(prev + 1, 98));
+            await new Promise(r => setTimeout(r, 150)); // Délai de sécurité
+            setMigrationProgress(prev => Math.min(prev + 1, 99));
           }
         }
       }
 
       setMigrationProgress(100);
       setStats({ ...currentStats });
-      addLog(`TÂCHE ${mode} TERMINÉE.`);
-      toast({ title: `${mode} terminé avec succès` });
+      addLog(`TERMINÉ : ${mode} fini avec succès.`);
+      toast({ title: `${mode} terminé` });
     } catch (e: any) {
-      addLog(`ERREUR CRITIQUE : ${e.message}`);
-      toast({ title: `Erreur durant le ${mode}`, variant: "destructive" });
+      addLog(`!!! ERREUR SYSTÈME !!! : ${e.message}`);
+      toast({ title: `Erreur fatale`, variant: "destructive" });
     } finally {
       setIsMigrating(false);
       setIsAuditing(false);
@@ -268,16 +275,16 @@ export default function AdminPage() {
     };
     setDocumentNonBlocking(doc(firestore, targetCollection, targetId), finalDocument, { merge: true });
     deleteDocumentNonBlocking(doc(firestore, fromCollection, submission.id));
-    toast({ title: 'Action réussie !', description: `${submission.title} est maintenant public et indexé.` });
+    toast({ title: 'Action réussie !', description: `${submission.title} est maintenant public.` });
     setProcessingId(null);
   };
 
   const handleReject = (id: string, fromCollection: string) => {
     if (!firestore) return;
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer définitivement cet élément ?")) return;
+    if (!window.confirm("Supprimer définitivement ?")) return;
     setProcessingId(id);
     deleteDocumentNonBlocking(doc(firestore, fromCollection, id));
-    toast({ title: 'Supprimé définitivement', variant: 'destructive' });
+    toast({ title: 'Supprimé' });
     setProcessingId(null);
   };
 
@@ -286,7 +293,7 @@ export default function AdminPage() {
     setProcessingId(comment.id);
     setDocumentNonBlocking(doc(firestore, 'concessions', comment.dealershipId, 'comments', comment.id), comment, {});
     deleteDocumentNonBlocking(doc(firestore, 'pending_comments', comment.id));
-    toast({ title: 'Commentaire approuvé !' });
+    toast({ title: 'Commentaire publié !' });
     setProcessingId(null);
   };
 
@@ -342,7 +349,7 @@ export default function AdminPage() {
                     </CardContent>
                     <CardFooter className="flex gap-2 justify-end bg-muted/20 p-4 border-t">
                       <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'pending_concessions')} disabled={processingId === sub.id} className="text-destructive">Refuser</Button>
-                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'pending_concessions')} disabled={processingId === sub.id} className="bg-brand">Approuver & Indexer</Button>
+                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'pending_concessions')} disabled={processingId === sub.id} className="bg-brand">Approuver</Button>
                     </CardFooter>
                   </Card>
                 ))}
@@ -386,7 +393,7 @@ export default function AdminPage() {
                     <CardContent className="flex-grow space-y-2 text-sm italic text-muted-foreground"><div className="bg-muted/30 p-3 rounded-lg text-xs not-italic text-foreground"><p><strong>Adresse:</strong> {sub.address}</p></div></CardContent>
                     <CardFooter className="flex gap-2 justify-end bg-muted/20 p-4 border-t">
                       <Button variant="outline" size="sm" onClick={() => handleReject(sub.id, 'a_verifier')} disabled={processingId === sub.id} className="text-destructive"><Trash2 className="mr-2 h-4 w-4" /> Supprimer</Button>
-                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'a_verifier')} disabled={processingId === sub.id} className="bg-brand"><ShieldCheck className="mr-2 h-4 w-4" /> Réintégrer & Indexer</Button>
+                      <Button size="sm" onClick={() => handleApproveSubmission(sub, 'a_verifier')} disabled={processingId === sub.id} className="bg-brand"><ShieldCheck className="mr-2 h-4 w-4" /> Réintégrer</Button>
                     </CardFooter>
                   </Card>
                 ))}
@@ -400,10 +407,10 @@ export default function AdminPage() {
                     <Card className="border-2 border-indigo-200 overflow-hidden">
                         <CardHeader className="bg-indigo-50 border-b border-indigo-100"><CardTitle className="text-indigo-900 flex items-center gap-2"><Database className="h-6 w-6" /> Maintenance Géo-Spatiale</CardTitle></CardHeader>
                         <CardContent className="py-6 space-y-4">
-                            <p className="text-xs text-indigo-800 leading-relaxed">Cet outil synchronise les Geohashes pour garantir que tous les établissements sont visibles sur la carte.</p>
+                            <p className="text-xs text-indigo-800 leading-relaxed">Cet outil synchronise les Geohashes pour garantir la visibilité sur la carte.</p>
                             <div className="flex flex-col gap-2">
                                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => runDatabaseTask('MIGRATE')} disabled={isMigrating || isAuditing}>{isMigrating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Migration...</> : <><Zap className="mr-2 h-4 w-4" /> Lancer la migration</>}</Button>
-                                <Button variant="outline" className="w-full h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => runDatabaseTask('AUDIT')} disabled={isMigrating || isAuditing}>{isAuditing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Audit...</> : <><BarChart3 className="mr-2 h-4 w-4" /> Lancer l'audit complet</>}</Button>
+                                <Button variant="outline" className="w-full h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => runDatabaseTask('AUDIT')} disabled={isMigrating || isAuditing}>{isAuditing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Audit...</> : <><BarChart3 className="mr-2 h-4 w-4" /> Lancer l'audit</>}</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -415,11 +422,11 @@ export default function AdminPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1"><p className="text-[10px] font-black text-muted-foreground uppercase">Total Scannés</p><p className="text-xl font-black">{stats.scanned}</p></div>
                                     <div className="space-y-1"><p className="text-[10px] font-black text-green-700 uppercase">Corrects / OK</p><p className="text-xl font-black text-green-600">{stats.ignored}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-red-700 uppercase">Sans Geohash</p><p className="text-xl font-black text-red-600">{stats.noGeohash}</p></div>
+                                    <div className="space-y-1"><p className="text-[10px] font-black text-red-700 uppercase">Mis à jour</p><p className="text-xl font-black text-indigo-600">{stats.updated}</p></div>
                                     <div className="space-y-1"><p className="text-[10px] font-black text-orange-700 uppercase">Coord. Invalides</p><p className="text-xl font-black text-orange-600">{stats.invalidCoords}</p></div>
                                 </div>
                             ) : (
-                                <div className="text-center py-6 opacity-30 italic text-sm">Lancez un audit pour voir les chiffres</div>
+                                <div className="text-center py-6 opacity-30 italic text-sm">Lancez une tâche pour voir les chiffres</div>
                             )}
                         </CardContent>
                     </Card>
@@ -428,17 +435,17 @@ export default function AdminPage() {
                 {(isMigrating || isAuditing || migrationLogs.length > 0) && (
                     <div className="space-y-4">
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-1">
-                            <span>Progression du traitement</span>
+                            <span>Progression</span>
                             <span>{migrationProgress}%</span>
                         </div>
                         <Progress value={migrationProgress} className="h-2 bg-indigo-100" />
                         
                         <Card className="bg-black border-none shadow-inner rounded-xl overflow-hidden">
-                            <CardHeader className="py-3 px-4 border-b border-white/10 bg-zinc-900"><CardTitle className="text-[10px] font-black text-white/50 uppercase tracking-widest flex items-center gap-2"><Terminal className="h-3 w-3" /> Console de logs techniques</CardTitle></CardHeader>
-                            <ScrollArea className="h-64 p-4">
+                            <CardHeader className="py-3 px-4 border-b border-white/10 bg-zinc-900"><CardTitle className="text-[10px] font-black text-white/50 uppercase tracking-widest flex items-center gap-2"><Terminal className="h-3 w-3" /> Console de logs (IDs invalides listés ici)</CardTitle></CardHeader>
+                            <ScrollArea className="h-80 p-4">
                                 <div className="space-y-1 font-mono text-[10px] md:text-xs">
                                     {migrationLogs.map((log, i) => (
-                                        <p key={i} className={cn("leading-tight", log.includes('TERMINÉE') ? "text-green-400 font-bold" : log.includes('ERREUR') ? "text-red-400 font-bold" : "text-indigo-200/70")}>{log}</p>
+                                        <p key={i} className={cn("leading-tight", log.includes('TERMINÉ') ? "text-green-400 font-bold" : log.includes('ERREUR') ? "text-red-400 font-bold" : (log.includes('ID:') ? "text-orange-300" : "text-indigo-200/70"))}>{log}</p>
                                     ))}
                                     <div ref={logEndRef} />
                                 </div>
