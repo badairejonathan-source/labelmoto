@@ -159,6 +159,7 @@ export default function AdminPage() {
 
   /**
    * MIGRATION GÉO-SPATIALE : Calcule les Geohashes pour tous les établissements.
+   * Optimisé pour être plus robuste et précis sur la progression.
    */
   const runGeohashMigration = async () => {
     if (!firestore || isMigrating) return;
@@ -169,44 +170,81 @@ export default function AdminPage() {
     
     try {
       const collections = ['concessions', 'associations', 'relais'];
-      let totalProcessed = 0;
+      let totalDocumentsCount = 0;
+      const allSnapshots = [];
 
+      // Phase 1 : Collecte des documents pour calculer le vrai total
       for (const colName of collections) {
         const snap = await getDocs(collection(firestore, colName));
-        setMigrationTotal(snap.size);
-        let batch = writeBatch(firestore);
-        let count = 0;
-
-        for (const document of snap.docs) {
-          const data = document.data();
-          let lat = data.latitude || data.lat || (data.location?.lat);
-          let lng = data.longitude || data.lng || (data.location?.lng);
-
-          if (lat && lng) {
-             lat = parseFloat(String(lat).replace(',', '.'));
-             lng = parseFloat(String(lng).replace(',', '.'));
-             const hash = encodeGeohash(lat, lng, 9);
-             batch.update(document.ref, { geohash: hash, latitude: lat, longitude: lng });
-             count++;
-             totalProcessed++;
-             setMigrationProgress(Math.floor((totalProcessed / (snap.size * collections.length)) * 100));
-
-             if (count >= 400) {
-               await batch.commit();
-               batch = writeBatch(firestore);
-               count = 0;
-             }
-          }
-        }
-        await batch.commit();
+        totalDocumentsCount += snap.size;
+        allSnapshots.push({ name: colName, docs: snap.docs });
       }
 
-      toast({ title: "Migration terminée !", description: "Tous les établissements ont maintenant un Geohash valide." });
-    } catch (e) {
-      console.error(e);
-      toast({ title: "Erreur lors de la migration", variant: "destructive" });
+      setMigrationTotal(totalDocumentsCount);
+      let globalProcessedCount = 0;
+
+      // Phase 2 : Traitement par lots
+      for (const colData of allSnapshots) {
+        let batch = writeBatch(firestore);
+        let batchCount = 0;
+
+        for (const document of colData.docs) {
+          const data = document.data();
+          
+          // Détection robuste des coordonnées
+          let latRaw = data.latitude !== undefined ? data.latitude : (data.lat !== undefined ? data.lat : data.location?.lat);
+          let lngRaw = data.longitude !== undefined ? data.longitude : (data.lng !== undefined ? data.lng : data.location?.lng);
+
+          if (latRaw !== undefined && lngRaw !== undefined) {
+             const lat = parseFloat(String(latRaw).replace(',', '.'));
+             const lng = parseFloat(String(lngRaw).replace(',', '.'));
+
+             if (!isNaN(lat) && !isNaN(lng)) {
+               const hash = encodeGeohash(lat, lng, 9);
+               batch.update(document.ref, { 
+                 geohash: hash, 
+                 latitude: lat, 
+                 longitude: lng 
+               });
+               batchCount++;
+             }
+          }
+          
+          globalProcessedCount++;
+          
+          // Mise à jour de la progression globale
+          if (totalDocumentsCount > 0) {
+            setMigrationProgress(Math.floor((globalProcessedCount / totalDocumentsCount) * 100));
+          }
+
+          // Commit du lot toutes les 400 opérations (limite Firestore : 500)
+          if (batchCount >= 400) {
+            await batch.commit();
+            batch = writeBatch(firestore);
+            batchCount = 0;
+          }
+        }
+        
+        // Finalisation de la collection courante
+        if (batchCount > 0) {
+          await batch.commit();
+        }
+      }
+
+      toast({ 
+        title: "Migration terminée !", 
+        description: `${globalProcessedCount} établissements ont été mis à jour avec un Geohash valide.` 
+      });
+    } catch (e: any) {
+      console.error("Migration error:", e);
+      toast({ 
+        title: "Erreur lors de la migration", 
+        description: e.message || "Une erreur technique est survenue.",
+        variant: "destructive" 
+      });
     } finally {
       setIsMigrating(false);
+      setMigrationProgress(100);
     }
   };
 
@@ -405,8 +443,11 @@ export default function AdminPage() {
                             onClick={runGeohashMigration}
                             disabled={isMigrating}
                         >
-                            {isMigrating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Zap className="mr-2 h-5 w-5" />}
-                            Lancer la migration Geohash
+                            {isMigrating ? (
+                              <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Traitement des données...</>
+                            ) : (
+                              <><Zap className="mr-2 h-5 w-5" /> Lancer la migration Geohash</>
+                            )}
                         </Button>
                     </CardContent>
                 </Card>
