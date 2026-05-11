@@ -569,6 +569,7 @@ function MapPageComponent() {
               center={mapCenter} 
               zoom={mapZoom} 
               targetBounds={targetBounds} 
+              selectionSource={selectionSource}
               hoveredId={hoveredDealershipId} 
               selectedId={selectedDealershipId} 
               onMarkerClick={handleMarkerClick} 

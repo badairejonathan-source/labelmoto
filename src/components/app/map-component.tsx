@@ -28,6 +28,7 @@ interface MapComponentProps {
   onLocateEnd?: () => void;
   onLocationFound?: (coords: [number, number]) => void;
   targetBounds?: L.LatLngBoundsExpression | null;
+  selectionSource: 'marker' | 'card' | 'external' | null;
 }
 
 /**
@@ -51,7 +52,8 @@ const MapComponent = ({
   onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
-  targetBounds = null
+  targetBounds = null,
+  selectionSource
 }: MapComponentProps) => {
   
   const mapRef = useRef<L.Map | null>(null);
@@ -172,7 +174,12 @@ const MapComponent = ({
     const map = mapRef.current;
     if (!map) return;
 
-    const targetKey = `${center[0]},${center[1]},${zoom},${JSON.stringify(targetBounds)},${leftPadding},${bottomPadding}`;
+    // IMPORTANT: On n'applique la logique de repositionnement automatique (avec offset)
+    // QUE si le mouvement est déclenché par une action utilisateur externe (recherche, clic liste/marker).
+    // Si selectionSource est null, c'est un mouvement manuel, on ne fait rien pour éviter les sauts de carte.
+    if (!selectionSource && !targetBounds) return;
+
+    const targetKey = `${center[0]},${center[1]},${zoom},${JSON.stringify(targetBounds)},${leftPadding},${bottomPadding},${selectionSource}`;
     if (lastSetTarget.current === targetKey) return;
     lastSetTarget.current = targetKey;
 
@@ -197,7 +204,7 @@ const MapComponent = ({
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [center, zoom, targetBounds, leftPadding, bottomPadding]);
+  }, [center, zoom, targetBounds, leftPadding, bottomPadding, selectionSource]);
 
   useEffect(() => {
     const map = mapRef.current;
