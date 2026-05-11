@@ -26,12 +26,11 @@ interface MapComponentProps {
   isLocating?: boolean;
   onLocateEnd?: () => void;
   onLocationFound?: (coords: [number, number]) => void;
+  targetBounds?: L.LatLngBoundsExpression | null;
 }
 
 /**
  * Calcule un centre géographique qui place le point d'intérêt au centre de la zone visible.
- * Sur Desktop : Décale vers la gauche de la moitié du padding gauche (sidebar).
- * Sur Mobile : Décale vers le bas de la moitié du padding bas (drawer).
  */
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
   const z = targetZoom ?? map.getZoom();
@@ -45,6 +44,7 @@ const MapComponent = ({
   onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
+  targetBounds = null
 }: MapComponentProps) => {
   
   const mapRef = useRef<L.Map | null>(null);
@@ -72,7 +72,6 @@ const MapComponent = ({
 
     map.setView(center, zoom, { animate: false });
 
-    // OPTIMISATION MOBILE : chunkedLoading permet de ne pas bloquer le thread principal
     const clusterGroup = L.markerClusterGroup({
       chunkedLoading: true,
       maxClusterRadius: 50,
@@ -105,7 +104,6 @@ const MapComponent = ({
     };
   }, []);
 
-  // Mise à jour massive des marqueurs (Mode B)
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
@@ -138,7 +136,6 @@ const MapComponent = ({
     clusterGroup.addLayers(markers);
   }, [points]); 
 
-  // Mise à jour visuelle fine (Hover/Selection)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !points) return;
@@ -152,7 +149,6 @@ const MapComponent = ({
         const currentIcon = marker.getIcon();
         const newIcon = createIcon(point, isHovered, isSelected, currentZoom);
         
-        // On ne change l'icône que si nécessaire pour la fluidité
         if ((isSelected || isHovered) || (currentIcon as any).options?.className?.includes('active')) {
           marker.setIcon(newIcon);
         }
@@ -163,38 +159,37 @@ const MapComponent = ({
     });
   }, [hoveredId, selectedId, zoom]); 
 
+  // LOGIQUE DE NAVIGATION : fitBounds ou flyTo
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    const targetKey = `${center[0]},${center[1]},${zoom},${leftPadding},${bottomPadding}`;
+    const targetKey = `${center[0]},${center[1]},${zoom},${JSON.stringify(targetBounds)},${leftPadding},${bottomPadding}`;
     if (lastSetTarget.current === targetKey) return;
+    lastSetTarget.current = targetKey;
 
-    const currentCenter = map.getCenter();
-    const dist = Math.sqrt(Math.pow(currentCenter.lat - center[0], 2) + Math.pow(currentCenter.lng - center[1], 2));
-    const zoomDiff = Math.abs(map.getZoom() - zoom);
+    isUpdatingFromProps.current = true;
 
-    if (dist > 0.0001 || zoomDiff > 0.05) {
-      isUpdatingFromProps.current = true;
-      lastSetTarget.current = targetKey;
-
+    if (targetBounds) {
+      // Priorité au cadrage par limites si disponibles
+      map.fitBounds(targetBounds, {
+        paddingTopLeft: [leftPadding + 40, 40],
+        paddingBottomRight: [40, bottomPadding + 40],
+        duration: 0.8
+      });
+    } else {
+      // Fallback flyTo classique avec décalage UI
       let finalCenter: L.LatLngExpression = center;
-      
-      // LOGIQUE DE CENTRAGE RELATIF :
-      // On décale le point cible pour qu'il tombe au centre de la zone blanche (non couverte par l'UI)
       if (leftPadding > 0 || bottomPadding > 0) {
-        // -leftPadding/2 pousse le point vers la droite (zone visible sur desktop)
-        // bottomPadding/2 pousse le point vers le haut (zone visible sur mobile)
         finalCenter = getOffsettedCenter(map, center, [-(leftPadding / 2), bottomPadding / 2], zoom);
       }
-
       map.flyTo(finalCenter, zoom, { duration: 0.8 });
-      
-      setTimeout(() => {
-        isUpdatingFromProps.current = false;
-      }, 1000);
     }
-  }, [center, zoom, leftPadding, bottomPadding]);
+    
+    setTimeout(() => {
+      isUpdatingFromProps.current = false;
+    }, 1000);
+  }, [center, zoom, targetBounds, leftPadding, bottomPadding]);
 
   useEffect(() => {
     const map = mapRef.current;

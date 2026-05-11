@@ -31,7 +31,6 @@ const CIRCUIT_BUGATTI: MapPoint = {
   appSection: 'both',
 };
 
-// CONFIGURATION ARCHITECTURE CARTOGRAPHIQUE MODE B
 const ZOOM_THRESHOLD = 8.0; 
 const MAX_ACTIVE_CELLS = 150; 
 const OVERVIEW_LIMIT = 6000; 
@@ -42,7 +41,6 @@ const MOTORCYCLE_BRANDS = [
   'aprilia', 'moto guzzi', 'indian', 'husqvarna', 'benelli', 'mash', 'voge'
 ];
 
-// Cache simple pour les coordonnées de villes
 const cityCoordsCache: Record<string, [number, number]> = {};
 
 const ads = [
@@ -108,6 +106,7 @@ function MapPageComponent() {
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
   const [mapZoom, setMapZoom] = useState(6.2);
+  const [targetBounds, setTargetBounds] = useState<any | null>(null);
   const [sortingAnchor, setSortingAnchor] = useState<[number, number]>([46.5, 2.2]);
   const [mapBoundsStr, setMapBoundsStr] = useState<string | null>(null);
   const [isMapMoving, setIsMapMoving] = useState(false);
@@ -167,6 +166,7 @@ function MapPageComponent() {
         setMapCenter(pos); 
         setSortingAnchor(pos); 
         setMapZoom(prev => Math.max(prev, 13));
+        setTargetBounds(null);
         setSelectionSource('external');
     }
     if (selectedIdParam) {
@@ -202,22 +202,6 @@ function MapPageComponent() {
       };
     }).filter(Boolean) as MapPoint[];
   }, []);
-
-  const logDiagnostic = useCallback(() => {
-    if (process.env.NODE_ENV !== 'development' && !window.location.search.includes('debug=true')) return;
-    
-    const stats = {
-      totalInMaster: masterPointsMap.current.size,
-      overviewPoints: overviewIds.current.size,
-      activeGeohashCells: loadedCells.current.size,
-      currentlyVisibleMarkers: filteredPoints.length,
-      currentZoom: mapZoom.toFixed(1)
-    };
-    
-    console.group(`📍 Map Diagnostic - ${new Date().toLocaleTimeString()}`);
-    console.table(stats);
-    console.groupEnd();
-  }, [filteredPoints.length, mapZoom]);
 
   const pruneMemory = useCallback(() => {
     if (loadedCells.current.size <= MAX_ACTIVE_CELLS) return;
@@ -368,10 +352,8 @@ function MapPageComponent() {
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
         
-        // 1. EXTRACTION DES FILTRES
         let results = [...allPoints];
         
-        // Détection de la marque
         let detectedBrand: string | null = null;
         for (const brand of MOTORCYCLE_BRANDS) {
             if (term.includes(brand)) {
@@ -381,7 +363,6 @@ function MapPageComponent() {
             }
         }
 
-        // Filtre de collection (Couches)
         if (activeFilter === 'association') {
             results = results.filter(p => p.appSection === 'association');
         } else if (activeFilter === 'relais') {
@@ -394,7 +375,6 @@ function MapPageComponent() {
             results = results.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
         }
 
-        // Filtre de marque si détecté
         if (detectedBrand) {
             results = results.filter(p => {
                 const brands = (p as any).brands || [];
@@ -408,10 +388,8 @@ function MapPageComponent() {
             return;
         }
         
-        // 2. RÉSOLUTION GÉOGRAPHIQUE
         let zipFound: string | null = null, deptFound: string | null = null, cityFound: string | null = null;
         
-        // Pattern Paris Arrondissements (ex: "paris 13")
         const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisArrMatch) {
             zipFound = `750${parisArrMatch[1].padStart(2, '0')}`;
@@ -429,7 +407,17 @@ function MapPageComponent() {
             if (coords && !controller.signal.aborted) { 
               setMapCenter(coords); 
               setSortingAnchor(coords); 
-              setMapZoom(13); 
+              
+              // LOGIQUE FITBOUNDS POUR PARIS / VILLES
+              if (zipFound.startsWith('750')) {
+                setTargetBounds([
+                  [coords[0] - 0.015, coords[1] - 0.02],
+                  [coords[0] + 0.015, coords[1] + 0.02]
+                ]);
+              } else {
+                setMapZoom(13); 
+                setTargetBounds(null);
+              }
               setSelectionSource('external'); 
             }
         } else if (deptFound) {
@@ -439,15 +427,16 @@ function MapPageComponent() {
               setMapCenter(info.center); 
               setSortingAnchor(info.center); 
               setMapZoom(9); 
+              setTargetBounds(null);
               setSelectionSource('external'); 
             }
         } else if (cityFound) {
-            // Recherche par texte dans les titres
             const cityMatch = results.find(d => (d.title || '').toLowerCase().includes(cityFound!));
             if (cityMatch) {
                 setMapCenter([cityMatch.latitude, cityMatch.longitude]);
                 setSortingAnchor([cityMatch.latitude, cityMatch.longitude]);
                 setMapZoom(12);
+                setTargetBounds(null);
                 setSelectionSource('external');
             }
         }
@@ -473,8 +462,6 @@ function MapPageComponent() {
     return results;
   }, [filteredPoints, mapBoundsStr]);
 
-  useEffect(() => { logDiagnostic(); }, [pointsInViewport, logDiagnostic]);
-
   const pointsToDisplay = useMemo(() => {
     if (isMapMoving) return [];
     let results = [...pointsInViewport];
@@ -487,8 +474,8 @@ function MapPageComponent() {
     setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
-      // On préserve le zoom si déjà élevé
       setMapZoom(prev => Math.max(prev, 13)); 
+      setTargetBounds(null); // On ignore les bounds pour un point précis
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
@@ -501,6 +488,7 @@ function MapPageComponent() {
       setMapCenter([point.latitude, point.longitude]); 
       setSortingAnchor([point.latitude, point.longitude]); 
       setMapZoom(prev => Math.max(prev, 13)); 
+      setTargetBounds(null); // On ignore les bounds pour un point précis
     } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile]);
@@ -532,6 +520,7 @@ function MapPageComponent() {
     setMapCenter(coords); 
     setSortingAnchor(coords); 
     setMapZoom(prev => Math.max(prev, 13)); 
+    setTargetBounds(null);
     setSelectionSource('external'); 
   }, []);
 
@@ -574,7 +563,7 @@ function MapPageComponent() {
     <div className="relative w-full h-screen overflow-hidden bg-background flex flex-col md:row">
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
-            <MapComponent points={filteredPoints} center={mapCenter} zoom={mapZoom} hoveredId={hoveredDealershipId} selectedId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} bottomPadding={bottomPadding} leftPadding={isMobile ? 0 : leftPadding} isLocating={isLocating} onLocateEnd={handleLocateEnd} onLocationFound={handleLocationFound} />
+            <MapComponent points={filteredPoints} center={mapCenter} zoom={mapZoom} targetBounds={targetBounds} hoveredId={hoveredDealershipId} selectedId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} bottomPadding={bottomPadding} leftPadding={isMobile ? 0 : leftPadding} isLocating={isLocating} onLocateEnd={handleLocateEnd} onLocationFound={handleLocationFound} />
         ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/10"><Loader2 className="h-10 w-10 animate-spin text-brand/20" /></div>
         )}
