@@ -79,8 +79,9 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    // Initialisation avec décalage si nécessaire
-    map.setView(center, zoom, { animate: false });
+    // Initialisation avec décalage pour tenir compte de la sidebar dès le chargement
+    const initialCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
+    map.setView(initialCenter, zoom, { animate: false });
 
     const clusterGroup = L.markerClusterGroup({
       chunkedLoading: true,
@@ -175,7 +176,7 @@ const MapComponent = ({
     if (!map) return;
 
     // IMPORTANT: On n'applique la logique de repositionnement automatique (avec offset)
-    // QUE si le mouvement est déclenché par une action utilisateur externe (recherche, clic liste/marker).
+    // QUE si le mouvement est déclenché par une action utilisateur externe (recherche, clic liste/marker, ou chargement initial).
     // Si selectionSource est null, c'est un mouvement manuel, on ne fait rien pour éviter les sauts de carte.
     if (!selectionSource && !targetBounds) return;
 
@@ -217,7 +218,7 @@ const MapComponent = ({
     map.locate({ setView: true, maxZoom: 14 });
   }, [isLocating]);
 
-  return <div ref={containerRef} className="w-full h-full min-h-0 bg-muted/10" />;
+  return <div ref={containerRef} className="w-full h-full min-0 bg-muted/10" />;
 };
 
 const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, currentZoom: number) => {

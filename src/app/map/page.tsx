@@ -115,7 +115,7 @@ function MapPageComponent() {
   const [showMap, setShowMap] = useState(false);
   const [hoveredDealershipId, setHoveredDealershipId] = useState<string | null>(null);
   const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
-  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(null);
+  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>('external');
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
   
