@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -145,7 +146,8 @@ function MapPageComponent() {
   const { width, height } = useWindowSize();
   const isMobile = mounted && width !== undefined && width < 1024;
 
-  const leftPadding = isMobile ? 0 : 540;
+  // Calcul du padding pour le centrage intelligent (Sidebar = 520px + margin left = 24px)
+  const leftPadding = isMobile ? 0 : 544;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? (height || 800) - 160 : (drawerHeight === 'half' ? (height || 800) / 2 : 110)) : 0;
   
   useEffect(() => { 
@@ -408,7 +410,6 @@ function MapPageComponent() {
               setMapCenter(coords); 
               setSortingAnchor(coords); 
               
-              // LOGIQUE FITBOUNDS POUR PARIS / VILLES
               if (zipFound.startsWith('750')) {
                 setTargetBounds([
                   [coords[0] - 0.015, coords[1] - 0.02],
@@ -475,7 +476,7 @@ function MapPageComponent() {
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
       setMapZoom(prev => Math.max(prev, 13)); 
-      setTargetBounds(null); // On ignore les bounds pour un point précis
+      setTargetBounds(null); 
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
@@ -488,7 +489,7 @@ function MapPageComponent() {
       setMapCenter([point.latitude, point.longitude]); 
       setSortingAnchor([point.latitude, point.longitude]); 
       setMapZoom(prev => Math.max(prev, 13)); 
-      setTargetBounds(null); // On ignore les bounds pour un point précis
+      setTargetBounds(null); 
     } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile]);
@@ -563,7 +564,25 @@ function MapPageComponent() {
     <div className="relative w-full h-screen overflow-hidden bg-background flex flex-col md:row">
       <div className="absolute inset-0 z-0 h-full w-full">
         {showMap ? (
-            <MapComponent points={filteredPoints} center={mapCenter} zoom={mapZoom} targetBounds={targetBounds} hoveredId={hoveredDealershipId} selectedId={selectedDealershipId} onMarkerClick={handleMarkerClick} onMarkerMouseOver={setHoveredDealershipId} onMarkerMouseOut={() => setHoveredDealershipId(null)} onMapChange={handleMapChange} onMapClick={handleUserMapInteraction} onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} bottomPadding={bottomPadding} leftPadding={isMobile ? 0 : leftPadding} isLocating={isLocating} onLocateEnd={handleLocateEnd} onLocationFound={handleLocationFound} />
+            <MapComponent 
+              points={filteredPoints} 
+              center={mapCenter} 
+              zoom={mapZoom} 
+              targetBounds={targetBounds} 
+              hoveredId={hoveredDealershipId} 
+              selectedId={selectedDealershipId} 
+              onMarkerClick={handleMarkerClick} 
+              onMarkerMouseOver={setHoveredDealershipId} 
+              onMarkerMouseOut={() => setHoveredDealershipId(null)} 
+              onMapChange={handleMapChange} 
+              onMapClick={handleUserMapInteraction} 
+              onUserInteraction={() => { handleUserMapInteraction(); setIsMapMoving(true); }} 
+              bottomPadding={bottomPadding} 
+              leftPadding={leftPadding} 
+              isLocating={isLocating} 
+              onLocateEnd={handleLocateEnd} 
+              onLocationFound={handleLocationFound} 
+            />
         ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/10"><Loader2 className="h-10 w-10 animate-spin text-brand/20" /></div>
         )}

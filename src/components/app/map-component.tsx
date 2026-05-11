@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -30,13 +31,19 @@ interface MapComponentProps {
 }
 
 /**
- * Calcule un centre géographique qui place le point d'intérêt au centre de la zone visible.
+ * Calcule un centre géographique qui place le point d'intérêt au centre de la zone visible utile.
+ * logic: centerPoint = targetPoint - offset
  */
-const getOffsettedCenter = (map: L.Map, latlng: [number, number], offsetPixels: [number, number], targetZoom?: number): L.LatLng => {
-  const z = targetZoom ?? map.getZoom();
-  const centerPoint = map.project(latlng, z);
-  const targetPoint = L.point(centerPoint.x + offsetPixels[0], centerPoint.y + offsetPixels[1]);
-  return map.unproject(targetPoint, z);
+const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: number, bottomPadding: number, targetZoom: number): L.LatLng => {
+  const centerPoint = map.project(latlng, targetZoom);
+  
+  // On décale le point cible vers la gauche de moitié de la sidebar et vers le bas de moitié du tiroir
+  // pour que le marqueur se retrouve au milieu de l'espace blanc disponible.
+  const offsetX = -(leftPadding / 2);
+  const offsetY = bottomPadding / 2;
+  
+  const targetPoint = L.point(centerPoint.x + offsetX, centerPoint.y + offsetY);
+  return map.unproject(targetPoint, targetZoom);
 };
 
 const MapComponent = ({
@@ -70,6 +77,7 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
+    // Initialisation avec décalage si nécessaire
     map.setView(center, zoom, { animate: false });
 
     const clusterGroup = L.markerClusterGroup({
@@ -159,7 +167,7 @@ const MapComponent = ({
     });
   }, [hoveredId, selectedId, zoom]); 
 
-  // LOGIQUE DE NAVIGATION : fitBounds ou flyTo
+  // LOGIQUE DE NAVIGATION INTELLIGENTE : fitBounds ou flyTo avec OFFSET
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -171,24 +179,24 @@ const MapComponent = ({
     isUpdatingFromProps.current = true;
 
     if (targetBounds) {
-      // Priorité au cadrage par limites si disponibles
+      // Pour les zones (fitBounds), on utilise les paddings Leaflet
       map.fitBounds(targetBounds, {
-        paddingTopLeft: [leftPadding + 40, 40],
-        paddingBottomRight: [40, bottomPadding + 40],
-        duration: 0.8
+        paddingTopLeft: [leftPadding + 20, 20],
+        paddingBottomRight: [20, bottomPadding + 20],
+        duration: 0.8,
+        animate: true
       });
     } else {
-      // Fallback flyTo classique avec décalage UI
-      let finalCenter: L.LatLngExpression = center;
-      if (leftPadding > 0 || bottomPadding > 0) {
-        finalCenter = getOffsettedCenter(map, center, [-(leftPadding / 2), bottomPadding / 2], zoom);
-      }
+      // Pour un point précis (flyTo), on calcule un centre géographique décalé
+      const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
       map.flyTo(finalCenter, zoom, { duration: 0.8 });
     }
     
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       isUpdatingFromProps.current = false;
     }, 1000);
+    
+    return () => clearTimeout(timer);
   }, [center, zoom, targetBounds, leftPadding, bottomPadding]);
 
   useEffect(() => {
