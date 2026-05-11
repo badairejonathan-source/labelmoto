@@ -7,7 +7,7 @@ import DealershipCardItem from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, Home, Bike, Wrench, Users, Utensils } from 'lucide-react';
+import { Compass, Loader2, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, Home, Bike, Wrench, Users, Utensils, Search } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, levenshteinDistance } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
@@ -304,7 +304,7 @@ function MapPageComponent() {
              }
              cellPointIds.add(p.id);
         });
-        loadedCells.set(`${precision}:${hash}`, cellPointIds);
+        loadedCells.current.set(`${precision}:${hash}`, cellPointIds);
       });
 
       if (addedCount > 0) {
