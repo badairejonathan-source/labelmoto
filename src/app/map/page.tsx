@@ -42,6 +42,9 @@ const MOTORCYCLE_BRANDS = [
   'aprilia', 'moto guzzi', 'indian', 'husqvarna', 'benelli', 'mash', 'voge'
 ];
 
+// Cache simple pour les coordonnées de villes
+const cityCoordsCache: Record<string, [number, number]> = {};
+
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
   { id: 'combien-coute-vraiment-une-moto-par-mois', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: '/images/motard-budget-reel.webp' },
@@ -69,13 +72,17 @@ const getDistanceSq = (anchor: [number, number], point: MapPoint) => {
 };
 
 const getCityCoordinates = async (postalCode: string, signal?: AbortSignal): Promise<[number, number] | null> => {
+  if (cityCoordsCache[postalCode]) return cityCoordsCache[postalCode];
+  
   try {
     const response = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre`, { signal });
     if (!response.ok) return null;
     const data = await response.json();
     if (data.length > 0) {
       const { coordinates } = data[0].centre;
-      return [coordinates[1], coordinates[0]];
+      const coords: [number, number] = [coordinates[1], coordinates[0]];
+      cityCoordsCache[postalCode] = coords;
+      return coords;
     }
     return null;
   } catch (error: any) { 
@@ -119,6 +126,7 @@ function MapPageComponent() {
   const touchStartY = useRef<number>(0);
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mapUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
   
   const fetchCounter = useRef(0);
   const currentVisibleHashes = useRef<Set<string>>(new Set());
@@ -158,7 +166,7 @@ function MapPageComponent() {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); 
         setSortingAnchor(pos); 
-        setMapZoom(prev => Math.max(prev, 12));
+        setMapZoom(prev => Math.max(prev, 13));
         setSelectionSource('external');
     }
     if (selectedIdParam) {
@@ -356,6 +364,7 @@ function MapPageComponent() {
 
   useEffect(() => {
     const controller = new AbortController();
+    
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
         
@@ -367,7 +376,6 @@ function MapPageComponent() {
         for (const brand of MOTORCYCLE_BRANDS) {
             if (term.includes(brand)) {
                 detectedBrand = brand;
-                // On retire la marque du terme pour ne garder que la partie géo
                 term = term.replace(brand, '').trim();
                 break;
             }
@@ -403,7 +411,7 @@ function MapPageComponent() {
         // 2. RÉSOLUTION GÉOGRAPHIQUE
         let zipFound: string | null = null, deptFound: string | null = null, cityFound: string | null = null;
         
-        // Pattern Paris Arrondissements
+        // Pattern Paris Arrondissements (ex: "paris 13")
         const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
         if (parisArrMatch) {
             zipFound = `750${parisArrMatch[1].padStart(2, '0')}`;
@@ -412,8 +420,8 @@ function MapPageComponent() {
             for (const word of words) {
                 if (/^\d{5}$/.test(word)) zipFound = word;
                 else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
-                else cityFound = term; // On garde le terme complet pour la recherche texte
             }
+            if (!zipFound && !deptFound) cityFound = term;
         }
         
         if (zipFound) {
@@ -434,12 +442,11 @@ function MapPageComponent() {
               setSelectionSource('external'); 
             }
         } else if (cityFound) {
-            // Recherche par texte dans les titres si pas de CP/Dept
-            results = results.filter(d => (d.title || '').toLowerCase().includes(cityFound!));
-            if (results.length > 0) {
-                const first = results[0];
-                setMapCenter([first.latitude, first.longitude]);
-                setSortingAnchor([first.latitude, first.longitude]);
+            // Recherche par texte dans les titres
+            const cityMatch = results.find(d => (d.title || '').toLowerCase().includes(cityFound!));
+            if (cityMatch) {
+                setMapCenter([cityMatch.latitude, cityMatch.longitude]);
+                setSortingAnchor([cityMatch.latitude, cityMatch.longitude]);
                 setMapZoom(12);
                 setSelectionSource('external');
             }
@@ -447,8 +454,14 @@ function MapPageComponent() {
         
         if (!controller.signal.aborted) setFilteredPoints(results);
     };
-    const timer = setTimeout(() => { processSearch(); }, 300);
-    return () => { clearTimeout(timer); controller.abort(); };
+
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => { processSearch(); }, 300);
+
+    return () => { 
+        controller.abort(); 
+        if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    };
   }, [submittedSearchTerm, allPoints, activeFilter]);
 
   const pointsInViewport = useMemo(() => {
@@ -470,16 +483,19 @@ function MapPageComponent() {
   }, [pointsInViewport, sortingAnchor, isMapMoving]);
 
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
-    setSelectedDealershipId(id); setSelectionSource('card'); 
+    setSelectedDealershipId(id); 
+    setSelectionSource('card'); 
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
+      // On préserve le zoom si déjà élevé
       setMapZoom(prev => Math.max(prev, 13)); 
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
 
   const handleMarkerClick = useCallback((id: string) => { 
-    setSelectedDealershipId(id); setSelectionSource('marker');
+    setSelectedDealershipId(id); 
+    setSelectionSource('marker');
     const point = masterPointsMap.current.get(id); 
     if (point) { 
       setMapCenter([point.latitude, point.longitude]); 
@@ -489,7 +505,10 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile]);
 
-  const handleUserMapInteraction = useCallback(() => { if (isMobile) setDrawerHeight('collapsed'); setSelectionSource(null); }, [isMobile]);
+  const handleUserMapInteraction = useCallback(() => { 
+    if (isMobile) setDrawerHeight('collapsed'); 
+    setSelectionSource(null); 
+  }, [isMobile]);
   
   const onDetailLoaded = useCallback((data: Dealership) => { 
     if (!data.id) return; 
@@ -497,7 +516,9 @@ function MapPageComponent() {
   }, []);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
-    setMapZoom(newZoom); setMapCenter(newCenter); setIsMapMoving(false);
+    setMapZoom(newZoom); 
+    setMapCenter(newCenter); 
+    setIsMapMoving(false);
     if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
     mapUpdateTimerRef.current = setTimeout(() => {
         setMapBoundsStr(bounds.toBBoxString()); 
@@ -534,12 +555,10 @@ function MapPageComponent() {
               </div>
             )}
             {!isMapMoving && pointsToDisplay.map((point, index) => (
-                <React.Fragment key={point.id}>
-                    <div onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
-                        <DealershipCardItem point={point} isSelected={point.id === selectedDealershipId} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} cachedData={detailCache[point.id]} onDataLoaded={onDetailLoaded} />
-                    </div>
+                <div key={point.id} onMouseEnter={() => setHoveredDealershipId(point.id)} onMouseLeave={() => setHoveredDealershipId(null)}>
+                    <DealershipCardItem point={point} isSelected={point.id === selectedDealershipId} onClick={() => handleCardClick(point.id, point.latitude, point.longitude)} className={cn(point.id === selectedDealershipId && "ring-2 ring-brand")} cachedData={detailCache[point.id]} onDataLoaded={onDetailLoaded} />
                     {(index + 1) % 8 === 0 && (<div className="my-3"><AdCard article={ads[Math.floor(index / 8) % ads.length]} /></div>)}
-                </React.Fragment>
+                </div>
             ))}
             {pointsToDisplay.length === 0 && !isMapMoving && (submittedSearchTerm !== '' || mapZoom >= ZOOM_THRESHOLD) && !isLoading && (
                 <div className="text-center py-20 opacity-50"><MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" /><p className="font-black uppercase tracking-widest text-xs">Aucun établissement dans cette zone</p></div>
