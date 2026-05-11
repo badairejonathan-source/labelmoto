@@ -592,7 +592,7 @@ const Header: React.FC<HeaderProps> = ({
                         )}
                     >
                         <Bike className={cn("h-6 w-6 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
-                        <span className="text-[9px] font-black uppercase tracking-tighter leading-none mt-1">Concession</span>
+                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Concess</span>
                     </Button>
                     <Button 
                         variant="ghost" 
