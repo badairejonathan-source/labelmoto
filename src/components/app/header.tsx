@@ -316,8 +316,7 @@ const Header: React.FC<HeaderProps> = ({
                 subLabel: cp,
                 score: 2000 // Priorité maximale
             });
-            // On peut aussi chercher le code postal correspondant dans locationsData si besoin
-            searchPart = cp; // On réoriente la recherche sur le CP
+            searchPart = cp; 
         }
     }
 
@@ -365,7 +364,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
-    // 4. DÉTECTION ÉTABLISSEMENTS (DEALERS)
+    // 4. DÉTECTION ÉTABLISSEMENTS (DEALERS) - Recherche par nom avec ranking intelligent
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -373,27 +372,19 @@ const Header: React.FC<HeaderProps> = ({
         let score = 0;
         
         const isNumeric = /^\d+$/.test(searchPart);
-        if (isNumeric && searchPart.length === 5 && address.includes(searchPart)) score = 1300;
-        
-        if (normalizedTitle === normalizedTerm) score = Math.max(score, 1200);
-        
-        const isShortNumber = /^\d{1,2}$/.test(searchPart);
-        if (address.includes(searchPart)) {
-            if (isShortNumber) {
-                const zipMatch = address.match(/\b\d{5}\b/);
-                if (zipMatch && zipMatch[0].startsWith(searchPart.padStart(2, '0'))) {
-                    score = Math.max(score, 1100);
-                }
-            } else {
-                score = Math.max(score, 1100);
-            }
+        if (isNumeric && searchPart.length === 5 && address.includes(searchPart)) {
+            score = 1300;
         }
         
-        if (searchPart.length > 3) {
-            const dist = levenshteinDistance(normalizedTerm, normalizedTitle);
-            if (dist === 1) score = Math.max(score, 1050);
+        if (normalizedTitle === normalizedTerm) score = Math.max(score, 1250);
+        else if (title.startsWith(searchPart)) score = Math.max(score, 1150);
+        else if (title.includes(searchPart)) score = Math.max(score, 850);
+
+        // Tolérance floue si le terme est long
+        if (searchPart.length > 4) {
+            const dist = levenshteinDistance(searchPart.substring(0, title.length), title.substring(0, searchPart.length));
+            if (dist <= 1) score = Math.max(score, 800);
         }
-        if (normalizedTitle.startsWith(normalizedTerm)) score = Math.max(score, 1000);
         
         if (score > 0) results.push({ ...d, score });
     });

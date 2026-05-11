@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -10,7 +9,7 @@ import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
 import { Compass, Loader2, ChevronUp, ChevronDown, Sparkles, FileText, MapPin, Home, Bike, Wrench, Users, Utensils } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
-import { cn } from "@/lib/utils";
+import { cn, levenshteinDistance } from "@/lib/utils";
 import { useFirebase } from '@/firebase';
 import { collection, getDocs, query, limit, where, orderBy, startAt, endAt } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -146,7 +145,6 @@ function MapPageComponent() {
   const { width, height } = useWindowSize();
   const isMobile = mounted && width !== undefined && width < 1024;
 
-  // Calcul du padding pour le centrage intelligent (Sidebar = 520px + margin left = 24px)
   const leftPadding = isMobile ? 0 : 544;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? (height || 800) - 160 : (drawerHeight === 'half' ? (height || 800) / 2 : 110)) : 0;
   
@@ -167,7 +165,7 @@ function MapPageComponent() {
         const pos: [number, number] = [parseFloat(latParam), parseFloat(lngParam)];
         setMapCenter(pos); 
         setSortingAnchor(pos); 
-        setMapZoom(prev => Math.max(prev, 13));
+        setMapZoom(prev => Math.max(prev, zoomParam ? parseFloat(zoomParam) : 13));
         setTargetBounds(null);
         setSelectionSource('external');
     }
@@ -306,7 +304,7 @@ function MapPageComponent() {
              }
              cellPointIds.add(p.id);
         });
-        loadedCells.current.set(`${precision}:${hash}`, cellPointIds);
+        loadedCells.set(`${precision}:${hash}`, cellPointIds);
       });
 
       if (addedCount > 0) {
@@ -353,9 +351,12 @@ function MapPageComponent() {
     
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
-        
-        let results = [...allPoints];
-        
+        if (term === '') {
+            setFilteredPoints(allPoints);
+            return;
+        }
+
+        // 1. Détection et extraction de la marque
         let detectedBrand: string | null = null;
         for (const brand of MOTORCYCLE_BRANDS) {
             if (term.includes(brand)) {
@@ -364,6 +365,45 @@ function MapPageComponent() {
                 break;
             }
         }
+
+        // 2. Recherche par nom d'établissement (Priorité maximale)
+        // On cherche parmi tous les points chargés pour voir si un nom correspond
+        let bestEstablishmentMatch: MapPoint | null = null;
+        let highestScore = 0;
+
+        allPoints.forEach(p => {
+            const title = p.title.toLowerCase();
+            const normalizedTitle = title.replace(/[\s-]/g, '');
+            const normalizedTerm = term.replace(/[\s-]/g, '');
+            let score = 0;
+            
+            if (normalizedTitle === normalizedTerm) score = 1200;
+            else if (title.startsWith(term)) score = 1000;
+            else if (title.includes(term)) score = 800;
+
+            // Tolérance floue
+            if (term.length > 4) {
+              const dist = levenshteinDistance(term.substring(0, 10), title.substring(0, 10));
+              if (dist <= 1) score = Math.max(score, 750);
+            }
+
+            if (score > highestScore) {
+                highestScore = score;
+                bestEstablishmentMatch = p;
+            }
+        });
+
+        // Si on a un match d'établissement très fort, on s'arrête là pour le centrage
+        if (bestEstablishmentMatch && highestScore > 900) {
+            setMapCenter([bestEstablishmentMatch.latitude, bestEstablishmentMatch.longitude]);
+            setSortingAnchor([bestEstablishmentMatch.latitude, bestEstablishmentMatch.longitude]);
+            setMapZoom(14);
+            setSelectedDealershipId(bestEstablishmentMatch.id);
+            setSelectionSource('external');
+            // On laisse le filtrage continuer si besoin
+        }
+
+        let results = [...allPoints];
 
         if (activeFilter === 'association') {
             results = results.filter(p => p.appSection === 'association');
@@ -431,7 +471,8 @@ function MapPageComponent() {
               setTargetBounds(null);
               setSelectionSource('external'); 
             }
-        } else if (cityFound) {
+        } else if (cityFound && !bestEstablishmentMatch) {
+            // Uniquement si on n'a pas déjà centré sur un établissement
             const cityMatch = results.find(d => (d.title || '').toLowerCase().includes(cityFound!));
             if (cityMatch) {
                 setMapCenter([cityMatch.latitude, cityMatch.longitude]);
