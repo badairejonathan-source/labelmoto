@@ -230,7 +230,9 @@ const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, cu
   if (isAssociation) color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
   else if (isRelais) color = isSelected || isHovered ? '#f59e0b' : '#d97706';
 
-  const showLabel = currentZoom >= 14.5 || isSelected || isHovered;
+  // Ne pas afficher de label si on est trop dézoomé (vue France)
+  // Même si sélectionné, on n'affiche le label qu'à partir du zoom 11
+  const showLabel = currentZoom >= 11 && (isSelected || isHovered || currentZoom >= 14.5);
 
   const iconHtml = `
     <div style="display: flex; align-items: center; position: relative;">
