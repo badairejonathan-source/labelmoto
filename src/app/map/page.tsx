@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -367,7 +368,6 @@ function MapPageComponent() {
         }
 
         // 2. Recherche par nom d'établissement (Priorité maximale)
-        // On cherche parmi tous les points chargés pour voir si un nom correspond
         let bestEstablishmentMatch: MapPoint | null = null;
         let highestScore = 0;
 
@@ -381,7 +381,6 @@ function MapPageComponent() {
             else if (title.startsWith(term)) score = 1000;
             else if (title.includes(term)) score = 800;
 
-            // Tolérance floue
             if (term.length > 4) {
               const dist = levenshteinDistance(term.substring(0, 10), title.substring(0, 10));
               if (dist <= 1) score = Math.max(score, 750);
@@ -393,14 +392,13 @@ function MapPageComponent() {
             }
         });
 
-        // Si on a un match d'établissement très fort, on s'arrête là pour le centrage
         if (bestEstablishmentMatch && highestScore > 900) {
             setMapCenter([bestEstablishmentMatch.latitude, bestEstablishmentMatch.longitude]);
             setSortingAnchor([bestEstablishmentMatch.latitude, bestEstablishmentMatch.longitude]);
             setMapZoom(14);
             setSelectedDealershipId(bestEstablishmentMatch.id);
             setSelectionSource('external');
-            // On laisse le filtrage continuer si besoin
+            setTargetBounds(null);
         }
 
         let results = [...allPoints];
@@ -451,9 +449,10 @@ function MapPageComponent() {
               setSortingAnchor(coords); 
               
               if (zipFound.startsWith('750')) {
+                // Bounds plus serrés pour les arrondissements de Paris
                 setTargetBounds([
-                  [coords[0] - 0.015, coords[1] - 0.02],
-                  [coords[0] + 0.015, coords[1] + 0.02]
+                  [coords[0] - 0.008, coords[1] - 0.01],
+                  [coords[0] + 0.008, coords[1] + 0.01]
                 ]);
               } else {
                 setMapZoom(13); 
@@ -472,7 +471,6 @@ function MapPageComponent() {
               setSelectionSource('external'); 
             }
         } else if (cityFound && !bestEstablishmentMatch) {
-            // Uniquement si on n'a pas déjà centré sur un établissement
             const cityMatch = results.find(d => (d.title || '').toLowerCase().includes(cityFound!));
             if (cityMatch) {
                 setMapCenter([cityMatch.latitude, cityMatch.longitude]);
@@ -514,10 +512,10 @@ function MapPageComponent() {
   const handleCardClick = useCallback((id: string, lat?: number, lng?: number) => { 
     setSelectedDealershipId(id); 
     setSelectionSource('card'); 
+    setTargetBounds(null);
     if (lat && lng) { 
       setMapCenter([lat, lng]); 
       setMapZoom(prev => Math.max(prev, 13)); 
-      setTargetBounds(null); 
       if (isMobile) setDrawerHeight('half'); 
     } 
   }, [isMobile]);
@@ -525,12 +523,12 @@ function MapPageComponent() {
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); 
     setSelectionSource('marker');
+    setTargetBounds(null);
     const point = masterPointsMap.current.get(id); 
     if (point) { 
       setMapCenter([point.latitude, point.longitude]); 
       setSortingAnchor([point.latitude, point.longitude]); 
       setMapZoom(prev => Math.max(prev, 13)); 
-      setTargetBounds(null); 
     } 
     if (isMobile) setDrawerHeight('half'); 
   }, [isMobile]);
@@ -538,6 +536,7 @@ function MapPageComponent() {
   const handleUserMapInteraction = useCallback(() => { 
     if (isMobile) setDrawerHeight('collapsed'); 
     setSelectionSource(null); 
+    setTargetBounds(null); // Nettoyage de l'intention de mouvement pour éviter les loops
   }, [isMobile]);
   
   const onDetailLoaded = useCallback((data: Dealership) => { 
@@ -546,13 +545,17 @@ function MapPageComponent() {
   }, []);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
-    setMapZoom(newZoom); 
-    setMapCenter(newCenter); 
+    // On ne met à jour l'état que si ce n'est pas un mouvement déclenché par le parent (loop prevention)
+    if (selectionSource === null) {
+      setMapZoom(newZoom); 
+      setMapCenter(newCenter); 
+      setSortingAnchor(newCenter);
+    }
+    
     setIsMapMoving(false);
     if (mapUpdateTimerRef.current) clearTimeout(mapUpdateTimerRef.current);
     mapUpdateTimerRef.current = setTimeout(() => {
         setMapBoundsStr(bounds.toBBoxString()); 
-        if (selectionSource === null) setSortingAnchor(newCenter);
         if (newZoom >= ZOOM_THRESHOLD) fetchPointsInViewport(bounds, newZoom);
     }, 300);
   }, [selectionSource, fetchPointsInViewport]);

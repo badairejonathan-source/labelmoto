@@ -31,18 +31,10 @@ interface MapComponentProps {
   selectionSource: 'marker' | 'card' | 'external' | null;
 }
 
-/**
- * Calcule un centre géographique qui place le point d'intérêt au centre de la zone visible utile.
- * logic: centerPoint = targetPoint - offset
- */
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: number, bottomPadding: number, targetZoom: number): L.LatLng => {
   const centerPoint = map.project(latlng, targetZoom);
-  
-  // On décale le point cible vers la gauche de moitié de la sidebar et vers le bas de moitié du tiroir
-  // pour que le marqueur se retrouve au milieu de l'espace blanc disponible.
   const offsetX = -(leftPadding / 2);
   const offsetY = bottomPadding / 2;
-  
   const targetPoint = L.point(centerPoint.x + offsetX, centerPoint.y + offsetY);
   return map.unproject(targetPoint, targetZoom);
 };
@@ -62,7 +54,7 @@ const MapComponent = ({
   const markerMapRef = useRef<Record<string, L.Marker>>({});
   
   const isUpdatingFromProps = useRef(false);
-  const lastSetTarget = useRef<string>("");
+  const lastSetTargetKey = useRef<string>("");
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -79,7 +71,6 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    // Initialisation avec décalage pour tenir compte de la sidebar dès le chargement
     const initialCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
     map.setView(initialCenter, zoom, { animate: false });
 
@@ -168,26 +159,19 @@ const MapComponent = ({
         else marker.setZIndexOffset(0);
       }
     });
-  }, [hoveredId, selectedId, zoom]); 
+  }, [hoveredId, selectedId]); 
 
-  // LOGIQUE DE NAVIGATION INTELLIGENTE : fitBounds ou flyTo avec OFFSET
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !selectionSource) return;
 
-    // IMPORTANT: On n'applique la logique de repositionnement automatique (avec offset)
-    // QUE si le mouvement est déclenché par une action utilisateur externe (recherche, clic liste/marker, ou chargement initial).
-    // Si selectionSource est null, c'est un mouvement manuel, on ne fait rien pour éviter les sauts de carte.
-    if (!selectionSource && !targetBounds) return;
-
-    const targetKey = `${center[0]},${center[1]},${zoom},${JSON.stringify(targetBounds)},${leftPadding},${bottomPadding},${selectionSource}`;
-    if (lastSetTarget.current === targetKey) return;
-    lastSetTarget.current = targetKey;
+    const intentKey = `${center[0]},${center[1]},${zoom},${JSON.stringify(targetBounds)},${selectionSource}`;
+    if (lastSetTargetKey.current === intentKey) return;
+    lastSetTargetKey.current = intentKey;
 
     isUpdatingFromProps.current = true;
 
     if (targetBounds) {
-      // Pour les zones (fitBounds), on utilise les paddings Leaflet
       map.fitBounds(targetBounds, {
         paddingTopLeft: [leftPadding + 20, 20],
         paddingBottomRight: [20, bottomPadding + 20],
@@ -195,9 +179,15 @@ const MapComponent = ({
         animate: true
       });
     } else {
-      // Pour un point précis (flyTo), on calcule un centre géographique décalé
       const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
-      map.flyTo(finalCenter, zoom, { duration: 0.8 });
+      
+      // On ne flyTo que si la distance est significative
+      const currentCenter = map.getCenter();
+      if (Math.abs(currentCenter.lat - finalCenter.lat) > 0.0001 || 
+          Math.abs(currentCenter.lng - finalCenter.lng) > 0.0001 || 
+          Math.abs(map.getZoom() - zoom) > 0.1) {
+        map.flyTo(finalCenter, zoom, { duration: 0.8 });
+      }
     }
     
     const timer = setTimeout(() => {
@@ -230,8 +220,6 @@ const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, cu
   if (isAssociation) color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
   else if (isRelais) color = isSelected || isHovered ? '#f59e0b' : '#d97706';
 
-  // Ne pas afficher de label si on est trop dézoomé (vue France)
-  // Même si sélectionné, on n'affiche le label qu'à partir du zoom 11
   const showLabel = currentZoom >= 11 && (isSelected || isHovered || currentZoom >= 14.5);
 
   const iconHtml = `

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -29,6 +30,15 @@ import { FirestorePermissionError } from '@/firebase/errors';
 
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: Suggestion[] | null = null;
+
+// Données statiques des arrondissements de Paris pour un centrage précis
+const PARIS_ARRONDISSEMENTS: Record<number, [number, number]> = {
+  1: [48.8625, 2.3364], 2: [48.8669, 2.3426], 3: [48.8637, 2.3595], 4: [48.8543, 2.3576],
+  5: [48.8448, 2.3471], 6: [48.8493, 2.3300], 7: [48.8561, 2.3126], 8: [48.8727, 2.3126],
+  9: [48.8771, 2.3374], 10: [48.8761, 2.3607], 11: [48.8596, 2.3762], 12: [48.8408, 2.4047],
+  13: [48.8322, 2.3550], 14: [48.8331, 2.3237], 15: [48.8412, 2.2985], 16: [48.8603, 2.2619],
+  17: [48.8835, 2.3067], 18: [48.8913, 2.3444], 19: [48.8817, 2.3822], 20: [48.8646, 2.3983]
+};
 
 interface Suggestion {
     type: 'city' | 'dept' | 'dealer' | 'brand-only';
@@ -294,7 +304,6 @@ const Header: React.FC<HeaderProps> = ({
 
     let lowerTerm = deferredSearchTerm.toLowerCase().trim();
     
-    // Détection de mot-clé association
     const assoKeywords = ["association", "associations", "asso"];
     const foundAssoKeyword = assoKeywords.find(k => lowerTerm.includes(k));
     let searchPart = lowerTerm;
@@ -310,11 +319,15 @@ const Header: React.FC<HeaderProps> = ({
         const arrNum = parseInt(parisArrMatch[1]);
         if (arrNum >= 1 && arrNum <= 20) {
             const cp = `750${arrNum.toString().padStart(2, '0')}`;
+            const coords = PARIS_ARRONDISSEMENTS[arrNum];
             results.push({
                 type: 'city',
                 label: foundAssoKeyword ? `Associations : Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}` : `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
                 subLabel: cp,
-                score: 2000 // Priorité maximale
+                lat: coords ? coords[0] : undefined,
+                lng: coords ? coords[1] : undefined,
+                zoom: 14,
+                score: 2000
             });
             searchPart = cp; 
         }
@@ -354,7 +367,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 3. DÉTECTION MARQUES (si pas de mot-clé association)
+    // 3. DÉTECTION MARQUES
     if (!foundAssoKeyword) {
         brandsList.forEach(brand => {
             const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
@@ -364,7 +377,7 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
 
-    // 4. DÉTECTION ÉTABLISSEMENTS (DEALERS) - Recherche par nom avec ranking intelligent
+    // 4. DÉTECTION ÉTABLISSEMENTS
     allDealers.forEach(d => {
         const title = d.label.toLowerCase();
         const address = d.subLabel?.toLowerCase() || '';
@@ -380,7 +393,6 @@ const Header: React.FC<HeaderProps> = ({
         else if (title.startsWith(searchPart)) score = Math.max(score, 1150);
         else if (title.includes(searchPart)) score = Math.max(score, 850);
 
-        // Tolérance floue si le terme est long
         if (searchPart.length > 4) {
             const dist = levenshteinDistance(searchPart.substring(0, title.length), title.substring(0, searchPart.length));
             if (dist <= 1) score = Math.max(score, 800);
@@ -399,7 +411,6 @@ const Header: React.FC<HeaderProps> = ({
   const handleSuggestionClick = (suggestion: Suggestion) => {
     let searchTermToUse = suggestion.label;
     if (suggestion.type === 'brand-only') searchTermToUse = suggestion.brand || suggestion.label;
-    if (suggestion.type === 'city' && suggestion.subLabel && suggestion.subLabel.startsWith('750')) searchTermToUse = suggestion.label;
     
     onSearchTermChange(searchTermToUse);
     setShowSuggestions(false);
