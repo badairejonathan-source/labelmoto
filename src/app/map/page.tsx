@@ -23,6 +23,14 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { useToast } from '@/hooks/use-toast';
 import { getGeohashCells, extractValidCoordinates } from '@/lib/geohash';
 
+const PARIS_ARRONDISSEMENTS: Record<number, [number, number]> = {
+  1: [48.8625, 2.3364], 2: [48.8669, 2.3426], 3: [48.8637, 2.3595], 4: [48.8543, 2.3576],
+  5: [48.8448, 2.3471], 6: [48.8493, 2.3300], 7: [48.8561, 2.3126], 8: [48.8727, 2.3126],
+  9: [48.8771, 2.3374], 10: [48.8761, 2.3607], 11: [48.8596, 2.3762], 12: [48.8408, 2.4047],
+  13: [48.8322, 2.3550], 14: [48.8331, 2.3237], 15: [48.8412, 2.2985], 16: [48.8603, 2.2619],
+  17: [48.8835, 2.3067], 18: [48.8913, 2.3444], 19: [48.8817, 2.3822], 20: [48.8646, 2.3983]
+};
+
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
   title: 'Circuit Bugatti - Le Mans',
@@ -357,6 +365,21 @@ function MapPageComponent() {
             return;
         }
 
+        // Détection Arrondissements Paris Prioritaire
+        const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
+        if (parisArrMatch) {
+            const arrNum = parseInt(parisArrMatch[1]);
+            const coords = PARIS_ARRONDISSEMENTS[arrNum];
+            if (coords) {
+                setMapCenter(coords);
+                setSortingAnchor(coords);
+                setMapZoom(15);
+                setTargetBounds(null);
+                setSelectionSource('external');
+                return;
+            }
+        }
+
         // 1. Détection et extraction de la marque
         let detectedBrand: string | null = null;
         for (const brand of MOTORCYCLE_BRANDS) {
@@ -367,7 +390,7 @@ function MapPageComponent() {
             }
         }
 
-        // 2. Recherche par nom d'établissement (Priorité maximale)
+        // 2. Recherche par nom d'établissement
         let bestEstablishmentMatch: MapPoint | null = null;
         let highestScore = 0;
 
@@ -395,7 +418,7 @@ function MapPageComponent() {
         if (bestEstablishmentMatch && highestScore > 900) {
             setMapCenter([bestEstablishmentMatch.latitude, bestEstablishmentMatch.longitude]);
             setSortingAnchor([bestEstablishmentMatch.latitude, bestEstablishmentMatch.longitude]);
-            setMapZoom(14);
+            setMapZoom(15);
             setSelectedDealershipId(bestEstablishmentMatch.id);
             setSelectionSource('external');
             setTargetBounds(null);
@@ -429,18 +452,12 @@ function MapPageComponent() {
         }
         
         let zipFound: string | null = null, deptFound: string | null = null, cityFound: string | null = null;
-        
-        const parisArrMatch = term.match(/paris\s*(\d{1,2})/i);
-        if (parisArrMatch) {
-            zipFound = `750${parisArrMatch[1].padStart(2, '0')}`;
-        } else {
-            const words = term.split(/\s+/).filter(w => w.length > 0);
-            for (const word of words) {
-                if (/^\d{5}$/.test(word)) zipFound = word;
-                else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
-            }
-            if (!zipFound && !deptFound) cityFound = term;
+        const words = term.split(/\s+/).filter(w => w.length > 0);
+        for (const word of words) {
+            if (/^\d{5}$/.test(word)) zipFound = word;
+            else if (/^(\d{1,2}|2[ab])$/i.test(word) && word.length <= 2) deptFound = word.padStart(2, '0').toUpperCase();
         }
+        if (!zipFound && !deptFound) cityFound = term;
         
         if (zipFound) {
             const coords = await getCityCoordinates(zipFound, controller.signal);
@@ -449,10 +466,9 @@ function MapPageComponent() {
               setSortingAnchor(coords); 
               
               if (zipFound.startsWith('750')) {
-                // Bounds plus serrés pour les arrondissements de Paris
                 setTargetBounds([
-                  [coords[0] - 0.008, coords[1] - 0.01],
-                  [coords[0] + 0.008, coords[1] + 0.01]
+                  [coords[0] - 0.005, coords[1] - 0.008],
+                  [coords[0] + 0.005, coords[1] + 0.008]
                 ]);
               } else {
                 setMapZoom(13); 
@@ -536,7 +552,7 @@ function MapPageComponent() {
   const handleUserMapInteraction = useCallback(() => { 
     if (isMobile) setDrawerHeight('collapsed'); 
     setSelectionSource(null); 
-    setTargetBounds(null); // Nettoyage de l'intention de mouvement pour éviter les loops
+    setTargetBounds(null);
   }, [isMobile]);
   
   const onDetailLoaded = useCallback((data: Dealership) => { 
@@ -545,7 +561,6 @@ function MapPageComponent() {
   }, []);
 
   const handleMapChange = useCallback((newCenter: [number, number], newZoom: number, bounds: L.LatLngBounds) => { 
-    // On ne met à jour l'état que si ce n'est pas un mouvement déclenché par le parent (loop prevention)
     if (selectionSource === null) {
       setMapZoom(newZoom); 
       setMapCenter(newCenter); 

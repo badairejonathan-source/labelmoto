@@ -71,7 +71,10 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    const initialCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
+    // Initialisation avec décalage si nécessaire
+    const targetCenter: [number, number] = [center[0], center[1]];
+    const initialCenter = selectionSource ? getOffsettedCenter(map, targetCenter, leftPadding, bottomPadding, zoom) : L.latLng(targetCenter);
+    
     map.setView(initialCenter, zoom, { animate: false });
 
     const clusterGroup = L.markerClusterGroup({
@@ -148,18 +151,14 @@ const MapComponent = ({
       if (marker) {
         const isHovered = point.id === hoveredId;
         const isSelected = point.id === selectedId;
-        const currentIcon = marker.getIcon();
         const newIcon = createIcon(point, isHovered, isSelected, currentZoom);
-        
-        if ((isSelected || isHovered) || (currentIcon as any).options?.className?.includes('active')) {
-          marker.setIcon(newIcon);
-        }
+        marker.setIcon(newIcon);
         
         if (isSelected || isHovered) marker.setZIndexOffset(1000);
         else marker.setZIndexOffset(0);
       }
     });
-  }, [hoveredId, selectedId]); 
+  }, [hoveredId, selectedId, zoom]); // On écoute aussi le zoom pour rafraîchir les labels
 
   useEffect(() => {
     const map = mapRef.current;
@@ -180,14 +179,7 @@ const MapComponent = ({
       });
     } else {
       const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
-      
-      // On ne flyTo que si la distance est significative
-      const currentCenter = map.getCenter();
-      if (Math.abs(currentCenter.lat - finalCenter.lat) > 0.0001 || 
-          Math.abs(currentCenter.lng - finalCenter.lng) > 0.0001 || 
-          Math.abs(map.getZoom() - zoom) > 0.1) {
-        map.flyTo(finalCenter, zoom, { duration: 0.8 });
-      }
+      map.flyTo(finalCenter, zoom, { duration: 0.8 });
     }
     
     const timer = setTimeout(() => {
@@ -220,7 +212,8 @@ const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, cu
   if (isAssociation) color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
   else if (isRelais) color = isSelected || isHovered ? '#f59e0b' : '#d97706';
 
-  const showLabel = currentZoom >= 11 && (isSelected || isHovered || currentZoom >= 14.5);
+  // Seuil relevé à 16 pour éviter l'explosion de bulles dans Paris
+  const showLabel = currentZoom >= 11 && (isSelected || isHovered || currentZoom >= 16);
 
   const iconHtml = `
     <div style="display: flex; align-items: center; position: relative;">
