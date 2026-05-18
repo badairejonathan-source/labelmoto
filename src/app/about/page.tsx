@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState } from 'react';
@@ -8,9 +9,9 @@ import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 
 /**
- * Metadata est exportée ici pour Next.js (Server Component wrapper par défaut)
+ * Metadata pour la page À propos
  */
-export const metadata = {
+const metadataExport = {
   title: "À propos de Label Moto : notre mission et notre histoire",
   description: "Découvrez le projet Label Moto : une plateforme à but non lucratif créée par des passionnés pour aider les motards à trouver les meilleurs experts partout en France.",
 };
