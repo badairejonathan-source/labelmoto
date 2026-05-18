@@ -74,20 +74,23 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
   const actualImgUrl = point.imgUrl || fullDetails?.imgUrl || fullDetails?.imageUrl || "";
 
+  // On utilise le slug s'il est disponible dans les données chargées, sinon l'ID
+  const slugOrId = fullDetails?.slug || point.id;
+
   const localBusinessLd = useMemo(() => {
     if (!isSelected || !fullDetails) return null;
     const type = isRelais ? "LodgingBusiness" : (point.category?.includes('concession') ? "AutoDealer" : "AutoRepair");
     return {
       "@context": "https://schema.org",
       "@type": type,
-      "@id": `https://labelmoto.fr/concessions/${point.id}#business`,
+      "@id": `https://labelmoto.fr/concessions/${slugOrId}#business`,
       "name": fullDetails.title,
       "address": {
         "@type": "PostalAddress",
         "streetAddress": fullDetails.address
       },
       "telephone": fullDetails.phoneNumber,
-      "url": `https://labelmoto.fr/concessions/${point.id}`,
+      "url": `https://labelmoto.fr/concessions/${slugOrId}`,
       "image": actualImgUrl,
       "geo": {
         "@type": "GeoCoordinates",
@@ -95,7 +98,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
         "longitude": point.longitude
       }
     };
-  }, [isSelected, fullDetails, point, isRelais, actualImgUrl]);
+  }, [isSelected, fullDetails, point, isRelais, actualImgUrl, slugOrId]);
 
   const handleRatingSubmit = () => {
     if (!user || !firestore) return;
@@ -243,7 +246,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                         )}
                         
                         {isSelected && !isDetailLoading && (
-                          <Link href={`/concessions/${point.id}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
+                          <Link href={`/concessions/${slugOrId}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
                             <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all bg-brand text-white border-2 border-white")}>
                                 <Store className="h-4 w-4 mb-0.5" /><span className="text-[6px] font-black uppercase">Fiche</span>
                             </div>

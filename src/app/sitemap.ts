@@ -11,14 +11,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let motoUrls: MetadataRoute.Sitemap = []
 
   try {
-    // 1. Récupération Concessions (Pages dédiées crawlables)
+    // 1. Récupération Concessions (Priorité aux SLUGS pour l'indexation)
     const concessionsSnap = await getDocs(collection(db, 'concessions'))
-    concessionUrls = concessionsSnap.docs.map((doc) => ({
-      url: `${baseUrl}/concessions/${doc.id}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }))
+    concessionUrls = concessionsSnap.docs.map((doc) => {
+      const data = doc.data();
+      const slugOrId = data.slug || doc.id;
+      return {
+        url: `${baseUrl}/concessions/${slugOrId}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      };
+    })
 
     // 2. Récupération Articles (Conseils)
     const articlesSnap = await getDocs(collection(db, 'articles'))

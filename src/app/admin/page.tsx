@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -7,7 +6,7 @@ import { collection, query, limit, startAfter, getDocs, writeBatch, doc, onSnaps
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2, Database, Zap, Terminal, BarChart3, SearchCode } from 'lucide-react';
+import { Loader2, CheckCircle, ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, MessageSquare, Star, User, ShieldCheck, Trash2, Database, Zap, Terminal, BarChart3, SearchCode, Link2 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import { formatDistanceToNow } from 'date-fns';
@@ -16,8 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { cn } from '@/lib/utils';
-import { encodeGeohash, extractValidCoordinates } from '@/lib/geohash';
+import { cn, extractValidCoordinates, generateDealershipSlug } from '@/lib/utils';
+import { encodeGeohash } from '@/lib/geohash';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -73,6 +72,7 @@ export default function AdminPage() {
   
   const [isMigrating, setIsMigrating] = useState(false);
   const [isAuditing, setIsAuditing] = useState(false);
+  const [isMigratingSlugs, setIsMigratingSlugs] = useState(false);
   const [migrationProgress, setMigrationProgress] = useState(0);
   const [migrationLogs, setMigrationLogs] = useState<string[]>([]);
   const [stats, setStats] = useState<MigrationStats | null>(null);
@@ -132,6 +132,72 @@ export default function AdminPage() {
     }
   }, [migrationLogs]);
 
+  const runSlugMigration = async () => {
+    if (!firestore || isMigratingSlugs) return;
+    if (!window.confirm("Générer les slugs SEO pour tous les établissements ?")) return;
+
+    setIsMigratingSlugs(true);
+    setMigrationProgress(0);
+    setMigrationLogs([]);
+    addLog(`INITIALISATION : Migration des Slugs SEO lancée...`);
+
+    try {
+      const collectionsToProcess = ['concessions', 'associations', 'relais'];
+      let totalUpdated = 0;
+
+      for (const colName of collectionsToProcess) {
+        addLog(`SCAN COLLECTION : ${colName.toUpperCase()}...`);
+        let lastDocSnapshot = null;
+        let hasMore = true;
+        const PAGE_SIZE = 100;
+
+        while (hasMore) {
+          let q = lastDocSnapshot 
+            ? query(collection(firestore, colName), orderBy('__name__'), startAfter(lastDocSnapshot), limit(PAGE_SIZE))
+            : query(collection(firestore, colName), orderBy('__name__'), limit(PAGE_SIZE));
+
+          const snapshot = await getDocs(q);
+          if (snapshot.empty) { hasMore = false; continue; }
+
+          const batch = writeBatch(firestore);
+          let updatesInBatch = 0;
+
+          for (const docSnapshot of snapshot.docs) {
+            const data = docSnapshot.data();
+            if (!data.slug) {
+              const newSlug = generateDealershipSlug({ 
+                title: data.title || data.name, 
+                address: data.address 
+              });
+              batch.update(docSnapshot.ref, { 
+                slug: newSlug,
+                updatedAt: new Date().toISOString()
+              });
+              updatesInBatch++;
+              totalUpdated++;
+            }
+          }
+
+          if (updatesInBatch > 0) {
+            await batch.commit();
+            addLog(`COMMIT : ${updatesInBatch} slugs générés dans ${colName}.`);
+          }
+
+          lastDocSnapshot = snapshot.docs[snapshot.docs.length - 1];
+          if (snapshot.docs.length < PAGE_SIZE) hasMore = false;
+        }
+      }
+
+      setMigrationProgress(100);
+      addLog(`TERMINÉ : Migration réussie. ${totalUpdated} établissements ont maintenant un slug SEO.`);
+      toast({ title: "Migration Slugs terminée" });
+    } catch (e: any) {
+      addLog(`!!! ERREUR !!! : ${e.message}`);
+    } finally {
+      setIsMigratingSlugs(false);
+    }
+  };
+
   const runDatabaseTask = async (mode: 'AUDIT' | 'MIGRATE') => {
     if (!firestore || isMigrating || isAuditing) return;
     
@@ -154,12 +220,9 @@ export default function AdminPage() {
         const PAGE_SIZE = 100; 
 
         while (hasMore) {
-          let q;
-          if (lastDocSnapshot) {
-            q = query(collection(firestore, colName), orderBy('__name__'), startAfter(lastDocSnapshot), limit(PAGE_SIZE));
-          } else {
-            q = query(collection(firestore, colName), orderBy('__name__'), limit(PAGE_SIZE));
-          }
+          let q = lastDocSnapshot 
+            ? query(collection(firestore, colName), orderBy('__name__'), startAfter(lastDocSnapshot), limit(PAGE_SIZE))
+            : query(collection(firestore, colName), orderBy('__name__'), limit(PAGE_SIZE));
 
           const snapshot = await getDocs(q);
           if (snapshot.empty) {
@@ -177,14 +240,10 @@ export default function AdminPage() {
 
             if (coords) {
               const calculatedHash = encodeGeohash(coords.lat, coords.lng, 9);
-              
-              // Comparaison intelligente : on vérifie si le hash existant est un préfixe valide du calculé
-              // Cela gère les différences de précision (9 vs 10 caractères)
               const existingHash = data.geohash;
               const hashesMatch = typeof existingHash === 'string' && 
                                  (existingHash.startsWith(calculatedHash) || calculatedHash.startsWith(existingHash.substring(0, 9)));
 
-              // Vérification de la dérive des coordonnées stockées vs coordonnées détectées
               const currentLat = typeof data.latitude === 'number' ? data.latitude : parseFloat(String(data.latitude || 0).replace(',', '.'));
               const currentLng = typeof data.longitude === 'number' ? data.longitude : parseFloat(String(data.longitude || 0).replace(',', '.'));
               const coordsMatch = Math.abs(currentLat - coords.lat) < 0.00001 && 
@@ -212,30 +271,21 @@ export default function AdminPage() {
               currentStats.invalidCoords++;
               currentStats.errors++;
               if (currentStats.invalidCoords < 50) {
-                addLog(`[COORD_ERROR] ID: ${docSnapshot.id} (${data.title || 'Sans titre'}) - Coordonnées manquantes ou invalides.`);
+                addLog(`[COORD_ERROR] ID: ${docSnapshot.id} (${data.title || 'Sans titre'}) - Coordonnées manquantes.`);
               }
             }
           }
 
           if (updatesInBatch > 0 && mode === 'MIGRATE') {
-            try {
-              addLog(`COMMIT : Envoi d'un lot de ${updatesInBatch} modifications...`);
-              await batch.commit();
-              addLog(`SUCCÈS : Lot validé sur Firestore.`);
-            } catch (commitErr: any) {
-              addLog(`!!! ERREUR CRITIQUE COMMIT !!! : ${commitErr.message}`);
-              currentStats.errors += updatesInBatch;
-              hasMore = false;
-            }
+            await batch.commit();
+            addLog(`COMMIT : ${updatesInBatch} modifications validées.`);
           }
 
           lastDocSnapshot = snapshot.docs[snapshot.docs.length - 1];
           setStats({ ...currentStats });
           
-          if (snapshot.docs.length < PAGE_SIZE) {
-            hasMore = false;
-          } else {
-            // Petite pause pour éviter de bloquer l'UI
+          if (snapshot.docs.length < PAGE_SIZE) hasMore = false;
+          else {
             await new Promise(r => setTimeout(r, 50));
             setMigrationProgress(prev => Math.min(prev + 1, 99));
           }
@@ -248,7 +298,6 @@ export default function AdminPage() {
       toast({ title: `${mode} terminé` });
     } catch (e: any) {
       addLog(`!!! ERREUR SYSTÈME !!! : ${e.message}`);
-      toast({ title: `Erreur fatale`, variant: "destructive" });
     } finally {
       setIsMigrating(false);
       setIsAuditing(false);
@@ -270,12 +319,16 @@ export default function AdminPage() {
     }
     const targetCollection = cleanData.appSection === 'association' ? 'associations' : (cleanData.appSection === 'relais' ? 'relais' : 'concessions');
     const targetId = requestType === 'MODIFICATION' && originalDealershipId ? originalDealershipId : submission.id;
+    
+    // Génération automatique du slug à l'approbation
     const finalDocument = {
       ...cleanData,
       ...geohashUpdates,
+      slug: generateDealershipSlug(cleanData),
       appSection: cleanData.appSection || (cleanData.category?.includes('concession') ? 'both' : 'service'),
       updatedAt: new Date().toISOString()
     };
+    
     setDocumentNonBlocking(doc(firestore, targetCollection, targetId), finalDocument, { merge: true });
     deleteDocumentNonBlocking(doc(firestore, fromCollection, submission.id));
     toast({ title: 'Action réussie !', description: `${submission.title} est maintenant public.` });
@@ -418,30 +471,16 @@ export default function AdminPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-2 border-green-200">
-                        <CardHeader className="bg-green-50 border-b border-green-100"><CardTitle className="text-green-900 flex items-center gap-2"><BarChart3 className="h-6 w-6" /> État Réel de la Base</CardTitle></CardHeader>
-                        <CardContent className="py-6">
-                            {stats ? (
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-6">
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-muted-foreground uppercase">Total Scannés</p><p className="text-xl font-black">{stats.scanned}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-green-700 uppercase">Indexés (OK)</p><p className="text-xl font-black text-green-600">{stats.alreadyOk}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-indigo-700 uppercase">À indexer</p><p className="text-xl font-black text-indigo-600">{stats.noGeohash}</p></div>
-                                    <div className="space-y-1"><p className="text-[10px] font-black text-orange-700 uppercase">Invalides / Erreurs</p><p className="text-xl font-black text-orange-600">{stats.invalidCoords}</p></div>
-                                    {stats.updated > 0 && (
-                                      <div className="col-span-2 pt-2 border-t border-dashed">
-                                        <p className="text-[10px] font-black text-indigo-900 uppercase">Mises à jour effectuées (session)</p>
-                                        <p className="text-xl font-black text-indigo-700">{stats.updated}</p>
-                                      </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="text-center py-6 opacity-30 italic text-sm">Lancez une tâche pour voir les chiffres</div>
-                            )}
+                    <Card className="border-2 border-orange-200">
+                        <CardHeader className="bg-orange-50 border-b border-orange-100"><CardTitle className="text-orange-900 flex items-center gap-2"><Link2 className="h-6 w-6" /> SEO & Slugs</CardTitle></CardHeader>
+                        <CardContent className="py-6 space-y-4">
+                            <p className="text-xs text-orange-800 leading-relaxed">Génère des URLs lisibles pour tous les établissements n'en ayant pas encore.</p>
+                            <Button className="w-full bg-orange-600 hover:bg-orange-700 h-12 font-black uppercase tracking-widest text-[10px]" onClick={runSlugMigration} disabled={isMigratingSlugs}>{isMigratingSlugs ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Génération...</> : <><Link2 className="mr-2 h-4 w-4" /> Migrer vers Slugs SEO</>}</Button>
                         </CardContent>
                     </Card>
                 </div>
 
-                {(isMigrating || isAuditing || migrationLogs.length > 0) && (
+                {(isMigrating || isAuditing || isMigratingSlugs || migrationLogs.length > 0) && (
                     <div className="space-y-4">
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-1">
                             <span>Progression du scan</span>

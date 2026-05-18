@@ -1,175 +1,116 @@
-'use client';
-
-import React, { useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import Header from '@/components/app/header';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { ArrowLeft, MapPin, Phone, Globe, Star, Clock, Home, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
+import { Metadata } from 'next';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { redirect } from 'next/navigation';
 import Script from 'next/script';
-import { cn } from '@/lib/utils';
+import DealershipDetailClient from '@/components/app/dealership-detail-client';
 import type { Dealership } from '@/lib/types';
 
-export default function DealershipPage() {
-  const params = useParams();
-  const router = useRouter();
-  const id = params.id as string;
-  const firestore = useFirestore();
+/**
+ * Récupère un établissement soit par son ID Firestore, soit par son champ slug.
+ */
+async function getDealership(idOrSlug: string): Promise<{ data: Dealership | null; type: 'id' | 'slug' | null }> {
+  // 1. On tente d'abord par ID (pour compatibilité ancienne URL)
+  const idRef = doc(db, 'concessions', idOrSlug);
+  const idSnap = await getDoc(idRef);
+  
+  if (idSnap.exists()) {
+    return { data: { id: idSnap.id, ...idSnap.data() } as Dealership, type: 'id' };
+  }
 
-  const docRef = useMemoFirebase(() => id ? doc(firestore, 'concessions', id) : null, [firestore, id]);
-  const { data: pro, isLoading } = useDoc<Dealership>(docRef);
+  // 2. Si non trouvé par ID, on cherche par le champ 'slug'
+  const slugQuery = query(collection(db, 'concessions'), where('slug', '==', idOrSlug), limit(1));
+  const slugSnap = await getDocs(slugQuery);
+  
+  if (!slugSnap.empty) {
+    const doc = slugSnap.docs[0];
+    return { data: { id: doc.id, ...doc.data() } as Dealership, type: 'slug' };
+  }
 
-  const breadcrumbLd = useMemo(() => {
-    if (!pro) return null;
-    return {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Accueil",
-          "item": "https://labelmoto.fr"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Carte",
-          "item": "https://labelmoto.fr/map"
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": pro.title,
-          "item": `https://labelmoto.fr/concessions/${id}`
-        }
-      ]
-    };
-  }, [pro, id]);
+  // 3. Fallback sur associations/relais si nécessaire (optionnel selon structure)
+  const collections = ['associations', 'relais'];
+  for (const col of collections) {
+    const q = query(collection(db, col), where('slug', '==', idOrSlug), limit(1));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+       const doc = snap.docs[0];
+       return { data: { id: doc.id, ...doc.data() } as Dealership, type: 'slug' };
+    }
+  }
 
-  const localBusinessLd = useMemo(() => {
-    if (!pro) return null;
-    const type = pro.category?.includes('concession') ? 'AutoDealer' : 'AutoRepair';
-    return {
-      "@context": "https://schema.org",
-      "@type": type,
-      "name": pro.title,
-      "description": `Retrouvez ${pro.title}, professionnel moto à ${pro.address}. Coordonnées, horaires et services sur Label Moto.`,
-      "url": `https://labelmoto.fr/concessions/${id}`,
-      "telephone": pro.phoneNumber,
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": pro.address
-      },
-      "image": pro.imageUrl || pro.imgUrl || "https://labelmoto.fr/images/logo-moto.webp",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": pro.latitude,
-        "longitude": pro.longitude
-      }
-    };
-  }, [pro, id]);
+  return { data: null, type: null };
+}
 
-  if (isLoading) return (
-    <div className="min-h-screen bg-background">
-      <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
-      <main className="container mx-auto p-8 pt-28 max-w-4xl">
-        <Skeleton className="h-10 w-64 mb-6" />
-        <Skeleton className="aspect-video w-full rounded-3xl mb-8" />
-        <div className="space-y-4"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-3/4" /></div>
-      </main>
-    </div>
-  );
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id: idOrSlug } = await params;
+  const { data: pro } = await getDealership(idOrSlug);
 
-  if (!pro) return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-      <h1 className="text-2xl font-black uppercase">Établissement non trouvé</h1>
-      <Button asChild className="bg-brand rounded-full px-8"><Link href="/map">Retour à la carte</Link></Button>
-    </div>
-  );
+  if (!pro) {
+    return { title: "Établissement non trouvé | Label Moto" };
+  }
+
+  const title = `${pro.title} à ${pro.address.split(',').pop()?.trim() || ''} | Professionnel moto`;
+  const description = `Retrouvez ${pro.title}, professionnel moto. Coordonnées, horaires et services sur Label Moto.`;
+
+  return {
+    title: `${title} | Label Moto`,
+    description: description,
+    alternates: {
+      canonical: `/concessions/${pro.slug || pro.id}`,
+    },
+    openGraph: {
+      title: title,
+      description: description,
+      images: [pro.imageUrl || pro.imgUrl || "/images/logo-moto.webp"],
+    }
+  };
+}
+
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id: idOrSlug } = await params;
+  const { data: pro, type } = await getDealership(idOrSlug);
+
+  if (!pro) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <h1 className="text-2xl font-black uppercase">Établissement non trouvé</h1>
+        <DealershipDetailClient pro={{ title: "Établissement non trouvé" } as any} />
+      </div>
+    );
+  }
+
+  // Si on a trouvé par ID mais qu'un SLUG existe, on redirige 301 vers le slug
+  if (type === 'id' && pro.slug) {
+    redirect(`/concessions/${pro.slug}`);
+  }
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://labelmoto.fr" },
+      { "@type": "ListItem", "position": 2, "name": "Carte", "item": "https://labelmoto.fr/map" },
+      { "@type": "ListItem", "position": 3, "name": pro.title, "item": `https://labelmoto.fr/concessions/${pro.slug || pro.id}` }
+    ]
+  };
+
+  const localBusinessLd = {
+    "@context": "https://schema.org",
+    "@type": pro.category?.includes('concession') ? 'AutoDealer' : 'AutoRepair',
+    "name": pro.title,
+    "description": `Retrouvez ${pro.title}, professionnel moto à ${pro.address}. Coordonnées et horaires sur Label Moto.`,
+    "url": `https://labelmoto.fr/concessions/${pro.slug || pro.id}`,
+    "telephone": pro.phoneNumber,
+    "address": { "@type": "PostalAddress", "streetAddress": pro.address },
+    "image": pro.imageUrl || pro.imgUrl || "https://labelmoto.fr/images/logo-moto.webp",
+    "geo": { "@type": "GeoCoordinates", "latitude": pro.latitude, "longitude": pro.longitude }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
-      {breadcrumbLd && <Script id="breadcrumb-pro-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />}
-      {localBusinessLd && <Script id="local-business-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />}
-
-      <main className="container mx-auto px-4 py-8 pt-24 md:pt-32 max-w-5xl">
-        <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-8">
-          <Link href="/" className="hover:text-brand flex items-center gap-1"><Home className="h-3 w-3" /> ACCUEIL</Link>
-          <ChevronRight className="h-2 w-2" /><Link href="/map" className="hover:text-brand">CARTE</Link>
-          <ChevronRight className="h-2 w-2" /><span className="text-foreground">{pro.title}</span>
-        </nav>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <div className="lg:col-span-8 space-y-8">
-            <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-muted">
-              <Image 
-                src={pro.imageUrl || pro.imgUrl || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"} 
-                alt={pro.title} 
-                fill 
-                className="object-cover" 
-              />
-            </div>
-            
-            <div className="space-y-4">
-              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-foreground leading-none">{pro.title}</h1>
-              <p className="text-xl font-bold text-brand italic">{pro.category || 'Professionnel moto'}</p>
-              <div className="flex items-start gap-3 p-6 bg-muted/30 rounded-2xl border-2 border-dashed">
-                <MapPin className="h-6 w-6 text-brand shrink-0" />
-                <div>
-                  <p className="font-black text-lg uppercase tracking-tight">{pro.address}</p>
-                  <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer">Calculer l'itinéraire</a></Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {pro.phoneNumber && (
-                <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                  <a href={`tel:${pro.phoneNumber}`} className="flex items-center gap-4 px-6">
-                    <Phone className="h-6 w-6 text-brand" />
-                    <div className="text-left"><p className="text-[9px] font-black uppercase tracking-widest opacity-50">Appeler</p><p className="font-black">{pro.phoneNumber}</p></div>
-                  </a>
-                </Button>
-              )}
-              {pro.website && (
-                <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                  <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 px-6">
-                    <Globe className="h-6 w-6 text-brand" />
-                    <div className="text-left"><p className="text-[9px] font-black uppercase tracking-widest opacity-50">Site Web</p><p className="font-black truncate max-w-[150px]">Visiter le site</p></div>
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <aside className="lg:col-span-4 space-y-6">
-            <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
-              <CardHeader className="bg-muted/50 p-6 border-b"><CardTitle className="text-sm font-black uppercase flex items-center gap-3"><Clock className="h-5 w-5 text-brand" /> Horaires d'ouverture</CardTitle></CardHeader>
-              <CardContent className="p-6 space-y-2">
-                {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
-                  <div key={day} className="flex justify-between items-center text-xs font-bold border-b border-dashed border-muted last:border-0 pb-1.5 pt-1.5">
-                    <span className="capitalize text-muted-foreground">{day}</span>
-                    <span className="text-foreground font-black">{pro[day] || 'Fermé'}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <div className="bg-brand/5 p-8 rounded-[2rem] border-2 border-brand/20 text-center space-y-4">
-              <p className="text-xs font-black uppercase tracking-widest text-brand">Besoin d'un autre pro ?</p>
-              <Button asChild className="w-full bg-brand rounded-full font-black uppercase text-[10px] tracking-widest py-6">
-                <Link href="/map">🔘 Retour à la carte interactive</Link>
-              </Button>
-            </div>
-          </aside>
-        </div>
-      </main>
-    </div>
+    <>
+      <Script id="breadcrumb-pro-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <Script id="local-business-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
+      <DealershipDetailClient pro={pro} />
+    </>
   );
 }

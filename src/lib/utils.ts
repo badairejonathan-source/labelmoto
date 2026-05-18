@@ -38,3 +38,40 @@ export function levenshteinDistance(a: string, b: string): number {
 
   return matrix[b.length][a.length];
 }
+
+/**
+ * Génère un slug propre et SEO-friendly à partir d'un texte.
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
+/**
+ * Génère un slug unique pour un établissement moto.
+ * Structure: nom-etablissement-ville-cp
+ */
+export function generateDealershipSlug(data: { title?: string; name?: string; address?: string }): string {
+  const name = slugify(data.title || data.name || "etablissement");
+  const address = data.address || "";
+  
+  // Extraction simplifiée de la ville et du CP depuis l'adresse
+  const cpMatch = address.match(/\b\d{5}\b/);
+  const cp = cpMatch ? cpMatch[0] : "";
+  
+  // On essaye d'extraire la ville (souvent après le CP ou en fin d'adresse)
+  let city = "";
+  if (cp) {
+    const parts = address.split(cp);
+    if (parts.length > 1) {
+      city = slugify(parts[1].trim());
+    }
+  }
+
+  const finalSlug = [name, city, cp].filter(Boolean).join("-");
+  return finalSlug;
+}
