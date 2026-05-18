@@ -15,8 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { cn, extractValidCoordinates, generateDealershipSlug } from '@/lib/utils';
-import { encodeGeohash } from '@/lib/geohash';
+import { cn, generateDealershipSlug } from '@/lib/utils';
+import { encodeGeohash, extractValidCoordinates } from '@/lib/geohash';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
