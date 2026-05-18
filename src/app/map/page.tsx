@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -38,6 +37,7 @@ const CIRCUIT_BUGATTI: MapPoint = {
   longitude: 0.2078,
   category: 'Circuit',
   appSection: 'both',
+  slug: 'circuit-bugatti-le-mans'
 };
 
 const ZOOM_THRESHOLD = 8.0; 
@@ -55,7 +55,7 @@ const cityCoordsCache: Record<string, [number, number]> = {};
 const ads = [
   { id: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges', title: 'Achat moto d’occasion : le guide pour éviter les pièges', description: 'Apprenez à inspecter une moto, vérifier les documents et négocier.', imageUrl: '/images/evitelespieges.webp' },
   { id: 'combien-coute-vraiment-une-moto-par-mois', title: 'Combien coûte vraiment une moto par mois ?', description: 'Le budget réel d’un motard débutant : assurance, essence, entretien.', imageUrl: '/images/motard-budget-reel.webp' },
-  { id: 'meilleure-moto-a2-quelle-moto-choisir-pour-debuter', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.webp' },
+  { id: 'meilleure-moto-a2-quelle-moto-choose-pour-debuter', title: 'Achat moto A2 : le guide des meilleures motos', description: 'Trouvez la moto idéale pour débuter selon votre gabarit et votre budget.', imageUrl: '/images/achat-occasion.webp' },
   { id: 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil', title: 'Assurance moto : bien choisir sa formule', description: 'Le guide complet des formules 2026 pour motards.', imageUrl: '/images/motard-article-assurance20262.webp' },
 ];
 
@@ -207,6 +207,7 @@ function MapPageComponent() {
         imgUrl: data.imgUrl || data.imageUrl || data.photoUrl || "",
         rating: data.rating,
         geohash: data.geohash,
+        slug: data.slug || doc.id,
         brands: Array.isArray(data.brands) ? data.brands : (data.primaryBrand ? [data.primaryBrand] : [])
       };
     }).filter(Boolean) as MapPoint[];
@@ -513,7 +514,7 @@ function MapPageComponent() {
     let results = [...filteredPoints];
     if (mapBoundsStr) { 
         const [minLng, minLat, maxLng, maxLat] = mapBoundsStr.split(',').map(Number); 
-        results = results.filter(d => d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLng); 
+        results = results.filter(d => d.latitude >= minLat && d.latitude <= maxLat && d.longitude >= minLng && d.longitude <= maxLat); 
     }
     return results;
   }, [filteredPoints, mapBoundsStr]);

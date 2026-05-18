@@ -197,7 +197,6 @@ export default function AdminPage() {
           lastDocSnapshot = snapshot.docs[snapshot.docs.length - 1];
           if (snapshot.docs.length < PAGE_SIZE) hasMore = false;
           
-          // Petit délai pour ne pas saturer le thread
           await new Promise(r => setTimeout(r, 50));
         }
       }

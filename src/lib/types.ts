@@ -5,6 +5,7 @@ export interface MapPoint {
   category: string;
   appSection: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   title: string;
+  slug?: string;
   geohash?: string;
   // Données de preview incluses pour éviter les fetchs inutiles dans la liste
   imgUrl?: string;
@@ -13,6 +14,7 @@ export interface MapPoint {
 
 export interface Dealership {
   id: string;
+  slug?: string;
   placeUrl: string;
   title: string;
   address: string;
