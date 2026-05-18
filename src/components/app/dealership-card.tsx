@@ -16,6 +16,7 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
 interface DealershipCardProps {
   point: MapPoint;
@@ -49,7 +50,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // COUCHE 3 : FULL DATA - Chargé uniquement si sélectionné
   const docRef = useMemoFirebase(() => {
     if (!isSelected || cachedData) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
@@ -68,7 +68,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
 
-  // COUCHE 2 : PREVIEW DATA - On utilise les données du point pour l'affichage de base
   const ratingValue = parseFloat(String(point.rating || fullDetails?.rating || 0).replace(',', '.'));
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[point.category] || point.category;
@@ -77,16 +76,18 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
   const localBusinessLd = useMemo(() => {
     if (!isSelected || !fullDetails) return null;
+    const type = isRelais ? "LodgingBusiness" : (point.category?.includes('concession') ? "AutoDealer" : "AutoRepair");
     return {
       "@context": "https://schema.org",
-      "@type": isRelais ? "LodgingBusiness" : "AutoRepair",
+      "@type": type,
+      "@id": `https://labelmoto.fr/concessions/${point.id}#business`,
       "name": fullDetails.title,
       "address": {
         "@type": "PostalAddress",
         "streetAddress": fullDetails.address
       },
       "telephone": fullDetails.phoneNumber,
-      "url": fullDetails.website || `https://labelmoto.fr/map?selectedId=${point.id}`,
+      "url": `https://labelmoto.fr/concessions/${point.id}`,
       "image": actualImgUrl,
       "geo": {
         "@type": "GeoCoordinates",
@@ -241,10 +242,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                         </button>
                         )}
                         
-                        {!isSelected && (
-                            <div className="flex flex-col justify-center py-2 opacity-40">
-                                <span className="text-[7px] font-black uppercase tracking-widest text-muted-foreground">Cliquez pour les détails</span>
+                        {isSelected && !isDetailLoading && (
+                          <Link href={`/concessions/${point.id}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
+                            <div className={cn("h-16 w-16 rounded-full flex flex-col items-center justify-center shadow-lg transition-all bg-brand text-white border-2 border-white")}>
+                                <Store className="h-4 w-4 mb-0.5" /><span className="text-[6px] font-black uppercase">Fiche</span>
                             </div>
+                          </Link>
                         )}
                     </>
                 )}

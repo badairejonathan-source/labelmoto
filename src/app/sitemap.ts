@@ -6,36 +6,35 @@ import { collection, getDocs } from 'firebase/firestore'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://labelmoto.fr'
 
-  // On prépare les tableaux vides
-  let concessionUrls: any[] = []
-  let articleUrls: any[] = []
-  let motoUrls: any[] = []
+  let concessionUrls: MetadataRoute.Sitemap = []
+  let articleUrls: MetadataRoute.Sitemap = []
+  let motoUrls: MetadataRoute.Sitemap = []
 
   try {
-    // 1. Récupération Concessions
+    // 1. Récupération Concessions (Pages dédiées crawlables)
     const concessionsSnap = await getDocs(collection(db, 'concessions'))
     concessionUrls = concessionsSnap.docs.map((doc) => ({
-      url: `${baseUrl}/fiches/${doc.id}`,
+      url: `${baseUrl}/concessions/${doc.id}`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }))
+
+    // 2. Récupération Articles (Conseils)
+    const articlesSnap = await getDocs(collection(db, 'articles'))
+    articleUrls = articlesSnap.docs.map((doc) => ({
+      url: `${baseUrl}/info/${doc.id}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
       priority: 0.8,
     }))
 
-    // 2. Récupération Articles
-    const articlesSnap = await getDocs(collection(db, 'articles'))
-    articleUrls = articlesSnap.docs.map((doc) => ({
-      url: `${baseUrl}/articles/${doc.id}`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    }))
-
-    // 3. Récupération Motorcycle Sheets (Entretien)
+    // 3. Récupération Motorcycle Sheets (Fiches Techniques)
     const motoSnap = await getDocs(collection(db, 'motorcycle_sheets'))
     motoUrls = motoSnap.docs.map((doc) => ({
-      url: `${baseUrl}/entretien/${doc.id}`,
+      url: `${baseUrl}/fiches/${doc.id}`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.6,
     }))
   } catch (error) {
@@ -43,8 +42,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Pages statiques de base
-  const staticPages = [
-    '', '/about', '/contact', '/legal', '/pro', '/map', 
+  const staticPages: MetadataRoute.Sitemap = [
+    '', '/about', '/contact', '/legal', '/map', 
     '/entretien', '/info', '/selection', '/terms', '/privacy', '/accessibility'
   ].map(route => ({
     url: `${baseUrl}${route}`,

@@ -81,8 +81,14 @@ export default function RootLayout({
         "url": "https://labelmoto.fr",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://labelmoto.fr/images/logo-moto.webp"
+          "@id": "https://labelmoto.fr/#logo",
+          "url": "https://labelmoto.fr/images/logo-moto.webp",
+          "contentUrl": "https://labelmoto.fr/images/logo-moto.webp",
+          "width": "520",
+          "height": "166",
+          "caption": "Label Moto"
         },
+        "image": { "@id": "https://labelmoto.fr/#logo" },
         "description": "Annuaire national indépendant référençant les concessions, ateliers et relais motards en France. Plateforme de ressources et guides d'entretien pour motards.",
         "sameAs": [
           "https://www.instagram.com/labelmoto.fr/"

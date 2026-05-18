@@ -90,7 +90,7 @@ const InternalLinkCard = ({ title, description, link, icon: Icon }: any) => (
           <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title}</h4>
           <p className="text-sm font-bold text-muted-foreground leading-snug">{description}</p>
         </div>
-        <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
+        <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
           <Link href={link} className="flex items-center gap-2">
             Voir le guide complet <ChevronRight className="h-4 w-4" />
           </Link>
@@ -376,7 +376,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                     <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                     <p className="text-[10px] md:text-xs font-medium text-muted-foreground italic leading-relaxed">{note}</p>
                 </div>
-            </CardFooter>
+          </CardFooter>
           )}
         </Card>
       </div>
