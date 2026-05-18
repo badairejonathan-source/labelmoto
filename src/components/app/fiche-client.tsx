@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import Script from 'next/script';
 import { 
   ArrowLeft, 
   Gauge, 
@@ -154,6 +155,34 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     };
   }, [fiche, selectedVariantIndex, modelId]);
 
+  const breadcrumbLd = useMemo(() => {
+    if (!displayData) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://labelmoto.fr"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Catalogue",
+          "item": "https://labelmoto.fr/entretien"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": displayData.modelName,
+          "item": `https://labelmoto.fr/fiches/${modelId}`
+        }
+      ]
+    };
+  }, [displayData, modelId]);
+
   const relatedModels = useMemo(() => {
     if (!displayData) return [];
     
@@ -217,6 +246,13 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   return (
     <div className="min-h-screen bg-background">
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} />
+      {breadcrumbLd && (
+        <Script
+          id="breadcrumb-fiche-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        />
+      )}
       
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-5xl mx-auto">

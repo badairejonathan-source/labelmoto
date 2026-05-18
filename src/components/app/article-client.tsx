@@ -19,6 +19,7 @@ import {
   Flag
 } from 'lucide-react';
 import Link from 'next/link';
+import Script from 'next/script';
 
 import Header from '@/components/app/header';
 import {
@@ -142,6 +143,34 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
   }, [article, id]);
 
+  const breadcrumbLd = useMemo(() => {
+    if (!article) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://labelmoto.fr"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Conseils",
+          "item": "https://labelmoto.fr/info"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": article.display_title || article.title,
+          "item": `https://labelmoto.fr/info/${id}`
+        }
+      ]
+    };
+  }, [article, id]);
+
   const activeSections = useMemo(() => {
     if (!article) return [];
     return article.sections || article.content || [];
@@ -247,7 +276,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           <CardHeader className="bg-primary text-white p-8 pb-6">
             <div className="flex flex-col gap-2">
                 <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
-                    <Clock className="h-6 w-6 md:h-8 md:w-8" /> {title}
+                    <Clock className="h-6 w-6 md:h-8 w-8" /> {title}
                 </CardTitle>
                 {subtitle && <p className="text-xs md:text-sm font-bold opacity-80 uppercase tracking-widest">{subtitle}</p>}
             </div>
@@ -623,6 +652,13 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   return (
     <div className="min-h-screen relative bg-background">
       {showHeader && <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />}
+      {breadcrumbLd && (
+        <Script
+          id="breadcrumb-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        />
+      )}
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10">
         <div className="max-w-6xl mx-auto">

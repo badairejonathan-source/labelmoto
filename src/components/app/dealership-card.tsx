@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect, memo } from 'react';
 import Image from 'next/image';
+import Script from 'next/script';
 import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, X, ZoomIn, Clock, Store, Users, Utensils, Loader2 } from 'lucide-react';
 import type { Dealership, MapPoint } from '@/lib/types';
@@ -72,8 +73,28 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const rating = isNaN(ratingValue) ? 0 : ratingValue;
   const categoryLabel = categoryDisplay[point.category] || point.category;
 
-  // L'URL de l'image est d'abord cherchée dans le point (Preview)
   const actualImgUrl = point.imgUrl || fullDetails?.imgUrl || fullDetails?.imageUrl || "";
+
+  const localBusinessLd = useMemo(() => {
+    if (!isSelected || !fullDetails) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": isRelais ? "LodgingBusiness" : "AutoRepair",
+      "name": fullDetails.title,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": fullDetails.address
+      },
+      "telephone": fullDetails.phoneNumber,
+      "url": fullDetails.website || `https://labelmoto.fr/map?selectedId=${point.id}`,
+      "image": actualImgUrl,
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": point.latitude,
+        "longitude": point.longitude
+      }
+    };
+  }, [isSelected, fullDetails, point, isRelais, actualImgUrl]);
 
   const handleRatingSubmit = () => {
     if (!user || !firestore) return;
@@ -100,6 +121,13 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
 
   return (
     <>
+      {localBusinessLd && (
+        <Script
+          id={`ld-pro-${point.id}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
+        />
+      )}
       <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader><DialogTitle>Avis sur {point.title}</DialogTitle></DialogHeader>

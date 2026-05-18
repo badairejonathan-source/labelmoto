@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   title: {
-    default: "Label Moto : l'annuaire national et guide des motards en France",
+    default: "Label Moto : l'annuaire intelligent des motards en France",
     template: "%s | Label Moto"
   },
-  description: "Trouvez une concession de confiance, un atelier expert ou un relais motard partout en France. Accédez gratuitement aux guides d'entretien et conseils d'achat.",
+  description: "Le compagnon de route indispensable : trouvez une concession de confiance, un atelier expert ou un relais motard. Accédez gratuitement aux guides d'entretien et conseils d'achat.",
   keywords: ["annuaire moto", "concessionnaire moto france", "atelier moto", "entretien moto", "guide achat moto", "relais motard", "plateforme motards"],
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://labelmoto.fr",
     siteName: "Label Moto",
-    title: "Label Moto : l'annuaire de référence des motards",
+    title: "Label Moto : l'annuaire national des motards",
     description: "Trouvez un pro de confiance et gérez l'entretien de votre moto facilement partout en France.",
     images: [
       {
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Label Moto : trouvez votre garage ou concession moto",
-    description: "L'annuaire national complet pour les motards : entretien, conseils et pros de confiance.",
+    title: "Label Moto : l'annuaire de référence pour les motards",
+    description: "L'annuaire national complet : entretien, conseils et professionnels de confiance.",
     images: ["/images/logo-moto.webp"],
   },
   robots: {
