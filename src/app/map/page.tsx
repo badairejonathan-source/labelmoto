@@ -361,8 +361,24 @@ function MapPageComponent() {
     
     const processSearch = async () => {
         let term = submittedSearchTerm.trim().toLowerCase();
+        
+        // --- LOGIQUE CENTRALE DE FILTRAGE PAR CATÉGORIE ---
+        let baseResults = [...allPoints];
+        if (activeFilter === 'association') {
+            baseResults = baseResults.filter(p => p.appSection === 'association');
+        } else if (activeFilter === 'relais') {
+            baseResults = baseResults.filter(p => p.appSection === 'relais');
+        } else if (activeFilter === 'shopping') {
+            baseResults = baseResults.filter(p => p.appSection === 'shopping' || p.appSection === 'both');
+        } else if (activeFilter === 'service') {
+            baseResults = baseResults.filter(p => p.appSection === 'service' || p.appSection === 'both');
+        } else {
+            // "Tout" (null) = Uniquement concessions et ateliers
+            baseResults = baseResults.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
+        }
+
         if (term === '') {
-            setFilteredPoints(allPoints);
+            setFilteredPoints(baseResults);
             return;
         }
 
@@ -377,6 +393,7 @@ function MapPageComponent() {
                 setMapZoom(15);
                 setTargetBounds(null);
                 setSelectionSource('external');
+                setFilteredPoints(baseResults);
                 return;
             }
         }
@@ -395,7 +412,7 @@ function MapPageComponent() {
         let bestEstablishmentMatch: MapPoint | null = null;
         let highestScore = 0;
 
-        allPoints.forEach(p => {
+        baseResults.forEach(p => {
             const title = p.title.toLowerCase();
             const normalizedTitle = title.replace(/[\s-]/g, '');
             const normalizedTerm = term.replace(/[\s-]/g, '');
@@ -425,19 +442,7 @@ function MapPageComponent() {
             setTargetBounds(null);
         }
 
-        let results = [...allPoints];
-
-        if (activeFilter === 'association') {
-            results = results.filter(p => p.appSection === 'association');
-        } else if (activeFilter === 'relais') {
-            results = results.filter(p => p.appSection === 'relais');
-        } else if (activeFilter === 'shopping') {
-            results = results.filter(p => p.appSection === 'shopping' || p.appSection === 'both');
-        } else if (activeFilter === 'service') {
-            results = results.filter(p => p.appSection === 'service' || p.appSection === 'both');
-        } else {
-            results = results.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
-        }
+        let results = [...baseResults];
 
         if (detectedBrand) {
             results = results.filter(p => {

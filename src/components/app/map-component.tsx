@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -109,6 +108,7 @@ const MapComponent = ({
     };
   }, []);
 
+  // Synchronisation stricte : Re-calculer les marqueurs et clusters à chaque changement de 'points'
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
@@ -139,7 +139,7 @@ const MapComponent = ({
     });
 
     clusterGroup.addLayers(markers);
-  }, [points]); 
+  }, [points]); // Dépendance cruciale : on nettoie et on repeuple dès que les points changent (filtrage)
 
   useEffect(() => {
     const map = mapRef.current;
@@ -158,7 +158,7 @@ const MapComponent = ({
         else marker.setZIndexOffset(0);
       }
     });
-  }, [hoveredId, selectedId, zoom]); // On écoute aussi le zoom pour rafraîchir les labels
+  }, [hoveredId, selectedId, zoom]); 
 
   useEffect(() => {
     const map = mapRef.current;
@@ -212,7 +212,6 @@ const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, cu
   if (isAssociation) color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
   else if (isRelais) color = isSelected || isHovered ? '#f59e0b' : '#d97706';
 
-  // Seuil relevé à 16 pour éviter l'explosion de bulles dans Paris
   const showLabel = currentZoom >= 11 && (isSelected || isHovered || currentZoom >= 16);
 
   const iconHtml = `
