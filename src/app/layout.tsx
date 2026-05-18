@@ -14,7 +14,7 @@ const inter = Inter({
   adjustFontFallback: true,
 });
 
-// Métadonnées globales du site
+// Métadonnées globales du site - Version Canonique Unique
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
   alternates: {
