@@ -144,6 +144,7 @@ export default function AdminPage() {
     try {
       const collectionsToProcess = ['concessions', 'associations', 'relais'];
       let totalUpdated = 0;
+      let totalScanned = 0;
 
       for (const colName of collectionsToProcess) {
         addLog(`SCAN COLLECTION : ${colName.toUpperCase()}...`);
@@ -163,36 +164,51 @@ export default function AdminPage() {
           let updatesInBatch = 0;
 
           for (const docSnapshot of snapshot.docs) {
+            totalScanned++;
             const data = docSnapshot.data();
-            if (!data.slug) {
+            
+            // On génère le slug si absent ou vide
+            if (!data.slug || data.slug.trim() === '') {
               const newSlug = generateDealershipSlug({ 
-                title: data.title || data.name, 
+                title: data.title || data.name || data.displayName, 
                 address: data.address 
               });
-              batch.update(docSnapshot.ref, { 
-                slug: newSlug,
-                updatedAt: new Date().toISOString()
-              });
-              updatesInBatch++;
-              totalUpdated++;
+              
+              if (newSlug) {
+                batch.update(docSnapshot.ref, { 
+                  slug: newSlug,
+                  updatedAt: new Date().toISOString()
+                });
+                updatesInBatch++;
+                totalUpdated++;
+              }
             }
           }
 
           if (updatesInBatch > 0) {
             await batch.commit();
             addLog(`COMMIT : ${updatesInBatch} slugs générés dans ${colName}.`);
+          } else {
+            addLog(`CHECK : 100 documents analysés dans ${colName}, rien à mettre à jour.`);
           }
+
+          setMigrationProgress(Math.min(99, Math.round((totalScanned / 3000) * 100)));
 
           lastDocSnapshot = snapshot.docs[snapshot.docs.length - 1];
           if (snapshot.docs.length < PAGE_SIZE) hasMore = false;
+          
+          // Petit délai pour ne pas saturer le thread
+          await new Promise(r => setTimeout(r, 50));
         }
       }
 
       setMigrationProgress(100);
-      addLog(`TERMINÉ : Migration réussie. ${totalUpdated} établissements ont maintenant un slug SEO.`);
-      toast({ title: "Migration Slugs terminée" });
+      addLog(`TERMINÉ : Migration réussie. ${totalUpdated} établissements mis à jour.`);
+      toast({ title: "Migration Slugs terminée", description: `${totalUpdated} documents mis à jour.` });
     } catch (e: any) {
+      console.error(e);
       addLog(`!!! ERREUR !!! : ${e.message}`);
+      toast({ variant: "destructive", title: "Erreur de migration", description: e.message });
     } finally {
       setIsMigratingSlugs(false);
     }
@@ -320,7 +336,6 @@ export default function AdminPage() {
     const targetCollection = cleanData.appSection === 'association' ? 'associations' : (cleanData.appSection === 'relais' ? 'relais' : 'concessions');
     const targetId = requestType === 'MODIFICATION' && originalDealershipId ? originalDealershipId : submission.id;
     
-    // Génération automatique du slug à l'approbation
     const finalDocument = {
       ...cleanData,
       ...geohashUpdates,
