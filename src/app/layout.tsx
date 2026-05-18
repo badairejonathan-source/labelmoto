@@ -14,18 +14,18 @@ const inter = Inter({
   adjustFontFallback: true,
 });
 
-// Métadonnées globales du site - Version Canonique Unique https://labelmoto.fr
+// Métadonnées globales optimisées pour le CTR et la clarté
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
   alternates: {
     canonical: '/',
   },
   title: {
-    default: "Label Moto - L'annuaire intelligent des motards (Concessions & Ateliers)",
+    default: "Label Moto : concessions, garages, relais et guides moto en France",
     template: "%s | Label Moto"
   },
-  description: "Trouvez les meilleures concessions et ateliers moto en France. Guides d'entretien, fiches techniques gratuites et conseils pour motards débutants et expérimentés.",
-  keywords: ["moto", "concessionnaire moto", "atelier moto", "entretien moto", "fiche technique moto", "permis A2", "révision moto prix"],
+  description: "Trouvez les meilleures concessions, ateliers et relais motards en France. Guides d'entretien, fiches techniques gratuites et conseils experts pour tous les motards.",
+  keywords: ["moto", "concessionnaire moto", "atelier moto", "entretien moto", "fiche technique moto", "permis A2", "révision moto prix", "relais motard", "association moto"],
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
   publisher: "Label Moto",
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://labelmoto.fr",
     siteName: "Label Moto",
-    title: "Label Moto - L'annuaire intelligent des motards",
-    description: "Le compagnon de route indispensable pour tout motard en France. Trouver un pro n'a jamais été aussi simple.",
+    title: "Label Moto : l'annuaire intelligent des motards",
+    description: "Le compagnon de route indispensable : trouvez un pro de confiance et entretenez votre moto facilement.",
     images: [
       {
         url: "/images/logo-moto.webp",
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Label Moto - L'annuaire intelligent des motards",
-    description: "Trouvez votre concession et entretenez votre moto en toute confiance.",
+    title: "Label Moto : concessions et ateliers moto en France",
+    description: "Trouvez votre concession et gérez l'entretien de votre moto en toute confiance.",
     images: ["/images/logo-moto.webp"],
   },
   robots: {
@@ -81,7 +81,6 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning className={inter.variable}>
       <head>
-        {/* Pré-connexions pour accélérer les ressources critiques */}
         <link rel="preconnect" href="https://firestore.googleapis.com" />
         <link rel="preconnect" href="https://images.unsplash.com" />
       </head>

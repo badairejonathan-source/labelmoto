@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -22,6 +21,9 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useToast } from '@/hooks/use-toast';
 import { getGeohashCells, extractValidCoordinates } from '@/lib/geohash';
+
+// Note: Metadata is handled via generateMetadata in a separate layout or segment if needed,
+// but for client-side pages, we rely on the parent layout or dynamic metadata injection.
 
 const PARIS_ARRONDISSEMENTS: Record<number, [number, number]> = {
   1: [48.8625, 2.3364], 2: [48.8669, 2.3426], 3: [48.8637, 2.3595], 4: [48.8543, 2.3576],

@@ -10,6 +10,9 @@ import { cn } from '@/lib/utils';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 
+// Note: Standard SEO title "Entretien moto : programmes de révision et budgets par modèle" 
+// is usually handled in a higher level page metadata for this route if refactored to server component.
+
 export default function EntretienPage() {
   const router = useRouter();
   const [expandedBrands, setExpandedBrands] = useState<string[]>([]);
@@ -43,7 +46,7 @@ export default function EntretienPage() {
         <div id="fiches-par-modele" className="scroll-mt-28 mb-12">
           <h2 className="text-4xl font-black uppercase tracking-tighter mb-4 text-foreground">Fiches d'entretien par modèle</h2>
           <p className="text-xl text-muted-foreground font-medium mb-8">
-            Sélectionnez votre marque pour accéder aux périodicités et au budget moyen de révision de votre moto.
+            Sélectionnez votre marque pour accéder aux périodicités, points de contrôle et au budget moyen de révision de votre moto.
           </p>
 
           {isCatalogLoading ? (

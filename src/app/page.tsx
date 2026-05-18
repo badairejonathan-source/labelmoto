@@ -10,6 +10,9 @@ import placeholderData from '@/app/lib/placeholder-images.json';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Note: Titles and Descriptions for Home are provided by the Root Layout defaults,
+// as this is a client-side component at the root level.
+
 // Squelette de chargement structuré pour éviter le CLS lors de l'import dynamique
 const HomepageSkeleton = () => (
     <div className="space-y-24 mt-16 md:mt-32">
@@ -57,7 +60,7 @@ export default function LandingPage() {
                 placeholderText="Recherche par departement, ville, marque, nom..."
             />
             
-            {/* Filigrane Logo - Optimisé: décodage asynchrone et chargement lazy pour le watermark */}
+            {/* Filigrane Logo */}
             <div className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden">
                 <Image 
                     src="/images/logo-moto.webp" 
@@ -72,12 +75,12 @@ export default function LandingPage() {
 
             <main className="py-4 md:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
               <div className="max-w-6xl mx-auto">
-                {/* Hero Section - Stable et prioritaire */}
+                {/* Hero Section */}
                 <div className="relative mb-24 md:mb-48 overflow-visible min-h-[320px] md:min-h-[480px]">
                     <div className="absolute inset-0 rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl z-0">
                          <Image 
                             src="/images/motardnuitlandinfpage1.webp" 
-                            alt="Label Moto Hero" 
+                            alt="Label Moto : trouver une concession ou un atelier moto" 
                             fill 
                             className="object-cover opacity-40" 
                             priority 
@@ -90,10 +93,10 @@ export default function LandingPage() {
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8 text-white p-6 md:p-12 pt-16 md:pt-20">
                         <div className="md:w-1/2 text-center md:text-left relative z-20">
                             <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 uppercase leading-[1.1]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                                Du A2 au motard expérimenté : trouvez les professionnels les plus proches en quelques clics
+                                Trouvez les meilleurs professionnels moto en quelques clics
                             </h1>
                             <p className="text-[10px] md:text-lg max-w-lg mx-auto md:mx-0 mb-4 text-gray-200 font-medium leading-relaxed" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                                Fini les dizaines d'onglets ouverts. Label Moto regroupe tout l’univers deux-roues au même endroit pour vous laisser plus de temps sur la route.
+                                Annuaire intelligent de concessions, garages et relais motards. Accédez gratuitement aux guides d'entretien et conseils experts partout en France.
                             </p>
                         </div>
                          <div className="w-full md:w-1/2 flex justify-center md:justify-end relative z-10">
@@ -102,7 +105,7 @@ export default function LandingPage() {
                                     <div className="relative w-44 h-44 md:w-[330px] md:h-[330px]">
                                         <Image 
                                             src={hero.mapPreview.src} 
-                                            alt="Aperçu de la carte" 
+                                            alt="Carte interactive des pros moto" 
                                             fill 
                                             className="rounded-2xl border-4 border-white shadow-2xl object-cover" 
                                             sizes="(max-width: 768px) 176px, 330px" 
@@ -122,7 +125,6 @@ export default function LandingPage() {
                     </div>
                 </div>
 
-                {/* Sections chargées en différé avec skeleton structurel pour éliminer le CLS */}
                 <HomepageDeferred />
               </div>
             </main>
