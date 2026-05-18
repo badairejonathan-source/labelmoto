@@ -4,11 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/app/header';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, MapPin, Search } from 'lucide-react';
 import Image from 'next/image';
-
-// Metadata is handled by a potential layout.tsx in a real app, 
-// but we keep the logical intention here.
 
 export default function AboutPage() {
   const router = useRouter();
@@ -25,14 +22,14 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-background">
       <Header
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
         onSearch={handleSearch}
         activeFilter={null}
         onFilterChange={handleFilterChange}
-        placeholderText="Recherche par departement, ville, marque, nom..."
+        placeholderText="Recherche..."
       />
       
       {/* Filigrane Logo */}
@@ -42,25 +39,65 @@ export default function AboutPage() {
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="max-w-4xl mx-auto pt-24">
-          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 font-black uppercase text-[10px] tracking-widest">
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-12 font-black uppercase text-[10px] tracking-widest transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil
           </Link>
-          <div className="space-y-6 text-foreground/90 leading-relaxed">
-            <h1 className="text-4xl md:text-6xl font-black text-foreground uppercase tracking-tighter leading-none mb-8">À propos de Label Moto</h1>
-            
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-brand mt-8">Notre Mission</h2>
-            <p className="text-lg font-medium">Chez Label Moto, notre mission est simple : simplifier la vie des motards. Nous savons que trouver une concession de confiance, un atelier compétent ou des conseils fiables peut être un parcours du combattant. C'est pourquoi nous avons créé une plateforme unique qui rassemble tout ce dont vous avez besoin pour vivre votre passion à fond, sans les tracas.</p>
-            <p className="text-lg font-medium">Nous nous engageons à fournir des informations transparentes, à jour et vérifiées pour vous aider à prendre les meilleures décisions, que vous cherchiez à acheter votre prochaine moto, à l'entretenir ou simplement à trouver l'inspiration pour votre prochain road-trip.</p>
+          
+          <div className="space-y-12">
+            <section className="space-y-6">
+                <h1 className="text-4xl md:text-7xl font-black text-foreground uppercase tracking-tighter leading-[0.9] mb-4">
+                  Label Moto : la plateforme nationale de référence
+                </h1>
+                <p className="text-xl md:text-2xl font-bold text-brand italic border-l-4 border-brand pl-6 py-2">
+                  Simplifier la vie des motards en centralisant les meilleurs services de France.
+                </p>
+            </section>
 
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-brand mt-8">Notre Histoire</h2>
-            <p className="text-lg font-medium">Label Moto est né de la frustration de passionnés de deux-roues, fatigués de passer des heures à chercher des informations éparpillées sur le web. L'idée était de créer un annuaire intelligent et une communauté où chaque motard, du débutant au plus expérimenté, pourrait trouver sa route... et sa concession.</p>
-            <p className="text-lg font-medium">Aujourd'hui, nous sommes fiers de connecter des milliers de motards avec les meilleurs professionnels de France, et de proposer des articles et des guides pour nourrir votre passion au quotidien.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <section className="space-y-4">
+                    <div className="flex items-center gap-3 text-brand">
+                        <Search className="h-6 w-6" />
+                        <h2 className="text-2xl font-black uppercase tracking-tighter">Notre Identité</h2>
+                    </div>
+                    <p className="text-lg font-medium leading-relaxed">
+                        Label Moto n'est pas un garage, ni une marque de moto. Nous sommes un **annuaire numérique indépendant** et une plateforme de ressources dédiée à la communauté motarde en France.
+                    </p>
+                    <p className="text-lg font-medium leading-relaxed">
+                        Notre mission est de supprimer les barrières entre les motards et les bons professionnels. Que vous cherchiez votre prochaine machine, un atelier pour une révision ou un hôtel labellisé "relais motard", nous centralisons tout sur une carte interactive unique.
+                    </p>
+                </section>
 
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-brand mt-8">Notre Vision</h2>
-            <p className="text-lg font-medium">Nous rêvons d'un monde où chaque motard a un accès facile et fiable à des services de qualité. Nous continuons d'innover pour améliorer notre plateforme, en nous basant sur les retours de notre communauté. Notre objectif est de devenir le compagnon de route digital indispensable pour tous les amoureux de la moto en France.</p>
-            <p className="text-lg font-medium">Rejoignez-nous dans cette aventure et contribuez à bâtir la plateforme de référence pour tous les passionnés de deux-roues.</p>
-            <div className="flex items-center mt-12 pt-8 border-t border-dashed">
+                <section className="space-y-4">
+                    <div className="flex items-center gap-3 text-brand">
+                        <ShieldCheck className="h-6 w-6" />
+                        <h2 className="text-2xl font-black uppercase tracking-tighter">Notre Engagement</h2>
+                    </div>
+                    <p className="text-lg font-medium leading-relaxed">
+                        Nous luttons contre les informations obsolètes et les annuaires pollués par la publicité. Sur Label Moto, les données sont vérifiées, les fiches sont propres et les avis sont réels.
+                    </p>
+                    <p className="text-lg font-medium leading-relaxed">
+                        En tant que plateforme à but non lucratif, notre seule priorité est la pertinence de l'information pour le pilote.
+                    </p>
+                </section>
+            </div>
+
+            <section className="bg-muted/30 p-8 md:p-12 rounded-[3rem] border-2 border-dashed border-muted-foreground/10 space-y-6">
+                <div className="flex items-center gap-4 mb-4">
+                    <MapPin className="h-8 w-8 text-brand" />
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Un rayonnement National</h2>
+                </div>
+                <p className="text-lg font-medium leading-relaxed">
+                    De Lille à Marseille, de Brest à Strasbourg, Label Moto couvre l'intégralité du territoire français. Nous référençons plus de 3000 établissements, incluant les plus grandes marques (Yamaha, Honda, BMW, Kawasaki...) mais aussi les préparateurs indépendants et les associations de passionnés.
+                </p>
+                <div className="pt-6">
+                    <Link href="/map" className="bg-brand text-white px-10 py-5 rounded-full font-black uppercase text-xs tracking-widest shadow-xl hover:scale-105 transition-transform inline-block">
+                        Explorer la carte de France
+                    </Link>
+                </div>
+            </section>
+
+            <div className="flex items-center pt-8 border-t border-dashed">
                 <p className="font-black text-2xl uppercase tracking-tighter italic">L'équipe Label Moto</p>
                 <Image src="/images/Stamp-LM.webp" alt="" width={100} height={100} className="opacity-40 -ml-4 -rotate-12" />
             </div>

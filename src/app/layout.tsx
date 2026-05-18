@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/app/footer";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CookieConsent from "@/components/app/cookie-consent";
+import Script from "next/script";
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -20,11 +21,11 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   title: {
-    default: "Label Moto : concessions, garages et conseils moto en France",
+    default: "Label Moto : l'annuaire national et guide des motards en France",
     template: "%s | Label Moto"
   },
-  description: "Trouvez une concession de confiance, un atelier expert ou un relais motard près de chez vous. Consultez nos guides d'entretien et nos conseils d'achat gratuits.",
-  keywords: ["moto", "concessionnaire moto", "atelier moto", "entretien moto", "fiche technique moto", "permis A2", "révision moto prix", "relais motard", "association moto"],
+  description: "Trouvez une concession de confiance, un atelier expert ou un relais motard partout en France. Accédez gratuitement aux guides d'entretien et conseils d'achat.",
+  keywords: ["annuaire moto", "concessionnaire moto france", "atelier moto", "entretien moto", "guide achat moto", "relais motard", "plateforme motards"],
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
   publisher: "Label Moto",
@@ -42,33 +43,26 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://labelmoto.fr",
     siteName: "Label Moto",
-    title: "Label Moto : l'annuaire et guide des motards",
-    description: "Trouvez un pro de confiance et entretenez votre moto facilement partout en France.",
+    title: "Label Moto : l'annuaire de référence des motards",
+    description: "Trouvez un pro de confiance et gérez l'entretien de votre moto facilement partout en France.",
     images: [
       {
         url: "/images/logo-moto.webp",
         width: 1200,
         height: 630,
-        alt: "Label Moto - Annuaire et Conseils Moto",
+        alt: "Label Moto - Plateforme Nationale Moto",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Label Moto : trouvez votre garage ou concession moto",
-    description: "L'annuaire complet pour gérer l'entretien de votre moto et trouver les meilleurs pros.",
+    description: "L'annuaire national complet pour les motards : entretien, conseils et pros de confiance.",
     images: ["/images/logo-moto.webp"],
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
   },
 };
 
@@ -77,11 +71,48 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://labelmoto.fr/#organization",
+        "name": "Label Moto",
+        "url": "https://labelmoto.fr",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://labelmoto.fr/images/logo-moto.webp"
+        },
+        "description": "Annuaire national indépendant référençant les concessions, ateliers et relais motards en France. Plateforme de ressources et guides d'entretien pour motards.",
+        "sameAs": [
+          "https://www.instagram.com/labelmoto.fr/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://labelmoto.fr/#website",
+        "url": "https://labelmoto.fr",
+        "name": "Label Moto",
+        "publisher": { "@id": "https://labelmoto.fr/#organization" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://labelmoto.fr/map?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="fr" suppressHydrationWarning className={inter.variable}>
       <head>
         <link rel="preconnect" href="https://firestore.googleapis.com" />
         <link rel="preconnect" href="https://images.unsplash.com" />
+        <Script
+          id="json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className={cn("bg-background font-sans antialiased", inter.className)}>
         <FirebaseClientProvider>

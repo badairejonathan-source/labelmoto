@@ -10,9 +10,6 @@ import placeholderData from '@/app/lib/placeholder-images.json';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Note: Titles and Descriptions for Home are provided by the Root Layout defaults,
-// as this is a client-side component at the root level.
-
 // Squelette de chargement structuré pour éviter le CLS lors de l'import dynamique
 const HomepageSkeleton = () => (
     <div className="space-y-24 mt-16 md:mt-32">
@@ -57,7 +54,7 @@ export default function LandingPage() {
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
                 onSearch={handleSearch}
-                placeholderText="Recherche par departement, ville, marque, nom..."
+                placeholderText="Recherche par ville, marque ou nom de pro..."
             />
             
             {/* Filigrane Logo */}
@@ -80,7 +77,7 @@ export default function LandingPage() {
                     <div className="absolute inset-0 rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl z-0">
                          <Image 
                             src="/images/motardnuitlandinfpage1.webp" 
-                            alt="Label Moto : trouver une concession ou un atelier moto" 
+                            alt="Label Moto : plateforme nationale de recherche de concessions et ateliers" 
                             fill 
                             className="object-cover opacity-40" 
                             priority 
@@ -92,11 +89,11 @@ export default function LandingPage() {
 
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8 text-white p-6 md:p-12 pt-16 md:pt-20">
                         <div className="md:w-1/2 text-center md:text-left relative z-20">
-                            <h1 className="text-xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 uppercase leading-[1.1]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
-                                Trouvez les meilleurs professionnels moto en quelques clics
+                            <h1 className="text-2xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 uppercase leading-[1.1]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
+                                L'annuaire national des professionnels moto
                             </h1>
-                            <p className="text-[10px] md:text-lg max-w-lg mx-auto md:mx-0 mb-4 text-gray-200 font-medium leading-relaxed" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                                Annuaire intelligent de concessions, garages et relais motards. Accédez gratuitement aux guides d'entretien et conseils experts partout en France.
+                            <p className="text-[11px] md:text-lg max-w-lg mx-auto md:mx-0 mb-4 text-gray-200 font-medium leading-relaxed" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                                Label Moto centralise les meilleures concessions, ateliers et relais motards de France. Trouvez un expert de confiance et gérez votre budget entretien gratuitement.
                             </p>
                         </div>
                          <div className="w-full md:w-1/2 flex justify-center md:justify-end relative z-10">
@@ -105,7 +102,7 @@ export default function LandingPage() {
                                     <div className="relative w-44 h-44 md:w-[330px] md:h-[330px]">
                                         <Image 
                                             src={hero.mapPreview.src} 
-                                            alt="Carte interactive des pros moto" 
+                                            alt="Carte de France des pros moto" 
                                             fill 
                                             className="rounded-2xl border-4 border-white shadow-2xl object-cover" 
                                             sizes="(max-width: 768px) 176px, 330px" 
@@ -116,7 +113,7 @@ export default function LandingPage() {
                                 <div className="absolute -left-6 md:-left-24 top-1/2 -translate-y-1/2 z-50">
                                     <Link href="/map">
                                         <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-[8px] md:text-base px-5 md:px-8 py-3 md:py-6 rounded-full shadow-2xl border-2 md:border-4 border-white whitespace-nowrap transition-transform hover:scale-110 tracking-widest">
-                                            Explorer la carte
+                                            Explorer l'annuaire
                                         </Button>
                                     </Link>
                                 </div>
