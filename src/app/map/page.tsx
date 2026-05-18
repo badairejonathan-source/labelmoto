@@ -22,9 +22,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { useToast } from '@/hooks/use-toast';
 import { getGeohashCells, extractValidCoordinates } from '@/lib/geohash';
 
-// Note: Metadata is handled via generateMetadata in a separate layout or segment if needed,
-// but for client-side pages, we rely on the parent layout or dynamic metadata injection.
-
 const PARIS_ARRONDISSEMENTS: Record<number, [number, number]> = {
   1: [48.8625, 2.3364], 2: [48.8669, 2.3426], 3: [48.8637, 2.3595], 4: [48.8543, 2.3576],
   5: [48.8448, 2.3471], 6: [48.8493, 2.3300], 7: [48.8561, 2.3126], 8: [48.8727, 2.3126],

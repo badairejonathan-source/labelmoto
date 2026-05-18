@@ -14,17 +14,16 @@ const inter = Inter({
   adjustFontFallback: true,
 });
 
-// Métadonnées globales optimisées pour le CTR et la clarté
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
   alternates: {
     canonical: '/',
   },
   title: {
-    default: "Label Moto : concessions, garages, relais et guides moto en France",
+    default: "Label Moto : l'annuaire intelligent des motards en France",
     template: "%s | Label Moto"
   },
-  description: "Trouvez les meilleures concessions, ateliers et relais motards en France. Guides d'entretien, fiches techniques gratuites et conseils experts pour tous les motards.",
+  description: "Le compagnon de route indispensable : trouvez une concession de confiance, un atelier expert ou un relais motard. Accédez gratuitement aux guides d'entretien et conseils d'achat.",
   keywords: ["moto", "concessionnaire moto", "atelier moto", "entretien moto", "fiche technique moto", "permis A2", "révision moto prix", "relais motard", "association moto"],
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
@@ -44,7 +43,7 @@ export const metadata: Metadata = {
     url: "https://labelmoto.fr",
     siteName: "Label Moto",
     title: "Label Moto : l'annuaire intelligent des motards",
-    description: "Le compagnon de route indispensable : trouvez un pro de confiance et entretenez votre moto facilement.",
+    description: "Trouvez un pro de confiance et entretenez votre moto facilement partout en France.",
     images: [
       {
         url: "/images/logo-moto.webp",
