@@ -1,9 +1,8 @@
-
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Carte interactive des concessions et ateliers moto en France",
-  description: "Explorez la carte Label Moto pour localiser les meilleures concessions, ateliers et relais motards partout en France. Recherche par ville, département et marque.",
+  title: "Carte des concessions et ateliers moto en France",
+  description: "Localisez les meilleurs garages, concessionnaires et relais motards sur notre carte interactive. Recherche par ville, marque et département.",
   alternates: {
     canonical: '/map',
   },

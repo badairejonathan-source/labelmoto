@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react';
@@ -8,13 +7,8 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 
-/**
- * Metadata pour la page À propos
- */
-const metadataExport = {
-  title: "À propos de Label Moto : notre mission et notre histoire",
-  description: "Découvrez le projet Label Moto : une plateforme à but non lucratif créée par des passionnés pour aider les motards à trouver les meilleurs experts partout en France.",
-};
+// Metadata is handled by a potential layout.tsx in a real app, 
+// but we keep the logical intention here.
 
 export default function AboutPage() {
   const router = useRouter();

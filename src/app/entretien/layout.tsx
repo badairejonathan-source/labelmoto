@@ -1,9 +1,8 @@
-
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Entretien moto : révisions, périodicités et budgets par modèle",
-  description: "Anticipez vos dépenses : accédez gratuitement aux programmes d'entretien officiels et aux estimations de budget de révision pour votre moto.",
+  title: "Entretien moto : révisions, prix et carnets par modèle",
+  description: "Anticipez vos frais d'entretien. Accédez aux programmes de révision détaillés et aux estimations de budget pour votre moto.",
   alternates: {
     canonical: '/entretien',
   },
