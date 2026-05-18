@@ -3,22 +3,22 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Middleware de redirection globale pour Label Moto.
- * Objectif : Forcer la version https://labelmoto.fr/ comme unique point d'entrée.
+ * Objectif : Forcer la version unique https://labelmoto.fr/
  */
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host');
-  const protocol = request.headers.get('x-forwarded-proto') || 'http';
   const pathname = request.nextUrl.pathname;
   const search = request.nextUrl.search;
 
   // 1. Redirection WWW vers non-WWW (ex: www.labelmoto.fr -> labelmoto.fr)
+  // On redirige vers la version HTTPS finale pour éviter les sauts multiples
   if (host?.startsWith('www.')) {
-    const newHost = host.replace(/^www\./, '');
-    return NextResponse.redirect(`https://${newHost}${pathname}${search}`, 301);
+    return NextResponse.redirect(`https://labelmoto.fr${pathname}${search}`, 301);
   }
 
-  // 2. Force HTTPS en production (si ce n'est pas déjà géré par l'infrastructure)
+  // 2. Force HTTPS en production
   // On ignore localhost et les environnements de preview cloud
+  const protocol = request.headers.get('x-forwarded-proto') || 'http';
   if (
     process.env.NODE_ENV === 'production' && 
     protocol === 'http' && 
