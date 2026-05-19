@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Clock, ExternalLink, Navigation, ChevronRight } from 'lucide-react';
+import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ExternalLink, Navigation, ChevronRight, Zap, FileText, Sparkles } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -20,6 +20,7 @@ import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useMemoFirebase } from '@/firebase/provider';
+import { useCollection } from '@/firebase/firestore/use-collection';
 
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
@@ -45,7 +46,6 @@ const MapComponent = dynamic(
 
 /**
  * Vue détaillée complète (Panneau latéral)
- * S'affiche uniquement quand l'utilisateur clique sur "Détails"
  */
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
   const { firestore } = useFirebase();
@@ -134,12 +134,12 @@ function MapPageComponent() {
   const selectedIdParam = searchParams.get('selectedId');
 
   const [allPoints, setAllPoints] = useState<MapPoint[]>([CIRCUIT_BUGATTI]);
-  const [filteredPoints, setFilteredPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
   const [mapZoom, setMapZoom] = useState(6.2);
+  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>('external');
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLoadingLocating] = useState(false);
@@ -153,6 +153,10 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
 
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
+
+  // Récupération des articles pour le mode "Découverte"
+  const articlesRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
+  const { data: articles } = useCollection(articlesRef);
 
   const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
     if (filterParam === 'service') return 'service';
@@ -170,40 +174,47 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
-  // Règle métier de filtrage centralisée (Source de Vérité)
-  useEffect(() => {
+  // Filtrage et Tri Intelligent
+  const filteredAndSortedPoints = useMemo(() => {
     let base = Array.from(masterPointsMap.current.values());
     
-    // Filtrage strict par catégorie
+    // 1. Filtrage métier strict
     if (activeFilter === null) {
-      // "Tout" = Concession (shopping) + Atelier (service) + Both
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'both');
     } else if (activeFilter === 'service') {
       base = base.filter(p => p.appSection === 'service' || p.appSection === 'both');
     } else {
-      // Asso ou Relais exclusifs
       base = base.filter(p => p.appSection === activeFilter);
     }
 
-    // Filtrage par recherche
+    // 2. Filtrage recherche
     if (submittedSearchTerm) {
       const lower = submittedSearchTerm.toLowerCase();
       base = base.filter(p => p.title.toLowerCase().includes(lower) || (p as any).brands?.some((b:string) => b.toLowerCase().includes(lower)));
     }
 
-    setFilteredPoints(base);
+    // 3. Tri par pertinence géographique
+    const sorted = base.sort((a, b) => {
+      // Priorité 1 : Sélection active
+      if (a.id === selectedDealershipId) return -1;
+      if (b.id === selectedDealershipId) return 1;
 
-    // Sécurité : fermer la fiche si l'élément n'est plus dans le filtre
-    if (selectedDealershipId) {
-      const stillVisible = base.some(p => p.id === selectedDealershipId);
-      if (!stillVisible) {
-        setIsDetailViewOpen(false);
-        setSelectedDealershipId(null);
-      }
-    }
-  }, [allPoints, activeFilter, submittedSearchTerm, selectedDealershipId]);
+      // Priorité 2 : Visibilité dans le viewport
+      const aInView = mapBounds?.contains([a.latitude, a.longitude]);
+      const bInView = mapBounds?.contains([b.latitude, b.longitude]);
+      if (aInView && !bInView) return -1;
+      if (!aInView && bInView) return 1;
+
+      // Priorité 3 : Distance au centre
+      const distA = Math.pow(a.latitude - mapCenter[0], 2) + Math.pow(a.longitude - mapCenter[1], 2);
+      const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
+      return distA - distB;
+    });
+
+    return sorted;
+  }, [allPoints, activeFilter, submittedSearchTerm, selectedDealershipId, mapCenter, mapBounds]);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -238,10 +249,10 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
-  // Clic sur marqueur : sélectionne en liste mais n'ouvre pas la fiche complète
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); 
     setSelectionSource('marker');
+    if (isMobile) setDrawerHeight('half');
     
     const point = masterPointsMap.current.get(id); 
     if (point) { 
@@ -249,14 +260,12 @@ function MapPageComponent() {
       setMapZoom(14); 
     } 
 
-    // Scroll automatique vers la carte sélectionnée dans la liste
     const element = document.getElementById(`card-${id}`);
     if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  }, []);
+  }, [isMobile]);
 
-  // Action volontaire : clic sur "Détails"
   const handleOpenDetails = useCallback((id: string) => {
     setSelectedDealershipId(id);
     setIsDetailViewOpen(true);
@@ -270,19 +279,63 @@ function MapPageComponent() {
     }
   }, [isMobile]);
 
+  const handleMapInteraction = useCallback(() => {
+    if (isMobile && drawerHeight !== 'collapsed' && !isDetailViewOpen) {
+      setDrawerHeight('collapsed');
+    }
+  }, [isMobile, drawerHeight, isDetailViewOpen]);
+
+  // Mode Découverte (Zoom faible) vs Mode Précision
+  const isDiscoveryMode = mapZoom < 9;
+
+  const FilterButtons = ({ mobile = false }) => {
+    const filters = [
+        { id: 'shopping', label: 'Concess', icon: Bike, color: 'brand' },
+        { id: null, label: 'Tout', icon: Home, color: 'brand' },
+        { id: 'service', label: 'Atelier', icon: Wrench, color: 'brand' },
+        { id: 'association', label: 'Asso', icon: Users, color: 'indigo-600' },
+        { id: 'relais', label: 'Relais', icon: Utensils, color: 'amber-600' }
+    ];
+
+    return (
+        <div className={cn("flex gap-3 overflow-x-auto no-scrollbar py-2", mobile ? "px-1 justify-start" : "justify-center")}>
+            {filters.map((f) => (
+                <button 
+                    key={String(f.id)} 
+                    onClick={() => setActiveFilter(f.id as any)}
+                    className="flex flex-col items-center gap-1.5 shrink-0 group"
+                >
+                    <div className={cn(
+                        "h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center transition-all border-2 shadow-sm group-hover:scale-105 active:scale-95",
+                        activeFilter === f.id 
+                            ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110" : "bg-brand text-white border-white scale-110"))
+                            : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
+                    )}>
+                        <f.icon className="h-5 w-5 md:h-6 md:w-6" />
+                    </div>
+                    <span className={cn("text-[8px] font-black uppercase tracking-widest", activeFilter === f.id ? "text-foreground" : "text-muted-foreground")}>
+                        {f.label}
+                    </span>
+                </button>
+            ))}
+        </div>
+    );
+  };
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* CARTE EN ARRIERE-PLAN */}
+      {/* CARTE */}
       <div className="absolute inset-0 z-0">
         <MapComponent 
-          points={filteredPoints} 
+          points={filteredAndSortedPoints} 
           center={mapCenter} 
           zoom={mapZoom} 
           selectionSource={selectionSource}
           selectedId={selectedDealershipId} 
           onMarkerClick={handleMarkerClick} 
-          onMapChange={(c, z) => { setMapCenter(c); setMapZoom(z); setSelectionSource(null); }} 
+          onMapChange={(c, z, b) => { setMapCenter(c); setMapZoom(z); setMapBounds(b); setSelectionSource(null); }} 
           onMapClick={() => { if (isMobile) setDrawerHeight('collapsed'); setSelectedDealershipId(null); setIsDetailViewOpen(false); }} 
+          onUserInteraction={handleMapInteraction}
           bottomPadding={bottomPadding} 
           leftPadding={leftPadding} 
           isLocating={isLocating} 
@@ -298,7 +351,7 @@ function MapPageComponent() {
             searchTerm={searchTerm} 
             onSearchTermChange={setSearchTerm} 
             onSearch={() => setSubmittedSearchTerm(searchTerm)} 
-            placeholderText="Recherche par département, ville, marque, nom..."
+            placeholderText="Ville, marque ou nom..."
             variant="map"
             hideUserMenu
           />
@@ -307,7 +360,7 @@ function MapPageComponent() {
 
       {/* DASHBOARD LATERAL (PC) */}
       {!isMobile && (
-        <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.2)] z-[1000] border border-white/40 overflow-hidden transition-all duration-300">
+        <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.2)] z-[1000] border border-white/40 overflow-hidden">
             <div className="p-10 pb-6 shrink-0">
                 <div className="flex items-center justify-between gap-4 mb-8">
                     <div className="w-40"><LabelMotoLogo noBubble /></div>
@@ -317,69 +370,12 @@ function MapPageComponent() {
                     </div>
                     <UserMenu />
                 </div>
-
-                {/* Filtres de catégories */}
-                <div className="space-y-8 mt-10">
-                    <div className="text-center space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Pros & Services</p>
-                        <div className="flex justify-center gap-6">
-                            {[
-                                { id: 'shopping', label: 'Concess', icon: Bike },
-                                { id: null, label: 'Tout', icon: Home },
-                                { id: 'service', label: 'Atelier', icon: Wrench }
-                            ].map((tab) => (
-                                <button 
-                                    key={String(tab.id)} 
-                                    onClick={() => setActiveFilter(tab.id as any)}
-                                    className="flex flex-col items-center gap-2 group"
-                                >
-                                    <div className={cn(
-                                        "h-16 w-16 rounded-full flex items-center justify-center transition-all border-4 shadow-lg group-hover:scale-105 active:scale-95",
-                                        activeFilter === tab.id 
-                                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                                            : "bg-white text-brand border-transparent hover:border-brand/20"
-                                    )}>
-                                        <tab.icon className="h-7 w-7" />
-                                    </div>
-                                    <span className={cn("text-[9px] font-black uppercase tracking-widest", activeFilter === tab.id ? "text-brand" : "text-muted-foreground")}>
-                                        {tab.label}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="text-center space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Communauté</p>
-                        <div className="flex justify-center gap-10">
-                            {[
-                                { id: 'association', label: 'Asso', icon: Users, color: 'indigo-600' },
-                                { id: 'relais', label: 'Relais', icon: Utensils, color: 'amber-600' }
-                            ].map((tab) => (
-                                <button 
-                                    key={tab.id} 
-                                    onClick={() => setActiveFilter(tab.id as any)}
-                                    className="flex flex-col items-center gap-2 group"
-                                >
-                                    <div className={cn(
-                                        "h-14 w-14 rounded-full flex items-center justify-center transition-all border-4 shadow-md group-hover:scale-105 active:scale-95",
-                                        activeFilter === tab.id 
-                                            ? `bg-${tab.color} text-white border-white scale-110 z-10 shadow-${tab.color}/40` 
-                                            : `bg-white text-${tab.color} border-transparent hover:border-${tab.color}/20`
-                                    )}>
-                                        <tab.icon className="h-6 w-6" />
-                                    </div>
-                                    <span className={cn("text-[9px] font-black uppercase tracking-widest", activeFilter === tab.id ? `text-${tab.color}` : "text-muted-foreground")}>
-                                        {tab.label}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                <div className="space-y-6">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Filtres de recherche</p>
+                    <FilterButtons />
                 </div>
             </div>
 
-            {/* LISTE OU DETAIL */}
             <div ref={listContainerRef} className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
                 {isDetailViewOpen && selectedDealershipId ? (
                    <SidebarDetailView 
@@ -389,10 +385,37 @@ function MapPageComponent() {
                    />
                 ) : (
                     <div className="space-y-4">
+                        {isDiscoveryMode && articles && articles.length > 0 && (
+                            <div className="mb-10 space-y-4">
+                                <div className="flex items-center gap-2 text-brand">
+                                    <Sparkles className="h-4 w-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Conseils & Guides</span>
+                                </div>
+                                <div className="grid gap-3">
+                                    {articles.slice(0, 3).map(art => (
+                                        <Link key={art.id} href={`/info/${art.id}`} className="flex items-center gap-4 bg-brand/5 p-4 rounded-2xl hover:bg-brand/10 transition-colors border border-brand/10 group">
+                                            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-brand shadow-sm">
+                                                <FileText className="h-6 w-6" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-[11px] font-black uppercase leading-tight group-hover:text-brand transition-colors">{art.display_title || art.title}</p>
+                                                <p className="text-[9px] text-muted-foreground font-bold mt-0.5">Guide pratique</p>
+                                            </div>
+                                            <ChevronRight className="h-4 w-4 text-brand/40" />
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between px-2 mb-4">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                                {isDiscoveryMode ? "Tous les pros" : `${filteredAndSortedPoints.length} Pros dans la zone`}
+                            </span>
+                        </div>
                         {isLoading ? (
                             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)
-                        ) : filteredPoints.length > 0 ? (
-                            filteredPoints.map((point) => (
+                        ) : filteredAndSortedPoints.length > 0 ? (
+                            filteredAndSortedPoints.map((point) => (
                                 <DealershipCardItem 
                                     key={point.id} 
                                     point={point} 
@@ -402,8 +425,8 @@ function MapPageComponent() {
                                 />
                             ))
                         ) : (
-                            <div className="text-center py-20">
-                                <p className="text-muted-foreground font-black uppercase text-xs">Aucun pro dans cette zone.</p>
+                            <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
+                                <p className="text-muted-foreground font-black uppercase text-[10px]">Aucun pro ne correspond à votre recherche.</p>
                             </div>
                         )}
                     </div>
@@ -414,12 +437,21 @@ function MapPageComponent() {
 
       {/* DRAWER MOBILE */}
       {isMobile && (
-        <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[110px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-160px)]')}>
-           <div className="absolute top-0 left-0 right-0 h-14 cursor-pointer flex items-center justify-center" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : (drawerHeight === 'half' ? 'full' : 'half'))}>
+        <div className={cn(
+            "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-15px_40px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", 
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[120px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-100px)]')
+        )}>
+           <div className="absolute top-0 left-0 right-0 h-10 cursor-pointer flex items-center justify-center" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : (drawerHeight === 'half' ? 'full' : 'half'))}>
               <div className="w-12 h-1.5 bg-muted rounded-full" />
            </div>
-           <div className="pt-2 h-full overflow-hidden flex flex-col">
-              <div className="flex-1 overflow-y-auto p-4">
+           
+           <div className="h-full overflow-hidden flex flex-col pt-4">
+              {/* Filtres toujours visibles dans le Drawer */}
+              <div className="px-4 pb-4 border-b border-muted/50">
+                  <FilterButtons mobile />
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {isDetailViewOpen && selectedDealershipId ? (
                    <SidebarDetailView 
                     dealershipId={selectedDealershipId} 
@@ -427,16 +459,33 @@ function MapPageComponent() {
                     onBack={() => { setIsDetailViewOpen(false); setDrawerHeight('half'); }} 
                   />
                 ) : (
-                  <div className="space-y-3">
-                     {filteredPoints.map((point) => (
-                        <DealershipCardItem 
-                            key={point.id} 
-                            point={point} 
-                            isSelected={point.id === selectedDealershipId} 
-                            onClick={() => setSelectedDealershipId(point.id)} 
-                            onOpenDetails={handleOpenDetails}
-                        />
-                      ))}
+                  <div className="space-y-4">
+                     {isDiscoveryMode && articles && articles.length > 0 && (
+                        <div className="grid grid-cols-1 gap-2">
+                           {articles.slice(0, 2).map(art => (
+                              <Link key={art.id} href={`/info/${art.id}`} className="flex items-center gap-3 bg-muted/30 p-3 rounded-2xl border border-muted">
+                                 <Zap className="h-4 w-4 text-brand shrink-0" />
+                                 <span className="text-[10px] font-black uppercase tracking-tight line-clamp-1">{art.display_title || art.title}</span>
+                              </Link>
+                           ))}
+                        </div>
+                     )}
+                     
+                     {filteredAndSortedPoints.length > 0 ? (
+                        filteredAndSortedPoints.map((point) => (
+                           <DealershipCardItem 
+                               key={point.id} 
+                               point={point} 
+                               isSelected={point.id === selectedDealershipId} 
+                               onClick={() => setSelectedDealershipId(point.id)} 
+                               onOpenDetails={handleOpenDetails}
+                           />
+                         ))
+                     ) : (
+                        <div className="text-center py-10 opacity-50">
+                           <p className="text-[10px] font-black uppercase">Aucun résultat ici.</p>
+                        </div>
+                     )}
                   </div>
                 )}
               </div>
@@ -444,7 +493,17 @@ function MapPageComponent() {
         </div>
       )}
 
-      <button className="absolute right-6 bottom-32 md:bottom-10 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95" onClick={() => setIsLoadingLocating(true)}><Compass className="h-7 w-7" /></button>
+      {/* BOUTON LOCALISATION */}
+      <button 
+        className={cn(
+            "absolute right-6 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95",
+            isMobile ? "bottom-36" : "bottom-10"
+        )} 
+        onClick={() => setIsLoadingLocating(true)}
+        aria-label="Me localiser"
+      >
+        <Compass className={cn("h-7 w-7", isLocating && "animate-spin")} />
+      </button>
     </div>
   );
 }
@@ -452,3 +511,4 @@ function MapPageComponent() {
 export default function MapPage() { 
   return <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
 }
+

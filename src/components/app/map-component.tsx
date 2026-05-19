@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -70,7 +71,6 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    // Initialisation avec décalage si nécessaire
     const targetCenter: [number, number] = [center[0], center[1]];
     const initialCenter = selectionSource ? getOffsettedCenter(map, targetCenter, leftPadding, bottomPadding, zoom) : L.latLng(targetCenter);
     
@@ -89,8 +89,11 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    map.on('movestart zoomstart', () => {
-      if (!isUpdatingFromProps.current) onUserInteraction?.();
+    // Détection des interactions utilisateur (Pan/Drag)
+    map.on('movestart zoomstart dragstart', () => {
+      if (!isUpdatingFromProps.current) {
+        onUserInteraction?.();
+      }
     });
 
     map.on('moveend zoomend', () => {
@@ -108,7 +111,6 @@ const MapComponent = ({
     };
   }, []);
 
-  // Synchronisation stricte : Re-calculer les marqueurs et clusters à chaque changement de 'points'
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
@@ -145,7 +147,7 @@ const MapComponent = ({
     });
 
     clusterGroup.addLayers(markers);
-  }, [points]); // Dépendance cruciale : on nettoie et on repeuple dès que les points changent (filtrage)
+  }, [points]); 
 
   useEffect(() => {
     const map = mapRef.current;
