@@ -62,7 +62,7 @@ const MapComponent = ({
 
     const map = mapRef.current;
     const labelsToShow = new Set<string>();
-    const bounds = map.getBounds();
+    const currentBounds = mapBounds || map.getBounds();
     
     // On priorise TOUJOURS la sélection
     if (selectedId) labelsToShow.add(selectedId);
@@ -76,7 +76,7 @@ const MapComponent = ({
       // On traite d'abord le point sélectionné pour "réserver" sa place
       if (selectedId) {
         const selPoint = points.find(p => p.id === selectedId);
-        if (selPoint && bounds.contains([selPoint.latitude, selPoint.longitude])) {
+        if (selPoint && currentBounds.contains([selPoint.latitude, selPoint.longitude])) {
           const pix = map.latLngToLayerPoint([selPoint.latitude, selPoint.longitude]);
           const gx = Math.floor(pix.x / gridWidth);
           const gy = Math.floor(pix.y / gridHeight);
@@ -87,7 +87,7 @@ const MapComponent = ({
       // On traite les autres points visibles
       points.forEach(point => {
         if (point.id === selectedId) return;
-        if (!bounds.contains([point.latitude, point.longitude])) return;
+        if (!currentBounds.contains([point.latitude, point.longitude])) return;
 
         const pix = map.latLngToLayerPoint([point.latitude, point.longitude]);
         const gx = Math.floor(pix.x / gridWidth);
