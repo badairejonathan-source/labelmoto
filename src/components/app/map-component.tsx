@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -14,6 +13,7 @@ interface MapComponentProps {
   points: MapPoint[];
   center: [number, number];
   zoom: number;
+  mapBounds?: L.LatLngBounds | null;
   hoveredId?: string | null;
   selectedId: string | null;
   onMarkerClick: (id: string) => void;
@@ -40,7 +40,7 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 };
 
 const MapComponent = ({
-  points, center, zoom, hoveredId = null, selectedId,
+  points, center, zoom, mapBounds, hoveredId = null, selectedId,
   onMarkerClick, onMarkerMouseOver = () => {}, onMarkerMouseOut = () => {}, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
@@ -241,8 +241,7 @@ const MapComponent = ({
       });
     } else {
       const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
-      // UX GOOGLE MAPS : On utilise flyTo avec le zoom ACTUEL si selectionSource est 'marker'
-      // pour éviter le saut de zoom intempestif.
+      // flyTo avec le zoom ACTUEL pour éviter le saut de zoom intempestif au clic marqueur
       map.flyTo(finalCenter, zoom, { duration: 0.8 });
     }
     

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -376,6 +375,7 @@ function MapPageComponent() {
           points={clusterPoints} 
           center={mapCenter} 
           zoom={mapZoom} 
+          mapBounds={mapBounds}
           selectionSource={selectionSource}
           selectedId={selectedDealershipId} 
           onMarkerClick={handleMarkerClick} 
