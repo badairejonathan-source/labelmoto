@@ -13,11 +13,11 @@ interface MapComponentProps {
   points: MapPoint[];
   center: [number, number];
   zoom: number;
-  hoveredId: string | null;
+  hoveredId?: string | null;
   selectedId: string | null;
   onMarkerClick: (id: string) => void;
-  onMarkerMouseOver: (id: string) => void;
-  onMarkerMouseOut: () => void;
+  onMarkerMouseOver?: (id: string) => void;
+  onMarkerMouseOut?: () => void;
   onMapClick: () => void;
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   onUserInteraction?: () => void;
@@ -39,8 +39,8 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 };
 
 const MapComponent = ({
-  points, center, zoom, hoveredId, selectedId,
-  onMarkerClick, onMarkerMouseOver, onMarkerMouseOut, onMapClick, onMapChange,
+  points, center, zoom, hoveredId = null, selectedId,
+  onMarkerClick, onMarkerMouseOver = () => {}, onMarkerMouseOut = () => {}, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
   targetBounds = null,
@@ -131,8 +131,14 @@ const MapComponent = ({
         L.DomEvent.stopPropagation(e);
         onMarkerClick(point.id);
       });
-      marker.on('mouseover', () => onMarkerMouseOver(point.id));
-      marker.on('mouseout', onMarkerMouseOut);
+      
+      if (onMarkerMouseOver) {
+        marker.on('mouseover', () => onMarkerMouseOver(point.id));
+      }
+      
+      if (onMarkerMouseOut) {
+        marker.on('mouseout', onMarkerMouseOut);
+      }
 
       markerMapRef.current[point.id] = marker;
       return marker;
