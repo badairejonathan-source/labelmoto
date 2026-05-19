@@ -1,20 +1,17 @@
+
 'use client';
 
-import React, { useState, useMemo, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import Image from 'next/image';
-import Script from 'next/script';
 import { Card } from '@/components/ui/card';
-import { MapPin, Star, Phone, Globe, X, ZoomIn, Clock, Store, Users, Utensils, Loader2, ChevronRight } from 'lucide-react';
+import { MapPin, Star, Phone, Globe, X, Store, Users, Utensils, ChevronRight } from 'lucide-react';
 import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, serverTimestamp, doc } from 'firebase/firestore';
+import { useFirebase, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
@@ -24,8 +21,6 @@ interface DealershipCardProps {
   onClick?: () => void;
   onOpenDetails?: (id: string) => void;
   className?: string;
-  cachedData?: Dealership;
-  onDataLoaded?: (data: Dealership) => void;
 }
 
 const categoryDisplay: { [key: string]: string } = {
@@ -37,34 +32,19 @@ const categoryDisplay: { [key: string]: string } = {
   'relais': 'Relais Motard',
 };
 
-const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = false, onClick, onOpenDetails, className, cachedData, onDataLoaded }) => {
-  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = false, onClick, onOpenDetails, className }) => {
   const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
-  const [showHours, setShowHours] = useState(false);
-  const [showReviews, setShowReviews] = useState(false);
-  const [newComment, setNewComment] = useState('');
-  const [newRating, setNewRating] = useState(5);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const { firestore } = useFirebase();
 
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const { toast } = useToast();
-
+  // On ne charge les détails complets (téléphone, etc.) que si la carte est sélectionnée
   const docRef = useMemoFirebase(() => {
-    if (!isSelected || cachedData) return null;
+    if (!isSelected) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
     return doc(firestore, col, point.id);
-  }, [firestore, point.id, point.appSection, isSelected, cachedData]);
+  }, [firestore, point.id, point.appSection, isSelected]);
   
-  const { data: fetchedData, isLoading: isDetailLoading } = useDoc<Dealership>(docRef);
-  const fullDetails = cachedData || fetchedData;
-
-  useEffect(() => {
-    if (fetchedData && onDataLoaded && !cachedData) {
-      onDataLoaded(fetchedData);
-    }
-  }, [fetchedData, onDataLoaded, cachedData]);
+  const { data: fullDetails, isLoading: isDetailLoading } = useDoc<Dealership>(docRef);
 
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
@@ -74,13 +54,9 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const categoryLabel = categoryDisplay[point.category] || point.category;
 
   const actualImgUrl = point.imgUrl || fullDetails?.imgUrl || fullDetails?.imageUrl || "";
-
   const slugOrId = fullDetails?.slug || point.slug || point.id;
 
-  const handleOpenDetails = (e: React.MouseEvent) => {
-    // Si CTRL ou META est pressé, on laisse le comportement par défaut (ouvrir dans un nouvel onglet)
-    if (e.ctrlKey || e.metaKey) return;
-    
+  const handleDetailsClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (onOpenDetails) {
@@ -88,115 +64,102 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
     }
   };
 
-  const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${point.latitude},${point.longitude}`;
-
   return (
-    <Card className={cn("relative overflow-hidden border-border/50 bg-card shadow-sm hover:shadow-md transition-all group", className)}>
-      {!isAssociation && !isRelais && rating > 0 && (
-        <div className="absolute top-2 left-2 z-20 flex items-center justify-center h-10 w-10 md:h-12 md:w-12 bg-brand rounded-full text-white shadow-lg border-2 border-white font-black">
-          <div className="flex flex-col items-center leading-none">
-            <span className="text-xs md:text-sm">{rating.toFixed(1)}</span>
-            <Star className="h-2 w-2 fill-white" />
-          </div>
-        </div>
+    <Card 
+      id={`card-${point.id}`}
+      className={cn(
+        "relative overflow-hidden border-2 transition-all duration-300 group rounded-[2rem]", 
+        isSelected ? "border-brand shadow-xl bg-white scale-[1.02] z-10" : "border-transparent bg-white/50 hover:bg-white hover:border-brand/20 shadow-sm",
+        className
       )}
+    >
+      <div className="flex items-stretch min-h-[140px]">
+        {/* IMAGE PREVIEW */}
+        <div 
+          className={cn(
+            "relative w-32 sm:w-36 md:w-44 overflow-hidden bg-muted/30 flex items-center justify-center shrink-0 border-r", 
+            actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default"
+          )} 
+          onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}
+        >
+          {actualImgUrl && !imgError ? (
+            <Image 
+              src={actualImgUrl} 
+              alt={point.title} 
+              fill 
+              className="object-cover transition-transform group-hover:scale-105 duration-700" 
+              onError={() => setImgError(true)} 
+              referrerPolicy="no-referrer"
+              sizes="(max-width: 768px) 120px, 180px"
+            />
+          ) : (
+            <div className="flex flex-col items-center gap-2 opacity-20">
+              {isAssociation ? <Users className="h-8 w-8" /> : (isRelais ? <Utensils className="h-8 w-8" /> : <Store className="h-8 w-8" />)}
+            </div>
+          )}
+          
+          {rating > 0 && (
+            <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/70 backdrop-blur-md text-white px-2 py-0.5 rounded-full text-[9px] font-black border border-white/20">
+              {rating.toFixed(1)} <Star className="h-2 w-2 fill-yellow-400 text-yellow-400" />
+            </div>
+          )}
+        </div>
 
-      <div className="flex items-stretch min-h-[130px] md:min-h-[150px]">
-        <div className="flex flex-1 flex-row items-stretch">
-          <div 
-            className={cn(
-              "relative w-36 sm:w-40 md:w-48 overflow-hidden border-r bg-muted/30 flex items-center justify-center", 
-              actualImgUrl && !imgError ? "cursor-zoom-in group/img" : "cursor-default"
-            )} 
-            onClick={(e) => { if (actualImgUrl && !imgError) { e.stopPropagation(); setIsZoomDialogOpen(true); } }}
-          >
-            {actualImgUrl && !imgError ? (
-              <>
-                <Image 
-                  src={actualImgUrl} 
-                  alt={point.title} 
-                  fill 
-                  className="object-cover transition-transform group-hover:brightness-110 duration-700" 
-                  onError={() => setImgError(true)} 
-                  referrerPolicy="no-referrer"
-                  sizes="(max-width: 768px) 140px, 200px"
-                />
-              </>
+        {/* CONTENT */}
+        <div className="flex flex-col justify-center flex-1 p-4 cursor-pointer" onClick={onClick}>
+          <div className="mb-2">
+            <h3 className="font-black text-sm md:text-base uppercase leading-tight line-clamp-2">{point.title}</h3>
+            <span className={cn("text-[8px] font-black uppercase tracking-widest", isAssociation ? "text-indigo-600" : (isRelais ? "text-amber-600" : "text-brand"))}>
+              {categoryLabel}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 mb-3">
+            <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span className="text-[9px] font-bold text-muted-foreground truncate uppercase">
+              {fullDetails?.address || point.title.split('-').pop() || "Adresse"}
+            </span>
+          </div>
+
+          {/* ACTIONS RAPIDES (Si sélectionné) */}
+          <div className="flex items-center gap-2 mt-auto">
+            {isSelected && isDetailLoading ? (
+              <div className="flex gap-2"><Skeleton className="h-9 w-9 rounded-full" /><Skeleton className="h-9 w-9 rounded-full" /></div>
             ) : (
-              <div className="flex flex-col items-center gap-2 opacity-20">
-                {isAssociation ? <Users className="h-10 w-10 text-muted-foreground" /> : (isRelais ? <Utensils className="h-10 w-10 text-muted-foreground" /> : <Store className="h-10 w-10 text-muted-foreground" />)}
+              <div className={cn("flex items-center gap-2 transition-all duration-500", isSelected ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none")}>
+                {fullDetails?.phoneNumber && (
+                  <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-brand/10 hover:border-brand" onClick={(e) => e.stopPropagation()}>
+                    <a href={`tel:${fullDetails.phoneNumber}`}><Phone className="h-4 w-4 text-brand" /></a>
+                  </Button>
+                )}
+                {fullDetails?.website && (
+                  <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-brand/10 hover:border-brand" onClick={(e) => e.stopPropagation()}>
+                    <a href={fullDetails.website} target="_blank" rel="noopener noreferrer"><Globe className="h-4 w-4 text-brand" /></a>
+                  </Button>
+                )}
+                <Button 
+                  className="bg-brand hover:bg-brand/90 text-white rounded-full font-black uppercase text-[9px] h-10 px-6 shadow-lg shadow-brand/20 ml-auto"
+                  onClick={handleDetailsClick}
+                >
+                  Détails <ChevronRight className="ml-1 h-3 w-3" />
+                </Button>
               </div>
             )}
-          </div>
-
-          <div className="flex flex-col justify-center flex-1 p-3 md:p-4 cursor-pointer" onClick={onClick}>
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-black text-sm md:text-lg uppercase leading-tight truncate">{point.title}</h3>
-            </div>
-            <span className={cn("text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-3", isAssociation ? "text-indigo-600" : (isRelais ? "text-amber-600" : "text-brand"))}>{categoryLabel}</span>
             
-            <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar min-h-[48px]">
-              {isSelected && isDetailLoading ? (
-                  <div className="flex gap-2"><Skeleton className="h-12 w-12 rounded-full" /><Skeleton className="h-12 w-12 rounded-full" /></div>
-              ) : (
-                  <>
-                      {fullDetails?.phoneNumber && (
-                      <a href={`tel:${fullDetails.phoneNumber}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
-                          <div className={cn("h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
-                          <Phone className="h-3.5 w-3.5 text-brand" /><span className="text-[5px] font-black uppercase mt-0.5">Appel</span>
-                          </div>
-                      </a>
-                      )}
-
-                      {fullDetails?.website && (
-                      <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0">
-                          <div className={cn("h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all", isAssociation ? "bg-indigo-50" : (isRelais ? "bg-amber-50" : "bg-brand/10"))}>
-                          <Globe className="h-3.5 w-3.5 text-brand" /><span className="text-[5px] font-black uppercase mt-0.5">Web</span>
-                          </div>
-                      </a>
-                      )}
-                      
-                      {isSelected && !isDetailLoading && (
-                        <Link 
-                          href={`/concessions/${slugOrId}`} 
-                          onClick={handleOpenDetails}
-                          className="shrink-0"
-                        >
-                          <div className={cn("h-12 w-12 rounded-full flex flex-col items-center justify-center shadow-lg transition-all bg-brand text-white border-2 border-white")}>
-                              <ChevronRight className="h-4 w-4" /><span className="text-[5px] font-black uppercase">Détails</span>
-                          </div>
-                        </Link>
-                      )}
-                  </>
-              )}
-            </div>
-            
-            <div className="mt-2 border-t border-dashed pt-2">
-              <span className="text-[8px] md:text-[9px] font-bold text-muted-foreground flex items-center gap-1.5 truncate">
-                <MapPin className="h-2.5 w-2.5 shrink-0" />
-                {fullDetails?.address || "Adresse en attente"}
-              </span>
-            </div>
+            {/* Lien SEO caché pour crawl Google */}
+            <Link href={`/concessions/${slugOrId}`} className="sr-only">Voir la fiche complète</Link>
           </div>
         </div>
       </div>
       
-      {/* Zoom Dialog pour la photo */}
+      {/* Zoom Dialog */}
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
-        <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none">
+        <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none z-[3000]">
           <div className="relative w-full h-full flex items-center justify-center">
-            <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[1400] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white"><X className="h-6 w-6" /></button>
+            <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[3100] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white"><X className="h-6 w-6" /></button>
             <div className="relative w-full h-full">
               {actualImgUrl && !imgError && (
-                <Image 
-                  src={actualImgUrl} 
-                  alt={point.title} 
-                  fill 
-                  className="object-contain" 
-                  onError={() => setImgError(true)} 
-                  referrerPolicy="no-referrer"
-                  unoptimized 
-                />
+                <Image src={actualImgUrl} alt={point.title} fill className="object-contain" onError={() => setImgError(true)} referrerPolicy="no-referrer" unoptimized />
               )}
             </div>
           </div>
