@@ -89,7 +89,9 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    map.on('movestart zoomstart dragstart', () => {
+    // Détection stricte de l'interaction MANUELLE pour réduire le tiroir mobile
+    map.on('dragstart zoomstart', () => {
+      // Si on n'est pas en train d'exécuter une mise à jour auto (fitBounds, flyTo)
       if (!isUpdatingFromProps.current) {
         onUserInteraction?.();
       }
@@ -175,6 +177,7 @@ const MapComponent = ({
     if (lastSetTargetKey.current === intentKey) return;
     lastSetTargetKey.current = intentKey;
 
+    // On active le flag pour empêcher la réduction du drawer lors de ce déplacement programmatique
     isUpdatingFromProps.current = true;
 
     if (targetBounds) {

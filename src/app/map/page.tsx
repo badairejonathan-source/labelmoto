@@ -22,6 +22,9 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { useMemoFirebase } from '@/firebase/provider';
 import { useCollection } from '@/firebase/firestore/use-collection';
 
+// Constante de seuil de zoom pour basculer entre mode découverte et mode précision
+const DISCOVERY_ZOOM_THRESHOLD = 9;
+
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
   title: 'Circuit Bugatti - Le Mans',
@@ -170,9 +173,11 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
+  // Source de vérité unique pour les points filtrés et triés
   const filteredAndSortedPoints = useMemo(() => {
     let base = Array.from(masterPointsMap.current.values());
     
+    // 1. Filtrage par Catégorie Métier
     if (activeFilter === null) {
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
@@ -183,20 +188,25 @@ function MapPageComponent() {
       base = base.filter(p => p.appSection === activeFilter);
     }
 
+    // 2. Filtrage par Recherche
     if (submittedSearchTerm) {
       const lower = submittedSearchTerm.toLowerCase();
       base = base.filter(p => p.title.toLowerCase().includes(lower) || (p as any).brands?.some((b:string) => b.toLowerCase().includes(lower)));
     }
 
+    // 3. Tri Géographique (Priorité : Sélection > Viewport > Distance au centre)
     const sorted = base.sort((a, b) => {
+      // Priorité absolue à la sélection active
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
+      // Priorité à la présence dans le champ de vision (viewport)
       const aInView = mapBounds?.contains([a.latitude, a.longitude]);
       const bInView = mapBounds?.contains([b.latitude, b.longitude]);
       if (aInView && !bInView) return -1;
       if (!aInView && bInView) return 1;
 
+      // Tri par distance euclidienne par rapport au centre de la carte
       const distA = Math.pow(a.latitude - mapCenter[0], 2) + Math.pow(a.longitude - mapCenter[1], 2);
       const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
       return distA - distB;
@@ -241,6 +251,7 @@ function MapPageComponent() {
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); 
     setSelectionSource('marker');
+    // Sur mobile, on remonte le tiroir à mi-hauteur pour voir la carte sélectionnée
     if (isMobile) setDrawerHeight('half');
     
     const point = masterPointsMap.current.get(id); 
@@ -249,6 +260,7 @@ function MapPageComponent() {
       setMapZoom(14); 
     } 
 
+    // Scroll auto de la liste latérale vers l'élément sélectionné
     const element = document.getElementById(`card-${id}`);
     if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -268,13 +280,15 @@ function MapPageComponent() {
     }
   }, [isMobile]);
 
+  // Se réduit automatiquement SEULEMENT lors d'une interaction manuelle
   const handleMapInteraction = useCallback(() => {
     if (isMobile && drawerHeight !== 'collapsed' && !isDetailViewOpen) {
       setDrawerHeight('collapsed');
     }
   }, [isMobile, drawerHeight, isDetailViewOpen]);
 
-  const isDiscoveryMode = mapZoom < 9;
+  // Mode découverte basé sur le seuil de zoom précis
+  const isDiscoveryMode = mapZoom < DISCOVERY_ZOOM_THRESHOLD;
 
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
@@ -290,7 +304,11 @@ function MapPageComponent() {
             {filters.map((f) => (
                 <button 
                     key={String(f.id)} 
-                    onClick={() => { setActiveFilter(f.id as any); if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); }}
+                    onClick={() => { 
+                      setActiveFilter(f.id as any); 
+                      // Si on clique sur un filtre en mode réduit, on remonte un peu le tiroir pour voir les résultats
+                      if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); 
+                    }}
                     className="flex flex-col items-center gap-1.5 shrink-0 group"
                 >
                     <div className={cn(
@@ -425,11 +443,13 @@ function MapPageComponent() {
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-15px_40px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", 
             drawerHeight === 'collapsed' ? 'bottom-0 h-[120px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-100px)]')
         )}>
+           {/* Handle de drag */}
            <div className="absolute top-0 left-0 right-0 h-10 cursor-pointer flex items-center justify-center" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : (drawerHeight === 'half' ? 'full' : 'half'))}>
               <div className="w-12 h-1.5 bg-muted rounded-full" />
            </div>
            
            <div className="h-full overflow-hidden flex flex-col pt-4">
+              {/* Filtres : Toujours visibles même en mode réduit (120px) */}
               <div className="px-4 pb-4 border-b border-muted/50 shrink-0">
                   <FilterButtons mobile />
               </div>
@@ -443,6 +463,7 @@ function MapPageComponent() {
                   />
                 ) : (
                   <div className="space-y-4">
+                     {/* Articles en mode découverte (Zoom faible) */}
                      {isDiscoveryMode && articles && articles.length > 0 && (
                         <div className="grid grid-cols-1 gap-2">
                            {articles.slice(0, 2).map(art => (
@@ -454,7 +475,8 @@ function MapPageComponent() {
                         </div>
                      )}
                      
-                     {filteredAndSortedPoints.length > 0 ? (
+                     {/* Fiches pros en mode précision (Zoom élevé) */}
+                     {!isDiscoveryMode && filteredAndSortedPoints.length > 0 ? (
                         filteredAndSortedPoints.map((point) => (
                            <DealershipCardItem 
                                key={point.id} 
@@ -464,9 +486,9 @@ function MapPageComponent() {
                                onOpenDetails={handleOpenDetails}
                            />
                          ))
-                     ) : (
+                     ) : !isDiscoveryMode && (
                         <div className="text-center py-10 opacity-50">
-                           <p className="text-[10px] font-black uppercase">Aucun résultat ici.</p>
+                           <p className="text-[10px] font-black uppercase">Aucun pro dans cette zone.</p>
                         </div>
                      )}
                   </div>
