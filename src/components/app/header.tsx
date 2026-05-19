@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -31,7 +30,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: Suggestion[] | null = null;
 
-// Données statiques des arrondissements de Paris pour un centrage précis
 const PARIS_ARRONDISSEMENTS: Record<number, [number, number]> = {
   1: [48.8625, 2.3364], 2: [48.8669, 2.3426], 3: [48.8637, 2.3595], 4: [48.8543, 2.3576],
   5: [48.8448, 2.3471], 6: [48.8493, 2.3300], 7: [48.8561, 2.3126], 8: [48.8727, 2.3126],
@@ -263,20 +261,14 @@ const Header: React.FC<HeaderProps> = ({
             const dealers: Suggestion[] = snapshot.docs.map(doc => {
                 const data = doc.data();
                 const title = data.title || data.name || data.displayName || data.label || doc.id.replace(/-/g, ' ').toUpperCase();
-                
-                let lat = data.latitude !== undefined ? data.latitude : data.lat;
-                let lng = data.longitude !== undefined ? data.longitude : data.lng;
-                if (data.location?.lat !== undefined) { lat = data.location.lat; lng = data.location.lng; }
-
                 return {
                     type: 'dealer',
                     label: title,
                     subLabel: data.address || '',
-                    lat: lat ? parseFloat(String(lat).replace(',', '.')) : undefined,
-                    lng: lng ? parseFloat(String(lng).replace(',', '.')) : undefined,
+                    lat: data.latitude || (data.location?.lat),
+                    lng: data.longitude || (data.location?.lng),
                     zoom: 14,
-                    id: doc.id,
-                    brand: Array.isArray(data.brands) ? data.brands[0] : undefined
+                    id: doc.id
                 };
             });
             globalDealersCache = dealers;
@@ -298,124 +290,67 @@ const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
     if (deferredSearchTerm.trim().length < 1) {
         setSuggestions([]);
-        setPrediction('');
         return;
     }
 
     let lowerTerm = deferredSearchTerm.toLowerCase().trim();
-    
-    const assoKeywords = ["association", "associations", "asso"];
-    const foundAssoKeyword = assoKeywords.find(k => lowerTerm.includes(k));
-    let searchPart = lowerTerm;
-    if (foundAssoKeyword) {
-        searchPart = lowerTerm.replace(foundAssoKeyword, '').trim();
-    }
-
     const results: Suggestion[] = [];
     
     // 1. DÉTECTION PARIS ARRONDISSEMENTS
-    const parisArrMatch = searchPart.match(/paris\s*(\d{1,2})/i);
+    const parisArrMatch = lowerTerm.match(/paris\s*(\d{1,2})/i);
     if (parisArrMatch) {
         const arrNum = parseInt(parisArrMatch[1]);
         if (arrNum >= 1 && arrNum <= 20) {
-            const cp = `750${arrNum.toString().padStart(2, '0')}`;
             const coords = PARIS_ARRONDISSEMENTS[arrNum];
             results.push({
                 type: 'city',
-                label: foundAssoKeyword ? `Associations : Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}` : `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
-                subLabel: cp,
+                label: `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
+                subLabel: `750${arrNum.toString().padStart(2, '0')}`,
                 lat: coords ? coords[0] : undefined,
                 lng: coords ? coords[1] : undefined,
                 zoom: 14,
                 score: 2000
             });
-            searchPart = cp; 
         }
     }
 
-    const normalizedTerm = searchPart.replace(/[\s-]/g, '');
-
-    // 2. DÉTECTION DÉPARTEMENTS ET VILLES
+    // 2. DÉPARTEMENTS ET VILLES
     Object.entries(locationsData).forEach(([dept, info]) => {
-        const deptNum = dept.split(' - ')[0];
-        const normalizedDept = dept.toLowerCase().replace(/[\s-]/g, '');
-        
-        if (deptNum.startsWith(normalizedTerm) || normalizedDept.includes(normalizedTerm)) {
-            results.push({ 
-                type: 'dept', 
-                label: foundAssoKeyword ? `Associations : ${dept}` : dept, 
-                lat: info.center[0], 
-                lng: info.center[1], 
-                zoom: 9, 
-                score: 900 
-            });
+        if (dept.toLowerCase().includes(lowerTerm)) {
+            results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 900 });
         }
-        
         info.cities.forEach(city => {
-            const normalizedCity = city.toLowerCase().replace(/[\s-]/g, '');
-            if (normalizedCity.includes(normalizedTerm)) {
-                results.push({ 
-                    type: 'city', 
-                    label: foundAssoKeyword ? `Associations à ${city}` : city, 
-                    subLabel: dept.split(' - ')[0], 
-                    lat: info.center[0], 
-                    lng: info.center[1], 
-                    zoom: 12, 
-                    score: 650 
-                });
+            if (city.toLowerCase().includes(lowerTerm)) {
+                results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[0], lat: info.center[0], lng: info.center[1], zoom: 12, score: 650 });
             }
         });
     });
 
-    // 3. DÉTECTION MARQUES
-    if (!foundAssoKeyword) {
-        brandsList.forEach(brand => {
-            const normalizedBrand = brand.toLowerCase().replace(/[\s-]/g, '');
-            if (normalizedBrand.includes(normalizedTerm)) {
-                results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1100 });
-            }
-        });
-    }
+    // 3. MARQUES
+    brandsList.forEach(brand => {
+        if (brand.toLowerCase().includes(lowerTerm)) {
+            results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1100 });
+        }
+    });
 
-    // 4. DÉTECTION ÉTABLISSEMENTS
+    // 4. ÉTABLISSEMENTS
     allDealers.forEach(d => {
-        const title = d.label.toLowerCase();
-        const address = d.subLabel?.toLowerCase() || '';
-        const normalizedTitle = title.replace(/[\s-]/g, '');
-        let score = 0;
-        
-        const isNumeric = /^\d+$/.test(searchPart);
-        if (isNumeric && searchPart.length === 5 && address.includes(searchPart)) {
-            score = 1300;
+        if (d.label.toLowerCase().includes(lowerTerm)) {
+            results.push({ ...d, score: 800 });
         }
-        
-        if (normalizedTitle === normalizedTerm) score = Math.max(score, 1250);
-        else if (title.startsWith(searchPart)) score = Math.max(score, 1150);
-        else if (title.includes(searchPart)) score = Math.max(score, 850);
-
-        if (searchPart.length > 4) {
-            const dist = levenshteinDistance(searchPart.substring(0, title.length), title.substring(0, searchPart.length));
-            if (dist <= 1) score = Math.max(score, 800);
-        }
-        
-        if (score > 0) results.push({ ...d, score });
     });
 
     const finalSuggestions = results
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .filter((v, i, a) => a.findIndex(t => t.label === v.label && t.type === v.type) === i);
     
-    setSuggestions(finalSuggestions.slice(0, 30));
+    setSuggestions(finalSuggestions.slice(0, 15));
   }, [deferredSearchTerm, allDealers]);
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
-    let searchTermToUse = suggestion.label;
-    if (suggestion.type === 'brand-only') searchTermToUse = suggestion.brand || suggestion.label;
-    
-    onSearchTermChange(searchTermToUse);
+    onSearchTermChange(suggestion.label);
     setShowSuggestions(false);
     setIsFocused(false);
-    setPrediction('');
     
     const queryParams = new URLSearchParams();
     if (suggestion.lat && suggestion.lng) {
@@ -424,24 +359,9 @@ const Header: React.FC<HeaderProps> = ({
         if (suggestion.zoom) queryParams.set('zoom', suggestion.zoom.toString());
     }
     if (suggestion.id) queryParams.set('selectedId', suggestion.id);
-    queryParams.set('search', searchTermToUse);
+    queryParams.set('search', suggestion.label);
     if (activeFilter) queryParams.set('filter', activeFilter);
     router.push(`/map?${queryParams.toString()}`);
-  };
-
-  const executeSearch = () => {
-    onSearch();
-    setShowSuggestions(false);
-    setIsFocused(false);
-    setPrediction('');
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === 'Tab' || e.key === 'ArrowRight') && prediction && prediction !== searchTerm) {
-        e.preventDefault();
-        onSearchTermChange(prediction);
-        setPrediction('');
-    } else if (e.key === 'Enter') executeSearch();
   };
 
   const handleTabClick = (filter: 'shopping' | 'service' | 'association' | 'relais' | null) => {
@@ -454,55 +374,35 @@ const Header: React.FC<HeaderProps> = ({
       <Input 
         type="search" 
         placeholder={placeholderText} 
-        aria-label={placeholderText}
         className={cn(
-            "pr-24 md:pr-32 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 relative z-10 font-black transition-all",
-            isMapPage ? "h-11 md:h-14 text-xs md:text-base" : "h-12 md:h-14 text-xs md:text-base",
+            "pr-24 md:pr-32 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 h-12 md:h-14 font-black transition-all",
             !isMapPage && "md:pr-[110px]"
         )}
         value={searchTerm} 
         onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
         onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
-        onKeyDown={handleKeyDown} 
+        onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
         autoComplete="off" 
       />
-      
-      {isDataLoading && (
-        <div className="absolute top-1/2 right-24 md:right-32 -translate-y-1/2 z-20">
-            <Loader2 className="h-4 w-4 animate-spin text-brand/40" />
-        </div>
-      )}
-
-      {searchTerm && !isDataLoading && (<button onClick={() => { onSearchTermChange(''); setPrediction(''); }} className="absolute top-1/2 right-16 md:right-24 -translate-y-1/2 p-2 text-muted-foreground z-20 transition-colors" type="button" aria-label="Effacer la recherche"><X className="h-4 w-4" /></button>)}
       <Button 
         type="submit" 
         size="icon" 
-        aria-label="Lancer la recherche"
-        className={cn(
-            "absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full z-20 shadow-lg transition-transform", 
-            isMapPage 
-              ? "h-[48px] w-[48px] md:h-[70px] md:w-[70px]" 
-              : "h-[54px] w-[54px] md:h-[70px] md:w-[70px]"
-        )} 
-        onClick={executeSearch}
+        className="absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg" 
+        onClick={onSearch}
       >
-        <Search className={cn(
-            isMapPage 
-              ? "h-6 w-6 md:h-7 md:w-7" 
-              : "h-7 w-7 md:h-7 md:w-7"
-        )} />
+        <Search className="h-7 w-7" />
       </Button>
       
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-background border rounded-[2rem] shadow-2xl z-[1600] max-h-[60vh] overflow-y-auto py-3 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full left-0 right-0 mt-3 bg-background border rounded-[2rem] shadow-2xl z-[1600] max-h-[50vh] overflow-y-auto py-3">
           {suggestions.map((s, idx) => (
-            <button key={`${s.type}-${idx}`} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group transition-all" onClick={() => handleSuggestionClick(s)} aria-label={`Suggestion : ${s.label} ${s.subLabel || ''}`}>
+            <button key={idx} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
               <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
                 {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-sm font-black text-foreground truncate uppercase tracking-tight">{s.label}</span>
-                {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black tracking-[0.2em]">{s.subLabel}</span>}
+                <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
+                {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black">{s.subLabel}</span>}
               </div>
             </button>
           ))}
@@ -512,153 +412,66 @@ const Header: React.FC<HeaderProps> = ({
   );
 
   return (
-    <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0 md:pb-0" : "pb-4 md:pb-0", className)}>
+    <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0" : "pb-4 md:pb-0", className)}>
       <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-4">
         {(!isMapPage || isMobile) && (
-          <div className="flex flex-row items-center justify-between gap-2 md:gap-6 w-full">
-            <div className="shrink-0 relative z-[150]">
-              <LabelMotoLogo 
-                  className={cn(
-                      "transition-all w-[170px] sm:w-52 md:w-[360px] py-1"
-                  )}
-              />
-            </div>
-            
-            <div className="flex flex-1 justify-center px-1 md:px-4 relative z-10 min-w-0">
-                <div className="bg-white px-2 py-1.5 md:px-8 md:py-4 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] border border-gray-100 text-center transform hover:scale-[1.02] transition-transform w-full max-w-xs md:max-w-md lg:max-w-none overflow-hidden flex flex-col justify-center items-center">
-                    <p className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm lg:text-base font-black uppercase tracking-wider text-foreground leading-tight">
-                        TROUVER UNE CONCESSION ?
-                    </p>
-                    <p className="text-[10px] xs:text-[12px] sm:text-sm md:text-lg lg:text-xl font-black italic text-brand mt-0.5 md:mt-1 leading-none tracking-tighter">
-                        FINI LA GALÈRE.
-                    </p>
+          <div className="flex flex-row items-center justify-between gap-2 w-full">
+            <div className="shrink-0 relative z-[150]"><LabelMotoLogo className="w-[170px] sm:w-52 md:w-[360px] py-1" /></div>
+            <div className="flex flex-1 justify-center px-1 relative z-10 min-w-0">
+                <div className="bg-white px-2 py-1.5 md:px-8 md:py-4 rounded-full shadow-lg border border-gray-100 text-center w-full max-w-xs flex flex-col justify-center items-center">
+                    <p className="text-[8px] sm:text-xs font-black uppercase tracking-wider text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
+                    <p className="text-[10px] sm:text-lg font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
                 </div>
             </div>
-
-            <div className="shrink-0 relative z-[150]">
-              {!hideUserMenu && <UserMenu />}
-            </div>
+            <div className="shrink-0 relative z-[150]">{!hideUserMenu && <UserMenu />}</div>
           </div>
         )}
 
-        <div className="flex flex-col items-center gap-4 md:gap-4 w-full max-w-screen-xl mx-auto relative z-20">
-            <div className={cn("flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full justify-center", isMapPage && "md:justify-end md:pr-8")}>
-                <div className="w-full max-w-2xl">
-                    {searchInput}
-                </div>
+        <div className="flex flex-col items-center gap-4 w-full max-w-screen-xl mx-auto relative z-20">
+            <div className={cn("flex flex-col md:flex-row items-center gap-4 w-full justify-center", isMapPage && "md:justify-end md:pr-8")}>
+                <div className="w-full max-w-2xl">{searchInput}</div>
                 {!isMapPage && (
                     <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
                         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
-                        <div className="flex flex-col items-center gap-1.5 shrink-0">
-                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
-                                <Link href="/entretien" className="flex items-center justify-center h-full w-full" aria-label="Fiches entretien">
-                                    <Image 
-                                      src="/images/icon-entretienrevision.webp" 
-                                      alt="" 
-                                      width={44} 
-                                      height={44} 
-                                      className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" 
-                                      loading="lazy"
-                                      decoding="async"
-                                    />
-                                    <span className="sr-only">Entretien</span>
-                                </Link>
-                            </Button>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Entretien</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1.5 shrink-0">
-                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] aspect-square rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 active:scale-95 group p-0 flex items-center justify-center">
-                                <Link href="/info" className="flex items-center justify-center h-full w-full" aria-label="Conseils pratiques">
-                                    <Image 
-                                      src="/images/icon-conseils.webp" 
-                                      alt="" 
-                                      width={44} 
-                                      height={44} 
-                                      className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert pointer-events-none" 
-                                      loading="lazy"
-                                      decoding="async"
-                                    />
-                                    <span className="sr-only">Conseils</span>
-                                </Link>
-                            </Button>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Conseils</span>
-                        </div>
+                        {[{ href: '/entretien', img: '/images/icon-entretienrevision.webp', label: 'Entretien' }, { href: '/info', img: '/images/icon-conseils.webp', label: 'Conseils' }].map((item, i) => (
+                            <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
+                                <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 group p-0 flex items-center justify-center">
+                                    <Link href={item.href} className="flex items-center justify-center h-full w-full">
+                                        <Image src={item.img} alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" />
+                                    </Link>
+                                </Button>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{item.label}</span>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
             
             <nav className={cn(
               "flex flex-wrap items-center justify-center gap-4 md:gap-8 relative z-50",
-              isMapPage ? "hidden" : (isCompactPage ? "-mb-24 md:-mb-20" : "-mb-16 md:-mb-10")
+              isMapPage ? "mt-4" : (isCompactPage ? "-mb-24 md:-mb-20" : "-mb-16 md:-mb-10")
             )}>
                 <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick('shopping')} 
-                        className={cn(
-                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
-                            activeFilter === 'shopping' 
-                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                            : "bg-white text-muted-foreground border-transparent hover:border-brand/30"
-                        )}
-                    >
+                    <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
                         <Bike className={cn("h-6 w-6 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Concess</span>
                     </Button>
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick(null)} 
-                        className={cn(
-                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
-                            activeFilter === null 
-                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                            : "bg-white text-muted-foreground border-transparent hover:border-brand/30"
-                        )}
-                    >
+                    <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === null ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
                         <Home className={cn("h-6 w-6 transition-colors", activeFilter === null ? "text-white" : "text-brand")} />
                         <span className="text-[10px] font-black uppercase tracking-[0.1em] mt-1">Tout</span>
                     </Button>
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick('service')} 
-                        className={cn(
-                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
-                            activeFilter === 'service' 
-                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
-                            : "bg-white text-muted-foreground border-transparent hover:border-brand/30"
-                        )}
-                    >
+                    <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
                         <Wrench className={cn("h-6 w-6 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Atelier</span>
                     </Button>
                 </div>
-
                 <div className="hidden md:block w-px h-12 bg-border/50" />
-
                 <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick('association')} 
-                        className={cn(
-                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
-                            activeFilter === 'association' 
-                            ? "bg-indigo-600 text-white border-white scale-110 z-10 shadow-indigo-600/40" 
-                            : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/30"
-                        )}
-                    >
+                    <Button variant="ghost" onClick={() => handleTabClick('association')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'association' ? "bg-indigo-600 text-white border-white scale-110 z-10 shadow-indigo-600/40" : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/30")}>
                         <Users className={cn("h-6 w-6 transition-colors", activeFilter === 'association' ? "text-white" : "text-indigo-600")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Asso</span>
                     </Button>
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => handleTabClick('relais')} 
-                        className={cn(
-                            "h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4",
-                            activeFilter === 'relais' 
-                            ? "bg-amber-600 text-white border-white scale-110 z-10 shadow-amber-600/40" 
-                            : "bg-white text-muted-foreground border-transparent hover:border-amber-600/30"
-                        )}
-                    >
+                    <Button variant="ghost" onClick={() => handleTabClick('relais')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'relais' ? "bg-amber-600 text-white border-white scale-110 z-10 shadow-amber-600/40" : "bg-white text-muted-foreground border-transparent hover:border-amber-600/30")}>
                         <Utensils className={cn("h-6 w-6 transition-colors", activeFilter === 'relais' ? "text-white" : "text-amber-600")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Relais</span>
                     </Button>
