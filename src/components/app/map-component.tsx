@@ -240,9 +240,12 @@ const MapComponent = ({
         animate: true
       });
     } else {
-      const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
-      // flyTo avec le zoom ACTUEL pour éviter le saut de zoom intempestif au clic marqueur
-      map.flyTo(finalCenter, zoom, { duration: 0.8 });
+      // Pour les clics marqueurs ou cartes, on reste scrupuleusement au zoom actuel de la carte.
+      // On utilise map.getZoom() directement plutôt que la prop zoom pour éviter les désynchronisations d'états
+      // qui pourraient causer un dézoom intempestif.
+      const currentMapZoom = map.getZoom();
+      const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, currentMapZoom);
+      map.flyTo(finalCenter, currentMapZoom, { duration: 0.8 });
     }
     
     const timer = setTimeout(() => {
