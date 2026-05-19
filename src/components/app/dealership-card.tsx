@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, X, Store, Users, Utensils, ChevronRight } from 'lucide-react';
 import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useFirebase, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -155,6 +155,10 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
       {/* Zoom Dialog */}
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none z-[3000]">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Aperçu de l'établissement {point.title}</DialogTitle>
+            <DialogDescription>Photo grand format de {point.title}</DialogDescription>
+          </DialogHeader>
           <div className="relative w-full h-full flex items-center justify-center">
             <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[3100] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white"><X className="h-6 w-6" /></button>
             <div className="relative w-full h-full">
