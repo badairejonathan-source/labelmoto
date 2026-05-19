@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ExternalLink, Navigation, ChevronRight, Zap, FileText, Sparkles } from 'lucide-react';
+import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Zap, FileText, Sparkles } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -137,6 +137,9 @@ function MapPageComponent() {
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
+  // Nouveaux états de mode UX pour éviter le retour automatique des articles
+  const [uxMode, setUxMode] = useState<'discovery' | 'pros'>('discovery');
+  
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
   const [mapZoom, setMapZoom] = useState(6.2);
   const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
@@ -174,11 +177,23 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
-  // Source de vérité unique pour les points filtrés et triés
-  const filteredAndSortedPoints = useMemo(() => {
+  // Détection du passage définitif en mode Pros
+  useEffect(() => {
+    if (uxMode === 'pros') return;
+    if (mapZoom >= DISCOVERY_ZOOM_THRESHOLD || submittedSearchTerm || selectedDealershipId) {
+      setUxMode('pros');
+    }
+  }, [mapZoom, submittedSearchTerm, selectedDealershipId, uxMode]);
+
+  /**
+   * SOURCE DE VÉRITÉ CARTE (mapPoints)
+   * Contient TOUS les points filtrés par métier et recherche, 
+   * sans limite de viewport pour garantir des clusters complets.
+   */
+  const mapPoints = useMemo(() => {
     let base = Array.from(masterPointsMap.current.values());
     
-    // 1. Filtrage par Catégorie Métier
+    // 1. Filtrage Métier
     if (activeFilter === null) {
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
@@ -189,37 +204,43 @@ function MapPageComponent() {
       base = base.filter(p => p.appSection === activeFilter);
     }
 
-    // 2. Filtrage par Recherche
+    // 2. Filtrage Recherche
     if (submittedSearchTerm) {
       const lower = submittedSearchTerm.toLowerCase();
       base = base.filter(p => p.title.toLowerCase().includes(lower) || (p as any).brands?.some((b:string) => b.toLowerCase().includes(lower)));
     }
 
-    // 3. Tri Géographique Priorisé
-    // Si un point est sélectionné, on trie le reste de la liste par rapport à sa position
+    return base;
+  }, [allPoints, activeFilter, submittedSearchTerm]);
+
+  /**
+   * SOURCE DE VÉRITÉ LISTE (listPoints)
+   * Basé sur mapPoints, mais trié selon l'UX (Sélection > Proximité).
+   */
+  const listPoints = useMemo(() => {
     const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
+    
+    // On trie par rapport au point sélectionné ou au centre de la carte
     const pivotLat = selectedPoint?.latitude ?? mapCenter[0];
     const pivotLng = selectedPoint?.longitude ?? mapCenter[1];
 
-    const sorted = base.sort((a, b) => {
-      // Règle 1 : La sélection active est TOUJOURS en première position (index 0)
+    return [...mapPoints].sort((a, b) => {
+      // 1. Priorité absolue à la sélection
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
-      // Règle 2 : Priorité au viewport si pas de sélection
+      // 2. Priorité relative aux points dans le viewport (seulement pour la liste)
       const aInView = mapBounds?.contains([a.latitude, a.longitude]);
       const bInView = mapBounds?.contains([b.latitude, b.longitude]);
       if (aInView && !bInView) return -1;
       if (!aInView && bInView) return 1;
 
-      // Règle 3 : Tri par distance euclidienne par rapport au pivot (point sélectionné ou centre carte)
+      // 3. Tri par distance au pivot
       const distA = Math.pow(a.latitude - pivotLat, 2) + Math.pow(a.longitude - pivotLng, 2);
       const distB = Math.pow(b.latitude - pivotLat, 2) + Math.pow(b.longitude - pivotLng, 2);
       return distA - distB;
     });
-
-    return sorted;
-  }, [allPoints, activeFilter, submittedSearchTerm, selectedDealershipId, mapCenter, mapBounds]);
+  }, [mapPoints, selectedDealershipId, mapCenter, mapBounds]);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -254,7 +275,6 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
-  // Fonction centrale pour scroller la liste vers le haut
   const scrollListToTop = useCallback(() => {
     if (!isMobile && listContainerRef.current) {
         listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
@@ -273,12 +293,10 @@ function MapPageComponent() {
       setMapZoom(14); 
     } 
 
-    // Sur mobile, on remonte le tiroir à mi-hauteur
     if (isMobile) {
         setDrawerHeight('half');
     }
 
-    // On attend la fin du cycle de rendu pour que le tri place l'élément en haut, puis on scrolle
     setTimeout(() => {
         scrollListToTop();
     }, 100);
@@ -303,7 +321,8 @@ function MapPageComponent() {
     }
   }, [isMobile, drawerHeight, isDetailViewOpen]);
 
-  const isDiscoveryMode = mapZoom < DISCOVERY_ZOOM_THRESHOLD;
+  // Mode découverte : SEULEMENT si uxMode est discovery ET zoom faible
+  const isDiscoveryMode = uxMode === 'discovery' && mapZoom < DISCOVERY_ZOOM_THRESHOLD;
 
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
@@ -346,7 +365,7 @@ function MapPageComponent() {
     <div className="relative w-full h-screen overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
         <MapComponent 
-          points={filteredAndSortedPoints} 
+          points={mapPoints} 
           center={mapCenter} 
           zoom={mapZoom} 
           selectionSource={selectionSource}
@@ -426,13 +445,13 @@ function MapPageComponent() {
                         )}
                         <div className="flex items-center justify-between px-2 mb-4">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                                {isDiscoveryMode ? "Tous les pros" : `${filteredAndSortedPoints.length} Pros dans la zone`}
+                                {isDiscoveryMode ? "Tous les pros" : `${listPoints.length} Pros trouvés`}
                             </span>
                         </div>
                         {isLoading ? (
                             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)
-                        ) : filteredAndSortedPoints.length > 0 ? (
-                            filteredAndSortedPoints.map((point) => (
+                        ) : listPoints.length > 0 ? (
+                            listPoints.map((point) => (
                                 <DealershipCardItem 
                                     key={point.id} 
                                     point={point} 
@@ -457,13 +476,11 @@ function MapPageComponent() {
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-15px_40px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", 
             drawerHeight === 'collapsed' ? 'bottom-0 h-[120px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-100px)]')
         )}>
-           {/* Handle de drag */}
            <div className="absolute top-0 left-0 right-0 h-10 cursor-pointer flex items-center justify-center" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : (drawerHeight === 'half' ? 'full' : 'half'))}>
               <div className="w-12 h-1.5 bg-muted rounded-full" />
            </div>
            
            <div className="h-full overflow-hidden flex flex-col pt-4">
-              {/* Filtres : Toujours visibles même en mode réduit (120px) */}
               <div className="px-4 pb-4 border-b border-muted/50 shrink-0">
                   <FilterButtons mobile />
               </div>
@@ -477,7 +494,6 @@ function MapPageComponent() {
                   />
                 ) : (
                   <div className="space-y-4">
-                     {/* Articles en mode découverte (Zoom faible) */}
                      {isDiscoveryMode && articles && articles.length > 0 && (
                         <div className="grid grid-cols-1 gap-2">
                            {articles.slice(0, 2).map(art => (
@@ -489,9 +505,8 @@ function MapPageComponent() {
                         </div>
                      )}
                      
-                     {/* Fiches pros en mode précision (Zoom élevé) */}
-                     {!isDiscoveryMode && filteredAndSortedPoints.length > 0 ? (
-                        filteredAndSortedPoints.map((point) => (
+                     {!isDiscoveryMode && listPoints.length > 0 ? (
+                        listPoints.map((point) => (
                            <DealershipCardItem 
                                key={point.id} 
                                point={point} 
