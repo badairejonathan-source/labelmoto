@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -104,18 +105,18 @@ export const UserMenu = () => {
       variant="ghost" 
       aria-label="Menu utilisateur"
       onClick={handleOpenMenu}
-      className="relative h-[62px] w-[62px] md:h-[70px] md:w-[70px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
+      className="relative h-[56px] w-[56px] md:h-[62px] md:w-[62px] rounded-full p-0 flex items-center justify-center focus-visible:ring-0 shadow-xl border-2 border-white bg-white hover:border-brand/20 transition-all hover:scale-105 active:scale-95 z-[150]"
     >
       <div className="relative h-full w-full flex items-center justify-center pointer-events-none">
         {user ? (
-          <Avatar className="h-[48px] w-[48px] md:h-[54px] md:w-[54px] border-2 border-brand" aria-hidden="true">
+          <Avatar className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] border-2 border-brand" aria-hidden="true">
             <AvatarImage src={user.photoURL || undefined} alt="" />
             <AvatarFallback className="bg-brand text-brand-foreground text-xs font-black">
               {initial}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-[48px] w-[48px] md:h-[54px] md:w-[54px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
+          <div className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] rounded-full flex items-center justify-center p-1" aria-hidden="true">
             {isUserLoading ? (
               <Loader2 className="h-6 w-6 animate-spin text-brand" />
             ) : (
@@ -132,7 +133,7 @@ export const UserMenu = () => {
         )}
         
         <div className="absolute -bottom-0.5 -right-0.5 md:bottom-0.5 md:right-0.5 bg-brand text-white rounded-full p-0.5 md:p-1 border-2 border-white shadow-md z-20">
-          <Menu className="h-2 w-2 md:h-4 md:w-4" />
+          <Menu className="h-2 w-2 md:h-3 w-3" />
         </div>
       </div>
       <span className="sr-only">Menu utilisateur</span>
@@ -230,9 +231,7 @@ const Header: React.FC<HeaderProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const firestore = useFirestore();
-  const { width } = useWindowSize();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [prediction, setPrediction] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<Suggestion[]>(globalDealersCache || []);
   const [mounted, setMounted] = useState(false);
@@ -243,8 +242,6 @@ const Header: React.FC<HeaderProps> = ({
   const deferredSearchTerm = useDeferredValue(searchTerm);
 
   const isMapPage = pathname === '/map';
-  const isMobile = mounted && width !== undefined && width < 1024;
-  const isCompactPage = pathname === '/info' || pathname.startsWith('/info/') || pathname === '/entretien' || pathname.startsWith('/fiches/');
 
   useEffect(() => {
     setMounted(true);
@@ -256,7 +253,7 @@ const Header: React.FC<HeaderProps> = ({
         setIsDataLoading(true);
         const concessionsRef = collection(firestore, 'concessions');
         try {
-            const q = query(concessionsRef, limit(10000));
+            const q = query(concessionsRef, limit(3000));
             const snapshot = await getDocs(q);
             const dealers: Suggestion[] = snapshot.docs.map(doc => {
                 const data = doc.data();
@@ -273,14 +270,7 @@ const Header: React.FC<HeaderProps> = ({
             });
             globalDealersCache = dealers;
             setAllDealers(dealers);
-        } catch (e: any) {
-            if (e.code === 'permission-denied') {
-              errorEmitter.emit('permission-error', new FirestorePermissionError({
-                path: concessionsRef.path,
-                operation: 'list'
-              }));
-            }
-        } finally {
+        } catch (e: any) {} finally {
             setIsDataLoading(false);
         }
     };
@@ -296,7 +286,6 @@ const Header: React.FC<HeaderProps> = ({
     let lowerTerm = deferredSearchTerm.toLowerCase().trim();
     const results: Suggestion[] = [];
     
-    // 1. DÉTECTION PARIS ARRONDISSEMENTS
     const parisArrMatch = lowerTerm.match(/paris\s*(\d{1,2})/i);
     if (parisArrMatch) {
         const arrNum = parseInt(parisArrMatch[1]);
@@ -314,7 +303,6 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
-    // 2. DÉPARTEMENTS ET VILLES
     Object.entries(locationsData).forEach(([dept, info]) => {
         if (dept.toLowerCase().includes(lowerTerm)) {
             results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9, score: 900 });
@@ -326,14 +314,12 @@ const Header: React.FC<HeaderProps> = ({
         });
     });
 
-    // 3. MARQUES
     brandsList.forEach(brand => {
         if (brand.toLowerCase().includes(lowerTerm)) {
             results.push({ type: 'brand-only', label: brand, subLabel: "Voir les concessionnaires", brand: brand, score: 1100 });
         }
     });
 
-    // 4. ÉTABLISSEMENTS
     allDealers.forEach(d => {
         if (d.label.toLowerCase().includes(lowerTerm)) {
             results.push({ ...d, score: 800 });
@@ -369,53 +355,53 @@ const Header: React.FC<HeaderProps> = ({
     else router.push(`/map${filter ? `?filter=${filter}` : ''}`);
   };
 
-  const searchInput = (
-    <div className="relative flex-1" ref={suggestionsRef}>
-      <Input 
-        type="search" 
-        placeholder={placeholderText} 
-        className={cn(
-            "pr-24 md:pr-32 rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 h-12 md:h-14 font-black transition-all",
-            !isMapPage && "md:pr-[110px]"
-        )}
-        value={searchTerm} 
-        onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
-        onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
-        onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
-        autoComplete="off" 
-      />
-      <Button 
-        type="submit" 
-        size="icon" 
-        className="absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg" 
-        onClick={onSearch}
-      >
-        <Search className="h-7 w-7" />
-      </Button>
-      
-      {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-background border rounded-[2rem] shadow-2xl z-[1600] max-h-[50vh] overflow-y-auto py-3">
-          {suggestions.map((s, idx) => (
-            <button key={idx} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
-              <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
-                {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
-                {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black">{s.subLabel}</span>}
-              </div>
-            </button>
-          ))}
+  if (variant === 'map') {
+    return (
+      <div className="relative w-full" ref={suggestionsRef}>
+        <div className="relative group">
+            <Input 
+                type="search" 
+                placeholder={placeholderText} 
+                className="pr-16 md:pr-20 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] bg-white/95 focus:bg-white border-none px-6 md:px-8 h-12 md:h-14 font-black text-sm md:text-base transition-all"
+                value={searchTerm} 
+                onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
+                onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
+                onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
+                autoComplete="off" 
+            />
+            <Button 
+                type="submit" 
+                size="icon" 
+                className="absolute top-1/2 -right-1 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[62px] md:w-[62px] shadow-lg hover:scale-105 active:scale-95 transition-all" 
+                onClick={onSearch}
+            >
+                <Search className="h-6 w-6 md:h-7 md:w-7" />
+            </Button>
         </div>
-      )}
-    </div>
-  );
+        
+        {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-3 bg-background border rounded-[2rem] shadow-2xl z-[1600] max-h-[50vh] overflow-y-auto py-3">
+            {suggestions.map((s, idx) => (
+                <button key={idx} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
+                <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
+                    {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                </div>
+                <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
+                    {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black">{s.subLabel}</span>}
+                </div>
+                </button>
+            ))}
+            </div>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <header className={cn("bg-transparent py-4 px-4 border-none relative", isMapPage ? "pb-0" : "pb-4 md:pb-0", className)}>
+    <header className={cn("bg-transparent py-4 px-4 border-none relative pb-4 md:pb-0", className)}>
       <div className="container mx-auto max-w-screen-2xl flex flex-col gap-6 md:gap-4">
-        {(!isMapPage || isMobile) && (
-          <div className="flex flex-row items-center justify-between gap-2 w-full">
+        <div className="flex flex-row items-center justify-between gap-2 w-full">
             <div className="shrink-0 relative z-[150]"><LabelMotoLogo className="w-[170px] sm:w-52 md:w-[360px] py-1" /></div>
             <div className="flex flex-1 justify-center px-1 relative z-10 min-w-0">
                 <div className="bg-white px-2 py-1.5 md:px-8 md:py-4 rounded-full shadow-lg border border-gray-100 text-center w-full max-w-xs flex flex-col justify-center items-center">
@@ -424,33 +410,64 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
             </div>
             <div className="shrink-0 relative z-[150]">{!hideUserMenu && <UserMenu />}</div>
-          </div>
-        )}
+        </div>
 
         <div className="flex flex-col items-center gap-4 w-full max-w-screen-xl mx-auto relative z-20">
-            <div className={cn("flex flex-col md:flex-row items-center gap-4 w-full justify-center", isMapPage && "md:justify-end md:pr-8")}>
-                <div className="w-full max-w-2xl">{searchInput}</div>
-                {!isMapPage && (
-                    <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
-                        {[{ href: '/entretien', img: '/images/icon-entretienrevision.webp', label: 'Entretien' }, { href: '/info', img: '/images/icon-conseils.webp', label: 'Conseils' }].map((item, i) => (
-                            <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
-                                <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 group p-0 flex items-center justify-center">
-                                    <Link href={item.href} className="flex items-center justify-center h-full w-full">
-                                        <Image src={item.img} alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" />
-                                    </Link>
-                                </Button>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{item.label}</span>
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
+                <div className="w-full max-w-2xl">
+                    <div className="relative" ref={suggestionsRef}>
+                        <Input 
+                            type="search" 
+                            placeholder={placeholderText} 
+                            className="pr-24 md:pr-[110px] rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 h-12 md:h-14 font-black transition-all"
+                            value={searchTerm} 
+                            onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
+                            onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
+                            onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
+                            autoComplete="off" 
+                        />
+                        <Button 
+                            type="submit" 
+                            size="icon" 
+                            className="absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg" 
+                            onClick={onSearch}
+                        >
+                            <Search className="h-7 w-7" />
+                        </Button>
+                        
+                        {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-3 bg-background border rounded-[2rem] shadow-2xl z-[1600] max-h-[50vh] overflow-y-auto py-3">
+                            {suggestions.map((s, idx) => (
+                                <button key={idx} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
+                                <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
+                                    {s.type === 'dealer' || s.type === 'brand-only' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
+                                    {s.subLabel && <span className="text-[10px] text-muted-foreground truncate uppercase font-black">{s.subLabel}</span>}
+                                </div>
+                                </button>
+                            ))}
                             </div>
-                        ))}
+                        )}
                     </div>
-                )}
+                </div>
+                <div className="hidden md:flex relative border-2 border-dashed border-gray-200 rounded-[2.5rem] p-4 gap-6 items-center bg-white/40 backdrop-blur-md shadow-inner md:ml-36">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-2 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Guide</span>
+                    {[{ href: '/entretien', img: '/images/icon-entretienrevision.webp', label: 'Entretien' }, { href: '/info', img: '/images/icon-conseils.webp', label: 'Conseils' }].map((item, i) => (
+                        <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
+                            <Button asChild variant="ghost" size="icon" className="h-[62px] w-[62px] rounded-full bg-white shadow-xl border-2 border-white hover:bg-brand hover:border-white transition-all hover:scale-110 group p-0 flex items-center justify-center">
+                                <Link href={item.href} className="flex items-center justify-center h-full w-full">
+                                    <Image src={item.img} alt="" width={44} height={44} className="h-11 w-11 object-contain group-hover:brightness-0 group-hover:invert" />
+                                </Link>
+                            </Button>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{item.label}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
             
-            <nav className={cn(
-              "flex flex-wrap items-center justify-center gap-4 md:gap-8 relative z-50",
-              isMapPage ? "mt-4" : (isCompactPage ? "-mb-24 md:-mb-20" : "-mb-16 md:-mb-10")
-            )}>
+            <nav className="flex flex-wrap items-center justify-center gap-4 md:gap-8 relative z-50 -mb-16 md:-mb-10">
                 <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
                     <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
                         <Bike className={cn("h-6 w-6 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand")} />

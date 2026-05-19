@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Clock, ExternalLink } from 'lucide-react';
+import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Clock, ExternalLink, Navigation } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -49,97 +50,55 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
   if (isLoading) return (
-    <div className="p-6 space-y-6">
-      <Button variant="ghost" onClick={onBack} className="p-0 font-black uppercase text-[10px] tracking-widest mb-4"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Button>
-      <Skeleton className="aspect-video w-full rounded-2xl" />
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-3/4" />
+    <div className="p-4 space-y-4">
+      <Skeleton className="h-32 w-full rounded-2xl" />
+      <div className="space-y-2">
+        <Skeleton className="h-6 w-3/4" />
         <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-24 w-full rounded-xl" />
       </div>
     </div>
   );
 
-  if (!pro) return (
-    <div className="p-6 text-center">
-      <p className="font-black uppercase tracking-tighter mb-4">Établissement non trouvé</p>
-      <Button onClick={onBack} className="bg-brand">Retour aux résultats</Button>
-    </div>
-  );
+  if (!pro) return null;
 
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`;
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto custom-scrollbar bg-white">
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md p-4 border-b flex items-center justify-between">
-        <Button variant="ghost" onClick={onBack} className="font-black uppercase text-[10px] tracking-widest"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Button>
-        <Link href={`/concessions/${pro.slug || pro.id}`} className="text-[10px] font-black uppercase tracking-widest text-brand hover:underline flex items-center gap-1.5">
-          Page SEO <ExternalLink className="h-3 w-3" />
-        </Link>
-      </div>
-
-      <div className="relative aspect-video w-full shrink-0">
-        <Image 
-          src={pro.imageUrl || pro.imgUrl || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"} 
-          alt={pro.title} 
-          fill 
-          className="object-cover" 
-          sizes="(max-width: 1024px) 100vw, 520px"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-4 left-6 right-4">
-          <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter leading-none mb-1">{pro.title}</h2>
-          <p className="text-white/80 font-black italic text-xs md:text-sm uppercase tracking-widest">{pro.category || 'Expert moto'}</p>
-        </div>
-      </div>
-
-      <div className="p-6 space-y-8">
-        <div className="grid grid-cols-2 gap-3">
-          {pro.phoneNumber && (
-            <Button asChild className="h-14 rounded-xl bg-brand/5 border-2 border-brand/10 hover:bg-brand/10 text-brand shadow-none transition-all">
-              <a href={`tel:${pro.phoneNumber}`} className="flex flex-col items-center justify-center gap-1">
-                <Phone className="h-4 w-4" />
-                <span className="text-[8px] font-black uppercase tracking-widest">Appeler</span>
-              </a>
-            </Button>
-          )}
-          {pro.website && (
-            <Button asChild className="h-14 rounded-xl bg-brand/5 border-2 border-brand/10 hover:bg-brand/10 text-brand shadow-none transition-all">
-              <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center gap-1">
-                <Globe className="h-4 w-4" />
-                <span className="text-[8px] font-black uppercase tracking-widest">Site Web</span>
-              </a>
-            </Button>
+    <div className="bg-white border rounded-3xl p-4 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="flex gap-4 items-start mb-4">
+        <div className="relative w-32 h-32 rounded-2xl overflow-hidden bg-muted shrink-0 border">
+          {pro.imageUrl || pro.imgUrl ? (
+             <Image src={pro.imageUrl || pro.imgUrl || ""} alt={pro.title} fill className="object-cover" />
+          ) : (
+             <div className="w-full h-full flex items-center justify-center opacity-10">
+                <MapPin className="h-12 w-12" />
+             </div>
           )}
         </div>
-
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 p-4 bg-muted/30 rounded-2xl border-2 border-dashed">
-            <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-            <div className="space-y-2">
-              <p className="font-black text-sm uppercase tracking-tight leading-tight">{pro.address}</p>
-              <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[9px]"><a href={navigationUrl} target="_blank" rel="noopener noreferrer">🔘 Itinéraire Google Maps</a></Button>
-            </div>
-          </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg font-black uppercase tracking-tighter leading-tight mb-1">{pro.title}</h3>
+          <p className="text-[10px] font-black uppercase text-brand mb-4">{pro.category || 'Expert moto'}</p>
+          
+          <Button asChild className="bg-brand hover:bg-brand/90 text-white rounded-full font-black uppercase text-[9px] h-9 px-4 shadow-lg transition-transform hover:scale-105 active:scale-95">
+            <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+              <Navigation className="h-3.5 w-3.5 fill-white" />
+              Calculer l'itinéraire
+            </a>
+          </Button>
         </div>
-
-        <div className="bg-white border-2 rounded-2xl overflow-hidden shadow-sm">
-          <div className="bg-muted/50 p-4 border-b flex items-center gap-2">
-            <Clock className="h-4 w-4 text-brand" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Horaires d'ouverture</span>
-          </div>
-          <div className="p-4 space-y-2">
-            {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
-              <div key={day} className="flex justify-between items-center text-xs font-bold border-b border-dashed border-muted last:border-0 pb-1.5 pt-1.5">
-                <span className="capitalize text-muted-foreground">{day}</span>
-                <span className="text-foreground font-black">{pro[day] || 'Fermé'}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <button onClick={onBack} className="p-1 text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" />
+        </button>
       </div>
-      <div className="p-6 pt-0 mt-auto">
-        <p className="text-[10px] text-muted-foreground font-bold italic text-center">Données certifiées Label Moto © {new Date().getFullYear()}</p>
+      
+      <div className="border-t border-dashed pt-3 flex justify-between items-center">
+         <div className="flex gap-3">
+            {pro.phoneNumber && <a href={`tel:${pro.phoneNumber}`} className="text-brand hover:scale-110 transition-transform"><Phone className="h-4 w-4" /></a>}
+            {pro.website && <a href={pro.website} target="_blank" rel="noopener noreferrer" className="text-brand hover:scale-110 transition-transform"><Globe className="h-4 w-4" /></a>}
+         </div>
+         <Link href={`/concessions/${pro.slug || pro.id}`} className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand transition-colors">
+            Voir la fiche complète →
+         </Link>
       </div>
     </div>
   );
@@ -192,11 +151,9 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
-  // LOGIQUE DE FILTRAGE CENTRALE (Source de vérité)
   useEffect(() => {
     let base = Array.from(masterPointsMap.current.values());
     
-    // Règle métier : TOUT = Concession + Atelier
     if (activeFilter === null) {
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
@@ -214,7 +171,6 @@ function MapPageComponent() {
 
     setFilteredPoints(base);
 
-    // Sécurité : Fermer la fiche si elle ne correspond plus au filtre
     if (selectedDealershipId) {
       const stillVisible = base.some(p => p.id === selectedDealershipId);
       if (!stillVisible) {
@@ -230,7 +186,7 @@ function MapPageComponent() {
       setIsLoading(true);
       try {
         const collections = ['concessions', 'associations', 'relais'];
-        const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(2000)))));
+        const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(3000)))));
         
         snapshots.forEach((snap, idx) => {
           snap.docs.forEach(doc => {
@@ -256,7 +212,6 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
-  // ACTION : Clic sur un marqueur
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); 
     setIsDetailViewOpen(true);
@@ -270,7 +225,6 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('full'); 
   }, [isMobile]);
 
-  // ACTION : Clic sur une carte de la liste
   const handleOpenDetails = useCallback((id: string) => {
     setSelectedDealershipId(id);
     setIsDetailViewOpen(true);
@@ -284,27 +238,9 @@ function MapPageComponent() {
     }
   }, [isMobile]);
 
-  const listContent = (
-    <div className="space-y-3 pb-20">
-      {isLoading ? (
-        <div className="space-y-4 pt-4">{Array.from({ length: 5 }).map((_, i) => (<Skeleton key={i} className="h-32 w-full rounded-2xl" />))}</div>
-      ) : (
-        filteredPoints.map((point) => (
-          <DealershipCardItem 
-            key={point.id} 
-            point={point} 
-            isSelected={point.id === selectedDealershipId} 
-            onClick={() => handleOpenDetails(point.id)} 
-            onOpenDetails={handleOpenDetails}
-            className={cn(point.id === selectedDealershipId && "ring-2 ring-brand shadow-lg")} 
-          />
-        ))
-      )}
-    </div>
-  );
-
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
+      {/* MAP BACKGROUND */}
       <div className="absolute inset-0 z-0">
         <MapComponent 
           points={filteredPoints} 
@@ -323,65 +259,156 @@ function MapPageComponent() {
         />
       </div>
 
+      {/* FLOATING SEARCH BAR (TOP RIGHT) */}
+      <div className="absolute top-6 right-6 left-6 md:left-auto md:w-full md:max-w-2xl z-[1500] pointer-events-none">
+        <div className="pointer-events-auto">
+          <Header 
+            searchTerm={searchTerm} 
+            onSearchTermChange={setSearchTerm} 
+            onSearch={() => setSubmittedSearchTerm(searchTerm)} 
+            placeholderText="Recherche par département, ville, marque, nom..."
+            variant="map"
+            hideUserMenu
+          />
+        </div>
+      </div>
+
+      {/* SIDEBAR DASHBOARD (LEFT) */}
       {!isMobile && (
-        <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[100] border border-white/40 overflow-hidden transition-all duration-300">
-            {isDetailViewOpen && selectedDealershipId ? (
-              <SidebarDetailView 
-                dealershipId={selectedDealershipId} 
-                point={masterPointsMap.current.get(selectedDealershipId)}
-                onBack={() => setIsDetailViewOpen(false)} 
-              />
-            ) : (
-              <>
-                <div className="p-8 pb-4 shrink-0">
-                    <div className="flex items-center justify-between gap-4 mb-8">
-                        <div className="w-40"><LabelMotoLogo noBubble /></div>
-                        <UserMenu />
+        <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.2)] z-[1000] border border-white/40 overflow-hidden transition-all duration-300">
+            {/* Header du Dashboard */}
+            <div className="p-10 pb-6 shrink-0">
+                <div className="flex items-center justify-between gap-4 mb-8">
+                    <div className="w-40"><LabelMotoLogo noBubble /></div>
+                    <div className="bg-white px-4 py-2 rounded-full shadow-sm border border-gray-50 text-center flex-1 max-w-[200px]">
+                        <p className="text-[8px] font-black uppercase tracking-wider text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
+                        <p className="text-[10px] font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
                     </div>
-                    <Header 
-                      searchTerm={searchTerm} 
-                      onSearchTermChange={setSearchTerm} 
-                      onSearch={() => setSubmittedSearchTerm(searchTerm)} 
-                      activeFilter={activeFilter} 
-                      onFilterChange={setActiveFilter} 
-                      variant="map" 
-                      hideUserMenu 
-                    />
+                    <UserMenu />
                 </div>
-                <div ref={listContainerRef} className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">{listContent}</div>
-              </>
-            )}
+
+                {/* Filtres par catégories */}
+                <div className="space-y-8 mt-10">
+                    <div className="text-center space-y-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Pros & Services</p>
+                        <div className="flex justify-center gap-6">
+                            {[
+                                { id: 'shopping', label: 'Concess', icon: Bike },
+                                { id: null, label: 'Tout', icon: Home },
+                                { id: 'service', label: 'Atelier', icon: Wrench }
+                            ].map((tab) => (
+                                <button 
+                                    key={String(tab.id)} 
+                                    onClick={() => setActiveFilter(tab.id as any)}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className={cn(
+                                        "h-16 w-16 rounded-full flex items-center justify-center transition-all border-4 shadow-lg group-hover:scale-105 active:scale-95",
+                                        activeFilter === tab.id 
+                                            ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" 
+                                            : "bg-white text-brand border-transparent hover:border-brand/20"
+                                    )}>
+                                        <tab.icon className="h-7 w-7" />
+                                    </div>
+                                    <span className={cn("text-[9px] font-black uppercase tracking-widest", activeFilter === tab.id ? "text-brand" : "text-muted-foreground")}>
+                                        {tab.label}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="text-center space-y-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Communauté</p>
+                        <div className="flex justify-center gap-10">
+                            {[
+                                { id: 'association', label: 'Asso', icon: Users, color: 'indigo-600' },
+                                { id: 'relais', label: 'Relais', icon: Utensils, color: 'amber-600' }
+                            ].map((tab) => (
+                                <button 
+                                    key={tab.id} 
+                                    onClick={() => setActiveFilter(tab.id as any)}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className={cn(
+                                        "h-14 w-14 rounded-full flex items-center justify-center transition-all border-4 shadow-md group-hover:scale-105 active:scale-95",
+                                        activeFilter === tab.id 
+                                            ? `bg-${tab.color} text-white border-white scale-110 z-10 shadow-${tab.color}/40` 
+                                            : `bg-white text-${tab.color} border-transparent hover:border-${tab.color}/20`
+                                    )}>
+                                        <tab.icon className="h-6 w-6" />
+                                    </div>
+                                    <span className={cn("text-[9px] font-black uppercase tracking-widest", activeFilter === tab.id ? `text-${tab.color}` : "text-muted-foreground")}>
+                                        {tab.label}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Zone de résultats ou détails */}
+            <div className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
+                {isDetailViewOpen && selectedDealershipId ? (
+                   <SidebarDetailView 
+                        dealershipId={selectedDealershipId} 
+                        point={masterPointsMap.current.get(selectedDealershipId)}
+                        onBack={() => { setIsDetailViewOpen(false); setSelectedDealershipId(null); }}
+                   />
+                ) : (
+                    <div className="space-y-4">
+                        {isLoading ? (
+                            Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)
+                        ) : filteredPoints.length > 0 ? (
+                            filteredPoints.map((point) => (
+                                <DealershipCardItem 
+                                    key={point.id} 
+                                    point={point} 
+                                    isSelected={point.id === selectedDealershipId} 
+                                    onClick={() => handleOpenDetails(point.id)} 
+                                    onOpenDetails={handleOpenDetails}
+                                    className={cn("rounded-3xl border-muted/50", point.id === selectedDealershipId && "ring-2 ring-brand")} 
+                                />
+                            ))
+                        ) : (
+                            <div className="text-center py-20">
+                                <p className="text-muted-foreground font-black uppercase text-xs">Aucun pro dans cette zone.</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </aside>
       )}
 
+      {/* MOBILE DRAWER */}
       {isMobile && (
         <div className={cn("fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[110px]' : drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-160px)]')}>
            <div className="absolute top-0 left-0 right-0 h-14 cursor-pointer flex items-center justify-center" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : (drawerHeight === 'half' ? 'full' : 'half'))}>
               <div className="w-12 h-1.5 bg-muted rounded-full" />
            </div>
            <div className="pt-2 h-full overflow-hidden flex flex-col">
-              {!isDetailViewOpen && (
-                <div className="px-6 py-2">
-                   <Header 
-                      searchTerm={searchTerm} 
-                      onSearchTermChange={setSearchTerm} 
-                      onSearch={() => setSubmittedSearchTerm(searchTerm)} 
-                      activeFilter={activeFilter} 
-                      onFilterChange={(f) => { setActiveFilter(f); setDrawerHeight('half'); }} 
-                      variant="map" 
-                      hideUserMenu 
-                    />
-                </div>
-              )}
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto p-4">
                 {isDetailViewOpen && selectedDealershipId ? (
-                  <SidebarDetailView 
+                   <SidebarDetailView 
                     dealershipId={selectedDealershipId} 
                     point={masterPointsMap.current.get(selectedDealershipId)}
                     onBack={() => { setIsDetailViewOpen(false); setDrawerHeight('half'); }} 
                   />
                 ) : (
-                  <div className="px-4">{listContent}</div>
+                  <div className="space-y-3">
+                     {filteredPoints.map((point) => (
+                        <DealershipCardItem 
+                            key={point.id} 
+                            point={point} 
+                            isSelected={point.id === selectedDealershipId} 
+                            onClick={() => handleOpenDetails(point.id)} 
+                            onOpenDetails={handleOpenDetails}
+                            className="rounded-2xl"
+                        />
+                      ))}
+                  </div>
                 )}
               </div>
            </div>
