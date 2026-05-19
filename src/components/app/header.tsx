@@ -355,6 +355,14 @@ const Header: React.FC<HeaderProps> = ({
     else router.push(`/map${filter ? `?filter=${filter}` : ''}`);
   };
 
+  const handleClearSearch = () => {
+    onSearchTermChange('');
+    // Trigger onSearch after clear to refresh view
+    setTimeout(() => {
+        onSearch();
+    }, 10);
+  };
+
   if (variant === 'map') {
     return (
       <div className="relative w-full" ref={suggestionsRef}>
@@ -362,13 +370,21 @@ const Header: React.FC<HeaderProps> = ({
             <Input 
                 type="search" 
                 placeholder={placeholderText} 
-                className="pr-16 md:pr-20 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] bg-white/95 focus:bg-white border-none px-6 md:px-8 h-12 md:h-14 font-black text-sm md:text-base transition-all"
+                className="pr-16 md:pr-24 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] bg-white/95 focus:bg-white border-none px-6 md:px-8 h-12 md:h-14 font-black text-sm md:text-base transition-all"
                 value={searchTerm} 
                 onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                 onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
                 onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
                 autoComplete="off" 
             />
+            {searchTerm && (
+                <button 
+                    onClick={handleClearSearch}
+                    className="absolute right-16 md:right-20 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-[10]"
+                >
+                    <X className="h-5 w-5" />
+                </button>
+            )}
             <Button 
                 type="submit" 
                 size="icon" 
@@ -419,13 +435,21 @@ const Header: React.FC<HeaderProps> = ({
                         <Input 
                             type="search" 
                             placeholder={placeholderText} 
-                            className="pr-24 md:pr-[110px] rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 h-12 md:h-14 font-black transition-all"
+                            className="pr-24 md:pr-[160px] rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 h-12 md:h-14 font-black transition-all"
                             value={searchTerm} 
                             onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                             onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
                             onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
                             autoComplete="off" 
                         />
+                        {searchTerm && (
+                            <button 
+                                onClick={handleClearSearch}
+                                className="absolute right-20 md:right-[110px] top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-[10]"
+                            >
+                                <X className="h-6 w-6" />
+                            </button>
+                        )}
                         <Button 
                             type="submit" 
                             size="icon" 
