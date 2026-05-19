@@ -10,7 +10,7 @@ import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
 import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Zap, FileText, Sparkles } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
-import { cn, generateDealershipSlug } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase } from '@/firebase';
 import { collection, getDocs, query, limit, doc } from "firebase/firestore";
@@ -22,7 +22,7 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { useMemoFirebase } from '@/firebase/provider';
 import { useCollection } from '@/firebase/firestore/use-collection';
 
-// Constante de seuil de zoom pour basculer entre mode découverte et mode précision
+// Seuil de zoom stable pour basculer vers le mode professionnel
 const DISCOVERY_ZOOM_THRESHOLD = 9.0;
 
 const CIRCUIT_BUGATTI: MapPoint = {
@@ -133,13 +133,13 @@ function MapPageComponent() {
   const searchParam = searchParams.get('search');
   const selectedIdParam = searchParams.get('selectedId');
 
-  // SOURCE DE VÉRITÉ BRUTE : Tous les points chargés (Overview léger)
+  // SOURCE DE VÉRITÉ BRUTE : Tous les points cartographiques chargés
   const [allOverviewPoints, setAllOverviewPoints] = useState<MapPoint[]>([CIRCUIT_BUGATTI]);
   
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // État de mode UX pour gérer la transition Découverte -> Pros
+  // État de mode UX pour gérer la transition Découverte -> Pros persistante
   const [uxMode, setUxMode] = useState<'discovery' | 'pros'>('discovery');
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -179,7 +179,7 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
-  // Détection du passage définitif en mode Pros (ne revient jamais en arrière)
+  // Détection du passage définitif en mode Pros (ne revient jamais en arrière après exploration)
   useEffect(() => {
     if (uxMode === 'pros') return;
     if (mapZoom >= DISCOVERY_ZOOM_THRESHOLD || submittedSearchTerm || selectedDealershipId || activeFilter) {
@@ -189,12 +189,11 @@ function MapPageComponent() {
 
   /**
    * SOURCE 1 : clusterPoints (POUR LA CARTE)
-   * Contient TOUS les points filtrés par métier et recherche, sans limite de viewport.
+   * Contient TOUS les points filtrés, sans limite de viewport, pour alimenter les clusters nationaux.
    */
   const clusterPoints = useMemo(() => {
     let base = allOverviewPoints;
     
-    // 1. Filtrage Métier Strict
     if (activeFilter === null) { 
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
@@ -205,7 +204,6 @@ function MapPageComponent() {
       base = base.filter(p => p.appSection === activeFilter);
     }
 
-    // 2. Filtrage Recherche
     if (submittedSearchTerm) {
       const lower = submittedSearchTerm.toLowerCase();
       base = base.filter(p => p.title.toLowerCase().includes(lower));
@@ -216,21 +214,21 @@ function MapPageComponent() {
 
   /**
    * SOURCE 2 : listPoints (POUR L'UI LISTE)
-   * Basé sur clusterPoints, trié par point sélectionné (pivot) puis proximité.
+   * Trié par point sélectionné (Pivot) puis proximité géographique.
    */
   const listPoints = useMemo(() => {
     const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
     
-    // Si un point est sélectionné, il devient le pivot du tri de toute la liste
+    // Pivot de tri : Sélection active > Centre de la carte
     const pivotLat = selectedPoint?.latitude ?? mapCenter[0];
     const pivotLng = selectedPoint?.longitude ?? mapCenter[1];
 
     const sorted = [...clusterPoints].sort((a, b) => {
-      // 1. Priorité absolue à la sélection (Index 0)
+      // 1. Priorité absolue au pro cliqué
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
-      // 2. Tri par distance au pivot (point sélectionné ou centre)
+      // 2. Tri par proximité euclidienne au pivot
       const distA = Math.pow(a.latitude - pivotLat, 2) + Math.pow(a.longitude - pivotLng, 2);
       const distB = Math.pow(b.latitude - pivotLat, 2) + Math.pow(b.longitude - pivotLng, 2);
       return distA - distB;
@@ -239,7 +237,7 @@ function MapPageComponent() {
     return sorted.slice(0, 500); 
   }, [clusterPoints, selectedDealershipId, mapCenter]);
 
-  // Chargement initial massif des points d'overview (légers)
+  // Chargement massif des MapPoints (Overview léger)
   useEffect(() => {
     const fetchAll = async () => {
       if (!firestore) return;
@@ -291,7 +289,6 @@ function MapPageComponent() {
     
     const point = masterPointsMap.current.get(id); 
     if (point) { 
-      // RECENTRE la carte sans changer le zoom
       setMapCenter([point.latitude, point.longitude]); 
     } 
 
@@ -299,7 +296,7 @@ function MapPageComponent() {
         setDrawerHeight('half');
     }
 
-    // Scroll auto vers le haut (le point sélectionné y est forcé par le tri)
+    // Le tri fait remonter le point sélectionné à l'index 0, on scrolle vers lui.
     setTimeout(() => {
         scrollListToTop();
     }, 150);
@@ -323,7 +320,6 @@ function MapPageComponent() {
     }
   }, [isMobile, drawerHeight]);
 
-  // Mode découverte : SEULEMENT si uxMode est discovery ET zoom faible
   const isDiscoveryMode = uxMode === 'discovery' && mapZoom < DISCOVERY_ZOOM_THRESHOLD;
 
   const FilterButtons = ({ mobile = false }) => {

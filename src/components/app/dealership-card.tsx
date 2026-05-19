@@ -37,7 +37,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const [imgError, setImgError] = useState(false);
   const { firestore } = useFirebase();
 
-  // On ne charge les détails complets (téléphone, etc.) que si la carte est sélectionnée
+  // Détails complets chargés uniquement lors de la sélection
   const docRef = useMemoFirebase(() => {
     if (!isSelected) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
@@ -121,7 +121,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
             </span>
           </div>
 
-          {/* ACTIONS RAPIDES (Si sélectionné) */}
+          {/* ACTIONS RAPIDES */}
           <div className="flex items-center gap-2 mt-auto">
             {isSelected && isDetailLoading ? (
               <div className="flex gap-2"><Skeleton className="h-9 w-9 rounded-full" /><Skeleton className="h-9 w-9 rounded-full" /></div>
@@ -146,18 +146,17 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
               </div>
             )}
             
-            {/* Lien SEO caché pour crawl Google */}
             <Link href={`/concessions/${slugOrId}`} className="sr-only">Voir la fiche complète</Link>
           </div>
         </div>
       </div>
       
-      {/* Zoom Dialog */}
+      {/* Zoom Dialog Accessible */}
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none z-[3000]">
           <DialogHeader className="sr-only">
-            <DialogTitle>Aperçu de l'établissement {point.title}</DialogTitle>
-            <DialogDescription>Photo grand format de {point.title}</DialogDescription>
+            <DialogTitle>Aperçu : {point.title}</DialogTitle>
+            <DialogDescription>Photo plein écran de l'établissement professionnel {point.title}</DialogDescription>
           </DialogHeader>
           <div className="relative w-full h-full flex items-center justify-center">
             <button onClick={() => setIsZoomDialogOpen(false)} className="absolute top-4 right-4 z-[3100] bg-white/10 hover:bg-white/20 p-2 rounded-full text-white"><X className="h-6 w-6" /></button>

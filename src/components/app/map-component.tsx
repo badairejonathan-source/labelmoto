@@ -65,7 +65,7 @@ const MapComponent = ({
     const labelsToShow = new Set<string>();
     const currentBounds = mapBounds || map.getBounds();
     
-    // On priorise TOUJOURS la sélection
+    // On priorise TOUJOURS la sélection active
     if (selectedId) labelsToShow.add(selectedId);
 
     if (zoom >= 13) {
@@ -74,7 +74,7 @@ const MapComponent = ({
       const gridWidth = 160; 
       const gridHeight = 60;
 
-      // On traite d'abord le point sélectionné pour "réserver" sa place
+      // On traite d'abord le point sélectionné pour "réserver" sa place dans la grille
       if (selectedId) {
         const selPoint = points.find(p => p.id === selectedId);
         if (selPoint && currentBounds.contains([selPoint.latitude, selPoint.longitude])) {
@@ -85,7 +85,7 @@ const MapComponent = ({
         }
       }
 
-      // On traite les autres points visibles
+      // On traite les autres points visibles dans le viewport
       points.forEach(point => {
         if (point.id === selectedId) return;
         if (!currentBounds.contains([point.latitude, point.longitude])) return;
@@ -95,13 +95,14 @@ const MapComponent = ({
         const gy = Math.floor(pix.y / gridHeight);
         const key = `${gx},${gy}`;
 
+        // Si la cellule de grille est vide, on affiche le label
         if (!grid.has(key)) {
           grid.add(key);
           labelsToShow.add(point.id);
         }
       });
     } else if (zoom >= 11) {
-      // Zoom intermédiaire : seulement le point sélectionné ou survolé
+      // Zoom intermédiaire : seulement le point sélectionné ou survolé affichent leur nom
       if (selectedId) labelsToShow.add(selectedId);
       if (hoveredId) labelsToShow.add(hoveredId);
     }
@@ -142,8 +143,8 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // movestart capture tout début de mouvement (drag, zoom, pan)
-    map.on('movestart', () => {
+    // Détecte uniquement les interactions manuelles (Touch/Drag)
+    map.on('dragstart zoomstart', () => {
       if (!isUpdatingFromProps.current) {
         onUserInteraction?.();
       }
@@ -203,7 +204,7 @@ const MapComponent = ({
     clusterGroup.addLayers(markers);
   }, [points]); 
 
-  // Mise à jour réactive des icônes
+  // Mise à jour visuelle réactive des icônes et des noms
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !points) return;
@@ -242,6 +243,7 @@ const MapComponent = ({
         animate: true
       });
     } else {
+      // UTILISATION DU ZOOM ACTUEL pour éviter les dézooms brusques au clic
       const currentMapZoom = map.getZoom();
       const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, currentMapZoom);
       map.flyTo(finalCenter, currentMapZoom, { duration: 0.8 });
