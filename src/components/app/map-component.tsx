@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import '@/app/map.css';
-import React, { useEffect, useRef, memo } from 'react';
+import React, { useEffect, useRef, memo, useMemo } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { MapPoint } from '@/lib/types';
@@ -56,6 +56,58 @@ const MapComponent = ({
   const isUpdatingFromProps = useRef(false);
   const lastSetTargetKey = useRef<string>("");
 
+  // Logic pour décider quels labels afficher (Anti-collision Grid)
+  const labelIds = useMemo(() => {
+    if (!mapRef.current || zoom < 11) return new Set<string>();
+
+    const map = mapRef.current;
+    const labelsToShow = new Set<string>();
+    const bounds = map.getBounds();
+    
+    // On priorise TOUJOURS la sélection
+    if (selectedId) labelsToShow.add(selectedId);
+
+    if (zoom >= 13) {
+      // Stratégie Anti-collision : Grille de 160x60 pixels
+      const grid = new Set<string>();
+      const gridWidth = 160; 
+      const gridHeight = 60;
+
+      // On traite d'abord le point sélectionné pour "réserver" sa place
+      if (selectedId) {
+        const selPoint = points.find(p => p.id === selectedId);
+        if (selPoint && bounds.contains([selPoint.latitude, selPoint.longitude])) {
+          const pix = map.latLngToLayerPoint([selPoint.latitude, selPoint.longitude]);
+          const gx = Math.floor(pix.x / gridWidth);
+          const gy = Math.floor(pix.y / gridHeight);
+          grid.add(`${gx},${gy}`);
+        }
+      }
+
+      // On traite les autres points visibles
+      points.forEach(point => {
+        if (point.id === selectedId) return;
+        if (!bounds.contains([point.latitude, point.longitude])) return;
+
+        const pix = map.latLngToLayerPoint([point.latitude, point.longitude]);
+        const gx = Math.floor(pix.x / gridWidth);
+        const gy = Math.floor(pix.y / gridHeight);
+        const key = `${gx},${gy}`;
+
+        if (!grid.has(key)) {
+          grid.add(key);
+          labelsToShow.add(point.id);
+        }
+      });
+    } else if (zoom >= 11) {
+      // Zoom intermédiaire : seulement le point sélectionné ou survolé
+      if (selectedId) labelsToShow.add(selectedId);
+      if (hoveredId) labelsToShow.add(hoveredId);
+    }
+
+    return labelsToShow;
+  }, [points, zoom, selectedId, hoveredId, mapBounds]);
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -89,9 +141,7 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // Détection stricte de l'interaction MANUELLE pour réduire le tiroir mobile
     map.on('dragstart zoomstart', () => {
-      // Si on n'est pas en train d'exécuter une mise à jour auto (fitBounds, flyTo)
       if (!isUpdatingFromProps.current) {
         onUserInteraction?.();
       }
@@ -125,9 +175,10 @@ const MapComponent = ({
     const markers: L.Marker[] = points.map((point) => {
       const isHovered = point.id === hoveredId;
       const isSelected = point.id === selectedId;
+      const showLabel = labelIds.has(point.id);
 
       const marker = L.marker([point.latitude, point.longitude], {
-        icon: createIcon(point, isHovered, isSelected, currentZoom)
+        icon: createIcon(point, isHovered, isSelected, currentZoom, showLabel)
       });
 
       marker.on('click', (e) => {
@@ -150,6 +201,7 @@ const MapComponent = ({
     clusterGroup.addLayers(markers);
   }, [points]); 
 
+  // Mise à jour réactive des icônes (changement zoom, sélection, ou labels à afficher)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !points) return;
@@ -160,14 +212,15 @@ const MapComponent = ({
       if (marker) {
         const isHovered = point.id === hoveredId;
         const isSelected = point.id === selectedId;
-        const newIcon = createIcon(point, isHovered, isSelected, currentZoom);
+        const showLabel = labelIds.has(point.id);
+        const newIcon = createIcon(point, isHovered, isSelected, currentZoom, showLabel);
         marker.setIcon(newIcon);
         
         if (isSelected || isHovered) marker.setZIndexOffset(1000);
         else marker.setZIndexOffset(0);
       }
     });
-  }, [hoveredId, selectedId, zoom]); 
+  }, [hoveredId, selectedId, zoom, labelIds]); 
 
   useEffect(() => {
     const map = mapRef.current;
@@ -177,7 +230,6 @@ const MapComponent = ({
     if (lastSetTargetKey.current === intentKey) return;
     lastSetTargetKey.current = intentKey;
 
-    // On active le flag pour empêcher la réduction du drawer lors de ce déplacement programmatique
     isUpdatingFromProps.current = true;
 
     if (targetBounds) {
@@ -189,6 +241,8 @@ const MapComponent = ({
       });
     } else {
       const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom);
+      // UX GOOGLE MAPS : On utilise flyTo avec le zoom ACTUEL si selectionSource est 'marker'
+      // pour éviter le saut de zoom intempestif.
       map.flyTo(finalCenter, zoom, { duration: 0.8 });
     }
     
@@ -213,7 +267,7 @@ const MapComponent = ({
   return <div ref={containerRef} className="w-full h-full min-0 bg-muted/10" />;
 };
 
-const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, currentZoom: number) => {
+const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, currentZoom: number, showLabel: boolean) => {
   const scale = isHovered || isSelected ? 1.2 : 1;
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
@@ -221,8 +275,6 @@ const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, cu
   let color = isSelected || isHovered ? '#f97316' : '#ea580c';
   if (isAssociation) color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
   else if (isRelais) color = isSelected || isHovered ? '#f59e0b' : '#d97706';
-
-  const showLabel = currentZoom >= 11 && (isSelected || isHovered || currentZoom >= 16);
 
   const iconHtml = `
     <div style="display: flex; align-items: center; position: relative;">

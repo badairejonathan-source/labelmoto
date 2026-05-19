@@ -1,3 +1,4 @@
+
 /* Styles spécifiques à la carte Leaflet - Chargés uniquement sur la page /map */
 
 .leaflet-container .leaflet-tile-pane {
@@ -14,32 +15,43 @@
   left: 32px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   color: #334155;
-  white-space: normal; /* Autorise le retour à la ligne */
+  white-space: normal;
   width: max-content;
-  max-width: 160px; /* Limite la largeur pour éviter de sortir du champ */
-  line-height: 1.15;
+  max-width: 150px;
+  line-height: 1.2;
   pointer-events: none;
   text-transform: uppercase;
   letter-spacing: 0.01em;
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), 0 0 0 1px rgba(0,0,0,0.05);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.15), 0 0 0 1px rgba(0,0,0,0.05);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
   text-align: left;
+  border-left: 3px solid #ea580c;
 }
 
 .marker-label.active {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
-  color: #1e3a8a;
+  color: #000;
   background: white;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1), 0 0 0 2px #1e3a8a;
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.2), 0 0 0 2px #ea580c;
   z-index: 1000;
   transform: translateY(-50%) scale(1.05);
   max-width: 200px;
+  border-left-width: 4px;
 }
+
+/* Custom styles for Leaflet clusters to match Moto Trust brand */
+.marker-cluster-small { background-color: rgba(234, 88, 12, 0.6) !important; }
+.marker-cluster-small div { background-color: rgba(234, 88, 12, 0.8) !important; color: white !important; font-weight: 900 !important; }
+.marker-cluster-medium { background-color: rgba(234, 88, 12, 0.7) !important; }
+.marker-cluster-medium div { background-color: rgba(234, 88, 12, 0.9) !important; color: white !important; font-weight: 900 !important; }
+.marker-cluster-large { background-color: rgba(234, 88, 12, 0.8) !important; }
+.marker-cluster-large div { background-color: rgba(234, 88, 12, 1.0) !important; color: white !important; font-weight: 900 !important; }
+

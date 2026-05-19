@@ -295,8 +295,8 @@ function MapPageComponent() {
     
     const point = masterPointsMap.current.get(id); 
     if (point) { 
+      // RECENTRE la carte sans changer le zoom (UX Google Maps)
       setMapCenter([point.latitude, point.longitude]); 
-      setMapZoom(14); 
     } 
 
     if (isMobile) {
@@ -317,7 +317,7 @@ function MapPageComponent() {
     const point = masterPointsMap.current.get(id); 
     if (point) {
       setMapCenter([point.latitude, point.longitude]);
-      setMapZoom(14);
+      // On ne force pas le zoom ici non plus si on veut rester cohérent
       setSelectionSource('card');
     }
   }, [isMobile]);
@@ -386,7 +386,7 @@ function MapPageComponent() {
           leftPadding={leftPadding} 
           isLocating={isLocating} 
           onLocateEnd={() => setIsLoadingLocating(false)} 
-          onLocationFound={(c) => { setMapCenter(c); setMapZoom(14); setSelectionSource('external'); }} 
+          onLocationFound={(c) => { setMapCenter(c); setSelectionSource('external'); }} 
         />
       </div>
 
