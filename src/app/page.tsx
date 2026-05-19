@@ -113,7 +113,7 @@ export default function LandingPage() {
                                 <div className="absolute -left-6 md:-left-24 top-1/2 -translate-y-1/2 z-50">
                                     <Link href="/map">
                                         <Button size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-[8px] md:text-base px-5 md:px-8 py-3 md:py-6 rounded-full shadow-2xl border-2 md:border-4 border-white whitespace-nowrap transition-transform hover:scale-110 tracking-widest">
-                                            Explorer l'annuaire
+                                            explorer la carte
                                         </Button>
                                     </Link>
                                 </div>
