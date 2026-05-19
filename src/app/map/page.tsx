@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import AdCard from '@/components/app/ad-card';
@@ -95,6 +96,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
           alt={pro.title} 
           fill 
           className="object-cover" 
+          sizes="(max-width: 1024px) 100vw, 520px"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-4 left-6 right-4">
