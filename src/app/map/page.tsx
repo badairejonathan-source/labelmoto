@@ -151,6 +151,7 @@ function MapPageComponent() {
   const [mounted, setMounted] = useState(false);
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const listContainerRef = useRef<HTMLDivElement>(null);
+  const mobileListContainerRef = useRef<HTMLDivElement>(null);
 
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
 
@@ -194,21 +195,26 @@ function MapPageComponent() {
       base = base.filter(p => p.title.toLowerCase().includes(lower) || (p as any).brands?.some((b:string) => b.toLowerCase().includes(lower)));
     }
 
-    // 3. Tri Géographique (Priorité : Sélection > Viewport > Distance au centre)
+    // 3. Tri Géographique Priorisé
+    // Si un point est sélectionné, on trie le reste de la liste par rapport à sa position
+    const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
+    const pivotLat = selectedPoint?.latitude ?? mapCenter[0];
+    const pivotLng = selectedPoint?.longitude ?? mapCenter[1];
+
     const sorted = base.sort((a, b) => {
-      // Priorité absolue à la sélection active
+      // Règle 1 : La sélection active est TOUJOURS en première position (index 0)
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
-      // Priorité à la présence dans le champ de vision (viewport)
+      // Règle 2 : Priorité au viewport si pas de sélection
       const aInView = mapBounds?.contains([a.latitude, a.longitude]);
       const bInView = mapBounds?.contains([b.latitude, b.longitude]);
       if (aInView && !bInView) return -1;
       if (!aInView && bInView) return 1;
 
-      // Tri par distance euclidienne par rapport au centre de la carte
-      const distA = Math.pow(a.latitude - mapCenter[0], 2) + Math.pow(a.longitude - mapCenter[1], 2);
-      const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
+      // Règle 3 : Tri par distance euclidienne par rapport au pivot (point sélectionné ou centre carte)
+      const distA = Math.pow(a.latitude - pivotLat, 2) + Math.pow(a.longitude - pivotLng, 2);
+      const distB = Math.pow(b.latitude - pivotLat, 2) + Math.pow(b.longitude - pivotLng, 2);
       return distA - distB;
     });
 
@@ -248,11 +254,18 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
+  // Fonction centrale pour scroller la liste vers le haut
+  const scrollListToTop = useCallback(() => {
+    if (!isMobile && listContainerRef.current) {
+        listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (isMobile && mobileListContainerRef.current) {
+        mobileListContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isMobile]);
+
   const handleMarkerClick = useCallback((id: string) => { 
     setSelectedDealershipId(id); 
     setSelectionSource('marker');
-    // Sur mobile, on remonte le tiroir à mi-hauteur pour voir la carte sélectionnée
-    if (isMobile) setDrawerHeight('half');
     
     const point = masterPointsMap.current.get(id); 
     if (point) { 
@@ -260,12 +273,16 @@ function MapPageComponent() {
       setMapZoom(14); 
     } 
 
-    // Scroll auto de la liste latérale vers l'élément sélectionné
-    const element = document.getElementById(`card-${id}`);
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Sur mobile, on remonte le tiroir à mi-hauteur
+    if (isMobile) {
+        setDrawerHeight('half');
     }
-  }, [isMobile]);
+
+    // On attend la fin du cycle de rendu pour que le tri place l'élément en haut, puis on scrolle
+    setTimeout(() => {
+        scrollListToTop();
+    }, 100);
+  }, [isMobile, scrollListToTop]);
 
   const handleOpenDetails = useCallback((id: string) => {
     setSelectedDealershipId(id);
@@ -280,14 +297,12 @@ function MapPageComponent() {
     }
   }, [isMobile]);
 
-  // Se réduit automatiquement SEULEMENT lors d'une interaction manuelle
   const handleMapInteraction = useCallback(() => {
     if (isMobile && drawerHeight !== 'collapsed' && !isDetailViewOpen) {
       setDrawerHeight('collapsed');
     }
   }, [isMobile, drawerHeight, isDetailViewOpen]);
 
-  // Mode découverte basé sur le seuil de zoom précis
   const isDiscoveryMode = mapZoom < DISCOVERY_ZOOM_THRESHOLD;
 
   const FilterButtons = ({ mobile = false }) => {
@@ -306,7 +321,6 @@ function MapPageComponent() {
                     key={String(f.id)} 
                     onClick={() => { 
                       setActiveFilter(f.id as any); 
-                      // Si on clique sur un filtre en mode réduit, on remonte un peu le tiroir pour voir les résultats
                       if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); 
                     }}
                     className="flex flex-col items-center gap-1.5 shrink-0 group"
@@ -423,7 +437,7 @@ function MapPageComponent() {
                                     key={point.id} 
                                     point={point} 
                                     isSelected={point.id === selectedDealershipId} 
-                                    onClick={() => setSelectedDealershipId(point.id)} 
+                                    onClick={() => handleMarkerClick(point.id)} 
                                     onOpenDetails={handleOpenDetails}
                                 />
                             ))
@@ -454,7 +468,7 @@ function MapPageComponent() {
                   <FilterButtons mobile />
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+              <div ref={mobileListContainerRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {isDetailViewOpen && selectedDealershipId ? (
                    <SidebarDetailView 
                     dealershipId={selectedDealershipId} 
@@ -482,7 +496,7 @@ function MapPageComponent() {
                                key={point.id} 
                                point={point} 
                                isSelected={point.id === selectedDealershipId} 
-                               onClick={() => setSelectedDealershipId(point.id)} 
+                               onClick={() => handleMarkerClick(point.id)} 
                                onOpenDetails={handleOpenDetails}
                            />
                          ))
