@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -22,7 +23,7 @@ import { useMemoFirebase } from '@/firebase/provider';
 import { useCollection } from '@/firebase/firestore/use-collection';
 
 // Constante de seuil de zoom pour basculer entre mode découverte et mode précision
-const DISCOVERY_ZOOM_THRESHOLD = 9;
+const DISCOVERY_ZOOM_THRESHOLD = 9.0;
 
 const CIRCUIT_BUGATTI: MapPoint = {
   id: 'circuit-bugatti-le-mans',
@@ -189,20 +190,18 @@ function MapPageComponent() {
   /**
    * SOURCE 1 : clusterPoints (POUR LA CARTE)
    * Contient TOUS les points filtrés par métier et recherche, sans limite de viewport.
-   * C'est ce tableau qui alimente les clusters Leaflet.
    */
   const clusterPoints = useMemo(() => {
     let base = allOverviewPoints;
     
     // 1. Filtrage Métier Strict
-    if (activeFilter === null) { // "Tout" = Concessions + Ateliers
+    if (activeFilter === null) { 
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'both');
     } else if (activeFilter === 'service') {
       base = base.filter(p => p.appSection === 'service' || p.appSection === 'both');
     } else {
-      // association ou relais
       base = base.filter(p => p.appSection === activeFilter);
     }
 
@@ -217,17 +216,17 @@ function MapPageComponent() {
 
   /**
    * SOURCE 2 : listPoints (POUR L'UI LISTE)
-   * Basé sur clusterPoints, trié par proximité avec le point sélectionné (pivot).
+   * Basé sur clusterPoints, trié par point sélectionné (pivot) puis proximité.
    */
   const listPoints = useMemo(() => {
     const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
     
-    // On trie par rapport au point sélectionné ou au centre de la carte
+    // Si un point est sélectionné, il devient le pivot du tri de toute la liste
     const pivotLat = selectedPoint?.latitude ?? mapCenter[0];
     const pivotLng = selectedPoint?.longitude ?? mapCenter[1];
 
     const sorted = [...clusterPoints].sort((a, b) => {
-      // 1. Priorité absolue à la sélection
+      // 1. Priorité absolue à la sélection (Index 0)
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
@@ -237,18 +236,16 @@ function MapPageComponent() {
       return distA - distB;
     });
 
-    // On limite à un sous-ensemble raisonnable pour la performance de rendu de la liste
     return sorted.slice(0, 500); 
   }, [clusterPoints, selectedDealershipId, mapCenter]);
 
-  // Chargement initial massif des points d'overview (overview léger)
+  // Chargement initial massif des points d'overview (légers)
   useEffect(() => {
     const fetchAll = async () => {
       if (!firestore) return;
       setIsLoading(true);
       try {
         const collections = ['concessions', 'associations', 'relais'];
-        // Augmentation de la limite à 10000 pour couvrir l'intégralité de la base
         const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
         
         snapshots.forEach((snap, idx) => {
@@ -272,7 +269,7 @@ function MapPageComponent() {
         });
         setAllOverviewPoints(Array.from(masterPointsMap.current.values()));
       } catch (e) {
-        console.error("Erreur lors du chargement des points d'overview:", e);
+        console.error("Erreur chargement points:", e);
       } finally { 
         setIsLoading(false); 
       }
@@ -294,7 +291,7 @@ function MapPageComponent() {
     
     const point = masterPointsMap.current.get(id); 
     if (point) { 
-      // RECENTRE la carte sans changer le zoom (UX Google Maps)
+      // RECENTRE la carte sans changer le zoom
       setMapCenter([point.latitude, point.longitude]); 
     } 
 
@@ -302,7 +299,7 @@ function MapPageComponent() {
         setDrawerHeight('half');
     }
 
-    // Scroll auto vers le haut pour voir la fiche sélectionnée
+    // Scroll auto vers le haut (le point sélectionné y est forcé par le tri)
     setTimeout(() => {
         scrollListToTop();
     }, 150);
@@ -316,16 +313,15 @@ function MapPageComponent() {
     const point = masterPointsMap.current.get(id); 
     if (point) {
       setMapCenter([point.latitude, point.longitude]);
-      // On ne force pas le zoom ici non plus si on veut rester cohérent
       setSelectionSource('card');
     }
   }, [isMobile]);
 
   const handleMapInteraction = useCallback(() => {
-    if (isMobile && drawerHeight !== 'collapsed' && !isDetailViewOpen) {
+    if (isMobile && drawerHeight !== 'collapsed') {
       setDrawerHeight('collapsed');
     }
-  }, [isMobile, drawerHeight, isDetailViewOpen]);
+  }, [isMobile, drawerHeight]);
 
   // Mode découverte : SEULEMENT si uxMode est discovery ET zoom faible
   const isDiscoveryMode = uxMode === 'discovery' && mapZoom < DISCOVERY_ZOOM_THRESHOLD;
@@ -369,7 +365,6 @@ function MapPageComponent() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* LA CARTE : Reçoit clusterPoints (Source complète pour les clusters) */}
       <div className="absolute inset-0 z-0">
         <MapComponent 
           points={clusterPoints} 
@@ -482,7 +477,7 @@ function MapPageComponent() {
       {isMobile && (
         <div className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-15px_40px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[120px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-100px)]')
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-100px)]')
         )}>
            <div className="absolute top-0 left-0 right-0 h-10 cursor-pointer flex items-center justify-center" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : (drawerHeight === 'half' ? 'full' : 'half'))}>
               <div className="w-12 h-1.5 bg-muted rounded-full" />
@@ -538,7 +533,7 @@ function MapPageComponent() {
       <button 
         className={cn(
             "absolute right-6 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95",
-            isMobile ? "bottom-36" : "bottom-10"
+            isMobile ? "bottom-40" : "bottom-10"
         )} 
         onClick={() => setIsLoadingLocating(true)}
         aria-label="Me localiser"

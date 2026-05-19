@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -141,7 +142,8 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    map.on('dragstart zoomstart', () => {
+    // movestart capture tout début de mouvement (drag, zoom, pan)
+    map.on('movestart', () => {
       if (!isUpdatingFromProps.current) {
         onUserInteraction?.();
       }
@@ -201,7 +203,7 @@ const MapComponent = ({
     clusterGroup.addLayers(markers);
   }, [points]); 
 
-  // Mise à jour réactive des icônes (changement zoom, sélection, ou labels à afficher)
+  // Mise à jour réactive des icônes
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !points) return;
@@ -240,9 +242,6 @@ const MapComponent = ({
         animate: true
       });
     } else {
-      // Pour les clics marqueurs ou cartes, on reste scrupuleusement au zoom actuel de la carte.
-      // On utilise map.getZoom() directement plutôt que la prop zoom pour éviter les désynchronisations d'états
-      // qui pourraient causer un dézoom intempestif.
       const currentMapZoom = map.getZoom();
       const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, currentMapZoom);
       map.flyTo(finalCenter, currentMapZoom, { duration: 0.8 });
@@ -258,11 +257,18 @@ const MapComponent = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
+
+    isUpdatingFromProps.current = true;
+
     map.once('locationfound', (e) => {
       onLocationFound([e.latlng.lat, e.latlng.lng]);
       onLocateEnd();
+      setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     });
-    map.once('locationerror', () => onLocateEnd());
+    map.once('locationerror', () => {
+      onLocateEnd();
+      setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
+    });
     map.locate({ setView: true, maxZoom: 14 });
   }, [isLocating]);
 
