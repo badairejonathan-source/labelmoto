@@ -44,9 +44,6 @@ const MapComponent = dynamic(
   }
 );
 
-/**
- * Vue détaillée complète (Panneau latéral)
- */
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
   const { firestore } = useFirebase();
   const colName = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
@@ -154,7 +151,6 @@ function MapPageComponent() {
 
   const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
 
-  // Récupération des articles pour le mode "Découverte"
   const articlesRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
   const { data: articles } = useCollection(articlesRef);
 
@@ -174,11 +170,9 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
-  // Filtrage et Tri Intelligent
   const filteredAndSortedPoints = useMemo(() => {
     let base = Array.from(masterPointsMap.current.values());
     
-    // 1. Filtrage métier strict
     if (activeFilter === null) {
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
@@ -189,25 +183,20 @@ function MapPageComponent() {
       base = base.filter(p => p.appSection === activeFilter);
     }
 
-    // 2. Filtrage recherche
     if (submittedSearchTerm) {
       const lower = submittedSearchTerm.toLowerCase();
       base = base.filter(p => p.title.toLowerCase().includes(lower) || (p as any).brands?.some((b:string) => b.toLowerCase().includes(lower)));
     }
 
-    // 3. Tri par pertinence géographique
     const sorted = base.sort((a, b) => {
-      // Priorité 1 : Sélection active
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
-      // Priorité 2 : Visibilité dans le viewport
       const aInView = mapBounds?.contains([a.latitude, a.longitude]);
       const bInView = mapBounds?.contains([b.latitude, b.longitude]);
       if (aInView && !bInView) return -1;
       if (!aInView && bInView) return 1;
 
-      // Priorité 3 : Distance au centre
       const distA = Math.pow(a.latitude - mapCenter[0], 2) + Math.pow(a.longitude - mapCenter[1], 2);
       const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
       return distA - distB;
@@ -285,7 +274,6 @@ function MapPageComponent() {
     }
   }, [isMobile, drawerHeight, isDetailViewOpen]);
 
-  // Mode Découverte (Zoom faible) vs Mode Précision
   const isDiscoveryMode = mapZoom < 9;
 
   const FilterButtons = ({ mobile = false }) => {
@@ -302,7 +290,7 @@ function MapPageComponent() {
             {filters.map((f) => (
                 <button 
                     key={String(f.id)} 
-                    onClick={() => setActiveFilter(f.id as any)}
+                    onClick={() => { setActiveFilter(f.id as any); if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); }}
                     className="flex flex-col items-center gap-1.5 shrink-0 group"
                 >
                     <div className={cn(
@@ -324,7 +312,6 @@ function MapPageComponent() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* CARTE */}
       <div className="absolute inset-0 z-0">
         <MapComponent 
           points={filteredAndSortedPoints} 
@@ -344,7 +331,6 @@ function MapPageComponent() {
         />
       </div>
 
-      {/* RECHERCHE FLOTTANTE */}
       <div className="absolute top-6 right-6 left-6 md:left-auto md:w-full md:max-w-2xl z-[1500] pointer-events-none">
         <div className="pointer-events-auto">
           <Header 
@@ -358,7 +344,6 @@ function MapPageComponent() {
         </div>
       </div>
 
-      {/* DASHBOARD LATERAL (PC) */}
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.2)] z-[1000] border border-white/40 overflow-hidden">
             <div className="p-10 pb-6 shrink-0">
@@ -435,7 +420,6 @@ function MapPageComponent() {
         </aside>
       )}
 
-      {/* DRAWER MOBILE */}
       {isMobile && (
         <div className={cn(
             "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-15px_40px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", 
@@ -446,8 +430,7 @@ function MapPageComponent() {
            </div>
            
            <div className="h-full overflow-hidden flex flex-col pt-4">
-              {/* Filtres toujours visibles dans le Drawer */}
-              <div className="px-4 pb-4 border-b border-muted/50">
+              <div className="px-4 pb-4 border-b border-muted/50 shrink-0">
                   <FilterButtons mobile />
               </div>
 
@@ -493,7 +476,6 @@ function MapPageComponent() {
         </div>
       )}
 
-      {/* BOUTON LOCALISATION */}
       <button 
         className={cn(
             "absolute right-6 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95",
@@ -511,4 +493,3 @@ function MapPageComponent() {
 export default function MapPage() { 
   return <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
 }
-

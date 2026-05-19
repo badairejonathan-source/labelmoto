@@ -18,7 +18,7 @@ interface MapComponentProps {
   selectedId: string | null;
   onMarkerClick: (id: string) => void;
   onMarkerMouseOver?: (id: string) => void;
-  onMarkerMouseOut?: () => void;
+  onMarkerMouseOut?: (id: string) => void;
   onMapClick: () => void;
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   onUserInteraction?: () => void;
@@ -89,7 +89,6 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // Détection des interactions utilisateur (Pan/Drag)
     map.on('movestart zoomstart dragstart', () => {
       if (!isUpdatingFromProps.current) {
         onUserInteraction?.();
@@ -139,7 +138,7 @@ const MapComponent = ({
       }
       
       if (onMarkerMouseOut) {
-        marker.on('mouseout', onMarkerMouseOut);
+        marker.on('mouseout', () => onMarkerMouseOut(point.id));
       }
 
       markerMapRef.current[point.id] = marker;
