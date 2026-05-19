@@ -10,7 +10,7 @@ let firestore: Firestore;
 
 /**
  * Robust Firebase initialization.
- * Now strictly returns the App instance. Services are initialized lazily.
+ * Now strictly returns the App instance. Services are now lazy.
  */
 export function initializeFirebase() {
   if (getApps().length > 0) {
@@ -38,13 +38,19 @@ export function getAuthInstance() {
 export function getFirestoreInstance() {
   if (!firestore) {
     const { firebaseApp } = initializeFirebase();
-    try {
-      // Configuration robuste pour les environnements avec proxys/firewalls
-      firestore = initializeFirestore(firebaseApp, {
-        experimentalForceLongPolling: true,
-      });
-    } catch (err) {
-      // Fallback si déjà initialisé par ailleurs
+    
+    // On force le long polling uniquement sur le client pour la stabilité dans Firebase Studio
+    if (typeof window !== 'undefined') {
+      try {
+        firestore = initializeFirestore(firebaseApp, {
+          experimentalForceLongPolling: true,
+        });
+      } catch (err) {
+        // Fallback si déjà initialisé par ailleurs
+        firestore = getFirestore(firebaseApp);
+      }
+    } else {
+      // Sur le serveur (Sitemap, Metadata), on utilise les réglages par défaut
       firestore = getFirestore(firebaseApp);
     }
   }

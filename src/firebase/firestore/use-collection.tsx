@@ -75,7 +75,14 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (err: FirestoreError) => {
-        console.error("Firestore error in useCollection:", err);
+        // On utilise console.warn pour les problèmes de connectivité réseau
+        // afin de ne pas déclencher l'overlay d'erreur Next.js en mode dev.
+        // Firestore basculera automatiquement en mode hors-ligne.
+        if (err.code === 'unavailable') {
+          console.warn("Firestore collection unavailable (offline mode):", err.message);
+        } else {
+          console.error("Firestore error in useCollection:", err);
+        }
         
         if (err.code === 'resource-exhausted') {
           toast({

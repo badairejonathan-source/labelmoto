@@ -60,7 +60,13 @@ export function useDoc<T = any>(
         setIsLoading(false);
       },
       (err: FirestoreError) => {
-        console.error("Firestore error in useDoc:", err);
+        // On utilise console.warn pour les problèmes de connectivité réseau
+        // afin de ne pas déclencher l'overlay d'erreur Next.js en mode dev.
+        if (err.code === 'unavailable') {
+          console.warn("Firestore document unavailable (offline mode):", err.message);
+        } else {
+          console.error("Firestore error in useDoc:", err);
+        }
 
         if (err.code === 'resource-exhausted') {
           toast({
