@@ -7,6 +7,16 @@ import DealershipDetailClient from '@/components/app/dealership-detail-client';
 import type { Dealership } from '@/lib/types';
 
 /**
+ * Nettoie les données Firestore pour qu'elles soient sérialisables (POJO)
+ * car Next.js refuse les objets avec des méthodes (comme Timestamp.toJSON)
+ * lors du passage de Server à Client Component.
+ */
+function sanitizeFirestoreData(data: any): any {
+  if (!data) return null;
+  return JSON.parse(JSON.stringify(data));
+}
+
+/**
  * Récupère un établissement soit par son ID Firestore, soit par son champ slug.
  */
 async function getDealership(idOrSlug: string): Promise<{ data: Dealership | null; type: 'id' | 'slug' | null }> {
@@ -15,7 +25,8 @@ async function getDealership(idOrSlug: string): Promise<{ data: Dealership | nul
   const idSnap = await getDoc(idRef);
   
   if (idSnap.exists()) {
-    return { data: { id: idSnap.id, ...idSnap.data() } as Dealership, type: 'id' };
+    const proData = sanitizeFirestoreData({ id: idSnap.id, ...idSnap.data() });
+    return { data: proData as Dealership, type: 'id' };
   }
 
   // 2. Si non trouvé par ID, on cherche par le champ 'slug'
@@ -23,18 +34,20 @@ async function getDealership(idOrSlug: string): Promise<{ data: Dealership | nul
   const slugSnap = await getDocs(slugQuery);
   
   if (!slugSnap.empty) {
-    const doc = slugSnap.docs[0];
-    return { data: { id: doc.id, ...doc.data() } as Dealership, type: 'slug' };
+    const docSnap = slugSnap.docs[0];
+    const proData = sanitizeFirestoreData({ id: docSnap.id, ...docSnap.data() });
+    return { data: proData as Dealership, type: 'slug' };
   }
 
-  // 3. Fallback sur associations/relais si nécessaire (optionnel selon structure)
+  // 3. Fallback sur associations/relais si nécessaire
   const collections = ['associations', 'relais'];
   for (const col of collections) {
     const q = query(collection(db, col), where('slug', '==', idOrSlug), limit(1));
     const snap = await getDocs(q);
     if (!snap.empty) {
-       const doc = snap.docs[0];
-       return { data: { id: doc.id, ...doc.data() } as Dealership, type: 'slug' };
+       const docSnap = snap.docs[0];
+       const proData = sanitizeFirestoreData({ id: docSnap.id, ...docSnap.data() });
+       return { data: proData as Dealership, type: 'slug' };
     }
   }
 
