@@ -10,7 +10,7 @@ import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
 import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Zap, FileText, Sparkles } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
-import { cn } from "@/lib/utils";
+import { cn, generateDealershipSlug } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase } from '@/firebase';
 import { collection, getDocs, query, limit, doc } from "firebase/firestore";
@@ -133,11 +133,13 @@ function MapPageComponent() {
   const searchParam = searchParams.get('search');
   const selectedIdParam = searchParams.get('selectedId');
 
-  const [allPoints, setAllPoints] = useState<MapPoint[]>([CIRCUIT_BUGATTI]);
+  // SOURCE DE VÉRITÉ BRUTE : Tous les points chargés (Overview léger)
+  const [allOverviewPoints, setAllOverviewPoints] = useState<MapPoint[]>([CIRCUIT_BUGATTI]);
+  
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
   
-  // Nouveaux états de mode UX pour éviter le retour automatique des articles
+  // État de mode UX pour gérer la transition Découverte -> Pros
   const [uxMode, setUxMode] = useState<'discovery' | 'pros'>('discovery');
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -156,7 +158,7 @@ function MapPageComponent() {
   const listContainerRef = useRef<HTMLDivElement>(null);
   const mobileListContainerRef = useRef<HTMLDivElement>(null);
 
-  const masterPointsMap = useRef<Map<string, MapPoint>>(new Map());
+  const masterPointsMap = useRef<Map<string, MapPoint>>(new Map([['circuit-bugatti-le-mans', CIRCUIT_BUGATTI]]));
 
   const articlesRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
   const { data: articles } = useCollection(articlesRef);
@@ -177,45 +179,46 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
-  // Détection du passage définitif en mode Pros
+  // Détection du passage définitif en mode Pros (ne revient jamais en arrière)
   useEffect(() => {
     if (uxMode === 'pros') return;
-    if (mapZoom >= DISCOVERY_ZOOM_THRESHOLD || submittedSearchTerm || selectedDealershipId) {
+    if (mapZoom >= DISCOVERY_ZOOM_THRESHOLD || submittedSearchTerm || selectedDealershipId || activeFilter) {
       setUxMode('pros');
     }
-  }, [mapZoom, submittedSearchTerm, selectedDealershipId, uxMode]);
+  }, [mapZoom, submittedSearchTerm, selectedDealershipId, activeFilter, uxMode]);
 
   /**
-   * SOURCE DE VÉRITÉ CARTE (mapPoints)
-   * Contient TOUS les points filtrés par métier et recherche, 
-   * sans limite de viewport pour garantir des clusters complets.
+   * SOURCE 1 : clusterPoints (POUR LA CARTE)
+   * Contient TOUS les points filtrés par métier et recherche, sans limite de viewport.
+   * C'est ce tableau qui alimente les clusters Leaflet.
    */
-  const mapPoints = useMemo(() => {
-    let base = Array.from(masterPointsMap.current.values());
+  const clusterPoints = useMemo(() => {
+    let base = allOverviewPoints;
     
-    // 1. Filtrage Métier
-    if (activeFilter === null) {
+    // 1. Filtrage Métier Strict
+    if (activeFilter === null) { // "Tout" = Concessions + Ateliers
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
     } else if (activeFilter === 'shopping') {
       base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'both');
     } else if (activeFilter === 'service') {
       base = base.filter(p => p.appSection === 'service' || p.appSection === 'both');
     } else {
+      // association ou relais
       base = base.filter(p => p.appSection === activeFilter);
     }
 
     // 2. Filtrage Recherche
     if (submittedSearchTerm) {
       const lower = submittedSearchTerm.toLowerCase();
-      base = base.filter(p => p.title.toLowerCase().includes(lower) || (p as any).brands?.some((b:string) => b.toLowerCase().includes(lower)));
+      base = base.filter(p => p.title.toLowerCase().includes(lower));
     }
 
     return base;
-  }, [allPoints, activeFilter, submittedSearchTerm]);
+  }, [allOverviewPoints, activeFilter, submittedSearchTerm]);
 
   /**
-   * SOURCE DE VÉRITÉ LISTE (listPoints)
-   * Basé sur mapPoints, mais trié selon l'UX (Sélection > Proximité).
+   * SOURCE 2 : listPoints (POUR L'UI LISTE)
+   * Basé sur clusterPoints, trié par proximité avec le point sélectionné (pivot).
    */
   const listPoints = useMemo(() => {
     const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
@@ -224,31 +227,30 @@ function MapPageComponent() {
     const pivotLat = selectedPoint?.latitude ?? mapCenter[0];
     const pivotLng = selectedPoint?.longitude ?? mapCenter[1];
 
-    return [...mapPoints].sort((a, b) => {
+    const sorted = [...clusterPoints].sort((a, b) => {
       // 1. Priorité absolue à la sélection
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
-      // 2. Priorité relative aux points dans le viewport (seulement pour la liste)
-      const aInView = mapBounds?.contains([a.latitude, a.longitude]);
-      const bInView = mapBounds?.contains([b.latitude, b.longitude]);
-      if (aInView && !bInView) return -1;
-      if (!aInView && bInView) return 1;
-
-      // 3. Tri par distance au pivot
+      // 2. Tri par distance au pivot (point sélectionné ou centre)
       const distA = Math.pow(a.latitude - pivotLat, 2) + Math.pow(a.longitude - pivotLng, 2);
       const distB = Math.pow(b.latitude - pivotLat, 2) + Math.pow(b.longitude - pivotLng, 2);
       return distA - distB;
     });
-  }, [mapPoints, selectedDealershipId, mapCenter, mapBounds]);
 
+    // On limite à un sous-ensemble raisonnable pour la performance de rendu de la liste
+    return sorted.slice(0, 500); 
+  }, [clusterPoints, selectedDealershipId, mapCenter]);
+
+  // Chargement initial massif des points d'overview (overview léger)
   useEffect(() => {
     const fetchAll = async () => {
       if (!firestore) return;
       setIsLoading(true);
       try {
         const collections = ['concessions', 'associations', 'relais'];
-        const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(3000)))));
+        // Augmentation de la limite à 10000 pour couvrir l'intégralité de la base
+        const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
         
         snapshots.forEach((snap, idx) => {
           snap.docs.forEach(doc => {
@@ -269,8 +271,12 @@ function MapPageComponent() {
             masterPointsMap.current.set(p.id, p);
           });
         });
-        setAllPoints(Array.from(masterPointsMap.current.values()));
-      } catch (e) {} finally { setIsLoading(false); }
+        setAllOverviewPoints(Array.from(masterPointsMap.current.values()));
+      } catch (e) {
+        console.error("Erreur lors du chargement des points d'overview:", e);
+      } finally { 
+        setIsLoading(false); 
+      }
     };
     fetchAll();
   }, [firestore]);
@@ -297,9 +303,10 @@ function MapPageComponent() {
         setDrawerHeight('half');
     }
 
+    // Scroll auto vers le haut pour voir la fiche sélectionnée
     setTimeout(() => {
         scrollListToTop();
-    }, 100);
+    }, 150);
   }, [isMobile, scrollListToTop]);
 
   const handleOpenDetails = useCallback((id: string) => {
@@ -326,11 +333,11 @@ function MapPageComponent() {
 
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
-        { id: 'shopping', label: 'Concess', icon: Bike, color: 'brand' },
-        { id: null, label: 'Tout', icon: Home, color: 'brand' },
-        { id: 'service', label: 'Atelier', icon: Wrench, color: 'brand' },
-        { id: 'association', label: 'Asso', icon: Users, color: 'indigo-600' },
-        { id: 'relais', label: 'Relais', icon: Utensils, color: 'amber-600' }
+        { id: 'shopping', label: 'Concess', icon: Bike },
+        { id: null, label: 'Tout', icon: Home },
+        { id: 'service', label: 'Atelier', icon: Wrench },
+        { id: 'association', label: 'Asso', icon: Users },
+        { id: 'relais', label: 'Relais', icon: Utensils }
     ];
 
     return (
@@ -347,7 +354,7 @@ function MapPageComponent() {
                     <div className={cn(
                         "h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center transition-all border-2 shadow-sm group-hover:scale-105 active:scale-95",
                         activeFilter === f.id 
-                            ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110" : "bg-brand text-white border-white scale-110"))
+                            ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-lg" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-lg" : "bg-brand text-white border-white scale-110 shadow-lg"))
                             : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
                     )}>
                         <f.icon className="h-5 w-5 md:h-6 md:w-6" />
@@ -363,9 +370,10 @@ function MapPageComponent() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
+      {/* LA CARTE : Reçoit clusterPoints (Source complète pour les clusters) */}
       <div className="absolute inset-0 z-0">
         <MapComponent 
-          points={mapPoints} 
+          points={clusterPoints} 
           center={mapCenter} 
           zoom={mapZoom} 
           selectionSource={selectionSource}
@@ -445,7 +453,7 @@ function MapPageComponent() {
                         )}
                         <div className="flex items-center justify-between px-2 mb-4">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                                {isDiscoveryMode ? "Tous les pros" : `${listPoints.length} Pros trouvés`}
+                                {isLoading ? "Chargement..." : `${clusterPoints.length} Résultats sur la carte`}
                             </span>
                         </div>
                         {isLoading ? (
