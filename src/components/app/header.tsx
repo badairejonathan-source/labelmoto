@@ -368,7 +368,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className="relative w-full" ref={suggestionsRef}>
         <div className="relative group">
             <Input 
-                type="search" 
+                type="text" 
                 placeholder={placeholderText} 
                 className="pr-16 md:pr-24 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.1)] bg-white/95 focus:bg-white border-none px-6 md:px-8 h-12 md:h-14 font-black text-sm md:text-base transition-all"
                 value={searchTerm} 
@@ -379,8 +379,9 @@ const Header: React.FC<HeaderProps> = ({
             />
             {searchTerm && (
                 <button 
+                    type="button"
                     onClick={handleClearSearch}
-                    className="absolute right-16 md:right-20 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-[10]"
+                    className="absolute right-14 md:right-20 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-[30]"
                 >
                     <X className="h-5 w-5" />
                 </button>
@@ -388,7 +389,7 @@ const Header: React.FC<HeaderProps> = ({
             <Button 
                 type="submit" 
                 size="icon" 
-                className="absolute top-1/2 -right-1 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[62px] md:w-[62px] shadow-lg hover:scale-105 active:scale-95 transition-all" 
+                className="absolute top-1/2 -right-1 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[62px] md:w-[62px] shadow-lg hover:scale-105 active:scale-95 transition-all z-[20]" 
                 onClick={onSearch}
             >
                 <Search className="h-6 w-6 md:h-7 md:w-7" />
@@ -433,7 +434,7 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="w-full max-w-2xl">
                     <div className="relative" ref={suggestionsRef}>
                         <Input 
-                            type="search" 
+                            type="text" 
                             placeholder={placeholderText} 
                             className="pr-24 md:pr-[160px] rounded-full shadow-2xl bg-white/95 focus:bg-white border-2 border-transparent focus:border-brand/30 px-6 md:px-8 h-12 md:h-14 font-black transition-all"
                             value={searchTerm} 
@@ -444,8 +445,9 @@ const Header: React.FC<HeaderProps> = ({
                         />
                         {searchTerm && (
                             <button 
+                                type="button"
                                 onClick={handleClearSearch}
-                                className="absolute right-20 md:right-[110px] top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-[10]"
+                                className="absolute right-14 md:right-[110px] top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-[30]"
                             >
                                 <X className="h-6 w-6" />
                             </button>
@@ -453,7 +455,7 @@ const Header: React.FC<HeaderProps> = ({
                         <Button 
                             type="submit" 
                             size="icon" 
-                            className="absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg" 
+                            className="absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg z-[20]" 
                             onClick={onSearch}
                         >
                             <Search className="h-7 w-7" />
