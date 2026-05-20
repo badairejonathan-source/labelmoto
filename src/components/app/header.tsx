@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -8,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
 import { cn, levenshteinDistance } from '@/lib/utils';
-import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc, useFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import {
@@ -238,7 +239,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const firestore = useFirestore();
+  const { firestore } = useFirebase();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<Suggestion[]>(globalDealersCache || []);
@@ -395,7 +396,7 @@ const Header: React.FC<HeaderProps> = ({
         }
     }
 
-    // 3. Ville dans la base
+  // 3. Ville dans la base
     for (const [dept, info] of Object.entries(locationsData)) {
         const city = info.cities.find(c => c.toLowerCase() === lower);
         if (city) {
@@ -425,46 +426,6 @@ const Header: React.FC<HeaderProps> = ({
     setTimeout(() => {
         onSearch(); // Reset view
     }, 10);
-  };
-
-  const FilterButtons = ({ mobile = false }) => {
-    const filters = [
-        { id: 'shopping', label: 'Concess', icon: Bike },
-        { id: null, label: 'Tout', icon: Home },
-        { id: 'service', label: 'Atelier', icon: Wrench },
-        { id: 'association', label: 'Asso', icon: Users },
-        { id: 'relais', label: 'Relais', icon: Utensils }
-    ];
-
-    return (
-        <div className={cn("flex gap-3 overflow-x-auto no-scrollbar py-2", mobile ? "px-1 justify-start" : "justify-center")}>
-            {filters.map((f) => {
-                const isActive = f.id === null 
-                    ? (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2)
-                    : activeFilters.includes(String(f.id));
-
-                return (
-                    <button 
-                        key={String(f.id)} 
-                        onClick={() => handleTabClick(f.id)}
-                        className="flex flex-col items-center gap-1.5 shrink-0 group"
-                    >
-                        <div className={cn(
-                            "h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center transition-all border-2 shadow-sm group-hover:scale-105 active:scale-95",
-                            isActive 
-                                ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-lg" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-lg" : "bg-brand text-white border-white scale-110 shadow-lg"))
-                                : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
-                        )}>
-                            <f.icon className="h-5 w-5 md:h-6 md:w-6" />
-                        </div>
-                        <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>
-                            {f.label}
-                        </span>
-                    </button>
-                );
-            })}
-        </div>
-    );
   };
 
   if (variant === 'map') {
@@ -559,7 +520,7 @@ const Header: React.FC<HeaderProps> = ({
                         <Button 
                             type="button" 
                             size="icon" 
-                            className="absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg z-[20]" 
+                            className="absolute top-1/2 -right-0.5 md:right.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg z-[20]" 
                             onClick={handleSearchInternal}
                         >
                             <Search className="h-7 w-7" />
@@ -602,10 +563,6 @@ const Header: React.FC<HeaderProps> = ({
                     <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilters.includes('shopping') ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
                         <Bike className={cn("h-6 w-6 transition-colors", activeFilters.includes('shopping') ? "text-white" : "text-brand")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Concess</span>
-                    </Button>
-                    <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2) ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
-                        <Home className={cn("h-6 w-6 transition-colors", (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2) ? "text-white" : "text-brand")} />
-                        <span className="text-[10px] font-black uppercase tracking-[0.1em] mt-1">Tout</span>
                     </Button>
                     <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilters.includes('service') ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
                         <Wrench className={cn("h-6 w-6 transition-colors", activeFilters.includes('service') ? "text-white" : "text-brand")} />

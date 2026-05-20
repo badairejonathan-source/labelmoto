@@ -53,9 +53,15 @@ const MapComponent = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markerMapRef = useRef<Record<string, L.Marker>>({});
+  const onUserInteractionRef = useRef(onUserInteraction);
   
   const isUpdatingFromProps = useRef(false);
   const lastSetTargetKey = useRef<string>("");
+
+  // Sync ref for the manual interaction callback to avoid stale closures
+  useEffect(() => {
+    onUserInteractionRef.current = onUserInteraction;
+  }, [onUserInteraction]);
 
   // Logic Anti-collision Grid
   const labelIds = useMemo(() => {
@@ -145,14 +151,13 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // DETECTION MANUELLE ROBUSTE (MOBILE + DESKTOP)
-    const handleInteraction = () => {
+    // DETECTION MANUELLE ULTRA-RÉACTIVE
+    map.on('movestart zoomstart touchstart', () => {
+      // On déclenche l'interaction si ce n'est pas un mouvement provoqué par le code
       if (!isUpdatingFromProps.current) {
-        onUserInteraction?.();
+        onUserInteractionRef.current?.();
       }
-    };
-
-    map.on('dragstart zoomstart touchstart', handleInteraction);
+    });
 
     map.on('moveend zoomend', () => {
       if (map && !isUpdatingFromProps.current) {

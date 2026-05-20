@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Zap, FileText, Sparkles } from 'lucide-react';
+import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Zap, FileText, Sparkles, Clock } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -66,6 +66,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   if (!pro) return null;
 
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`;
+  const days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
@@ -74,8 +75,8 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
       </button>
 
       <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-muted mb-6 shadow-lg border-2 border-white">
-        {pro.imageUrl || pro.imgUrl ? (
-           <Image src={pro.imageUrl || pro.imgUrl || ""} alt={pro.title} fill className="object-cover" />
+        {pro.imageUrl || pro.imgUrl || pro.img_url || pro.image_url ? (
+           <Image src={pro.imageUrl || pro.imgUrl || pro.img_url || pro.image_url || ""} alt={pro.title} fill className="object-cover" />
         ) : (
            <div className="w-full h-full flex items-center justify-center opacity-10">
               <MapPin className="h-12 w-12" />
@@ -92,6 +93,22 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
         <div className="bg-muted/30 p-4 rounded-2xl border-2 border-dashed flex items-start gap-3">
           <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
           <p className="text-sm font-bold leading-snug">{pro.address}</p>
+        </div>
+
+        {/* HORAIRES DIRECTS */}
+        <div className="bg-brand/5 p-5 rounded-2xl border border-brand/10">
+          <div className="flex items-center gap-2 mb-3 text-brand">
+            <Clock className="h-4 w-4" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Horaires d'ouverture</span>
+          </div>
+          <div className="space-y-1.5">
+            {days.map((day) => (
+              <div key={day} className="flex justify-between items-center text-[10px] font-bold">
+                <span className="capitalize text-muted-foreground">{day}</span>
+                <span className="text-foreground uppercase">{pro[day] || 'Fermé'}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -164,7 +181,7 @@ function MapPageComponent() {
   const [activeFilters, setActiveFilters] = useState<string[]>(() => {
     if (filtersParam) return filtersParam.split(',');
     if (filterParam) return [filterParam];
-    return ['shopping', 'service']; // Mode "Pro" (Tout) par défaut
+    return ['shopping', 'service']; // Mode "Pro" par défaut
   });
 
   const { width, height } = useWindowSize();
@@ -265,7 +282,7 @@ function MapPageComponent() {
               category: data.category || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : 'concession')),
               appSection: data.appSection || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : (data.category?.includes('concession') ? 'both' : 'service'))),
               slug: data.slug || doc.id,
-              imgUrl: data.imageUrl || data.imgUrl || "",
+              imgUrl: data.imageUrl || data.imgUrl || data.img_url || data.image_url || "",
               rating: data.rating
             };
             masterPointsMap.current.set(p.id, p);
@@ -327,16 +344,11 @@ function MapPageComponent() {
   }, [isMobile, drawerHeight]);
 
   const handleFilterToggle = (filterId: string | null) => {
-    if (filterId === null) {
-        setActiveFilters(['shopping', 'service']);
-        return;
-    }
-
     setActiveFilters(prev => {
-        if (prev.includes(filterId)) {
+        if (prev.includes(filterId!)) {
             return prev.filter(f => f !== filterId);
         } else {
-            return [...prev, filterId];
+            return [...prev, filterId!];
         }
     });
   };
@@ -354,7 +366,6 @@ function MapPageComponent() {
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
         { id: 'shopping', label: 'Concess', icon: Bike },
-        { id: null, label: 'Tout', icon: Home },
         { id: 'service', label: 'Atelier', icon: Wrench },
         { id: 'association', label: 'Asso', icon: Users },
         { id: 'relais', label: 'Relais', icon: Utensils }
@@ -363,15 +374,13 @@ function MapPageComponent() {
     return (
         <div className={cn("flex gap-3 overflow-x-auto no-scrollbar py-2", mobile ? "px-1 justify-start" : "justify-center")}>
             {filters.map((f) => {
-                const isActive = f.id === null 
-                    ? (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2)
-                    : activeFilters.includes(String(f.id));
+                const isActive = activeFilters.includes(f.id);
 
                 return (
                     <button 
-                        key={String(f.id)} 
+                        key={f.id} 
                         onClick={() => { 
-                            handleFilterToggle(f.id as string | null); 
+                            handleFilterToggle(f.id); 
                             if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); 
                         }}
                         className="flex flex-col items-center gap-1.5 shrink-0 group"
