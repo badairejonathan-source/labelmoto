@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -130,16 +129,13 @@ function MapPageComponent() {
   const router = useRouter();
   
   const filterParam = searchParams.get('filter');
+  const filtersParam = searchParams.get('filters');
   const searchParam = searchParams.get('search');
   const selectedIdParam = searchParams.get('selectedId');
 
-  // SOURCE DE VÉRITÉ BRUTE : Tous les points cartographiques chargés
   const [allOverviewPoints, setAllOverviewPoints] = useState<MapPoint[]>([CIRCUIT_BUGATTI]);
-  
   const [searchTerm, setSearchTerm] = useState(searchParam || '');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
-  
-  // État de mode UX pour gérer la transition Découverte -> Pros persistante
   const [uxMode, setUxMode] = useState<'discovery' | 'pros'>('discovery');
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -163,12 +159,11 @@ function MapPageComponent() {
   const articlesRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
   const { data: articles } = useCollection(articlesRef);
 
-  const [activeFilter, setActiveFilter] = useState<'shopping' | 'service' | 'association' | 'relais' | null>(() => {
-    if (filterParam === 'service') return 'service';
-    if (filterParam === 'shopping') return 'shopping';
-    if (filterParam === 'association') return 'association';
-    if (filterParam === 'relais') return 'relais';
-    return null;
+  // Filtres actifs (Multi-sélection / Toggle)
+  const [activeFilters, setActiveFilters] = useState<string[]>(() => {
+    if (filtersParam) return filtersParam.split(',');
+    if (filterParam) return [filterParam];
+    return ['shopping', 'service']; // Mode "Pro" (Tout) par défaut
   });
 
   const { width, height } = useWindowSize();
@@ -179,29 +174,47 @@ function MapPageComponent() {
   
   useEffect(() => { setMounted(true); }, []);
 
-  // Détection du passage définitif en mode Pros (ne revient jamais en arrière après exploration)
   useEffect(() => {
     if (uxMode === 'pros') return;
-    if (mapZoom >= DISCOVERY_ZOOM_THRESHOLD || submittedSearchTerm || selectedDealershipId || activeFilter) {
+    if (mapZoom >= DISCOVERY_ZOOM_THRESHOLD || submittedSearchTerm || selectedDealershipId || activeFilters.length > 0) {
       setUxMode('pros');
     }
-  }, [mapZoom, submittedSearchTerm, selectedDealershipId, activeFilter, uxMode]);
+  }, [mapZoom, submittedSearchTerm, selectedDealershipId, activeFilters, uxMode]);
+
+  // Logic pour fermer la fiche si le pro sélectionné est filtré
+  useEffect(() => {
+    if (selectedDealershipId) {
+        const point = masterPointsMap.current.get(selectedDealershipId);
+        if (point) {
+            const matches = point.appSection === 'both' 
+                ? (activeFilters.includes('shopping') || activeFilters.includes('service'))
+                : activeFilters.includes(point.appSection);
+            
+            if (activeFilters.length > 0 && !matches) {
+                setSelectedDealershipId(null);
+                setIsDetailViewOpen(false);
+            }
+        }
+    }
+  }, [activeFilters, selectedDealershipId]);
 
   /**
    * SOURCE 1 : clusterPoints (POUR LA CARTE)
-   * Contient TOUS les points filtrés, sans limite de viewport, pour alimenter les clusters nationaux.
+   * Contient TOUS les points filtrés par métier et recherche.
    */
   const clusterPoints = useMemo(() => {
     let base = allOverviewPoints;
     
-    if (activeFilter === null) { 
-      base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'service' || p.appSection === 'both');
-    } else if (activeFilter === 'shopping') {
-      base = base.filter(p => p.appSection === 'shopping' || p.appSection === 'both');
-    } else if (activeFilter === 'service') {
-      base = base.filter(p => p.appSection === 'service' || p.appSection === 'both');
+    // Application des filtres cumulables
+    if (activeFilters.length > 0) {
+        base = base.filter(p => {
+            if (p.appSection === 'both') {
+                return activeFilters.includes('shopping') || activeFilters.includes('service');
+            }
+            return activeFilters.includes(p.appSection);
+        });
     } else {
-      base = base.filter(p => p.appSection === activeFilter);
+        return []; // Rien n'est sélectionné
     }
 
     if (submittedSearchTerm) {
@@ -210,7 +223,7 @@ function MapPageComponent() {
     }
 
     return base;
-  }, [allOverviewPoints, activeFilter, submittedSearchTerm]);
+  }, [allOverviewPoints, activeFilters, submittedSearchTerm]);
 
   /**
    * SOURCE 2 : listPoints (POUR L'UI LISTE)
@@ -218,17 +231,13 @@ function MapPageComponent() {
    */
   const listPoints = useMemo(() => {
     const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
-    
-    // Pivot de tri : Sélection active > Centre de la carte
     const pivotLat = selectedPoint?.latitude ?? mapCenter[0];
     const pivotLng = selectedPoint?.longitude ?? mapCenter[1];
 
     const sorted = [...clusterPoints].sort((a, b) => {
-      // 1. Priorité absolue au pro cliqué
       if (a.id === selectedDealershipId) return -1;
       if (b.id === selectedDealershipId) return 1;
 
-      // 2. Tri par proximité euclidienne au pivot
       const distA = Math.pow(a.latitude - pivotLat, 2) + Math.pow(a.longitude - pivotLng, 2);
       const distB = Math.pow(b.latitude - pivotLat, 2) + Math.pow(b.longitude - pivotLng, 2);
       return distA - distB;
@@ -237,7 +246,7 @@ function MapPageComponent() {
     return sorted.slice(0, 500); 
   }, [clusterPoints, selectedDealershipId, mapCenter]);
 
-  // Chargement massif des MapPoints (Overview léger)
+  // Chargement massif des MapPoints (Overview léger ~5200 points)
   useEffect(() => {
     const fetchAll = async () => {
       if (!firestore) return;
@@ -296,7 +305,6 @@ function MapPageComponent() {
         setDrawerHeight('half');
     }
 
-    // Le tri fait remonter le point sélectionné à l'index 0, on scrolle vers lui.
     setTimeout(() => {
         scrollListToTop();
     }, 150);
@@ -320,6 +328,31 @@ function MapPageComponent() {
     }
   }, [isMobile, drawerHeight]);
 
+  const handleFilterToggle = (filterId: string | null) => {
+    if (filterId === null) {
+        // Mode "Tout" : Shortcut pour Concessions + Ateliers
+        setActiveFilters(['shopping', 'service']);
+        return;
+    }
+
+    setActiveFilters(prev => {
+        if (prev.includes(filterId)) {
+            return prev.filter(f => f !== filterId);
+        } else {
+            return [...prev, filterId];
+        }
+    });
+  };
+
+  const handleResetSearch = () => {
+    setSearchTerm('');
+    setSubmittedSearchTerm('');
+    // Réinitialisation de la vue sur la France
+    setMapCenter([46.5, 2.2]);
+    setMapZoom(6.2);
+    setSelectionSource('external');
+  };
+
   const isDiscoveryMode = uxMode === 'discovery' && mapZoom < DISCOVERY_ZOOM_THRESHOLD;
 
   const FilterButtons = ({ mobile = false }) => {
@@ -333,28 +366,34 @@ function MapPageComponent() {
 
     return (
         <div className={cn("flex gap-3 overflow-x-auto no-scrollbar py-2", mobile ? "px-1 justify-start" : "justify-center")}>
-            {filters.map((f) => (
-                <button 
-                    key={String(f.id)} 
-                    onClick={() => { 
-                      setActiveFilter(f.id as any); 
-                      if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); 
-                    }}
-                    className="flex flex-col items-center gap-1.5 shrink-0 group"
-                >
-                    <div className={cn(
-                        "h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center transition-all border-2 shadow-sm group-hover:scale-105 active:scale-95",
-                        activeFilter === f.id 
-                            ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-lg" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-lg" : "bg-brand text-white border-white scale-110 shadow-lg"))
-                            : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
-                    )}>
-                        <f.icon className="h-5 w-5 md:h-6 md:w-6" />
-                    </div>
-                    <span className={cn("text-[8px] font-black uppercase tracking-widest", activeFilter === f.id ? "text-foreground" : "text-muted-foreground")}>
-                        {f.label}
-                    </span>
-                </button>
-            ))}
+            {filters.map((f) => {
+                const isActive = f.id === null 
+                    ? (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2)
+                    : activeFilters.includes(String(f.id));
+
+                return (
+                    <button 
+                        key={String(f.id)} 
+                        onClick={() => { 
+                            handleFilterToggle(f.id as string | null); 
+                            if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); 
+                        }}
+                        className="flex flex-col items-center gap-1.5 shrink-0 group"
+                    >
+                        <div className={cn(
+                            "h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center transition-all border-2 shadow-sm group-hover:scale-105 active:scale-95",
+                            isActive 
+                                ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-lg" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-lg" : "bg-brand text-white border-white scale-110 shadow-lg"))
+                                : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
+                        )}>
+                            <f.icon className="h-5 w-5 md:h-6 md:w-6" />
+                        </div>
+                        <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>
+                            {f.label}
+                        </span>
+                    </button>
+                );
+            })}
         </div>
     );
   };
@@ -386,9 +425,11 @@ function MapPageComponent() {
           <Header 
             searchTerm={searchTerm} 
             onSearchTermChange={setSearchTerm} 
-            onSearch={() => setSubmittedSearchTerm(searchTerm)} 
+            onSearch={() => term === '' ? handleResetSearch() : setSubmittedSearchTerm(searchTerm)} 
             placeholderText="Ville, marque ou nom..."
             variant="map"
+            activeFilters={activeFilters}
+            onFilterToggle={handleFilterToggle}
             hideUserMenu
           />
         </div>
@@ -399,7 +440,7 @@ function MapPageComponent() {
             <div className="p-10 pb-6 shrink-0">
                 <div className="flex items-center justify-between gap-4 mb-8">
                     <div className="w-40"><LabelMotoLogo noBubble /></div>
-                    <div className="bg-white px-4 py-2 rounded-full shadow-sm border border-gray-50 text-center flex-1 max-w-[200px]">
+                    <div className="bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 text-center flex-1 max-w-[200px]">
                         <p className="text-[8px] font-black uppercase tracking-wider text-foreground leading-tight">TROUVER UN PRO ?</p>
                         <p className="text-[10px] font-black italic text-brand leading-none">C'EST ICI.</p>
                     </div>
@@ -504,7 +545,7 @@ function MapPageComponent() {
                         </div>
                      )}
                      
-                     {!isDiscoveryMode && listPoints.length > 0 ? (
+                     {listPoints.length > 0 ? (
                         listPoints.map((point) => (
                            <DealershipCardItem 
                                key={point.id} 

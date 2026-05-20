@@ -24,18 +24,27 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
 import useWindowSize from '@/hooks/use-window-size';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: Suggestion[] | null = null;
 
-const PARIS_ARRONDISSEMENTS: Record<number, [number, number]> = {
-  1: [48.8625, 2.3364], 2: [48.8669, 2.3426], 3: [48.8637, 2.3595], 4: [48.8543, 2.3576],
-  5: [48.8448, 2.3471], 6: [48.8493, 2.3300], 7: [48.8561, 2.3126], 8: [48.8727, 2.3126],
-  9: [48.8771, 2.3374], 10: [48.8761, 2.3607], 11: [48.8596, 2.3762], 12: [48.8408, 2.4047],
-  13: [48.8322, 2.3550], 14: [48.8331, 2.3237], 15: [48.8412, 2.2985], 16: [48.8603, 2.2619],
-  17: [48.8835, 2.3067], 18: [48.8913, 2.3444], 19: [48.8817, 2.3822], 20: [48.8646, 2.3983]
+// Coordonnées précises pour les arrondissements de Paris, Marseille et Lyon
+const ArrondissementCoords: Record<string, [number, number]> = {
+  // Paris
+  "75001": [48.8625, 2.3364], "75002": [48.8669, 2.3426], "75003": [48.8637, 2.3595], "75004": [48.8543, 2.3576],
+  "75005": [48.8448, 2.3471], "75006": [48.8493, 2.3300], "75007": [48.8561, 2.3126], "75008": [48.8727, 2.3126],
+  "75009": [48.8771, 2.3374], "75010": [48.8761, 2.3607], "75011": [48.8596, 2.3762], "75012": [48.8408, 2.4047],
+  "75013": [48.8322, 2.3550], "75014": [48.8331, 2.3237], "75015": [48.8412, 2.2985], "75016": [48.8603, 2.2619],
+  "75017": [48.8835, 2.3067], "75018": [48.8913, 2.3444], "75019": [48.8817, 2.3822], "75020": [48.8646, 2.3983],
+  // Marseille
+  "13001": [43.2995, 5.3814], "13002": [43.3039, 5.3672], "13003": [43.3102, 5.3831], "13004": [43.3045, 5.4019],
+  "13005": [43.2941, 5.4001], "13006": [43.2863, 5.3821], "13007": [43.2847, 5.3582], "13008": [43.2591, 5.3812],
+  "13009": [43.2391, 5.4221], "13010": [43.2771, 5.4111], "13011": [43.2891, 5.4671], "13012": [43.3011, 5.4321],
+  "13013": [43.3321, 5.4211], "13014": [43.3441, 5.3851], "13015": [43.3711, 5.3551], "13016": [43.3591, 5.3211],
+  // Lyon
+  "69001": [45.7686, 4.8323], "69002": [45.7533, 4.8291], "69003": [45.7591, 4.8532], "69004": [45.7771, 4.8271],
+  "69005": [45.7581, 4.8111], "69006": [45.7721, 4.8491], "69007": [45.7391, 4.8411], "69008": [45.7341, 4.8691],
+  "69009": [45.7821, 4.8021]
 };
 
 interface Suggestion {
@@ -55,8 +64,8 @@ interface HeaderProps {
     onSearchTermChange: (term: string) => void;
     onSearch: () => void;
     className?: string;
-    activeFilter?: 'shopping' | 'service' | 'association' | 'relais' | null;
-    onFilterChange?: (filter: 'shopping' | 'service' | 'association' | 'relais' | null) => void;
+    activeFilters?: string[];
+    onFilterToggle?: (filter: string | null) => void;
     placeholderText?: string;
     variant?: 'default' | 'map';
     hideUserMenu?: boolean;
@@ -221,8 +230,8 @@ const Header: React.FC<HeaderProps> = ({
     onSearchTermChange, 
     onSearch, 
     className, 
-    activeFilter = null, 
-    onFilterChange, 
+    activeFilters = [], 
+    onFilterToggle, 
     placeholderText = "Recherche par departement, ville, marque, nom...",
     variant = 'default',
     hideUserMenu = false
@@ -239,8 +248,6 @@ const Header: React.FC<HeaderProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const deferredSearchTerm = useDeferredValue(searchTerm);
-
-  const isMapPage = pathname === '/map';
 
   useEffect(() => {
     setMounted(true);
@@ -285,17 +292,16 @@ const Header: React.FC<HeaderProps> = ({
     let lowerTerm = deferredSearchTerm.toLowerCase().trim();
     const results: Suggestion[] = [];
     
-    const parisArrMatch = lowerTerm.match(/paris\s*(\d{1,2})/i);
-    if (parisArrMatch) {
-        const arrNum = parseInt(parisArrMatch[1]);
-        if (arrNum >= 1 && arrNum <= 20) {
-            const coords = PARIS_ARRONDISSEMENTS[arrNum];
+    // Reconnaissance des arrondissements lors de la saisie
+    if (/^\d{5}$/.test(lowerTerm)) {
+        const coords = ArrondissementCoords[lowerTerm];
+        if (coords) {
             results.push({
                 type: 'city',
-                label: `Paris ${arrNum}${arrNum === 1 ? 'er' : 'ème'}`,
-                subLabel: `750${arrNum.toString().padStart(2, '0')}`,
-                lat: coords ? coords[0] : undefined,
-                lng: coords ? coords[1] : undefined,
+                label: `Code Postal ${lowerTerm}`,
+                subLabel: lowerTerm.startsWith('75') ? 'Paris' : (lowerTerm.startsWith('13') ? 'Marseille' : 'Lyon'),
+                lat: coords[0],
+                lng: coords[1],
                 zoom: 14,
                 score: 2000
             });
@@ -345,21 +351,120 @@ const Header: React.FC<HeaderProps> = ({
     }
     if (suggestion.id) queryParams.set('selectedId', suggestion.id);
     queryParams.set('search', suggestion.label);
-    if (activeFilter) queryParams.set('filter', activeFilter);
+    if (activeFilters.length > 0) queryParams.set('filters', activeFilters.join(','));
     router.push(`/map?${queryParams.toString()}`);
   };
 
-  const handleTabClick = (filter: 'shopping' | 'service' | 'association' | 'relais' | null) => {
-    if (onFilterChange) onFilterChange(filter);
+  const handleSearchInternal = () => {
+    const term = searchTerm.trim();
+    if (term === '') {
+        onSearch();
+        return;
+    }
+
+    const lower = term.toLowerCase();
+    
+    // Logique "Enter" sans suggestion : Détection de pattern
+    // 1. Département (2 chiffres)
+    if (/^\d{2}$/.test(lower)) {
+        const deptEntry = Object.entries(locationsData).find(([k]) => k.startsWith(lower));
+        if (deptEntry) {
+            handleSuggestionClick({
+                type: 'dept',
+                label: deptEntry[0],
+                lat: deptEntry[1].center[0],
+                lng: deptEntry[1].center[1],
+                zoom: 9
+            });
+            return;
+        }
+    }
+
+    // 2. Arrondissement Zip (750xx, 130xx, 690xx)
+    if (/^(750|130|690)\d{2}$/.test(lower)) {
+        const coords = ArrondissementCoords[lower];
+        if (coords) {
+            handleSuggestionClick({
+                type: 'city',
+                label: lower,
+                lat: coords[0],
+                lng: coords[1],
+                zoom: 13
+            });
+            return;
+        }
+    }
+
+    // 3. Ville dans la base
+    for (const [dept, info] of Object.entries(locationsData)) {
+        const city = info.cities.find(c => c.toLowerCase() === lower);
+        if (city) {
+            handleSuggestionClick({
+                type: 'city',
+                label: city,
+                lat: info.center[0],
+                lng: info.center[1],
+                zoom: 12
+            });
+            return;
+        }
+    }
+
+    onSearch();
+    setShowSuggestions(false);
+  };
+
+  const handleTabClick = (filter: string | null) => {
+    if (onFilterToggle) onFilterToggle(filter);
     else router.push(`/map${filter ? `?filter=${filter}` : ''}`);
   };
 
   const handleClearSearch = () => {
     onSearchTermChange('');
-    // Trigger onSearch after clear to refresh view
+    setShowSuggestions(false);
     setTimeout(() => {
-        onSearch();
+        onSearch(); // Reset view
     }, 10);
+  };
+
+  const FilterButtons = ({ mobile = false }) => {
+    const filters = [
+        { id: 'shopping', label: 'Concess', icon: Bike },
+        { id: null, label: 'Tout', icon: Home },
+        { id: 'service', label: 'Atelier', icon: Wrench },
+        { id: 'association', label: 'Asso', icon: Users },
+        { id: 'relais', label: 'Relais', icon: Utensils }
+    ];
+
+    return (
+        <div className={cn("flex gap-3 overflow-x-auto no-scrollbar py-2", mobile ? "px-1 justify-start" : "justify-center")}>
+            {filters.map((f) => {
+                const isActive = f.id === null 
+                    ? (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2)
+                    : activeFilters.includes(String(f.id));
+
+                return (
+                    <button 
+                        key={String(f.id)} 
+                        onClick={() => handleTabClick(f.id)}
+                        className="flex flex-col items-center gap-1.5 shrink-0 group"
+                    >
+                        <div className={cn(
+                            "h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center transition-all border-2 shadow-sm group-hover:scale-105 active:scale-95",
+                            isActive 
+                                ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-lg" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-lg" : "bg-brand text-white border-white scale-110 shadow-lg"))
+                                : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
+                        )}>
+                            <f.icon className="h-5 w-5 md:h-6 md:w-6" />
+                        </div>
+                        <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>
+                            {f.label}
+                        </span>
+                    </button>
+                );
+            })}
+        </div>
+    );
   };
 
   if (variant === 'map') {
@@ -373,7 +478,7 @@ const Header: React.FC<HeaderProps> = ({
                 value={searchTerm} 
                 onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                 onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
-                onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchInternal()} 
                 autoComplete="off" 
             />
             {searchTerm && (
@@ -386,10 +491,10 @@ const Header: React.FC<HeaderProps> = ({
                 </button>
             )}
             <Button 
-                type="submit" 
+                type="button" 
                 size="icon" 
                 className="absolute top-1/2 -right-1 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[62px] md:w-[62px] shadow-lg hover:scale-105 active:scale-95 transition-all z-[20]" 
-                onClick={onSearch}
+                onClick={handleSearchInternal}
             >
                 <Search className="h-6 w-6 md:h-7 md:w-7" />
             </Button>
@@ -439,7 +544,7 @@ const Header: React.FC<HeaderProps> = ({
                             value={searchTerm} 
                             onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }} 
                             onFocus={() => { setShowSuggestions(true); setIsFocused(true); }} 
-                            onKeyDown={(e) => e.key === 'Enter' && onSearch()} 
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchInternal()} 
                             autoComplete="off" 
                         />
                         {searchTerm && (
@@ -452,10 +557,10 @@ const Header: React.FC<HeaderProps> = ({
                             </button>
                         )}
                         <Button 
-                            type="submit" 
+                            type="button" 
                             size="icon" 
                             className="absolute top-1/2 -right-0.5 md:right-0.5 -translate-y-1/2 bg-brand rounded-full h-[54px] w-[54px] md:h-[70px] md:w-[70px] shadow-lg z-[20]" 
-                            onClick={onSearch}
+                            onClick={handleSearchInternal}
                         >
                             <Search className="h-7 w-7" />
                         </Button>
@@ -494,27 +599,27 @@ const Header: React.FC<HeaderProps> = ({
             
             <nav className="flex flex-wrap items-center justify-center gap-4 md:gap-8 relative z-50 -mb-16 md:-mb-10">
                 <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
-                    <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'shopping' ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
-                        <Bike className={cn("h-6 w-6 transition-colors", activeFilter === 'shopping' ? "text-white" : "text-brand")} />
+                    <Button variant="ghost" onClick={() => handleTabClick('shopping')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilters.includes('shopping') ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
+                        <Bike className={cn("h-6 w-6 transition-colors", activeFilters.includes('shopping') ? "text-white" : "text-brand")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Concess</span>
                     </Button>
-                    <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === null ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
-                        <Home className={cn("h-6 w-6 transition-colors", activeFilter === null ? "text-white" : "text-brand")} />
+                    <Button variant="ghost" onClick={() => handleTabClick(null)} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2) ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
+                        <Home className={cn("h-6 w-6 transition-colors", (activeFilters.includes('shopping') && activeFilters.includes('service') && activeFilters.length === 2) ? "text-white" : "text-brand")} />
                         <span className="text-[10px] font-black uppercase tracking-[0.1em] mt-1">Tout</span>
                     </Button>
-                    <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'service' ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
-                        <Wrench className={cn("h-6 w-6 transition-colors", activeFilter === 'service' ? "text-white" : "text-brand")} />
+                    <Button variant="ghost" onClick={() => handleTabClick('service')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilters.includes('service') ? "bg-brand text-white border-white scale-110 z-10 shadow-brand/40" : "bg-white text-muted-foreground border-transparent hover:border-brand/30")}>
+                        <Wrench className={cn("h-6 w-6 transition-colors", activeFilters.includes('service') ? "text-white" : "text-brand")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Atelier</span>
                     </Button>
                 </div>
                 <div className="hidden md:block w-px h-12 bg-border/50" />
                 <div className="flex items-center gap-3 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white/50">
-                    <Button variant="ghost" onClick={() => handleTabClick('association')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'association' ? "bg-indigo-600 text-white border-white scale-110 z-10 shadow-indigo-600/40" : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/30")}>
-                        <Users className={cn("h-6 w-6 transition-colors", activeFilter === 'association' ? "text-white" : "text-indigo-600")} />
+                    <Button variant="ghost" onClick={() => handleTabClick('association')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilters.includes('association') ? "bg-indigo-600 text-white border-white scale-110 z-10 shadow-indigo-600/40" : "bg-white text-muted-foreground border-transparent hover:border-indigo-600/30")}>
+                        <Users className={cn("h-6 w-6 transition-colors", activeFilters.includes('association') ? "text-white" : "text-indigo-600")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Asso</span>
                     </Button>
-                    <Button variant="ghost" onClick={() => handleTabClick('relais')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilter === 'relais' ? "bg-amber-600 text-white border-white scale-110 z-10 shadow-amber-600/40" : "bg-white text-muted-foreground border-transparent hover:border-amber-600/30")}>
-                        <Utensils className={cn("h-6 w-6 transition-colors", activeFilter === 'relais' ? "text-white" : "text-amber-600")} />
+                    <Button variant="ghost" onClick={() => handleTabClick('relais')} className={cn("h-[64px] w-[64px] md:h-[72px] md:w-[72px] p-0 rounded-full flex flex-col items-center justify-center transition-all group border-4", activeFilters.includes('relais') ? "bg-amber-600 text-white border-white scale-110 z-10 shadow-amber-600/40" : "bg-white text-muted-foreground border-transparent hover:border-amber-600/30")}>
+                        <Utensils className={cn("h-6 w-6 transition-colors", activeFilters.includes('relais') ? "text-white" : "text-amber-600")} />
                         <span className="text-[10px] font-black uppercase tracking-tighter leading-none mt-1">Relais</span>
                     </Button>
                 </div>
