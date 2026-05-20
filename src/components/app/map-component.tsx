@@ -59,55 +59,65 @@ const MapComponent = ({
 
   // Logic pour décider quels labels afficher (Anti-collision Grid)
   const labelIds = useMemo(() => {
-    if (!mapRef.current || zoom < 11) return new Set<string>();
-
     const map = mapRef.current;
-    const labelsToShow = new Set<string>();
-    const currentBounds = mapBounds || map.getBounds();
-    
-    // On priorise TOUJOURS la sélection active
-    if (selectedId) labelsToShow.add(selectedId);
+    if (!map || zoom < 11 || !points) return new Set<string>();
 
-    if (zoom >= 13) {
-      // Stratégie Anti-collision : Grille de 160x60 pixels
-      const grid = new Set<string>();
-      const gridWidth = 160; 
-      const gridHeight = 60;
+    try {
+      const labelsToShow = new Set<string>();
+      const currentBounds = mapBounds || (map.getBounds ? map.getBounds() : null);
+      
+      if (!currentBounds || typeof currentBounds.contains !== 'function') return new Set<string>();
+      
+      // On priorise TOUJOURS la sélection active
+      if (selectedId) labelsToShow.add(selectedId);
 
-      // On traite d'abord le point sélectionné pour "réserver" sa place dans la grille
-      if (selectedId) {
-        const selPoint = points.find(p => p.id === selectedId);
-        if (selPoint && currentBounds.contains([selPoint.latitude, selPoint.longitude])) {
-          const pix = map.latLngToLayerPoint([selPoint.latitude, selPoint.longitude]);
-          const gx = Math.floor(pix.x / gridWidth);
-          const gy = Math.floor(pix.y / gridHeight);
-          grid.add(`${gx},${gy}`);
+      if (zoom >= 13) {
+        // Stratégie Anti-collision : Grille de 160x60 pixels
+        const grid = new Set<string>();
+        const gridWidth = 160; 
+        const gridHeight = 60;
+
+        // On traite d'abord le point sélectionné pour "réserver" sa place dans la grille
+        if (selectedId) {
+          const selPoint = points.find(p => p.id === selectedId);
+          if (selPoint && currentBounds.contains([selPoint.latitude, selPoint.longitude])) {
+            const pix = map.latLngToLayerPoint([selPoint.latitude, selPoint.longitude]);
+            const gx = Math.floor(pix.x / gridWidth);
+            const gy = Math.floor(pix.y / gridHeight);
+            grid.add(`${gx},${gy}`);
+          }
         }
+
+        // On traite les autres points visibles dans le viewport
+        points.forEach(point => {
+          if (point.id === selectedId) return;
+          if (!currentBounds.contains([point.latitude, point.longitude])) return;
+
+          try {
+            const pix = map.latLngToLayerPoint([point.latitude, point.longitude]);
+            const gx = Math.floor(pix.x / gridWidth);
+            const gy = Math.floor(pix.y / gridHeight);
+            const key = `${gx},${gy}`;
+
+            // Si la cellule de grille est vide, on affiche le label
+            if (!grid.has(key)) {
+              grid.add(key);
+              labelsToShow.add(point.id);
+            }
+          } catch (e) {
+            // Ignorer les erreurs de projection individuelles
+          }
+        });
+      } else if (zoom >= 11) {
+        // Zoom intermédiaire : seulement le point sélectionné ou survolé affichent leur nom
+        if (selectedId) labelsToShow.add(selectedId);
+        if (hoveredId) labelsToShow.add(hoveredId);
       }
 
-      // On traite les autres points visibles dans le viewport
-      points.forEach(point => {
-        if (point.id === selectedId) return;
-        if (!currentBounds.contains([point.latitude, point.longitude])) return;
-
-        const pix = map.latLngToLayerPoint([point.latitude, point.longitude]);
-        const gx = Math.floor(pix.x / gridWidth);
-        const gy = Math.floor(pix.y / gridHeight);
-        const key = `${gx},${gy}`;
-
-        // Si la cellule de grille est vide, on affiche le label
-        if (!grid.has(key)) {
-          grid.add(key);
-          labelsToShow.add(point.id);
-        }
-      });
-    } else if (zoom >= 11) {
-      // Zoom intermédiaire : seulement le point sélectionné ou survolé affichent leur nom
-      if (selectedId) labelsToShow.add(selectedId);
-      if (hoveredId) labelsToShow.add(hoveredId);
+      return labelsToShow;
+    } catch (err) {
+      return new Set<string>();
     }
-
-    return labelsToShow;
   }, [points, zoom, selectedId, hoveredId, mapBounds]);
 
   useEffect(() => {
@@ -207,23 +217,31 @@ const MapComponent = ({
   // Mise à jour visuelle réactive des icônes et des noms
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !points) return;
+    const clusterGroup = clusterGroupRef.current;
+    if (!map || !clusterGroup || !points) return;
+    
     const currentZoom = map.getZoom();
 
     points.forEach(point => {
       const marker = markerMapRef.current[point.id];
-      if (marker) {
+      // Sécurité : Ne mettre à jour que si le marqueur est toujours actif dans le groupe de clusters
+      if (marker && clusterGroup.hasLayer(marker)) {
         const isHovered = point.id === hoveredId;
         const isSelected = point.id === selectedId;
         const showLabel = labelIds.has(point.id);
-        const newIcon = createIcon(point, isHovered, isSelected, currentZoom, showLabel);
-        marker.setIcon(newIcon);
         
-        if (isSelected || isHovered) marker.setZIndexOffset(1000);
-        else marker.setZIndexOffset(0);
+        try {
+          const newIcon = createIcon(point, isHovered, isSelected, currentZoom, showLabel);
+          marker.setIcon(newIcon);
+          
+          if (isSelected || isHovered) marker.setZIndexOffset(1000);
+          else marker.setZIndexOffset(0);
+        } catch (e) {
+          // Échec silencieux si le marqueur est en cours de manipulation par Leaflet
+        }
       }
     });
-  }, [hoveredId, selectedId, zoom, labelIds]); 
+  }, [hoveredId, selectedId, zoom, labelIds, points]); 
 
   useEffect(() => {
     const map = mapRef.current;
