@@ -95,7 +95,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
           <p className="text-sm font-bold leading-snug">{pro.address}</p>
         </div>
 
-        {/* HORAIRES DIRECTS */}
+        {/* HORAIRES DIRECTS DANS LE DETAIL */}
         <div className="bg-brand/5 p-5 rounded-2xl border border-brand/10">
           <div className="flex items-center gap-2 mb-3 text-brand">
             <Clock className="h-4 w-4" />

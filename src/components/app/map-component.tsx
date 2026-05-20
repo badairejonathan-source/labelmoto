@@ -53,15 +53,15 @@ const MapComponent = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markerMapRef = useRef<Record<string, L.Marker>>({});
-  const onUserInteractionRef = useRef(onUserInteraction);
   
-  const isUpdatingFromProps = useRef(false);
-  const lastSetTargetKey = useRef<string>("");
-
-  // Sync ref for the manual interaction callback to avoid stale closures
+  // Utilisation d'une ref pour le callback d'interaction afin d'éviter les closures périmées
+  const onUserInteractionRef = useRef(onUserInteraction);
   useEffect(() => {
     onUserInteractionRef.current = onUserInteraction;
   }, [onUserInteraction]);
+
+  const isUpdatingFromProps = useRef(false);
+  const lastSetTargetKey = useRef<string>("");
 
   // Logic Anti-collision Grid
   const labelIds = useMemo(() => {
@@ -151,13 +151,16 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // DETECTION MANUELLE ULTRA-RÉACTIVE
-    map.on('movestart zoomstart touchstart', () => {
-      // On déclenche l'interaction si ce n'est pas un mouvement provoqué par le code
+    // DETECTION MANUELLE ULTRA-FIABLE VIA LE CONTENEUR HTML
+    // On utilise la phase de capture pour être certain d'attraper l'événement avant Leaflet
+    const handleManualTouch = () => {
       if (!isUpdatingFromProps.current) {
         onUserInteractionRef.current?.();
       }
-    });
+    };
+
+    containerRef.current?.addEventListener('touchstart', handleManualTouch, { capture: true, passive: true });
+    containerRef.current?.addEventListener('mousedown', handleManualTouch, { capture: true });
 
     map.on('moveend zoomend', () => {
       if (map && !isUpdatingFromProps.current) {
@@ -168,6 +171,8 @@ const MapComponent = ({
     map.on('click', onMapClick);
 
     return () => {
+      containerRef.current?.removeEventListener('touchstart', handleManualTouch);
+      containerRef.current?.removeEventListener('mousedown', handleManualTouch);
       map.off();
       map.remove();
       mapRef.current = null;
