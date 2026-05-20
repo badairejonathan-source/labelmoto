@@ -497,13 +497,13 @@ function MapPageComponent() {
                             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)
                         ) : listPoints.length > 0 ? (
                             listPoints.map((point) => (
-                                DealershipCardItem({ 
-                                    key: point.id, 
-                                    point: point, 
-                                    isSelected: point.id === selectedDealershipId, 
-                                    onClick: () => handleMarkerClick(point.id), 
-                                    onOpenDetails: handleOpenDetails
-                                })
+                                <DealershipCardItem 
+                                    key={point.id} 
+                                    point={point} 
+                                    isSelected={point.id === selectedDealershipId} 
+                                    onClick={() => handleMarkerClick(point.id)} 
+                                    onOpenDetails={handleOpenDetails}
+                                />
                             ))
                         ) : (
                             <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
@@ -552,13 +552,13 @@ function MapPageComponent() {
                      
                      {listPoints.length > 0 ? (
                         listPoints.map((point) => (
-                           DealershipCardItem({ 
-                               key: point.id, 
-                               point: point, 
-                               isSelected: point.id === selectedDealershipId, 
-                               onClick: () => handleMarkerClick(point.id), 
-                               onOpenDetails: handleOpenDetails
-                           })
+                           <DealershipCardItem 
+                               key={point.id} 
+                               point={point} 
+                               isSelected={point.id === selectedDealershipId} 
+                               onClick={() => handleMarkerClick(point.id)} 
+                               onOpenDetails={handleOpenDetails}
+                           />
                          ))
                      ) : !isDiscoveryMode && (
                         <div className="text-center py-10 opacity-50">
