@@ -201,6 +201,7 @@ function MapPageComponent() {
   /**
    * SOURCE 1 : clusterPoints (POUR LA CARTE)
    * Contient TOUS les points filtrés par métier et recherche.
+   * C'est la source de vérité pour les clusters.
    */
   const clusterPoints = useMemo(() => {
     let base = allOverviewPoints;
@@ -253,6 +254,7 @@ function MapPageComponent() {
       setIsLoading(true);
       try {
         const collections = ['concessions', 'associations', 'relais'];
+        // On augmente la limite à 10k pour être sûr de tout avoir sans rechargement
         const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
         
         snapshots.forEach((snap, idx) => {
@@ -276,7 +278,7 @@ function MapPageComponent() {
         });
         setAllOverviewPoints(Array.from(masterPointsMap.current.values()));
       } catch (e) {
-        console.error("Erreur chargement points:", e);
+        console.warn("Erreur chargement points (mode hors-ligne probable):", e);
       } finally { 
         setIsLoading(false); 
       }
