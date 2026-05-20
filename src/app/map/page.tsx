@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
@@ -200,13 +201,10 @@ function MapPageComponent() {
 
   /**
    * SOURCE 1 : clusterPoints (POUR LA CARTE)
-   * Contient TOUS les points filtrés par métier et recherche.
-   * C'est la source de vérité pour les clusters.
    */
   const clusterPoints = useMemo(() => {
     let base = allOverviewPoints;
     
-    // Application des filtres cumulables
     if (activeFilters.length > 0) {
         base = base.filter(p => {
             if (p.appSection === 'both') {
@@ -215,7 +213,7 @@ function MapPageComponent() {
             return activeFilters.includes(p.appSection);
         });
     } else {
-        return []; // Rien n'est sélectionné
+        return []; 
     }
 
     if (submittedSearchTerm) {
@@ -228,7 +226,6 @@ function MapPageComponent() {
 
   /**
    * SOURCE 2 : listPoints (POUR L'UI LISTE)
-   * Trié par point sélectionné (Pivot) puis proximité géographique.
    */
   const listPoints = useMemo(() => {
     const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
@@ -247,14 +244,12 @@ function MapPageComponent() {
     return sorted.slice(0, 500); 
   }, [clusterPoints, selectedDealershipId, mapCenter]);
 
-  // Chargement massif des MapPoints (Overview léger ~5200 points)
   useEffect(() => {
     const fetchAll = async () => {
       if (!firestore) return;
       setIsLoading(true);
       try {
         const collections = ['concessions', 'associations', 'relais'];
-        // On augmente la limite à 10k pour être sûr de tout avoir sans rechargement
         const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
         
         snapshots.forEach((snap, idx) => {
@@ -324,6 +319,7 @@ function MapPageComponent() {
     }
   }, [isMobile]);
 
+  // REDUCTION AUTO AU MOUVEMENT MANUEL (MOBILE UNIQUEMENT)
   const handleMapInteraction = useCallback(() => {
     if (isMobile && drawerHeight !== 'collapsed') {
       setDrawerHeight('collapsed');
@@ -332,7 +328,6 @@ function MapPageComponent() {
 
   const handleFilterToggle = (filterId: string | null) => {
     if (filterId === null) {
-        // Mode "Tout" : Shortcut pour Concessions + Ateliers
         setActiveFilters(['shopping', 'service']);
         return;
     }
@@ -349,7 +344,6 @@ function MapPageComponent() {
   const handleResetSearch = () => {
     setSearchTerm('');
     setSubmittedSearchTerm('');
-    // Réinitialisation de la vue sur la France
     setMapCenter([46.5, 2.2]);
     setMapZoom(6.2);
     setSelectionSource('external');

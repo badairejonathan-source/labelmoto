@@ -57,7 +57,7 @@ const MapComponent = ({
   const isUpdatingFromProps = useRef(false);
   const lastSetTargetKey = useRef<string>("");
 
-  // Logic pour décider quels labels afficher (Anti-collision Grid)
+  // Logic Anti-collision Grid
   const labelIds = useMemo(() => {
     const map = mapRef.current;
     if (!map || zoom < 11 || !points) return new Set<string>();
@@ -68,16 +68,13 @@ const MapComponent = ({
       
       if (!currentBounds || typeof currentBounds.contains !== 'function') return new Set<string>();
       
-      // On priorise TOUJOURS la sélection active
       if (selectedId) labelsToShow.add(selectedId);
 
       if (zoom >= 13) {
-        // Stratégie Anti-collision : Grille de 160x60 pixels
         const grid = new Set<string>();
         const gridWidth = 160; 
         const gridHeight = 60;
 
-        // On traite d'abord le point sélectionné pour "réserver" sa place dans la grille
         if (selectedId) {
           const selPoint = points.find(p => p.id === selectedId);
           if (selPoint && currentBounds.contains([selPoint.latitude, selPoint.longitude])) {
@@ -88,7 +85,6 @@ const MapComponent = ({
           }
         }
 
-        // On traite les autres points visibles dans le viewport
         points.forEach(point => {
           if (point.id === selectedId) return;
           if (!currentBounds.contains([point.latitude, point.longitude])) return;
@@ -99,17 +95,13 @@ const MapComponent = ({
             const gy = Math.floor(pix.y / gridHeight);
             const key = `${gx},${gy}`;
 
-            // Si la cellule de grille est vide, on affiche le label
             if (!grid.has(key)) {
               grid.add(key);
               labelsToShow.add(point.id);
             }
-          } catch (e) {
-            // Ignorer les erreurs de projection individuelles
-          }
+          } catch (e) {}
         });
       } else if (zoom >= 11) {
-        // Zoom intermédiaire : seulement le point sélectionné ou survolé affichent leur nom
         if (selectedId) labelsToShow.add(selectedId);
         if (hoveredId) labelsToShow.add(hoveredId);
       }
@@ -153,12 +145,14 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // Détecte uniquement les interactions manuelles (Touch/Drag)
-    map.on('dragstart zoomstart', () => {
+    // DETECTION MANUELLE ROBUSTE (MOBILE + DESKTOP)
+    const handleInteraction = () => {
       if (!isUpdatingFromProps.current) {
         onUserInteraction?.();
       }
-    });
+    };
+
+    map.on('dragstart zoomstart touchstart', handleInteraction);
 
     map.on('moveend zoomend', () => {
       if (map && !isUpdatingFromProps.current) {
@@ -214,7 +208,6 @@ const MapComponent = ({
     clusterGroup.addLayers(markers);
   }, [points]); 
 
-  // Mise à jour visuelle réactive des icônes et des noms
   useEffect(() => {
     const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
@@ -224,7 +217,6 @@ const MapComponent = ({
 
     points.forEach(point => {
       const marker = markerMapRef.current[point.id];
-      // Sécurité : Ne mettre à jour que si le marqueur est toujours actif dans le groupe de clusters
       if (marker && clusterGroup.hasLayer(marker)) {
         const isHovered = point.id === hoveredId;
         const isSelected = point.id === selectedId;
@@ -236,9 +228,7 @@ const MapComponent = ({
           
           if (isSelected || isHovered) marker.setZIndexOffset(1000);
           else marker.setZIndexOffset(0);
-        } catch (e) {
-          // Échec silencieux si le marqueur est en cours de manipulation par Leaflet
-        }
+        } catch (e) {}
       }
     });
   }, [hoveredId, selectedId, zoom, labelIds, points]); 
@@ -261,7 +251,6 @@ const MapComponent = ({
         animate: true
       });
     } else {
-      // UTILISATION DU ZOOM ACTUEL pour éviter les dézooms brusques au clic
       const currentMapZoom = map.getZoom();
       const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, currentMapZoom);
       map.flyTo(finalCenter, currentMapZoom, { duration: 0.8 });
