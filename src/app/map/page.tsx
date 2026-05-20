@@ -133,7 +133,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
 
         <div className="pt-4 border-t border-dashed">
            <Link href={`/concessions/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-xl hover:bg-brand/5 group transition-colors">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Ouvrir la page SEO complète</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">ouvrir la fiche complete</span>
               <ChevronRight className="inline-block h-3 w-3 ml-2 text-muted-foreground group-hover:text-brand" />
            </Link>
         </div>
@@ -497,13 +497,13 @@ function MapPageComponent() {
                             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)
                         ) : listPoints.length > 0 ? (
                             listPoints.map((point) => (
-                                <DealershipCardItem 
-                                    key={point.id} 
-                                    point={point} 
-                                    isSelected={point.id === selectedDealershipId} 
-                                    onClick={() => handleMarkerClick(point.id)} 
-                                    onOpenDetails={handleOpenDetails}
-                                />
+                                DealershipCardItem({ 
+                                    key: point.id, 
+                                    point: point, 
+                                    isSelected: point.id === selectedDealershipId, 
+                                    onClick: () => handleMarkerClick(point.id), 
+                                    onOpenDetails: handleOpenDetails
+                                })
                             ))
                         ) : (
                             <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
@@ -552,13 +552,13 @@ function MapPageComponent() {
                      
                      {listPoints.length > 0 ? (
                         listPoints.map((point) => (
-                           <DealershipCardItem 
-                               key={point.id} 
-                               point={point} 
-                               isSelected={point.id === selectedDealershipId} 
-                               onClick={() => handleMarkerClick(point.id)} 
-                               onOpenDetails={handleOpenDetails}
-                           />
+                           DealershipCardItem({ 
+                               key: point.id, 
+                               point: point, 
+                               isSelected: point.id === selectedDealershipId, 
+                               onClick: () => handleMarkerClick(point.id), 
+                               onOpenDetails: handleOpenDetails
+                           })
                          ))
                      ) : !isDiscoveryMode && (
                         <div className="text-center py-10 opacity-50">
