@@ -39,8 +39,14 @@ export default function HomepageDeferred() {
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
-                // On inclut les relais motards dans l'actu
-                return (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association') || id.includes('relais'));
+                
+                // EXCLUSION : On retire spécifiquement le MotoGP de l'ACTU Home comme demandé
+                if (id.includes('motogp') || id.includes('gp-france')) {
+                    return false;
+                }
+
+                // On inclut les relais motards et associations dans l'actu
+                return (id.includes('event') || id.includes('association') || id.includes('relais'));
             })
             .sort(sortArticlesByDate)
             .slice(0, 3);
@@ -52,7 +58,11 @@ export default function HomepageDeferred() {
             .filter(a => {
                 const id = a.id.toLowerCase();
                 const title = (a.display_title || a.title || "").toLowerCase();
+                
+                // On n'affiche pas les news/events/relais ici
                 const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association') || id.includes('relais');
+                
+                // On exclut aussi l'article technique d'entretien qui a sa propre page
                 return !isNews && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
             })
             .sort(sortArticlesByDate)
