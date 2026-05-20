@@ -425,7 +425,7 @@ function MapPageComponent() {
           <Header 
             searchTerm={searchTerm} 
             onSearchTermChange={setSearchTerm} 
-            onSearch={() => term === '' ? handleResetSearch() : setSubmittedSearchTerm(searchTerm)} 
+            onSearch={() => searchTerm === '' ? handleResetSearch() : setSubmittedSearchTerm(searchTerm)} 
             placeholderText="Ville, marque ou nom..."
             variant="map"
             activeFilters={activeFilters}
