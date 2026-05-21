@@ -7,133 +7,76 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
-import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Home, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Zap, FileText, Sparkles, Clock } from 'lucide-react';
+import Header from '@/components/app/header';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Clock } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
-import { useFirebase } from '@/firebase';
+import { useFirebase, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, getDocs, query, limit, doc } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import LabelMotoLogo from '@/components/app/logo';
-import { useDoc } from '@/firebase/firestore/use-doc';
-import { useMemoFirebase } from '@/firebase/provider';
-import { useCollection } from '@/firebase/firestore/use-collection';
-
-// Seuil de zoom stable pour basculer vers le mode professionnel
-const DISCOVERY_ZOOM_THRESHOLD = 9.0;
-
-const CIRCUIT_BUGATTI: MapPoint = {
-  id: 'circuit-bugatti-le-mans',
-  title: 'Circuit Bugatti - Le Mans',
-  latitude: 47.9546,
-  longitude: 0.2078,
-  category: 'Circuit',
-  appSection: 'both',
-  slug: 'circuit-bugatti-le-mans'
-};
 
 const MapComponent = dynamic(
   () => import('@/components/app/map-component').then((mod) => mod.default), 
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-full flex items-center justify-center bg-muted/20">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
-      </div>
-    )
-  }
+  { ssr: false, loading: () => <div className="w-full h-full flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div> }
 );
 
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
   const { firestore } = useFirebase();
-  const colName = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
-  const docRef = useMemoFirebase(() => doc(firestore, colName, dealershipId), [firestore, colName, dealershipId]);
+  const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
+  const docRef = useMemoFirebase(() => doc(firestore, col, dealershipId), [firestore, col, dealershipId]);
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
-  if (isLoading) return (
-    <div className="p-4 space-y-4">
-      <Skeleton className="h-32 w-full rounded-2xl" />
-      <div className="space-y-2">
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
-      </div>
-    </div>
-  );
-
+  if (isLoading) return <div className="p-8 space-y-6"><Skeleton className="h-48 w-full rounded-3xl" /><Skeleton className="h-8 w-3/4" /></div>;
   if (!pro) return null;
 
-  const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`;
-  const days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
-      <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-6 transition-colors">
-        <ArrowLeft className="h-3.5 w-3.5" /> Retour à la liste
+    <div className="bg-white rounded-[2.5rem] p-8 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
+      <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-8 transition-colors">
+        <ArrowLeft className="h-4 w-4" /> Retour à la liste
       </button>
 
-      <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-muted mb-6 shadow-lg border-2 border-white">
-        {pro.imageUrl || pro.imgUrl || pro.img_url || pro.image_url ? (
-           <Image src={pro.imageUrl || pro.imgUrl || pro.img_url || pro.image_url || ""} alt={pro.title} fill className="object-cover" />
-        ) : (
-           <div className="w-full h-full flex items-center justify-center opacity-10">
-              <MapPin className="h-12 w-12" />
-           </div>
-        )}
-      </div>
-
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
-          <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-2">{pro.title}</h3>
-          <p className="text-xs font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
+          <h3 className="text-3xl font-black uppercase tracking-tighter leading-none mb-2">{pro.title}</h3>
+          <p className="text-sm font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
         </div>
 
-        <div className="bg-muted/30 p-4 rounded-2xl border-2 border-dashed flex items-start gap-3">
-          <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-          <p className="text-sm font-bold leading-snug">{pro.address}</p>
-        </div>
-
-        {/* HORAIRES DIRECTS DANS LE DETAIL */}
-        <div className="bg-brand/5 p-5 rounded-2xl border border-brand/10">
-          <div className="flex items-center gap-2 mb-3 text-brand">
-            <Clock className="h-4 w-4" />
+        {/* HORAIRES EN HAUT POUR VISIBILITE DIRECTE */}
+        <div className="bg-brand/5 p-6 rounded-3xl border border-brand/10">
+          <div className="flex items-center gap-2 mb-4 text-brand">
+            <Clock className="h-5 w-5" />
             <span className="text-[10px] font-black uppercase tracking-widest">Horaires d'ouverture</span>
           </div>
-          <div className="space-y-1.5">
-            {days.map((day) => (
+          <div className="grid gap-2">
+            {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
               <div key={day} className="flex justify-between items-center text-[10px] font-bold">
                 <span className="capitalize text-muted-foreground">{day}</span>
-                <span className="text-foreground uppercase">{pro[day] || 'Fermé'}</span>
+                <span className="text-foreground uppercase font-black">{pro[day] || 'Fermé'}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-           {pro.phoneNumber && (
-             <Button asChild variant="outline" className="h-12 rounded-xl font-black uppercase text-[9px] border-2">
-               <a href={`tel:${pro.phoneNumber}`}><Phone className="mr-2 h-3.5 w-3.5" /> Appeler</a>
-             </Button>
-           )}
-           {pro.website && (
-             <Button asChild variant="outline" className="h-12 rounded-xl font-black uppercase text-[9px] border-2">
-               <a href={pro.website} target="_blank" rel="noopener noreferrer"><Globe className="mr-2 h-3.5 w-3.5" /> Site Web</a>
-             </Button>
-           )}
+        <div className="bg-muted/30 p-5 rounded-3xl border-2 border-dashed flex items-start gap-3">
+          <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+          <p className="text-sm font-bold leading-snug">{pro.address}</p>
         </div>
 
-        <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white rounded-full font-black uppercase text-xs h-14 shadow-xl transition-all hover:scale-[1.02] active:scale-95">
-          <a href={navigationUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-            <Navigation className="h-4 w-4 fill-white" />
-            Calculer l'itinéraire
-          </a>
+        <div className="grid grid-cols-2 gap-3">
+           {pro.phoneNumber && <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[10px] border-2"><a href={`tel:${pro.phoneNumber}`}><Phone className="mr-2 h-4 w-4" /> Appeler</a></Button>}
+           {pro.website && <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[10px] border-2"><a href={pro.website} target="_blank" rel="noreferrer"><Globe className="mr-2 h-4 w-4" /> Site Web</a></Button>}
+        </div>
+
+        <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white rounded-full font-black uppercase text-xs h-16 shadow-xl shadow-brand/20 transition-all hover:scale-[1.02]">
+          <a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noreferrer">Calculer l'itinéraire</a>
         </Button>
 
-        <div className="pt-4 border-t border-dashed">
-           <Link href={`/concessions/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-xl hover:bg-brand/5 group transition-colors">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">ouvrir la fiche complete</span>
+        <div className="pt-6 border-t border-dashed">
+           <Link href={`/concessions/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-2xl hover:bg-brand/5 group transition-colors">
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Ouvrir la fiche complète</span>
               <ChevronRight className="inline-block h-3 w-3 ml-2 text-muted-foreground group-hover:text-brand" />
            </Link>
         </div>
@@ -145,447 +88,191 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
 function MapPageComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
-  const filterParam = searchParams.get('filter');
-  const filtersParam = searchParams.get('filters');
-  const searchParam = searchParams.get('search');
-  const selectedIdParam = searchParams.get('selectedId');
-
-  const [allOverviewPoints, setAllOverviewPoints] = useState<MapPoint[]>([CIRCUIT_BUGATTI]);
-  const [searchTerm, setSearchTerm] = useState(searchParam || '');
-  const [submittedSearchTerm, setSubmittedSearchTerm] = useState(searchParam || '');
-  const [uxMode, setUxMode] = useState<'discovery' | 'pros'>('discovery');
-  
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
-  const [mapZoom, setMapZoom] = useState(6.2);
-  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
-  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>('external');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLocating, setIsLoadingLocating] = useState(false);
-  
-  const [selectedDealershipId, setSelectedDealershipId] = useState<string | null>(selectedIdParam || null);
-  const [isDetailViewOpen, setIsDetailViewOpen] = useState(false);
-
+  const { width } = useWindowSize();
   const { firestore } = useFirebase();
-  const [mounted, setMounted] = useState(false);
+
+  const [points, setPoints] = useState<MapPoint[]>([]);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
+  const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
+  const [isDetailView, setIsDetailView] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
+  const [mapZoom, setMapZoom] = useState(6);
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
-  const listContainerRef = useRef<HTMLDivElement>(null);
-  const mobileListContainerRef = useRef<HTMLDivElement>(null);
+  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>('external');
+  const [isLocating, setIsLocating] = useState(false);
 
-  const masterPointsMap = useRef<Map<string, MapPoint>>(new Map([['circuit-bugatti-le-mans', CIRCUIT_BUGATTI]]));
-
-  const articlesRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
-  const { data: articles } = useCollection(articlesRef);
-
-  // Filtres actifs (Multi-sélection / Toggle)
-  const [activeFilters, setActiveFilters] = useState<string[]>(() => {
-    if (filtersParam) return filtersParam.split(',');
-    if (filterParam) return [filterParam];
-    return ['shopping', 'service']; // Mode "Pro" par défaut
-  });
-
-  const { width, height } = useWindowSize();
-  const isMobile = mounted && width !== undefined && width < 1024;
-
-  const leftPadding = isMobile ? 0 : 544;
-  const bottomPadding = isMobile ? (drawerHeight === 'full' ? (height || 800) - 160 : (drawerHeight === 'half' ? (height || 800) / 2 : 110)) : 0;
-  
-  useEffect(() => { setMounted(true); }, []);
-
-  useEffect(() => {
-    if (uxMode === 'pros') return;
-    if (mapZoom >= DISCOVERY_ZOOM_THRESHOLD || submittedSearchTerm || selectedDealershipId || activeFilters.length > 0) {
-      setUxMode('pros');
-    }
-  }, [mapZoom, submittedSearchTerm, selectedDealershipId, activeFilters, uxMode]);
-
-  // Logic pour fermer la fiche si le pro sélectionné est filtré
-  useEffect(() => {
-    if (selectedDealershipId) {
-        const point = masterPointsMap.current.get(selectedDealershipId);
-        if (point) {
-            const matches = point.appSection === 'both' 
-                ? (activeFilters.includes('shopping') || activeFilters.includes('service'))
-                : activeFilters.includes(point.appSection);
-            
-            if (activeFilters.length > 0 && !matches) {
-                setSelectedDealershipId(null);
-                setIsDetailViewOpen(false);
-            }
-        }
-    }
-  }, [activeFilters, selectedDealershipId]);
-
-  /**
-   * SOURCE 1 : clusterPoints (POUR LA CARTE)
-   */
-  const clusterPoints = useMemo(() => {
-    let base = allOverviewPoints;
-    
-    if (activeFilters.length > 0) {
-        base = base.filter(p => {
-            if (p.appSection === 'both') {
-                return activeFilters.includes('shopping') || activeFilters.includes('service');
-            }
-            return activeFilters.includes(p.appSection);
-        });
-    } else {
-        return []; 
-    }
-
-    if (submittedSearchTerm) {
-      const lower = submittedSearchTerm.toLowerCase();
-      base = base.filter(p => p.title.toLowerCase().includes(lower));
-    }
-
-    return base;
-  }, [allOverviewPoints, activeFilters, submittedSearchTerm]);
-
-  /**
-   * SOURCE 2 : listPoints (POUR L'UI LISTE)
-   */
-  const listPoints = useMemo(() => {
-    const selectedPoint = selectedDealershipId ? masterPointsMap.current.get(selectedDealershipId) : null;
-    const pivotLat = selectedPoint?.latitude ?? mapCenter[0];
-    const pivotLng = selectedPoint?.longitude ?? mapCenter[1];
-
-    const sorted = [...clusterPoints].sort((a, b) => {
-      if (a.id === selectedDealershipId) return -1;
-      if (b.id === selectedDealershipId) return 1;
-
-      const distA = Math.pow(a.latitude - pivotLat, 2) + Math.pow(a.longitude - pivotLng, 2);
-      const distB = Math.pow(b.latitude - pivotLat, 2) + Math.pow(b.longitude - pivotLng, 2);
-      return distA - distB;
-    });
-
-    return sorted.slice(0, 500); 
-  }, [clusterPoints, selectedDealershipId, mapCenter]);
+  const isMobile = width !== undefined && width < 1024;
+  const bottomPadding = isMobile ? (drawerHeight === 'full' ? 600 : (drawerHeight === 'half' ? 300 : 160)) : 0;
+  const leftPadding = !isMobile ? 544 : 0;
 
   useEffect(() => {
     const fetchAll = async () => {
       if (!firestore) return;
-      setIsLoading(true);
-      try {
-        const collections = ['concessions', 'associations', 'relais'];
-        const snapshots = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
-        
-        snapshots.forEach((snap, idx) => {
-          snap.docs.forEach(doc => {
-            const data = doc.data();
-            const coords = extractValidCoordinates(data);
-            if (!coords) return;
-            const p: MapPoint = {
-              id: doc.id,
-              title: data.title || data.name || doc.id.replace(/-/g, ' ').toUpperCase(),
-              latitude: coords.lat,
-              longitude: coords.lng,
-              category: data.category || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : 'concession')),
-              appSection: data.appSection || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : (data.category?.includes('concession') ? 'both' : 'service'))),
-              slug: data.slug || doc.id,
-              imgUrl: data.imageUrl || data.imgUrl || data.img_url || data.image_url || "",
-              rating: data.rating
-            };
-            masterPointsMap.current.set(p.id, p);
+      const collections = ['concessions', 'associations', 'relais'];
+      const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(2000)))));
+      const allPoints: MapPoint[] = [];
+      snaps.forEach((snap, idx) => {
+        snap.docs.forEach(doc => {
+          const data = doc.data();
+          const coords = extractValidCoordinates(data);
+          if (!coords) return;
+          allPoints.push({
+            id: doc.id,
+            latitude: coords.lat,
+            longitude: coords.lng,
+            category: data.category || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : 'concession')),
+            appSection: data.appSection || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : 'shopping')),
+            title: data.title || doc.id,
+            slug: data.slug,
+            rating: data.rating,
+            imgUrl: data.imageUrl || data.imgUrl
           });
         });
-        setAllOverviewPoints(Array.from(masterPointsMap.current.values()));
-      } catch (e) {
-        console.warn("Erreur chargement points (mode hors-ligne probable):", e);
-      } finally { 
-        setIsLoading(false); 
-      }
+      });
+      setPoints(allPoints);
     };
     fetchAll();
   }, [firestore]);
 
-  const scrollListToTop = useCallback(() => {
-    if (!isMobile && listContainerRef.current) {
-        listContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (isMobile && mobileListContainerRef.current) {
-        mobileListContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [isMobile]);
-
-  const handleMarkerClick = useCallback((id: string) => { 
-    setSelectedDealershipId(id); 
-    setSelectionSource('marker');
-    
-    const point = masterPointsMap.current.get(id); 
-    if (point) { 
-      setMapCenter([point.latitude, point.longitude]); 
-    } 
-
-    if (isMobile) {
-        setDrawerHeight('half');
-    }
-
-    setTimeout(() => {
-        scrollListToTop();
-    }, 150);
-  }, [isMobile, scrollListToTop]);
-
-  const handleOpenDetails = useCallback((id: string) => {
-    setSelectedDealershipId(id);
-    setIsDetailViewOpen(true);
-    if (isMobile) setDrawerHeight('full');
-    
-    const point = masterPointsMap.current.get(id); 
-    if (point) {
-      setMapCenter([point.latitude, point.longitude]);
-      setSelectionSource('card');
-    }
-  }, [isMobile]);
-
-  // REDUCTION AUTO AU MOUVEMENT MANUEL (MOBILE UNIQUEMENT)
-  const handleMapInteraction = useCallback(() => {
-    if (isMobile && drawerHeight !== 'collapsed') {
-      setDrawerHeight('collapsed');
-    }
-  }, [isMobile, drawerHeight]);
-
-  const handleFilterToggle = (filterId: string | null) => {
-    setActiveFilters(prev => {
-        if (prev.includes(filterId!)) {
-            return prev.filter(f => f !== filterId);
-        } else {
-            return [...prev, filterId!];
-        }
+  const filteredPoints = useMemo(() => {
+    return points.filter(p => {
+        const matchesSearch = !searchTerm || p.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter = activeFilters.includes(p.appSection === 'both' ? 'shopping' : p.appSection);
+        return matchesSearch && matchesFilter;
     });
+  }, [points, searchTerm, activeFilters]);
+
+  const handleFilterToggle = (f: string) => {
+    setActiveFilters(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
   };
 
-  const handleResetSearch = () => {
-    setSearchTerm('');
-    setSubmittedSearchTerm('');
-    setMapCenter([46.5, 2.2]);
-    setMapZoom(6.2);
-    setSelectionSource('external');
+  const handleMarkerClick = (id: string) => {
+    setSelectedId(id);
+    setSelectionSource('marker');
+    if (isMobile) setDrawerHeight('half');
   };
 
-  const isDiscoveryMode = uxMode === 'discovery' && mapZoom < DISCOVERY_ZOOM_THRESHOLD;
-
-  const FilterButtons = ({ mobile = false }) => {
-    const filters = [
-        { id: 'shopping', label: 'Concess', icon: Bike },
-        { id: 'service', label: 'Atelier', icon: Wrench },
-        { id: 'association', label: 'Asso', icon: Users },
-        { id: 'relais', label: 'Relais', icon: Utensils }
-    ];
-
-    return (
-        <div className={cn("flex gap-3 overflow-x-auto no-scrollbar py-2", mobile ? "px-1 justify-start" : "justify-center")}>
-            {filters.map((f) => {
-                const isActive = activeFilters.includes(f.id);
-
-                return (
-                    <button 
-                        key={f.id} 
-                        onClick={() => { 
-                            handleFilterToggle(f.id); 
-                            if (mobile && drawerHeight === 'collapsed') setDrawerHeight('half'); 
-                        }}
-                        className="flex flex-col items-center gap-1.5 shrink-0 group"
-                    >
-                        <div className={cn(
-                            "h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center transition-all border-2 shadow-sm group-hover:scale-105 active:scale-95",
-                            isActive 
-                                ? (f.id === 'association' ? "bg-indigo-600 text-white border-white scale-110 shadow-lg" : (f.id === 'relais' ? "bg-amber-600 text-white border-white scale-110 shadow-lg" : "bg-brand text-white border-white scale-110 shadow-lg"))
-                                : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
-                        )}>
-                            <f.icon className="h-5 w-5 md:h-6 md:w-6" />
-                        </div>
-                        <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>
-                            {f.label}
-                        </span>
-                    </button>
-                );
-            })}
-        </div>
-    );
+  const handleUserInteraction = () => {
+    if (isMobile) setDrawerHeight('collapsed');
   };
+
+  const FilterButtons = ({ mobile = false }) => (
+    <div className={cn("flex gap-4 overflow-x-auto no-scrollbar", mobile ? "justify-center" : "justify-center")}>
+        {[
+            { id: 'shopping', label: 'Concess', icon: Bike },
+            { id: 'service', label: 'Atelier', icon: Wrench },
+            { id: 'association', label: 'Asso', icon: Users },
+            { id: 'relais', label: 'Relais', icon: Utensils }
+        ].map(f => {
+            const isActive = activeFilters.includes(f.id);
+            return (
+                <button key={f.id} onClick={() => handleFilterToggle(f.id)} className="flex flex-col items-center gap-1.5 group shrink-0">
+                    <div className={cn("h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}>
+                        <f.icon className="h-5 w-5" />
+                    </div>
+                    <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
+                </button>
+            );
+        })}
+    </div>
+  );
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
         <MapComponent 
-          points={clusterPoints} 
-          center={mapCenter} 
-          zoom={mapZoom} 
-          mapBounds={mapBounds}
-          selectionSource={selectionSource}
-          selectedId={selectedDealershipId} 
-          onMarkerClick={handleMarkerClick} 
-          onMapChange={(c, z, b) => { setMapCenter(c); setMapZoom(z); setMapBounds(b); setSelectionSource(null); }} 
-          onMapClick={() => { if (isMobile) setDrawerHeight('collapsed'); setSelectedDealershipId(null); setIsDetailViewOpen(false); }} 
-          onUserInteraction={handleMapInteraction}
-          bottomPadding={bottomPadding} 
-          leftPadding={leftPadding} 
-          isLocating={isLocating} 
-          onLocateEnd={() => setIsLoadingLocating(false)} 
-          onLocationFound={(c) => { setMapCenter(c); setSelectionSource('external'); }} 
+            points={filteredPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
+            onMarkerClick={handleMarkerClick} onMapClick={() => { setSelectedId(null); setIsDetailView(false); }}
+            onMapChange={(c, z) => { setMapCenter(c); setMapZoom(z); setSelectionSource(null); }}
+            onUserInteraction={handleUserInteraction} bottomPadding={bottomPadding} leftPadding={leftPadding}
+            isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationFound={(c) => { setMapCenter(c); setSelectionSource('external'); }}
         />
       </div>
 
-      <div className="absolute top-6 right-6 left-6 md:left-auto md:w-full md:max-w-2xl z-[1500] pointer-events-none">
+      {/* TOP HEADER (IMAGE MATCH) */}
+      <div className="absolute top-6 left-6 right-6 z-[1500] pointer-events-none">
         <div className="pointer-events-auto">
-          <Header 
-            searchTerm={searchTerm} 
-            onSearchTermChange={setSearchTerm} 
-            onSearch={() => searchTerm === '' ? handleResetSearch() : setSubmittedSearchTerm(searchTerm)} 
-            placeholderText="Ville, marque ou nom..."
-            variant="map"
-            activeFilters={activeFilters}
-            onFilterToggle={handleFilterToggle}
-            hideUserMenu
-          />
+            <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSelectionSource('external')} />
         </div>
       </div>
 
+      {/* DESKTOP SIDEBAR */}
       {!isMobile && (
-        <aside className="absolute top-6 left-6 bottom-6 w-[520px] flex flex-col bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.2)] z-[1000] border border-white/40 overflow-hidden">
-            <div className="p-10 pb-6 shrink-0">
-                <div className="flex items-center justify-between gap-4 mb-8">
-                    <div className="w-40"><LabelMotoLogo noBubble /></div>
-                    <div className="bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 text-center flex-1 max-w-[200px]">
-                        <p className="text-[8px] font-black uppercase tracking-wider text-foreground leading-tight">TROUVER UN PRO ?</p>
-                        <p className="text-[10px] font-black italic text-brand leading-none">C'EST ICI.</p>
-                    </div>
-                    <UserMenu />
-                </div>
-                <div className="space-y-6">
+        <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
+            <div className="p-10 pb-6 shrink-0 space-y-8">
+                <div className="flex justify-between items-center"><Link href="/"><Image src="/images/logo-moto.webp" alt="Logo" width={180} height={60} /></Link></div>
+                <div className="space-y-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Filtres de recherche</p>
                     <FilterButtons />
                 </div>
             </div>
-
-            <div ref={listContainerRef} className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
-                {isDetailViewOpen && selectedDealershipId ? (
-                   <SidebarDetailView 
-                        dealershipId={selectedDealershipId} 
-                        point={masterPointsMap.current.get(selectedDealershipId)}
-                        onBack={() => { setIsDetailViewOpen(false); }}
-                   />
+            <div className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
+                {isDetailView && selectedId ? (
+                    <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
                 ) : (
                     <div className="space-y-4">
-                        {isDiscoveryMode && articles && articles.length > 0 && (
-                            <div className="mb-10 space-y-4">
-                                <div className="flex items-center gap-2 text-brand">
-                                    <Sparkles className="h-4 w-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Conseils & Guides</span>
-                                </div>
-                                <div className="grid gap-3">
-                                    {articles.slice(0, 3).map(art => (
-                                        <Link key={art.id} href={`/info/${art.id}`} className="flex items-center gap-4 bg-brand/5 p-4 rounded-2xl hover:bg-brand/10 transition-colors border border-brand/10 group">
-                                            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-brand shadow-sm">
-                                                <FileText className="h-6 w-6" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-[11px] font-black uppercase leading-tight group-hover:text-brand transition-colors">{art.display_title || art.title}</p>
-                                                <p className="text-[9px] text-muted-foreground font-bold mt-0.5">Guide pratique</p>
-                                            </div>
-                                            <ChevronRight className="h-4 w-4 text-brand/40" />
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                         <div className="flex items-center justify-between px-2 mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                                {isLoading ? "Chargement..." : `${clusterPoints.length} Résultats sur la carte`}
-                            </span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{filteredPoints.length} Résultats sur la carte</span>
                         </div>
-                        {isLoading ? (
-                            Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)
-                        ) : listPoints.length > 0 ? (
-                            listPoints.map((point) => (
-                                <DealershipCardItem 
-                                    key={point.id} 
-                                    point={point} 
-                                    isSelected={point.id === selectedDealershipId} 
-                                    onClick={() => handleMarkerClick(point.id)} 
-                                    onOpenDetails={handleOpenDetails}
-                                />
-                            ))
-                        ) : (
-                            <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
-                                <p className="text-muted-foreground font-black uppercase text-[10px]">Aucun pro ne correspond à votre recherche.</p>
-                            </div>
-                        )}
+                        {filteredPoints.map(p => (
+                            <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); }} />
+                        ))}
                     </div>
                 )}
             </div>
         </aside>
       )}
 
+      {/* MOBILE DRAWER WITH WINGS HEADER */}
       {isMobile && (
         <div className={cn(
-            "fixed left-0 right-0 bg-background rounded-t-[2.5rem] shadow-[0_-15px_40px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", 
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[calc(100vh-100px)]')
+            "fixed left-0 right-0 bg-white rounded-t-[3rem] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100] border-t-2 border-white",
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[160px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]')
         )}>
-           <div className="absolute top-0 left-0 right-0 h-10 cursor-pointer flex items-center justify-center" onClick={() => setDrawerHeight(drawerHeight === 'collapsed' ? 'half' : (drawerHeight === 'half' ? 'full' : 'half'))}>
-              <div className="w-12 h-1.5 bg-muted rounded-full" />
-           </div>
-           
-           <div className="h-full overflow-hidden flex flex-col pt-4">
-              <div className="px-4 pb-4 border-b border-muted/50 shrink-0">
-                  <FilterButtons mobile />
-              </div>
+            {/* WINGS HEADER MOBILE */}
+            <div className="relative h-20 flex items-end justify-center pointer-events-none">
+                <div className="absolute inset-0 z-0">
+                    <svg viewBox="0 0 400 100" className="w-full h-full preserve-3d" preserveAspectRatio="none">
+                        <path d="M0,100 L0,40 Q100,40 160,80 Q200,110 240,80 Q300,40 400,40 L400,100 Z" fill="white" stroke="#ea580c" strokeWidth="2" />
+                    </svg>
+                </div>
+                <div className="relative z-10 -mb-10 pointer-events-auto">
+                    <div className="h-20 w-20 rounded-full bg-white shadow-2xl border-4 border-white flex items-center justify-center transform hover:scale-110 transition-transform" onClick={() => setDrawerHeight('half')}>
+                        <Image src="/images/logomoto2.webp" alt="Logo" width={60} height={60} className="object-contain" />
+                    </div>
+                </div>
+            </div>
 
-              <div ref={mobileListContainerRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                {isDetailViewOpen && selectedDealershipId ? (
-                   <SidebarDetailView 
-                    dealershipId={selectedDealershipId} 
-                    point={masterPointsMap.current.get(selectedDealershipId)}
-                    onBack={() => { setIsDetailViewOpen(false); setDrawerHeight('half'); }} 
-                  />
-                ) : (
-                  <div className="space-y-4">
-                     {isDiscoveryMode && articles && articles.length > 0 && (
-                        <div className="grid grid-cols-1 gap-2">
-                           {articles.slice(0, 2).map(art => (
-                              <Link key={art.id} href={`/info/${art.id}`} className="flex items-center gap-3 bg-muted/30 p-3 rounded-2xl border border-muted">
-                                 <Zap className="h-4 w-4 text-brand shrink-0" />
-                                 <span className="text-[10px] font-black uppercase tracking-tight line-clamp-1">{art.display_title || art.title}</span>
-                              </Link>
-                           ))}
+            <div className="h-full pt-12 flex flex-col">
+                <div className="px-6 py-4 flex justify-between items-center gap-4">
+                    <div className="flex-1"><FilterButtons mobile /></div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                    {isDetailView && selectedId ? (
+                        <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('half'); }} />
+                    ) : (
+                        <div className="space-y-4">
+                            {filteredPoints.map(p => (
+                                <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); setDrawerHeight('full'); }} />
+                            ))}
                         </div>
-                     )}
-                     
-                     {listPoints.length > 0 ? (
-                        listPoints.map((point) => (
-                           <DealershipCardItem 
-                               key={point.id} 
-                               point={point} 
-                               isSelected={point.id === selectedDealershipId} 
-                               onClick={() => handleMarkerClick(point.id)} 
-                               onOpenDetails={handleOpenDetails}
-                           />
-                         ))
-                     ) : !isDiscoveryMode && (
-                        <div className="text-center py-10 opacity-50">
-                           <p className="text-[10px] font-black uppercase">Aucun pro dans cette zone.</p>
-                        </div>
-                     )}
-                  </div>
-                )}
-              </div>
-           </div>
+                    )}
+                </div>
+            </div>
         </div>
       )}
 
       <button 
-        className={cn(
-            "absolute right-6 z-[500] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95",
-            isMobile ? "bottom-40" : "bottom-10"
-        )} 
-        onClick={() => setIsLoadingLocating(true)}
-        aria-label="Me localiser"
+        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")} 
+        onClick={() => setIsLocating(true)}
       >
-        <Compass className={cn("h-7 w-7", isLocating && "animate-spin")} />
+        <Compass className={cn("h-8 w-8", isLocating && "animate-spin")} />
       </button>
     </div>
   );
 }
 
 export default function MapPage() { 
-  return <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>;
+    return <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-brand" /></div>}><MapPageComponent /></Suspense>; 
 }

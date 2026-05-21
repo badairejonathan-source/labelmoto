@@ -15,11 +15,8 @@ interface MapComponentProps {
   center: [number, number];
   zoom: number;
   mapBounds?: L.LatLngBounds | null;
-  hoveredId?: string | null;
   selectedId: string | null;
   onMarkerClick: (id: string) => void;
-  onMarkerMouseOver?: (id: string) => void;
-  onMarkerMouseOut?: (id: string) => void;
   onMapClick: () => void;
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   onUserInteraction?: () => void;
@@ -28,7 +25,6 @@ interface MapComponentProps {
   isLocating?: boolean;
   onLocateEnd?: () => void;
   onLocationFound?: (coords: [number, number]) => void;
-  targetBounds?: L.LatLngBoundsExpression | null;
   selectionSource: 'marker' | 'card' | 'external' | null;
 }
 
@@ -41,11 +37,10 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 };
 
 const MapComponent = ({
-  points, center, zoom, mapBounds, hoveredId = null, selectedId,
-  onMarkerClick, onMarkerMouseOver = () => {}, onMarkerMouseOut = () => {}, onMapClick, onMapChange,
+  points, center, zoom, mapBounds, selectedId,
+  onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
-  targetBounds = null,
   selectionSource
 }: MapComponentProps) => {
   
@@ -53,70 +48,7 @@ const MapComponent = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markerMapRef = useRef<Record<string, L.Marker>>({});
-  
-  // Utilisation d'une ref pour le callback d'interaction afin d'éviter les closures périmées
-  const onUserInteractionRef = useRef(onUserInteraction);
-  useEffect(() => {
-    onUserInteractionRef.current = onUserInteraction;
-  }, [onUserInteraction]);
-
   const isUpdatingFromProps = useRef(false);
-  const lastSetTargetKey = useRef<string>("");
-
-  // Logic Anti-collision Grid
-  const labelIds = useMemo(() => {
-    const map = mapRef.current;
-    if (!map || zoom < 11 || !points) return new Set<string>();
-
-    try {
-      const labelsToShow = new Set<string>();
-      const currentBounds = mapBounds || (map.getBounds ? map.getBounds() : null);
-      
-      if (!currentBounds || typeof currentBounds.contains !== 'function') return new Set<string>();
-      
-      if (selectedId) labelsToShow.add(selectedId);
-
-      if (zoom >= 13) {
-        const grid = new Set<string>();
-        const gridWidth = 160; 
-        const gridHeight = 60;
-
-        if (selectedId) {
-          const selPoint = points.find(p => p.id === selectedId);
-          if (selPoint && currentBounds.contains([selPoint.latitude, selPoint.longitude])) {
-            const pix = map.latLngToLayerPoint([selPoint.latitude, selPoint.longitude]);
-            const gx = Math.floor(pix.x / gridWidth);
-            const gy = Math.floor(pix.y / gridHeight);
-            grid.add(`${gx},${gy}`);
-          }
-        }
-
-        points.forEach(point => {
-          if (point.id === selectedId) return;
-          if (!currentBounds.contains([point.latitude, point.longitude])) return;
-
-          try {
-            const pix = map.latLngToLayerPoint([point.latitude, point.longitude]);
-            const gx = Math.floor(pix.x / gridWidth);
-            const gy = Math.floor(pix.y / gridHeight);
-            const key = `${gx},${gy}`;
-
-            if (!grid.has(key)) {
-              grid.add(key);
-              labelsToShow.add(point.id);
-            }
-          } catch (e) {}
-        });
-      } else if (zoom >= 11) {
-        if (selectedId) labelsToShow.add(selectedId);
-        if (hoveredId) labelsToShow.add(hoveredId);
-      }
-
-      return labelsToShow;
-    } catch (err) {
-      return new Set<string>();
-    }
-  }, [points, zoom, selectedId, hoveredId, mapBounds]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -124,7 +56,6 @@ const MapComponent = ({
     const map = L.map(containerRef.current, {
       minZoom: 5,
       zoomSnap: 0.1,
-      fadeAnimation: true,
       zoomControl: false,
     });
 
@@ -133,9 +64,7 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    const targetCenter: [number, number] = [center[0], center[1]];
-    const initialCenter = selectionSource ? getOffsettedCenter(map, targetCenter, leftPadding, bottomPadding, zoom) : L.latLng(targetCenter);
-    
+    const initialCenter = selectionSource ? getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom) : L.latLng(center);
     map.setView(initialCenter, zoom, { animate: false });
 
     const clusterGroup = L.markerClusterGroup({
@@ -144,23 +73,19 @@ const MapComponent = ({
       disableClusteringAtZoom: 13,
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
-      zoomToBoundsOnClick: true
     });
     
     map.addLayer(clusterGroup);
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // DETECTION MANUELLE ULTRA-FIABLE VIA LE CONTENEUR HTML
-    // On utilise la phase de capture pour être certain d'attraper l'événement avant Leaflet
-    const handleManualTouch = () => {
-      if (!isUpdatingFromProps.current) {
-        onUserInteractionRef.current?.();
-      }
+    // DETECTION TACTILE HAUTE PRIORITE POUR AUTO-COLLAPSE
+    const handleInteraction = () => {
+      if (!isUpdatingFromProps.current) onUserInteraction?.();
     };
 
-    containerRef.current?.addEventListener('touchstart', handleManualTouch, { capture: true, passive: true });
-    containerRef.current?.addEventListener('mousedown', handleManualTouch, { capture: true });
+    containerRef.current?.addEventListener('touchstart', handleInteraction, { capture: true, passive: true });
+    containerRef.current?.addEventListener('mousedown', handleInteraction, { capture: true });
 
     map.on('moveend zoomend', () => {
       if (map && !isUpdatingFromProps.current) {
@@ -171,9 +96,8 @@ const MapComponent = ({
     map.on('click', onMapClick);
 
     return () => {
-      containerRef.current?.removeEventListener('touchstart', handleManualTouch);
-      containerRef.current?.removeEventListener('mousedown', handleManualTouch);
-      map.off();
+      containerRef.current?.removeEventListener('touchstart', handleInteraction);
+      containerRef.current?.removeEventListener('mousedown', handleInteraction);
       map.remove();
       mapRef.current = null;
     };
@@ -186,16 +110,10 @@ const MapComponent = ({
     clusterGroup.clearLayers();
     markerMapRef.current = {};
 
-    if (!points || points.length === 0) return;
-
-    const currentZoom = mapRef.current.getZoom();
-    const markers: L.Marker[] = points.map((point) => {
-      const isHovered = point.id === hoveredId;
+    points.forEach((point) => {
       const isSelected = point.id === selectedId;
-      const showLabel = labelIds.has(point.id);
-
       const marker = L.marker([point.latitude, point.longitude], {
-        icon: createIcon(point, isHovered, isSelected, currentZoom, showLabel)
+        icon: createIcon(point, isSelected)
       });
 
       marker.on('click', (e) => {
@@ -203,128 +121,57 @@ const MapComponent = ({
         onMarkerClick(point.id);
       });
       
-      if (onMarkerMouseOver) {
-        marker.on('mouseover', () => onMarkerMouseOver(point.id));
-      }
-      
-      if (onMarkerMouseOut) {
-        marker.on('mouseout', () => onMarkerMouseOut(point.id));
-      }
-
       markerMapRef.current[point.id] = marker;
-      return marker;
+      clusterGroup.addLayer(marker);
     });
-
-    clusterGroup.addLayers(markers);
   }, [points]); 
-
-  useEffect(() => {
-    const map = mapRef.current;
-    const clusterGroup = clusterGroupRef.current;
-    if (!map || !clusterGroup || !points) return;
-    
-    const currentZoom = map.getZoom();
-
-    points.forEach(point => {
-      const marker = markerMapRef.current[point.id];
-      if (marker && clusterGroup.hasLayer(marker)) {
-        const isHovered = point.id === hoveredId;
-        const isSelected = point.id === selectedId;
-        const showLabel = labelIds.has(point.id);
-        
-        try {
-          const newIcon = createIcon(point, isHovered, isSelected, currentZoom, showLabel);
-          marker.setIcon(newIcon);
-          
-          if (isSelected || isHovered) marker.setZIndexOffset(1000);
-          else marker.setZIndexOffset(0);
-        } catch (e) {}
-      }
-    });
-  }, [hoveredId, selectedId, zoom, labelIds, points]); 
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !selectionSource) return;
 
-    const intentKey = `${center[0]},${center[1]},${zoom},${JSON.stringify(targetBounds)},${selectionSource}`;
-    if (lastSetTargetKey.current === intentKey) return;
-    lastSetTargetKey.current = intentKey;
-
     isUpdatingFromProps.current = true;
-
-    if (targetBounds) {
-      map.fitBounds(targetBounds, {
-        paddingTopLeft: [leftPadding + 20, 20],
-        paddingBottomRight: [20, bottomPadding + 20],
-        duration: 0.8,
-        animate: true
-      });
-    } else {
-      const currentMapZoom = map.getZoom();
-      const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, currentMapZoom);
-      map.flyTo(finalCenter, currentMapZoom, { duration: 0.8 });
-    }
+    const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, map.getZoom());
+    map.flyTo(finalCenter, map.getZoom(), { duration: 0.8 });
     
-    const timer = setTimeout(() => {
-      isUpdatingFromProps.current = false;
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [center, zoom, targetBounds, leftPadding, bottomPadding, selectionSource]);
+    setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
+  }, [center, leftPadding, bottomPadding, selectionSource]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
 
-    isUpdatingFromProps.current = true;
-
     map.once('locationfound', (e) => {
       onLocationFound([e.latlng.lat, e.latlng.lng]);
       onLocateEnd();
-      setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
-    });
-    map.once('locationerror', () => {
-      onLocateEnd();
-      setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     });
     map.locate({ setView: true, maxZoom: 14 });
   }, [isLocating]);
 
-  return <div ref={containerRef} className="w-full h-full min-0 bg-muted/10" />;
+  return <div ref={containerRef} className="w-full h-full bg-muted/10" />;
 };
 
-const createIcon = (point: MapPoint, isHovered: boolean, isSelected: boolean, currentZoom: number, showLabel: boolean) => {
-  const scale = isHovered || isSelected ? 1.2 : 1;
+const createIcon = (point: MapPoint, isSelected: boolean) => {
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
-  
-  let color = isSelected || isHovered ? '#f97316' : '#ea580c';
-  if (isAssociation) color = isSelected || isHovered ? '#4f46e5' : '#4338ca';
-  else if (isRelais) color = isSelected || isHovered ? '#f59e0b' : '#d97706';
+  const color = isSelected ? '#f97316' : (isAssociation ? '#4338ca' : (isRelais ? '#d97706' : '#ea580c'));
 
   const iconHtml = `
-    <div style="display: flex; align-items: center; position: relative;">
-      <div style="transform: scale(${scale}); transition: transform 0.2s ease-out;">
-        <svg width="28" height="36" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div class="relative flex items-center justify-center">
+      <div class="transition-transform duration-200 ${isSelected ? 'scale-125' : 'scale-100'}">
+        <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M16 0C7.16 0 0 7.16 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.16 24.84 0 16 0Z" fill="${color}"/>
-          ${isAssociation 
-            ? `<path d="M16 10C14.3431 10 13 11.3431 13 13C13 14.6569 14.3431 16 16 16C17.6569 16 19 14.6569 19 13C19 11.3431 17.6569 10 16 10ZM16 18C13.3333 18 8 19.3333 8 22V24H24V22C24 19.3333 18.6667 18 16 18Z" fill="white"/>`
-            : (isRelais 
-               ? `<path d="M11 10h10v2H11v-2zm0 4h10v2H11v-2zm-3 8c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v4H8v-4zm2-10V8c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2h2v2H8v-2h2z" fill="white"/>`
-               : `<circle cx="16" cy="16" r="6" fill="white"/>`)
-          }
+          <circle cx="16" cy="16" r="6" fill="white"/>
         </svg>
       </div>
-      ${showLabel ? `<div class="marker-label ${isSelected || isHovered ? 'active' : ''}">${point.title}</div>` : ''}
     </div>
   `;
 
   return L.divIcon({
     html: iconHtml,
     className: 'custom-marker',
-    iconSize: [28, 36],
-    iconAnchor: [14, 36]
+    iconSize: [32, 40],
+    iconAnchor: [16, 40]
   });
 };
 
