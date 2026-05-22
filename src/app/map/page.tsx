@@ -39,7 +39,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   return (
     <div className="bg-white rounded-[2.5rem] p-8 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
       <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-8 transition-colors">
-        <ArrowLeft className="h-4 w-4" /> Retour à l'liste
+        <ArrowLeft className="h-4 w-4" /> Retour à la liste
       </button>
 
       <div className="space-y-8">
@@ -113,7 +113,8 @@ function MapPageComponent() {
     const fetchAll = async () => {
       if (!firestore) return;
       const collections = ['concessions', 'associations', 'relais'];
-      const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(2000)))));
+      // Augmentation massive de la limite pour voir TOUS les pointeurs
+      const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
 
@@ -134,8 +135,10 @@ function MapPageComponent() {
             title: data.title || doc.id,
             slug: data.slug,
             rating: data.rating,
-            imgUrl: data.imageUrl || data.imgUrl
-          });
+            imgUrl: data.imageUrl || data.imgUrl,
+            // Ajout de l'adresse pour un filtrage textuel robuste
+            address: data.address || ""
+          } as any);
         });
       });
       setPoints(allPoints);
@@ -143,38 +146,35 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
-  // LOGIQUE DE RECHERCHE INTELLIGENTE
+  // LOGIQUE DE RECHERCHE INTELLIGENTE (SMART SEARCH)
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
     const lower = searchTerm.toLowerCase().trim();
-    
-    // Détection de la marque
     const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
     
-    // Détection géo
     let geo = { type: 'text', value: lower, coords: null as [number, number] | null, zoom: 12 };
     
-    // CAS 1 : Département (2 chiffres)
+    // PRIORITÉ 1 : Département (2 chiffres)
     const deptMatch = lower.match(/\b(\d{2})\b/);
     if (deptMatch) {
         const deptCode = deptMatch[1];
         const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode));
         if (deptKey) {
             const loc = (locationsData as any)[deptKey];
-            geo = { type: 'dept', value: deptKey, coords: loc.center, zoom: 9 };
+            geo = { type: 'dept', value: deptCode, coords: loc.center, zoom: 9 };
         }
     } 
-    // CAS 2 : Code Postal (5 chiffres)
+    // PRIORITÉ 2 : Code Postal (5 chiffres)
     else if (lower.match(/\b(\d{5})\b/)) {
         const cp = lower.match(/\b(\d{5})\b/)?.[1];
         const deptCode = cp?.substring(0, 2);
         const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode || ''));
         if (deptKey) {
             const loc = (locationsData as any)[deptKey];
-            geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 12 };
+            geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 13 };
         }
     }
-    // CAS 3 : Ville exacte ou approchée
+    // PRIORITÉ 3 : Ville ou Ville approximative
     else {
         for (const [dept, info] of Object.entries(locationsData)) {
             const city = info.cities.find(c => lower.includes(c.toLowerCase()));
@@ -198,22 +198,29 @@ function MapPageComponent() {
 
         const { brand, geo, original } = searchIntent;
         const titleLower = p.title.toLowerCase();
+        const addressLower = (p as any).address?.toLowerCase() || "";
         
-        // Match Marque si présente
+        // 1. Match Marque
         const matchesBrand = !brand || titleLower.includes(brand.toLowerCase());
         
-        // Match Texte si c'est une recherche textuelle pure
-        let matchesText = true;
-        if (geo.type === 'text') {
-            const textToMatch = brand ? original.replace(brand.toLowerCase(), '').trim() : original;
-            matchesText = !textToMatch || titleLower.includes(textToMatch);
+        // 2. Match Géographique (si détecté)
+        let matchesGeo = true;
+        if (geo.type === 'dept') {
+            matchesGeo = addressLower.includes(geo.value);
+        } else if (geo.type === 'cp') {
+            matchesGeo = addressLower.includes(geo.value);
+        } else if (geo.type === 'city') {
+            matchesGeo = addressLower.includes(geo.value.toLowerCase());
+        } else if (geo.type === 'text') {
+            const query = brand ? original.replace(brand.toLowerCase(), '').trim() : original;
+            matchesGeo = !query || titleLower.includes(query) || addressLower.includes(query);
         }
 
-        return matchesBrand && matchesText;
+        return matchesBrand && matchesGeo;
     });
   }, [points, searchIntent, activeFilters]);
 
-  // Synchronisation de la carte avec l'intention de recherche
+  // Synchronisation de la carte (Caméra)
   useEffect(() => {
     if (searchIntent?.geo.coords && selectionSource === 'external') {
         setMapCenter(searchIntent.geo.coords);
@@ -276,6 +283,9 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
+                {/* Arrondi central "Hump" derrière le logo */}
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-10 bg-white rounded-t-full z-[1050]" />
+                
                 <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 

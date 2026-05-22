@@ -89,7 +89,7 @@ const Header: React.FC<any> = ({
     searchTerm, 
     onSearchTermChange, 
     onSearch, 
-    placeholderText = "Recherche par departement, ville, marque, nom...",
+    placeholderText = "Recherche par département, ville, marque...",
 }) => {
   const router = useRouter();
   const { firestore } = useFirebase();
@@ -188,8 +188,8 @@ const Header: React.FC<any> = ({
         queryParams.set('search', s.label);
         router.push(`/map?${queryParams.toString()}`);
     } else {
-        // Sur la carte, MapPage réagit au changement de searchTerm (via searchIntent)
-        // et selectionSource: 'external' déclenchera le vol de caméra
+        // Déclenche la mise à jour sur la carte
+        setTimeout(() => onSearch(), 10);
     }
   };
 
@@ -229,7 +229,12 @@ const Header: React.FC<any> = ({
                     value={searchTerm} 
                     onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }}
                     onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}
-                    onKeyDown={(e) => e.key === 'Enter' && onSearch()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        onSearch();
+                        setShowSuggestions(false);
+                      }
+                    }}
                     autoComplete="off"
                 />
                 {searchTerm && (
@@ -239,7 +244,7 @@ const Header: React.FC<any> = ({
                 )}
                 <Button 
                     className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[44px] w-[44px] md:h-[52px] md:w-[52px] shadow-lg hover:scale-105 active:scale-95 transition-all" 
-                    onClick={onSearch}
+                    onClick={() => { onSearch(); setShowSuggestions(false); }}
                 >
                     <Search className="h-5 w-5 md:h-6 md:w-6" />
                 </Button>
