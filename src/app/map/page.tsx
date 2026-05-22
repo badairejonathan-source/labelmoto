@@ -34,7 +34,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   return (
     <div className="bg-white rounded-[2.5rem] p-8 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
       <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-8 transition-colors">
-        <ArrowLeft className="h-4 w-4" /> Retour à la liste
+        <ArrowLeft className="h-4 w-4" /> Retour à l'liste
       </button>
 
       <div className="space-y-8">
@@ -186,23 +186,23 @@ function MapPageComponent() {
             <button 
                 key={f.id} 
                 onClick={() => handleFilterToggle(f.id)} 
-                className="flex flex-col items-center gap-1.5 group shrink-0 w-[58px]"
+                className="flex flex-col items-center gap-2 group shrink-0"
             >
                 <div className={cn(
-                    "h-11 w-11 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", 
+                    "h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", 
                     isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
                 )}>
-                    <f.icon className="h-5 w-5" />
+                    <f.icon className="h-6 w-6" />
                 </div>
-                <span className={cn("text-[7px] font-black uppercase tracking-widest leading-none text-center", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
+                <span className={cn("text-[9px] font-black uppercase tracking-tight leading-none text-center", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
             </button>
         );
     };
 
     if (mobile) {
         return (
-            <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-[38px]">
-                {/* Logo Central XXL - 166px exactly as requested */}
+            <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-10 pb-4 px-6">
+                {/* Logo Central XXL - 166px exactement comme demandé */}
                 <div className="absolute -top-[70px] left-1/2 -translate-x-1/2 w-[166px] h-[166px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 
@@ -214,18 +214,16 @@ function MapPageComponent() {
                     />
                 </div>
 
-                {/* Grille des Filtres Symétrique (2 gauche, Espace, 2 droite) */}
-                <div className="grid grid-cols-[58px_58px_1fr_58px_58px] items-start justify-center gap-2 px-[18px] pt-[18px]">
-                    {/* Gauche du logo */}
-                    <div className="flex justify-center">{renderFilter(filters[0])}</div>
-                    <div className="flex justify-center">{renderFilter(filters[1])}</div>
-
-                    {/* Espace central pour le logo */}
-                    <div className="flex justify-center min-w-[58px]" />
-
-                    {/* Droite du logo */}
-                    <div className="flex justify-center">{renderFilter(filters[2])}</div>
-                    <div className="flex justify-center">{renderFilter(filters[3])}</div>
+                {/* Disposition des Filtres Symétrique */}
+                <div className="flex items-start justify-between w-full">
+                    <div className="flex gap-3">
+                        {renderFilter(filters[0])}
+                        {renderFilter(filters[1])}
+                    </div>
+                    <div className="flex gap-3">
+                        {renderFilter(filters[2])}
+                        {renderFilter(filters[3])}
+                    </div>
                 </div>
             </div>
         );
@@ -307,7 +305,7 @@ function MapPageComponent() {
       )}
 
       <button 
-        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-40" : "bottom-10")} 
+        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")} 
         onClick={() => setIsLocating(true)}
       >
         <Compass className={cn("h-8 w-8", isLocating && "animate-spin")} />
