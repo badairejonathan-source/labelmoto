@@ -9,8 +9,7 @@ import type { MapPoint, Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Clock } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
-import { cn } from "@/lib/utils";
-import { extractValidCoordinates } from "@/lib/geohash";
+import { cn, extractValidCoordinates } from "@/lib/utils";
 import { useFirebase, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, getDocs, query, limit, doc } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -38,11 +37,6 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
       </button>
 
       <div className="space-y-8">
-        <div>
-          <h3 className="text-3xl font-black uppercase tracking-tighter leading-none mb-2">{pro.title}</h3>
-          <p className="text-sm font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
-        </div>
-
         {/* HORAIRES EN HAUT POUR VISIBILITE DIRECTE */}
         <div className="bg-brand/5 p-6 rounded-3xl border border-brand/10">
           <div className="flex items-center gap-2 mb-4 text-brand">
@@ -57,6 +51,11 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
               </div>
             ))}
           </div>
+        </div>
+
+        <div>
+          <h3 className="text-3xl font-black uppercase tracking-tighter leading-none mb-2">{pro.title}</h3>
+          <p className="text-sm font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
         </div>
 
         <div className="bg-muted/30 p-5 rounded-3xl border-2 border-dashed flex items-start gap-3">
@@ -184,48 +183,49 @@ function MapPageComponent() {
     const renderFilter = (f: typeof filters[0]) => {
         const isActive = activeFilters.includes(f.id);
         return (
-            <button key={f.id} onClick={() => handleFilterToggle(f.id)} className="flex flex-col items-center gap-1.5 group shrink-0">
+            <button 
+                key={f.id} 
+                onClick={() => handleFilterToggle(f.id)} 
+                className="flex flex-col items-center gap-1.5 group shrink-0 w-[58px]"
+            >
                 <div className={cn(
                     "h-11 w-11 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", 
                     isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
                 )}>
                     <f.icon className="h-5 w-5" />
                 </div>
-                <span className={cn("text-[7px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
+                <span className={cn("text-[7px] font-black uppercase tracking-widest leading-none text-center", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
             </button>
         );
     };
 
     if (mobile) {
         return (
-            <div className="relative w-full px-2 pt-8 flex items-center justify-between">
-                {/* Decoration Wings (SVG) */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[95%] h-14 pointer-events-none">
-                    <svg viewBox="0 0 400 60" fill="none" preserveAspectRatio="none" className="w-full h-full drop-shadow-sm opacity-80">
-                        <path d="M0,25 Q100,25 180,45 L200,55 L220,45 Q300,25 400,25" stroke="#ea580c" strokeWidth="4" strokeLinecap="round" />
-                    </svg>
+            <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-[38px]">
+                {/* Logo Central - Chevauche le haut et z-index élevé */}
+                <div className="absolute -top-[42px] left-1/2 -translate-x-1/2 w-[110px] h-[110px] z-[1500] pointer-events-none">
+                    <Image 
+                        src="/images/logomoto2.webp" 
+                        alt="Label Moto" 
+                        width={110} 
+                        height={110} 
+                        className="w-full h-full object-contain" 
+                        priority 
+                    />
                 </div>
 
-                {/* Central Floating Logo */}
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20">
-                    <div className="h-24 w-24 rounded-full bg-white border-4 border-orange-600 shadow-xl flex items-center justify-center p-1">
-                        <div className="relative h-full w-full rounded-full overflow-hidden">
-                            <Image src="/images/logomoto2.webp" alt="Logo" fill className="object-contain" priority />
-                        </div>
-                    </div>
-                </div>
+                {/* Grille des Filtres (5 colonnes pour alignement horizontal parfait) */}
+                <div className="grid grid-cols-5 items-start justify-center gap-2 px-[18px] pt-[18px]">
+                    {/* Gauche du logo */}
+                    <div className="flex justify-center">{renderFilter(filters[0])}</div>
+                    <div className="flex justify-center">{renderFilter(filters[1])}</div>
 
-                {/* Left Side Filters */}
-                <div className="flex gap-3 sm:gap-6 z-10">
-                    {filters.slice(0, 2).map(renderFilter)}
-                </div>
+                    {/* Espace central pour le logo */}
+                    <div />
 
-                {/* Spacer for center logo */}
-                <div className="w-24 shrink-0 pointer-events-none" />
-
-                {/* Right Side Filters */}
-                <div className="flex gap-3 sm:gap-6 z-10">
-                    {filters.slice(2, 4).map(renderFilter)}
+                    {/* Droite du logo */}
+                    <div className="flex justify-center">{renderFilter(filters[2])}</div>
+                    <div className="flex justify-center">{renderFilter(filters[3])}</div>
                 </div>
             </div>
         );
@@ -284,11 +284,11 @@ function MapPageComponent() {
 
       {isMobile && (
         <div className={cn(
-            "fixed left-0 right-0 bg-white rounded-t-[3rem] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100] border-t-2 border-white",
+            "fixed left-0 right-0 bg-white rounded-t-[28px] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]",
             drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]')
         )}>
-            <div className="h-full pt-4 flex flex-col">
-                <div className="px-4 py-4 flex justify-center items-center overflow-visible">
+            <div className="h-full flex flex-col">
+                <div className="shrink-0 overflow-visible">
                     <FilterButtons mobile />
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
