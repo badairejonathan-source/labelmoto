@@ -9,7 +9,8 @@ import type { MapPoint, Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Clock } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
-import { cn, extractValidCoordinates } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, getDocs, query, limit, doc } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -37,7 +38,6 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
       </button>
 
       <div className="space-y-8">
-        {/* HORAIRES EN HAUT POUR VISIBILITE DIRECTE */}
         <div className="bg-brand/5 p-6 rounded-3xl border border-brand/10">
           <div className="flex items-center gap-2 mb-4 text-brand">
             <Clock className="h-5 w-5" />
@@ -203,25 +203,25 @@ function MapPageComponent() {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-[38px]">
                 {/* Logo Central - Chevauche le haut et z-index élevé */}
-                <div className="absolute -top-[42px] left-1/2 -translate-x-1/2 w-[110px] h-[110px] z-[1500] pointer-events-none">
+                <div className="absolute -top-[42px] left-1/2 -translate-x-1/2 w-[96px] h-[96px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 
                         alt="Label Moto" 
-                        width={110} 
-                        height={110} 
+                        width={96} 
+                        height={96} 
                         className="w-full h-full object-contain" 
                         priority 
                     />
                 </div>
 
                 {/* Grille des Filtres (5 colonnes pour alignement horizontal parfait) */}
-                <div className="grid grid-cols-5 items-start justify-center gap-2 px-[18px] pt-[18px]">
+                <div className="grid grid-cols-[58px_58px_1fr_58px_58px] items-start justify-center gap-2 px-[18px] pt-[18px]">
                     {/* Gauche du logo */}
                     <div className="flex justify-center">{renderFilter(filters[0])}</div>
                     <div className="flex justify-center">{renderFilter(filters[1])}</div>
 
                     {/* Espace central pour le logo */}
-                    <div />
+                    <div className="flex justify-center min-w-[58px]" />
 
                     {/* Droite du logo */}
                     <div className="flex justify-center">{renderFilter(filters[2])}</div>
