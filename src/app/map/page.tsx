@@ -194,7 +194,6 @@ function MapPageComponent() {
     });
   }, [points, searchIntent, activeFilters]);
 
-  // LOGIQUE DE TRI PAR PROXIMITÉ AU CENTRE DU VIEWPORT
   const listPoints = useMemo(() => {
     return [...filteredPoints]
       .sort((a, b) => {
@@ -207,14 +206,12 @@ function MapPageComponent() {
       .slice(0, 25);
   }, [filteredPoints, mapCenter, selectedId]);
 
-  // LOGIQUE DE LABELS AVEC ANTI-COLLISION
   const labelPoints = useMemo(() => {
     if (mapZoom < 13) return [];
     const gridSize = mapZoom >= 15 ? 0.005 : 0.015;
     const grid: Record<string, boolean> = {};
     const result: MapPoint[] = [];
 
-    // On priorise toujours le point sélectionné s'il est visible
     const sortedForLabels = [...filteredPoints].sort((a, b) => {
         if (a.id === selectedId) return -1;
         if (b.id === selectedId) return 1;
@@ -283,7 +280,7 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-10 bg-white rounded-t-full z-[1050]" />
+                <div className="absolute -top-[50px] left-1/2 -translate-x-1/2 w-[100px] h-[100px] bg-white rounded-full z-[1050]" />
                 <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none"><Image src="/images/logomoto2.webp" alt="Label Moto" width={300} height={300} className="w-full h-full object-contain" priority /></div>
                 <div className="grid grid-cols-5 items-start justify-between gap-1 relative z-10">
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
