@@ -205,7 +205,7 @@ function MapPageComponent() {
                 {/* Logo Central XXL - 166px exactement comme demandé */}
                 <div className="absolute -top-[70px] left-1/2 -translate-x-1/2 w-[166px] h-[166px] z-[1500] pointer-events-none">
                     <Image 
-                        src="/images/logomoto2.webp" 
+                        src="/images/logomoto2" 
                         alt="Label Moto" 
                         width={166} 
                         height={166} 
