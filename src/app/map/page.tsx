@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, Navigation, ChevronRight, Clock } from 'lucide-react';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -202,7 +202,7 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-[38px]">
-                {/* Logo Central - Chevauche le haut et z-index élevé - Agrandissement à 166px */}
+                {/* Logo Central XXL - 166px exactly as requested */}
                 <div className="absolute -top-[70px] left-1/2 -translate-x-1/2 w-[166px] h-[166px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 
@@ -214,7 +214,7 @@ function MapPageComponent() {
                     />
                 </div>
 
-                {/* Grille des Filtres (5 colonnes pour alignement horizontal parfait) */}
+                {/* Grille des Filtres Symétrique (2 gauche, Espace, 2 droite) */}
                 <div className="grid grid-cols-[58px_58px_1fr_58px_58px] items-start justify-center gap-2 px-[18px] pt-[18px]">
                     {/* Gauche du logo */}
                     <div className="flex justify-center">{renderFilter(filters[0])}</div>
