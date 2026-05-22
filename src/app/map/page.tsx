@@ -112,11 +112,10 @@ function MapPageComponent() {
       const collections = ['concessions', 'associations', 'relais'];
       const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(2000)))));
       const allPoints: MapPoint[] = [];
-      const seenIds = new Set<string>(); // Added to prevent duplicate React keys
+      const seenIds = new Set<string>();
 
       snaps.forEach((snap, idx) => {
         snap.docs.forEach(doc => {
-          // If ID already seen, skip to avoid duplicate keys error in React map()
           if (seenIds.has(doc.id)) return;
           seenIds.add(doc.id);
 
@@ -153,7 +152,6 @@ function MapPageComponent() {
   const handleFilterToggle = (f: string) => {
     setActiveFilters(prev => {
         const newFilters = prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f];
-        // Automatic close of detail view if current selection is filtered out
         if (selectedId) {
             const point = points.find(p => p.id === selectedId);
             const section = point?.appSection === 'both' ? 'shopping' : point?.appSection;
@@ -178,32 +176,45 @@ function MapPageComponent() {
 
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
-        { id: 'shopping', label: 'Concess', icon: Bike },
-        { id: 'service', label: 'Atelier', icon: Wrench },
-        { id: 'association', label: 'Asso', icon: Users },
-        { id: 'relais', label: 'Relais', icon: Utensils }
+        { id: 'shopping', label: 'CONCESS', icon: Bike },
+        { id: 'service', label: 'ATELIER', icon: Wrench },
+        { id: 'association', label: 'ASSO', icon: Users },
+        { id: 'relais', label: 'RELAIS', icon: Utensils }
     ];
-
-    const leftFilters = filters.slice(0, 2);
-    const rightFilters = filters.slice(2, 4);
 
     const renderFilter = (f: typeof filters[0]) => {
         const isActive = activeFilters.includes(f.id);
         return (
             <button key={f.id} onClick={() => handleFilterToggle(f.id)} className="flex flex-col items-center gap-1.5 group shrink-0">
-                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}>
+                <div className={cn("h-11 w-11 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}>
                     <f.icon className="h-5 w-5" />
                 </div>
-                <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
+                <span className={cn("text-[7px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
             </button>
         );
     };
 
+    if (mobile) {
+        return (
+            <div className="flex items-center justify-between w-full px-2 gap-1 sm:gap-4">
+                <div className="flex gap-2 sm:gap-4">
+                    {filters.slice(0, 2).map(renderFilter)}
+                </div>
+                
+                <div className="shrink-0 px-2 sm:px-6">
+                    <Image src="/images/logomoto2.webp" alt="Logo" width={90} height={90} className="object-contain" priority />
+                </div>
+
+                <div className="flex gap-2 sm:gap-4">
+                    {filters.slice(2, 4).map(renderFilter)}
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className={cn("flex items-center gap-4 md:gap-8", mobile ? "justify-center w-full px-2" : "justify-center")}>
-            <div className="flex gap-4">{leftFilters.map(renderFilter)}</div>
-            {mobile && <div className="w-16 h-1" />} {/* Centered gap for the floating logo on mobile */}
-            <div className="flex gap-4">{rightFilters.map(renderFilter)}</div>
+        <div className="flex items-center justify-center gap-8">
+            <div className="flex gap-4">{filters.map(renderFilter)}</div>
         </div>
     );
   };
@@ -220,14 +231,12 @@ function MapPageComponent() {
         />
       </div>
 
-      {/* TOP HEADER */}
       <div className="absolute top-6 left-6 right-6 z-[1500] pointer-events-none">
         <div className="pointer-events-auto">
             <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSelectionSource('external')} />
         </div>
       </div>
 
-      {/* DESKTOP SIDEBAR */}
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
             <div className="p-10 pb-6 shrink-0 space-y-8">
@@ -254,29 +263,14 @@ function MapPageComponent() {
         </aside>
       )}
 
-      {/* MOBILE DRAWER WITH WINGS HEADER */}
       {isMobile && (
         <div className={cn(
             "fixed left-0 right-0 bg-white rounded-t-[3rem] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100] border-t-2 border-white",
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[160px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]')
+            drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]')
         )}>
-            {/* WINGS HEADER MOBILE */}
-            <div className="relative h-20 flex items-end justify-center pointer-events-none">
-                <div className="absolute inset-0 z-0">
-                    <svg viewBox="0 0 400 100" className="w-full h-full preserve-3d" preserveAspectRatio="none">
-                        <path d="M0,100 L0,40 Q100,40 160,80 Q200,110 240,80 Q300,40 400,40 L400,100 Z" fill="white" stroke="#ea580c" strokeWidth="2" />
-                    </svg>
-                </div>
-                <div className="relative z-10 -mb-10 pointer-events-auto">
-                    <div className="h-20 w-20 rounded-full bg-white shadow-2xl border-4 border-white flex items-center justify-center transform hover:scale-110 transition-transform" onClick={() => setDrawerHeight('half')}>
-                        <Image src="/images/logomoto2.webp" alt="Logo" width={60} height={60} className="object-contain" />
-                    </div>
-                </div>
-            </div>
-
-            <div className="h-full pt-12 flex flex-col">
-                <div className="px-6 py-4 flex justify-between items-center gap-4">
-                    <div className="flex-1"><FilterButtons mobile /></div>
+            <div className="h-full pt-4 flex flex-col">
+                <div className="px-4 py-4 flex justify-center items-center">
+                    <FilterButtons mobile />
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
                     {isDetailView && selectedId ? (
@@ -294,7 +288,7 @@ function MapPageComponent() {
       )}
 
       <button 
-        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")} 
+        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-40" : "bottom-10")} 
         onClick={() => setIsLocating(true)}
       >
         <Compass className={cn("h-8 w-8", isLocating && "animate-spin")} />
