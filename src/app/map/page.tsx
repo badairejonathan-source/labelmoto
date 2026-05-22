@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -186,7 +185,10 @@ function MapPageComponent() {
         const isActive = activeFilters.includes(f.id);
         return (
             <button key={f.id} onClick={() => handleFilterToggle(f.id)} className="flex flex-col items-center gap-1.5 group shrink-0">
-                <div className={cn("h-11 w-11 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}>
+                <div className={cn(
+                    "h-11 w-11 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", 
+                    isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
+                )}>
                     <f.icon className="h-5 w-5" />
                 </div>
                 <span className={cn("text-[7px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
@@ -196,16 +198,33 @@ function MapPageComponent() {
 
     if (mobile) {
         return (
-            <div className="flex items-center justify-between w-full px-2 gap-1 sm:gap-4">
-                <div className="flex gap-2 sm:gap-4">
-                    {filters.slice(0, 2).map(renderFilter)}
-                </div>
-                
-                <div className="shrink-0 px-2 sm:px-6">
-                    <Image src="/images/logomoto2.webp" alt="Logo" width={90} height={90} className="object-contain" priority />
+            <div className="relative w-full px-2 pt-8 flex items-center justify-between">
+                {/* Decoration Wings (SVG) */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[95%] h-14 pointer-events-none">
+                    <svg viewBox="0 0 400 60" fill="none" preserveAspectRatio="none" className="w-full h-full drop-shadow-sm opacity-80">
+                        <path d="M0,25 Q100,25 180,45 L200,55 L220,45 Q300,25 400,25" stroke="#ea580c" strokeWidth="4" strokeLinecap="round" />
+                    </svg>
                 </div>
 
-                <div className="flex gap-2 sm:gap-4">
+                {/* Central Floating Logo */}
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20">
+                    <div className="h-24 w-24 rounded-full bg-white border-4 border-orange-600 shadow-xl flex items-center justify-center p-1">
+                        <div className="relative h-full w-full rounded-full overflow-hidden">
+                            <Image src="/images/logomoto2.webp" alt="Logo" fill className="object-contain" priority />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Left Side Filters */}
+                <div className="flex gap-3 sm:gap-6 z-10">
+                    {filters.slice(0, 2).map(renderFilter)}
+                </div>
+
+                {/* Spacer for center logo */}
+                <div className="w-24 shrink-0 pointer-events-none" />
+
+                {/* Right Side Filters */}
+                <div className="flex gap-3 sm:gap-6 z-10">
                     {filters.slice(2, 4).map(renderFilter)}
                 </div>
             </div>
@@ -269,7 +288,7 @@ function MapPageComponent() {
             drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]')
         )}>
             <div className="h-full pt-4 flex flex-col">
-                <div className="px-4 py-4 flex justify-center items-center">
+                <div className="px-4 py-4 flex justify-center items-center overflow-visible">
                     <FilterButtons mobile />
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">

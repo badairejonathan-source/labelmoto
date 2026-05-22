@@ -1,17 +1,15 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Loader2, User as UserIcon, Menu, MapPin, Store, X } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
-import { cn } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc, useFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +22,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
-import useWindowSize from '@/hooks/use-window-size';
 
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: any[] | null = null;
@@ -157,10 +154,10 @@ const Header: React.FC<any> = ({
                 <LabelMotoLogo className="h-auto w-[180px] sm:w-[220px] md:w-[280px]" />
             </div>
             
-            <div className="hidden sm:flex flex-1 justify-center px-4">
-                <div className="bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-8 py-3 md:py-4 text-center max-w-sm">
-                    <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
-                    <p className="text-[11px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
+            <div className="flex-1 flex justify-center px-4">
+                <div className="bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
+                    <p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
+                    <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
                 </div>
             </div>
 

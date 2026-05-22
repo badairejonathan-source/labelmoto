@@ -1,11 +1,10 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import '@/app/map.css';
-import React, { useEffect, useRef, memo, useMemo } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { MapPoint } from '@/lib/types';
@@ -37,7 +36,7 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 };
 
 const MapComponent = ({
-  points, center, zoom, mapBounds, selectedId,
+  points, center, zoom, selectedId,
   onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
@@ -79,13 +78,13 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // DETECTION TACTILE HAUTE PRIORITE POUR AUTO-COLLAPSE
-    const handleInteraction = () => {
-      if (!isUpdatingFromProps.current) onUserInteraction?.();
+    // DETECTION TACTILE HAUTE PRIORITE (CAPTURE PHASE)
+    const handleTouchStart = () => {
+        if (!isUpdatingFromProps.current) onUserInteraction?.();
     };
 
-    containerRef.current?.addEventListener('touchstart', handleInteraction, { capture: true, passive: true });
-    containerRef.current?.addEventListener('mousedown', handleInteraction, { capture: true });
+    containerRef.current?.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
+    containerRef.current?.addEventListener('mousedown', handleTouchStart, { capture: true });
 
     map.on('moveend zoomend', () => {
       if (map && !isUpdatingFromProps.current) {
@@ -96,8 +95,8 @@ const MapComponent = ({
     map.on('click', onMapClick);
 
     return () => {
-      containerRef.current?.removeEventListener('touchstart', handleInteraction);
-      containerRef.current?.removeEventListener('mousedown', handleInteraction);
+      containerRef.current?.removeEventListener('touchstart', handleTouchStart);
+      containerRef.current?.removeEventListener('mousedown', handleTouchStart);
       map.remove();
       mapRef.current = null;
     };
@@ -124,7 +123,7 @@ const MapComponent = ({
       markerMapRef.current[point.id] = marker;
       clusterGroup.addLayer(marker);
     });
-  }, [points]); 
+  }, [points, selectedId]); 
 
   useEffect(() => {
     const map = mapRef.current;
