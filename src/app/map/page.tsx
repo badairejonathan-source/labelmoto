@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
-import dynamic from 'next/dynamic';
+import dynamic from 'dynamic';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
@@ -280,7 +280,7 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
-                <div className="absolute -top-[50px] left-1/2 -translate-x-1/2 w-[100px] h-[100px] bg-white rounded-full z-[1050]" />
+                <div className="absolute -top-[40px] left-1/2 -translate-x-1/2 w-[80px] h-[80px] bg-white rounded-full z-[1050]" />
                 <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none"><Image src="/images/logomoto2.webp" alt="Label Moto" width={300} height={300} className="w-full h-full object-contain" priority /></div>
                 <div className="grid grid-cols-5 items-start justify-between gap-1 relative z-10">
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
