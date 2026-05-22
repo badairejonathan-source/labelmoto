@@ -202,8 +202,8 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
-                {/* Logo Central XXXL - 300px */}
-                <div className="absolute -top-[160px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none">
+                {/* Logo Central XXXL - 300px - Positionné plus bas de 1cm (environ 38px) */}
+                <div className="absolute -top-[122px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 
                         alt="Label Moto" 
