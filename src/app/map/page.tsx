@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -16,6 +17,10 @@ import { collection, getDocs, query, limit, doc } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
+import locationsData from '@/data/locations.json';
+import brandLogos from '@/data/brand-logos';
+
+const brandsList = Object.keys(brandLogos);
 
 const MapComponent = dynamic(
   () => import('@/components/app/map-component').then((mod) => mod.default), 
@@ -138,14 +143,83 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
+  // LOGIQUE DE RECHERCHE INTELLIGENTE
+  const searchIntent = useMemo(() => {
+    if (!searchTerm) return null;
+    const lower = searchTerm.toLowerCase().trim();
+    
+    // Détection de la marque
+    const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
+    
+    // Détection géo
+    let geo = { type: 'text', value: lower, coords: null as [number, number] | null, zoom: 12 };
+    
+    // CAS 1 : Département (2 chiffres)
+    const deptMatch = lower.match(/\b(\d{2})\b/);
+    if (deptMatch) {
+        const deptCode = deptMatch[1];
+        const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode));
+        if (deptKey) {
+            const loc = (locationsData as any)[deptKey];
+            geo = { type: 'dept', value: deptKey, coords: loc.center, zoom: 9 };
+        }
+    } 
+    // CAS 2 : Code Postal (5 chiffres)
+    else if (lower.match(/\b(\d{5})\b/)) {
+        const cp = lower.match(/\b(\d{5})\b/)?.[1];
+        const deptCode = cp?.substring(0, 2);
+        const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode || ''));
+        if (deptKey) {
+            const loc = (locationsData as any)[deptKey];
+            geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 12 };
+        }
+    }
+    // CAS 3 : Ville exacte ou approchée
+    else {
+        for (const [dept, info] of Object.entries(locationsData)) {
+            const city = info.cities.find(c => lower.includes(c.toLowerCase()));
+            if (city) {
+                geo = { type: 'city', value: city, coords: info.center, zoom: 13 };
+                break;
+            }
+        }
+    }
+
+    return { brand, geo, original: lower };
+  }, [searchTerm]);
+
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
-        const matchesSearch = !searchTerm || p.title.toLowerCase().includes(searchTerm.toLowerCase());
         const section = p.appSection === 'both' ? 'shopping' : p.appSection;
         const matchesFilter = activeFilters.includes(section);
-        return matchesSearch && matchesFilter;
+        if (!matchesFilter) return false;
+
+        if (!searchIntent) return true;
+
+        const { brand, geo, original } = searchIntent;
+        const titleLower = p.title.toLowerCase();
+        
+        // Match Marque si présente
+        const matchesBrand = !brand || titleLower.includes(brand.toLowerCase());
+        
+        // Match Texte si c'est une recherche textuelle pure
+        let matchesText = true;
+        if (geo.type === 'text') {
+            const textToMatch = brand ? original.replace(brand.toLowerCase(), '').trim() : original;
+            matchesText = !textToMatch || titleLower.includes(textToMatch);
+        }
+
+        return matchesBrand && matchesText;
     });
-  }, [points, searchTerm, activeFilters]);
+  }, [points, searchIntent, activeFilters]);
+
+  // Synchronisation de la carte avec l'intention de recherche
+  useEffect(() => {
+    if (searchIntent?.geo.coords && selectionSource === 'external') {
+        setMapCenter(searchIntent.geo.coords);
+        setMapZoom(searchIntent.geo.zoom);
+    }
+  }, [searchIntent, selectionSource]);
 
   const handleFilterToggle = (f: string) => {
     setActiveFilters(prev => {
@@ -202,10 +276,6 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
-                {/* Arrondi central derrière le logo pour modifier le format de la fenêtre */}
-                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-20 bg-white rounded-t-full z-[1400]" />
-
-                {/* Logo Central XXXL - 300px - Remonté de 0,5cm */}
                 <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 
@@ -217,11 +287,10 @@ function MapPageComponent() {
                     />
                 </div>
 
-                {/* Disposition des Filtres Symétrique - Écartement maximal pour le logo 300px */}
                 <div className="grid grid-cols-5 items-start justify-between gap-1 relative z-10">
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[1])}</div>
-                    <div className="col-span-1 h-12" /> {/* Espace central pour laisser respirer le logo */}
+                    <div className="col-span-1 h-12" />
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[2])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[3])}</div>
                 </div>
@@ -250,7 +319,14 @@ function MapPageComponent() {
 
       <div className="absolute top-6 left-6 right-6 z-[1500] pointer-events-none">
         <div className="pointer-events-auto">
-            <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSelectionSource('external')} />
+            <Header searchTerm={searchTerm} onSearchTermChange={(val: string) => {
+                setSearchTerm(val);
+                setSelectionSource('external');
+                if (!val) {
+                    setMapZoom(6);
+                    setMapCenter([46.5, 2.2]);
+                }
+            }} onSearch={() => setSelectionSource('external')} />
         </div>
       </div>
 
@@ -274,6 +350,12 @@ function MapPageComponent() {
                         {filteredPoints.map(p => (
                             <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); }} />
                         ))}
+                        {filteredPoints.length === 0 && (
+                            <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
+                                <p className="font-black uppercase tracking-tight text-muted-foreground">Aucun résultat</p>
+                                <p className="text-[10px] uppercase font-bold text-muted-foreground/60 mt-1">Essayez une autre zone ou marque</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -297,6 +379,11 @@ function MapPageComponent() {
                             {filteredPoints.map(p => (
                                 <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); setDrawerHeight('full'); }} />
                             ))}
+                             {filteredPoints.length === 0 && (
+                                <div className="text-center py-10 opacity-50">
+                                    <p className="font-black uppercase text-xs">Aucun résultat</p>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

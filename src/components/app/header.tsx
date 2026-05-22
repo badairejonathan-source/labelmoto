@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -123,32 +124,85 @@ const Header: React.FC<any> = ({
     if (deferredSearchTerm.trim().length < 1) { setSuggestions([]); return; }
     const lower = deferredSearchTerm.toLowerCase().trim();
     const results: any[] = [];
-    Object.entries(locationsData).forEach(([dept, info]) => {
-        if (dept.toLowerCase().includes(lower)) results.push({ type: 'dept', label: dept, lat: info.center[0], lng: info.center[1], zoom: 9 });
-        info.cities.forEach(city => { if (city.toLowerCase().includes(lower)) results.push({ type: 'city', label: city, subLabel: dept, lat: info.center[0], lng: info.center[1], zoom: 12 }); });
+
+    // Priorité 1 : Département (2 chiffres)
+    if (lower.match(/^\d{2}$/)) {
+        Object.entries(locationsData).forEach(([dept, info]) => {
+            if (dept.startsWith(lower)) {
+                results.push({ type: 'dept', label: dept, subLabel: "Département", lat: info.center[0], lng: info.center[1], zoom: 9 });
+            }
+        });
+    }
+
+    // Priorité 2 : Code Postal (5 chiffres)
+    if (lower.match(/^\d{5}$/)) {
+        const deptCode = lower.substring(0, 2);
+        Object.entries(locationsData).forEach(([dept, info]) => {
+            if (dept.startsWith(deptCode)) {
+                results.push({ type: 'cp', label: lower, subLabel: `Zone ${dept.split(' - ')[1]}`, lat: info.center[0], lng: info.center[1], zoom: 12 });
+            }
+        });
+    }
+
+    // Priorité 3 : Marques
+    brandsList.forEach(brand => {
+        if (brand.toLowerCase().includes(lower)) {
+            results.push({ type: 'brand', label: brand, subLabel: "Marque Moto" });
+        }
     });
-    brandsList.forEach(brand => { if (brand.toLowerCase().includes(lower)) results.push({ type: 'brand', label: brand, subLabel: "Marque moto" }); });
-    allDealers.forEach(d => { if (d.label.toLowerCase().includes(lower)) results.push(d); });
+
+    // Priorité 4 : Villes & Départements (Texte)
+    Object.entries(locationsData).forEach(([dept, info]) => {
+        if (dept.toLowerCase().includes(lower) && !results.some(r => r.label === dept)) {
+            results.push({ type: 'dept', label: dept, subLabel: "Département", lat: info.center[0], lng: info.center[1], zoom: 9 });
+        }
+        info.cities.forEach(city => {
+            if (city.toLowerCase().includes(lower)) {
+                results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[1], lat: info.center[0], lng: info.center[1], zoom: 12 });
+            }
+        });
+    });
+
+    // Priorité 5 : Établissements
+    allDealers.forEach(d => {
+        if (d.label.toLowerCase().includes(lower)) {
+            results.push(d);
+        }
+    });
+
     setSuggestions(results.slice(0, 10));
   }, [deferredSearchTerm, allDealers]);
 
   const handleSuggestionClick = (s: any) => {
     onSearchTermChange(s.label);
     setShowSuggestions(false);
-    const queryParams = new URLSearchParams();
-    if (s.lat && s.lng) {
-        queryParams.set('lat', s.lat.toString());
-        queryParams.set('lng', s.lng.toString());
-        if (s.zoom) queryParams.set('zoom', s.zoom.toString());
+    
+    if (window.location.pathname !== '/map') {
+        const queryParams = new URLSearchParams();
+        if (s.lat && s.lng) {
+            queryParams.set('lat', s.lat.toString());
+            queryParams.set('lng', s.lng.toString());
+            if (s.zoom) queryParams.set('zoom', s.zoom.toString());
+        }
+        if (s.id) queryParams.set('selectedId', s.id);
+        queryParams.set('search', s.label);
+        router.push(`/map?${queryParams.toString()}`);
+    } else {
+        // Sur la carte, MapPage réagit au changement de searchTerm (via searchIntent)
+        // et selectionSource: 'external' déclenchera le vol de caméra
     }
-    if (s.id) queryParams.set('selectedId', s.id);
-    queryParams.set('search', s.label);
-    router.push(`/map?${queryParams.toString()}`);
+  };
+
+  const clearSearch = () => {
+    onSearchTermChange('');
+    setShowSuggestions(false);
+    if (window.location.pathname === '/map') {
+        router.replace('/map');
+    }
   };
 
   return (
     <div className="w-full flex flex-col gap-6 md:gap-8">
-        {/* ROW 1: BUBBLES */}
         <div className="flex items-center justify-between gap-2 w-full">
             <div className="shrink-0">
                 <LabelMotoLogo className="h-auto w-[180px] sm:w-[220px] md:w-[280px]" />
@@ -166,7 +220,6 @@ const Header: React.FC<any> = ({
             </div>
         </div>
 
-        {/* ROW 2: SEARCH BAR */}
         <div className="w-full max-w-3xl mx-auto relative" ref={suggestionsRef}>
             <div className="relative group">
                 <Input 
@@ -180,7 +233,7 @@ const Header: React.FC<any> = ({
                     autoComplete="off"
                 />
                 {searchTerm && (
-                    <button onClick={() => onSearchTermChange('')} className="absolute right-14 md:right-16 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand">
+                    <button onClick={clearSearch} className="absolute right-14 md:right-16 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand">
                         <X className="h-4 w-4" />
                     </button>
                 )}
@@ -197,7 +250,7 @@ const Header: React.FC<any> = ({
                     {suggestions.map((s, idx) => (
                         <button key={idx} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
                             <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
-                                {s.type === 'dealer' ? <Store className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                                {s.type === 'dealer' ? <Store className="w-4 h-4" /> : s.type === 'brand' ? <Bike className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
                             </div>
                             <div className="flex flex-col min-w-0">
                                 <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
