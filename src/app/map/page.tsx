@@ -93,7 +93,7 @@ function MapPageComponent() {
 
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
+  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service', 'association', 'relais']);
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
   const [isDetailView, setIsDetailView] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -112,8 +112,14 @@ function MapPageComponent() {
       const collections = ['concessions', 'associations', 'relais'];
       const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(2000)))));
       const allPoints: MapPoint[] = [];
+      const seenIds = new Set<string>(); // Added to prevent duplicate React keys
+
       snaps.forEach((snap, idx) => {
         snap.docs.forEach(doc => {
+          // If ID already seen, skip to avoid duplicate keys error in React map()
+          if (seenIds.has(doc.id)) return;
+          seenIds.add(doc.id);
+
           const data = doc.data();
           const coords = extractValidCoordinates(data);
           if (!coords) return;
@@ -138,13 +144,26 @@ function MapPageComponent() {
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
         const matchesSearch = !searchTerm || p.title.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter = activeFilters.includes(p.appSection === 'both' ? 'shopping' : p.appSection);
+        const section = p.appSection === 'both' ? 'shopping' : p.appSection;
+        const matchesFilter = activeFilters.includes(section);
         return matchesSearch && matchesFilter;
     });
   }, [points, searchTerm, activeFilters]);
 
   const handleFilterToggle = (f: string) => {
-    setActiveFilters(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
+    setActiveFilters(prev => {
+        const newFilters = prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f];
+        // Automatic close of detail view if current selection is filtered out
+        if (selectedId) {
+            const point = points.find(p => p.id === selectedId);
+            const section = point?.appSection === 'both' ? 'shopping' : point?.appSection;
+            if (section && !newFilters.includes(section)) {
+                setSelectedId(null);
+                setIsDetailView(false);
+            }
+        }
+        return newFilters;
+    });
   };
 
   const handleMarkerClick = (id: string) => {
@@ -157,26 +176,37 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('collapsed');
   };
 
-  const FilterButtons = ({ mobile = false }) => (
-    <div className={cn("flex gap-4 overflow-x-auto no-scrollbar", mobile ? "justify-center" : "justify-center")}>
-        {[
-            { id: 'shopping', label: 'Concess', icon: Bike },
-            { id: 'service', label: 'Atelier', icon: Wrench },
-            { id: 'association', label: 'Asso', icon: Users },
-            { id: 'relais', label: 'Relais', icon: Utensils }
-        ].map(f => {
-            const isActive = activeFilters.includes(f.id);
-            return (
-                <button key={f.id} onClick={() => handleFilterToggle(f.id)} className="flex flex-col items-center gap-1.5 group shrink-0">
-                    <div className={cn("h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}>
-                        <f.icon className="h-5 w-5" />
-                    </div>
-                    <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
-                </button>
-            );
-        })}
-    </div>
-  );
+  const FilterButtons = ({ mobile = false }) => {
+    const filters = [
+        { id: 'shopping', label: 'Concess', icon: Bike },
+        { id: 'service', label: 'Atelier', icon: Wrench },
+        { id: 'association', label: 'Asso', icon: Users },
+        { id: 'relais', label: 'Relais', icon: Utensils }
+    ];
+
+    const leftFilters = filters.slice(0, 2);
+    const rightFilters = filters.slice(2, 4);
+
+    const renderFilter = (f: typeof filters[0]) => {
+        const isActive = activeFilters.includes(f.id);
+        return (
+            <button key={f.id} onClick={() => handleFilterToggle(f.id)} className="flex flex-col items-center gap-1.5 group shrink-0">
+                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}>
+                    <f.icon className="h-5 w-5" />
+                </div>
+                <span className={cn("text-[8px] font-black uppercase tracking-widest", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
+            </button>
+        );
+    };
+
+    return (
+        <div className={cn("flex items-center gap-4 md:gap-8", mobile ? "justify-center w-full px-2" : "justify-center")}>
+            <div className="flex gap-4">{leftFilters.map(renderFilter)}</div>
+            {mobile && <div className="w-16 h-1" />} {/* Centered gap for the floating logo on mobile */}
+            <div className="flex gap-4">{rightFilters.map(renderFilter)}</div>
+        </div>
+    );
+  };
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
@@ -190,7 +220,7 @@ function MapPageComponent() {
         />
       </div>
 
-      {/* TOP HEADER (IMAGE MATCH) */}
+      {/* TOP HEADER */}
       <div className="absolute top-6 left-6 right-6 z-[1500] pointer-events-none">
         <div className="pointer-events-auto">
             <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => setSelectionSource('external')} />
