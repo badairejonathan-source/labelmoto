@@ -202,10 +202,10 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-10 pb-4 px-6">
-                {/* Logo Central XXL - 166px exactement comme demandé */}
+                {/* Logo Central XXL - 166px */}
                 <div className="absolute -top-[70px] left-1/2 -translate-x-1/2 w-[166px] h-[166px] z-[1500] pointer-events-none">
                     <Image 
-                        src="/images/logomoto2" 
+                        src="/images/logomoto2.webp" 
                         alt="Label Moto" 
                         width={166} 
                         height={166} 
@@ -214,16 +214,13 @@ function MapPageComponent() {
                     />
                 </div>
 
-                {/* Disposition des Filtres Symétrique */}
-                <div className="flex items-start justify-between w-full">
-                    <div className="flex gap-3">
-                        {renderFilter(filters[0])}
-                        {renderFilter(filters[1])}
-                    </div>
-                    <div className="flex gap-3">
-                        {renderFilter(filters[2])}
-                        {renderFilter(filters[3])}
-                    </div>
+                {/* Disposition des Filtres Symétrique avec vide au milieu pour le logo */}
+                <div className="grid grid-cols-5 items-start justify-center gap-2">
+                    <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
+                    <div className="col-span-1 flex justify-center">{renderFilter(filters[1])}</div>
+                    <div className="col-span-1" /> {/* Espace pour le logo */}
+                    <div className="col-span-1 flex justify-center">{renderFilter(filters[2])}</div>
+                    <div className="col-span-1 flex justify-center">{renderFilter(filters[3])}</div>
                 </div>
             </div>
         );
