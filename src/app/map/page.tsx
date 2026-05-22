@@ -202,13 +202,13 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-[38px]">
-                {/* Logo Central - Chevauche le haut et z-index élevé */}
-                <div className="absolute -top-[42px] left-1/2 -translate-x-1/2 w-[96px] h-[96px] z-[1500] pointer-events-none">
+                {/* Logo Central - Chevauche le haut et z-index élevé - Agrandissement à 166px */}
+                <div className="absolute -top-[70px] left-1/2 -translate-x-1/2 w-[166px] h-[166px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 
                         alt="Label Moto" 
-                        width={96} 
-                        height={96} 
+                        width={166} 
+                        height={166} 
                         className="w-full h-full object-contain" 
                         priority 
                     />
