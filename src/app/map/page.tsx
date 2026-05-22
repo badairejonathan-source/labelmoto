@@ -202,6 +202,9 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
+                {/* Arrondi central derrière le logo pour modifier le format de la fenêtre */}
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-20 bg-white rounded-t-full z-[1400]" />
+
                 {/* Logo Central XXXL - 300px - Remonté de 0,5cm */}
                 <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none">
                     <Image 
@@ -215,7 +218,7 @@ function MapPageComponent() {
                 </div>
 
                 {/* Disposition des Filtres Symétrique - Écartement maximal pour le logo 300px */}
-                <div className="grid grid-cols-5 items-start justify-between gap-1">
+                <div className="grid grid-cols-5 items-start justify-between gap-1 relative z-10">
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[1])}</div>
                     <div className="col-span-1 h-12" /> {/* Espace central pour laisser respirer le logo */}
