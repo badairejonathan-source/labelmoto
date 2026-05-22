@@ -201,24 +201,24 @@ function MapPageComponent() {
 
     if (mobile) {
         return (
-            <div className="relative w-full bg-white rounded-t-[28px] min-h-[115px] pt-10 pb-4 px-6">
-                {/* Logo Central XXL - 166px */}
-                <div className="absolute -top-[70px] left-1/2 -translate-x-1/2 w-[166px] h-[166px] z-[1500] pointer-events-none">
+            <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
+                {/* Logo Central XXXL - 300px */}
+                <div className="absolute -top-[160px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none">
                     <Image 
                         src="/images/logomoto2.webp" 
                         alt="Label Moto" 
-                        width={166} 
-                        height={166} 
+                        width={300} 
+                        height={300} 
                         className="w-full h-full object-contain" 
                         priority 
                     />
                 </div>
 
-                {/* Disposition des Filtres Symétrique avec vide au milieu pour le logo */}
-                <div className="grid grid-cols-5 items-start justify-center gap-2">
+                {/* Disposition des Filtres Symétrique - Écartement maximal pour le logo 300px */}
+                <div className="grid grid-cols-5 items-start justify-between gap-1">
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[1])}</div>
-                    <div className="col-span-1" /> {/* Espace pour le logo */}
+                    <div className="col-span-1 h-12" /> {/* Espace central pour laisser respirer le logo */}
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[2])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[3])}</div>
                 </div>

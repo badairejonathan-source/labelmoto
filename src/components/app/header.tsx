@@ -27,7 +27,7 @@ const brandsList = Object.keys(brandLogos);
 let globalDealersCache: any[] | null = null;
 
 export const UserMenu = () => {
-  const { user, isUserLoading, activateAuth } = useUser();
+  const { user, activateAuth } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
   const [mounted, setMounted] = useState(false);
