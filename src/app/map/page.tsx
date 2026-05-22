@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
-import dynamic from 'dynamic';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
