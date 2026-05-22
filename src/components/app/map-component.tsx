@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -11,9 +12,9 @@ import type { MapPoint } from '@/lib/types';
 
 interface MapComponentProps {
   points: MapPoint[];
+  labelPoints: MapPoint[];
   center: [number, number];
   zoom: number;
-  mapBounds?: L.LatLngBounds | null;
   selectedId: string | null;
   onMarkerClick: (id: string) => void;
   onMapClick: () => void;
@@ -36,7 +37,7 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 };
 
 const MapComponent = ({
-  points, center, zoom, selectedId,
+  points, labelPoints, center, zoom, selectedId,
   onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
@@ -78,11 +79,7 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // DETECTION TACTILE HAUTE PRIORITE (CAPTURE PHASE)
-    const handleTouchStart = () => {
-        if (!isUpdatingFromProps.current) onUserInteraction?.();
-    };
-
+    const handleTouchStart = () => { if (!isUpdatingFromProps.current) onUserInteraction?.(); };
     containerRef.current?.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
     containerRef.current?.addEventListener('mousedown', handleTouchStart, { capture: true });
 
@@ -111,8 +108,9 @@ const MapComponent = ({
 
     points.forEach((point) => {
       const isSelected = point.id === selectedId;
+      const showLabel = labelPoints.some(lp => lp.id === point.id);
       const marker = L.marker([point.latitude, point.longitude], {
-        icon: createIcon(point, isSelected)
+        icon: createIcon(point, isSelected, showLabel)
       });
 
       marker.on('click', (e) => {
@@ -123,7 +121,7 @@ const MapComponent = ({
       markerMapRef.current[point.id] = marker;
       clusterGroup.addLayer(marker);
     });
-  }, [points, selectedId]); 
+  }, [points, labelPoints, selectedId]); 
 
   useEffect(() => {
     const map = mapRef.current;
@@ -139,7 +137,6 @@ const MapComponent = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
-
     map.once('locationfound', (e) => {
       onLocationFound([e.latlng.lat, e.latlng.lng]);
       onLocateEnd();
@@ -150,7 +147,7 @@ const MapComponent = ({
   return <div ref={containerRef} className="w-full h-full bg-muted/10" />;
 };
 
-const createIcon = (point: MapPoint, isSelected: boolean) => {
+const createIcon = (point: MapPoint, isSelected: boolean, showLabel: boolean) => {
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
   const color = isSelected ? '#f97316' : (isAssociation ? '#4338ca' : (isRelais ? '#d97706' : '#ea580c'));
@@ -163,6 +160,7 @@ const createIcon = (point: MapPoint, isSelected: boolean) => {
           <circle cx="16" cy="16" r="6" fill="white"/>
         </svg>
       </div>
+      ${showLabel ? `<div class="marker-label ${isSelected ? 'active' : ''}">${point.title}</div>` : ''}
     </div>
   `;
 

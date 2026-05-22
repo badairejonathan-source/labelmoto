@@ -113,7 +113,6 @@ function MapPageComponent() {
     const fetchAll = async () => {
       if (!firestore) return;
       const collections = ['concessions', 'associations', 'relais'];
-      // Augmentation massive de la limite pour voir TOUS les pointeurs
       const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
@@ -122,7 +121,6 @@ function MapPageComponent() {
         snap.docs.forEach(doc => {
           if (seenIds.has(doc.id)) return;
           seenIds.add(doc.id);
-
           const data = doc.data();
           const coords = extractValidCoordinates(data);
           if (!coords) return;
@@ -136,9 +134,8 @@ function MapPageComponent() {
             slug: data.slug,
             rating: data.rating,
             imgUrl: data.imageUrl || data.imgUrl,
-            // Ajout de l'adresse pour un filtrage textuel robuste
             address: data.address || ""
-          } as any);
+          } as MapPoint);
         });
       });
       setPoints(allPoints);
@@ -146,15 +143,11 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
-  // LOGIQUE DE RECHERCHE INTELLIGENTE (SMART SEARCH)
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
     const lower = searchTerm.toLowerCase().trim();
     const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
-    
     let geo = { type: 'text', value: lower, coords: null as [number, number] | null, zoom: 12 };
-    
-    // PRIORITÉ 1 : Département (2 chiffres)
     const deptMatch = lower.match(/\b(\d{2})\b/);
     if (deptMatch) {
         const deptCode = deptMatch[1];
@@ -163,64 +156,83 @@ function MapPageComponent() {
             const loc = (locationsData as any)[deptKey];
             geo = { type: 'dept', value: deptCode, coords: loc.center, zoom: 9 };
         }
-    } 
-    // PRIORITÉ 2 : Code Postal (5 chiffres)
-    else if (lower.match(/\b(\d{5})\b/)) {
-        const cp = lower.match(/\b(\d{5})\b/)?.[1];
+    } else if (lower.match(/\b(\d{5})\b/)) {
+        const cp = lower.match(/\b(\d{5})\b/)?.[0];
         const deptCode = cp?.substring(0, 2);
         const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode || ''));
         if (deptKey) {
             const loc = (locationsData as any)[deptKey];
             geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 13 };
         }
-    }
-    // PRIORITÉ 3 : Ville ou Ville approximative
-    else {
+    } else {
         for (const [dept, info] of Object.entries(locationsData)) {
             const city = info.cities.find(c => lower.includes(c.toLowerCase()));
-            if (city) {
-                geo = { type: 'city', value: city, coords: info.center, zoom: 13 };
-                break;
-            }
+            if (city) { geo = { type: 'city', value: city, coords: info.center, zoom: 13 }; break; }
         }
     }
-
     return { brand, geo, original: lower };
   }, [searchTerm]);
 
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
         const section = p.appSection === 'both' ? 'shopping' : p.appSection;
-        const matchesFilter = activeFilters.includes(section);
-        if (!matchesFilter) return false;
-
+        if (!activeFilters.includes(section)) return false;
         if (!searchIntent) return true;
-
         const { brand, geo, original } = searchIntent;
         const titleLower = p.title.toLowerCase();
         const addressLower = (p as any).address?.toLowerCase() || "";
-        
-        // 1. Match Marque
         const matchesBrand = !brand || titleLower.includes(brand.toLowerCase());
-        
-        // 2. Match Géographique (si détecté)
         let matchesGeo = true;
-        if (geo.type === 'dept') {
-            matchesGeo = addressLower.includes(geo.value);
-        } else if (geo.type === 'cp') {
-            matchesGeo = addressLower.includes(geo.value);
-        } else if (geo.type === 'city') {
-            matchesGeo = addressLower.includes(geo.value.toLowerCase());
-        } else if (geo.type === 'text') {
+        if (geo.type === 'dept') matchesGeo = addressLower.includes(geo.value);
+        else if (geo.type === 'cp') matchesGeo = addressLower.includes(geo.value);
+        else if (geo.type === 'city') matchesGeo = addressLower.includes(geo.value.toLowerCase());
+        else if (geo.type === 'text') {
             const query = brand ? original.replace(brand.toLowerCase(), '').trim() : original;
             matchesGeo = !query || titleLower.includes(query) || addressLower.includes(query);
         }
-
         return matchesBrand && matchesGeo;
     });
   }, [points, searchIntent, activeFilters]);
 
-  // Synchronisation de la carte (Caméra)
+  // LOGIQUE DE TRI PAR PROXIMITÉ AU CENTRE DU VIEWPORT
+  const listPoints = useMemo(() => {
+    return [...filteredPoints]
+      .sort((a, b) => {
+        if (a.id === selectedId) return -1;
+        if (b.id === selectedId) return 1;
+        const distA = Math.pow(a.latitude - mapCenter[0], 2) + Math.pow(a.longitude - mapCenter[1], 2);
+        const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
+        return distA - distB;
+      })
+      .slice(0, 25);
+  }, [filteredPoints, mapCenter, selectedId]);
+
+  // LOGIQUE DE LABELS AVEC ANTI-COLLISION
+  const labelPoints = useMemo(() => {
+    if (mapZoom < 13) return [];
+    const gridSize = mapZoom >= 15 ? 0.005 : 0.015;
+    const grid: Record<string, boolean> = {};
+    const result: MapPoint[] = [];
+
+    // On priorise toujours le point sélectionné s'il est visible
+    const sortedForLabels = [...filteredPoints].sort((a, b) => {
+        if (a.id === selectedId) return -1;
+        if (b.id === selectedId) return 1;
+        return 0;
+    });
+
+    sortedForLabels.forEach(p => {
+        const gridX = Math.floor(p.latitude / gridSize);
+        const gridY = Math.floor(p.longitude / gridSize);
+        const key = `${gridX},${gridY}`;
+        if (!grid[key] || p.id === selectedId) {
+            grid[key] = true;
+            result.push(p);
+        }
+    });
+    return result;
+  }, [filteredPoints, mapZoom, selectedId]);
+
   useEffect(() => {
     if (searchIntent?.geo.coords && selectionSource === 'external') {
         setMapCenter(searchIntent.geo.coords);
@@ -234,24 +246,23 @@ function MapPageComponent() {
         if (selectedId) {
             const point = points.find(p => p.id === selectedId);
             const section = point?.appSection === 'both' ? 'shopping' : point?.appSection;
-            if (section && !newFilters.includes(section)) {
-                setSelectedId(null);
-                setIsDetailView(false);
-            }
+            if (section && !newFilters.includes(section)) { setSelectedId(null); setIsDetailView(false); }
         }
         return newFilters;
     });
   };
 
   const handleMarkerClick = (id: string) => {
+    const p = points.find(x => x.id === id);
+    if (p) {
+        setMapCenter([p.latitude, p.longitude]);
+        setSelectionSource('marker');
+    }
     setSelectedId(id);
-    setSelectionSource('marker');
     if (isMobile) setDrawerHeight('half');
   };
 
-  const handleUserInteraction = () => {
-    if (isMobile) setDrawerHeight('collapsed');
-  };
+  const handleUserInteraction = () => { if (isMobile) setDrawerHeight('collapsed'); };
 
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
@@ -260,43 +271,20 @@ function MapPageComponent() {
         { id: 'association', label: 'ASSO', icon: Users },
         { id: 'relais', label: 'RELAIS', icon: Utensils }
     ];
-
     const renderFilter = (f: typeof filters[0]) => {
         const isActive = activeFilters.includes(f.id);
         return (
-            <button 
-                key={f.id} 
-                onClick={() => handleFilterToggle(f.id)} 
-                className="flex flex-col items-center gap-2 group shrink-0"
-            >
-                <div className={cn(
-                    "h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", 
-                    isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20"
-                )}>
-                    <f.icon className="h-6 w-6" />
-                </div>
+            <button key={f.id} onClick={() => handleFilterToggle(f.id)} className="flex flex-col items-center gap-2 group shrink-0">
+                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}><f.icon className="h-6 w-6" /></div>
                 <span className={cn("text-[9px] font-black uppercase tracking-tight leading-none text-center", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
             </button>
         );
     };
-
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
-                {/* Arrondi central "Hump" derrière le logo */}
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-10 bg-white rounded-t-full z-[1050]" />
-                
-                <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none">
-                    <Image 
-                        src="/images/logomoto2.webp" 
-                        alt="Label Moto" 
-                        width={300} 
-                        height={300} 
-                        className="w-full h-full object-contain" 
-                        priority 
-                    />
-                </div>
-
+                <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none"><Image src="/images/logomoto2.webp" alt="Label Moto" width={300} height={300} className="w-full h-full object-contain" priority /></div>
                 <div className="grid grid-cols-5 items-start justify-between gap-1 relative z-10">
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[1])}</div>
@@ -307,19 +295,14 @@ function MapPageComponent() {
             </div>
         );
     }
-
-    return (
-        <div className="flex items-center justify-center gap-8">
-            <div className="flex gap-4">{filters.map(renderFilter)}</div>
-        </div>
-    );
+    return (<div className="flex items-center justify-center gap-8"><div className="flex gap-4">{filters.map(renderFilter)}</div></div>);
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
         <MapComponent 
-            points={filteredPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
+            points={filteredPoints} labelPoints={labelPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
             onMarkerClick={handleMarkerClick} onMapClick={() => { setSelectedId(null); setIsDetailView(false); }}
             onMapChange={(c, z) => { setMapCenter(c); setMapZoom(z); setSelectionSource(null); }}
             onUserInteraction={handleUserInteraction} bottomPadding={bottomPadding} leftPadding={leftPadding}
@@ -332,10 +315,7 @@ function MapPageComponent() {
             <Header searchTerm={searchTerm} onSearchTermChange={(val: string) => {
                 setSearchTerm(val);
                 setSelectionSource('external');
-                if (!val) {
-                    setMapZoom(6);
-                    setMapCenter([46.5, 2.2]);
-                }
+                if (!val) { setMapZoom(6); setMapCenter([46.5, 2.2]); }
             }} onSearch={() => setSelectionSource('external')} />
         </div>
       </div>
@@ -344,27 +324,19 @@ function MapPageComponent() {
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
             <div className="p-10 pb-6 shrink-0 space-y-8">
                 <div className="flex justify-between items-center"><Link href="/"><Image src="/images/logo-moto.webp" alt="Logo" width={180} height={60} /></Link></div>
-                <div className="space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Filtres de recherche</p>
-                    <FilterButtons />
-                </div>
+                <div className="space-y-4"><p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">À proximité de la zone</p><FilterButtons /></div>
             </div>
             <div className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
                 {isDetailView && selectedId ? (
                     <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
                 ) : (
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between px-2 mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{filteredPoints.length} Résultats sur la carte</span>
-                        </div>
-                        {filteredPoints.map(p => (
+                        <div className="flex items-center justify-between px-2 mb-4"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{listPoints.length} Résultats pertinents ici</span></div>
+                        {listPoints.map(p => (
                             <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); }} />
                         ))}
                         {filteredPoints.length === 0 && (
-                            <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
-                                <p className="font-black uppercase tracking-tight text-muted-foreground">Aucun résultat</p>
-                                <p className="text-[10px] uppercase font-bold text-muted-foreground/60 mt-1">Essayez une autre zone ou marque</p>
-                            </div>
+                            <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed"><p className="font-black uppercase tracking-tight text-muted-foreground">Aucun résultat</p></div>
                         )}
                     </div>
                 )}
@@ -373,27 +345,18 @@ function MapPageComponent() {
       )}
 
       {isMobile && (
-        <div className={cn(
-            "fixed left-0 right-0 bg-white rounded-t-[28px] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]",
-            drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]')
-        )}>
+        <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]'))}>
             <div className="h-full flex flex-col">
-                <div className="shrink-0 overflow-visible">
-                    <FilterButtons mobile />
-                </div>
+                <div className="shrink-0 overflow-visible"><FilterButtons mobile /></div>
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
                     {isDetailView && selectedId ? (
                         <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('half'); }} />
                     ) : (
                         <div className="space-y-4">
-                            {filteredPoints.map(p => (
+                            {listPoints.map(p => (
                                 <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); setDrawerHeight('full'); }} />
                             ))}
-                             {filteredPoints.length === 0 && (
-                                <div className="text-center py-10 opacity-50">
-                                    <p className="font-black uppercase text-xs">Aucun résultat</p>
-                                </div>
-                            )}
+                             {filteredPoints.length === 0 && (<div className="text-center py-10 opacity-50"><p className="font-black uppercase text-xs">Aucun résultat</p></div>)}
                         </div>
                     )}
                 </div>
@@ -401,10 +364,7 @@ function MapPageComponent() {
         </div>
       )}
 
-      <button 
-        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")} 
-        onClick={() => setIsLocating(true)}
-      >
+      <button className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")} onClick={() => setIsLocating(true)}>
         <Compass className={cn("h-8 w-8", isLocating && "animate-spin")} />
       </button>
     </div>

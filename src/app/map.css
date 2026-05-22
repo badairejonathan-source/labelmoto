@@ -1,4 +1,5 @@
 
+
 /* Styles spécifiques à la carte Leaflet - Chargés uniquement sur la page /map */
 
 .leaflet-container .leaflet-tile-pane {
@@ -47,7 +48,7 @@
   border-left-width: 4px;
 }
 
-/* Custom styles for Leaflet clusters to match Moto Trust brand */
+/* Custom styles for Leaflet clusters to match Label Moto brand */
 .marker-cluster-small { background-color: rgba(234, 88, 12, 0.6) !important; }
 .marker-cluster-small div { background-color: rgba(234, 88, 12, 0.8) !important; color: white !important; font-weight: 900 !important; }
 .marker-cluster-medium { background-color: rgba(234, 88, 12, 0.7) !important; }
@@ -55,3 +56,8 @@
 .marker-cluster-large { background-color: rgba(234, 88, 12, 0.8) !important; }
 .marker-cluster-large div { background-color: rgba(234, 88, 12, 1.0) !important; color: white !important; font-weight: 900 !important; }
 
+/* Custom Scrollbar for sidebars */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 20px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(234, 88, 12, 0.3); }
