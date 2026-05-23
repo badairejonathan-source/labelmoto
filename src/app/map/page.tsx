@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
-import Header from '@/components/app/header';
+import Header, { UserMenu } from '@/components/app/header';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
@@ -307,22 +307,45 @@ function MapPageComponent() {
         />
       </div>
 
-      <div className="absolute top-6 left-6 right-6 z-[1500] pointer-events-none">
+      {/* TOP HEADER - Floating Pill on Desktop Right / Full Header on Mobile */}
+      <div className={cn("absolute top-6 z-[1500] pointer-events-none", isMobile ? "left-6 right-6" : "right-6 w-[400px]")}>
         <div className="pointer-events-auto">
-            <Header searchTerm={searchTerm} onSearchTermChange={(val: string) => {
-                setSearchTerm(val);
-                setSelectionSource('external');
-                if (!val) { setMapZoom(6); setMapCenter([46.5, 2.2]); }
-            }} onSearch={() => setSelectionSource('external')} />
+            <Header 
+                searchOnly={!isMobile}
+                searchTerm={searchTerm} 
+                onSearchTermChange={(val: string) => {
+                    setSearchTerm(val);
+                    setSelectionSource('external');
+                    if (!val) { setMapZoom(6); setMapCenter([46.5, 2.2]); }
+                }} 
+                onSearch={() => setSelectionSource('external')} 
+            />
         </div>
       </div>
 
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
-            <div className="p-10 pb-6 shrink-0 space-y-8">
-                <div className="flex justify-between items-center"><Link href="/"><Image src="/images/logo-moto.webp" alt="Logo" width={180} height={60} /></Link></div>
-                <div className="space-y-4"><p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">À proximité de la zone</p><FilterButtons /></div>
+            {/* DESKTOP SIDEBAR HEADER: LOGO + BANNER + PROFIL */}
+            <div className="px-10 py-8 shrink-0 flex items-center justify-between border-b border-muted/30">
+                <Link href="/" className="shrink-0 transition-transform hover:scale-105 active:scale-95">
+                    <Image src="/images/logo-moto.webp" alt="Logo" width={140} height={45} className="w-auto h-10 object-contain" />
+                </Link>
+                <div className="flex-1 text-center px-4">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
+                    <p className="text-[11px] font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
+                </div>
+                <div className="shrink-0">
+                    <UserMenu />
+                </div>
             </div>
+
+            <div className="px-10 py-8 pb-6 shrink-0 space-y-6">
+                <div className="space-y-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">À proximité de la zone</p>
+                    <FilterButtons />
+                </div>
+            </div>
+
             <div className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
                 {isDetailView && selectedId ? (
                     <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
