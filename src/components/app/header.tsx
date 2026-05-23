@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -263,7 +262,7 @@ const Header: React.FC<any> = ({
             </div>
             
             <div className="flex-1 flex justify-center px-4">
-                <div className="bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
+                <div className="hidden md:block bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
                     <p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
                     <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
                 </div>
