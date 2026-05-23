@@ -28,9 +28,10 @@ const MapComponent = dynamic(
 );
 
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
-  const { firestore, user } = useFirebase();
+  const { firestore } = useFirebase();
   const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
-  const docRef = useMemoFirebase(() => user ? doc(firestore, col, dealershipId) : null, [firestore, col, dealershipId]);
+  // Correction : On charge le document indépendamment de l'état de connexion de l'utilisateur
+  const docRef = useMemoFirebase(() => doc(firestore, col, dealershipId), [firestore, col, dealershipId]);
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
   if (isLoading) return <div className="p-8 space-y-6"><Skeleton className="h-48 w-full rounded-3xl" /><Skeleton className="h-8 w-3/4" /></div>;
@@ -97,7 +98,6 @@ function MapPageComponent() {
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   
-  // Filtres initiaux : Concession et Atelier seulement
   const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
   
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
@@ -211,7 +211,6 @@ function MapPageComponent() {
     });
   }, [points, searchIntent, activeFilters]);
 
-  // Liste pilotée par la proximité au centre du viewport (25 fiches légères)
   const listPoints = useMemo(() => {
     return [...filteredPoints]
         .sort((a, b) => {
@@ -224,7 +223,6 @@ function MapPageComponent() {
         .slice(0, 25);
   }, [filteredPoints, mapCenter, selectedId]);
 
-  // Calcul des labels avec anti-collision intelligente
   const labelPoints = useMemo(() => {
     if (mapZoom < 13) return [];
     
@@ -310,6 +308,7 @@ function MapPageComponent() {
             </button>
         );
     };
+
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
