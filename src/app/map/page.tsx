@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare } from 'lucide-react';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -48,16 +48,32 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
           <p className="text-sm font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
         </div>
 
-        <div className="bg-muted/30 p-5 rounded-3xl border-2 border-dashed flex items-start gap-3">
-          <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-          <p className="text-sm font-bold leading-snug">{pro.address}</p>
+        <div className="bg-muted/30 p-5 rounded-3xl border-2 border-dashed">
+          <div className="flex items-start gap-3 mb-3">
+            <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+            <p className="text-sm font-bold leading-snug">{pro.address}</p>
+          </div>
+          <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px] flex items-center gap-2">
+            <a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noreferrer">
+              <MapIcon className="h-3.5 w-3.5" /> Calculer l'itinéraire
+            </a>
+          </Button>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-           {pro.phoneNumber && <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[10px] border-2"><a href={`tel:${pro.phoneNumber}`}><Phone className="mr-2 h-4 w-4" /> Appeler</a></Button>}
-           <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[10px] border-2">
+        <div className="grid grid-cols-3 gap-2">
+           {pro.phoneNumber && (
+             <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
+               <a href={`tel:${pro.phoneNumber}`}><Phone className="mr-1 h-3 w-3 md:h-4 md:w-4" /> Appeler</a>
+             </Button>
+           )}
+           {pro.website && (
+             <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
+               <a href={pro.website} target="_blank" rel="noopener noreferrer"><Globe className="mr-1 h-3 w-3 md:h-4 md:w-4" /> Site</a>
+             </Button>
+           )}
+           <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
               <Link href={`/concessions/${pro.slug || pro.id}#reviews`}>
-                <MessageSquare className="mr-2 h-4 w-4" /> Avis
+                <MessageSquare className="mr-1 h-3 w-3 md:h-4 md:w-4" /> Avis
               </Link>
            </Button>
         </div>
@@ -76,10 +92,6 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
             ))}
           </div>
         </div>
-
-        <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white rounded-full font-black uppercase text-xs h-16 shadow-xl shadow-brand/20 transition-all hover:scale-[1.02]">
-          <a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noreferrer">Calculer l'itinéraire</a>
-        </Button>
 
         <div className="pt-6 border-t border-dashed">
            <Link href={`/concessions/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-2xl hover:bg-brand/5 group transition-colors">
