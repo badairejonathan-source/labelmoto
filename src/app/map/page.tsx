@@ -96,7 +96,10 @@ function MapPageComponent() {
 
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service', 'association', 'relais']);
+  
+  // Modification demandée : Seuls 'shopping' (CONCESS) et 'service' (ATELIER) sont actifs au démarrage
+  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
+  
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
   const [isDetailView, setIsDetailView] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -113,7 +116,7 @@ function MapPageComponent() {
     const fetchAll = async () => {
       if (!firestore) return;
       const collections = ['concessions', 'associations', 'relais'];
-      // Limite augmentée à 10k par collection pour assurer la visibilité totale
+      // Limite à 10k pour garantir que TOUS les points sont chargés sans omission
       const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
@@ -157,7 +160,7 @@ function MapPageComponent() {
 
     let geo = { type: 'text', value: geoQuery, coords: null as [number, number] | null, zoom: 12 };
 
-    // Priorité 1 : Département (2 chiffres)
+    // Priorité 1 : Département (2 chiffres) - Doit être strict
     const deptMatch = geoQuery.match(/\b(\d{2})\b/);
     if (deptMatch) {
         const deptCode = deptMatch[1];
@@ -193,17 +196,16 @@ function MapPageComponent() {
         if (!activeFilters.includes(section)) return false;
         if (!searchIntent) return true;
         
-        const { brand, geo, original } = searchIntent;
+        const { brand, geo } = searchIntent;
         const titleLower = p.title.toLowerCase();
         const addressLower = (p as any).address?.toLowerCase() || "";
         
         // Filtre Marque
         const matchesBrand = !brand || titleLower.includes(brand.toLowerCase());
         
-        // Filtre Geo
+        // Filtre Geo strict
         let matchesGeo = true;
         if (geo.type === 'dept') {
-            // Uniquement si le département est présent dans le CP de l'adresse
             matchesGeo = addressLower.includes(geo.value);
         } else if (geo.type === 'cp') {
             matchesGeo = addressLower.includes(geo.value);
@@ -219,7 +221,7 @@ function MapPageComponent() {
     });
   }, [points, searchIntent, activeFilters]);
 
-  // Liste triée par proximité au centre
+  // Liste triée par proximité au centre (Géocentrique)
   const listPoints = useMemo(() => {
     return [...filteredPoints]
       .sort((a, b) => {
@@ -232,7 +234,7 @@ function MapPageComponent() {
       .slice(0, 25);
   }, [filteredPoints, mapCenter, selectedId]);
 
-  // Labels avec thining (anti-collision)
+  // Labels avec anti-collision (Thinning géographique)
   const labelPoints = useMemo(() => {
     if (mapZoom < 13) return [];
     const gridSize = mapZoom >= 15 ? 0.005 : 0.015;
