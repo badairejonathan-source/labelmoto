@@ -30,7 +30,8 @@ const MapComponent = dynamic(
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
   const { firestore } = useFirebase();
   const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
-  // Correction : On charge le document indépendamment de l'état de connexion de l'utilisateur
+  
+  // Correction : La fiche est désormais accessible publiquement (indépendamment de user)
   const docRef = useMemoFirebase(() => doc(firestore, col, dealershipId), [firestore, col, dealershipId]);
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
@@ -98,6 +99,7 @@ function MapPageComponent() {
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   
+  // Initialisation par défaut : Concess et Atelier uniquement
   const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
   
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
@@ -149,15 +151,27 @@ function MapPageComponent() {
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
     const lower = searchTerm.toLowerCase().trim();
+    
+    // RÈGLE : 2 chiffres = Priorité absolue Département
+    const deptMatch = lower.match(/^\d{2}$/);
+    if (deptMatch) {
+        const deptCode = deptMatch[0];
+        const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode));
+        if (deptKey) {
+            const loc = (locationsData as any)[deptKey];
+            return { brand: null, geo: { type: 'dept', value: deptCode, coords: loc.center, zoom: 9 }, original: lower };
+        }
+    }
+
     const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
     let geoQuery = lower;
     if (brand) geoQuery = lower.replace(brand.toLowerCase(), '').trim();
 
     let geo = { type: 'text', value: geoQuery, coords: null as [number, number] | null, zoom: 12 };
 
-    const deptMatch = geoQuery.match(/\b(\d{2})\b/);
-    if (deptMatch) {
-        const deptCode = deptMatch[1];
+    const longDeptMatch = geoQuery.match(/\b(\d{2})\b/);
+    if (longDeptMatch) {
+        const deptCode = longDeptMatch[1];
         const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode));
         if (deptKey) {
             const loc = (locationsData as any)[deptKey];
@@ -201,16 +215,15 @@ function MapPageComponent() {
             matchesGeo = addressLower.includes(geo.value);
         } else if (geo.type === 'city') {
             matchesGeo = addressLower.includes(geo.value.toLowerCase());
-        } else if (geo.type === 'text') {
-            if (geo.value) {
-                matchesGeo = titleLower.includes(geo.value) || addressLower.includes(geo.value);
-            }
+        } else if (geo.type === 'text' && geo.value) {
+            matchesGeo = titleLower.includes(geo.value) || addressLower.includes(geo.value);
         }
         
         return matchesBrand && matchesGeo;
     });
   }, [points, searchIntent, activeFilters]);
 
+  // TRI GÉOCENTRIQUE : La liste dépend de la distance au centre de la carte
   const listPoints = useMemo(() => {
     return [...filteredPoints]
         .sort((a, b) => {
@@ -223,6 +236,7 @@ function MapPageComponent() {
         .slice(0, 25);
   }, [filteredPoints, mapCenter, selectedId]);
 
+  // LABELS INTELLIGENTS : Système anti-collision par grille géographique
   const labelPoints = useMemo(() => {
     if (mapZoom < 13) return [];
     
@@ -230,6 +244,7 @@ function MapPageComponent() {
     const seen = new Set<string>();
     const results: MapPoint[] = [];
 
+    // Priorité au point sélectionné
     const selected = filteredPoints.find(p => p.id === selectedId);
     if (selected) {
       const gx = Math.floor(selected.latitude / gridStep);
@@ -258,6 +273,19 @@ function MapPageComponent() {
         setMapZoom(searchIntent.geo.zoom);
     }
   }, [searchIntent, selectionSource]);
+
+  // AUTO-SCROLL : Faire remonter la liste vers la fiche sélectionnée
+  useEffect(() => {
+    if (selectedId && selectionSource === 'marker') {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`card-${selectedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedId, selectionSource, listPoints]);
 
   const handleFilterToggle = (f: string) => {
     setActiveFilters(prev => {
@@ -296,7 +324,7 @@ function MapPageComponent() {
     ];
 
     const toggleDrawer = () => {
-        setDrawerHeight(prev => prev === 'collapsed' ? 'half' : 'collapsed');
+        setDrawerHeight(prev => prev === 'collapsed' ? 'half' : (prev === 'full' ? 'half' : 'collapsed'));
     };
 
     const renderFilter = (f: typeof filters[0]) => {
@@ -312,10 +340,10 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
+                {/* CHEVRON MANUEL : Garder la liberté d'action */}
                 <button 
                     onClick={toggleDrawer}
                     className="absolute top-4 right-6 z-[1600] p-2 bg-muted/20 hover:bg-muted/40 rounded-full text-brand transition-all active:scale-90"
-                    aria-label={drawerHeight === 'collapsed' ? "Ouvrir le menu" : "Fermer le menu"}
                 >
                     {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
                 </button>
