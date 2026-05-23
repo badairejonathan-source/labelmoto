@@ -155,7 +155,8 @@ function MapPageComponent() {
             slug: data.slug,
             rating: data.rating,
             imgUrl: data.imageUrl || data.imgUrl,
-            address: data.address || ""
+            address: data.address || "",
+            brands: data.brands || []
           } as MapPoint);
         });
       });
@@ -168,6 +169,7 @@ function MapPageComponent() {
     if (!searchTerm) return null;
     const lower = searchTerm.toLowerCase().trim();
     
+    // 1. Détection Prioritaire Département (2 chiffres seuls)
     const deptMatch = lower.match(/^\d{2}$/);
     if (deptMatch) {
         const deptCode = deptMatch[0];
@@ -178,10 +180,12 @@ function MapPageComponent() {
         }
     }
 
+    // 2. Détection de la marque
     const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
     let geoQuery = lower;
     if (brand) geoQuery = lower.replace(brand.toLowerCase(), '').trim();
 
+    // 3. Détection de la zone géographique (Dépt, CP, Ville)
     let geo = { type: 'text', value: geoQuery, coords: null as [number, number] | null, zoom: 12 };
 
     const longDeptMatch = geoQuery.match(/\b(\d{2})\b/);
@@ -202,12 +206,13 @@ function MapPageComponent() {
             geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 13 };
         }
     } 
-    else {
+    else if (geoQuery) {
         for (const [dept, info] of Object.entries(locationsData)) {
             const city = info.cities.find(c => geoQuery.includes(c.toLowerCase()) || c.toLowerCase().includes(geoQuery));
             if (city) { geo = { type: 'city', value: city, coords: info.center, zoom: 13 }; break; }
         }
     }
+
     return { brand, geo, original: lower };
   }, [searchTerm]);
 
@@ -220,9 +225,18 @@ function MapPageComponent() {
         const { brand, geo } = searchIntent;
         const titleLower = p.title.toLowerCase();
         const addressLower = (p as any).address?.toLowerCase() || "";
+        const pBrands = p.brands || [];
         
-        const matchesBrand = !brand || titleLower.includes(brand.toLowerCase());
+        // Logique Marque : doit matcher le titre OU la liste des marques officielles
+        const matchesBrand = !brand || 
+                             titleLower.includes(brand.toLowerCase()) || 
+                             pBrands.some(b => b.toLowerCase() === brand.toLowerCase());
         
+        if (!matchesBrand) return false;
+
+        // Logique Géo : Si on a une marque mais PAS de géo spécifiée -> on affiche tout (matchesGeo = true)
+        if (geo.type === 'text' && !geo.value) return true;
+
         let matchesGeo = true;
         if (geo.type === 'dept') {
             matchesGeo = addressLower.includes(geo.value);
@@ -234,7 +248,7 @@ function MapPageComponent() {
             matchesGeo = titleLower.includes(geo.value) || addressLower.includes(geo.value);
         }
         
-        return matchesBrand && matchesGeo;
+        return matchesGeo;
     });
   }, [points, searchIntent, activeFilters]);
 
@@ -280,9 +294,15 @@ function MapPageComponent() {
   }, [filteredPoints, mapZoom, selectedId]);
 
   useEffect(() => {
-    if (searchIntent?.geo.coords && selectionSource === 'external') {
-        setMapCenter(searchIntent.geo.coords);
-        setMapZoom(searchIntent.geo.zoom);
+    if (searchIntent && selectionSource === 'external') {
+        if (searchIntent.geo.coords) {
+            setMapCenter(searchIntent.geo.coords);
+            setMapZoom(searchIntent.geo.zoom);
+        } else if (searchIntent.brand && !searchIntent.geo.value) {
+            // Uniquement une marque cherchée sans géo -> on affiche toute la France
+            setMapCenter([46.5, 2.2]);
+            setMapZoom(6);
+        }
     }
   }, [searchIntent, selectionSource]);
 
