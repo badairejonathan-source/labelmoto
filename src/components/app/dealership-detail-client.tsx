@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -179,6 +180,23 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
               </div>
             </div>
 
+            {/* BLOC HORAIRES (Placé ici avant les avis selon la demande) */}
+            <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
+              <CardHeader className="bg-muted/50 p-6 border-b">
+                <CardTitle className="text-sm font-black uppercase flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-brand" /> Horaires d'ouverture
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-2">
+                {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
+                  <div key={day} className="flex justify-between items-center text-xs font-bold border-b border-dashed border-muted last:border-0 pb-1.5 pt-1.5">
+                    <span className="capitalize text-muted-foreground">{day}</span>
+                    <span className="text-foreground font-black">{pro[day] || 'Fermé'}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
             {/* SECTION AVIS */}
             <section id="reviews" className="scroll-mt-28 space-y-8 pt-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-4 border-brand pb-4 gap-4">
@@ -242,18 +260,6 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
           </div>
 
           <aside className="lg:col-span-4 space-y-6">
-            <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
-              <CardHeader className="bg-muted/50 p-6 border-b"><CardTitle className="text-sm font-black uppercase flex items-center gap-3"><Clock className="h-5 w-5 text-brand" /> Horaires d'ouverture</CardTitle></CardHeader>
-              <CardContent className="p-6 space-y-2">
-                {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
-                  <div key={day} className="flex justify-between items-center text-xs font-bold border-b border-dashed border-muted last:border-0 pb-1.5 pt-1.5">
-                    <span className="capitalize text-muted-foreground">{day}</span>
-                    <span className="text-foreground font-black">{pro[day] || 'Fermé'}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
             <div className="bg-brand/5 p-8 rounded-[2rem] border-2 border-brand/20 text-center space-y-4">
               <p className="text-xs font-black uppercase tracking-widest text-brand">Besoin d'un autre pro ?</p>
               <Button asChild className="w-full bg-brand rounded-full font-black uppercase text-[10px] tracking-widest py-6">
