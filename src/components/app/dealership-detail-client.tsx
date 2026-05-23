@@ -153,20 +153,26 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 {pro.phoneNumber && (
                   <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                    <a href={`tel:${pro.phoneNumber}`} className="flex items-center gap-4 px-6">
-                      <Phone className="h-6 w-6 text-brand" />
-                      <div className="text-left"><p className="text-[9px] font-black uppercase tracking-widest opacity-50">Appeler</p><p className="font-black">{pro.phoneNumber}</p></div>
+                    <a href={`tel:${pro.phoneNumber}`} className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6">
+                      <Phone className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
+                      <div className="text-left min-w-0">
+                        <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Appeler</p>
+                        <p className="font-black text-[10px] sm:text-sm truncate">{pro.phoneNumber}</p>
+                      </div>
                     </a>
                   </Button>
                 )}
                 {pro.website && (
                   <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                    <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 px-6">
-                      <Globe className="h-6 w-6 text-brand" />
-                      <div className="text-left"><p className="text-[9px] font-black uppercase tracking-widest opacity-50">Site Web</p><p className="font-black truncate max-w-[150px]">Visiter le site</p></div>
+                    <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6">
+                      <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
+                      <div className="text-left min-w-0">
+                        <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Site Web</p>
+                        <p className="font-black text-[10px] sm:text-sm truncate">Visiter le site</p>
+                      </div>
                     </a>
                   </Button>
                 )}
