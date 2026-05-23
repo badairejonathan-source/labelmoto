@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock } from 'lucide-react';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -30,7 +30,7 @@ const MapComponent = dynamic(
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
   const { firestore } = useFirebase();
   const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
-  const docRef = useMemoFirebase(() => doc(firestore, col, dealershipId), [firestore, col, dealershipId]);
+  const docRef = useMemoFirebase(() => user ? doc(firestore, col, dealershipId) : null, [firestore, col, dealershipId]);
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
   if (isLoading) return <div className="p-8 space-y-6"><Skeleton className="h-48 w-full rounded-3xl" /><Skeleton className="h-8 w-3/4" /></div>;
@@ -221,43 +221,13 @@ function MapPageComponent() {
     });
   }, [points, searchIntent, activeFilters]);
 
-  // Liste triée par proximité au centre (Géocentrique)
   const listPoints = useMemo(() => {
-    return [...filteredPoints]
-      .sort((a, b) => {
-        if (a.id === selectedId) return -1;
-        if (b.id === selectedId) return 1;
-        const distA = Math.pow(a.latitude - mapCenter[0], 2) + Math.pow(a.longitude - mapCenter[1], 2);
-        const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
-        return distA - distB;
-      })
-      .slice(0, 25);
-  }, [filteredPoints, mapCenter, selectedId]);
-
-  // Labels avec anti-collision (Thinning géographique)
-  const labelPoints = useMemo(() => {
-    if (mapZoom < 13) return [];
-    const gridSize = mapZoom >= 15 ? 0.005 : 0.015;
-    const grid: Record<string, boolean> = {};
-    const result: MapPoint[] = [];
-
-    const sortedForLabels = [...filteredPoints].sort((a, b) => {
+    return [...filteredPoints].sort((a, b) => {
         if (a.id === selectedId) return -1;
         if (b.id === selectedId) return 1;
         return 0;
-    });
-
-    sortedForLabels.forEach(p => {
-        const gridX = Math.floor(p.latitude / gridSize);
-        const gridY = Math.floor(p.longitude / gridSize);
-        const key = `${gridX},${gridY}`;
-        if (!grid[key] || p.id === selectedId) {
-            grid[key] = true;
-            result.push(p);
-        }
-    });
-    return result;
-  }, [filteredPoints, mapZoom, selectedId]);
+    }).slice(0, 25);
+  }, [filteredPoints, selectedId]);
 
   useEffect(() => {
     if (searchIntent?.geo.coords && selectionSource === 'external') {
@@ -302,6 +272,11 @@ function MapPageComponent() {
         { id: 'association', label: 'ASSO', icon: Users },
         { id: 'relais', label: 'RELAIS', icon: Utensils }
     ];
+
+    const toggleDrawer = () => {
+        setDrawerHeight(prev => prev === 'collapsed' ? 'half' : 'collapsed');
+    };
+
     const renderFilter = (f: typeof filters[0]) => {
         const isActive = activeFilters.includes(f.id);
         return (
@@ -314,6 +289,15 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
+                {/* Bouton de contrôle manuel (Chevron) */}
+                <button 
+                    onClick={toggleDrawer}
+                    className="absolute top-4 right-6 z-[1600] p-2 bg-muted/20 hover:bg-muted/40 rounded-full text-brand transition-all active:scale-90"
+                    aria-label={drawerHeight === 'collapsed' ? "Ouvrir le menu" : "Fermer le menu"}
+                >
+                    {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+                </button>
+
                 <div className="absolute -top-[40px] left-1/2 -translate-x-1/2 w-[80px] h-[80px] bg-white rounded-full z-[1050]" />
                 <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none"><Image src="/images/logomoto2.webp" alt="Label Moto" width={300} height={300} className="w-full h-full object-contain" priority /></div>
                 <div className="grid grid-cols-5 items-start justify-between gap-1 relative z-10">
@@ -333,7 +317,7 @@ function MapPageComponent() {
     <div className="relative w-full h-screen overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
         <MapComponent 
-            points={filteredPoints} labelPoints={labelPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
+            points={filteredPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
             onMarkerClick={handleMarkerClick} onMapClick={() => { setSelectedId(null); setIsDetailView(false); }}
             onMapChange={(c, z) => { setMapCenter(c); setMapZoom(z); setSelectionSource(null); }}
             onUserInteraction={handleUserInteraction} bottomPadding={bottomPadding} leftPadding={leftPadding}
