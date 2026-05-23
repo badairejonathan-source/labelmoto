@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
+import LabelMotoLogo from '@/components/app/logo';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
@@ -399,6 +400,9 @@ function MapPageComponent() {
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
             <div className="px-10 py-8 shrink-0 flex items-center justify-between border-b border-muted/30">
+                <div className="shrink-0">
+                    <LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" />
+                </div>
                 <div className="flex-1 text-center px-4">
                     <p className="text-[9px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
                     <p className="text-[11px] font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
