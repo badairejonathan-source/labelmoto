@@ -43,21 +43,6 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
       </button>
 
       <div className="space-y-8">
-        <div className="bg-brand/5 p-6 rounded-3xl border border-brand/10">
-          <div className="flex items-center gap-2 mb-4 text-brand">
-            <Clock className="h-5 w-5" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Horaires d'ouverture</span>
-          </div>
-          <div className="grid gap-2">
-            {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
-              <div key={day} className="flex justify-between items-center text-[10px] font-bold">
-                <span className="capitalize text-muted-foreground">{day}</span>
-                <span className="text-foreground uppercase font-black">{pro[day] || 'Fermé'}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div>
           <h3 className="text-3xl font-black uppercase tracking-tighter leading-none mb-2">{pro.title}</h3>
           <p className="text-sm font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
@@ -75,6 +60,21 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
                 <MessageSquare className="mr-2 h-4 w-4" /> Avis
               </Link>
            </Button>
+        </div>
+
+        <div className="bg-brand/5 p-6 rounded-3xl border border-brand/10">
+          <div className="flex items-center gap-2 mb-4 text-brand">
+            <Clock className="h-5 w-5" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Horaires d'ouverture</span>
+          </div>
+          <div className="grid gap-2">
+            {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
+              <div key={day} className="flex justify-between items-center text-[10px] font-bold">
+                <span className="capitalize text-muted-foreground">{day}</span>
+                <span className="text-foreground uppercase font-black">{pro[day] || 'Fermé'}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white rounded-full font-black uppercase text-xs h-16 shadow-xl shadow-brand/20 transition-all hover:scale-[1.02]">
