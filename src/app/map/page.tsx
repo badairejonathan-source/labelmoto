@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown } from 'lucide-react';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -31,7 +30,6 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   const { firestore } = useFirebase();
   const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
   
-  // Correction : La fiche est désormais accessible publiquement (indépendamment de user)
   const docRef = useMemoFirebase(() => doc(firestore, col, dealershipId), [firestore, col, dealershipId]);
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
@@ -72,7 +70,11 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
 
         <div className="grid grid-cols-2 gap-3">
            {pro.phoneNumber && <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[10px] border-2"><a href={`tel:${pro.phoneNumber}`}><Phone className="mr-2 h-4 w-4" /> Appeler</a></Button>}
-           {pro.website && <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[10px] border-2"><a href={pro.website} target="_blank" rel="noreferrer"><Globe className="mr-2 h-4 w-4" /> Site Web</a></Button>}
+           <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[10px] border-2">
+              <Link href={`/concessions/${pro.slug || pro.id}#reviews`}>
+                <MessageSquare className="mr-2 h-4 w-4" /> Avis
+              </Link>
+           </Button>
         </div>
 
         <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white rounded-full font-black uppercase text-xs h-16 shadow-xl shadow-brand/20 transition-all hover:scale-[1.02]">
@@ -99,7 +101,6 @@ function MapPageComponent() {
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   
-  // Initialisation par défaut : Concess et Atelier uniquement
   const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
   
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
@@ -152,7 +153,6 @@ function MapPageComponent() {
     if (!searchTerm) return null;
     const lower = searchTerm.toLowerCase().trim();
     
-    // RÈGLE : 2 chiffres = Priorité absolue Département
     const deptMatch = lower.match(/^\d{2}$/);
     if (deptMatch) {
         const deptCode = deptMatch[0];
@@ -223,7 +223,6 @@ function MapPageComponent() {
     });
   }, [points, searchIntent, activeFilters]);
 
-  // TRI GÉOCENTRIQUE : La liste dépend de la distance au centre de la carte
   const listPoints = useMemo(() => {
     return [...filteredPoints]
         .sort((a, b) => {
@@ -236,7 +235,6 @@ function MapPageComponent() {
         .slice(0, 25);
   }, [filteredPoints, mapCenter, selectedId]);
 
-  // LABELS INTELLIGENTS : Système anti-collision par grille géographique
   const labelPoints = useMemo(() => {
     if (mapZoom < 13) return [];
     
@@ -244,7 +242,6 @@ function MapPageComponent() {
     const seen = new Set<string>();
     const results: MapPoint[] = [];
 
-    // Priorité au point sélectionné
     const selected = filteredPoints.find(p => p.id === selectedId);
     if (selected) {
       const gx = Math.floor(selected.latitude / gridStep);
@@ -274,7 +271,6 @@ function MapPageComponent() {
     }
   }, [searchIntent, selectionSource]);
 
-  // AUTO-SCROLL : Faire remonter la liste vers la fiche sélectionnée
   useEffect(() => {
     if (selectedId && selectionSource === 'marker') {
       const timer = setTimeout(() => {
@@ -340,7 +336,6 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
-                {/* CHEVRON MANUEL : Garder la liberté d'action */}
                 <button 
                     onClick={toggleDrawer}
                     className="absolute top-4 right-6 z-[1600] p-2 bg-muted/20 hover:bg-muted/40 rounded-full text-brand transition-all active:scale-90"
