@@ -12,7 +12,7 @@ import type { MapPoint } from '@/lib/types';
 
 interface MapComponentProps {
   points: MapPoint[];
-  labelPoints: MapPoint[];
+  labelPoints?: MapPoint[];
   center: [number, number];
   zoom: number;
   selectedId: string | null;
@@ -37,7 +37,7 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 };
 
 const MapComponent = ({
-  points, labelPoints, center, zoom, selectedId,
+  points = [], labelPoints = [], center, zoom, selectedId,
   onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
   onLocationFound = () => {},
@@ -79,7 +79,6 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    // Détecte le toucher initial ou le clic sur le conteneur de la carte
     const handleTouchStart = () => { 
         if (!isUpdatingFromProps.current) onUserInteraction?.(); 
     };
@@ -87,7 +86,6 @@ const MapComponent = ({
     containerRef.current?.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
     containerRef.current?.addEventListener('mousedown', handleTouchStart, { capture: true });
 
-    // Détecte les mouvements de carte manuels (Glissement, Zoom, etc.)
     map.on('movestart zoomstart', () => {
         if (!isUpdatingFromProps.current) {
             onUserInteraction?.();
@@ -119,9 +117,9 @@ const MapComponent = ({
 
     points.forEach((point) => {
       const isSelected = point.id === selectedId;
-      const showLabel = labelPoints.some(lp => lp.id === point.id);
+      const showLabel = labelPoints && Array.isArray(labelPoints) && labelPoints.some(lp => lp.id === point.id);
       const marker = L.marker([point.latitude, point.longitude], {
-        icon: createIcon(point, isSelected, showLabel)
+        icon: createIcon(point, isSelected, !!showLabel)
       });
 
       marker.on('click', (e) => {

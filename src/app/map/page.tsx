@@ -28,7 +28,7 @@ const MapComponent = dynamic(
 );
 
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
-  const { firestore } = useFirebase();
+  const { firestore, user } = useFirebase();
   const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
   const docRef = useMemoFirebase(() => user ? doc(firestore, col, dealershipId) : null, [firestore, col, dealershipId]);
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
@@ -97,7 +97,7 @@ function MapPageComponent() {
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   
-  // Modification demandée : Seuls 'shopping' (CONCESS) et 'service' (ATELIER) sont actifs au démarrage
+  // Filtres initiaux : Concession et Atelier seulement
   const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
   
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
@@ -116,7 +116,6 @@ function MapPageComponent() {
     const fetchAll = async () => {
       if (!firestore) return;
       const collections = ['concessions', 'associations', 'relais'];
-      // Limite à 10k pour garantir que TOUS les points sont chargés sans omission
       const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
@@ -150,17 +149,12 @@ function MapPageComponent() {
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
     const lower = searchTerm.toLowerCase().trim();
-    
-    // Détection de la marque
     const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
-    
-    // Nettoyage pour la zone geo
     let geoQuery = lower;
     if (brand) geoQuery = lower.replace(brand.toLowerCase(), '').trim();
 
     let geo = { type: 'text', value: geoQuery, coords: null as [number, number] | null, zoom: 12 };
 
-    // Priorité 1 : Département (2 chiffres) - Doit être strict
     const deptMatch = geoQuery.match(/\b(\d{2})\b/);
     if (deptMatch) {
         const deptCode = deptMatch[1];
@@ -170,7 +164,6 @@ function MapPageComponent() {
             geo = { type: 'dept', value: deptCode, coords: loc.center, zoom: 9 };
         }
     } 
-    // Priorité 2 : Code Postal (5 chiffres)
     else if (geoQuery.match(/\b(\d{5})\b/)) {
         const cp = geoQuery.match(/\b(\d{5})\b/)?.[0];
         const deptCode = cp?.substring(0, 2);
@@ -180,7 +173,6 @@ function MapPageComponent() {
             geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 13 };
         }
     } 
-    // Priorité 3 : Noms de villes
     else {
         for (const [dept, info] of Object.entries(locationsData)) {
             const city = info.cities.find(c => geoQuery.includes(c.toLowerCase()) || c.toLowerCase().includes(geoQuery));
@@ -200,10 +192,8 @@ function MapPageComponent() {
         const titleLower = p.title.toLowerCase();
         const addressLower = (p as any).address?.toLowerCase() || "";
         
-        // Filtre Marque
         const matchesBrand = !brand || titleLower.includes(brand.toLowerCase());
         
-        // Filtre Geo strict
         let matchesGeo = true;
         if (geo.type === 'dept') {
             matchesGeo = addressLower.includes(geo.value);
@@ -221,13 +211,48 @@ function MapPageComponent() {
     });
   }, [points, searchIntent, activeFilters]);
 
+  // Liste pilotée par la proximité au centre du viewport (25 fiches légères)
   const listPoints = useMemo(() => {
-    return [...filteredPoints].sort((a, b) => {
-        if (a.id === selectedId) return -1;
-        if (b.id === selectedId) return 1;
-        return 0;
-    }).slice(0, 25);
-  }, [filteredPoints, selectedId]);
+    return [...filteredPoints]
+        .sort((a, b) => {
+            if (a.id === selectedId) return -1;
+            if (b.id === selectedId) return 1;
+            const distA = Math.pow(a.latitude - mapCenter[0], 2) + Math.pow(a.longitude - mapCenter[1], 2);
+            const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
+            return distA - distB;
+        })
+        .slice(0, 25);
+  }, [filteredPoints, mapCenter, selectedId]);
+
+  // Calcul des labels avec anti-collision intelligente
+  const labelPoints = useMemo(() => {
+    if (mapZoom < 13) return [];
+    
+    const gridStep = mapZoom < 14 ? 0.012 : (mapZoom < 15 ? 0.006 : 0.002);
+    const seen = new Set<string>();
+    const results: MapPoint[] = [];
+
+    const selected = filteredPoints.find(p => p.id === selectedId);
+    if (selected) {
+      const gx = Math.floor(selected.latitude / gridStep);
+      const gy = Math.floor(selected.longitude / gridStep);
+      seen.add(`${gx},${gy}`);
+      results.push(selected);
+    }
+
+    filteredPoints.forEach(p => {
+      if (p.id === selectedId) return;
+      const gx = Math.floor(p.latitude / gridStep);
+      const gy = Math.floor(p.longitude / gridStep);
+      const key = `${gx},${gy}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        results.push(p);
+      }
+    });
+
+    return results;
+  }, [filteredPoints, mapZoom, selectedId]);
 
   useEffect(() => {
     if (searchIntent?.geo.coords && selectionSource === 'external') {
@@ -258,7 +283,6 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('half');
   };
 
-  // Fonction de réduction du menu mobile lors de l'interaction manuelle sur la carte
   const handleUserInteraction = () => { 
     if (isMobile) {
       setDrawerHeight('collapsed'); 
@@ -289,7 +313,6 @@ function MapPageComponent() {
     if (mobile) {
         return (
             <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
-                {/* Bouton de contrôle manuel (Chevron) */}
                 <button 
                     onClick={toggleDrawer}
                     className="absolute top-4 right-6 z-[1600] p-2 bg-muted/20 hover:bg-muted/40 rounded-full text-brand transition-all active:scale-90"
@@ -317,7 +340,7 @@ function MapPageComponent() {
     <div className="relative w-full h-screen overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
         <MapComponent 
-            points={filteredPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
+            points={filteredPoints} labelPoints={labelPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
             onMarkerClick={handleMarkerClick} onMapClick={() => { setSelectedId(null); setIsDetailView(false); }}
             onMapChange={(c, z) => { setMapCenter(c); setMapZoom(z); setSelectionSource(null); }}
             onUserInteraction={handleUserInteraction} bottomPadding={bottomPadding} leftPadding={leftPadding}
@@ -367,7 +390,7 @@ function MapPageComponent() {
                     <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
                 ) : (
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between px-2 mb-4"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{listPoints.length} Résultats pertinents ici</span></div>
+                        <div className="flex items-center justify-between px-2 mb-4"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{filteredPoints.length} Résultats trouvés</span></div>
                         {listPoints.map(p => (
                             <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); }} />
                         ))}
