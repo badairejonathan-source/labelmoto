@@ -49,15 +49,17 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
         </div>
 
         <div className="bg-muted/30 p-5 rounded-3xl border-2 border-dashed">
-          <div className="flex items-start gap-3 mb-3">
-            <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-            <p className="text-sm font-bold leading-snug">{pro.address}</p>
+          <div className="flex flex-col gap-1 mb-3">
+            <div className="flex items-start gap-3">
+              <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+              <p className="text-sm font-bold leading-snug">{pro.address}</p>
+            </div>
+            <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px] flex items-center gap-2 ml-8 justify-start">
+              <a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noreferrer">
+                <MapIcon className="h-3.5 w-3.5" /> Calculer l'itinéraire
+              </a>
+            </Button>
           </div>
-          <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px] flex items-center gap-2">
-            <a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noreferrer">
-              <MapIcon className="h-3.5 w-3.5" /> Calculer l'itinéraire
-            </a>
-          </Button>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
@@ -355,12 +357,9 @@ function MapPageComponent() {
                     {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
                 </button>
 
-                <div className="absolute -top-[40px] left-1/2 -translate-x-1/2 w-[80px] h-[80px] bg-white rounded-full z-[1050]" />
-                <div className="absolute -top-[141px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] z-[1500] pointer-events-none"><Image src="/images/logomoto2.webp" alt="Label Moto" width={300} height={300} className="w-full h-full object-contain" priority /></div>
-                <div className="grid grid-cols-5 items-start justify-between gap-1 relative z-10">
+                <div className="grid grid-cols-4 items-start justify-between gap-1 relative z-10">
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[0])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[1])}</div>
-                    <div className="col-span-1 h-12" />
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[2])}</div>
                     <div className="col-span-1 flex justify-center">{renderFilter(filters[3])}</div>
                 </div>
@@ -400,9 +399,6 @@ function MapPageComponent() {
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
             <div className="px-10 py-8 shrink-0 flex items-center justify-between border-b border-muted/30">
-                <Link href="/" className="shrink-0 transition-transform hover:scale-105 active:scale-95">
-                    <Image src="/images/logo-moto.webp" alt="Logo" width={140} height={45} className="w-auto h-10 object-contain" />
-                </Link>
                 <div className="flex-1 text-center px-4">
                     <p className="text-[9px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
                     <p className="text-[11px] font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
