@@ -113,6 +113,7 @@ function MapPageComponent() {
     const fetchAll = async () => {
       if (!firestore) return;
       const collections = ['concessions', 'associations', 'relais'];
+      // Limite augmentée à 10k par collection pour assurer la visibilité totale
       const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
@@ -146,9 +147,18 @@ function MapPageComponent() {
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
     const lower = searchTerm.toLowerCase().trim();
+    
+    // Détection de la marque
     const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
-    let geo = { type: 'text', value: lower, coords: null as [number, number] | null, zoom: 12 };
-    const deptMatch = lower.match(/\b(\d{2})\b/);
+    
+    // Nettoyage pour la zone geo
+    let geoQuery = lower;
+    if (brand) geoQuery = lower.replace(brand.toLowerCase(), '').trim();
+
+    let geo = { type: 'text', value: geoQuery, coords: null as [number, number] | null, zoom: 12 };
+
+    // Priorité 1 : Département (2 chiffres)
+    const deptMatch = geoQuery.match(/\b(\d{2})\b/);
     if (deptMatch) {
         const deptCode = deptMatch[1];
         const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode));
@@ -156,17 +166,21 @@ function MapPageComponent() {
             const loc = (locationsData as any)[deptKey];
             geo = { type: 'dept', value: deptCode, coords: loc.center, zoom: 9 };
         }
-    } else if (lower.match(/\b(\d{5})\b/)) {
-        const cp = lower.match(/\b(\d{5})\b/)?.[0];
+    } 
+    // Priorité 2 : Code Postal (5 chiffres)
+    else if (geoQuery.match(/\b(\d{5})\b/)) {
+        const cp = geoQuery.match(/\b(\d{5})\b/)?.[0];
         const deptCode = cp?.substring(0, 2);
         const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode || ''));
         if (deptKey) {
             const loc = (locationsData as any)[deptKey];
             geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 13 };
         }
-    } else {
+    } 
+    // Priorité 3 : Noms de villes
+    else {
         for (const [dept, info] of Object.entries(locationsData)) {
-            const city = info.cities.find(c => lower.includes(c.toLowerCase()));
+            const city = info.cities.find(c => geoQuery.includes(c.toLowerCase()) || c.toLowerCase().includes(geoQuery));
             if (city) { geo = { type: 'city', value: city, coords: info.center, zoom: 13 }; break; }
         }
     }
@@ -178,22 +192,34 @@ function MapPageComponent() {
         const section = p.appSection === 'both' ? 'shopping' : p.appSection;
         if (!activeFilters.includes(section)) return false;
         if (!searchIntent) return true;
+        
         const { brand, geo, original } = searchIntent;
         const titleLower = p.title.toLowerCase();
         const addressLower = (p as any).address?.toLowerCase() || "";
+        
+        // Filtre Marque
         const matchesBrand = !brand || titleLower.includes(brand.toLowerCase());
+        
+        // Filtre Geo
         let matchesGeo = true;
-        if (geo.type === 'dept') matchesGeo = addressLower.includes(geo.value);
-        else if (geo.type === 'cp') matchesGeo = addressLower.includes(geo.value);
-        else if (geo.type === 'city') matchesGeo = addressLower.includes(geo.value.toLowerCase());
-        else if (geo.type === 'text') {
-            const query = brand ? original.replace(brand.toLowerCase(), '').trim() : original;
-            matchesGeo = !query || titleLower.includes(query) || addressLower.includes(query);
+        if (geo.type === 'dept') {
+            // Uniquement si le département est présent dans le CP de l'adresse
+            matchesGeo = addressLower.includes(geo.value);
+        } else if (geo.type === 'cp') {
+            matchesGeo = addressLower.includes(geo.value);
+        } else if (geo.type === 'city') {
+            matchesGeo = addressLower.includes(geo.value.toLowerCase());
+        } else if (geo.type === 'text') {
+            if (geo.value) {
+                matchesGeo = titleLower.includes(geo.value) || addressLower.includes(geo.value);
+            }
         }
+        
         return matchesBrand && matchesGeo;
     });
   }, [points, searchIntent, activeFilters]);
 
+  // Liste triée par proximité au centre
   const listPoints = useMemo(() => {
     return [...filteredPoints]
       .sort((a, b) => {
@@ -206,6 +232,7 @@ function MapPageComponent() {
       .slice(0, 25);
   }, [filteredPoints, mapCenter, selectedId]);
 
+  // Labels avec thining (anti-collision)
   const labelPoints = useMemo(() => {
     if (mapZoom < 13) return [];
     const gridSize = mapZoom >= 15 ? 0.005 : 0.015;
@@ -259,7 +286,12 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('half');
   };
 
-  const handleUserInteraction = () => { if (isMobile) setDrawerHeight('collapsed'); };
+  // Fonction de réduction du menu mobile lors de l'interaction manuelle sur la carte
+  const handleUserInteraction = () => { 
+    if (isMobile) {
+      setDrawerHeight('collapsed'); 
+    }
+  };
 
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
@@ -307,7 +339,6 @@ function MapPageComponent() {
         />
       </div>
 
-      {/* TOP HEADER - Floating Pill on Desktop Right / Full Header on Mobile */}
       <div className={cn("absolute top-6 z-[1500] pointer-events-none", isMobile ? "left-6 right-6" : "right-6 w-[400px]")}>
         <div className="pointer-events-auto">
             <Header 
@@ -325,7 +356,6 @@ function MapPageComponent() {
 
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
-            {/* DESKTOP SIDEBAR HEADER: LOGO + BANNER + PROFIL */}
             <div className="px-10 py-8 shrink-0 flex items-center justify-between border-b border-muted/30">
                 <Link href="/" className="shrink-0 transition-transform hover:scale-105 active:scale-95">
                     <Image src="/images/logo-moto.webp" alt="Logo" width={140} height={45} className="w-auto h-10 object-contain" />

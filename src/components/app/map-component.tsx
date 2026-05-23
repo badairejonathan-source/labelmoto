@@ -79,9 +79,20 @@ const MapComponent = ({
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    const handleTouchStart = () => { if (!isUpdatingFromProps.current) onUserInteraction?.(); };
+    // Détecte le toucher initial ou le clic sur le conteneur de la carte
+    const handleTouchStart = () => { 
+        if (!isUpdatingFromProps.current) onUserInteraction?.(); 
+    };
+    
     containerRef.current?.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
     containerRef.current?.addEventListener('mousedown', handleTouchStart, { capture: true });
+
+    // Détecte les mouvements de carte manuels (Glissement, Zoom, etc.)
+    map.on('movestart zoomstart', () => {
+        if (!isUpdatingFromProps.current) {
+            onUserInteraction?.();
+        }
+    });
 
     map.on('moveend zoomend', () => {
       if (map && !isUpdatingFromProps.current) {
