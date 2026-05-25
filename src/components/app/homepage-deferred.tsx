@@ -69,7 +69,8 @@ export default function HomepageDeferred() {
             .slice(0, 3);
     }, [featuredArticles]);
 
-    const proRegisterLink = user ? "/pro/register" : "/login";
+    // Redirection intelligente : si pas connecté, on passe par login avec callback vers /pro/register
+    const proRegisterLink = user ? "/pro/register" : `/login?callbackUrl=${encodeURIComponent('/pro/register')}`;
 
     const getArticleImage = (article: any) => {
         const id = (article.id || '').toLowerCase();
