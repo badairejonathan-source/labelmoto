@@ -43,9 +43,15 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // --- SOUMISSIONS (CRÉATION PUBLIQUE, LECTURE/MODIF ADMIN) ---
+    // --- SOUMISSIONS PROS (CRÉATION PUBLIQUE, MODIF ADMIN) ---
+    match /listing_submissions/{submissionId} {
+      allow create: if true; // Autorisé via formulaire public
+      allow read, update, delete: if isAdmin();
+    }
+    
+    // Ancien sas de soumission (deprecated but kept for ongoing processes)
     match /pending_concessions/{submissionId} {
-      allow create: if true; // Autoriser la création publique via le formulaire
+      allow create: if true;
       allow read, update, delete: if isAdmin();
     }
     
