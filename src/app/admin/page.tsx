@@ -142,7 +142,7 @@ export default function AdminPage() {
       const data = selectedSubmission;
       const coords = extractValidCoordinates(data);
       
-      // --- MAPPING VERS LE SCHÉMA PUBLIC ACTUEL (SANS CHAMPS SYSTÈME PRO) ---
+      // --- MAPPING VERS LE SCHÉMA PUBLIC ACTUEL ---
       const publicData = {
         title: data.businessName,
         category: data.categoryRequested,
@@ -161,7 +161,6 @@ export default function AdminPage() {
         slug: generateDealershipSlug({ title: data.businessName, address: data.addressRaw }),
         isClaimed: true,
         currentStatus: 'OPERATIONAL',
-        // Champs système gérés par le backend uniquement
         timestamp: serverTimestamp(),
         rating: "0",
         ratingNumber: 0,
@@ -234,7 +233,7 @@ export default function AdminPage() {
           </Card>
           <Card className="shadow-lg bg-indigo-600 text-white border-none">
             <CardHeader className="pb-2"><CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Total historiques</CardDescription><CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle></CardHeader>
-          </div>
+          </Card>
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
