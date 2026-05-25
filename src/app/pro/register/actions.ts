@@ -6,7 +6,8 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { slugify } from '@/lib/utils';
 
 /**
- * Schéma de validation strict pour les soumissions publiques
+ * Schéma de validation strict pour les soumissions publiques.
+ * On ne demande QUE les données métier, aucun champ système.
  */
 const submissionSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est trop court"),
@@ -24,7 +25,8 @@ const submissionSchema = z.object({
 });
 
 /**
- * Server Action pour enregistrer une demande de création de fiche
+ * Server Action pour enregistrer une demande de création de fiche.
+ * Sécurise l'entrée des données sans écriture directe côté client.
  */
 export async function submitProAction(formData: FormData) {
   const firestore = getFirestoreInstance();
@@ -55,7 +57,8 @@ export async function submitProAction(formData: FormData) {
   }
 
   try {
-    // Enregistrement dans la collection privée de quarantaine
+    // Enregistrement dans la collection privée de quarantaine.
+    // AUCUNE écriture n'est faite dans les collections publiques ici.
     const docRef = await addDoc(collection(firestore, 'listing_submissions'), {
       status: 'pending',
       createdAt: serverTimestamp(),
@@ -72,7 +75,7 @@ export async function submitProAction(formData: FormData) {
       instagram: validated.data.instagram || '',
       description: validated.data.description || '',
       slugCandidate: slugify(validated.data.businessName),
-      needsGeocoding: true,
+      needsGeocoding: true, // Marqué pour revue par l'admin
       notesAdmin: ''
     });
 

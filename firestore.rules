@@ -18,6 +18,7 @@ service cloud.firestore {
     }
 
     // --- COLLECTIONS PUBLIQUES (LECTURE SEULE POUR TOUS, ÉCRITURE ADMIN) ---
+    // Verrouillage strict : les pros ne peuvent plus écrire ici directement
     match /concessions/{dealershipId} {
       allow read: if true;
       allow write: if isAdmin();
@@ -43,9 +44,10 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // --- SOUMISSIONS PROS (CRÉATION PUBLIQUE, MODIF ADMIN) ---
+    // --- SOUMISSIONS PROS (SAS DE QUARANTAINE) ---
+    // Les écritures se font via Server Actions, mais on garde une règle de sécurité par précaution
     match /listing_submissions/{submissionId} {
-      allow create: if true; // Autorisé via formulaire public
+      allow create: if true; // Autorisé via formulaire public / Server Actions
       allow read, update, delete: if isAdmin();
     }
     

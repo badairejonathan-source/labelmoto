@@ -71,7 +71,7 @@ export default function AdminPage() {
   useEffect(() => {
     if (!firestore || !user || user.uid !== ADMIN_UID) return;
 
-    // Écoute de la nouvelle collection de soumissions
+    // Écoute de la collection de soumissions
     const unsubSubmissions = onSnapshot(
       query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc')), 
       (snap) => {
@@ -99,16 +99,8 @@ export default function AdminPage() {
     let matches: any[] = [];
     
     for (const colName of collections) {
-      // Recherche par téléphone (champ normalisé)
       if (submission.phone) {
         const q = query(collection(firestore, colName), where('phoneNumber', '==', submission.phone));
-        const snap = await getDocs(q);
-        snap.forEach(d => matches.push({ id: d.id, ...d.data(), col: colName }));
-      }
-      
-      // Recherche par site web
-      if (submission.website && submission.website.length > 5) {
-        const q = query(collection(firestore, colName), where('website', '==', submission.website));
         const snap = await getDocs(q);
         snap.forEach(d => matches.push({ id: d.id, ...d.data(), col: colName }));
       }
@@ -150,13 +142,13 @@ export default function AdminPage() {
       const data = selectedSubmission;
       const coords = extractValidCoordinates(data);
       
-      // --- MAPPING VERS LE SCHÉMA PUBLIC ACTUEL ---
+      // --- MAPPING VERS LE SCHÉMA PUBLIC ACTUEL (SANS CHAMPS SYSTÈME PRO) ---
       const publicData = {
         title: data.businessName,
         category: data.categoryRequested,
         appSection: data.appSectionRequested === 'both' ? 'shopping' : data.appSectionRequested,
         address: data.addressRaw,
-        addresss: data.addressRaw, // Maintien de la compatibilité avec le champ public spécifique
+        addresss: data.addressRaw, // Compatibilité clusters/map
         phoneNumber: data.phone,
         email: data.email,
         website: data.website || '',
@@ -169,24 +161,29 @@ export default function AdminPage() {
         slug: generateDealershipSlug({ title: data.businessName, address: data.addressRaw }),
         isClaimed: true,
         currentStatus: 'OPERATIONAL',
+        // Champs système gérés par le backend uniquement
         timestamp: serverTimestamp(),
+        rating: "0",
+        ratingNumber: 0,
+        reviewCount: 0,
         publishedAt: serverTimestamp(),
         publishedBy: user?.uid,
       };
 
-      // Détermination de la collection cible en fonction de la structure métier
       const targetCol = data.appSectionRequested === 'association' ? 'associations' : 
                        (data.appSectionRequested === 'relais' ? 'relais' : 'concessions');
       
-      // Publication réelle
+      // 1. Création de la fiche publique
       await setDocumentNonBlocking(doc(firestore, targetCol, data.id), publicData, { merge: true });
       
-      // Mise à jour de la soumission source
+      // 2. Mise à jour de la soumission (Historique conservé !)
       await updateDocumentNonBlocking(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
         publishedAt: serverTimestamp(),
         publishedCollection: targetCol,
-        publishedDocId: data.id
+        publishedDocId: data.id,
+        reviewedBy: user?.uid,
+        reviewedAt: serverTimestamp()
       });
       
       toast({ title: "Fiche publiée avec succès !", description: `Visible dans la collection ${targetCol}` });
@@ -237,7 +234,7 @@ export default function AdminPage() {
           </Card>
           <Card className="shadow-lg bg-indigo-600 text-white border-none">
             <CardHeader className="pb-2"><CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Total historiques</CardDescription><CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle></CardHeader>
-          </Card>
+          </div>
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
@@ -318,7 +315,7 @@ export default function AdminPage() {
         </Tabs>
       </main>
 
-      {/* THE MODERATION STATION */}
+      {/* MODALE DE RÉVISION ET PUBLICATION */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden rounded-[2.5rem] p-0 border-none shadow-2xl flex flex-col">
           {selectedSubmission && (
@@ -394,16 +391,6 @@ export default function AdminPage() {
                                     <Input value={selectedSubmission.email} onChange={e => setSelectedSubmission({...selectedSubmission, email: e.target.value})} className="font-bold" />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black ml-1">Facebook</Label>
-                                    <Input value={selectedSubmission.facebook} onChange={e => setSelectedSubmission({...selectedSubmission, facebook: e.target.value})} className="font-bold" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black ml-1">Instagram</Label>
-                                    <Input value={selectedSubmission.instagram} onChange={e => setSelectedSubmission({...selectedSubmission, instagram: e.target.value})} className="font-bold" />
-                                </div>
-                            </div>
                         </section>
 
                         <section className="space-y-6">
@@ -424,7 +411,7 @@ export default function AdminPage() {
                             <CardContent className="p-4 space-y-4">
                                 {duplicates.length > 0 ? (
                                     duplicates.map(d => (
-                                        <div key={d.id} className="bg-white p-3 rounded-xl border flex justify-between items-center group">
+                                        <div key={d.id} className="bg-white p-3 rounded-xl border flex justify-between items-center">
                                             <div className="min-w-0">
                                                 <p className="font-black text-[10px] uppercase truncate">{d.title}</p>
                                                 <p className="text-[8px] text-muted-foreground truncate">{d.phoneNumber}</p>
@@ -433,7 +420,7 @@ export default function AdminPage() {
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-[10px] italic text-muted-foreground text-center py-4">Aucun doublon trouvé par téléphone ou site.</p>
+                                    <p className="text-[10px] italic text-muted-foreground text-center py-4">Aucun doublon trouvé par téléphone.</p>
                                 )}
                             </CardContent>
                         </Card>
