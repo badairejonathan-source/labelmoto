@@ -7,7 +7,6 @@ import { slugify } from '@/lib/utils';
 
 /**
  * Schéma de validation strict pour les soumissions publiques.
- * On ne demande QUE les données métier, aucun champ système.
  */
 const submissionSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est trop court"),
@@ -17,7 +16,7 @@ const submissionSchema = z.object({
   phone: z.string().min(10, "Numéro de téléphone invalide"),
   email: z.string().email("Adresse e-mail invalide"),
   website: z.string().url().optional().or(z.literal('')),
-  description: z.string().max(2000).optional(),
+  description: z.string().max(3000).optional(),
   facebook: z.string().url().optional().or(z.literal('')),
   instagram: z.string().url().optional().or(z.literal('')),
   // Honeypot pour le spam
@@ -26,7 +25,6 @@ const submissionSchema = z.object({
 
 /**
  * Server Action pour enregistrer une demande de création de fiche.
- * Sécurise l'entrée des données sans écriture directe côté client.
  */
 export async function submitProAction(formData: FormData) {
   const firestore = getFirestoreInstance();
@@ -57,8 +55,7 @@ export async function submitProAction(formData: FormData) {
   }
 
   try {
-    // Enregistrement dans la collection privée de quarantaine.
-    // AUCUNE écriture n'est faite dans les collections publiques ici.
+    // Enregistrement dans le sas de quarantaine
     const docRef = await addDoc(collection(firestore, 'listing_submissions'), {
       status: 'pending',
       createdAt: serverTimestamp(),
@@ -75,8 +72,9 @@ export async function submitProAction(formData: FormData) {
       instagram: validated.data.instagram || '',
       description: validated.data.description || '',
       slugCandidate: slugify(validated.data.businessName),
-      needsGeocoding: true, // Marqué pour revue par l'admin
-      notesAdmin: ''
+      needsGeocoding: true,
+      notesAdmin: '',
+      isClaimedRequested: true
     });
 
     return { success: true, submissionId: docRef.id };

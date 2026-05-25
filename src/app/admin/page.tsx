@@ -9,7 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Loader2, CheckCircle, ArrowLeft, ShieldAlert, 
   Store, Search, ChevronRight, X, ExternalLink, 
-  Trash2, Zap, Globe, Phone, MapPin, Info, Save
+  Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
+  Filter
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -34,7 +35,7 @@ interface Submission {
   id: string;
   businessName: string;
   categoryRequested: string;
-  appSectionRequested: string;
+  appSectionRequested: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   addressRaw: string;
   phone: string;
   email: string;
@@ -46,6 +47,9 @@ interface Submission {
   createdAt?: any;
   slugCandidate?: string;
   notesAdmin?: string;
+  publishedCollection?: string;
+  publishedDocId?: string;
+  publishedAt?: any;
   [key: string]: any;
 }
 
@@ -58,7 +62,6 @@ export default function AdminPage() {
   const [pendingComments, setPendingComments] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   
-  // State for the item being edited in the modal
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<Submission | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -81,10 +84,10 @@ export default function AdminPage() {
         setSubmissions(list);
         setIsLoadingData(false);
 
-        // Sync modal if open
+        // Sync modal if open and it's a server-side status change
         if (selectedId) {
             const updated = list.find(s => s.id === selectedId);
-            if (updated && updated.status !== editDraft?.status) {
+            if (updated && updated.status !== editDraft?.status && !isPublishing) {
                 setEditDraft(prev => prev ? { ...prev, status: updated.status } : null);
             }
         }
@@ -102,7 +105,7 @@ export default function AdminPage() {
       unsubSubmissions();
       unsubComments();
     };
-  }, [firestore, user, selectedId]);
+  }, [firestore, user, selectedId, isPublishing]);
 
   const findDuplicates = async (submission: Submission) => {
     if (!firestore) return;
@@ -126,14 +129,15 @@ export default function AdminPage() {
     findDuplicates(sub);
   };
 
-  const handleUpdateStatus = (id: string, newStatus: string) => {
-    if (!firestore) return;
-    updateDocumentNonBlocking(doc(firestore, 'listing_submissions', id), { 
+  const handleUpdateStatus = (newStatus: Submission['status']) => {
+    if (!firestore || !selectedId) return;
+    updateDocumentNonBlocking(doc(firestore, 'listing_submissions', selectedId), { 
         status: newStatus, 
         updatedAt: serverTimestamp(),
         reviewedBy: user?.uid,
         reviewedAt: serverTimestamp()
     });
+    setEditDraft(prev => prev ? { ...prev, status: newStatus } : null);
     toast({ title: `Statut mis à jour : ${newStatus}` });
   };
 
@@ -154,12 +158,14 @@ export default function AdminPage() {
       const data = editDraft;
       const coords = extractValidCoordinates(data);
       
+      // Mapping strict vers le schéma public actuel
       const publicData = {
         title: data.businessName,
         category: data.categoryRequested,
+        // Normalisation appSection
         appSection: data.appSectionRequested === 'both' ? 'shopping' : data.appSectionRequested,
-        address: data.addressRaw,
-        addresss: data.addressRaw, 
+        address: data.addressRaw, // Futur champ normalisé
+        addresss: data.addressRaw, // Champ historique COMPATIBILITÉ CARTE
         phoneNumber: data.phone,
         email: data.email,
         website: data.website || '',
@@ -177,14 +183,16 @@ export default function AdminPage() {
         ratingNumber: 0,
         reviewCount: 0,
         publishedAt: serverTimestamp(),
-        publishedBy: user?.uid,
+        submissionId: data.id // Lien vers l'origine
       };
 
       const targetCol = data.appSectionRequested === 'association' ? 'associations' : 
                        (data.appSectionRequested === 'relais' ? 'relais' : 'concessions');
       
+      // Écriture de la fiche publique
       await setDocumentNonBlocking(doc(firestore, targetCol, data.id), publicData, { merge: true });
       
+      // Mise à jour de la soumission (Historique)
       await updateDocumentNonBlocking(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
         publishedAt: serverTimestamp(),
@@ -203,10 +211,11 @@ export default function AdminPage() {
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = () => {
+    if (!selectedId || !firestore) return;
     if (!window.confirm("Supprimer cette soumission définitivement ?")) return;
-    if (!firestore) return;
-    deleteDocumentNonBlocking(doc(firestore, 'listing_submissions', id));
+    
+    deleteDocumentNonBlocking(doc(firestore, 'listing_submissions', selectedId));
     setIsDetailOpen(false);
     setSelectedId(null);
     setEditDraft(null);
@@ -227,7 +236,7 @@ export default function AdminPage() {
     );
   }
 
-  const pendingSubs = submissions.filter(s => s.status === 'pending' || s.status === 'in_review');
+  const pendingSubs = submissions.filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved');
   const processedSubs = submissions.filter(s => s.status === 'published' || s.status === 'rejected');
 
   return (
@@ -243,19 +252,19 @@ export default function AdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <Card className="bg-brand text-white border-none shadow-lg">
             <CardHeader className="pb-2">
-              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Demandes en attente</CardDescription>
+              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Pros en attente</CardDescription>
               <CardTitle className="text-4xl font-black">{pendingSubs.length}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="shadow-lg">
             <CardHeader className="pb-2">
-              <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis à modérer</CardDescription>
+              <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis modération</CardDescription>
               <CardTitle className="text-4xl font-black">{pendingComments.length}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="shadow-lg bg-indigo-600 text-white border-none">
             <CardHeader className="pb-2">
-              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Total historiques</CardDescription>
+              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Traités total</CardDescription>
               <CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle>
             </CardHeader>
           </Card>
@@ -263,9 +272,9 @@ export default function AdminPage() {
 
         <Tabs defaultValue="submissions" className="w-full">
           <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto h-12 p-1 bg-muted rounded-full mb-8">
-            <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px]">Soumissions</TabsTrigger>
+            <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px]">Demandes</TabsTrigger>
             <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px]">Archives</TabsTrigger>
-            <TabsTrigger value="tools" className="rounded-full font-black uppercase text-[10px]">Paramètres</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px]">Avis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="submissions">
@@ -274,7 +283,7 @@ export default function AdminPage() {
             ) : pendingSubs.length === 0 ? (
               <div className="text-center py-20 bg-background rounded-[2.5rem] border-2 border-dashed">
                 <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4 opacity-20" />
-                <h2 className="text-xl font-black uppercase text-muted-foreground">Aucune nouvelle demande</h2>
+                <h2 className="text-xl font-black uppercase text-muted-foreground">Tout est à jour !</h2>
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -303,7 +312,7 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="history">
-             <Card className="rounded-3xl shadow-lg overflow-hidden">
+             <Card className="rounded-3xl shadow-lg overflow-hidden bg-background">
                <CardContent className="p-0">
                  <ScrollArea className="h-[600px]">
                    {processedSubs.map(sub => (
@@ -312,7 +321,7 @@ export default function AdminPage() {
                           <p className="font-black text-base uppercase tracking-tight">{sub.businessName}</p>
                           <div className="flex items-center gap-3">
                             <p className="text-[10px] text-muted-foreground font-bold">{sub.addressRaw}</p>
-                            <Badge variant="outline" className="text-[8px]">{sub.publishedCollection || 'Archive'}</Badge>
+                            <Badge variant="outline" className="text-[8px]">{sub.publishedCollection || 'Soumission'}</Badge>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
@@ -326,14 +335,10 @@ export default function AdminPage() {
              </Card>
           </TabsContent>
           
-          <TabsContent value="tools">
-             <div className="grid gap-6 max-w-2xl mx-auto">
-                <Card className="rounded-[2.5rem] border-2 border-dashed bg-muted/20">
-                    <CardHeader><CardTitle className="text-xl font-black uppercase tracking-widest">Outils Maintenance</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="text-sm font-bold text-muted-foreground">La gestion des soumissions centralisée utilise la collection "listing_submissions".</p>
-                    </CardContent>
-                </Card>
+          <TabsContent value="comments">
+             <div className="text-center py-20 bg-background rounded-[2.5rem] border-2 border-dashed">
+                <Info className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-20" />
+                <p className="font-black uppercase text-muted-foreground">Module de modération des avis en cours de liaison.</p>
              </div>
           </TabsContent>
         </Tabs>
@@ -341,17 +346,17 @@ export default function AdminPage() {
 
       {/* MODALE DE RÉVISION ET PUBLICATION */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden rounded-[2.5rem] p-0 border-none shadow-2xl flex flex-col">
+        <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden rounded-[2.5rem] p-0 border-none shadow-2xl flex flex-col z-[3000]">
           {editDraft && (
             <>
               <DialogHeader className="bg-brand text-white p-8 shrink-0">
                 <div className="flex justify-between items-center">
                   <div className="space-y-1">
                     <div className="flex items-center gap-3">
-                        <Badge className="bg-white/20 text-white uppercase text-[8px] tracking-widest border-none">Révision</Badge>
+                        <Badge className="bg-white/20 text-white uppercase text-[8px] tracking-widest border-none">{editDraft.status}</Badge>
                         <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{editDraft.businessName}</DialogTitle>
                     </div>
-                    <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest">Soumis le {formatDate(editDraft.createdAt)} via formulaire public</DialogDescription>
+                    <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest">Demande reçue {formatDate(editDraft.createdAt)}</DialogDescription>
                   </div>
                   <Button variant="ghost" className="text-white hover:bg-white/10 rounded-full" onClick={() => setIsDetailOpen(false)}><X className="h-6 w-6" /></Button>
                 </div>
@@ -359,7 +364,6 @@ export default function AdminPage() {
 
               <ScrollArea className="flex-grow">
                 <div className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
-                    {/* FORMULAIRE D'ÉDITION MAPPING PUBLIC */}
                     <div className="lg:col-span-8 space-y-10">
                         <section className="space-y-6">
                             <div className="flex items-center gap-3 border-b pb-2">
@@ -368,16 +372,16 @@ export default function AdminPage() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Titre de la fiche (businessName -> title)</Label>
+                                    <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Nom (mappe vers title)</Label>
                                     <Input value={editDraft.businessName} onChange={e => setEditDraft({...editDraft, businessName: e.target.value})} className="font-bold rounded-xl h-12" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Section App (Mappe vers les collections)</Label>
-                                    <Select value={editDraft.appSectionRequested} onValueChange={v => setEditDraft({...editDraft, appSectionRequested: v})}>
+                                    <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Section App (Cible Collection)</Label>
+                                    <Select value={editDraft.appSectionRequested} onValueChange={(v: any) => setEditDraft({...editDraft, appSectionRequested: v})}>
                                         <SelectTrigger className="font-bold h-12 rounded-xl"><SelectValue /></SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="shopping">Concession (Public)</SelectItem>
-                                            <SelectItem value="service">Atelier (Public)</SelectItem>
+                                            <SelectItem value="shopping">Concessionnaire</SelectItem>
+                                            <SelectItem value="service">Atelier / Garage</SelectItem>
                                             <SelectItem value="both">Vente & Service</SelectItem>
                                             <SelectItem value="association">Association</SelectItem>
                                             <SelectItem value="relais">Relais Motard</SelectItem>
@@ -386,13 +390,13 @@ export default function AdminPage() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Spécialité / Catégorie (categoryRequested -> category)</Label>
+                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Catégorie / Spécialité</Label>
                                 <Input value={editDraft.categoryRequested} onChange={e => setEditDraft({...editDraft, categoryRequested: e.target.value})} className="font-bold rounded-xl h-12" />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (addressRaw -> address & addresss)</Label>
+                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (mappe vers address et addresss)</Label>
                                 <Textarea value={editDraft.addressRaw} onChange={e => setEditDraft({...editDraft, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px]" />
-                                <p className="text-[8px] text-orange-500 font-bold ml-1">⚠️ Ce champ remplira automatiquement "addresss" pour la compatibilité système.</p>
+                                {editDraft.needsGeocoding && <p className="text-[8px] text-orange-500 font-bold ml-1">⚠️ Géocodage requis ou à vérifier.</p>}
                             </div>
                         </section>
 
@@ -407,11 +411,11 @@ export default function AdminPage() {
                                     <Input value={editDraft.phone} onChange={e => setEditDraft({...editDraft, phone: e.target.value})} className="font-bold" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black ml-1">Site Web (website)</Label>
+                                    <Label className="text-[9px] uppercase font-black ml-1">Site Web</Label>
                                     <Input value={editDraft.website} onChange={e => setEditDraft({...editDraft, website: e.target.value})} className="font-bold" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black ml-1">E-mail (email)</Label>
+                                    <Label className="text-[9px] uppercase font-black ml-1">E-mail</Label>
                                     <Input value={editDraft.email} onChange={e => setEditDraft({...editDraft, email: e.target.value})} className="font-bold" />
                                 </div>
                             </div>
@@ -419,14 +423,24 @@ export default function AdminPage() {
 
                         <section className="space-y-6">
                             <div className="flex items-center gap-3 border-b pb-2">
-                                <Store className="h-4 w-4 text-brand" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Description (info)</h3>
+                                <History className="h-4 w-4 text-brand" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Notes Internes & Audit</h3>
                             </div>
-                            <Textarea value={editDraft.description} onChange={e => setEditDraft({...editDraft, description: e.target.value})} className="font-bold rounded-xl min-h-[150px] bg-muted/20" />
+                            <Textarea 
+                                placeholder="Ajouter une note de modération..." 
+                                value={editDraft.notesAdmin} 
+                                onChange={e => setEditDraft({...editDraft, notesAdmin: e.target.value})} 
+                                className="font-bold rounded-xl min-h-[100px] bg-muted/20" 
+                            />
+                            {editDraft.publishedAt && (
+                                <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-widest">PUBLIÉ LE {formatDate(editDraft.publishedAt)}</p>
+                                    <p className="text-[8px] font-bold text-green-600 mt-1">DOC ID: {editDraft.publishedDocId} | COLL: {editDraft.publishedCollection}</p>
+                                </div>
+                            )}
                         </section>
                     </div>
 
-                    {/* ACTIONS & DOUBLONS */}
                     <div className="lg:col-span-4 space-y-8">
                         <Card className="bg-muted/30 border-2 border-dashed rounded-3xl overflow-hidden">
                             <CardHeader className="bg-white/50 border-b py-4">
@@ -450,13 +464,13 @@ export default function AdminPage() {
                         </Card>
 
                         <section className="space-y-4">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Actions Administrateur</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Actions de Modération</h3>
                             <div className="grid grid-cols-2 gap-2">
-                                <Button variant="outline" className={cn("rounded-xl text-[9px] font-black uppercase h-12", editDraft.status === 'in_review' && "bg-blue-50 border-blue-400")} onClick={() => handleUpdateStatus(editDraft.id, 'in_review')} disabled={editDraft.status === 'in_review'}>🔘 {editDraft.status === 'in_review' ? 'En cours' : 'Examiner'}</Button>
-                                <Button variant="outline" className="rounded-xl text-[9px] font-black uppercase h-12 text-destructive hover:bg-destructive/10" onClick={() => handleUpdateStatus(editDraft.id, 'rejected')} disabled={editDraft.status === 'rejected'}>❌ {editDraft.status === 'rejected' ? 'Rejeté' : 'Rejeter'}</Button>
+                                <Button variant="outline" className={cn("rounded-xl text-[9px] font-black uppercase h-12", editDraft.status === 'in_review' && "bg-blue-50 border-blue-400")} onClick={() => handleUpdateStatus('in_review')} disabled={editDraft.status === 'in_review'}>🔘 {editDraft.status === 'in_review' ? 'En cours' : 'Examiner'}</Button>
+                                <Button variant="outline" className="rounded-xl text-[9px] font-black uppercase h-12 text-destructive hover:bg-destructive/10" onClick={() => handleUpdateStatus('rejected')} disabled={editDraft.status === 'rejected'}>❌ {editDraft.status === 'rejected' ? 'Rejeté' : 'Rejeter'}</Button>
                             </div>
                             <Button variant="secondary" className="w-full rounded-xl text-[9px] font-black uppercase h-12" onClick={handleSaveDraft}>
-                                <Save className="mr-2 h-4 w-4" /> Enregistrer brouillon
+                                <Save className="mr-2 h-4 w-4" /> Enregistrer sans publier
                             </Button>
                             <div className="pt-4">
                                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-black uppercase tracking-widest h-16 shadow-xl" onClick={handlePublish} disabled={isPublishing || editDraft.status === 'published'}>
@@ -464,13 +478,13 @@ export default function AdminPage() {
                                     Valider & Publier la fiche
                                 </Button>
                                 {editDraft.status === 'published' && (
-                                    <p className="text-center text-green-600 text-[10px] font-black uppercase tracking-widest mt-4">✅ Déjà en ligne</p>
+                                    <p className="text-center text-green-600 text-[10px] font-black uppercase tracking-widest mt-4">✅ Fiche publiée</p>
                                 )}
                             </div>
                         </section>
 
                         <div className="pt-10">
-                            <Button variant="ghost" className="w-full text-muted-foreground hover:text-destructive text-[10px] font-bold flex items-center justify-center gap-2" onClick={() => handleDelete(editDraft.id)}>
+                            <Button variant="ghost" className="w-full text-muted-foreground hover:text-destructive text-[10px] font-bold flex items-center justify-center gap-2" onClick={handleDelete}>
                                 <Trash2 className="h-4 w-4" /> Supprimer définitivement
                             </Button>
                         </div>
