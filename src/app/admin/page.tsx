@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useFirebase } from '@/firebase';
 import { collection, query, getDocs, doc, onSnapshot, orderBy, where, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -57,7 +57,10 @@ export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [pendingComments, setPendingComments] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  
+  // State for the item being edited in the modal
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<Submission | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [duplicates, setDuplicates] = useState<any[]>([]);
@@ -71,12 +74,20 @@ export default function AdminPage() {
   useEffect(() => {
     if (!firestore || !user || user.uid !== ADMIN_UID) return;
 
-    // Écoute de la collection de soumissions
     const unsubSubmissions = onSnapshot(
       query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc')), 
       (snap) => {
-        setSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
+        const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission));
+        setSubmissions(list);
         setIsLoadingData(false);
+
+        // Sync modal if open
+        if (selectedId) {
+            const updated = list.find(s => s.id === selectedId);
+            if (updated && updated.status !== editDraft?.status) {
+                setEditDraft(prev => prev ? { ...prev, status: updated.status } : null);
+            }
+        }
       }
     );
 
@@ -91,7 +102,7 @@ export default function AdminPage() {
       unsubSubmissions();
       unsubComments();
     };
-  }, [firestore, user]);
+  }, [firestore, user, selectedId]);
 
   const findDuplicates = async (submission: Submission) => {
     if (!firestore) return;
@@ -109,7 +120,8 @@ export default function AdminPage() {
   };
 
   const handleOpenDetail = (sub: Submission) => {
-    setSelectedSubmission({ ...sub });
+    setSelectedId(sub.id);
+    setEditDraft({ ...sub });
     setIsDetailOpen(true);
     findDuplicates(sub);
   };
@@ -126,29 +138,28 @@ export default function AdminPage() {
   };
 
   const handleSaveDraft = () => {
-    if (!firestore || !selectedSubmission) return;
-    updateDocumentNonBlocking(doc(firestore, 'listing_submissions', selectedSubmission.id), {
-        ...selectedSubmission,
+    if (!firestore || !editDraft) return;
+    updateDocumentNonBlocking(doc(firestore, 'listing_submissions', editDraft.id), {
+        ...editDraft,
         updatedAt: serverTimestamp()
     });
     toast({ title: "Modifications enregistrées" });
   };
 
   const handlePublish = async () => {
-    if (!firestore || !selectedSubmission) return;
+    if (!firestore || !editDraft) return;
     setIsPublishing(true);
     
     try {
-      const data = selectedSubmission;
+      const data = editDraft;
       const coords = extractValidCoordinates(data);
       
-      // --- MAPPING VERS LE SCHÉMA PUBLIC ACTUEL ---
       const publicData = {
         title: data.businessName,
         category: data.categoryRequested,
         appSection: data.appSectionRequested === 'both' ? 'shopping' : data.appSectionRequested,
         address: data.addressRaw,
-        addresss: data.addressRaw, // Compatibilité clusters/map
+        addresss: data.addressRaw, 
         phoneNumber: data.phone,
         email: data.email,
         website: data.website || '',
@@ -172,10 +183,8 @@ export default function AdminPage() {
       const targetCol = data.appSectionRequested === 'association' ? 'associations' : 
                        (data.appSectionRequested === 'relais' ? 'relais' : 'concessions');
       
-      // 1. Création de la fiche publique
       await setDocumentNonBlocking(doc(firestore, targetCol, data.id), publicData, { merge: true });
       
-      // 2. Mise à jour de la soumission (Historique conservé !)
       await updateDocumentNonBlocking(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
         publishedAt: serverTimestamp(),
@@ -196,8 +205,11 @@ export default function AdminPage() {
 
   const handleDelete = (id: string) => {
     if (!window.confirm("Supprimer cette soumission définitivement ?")) return;
+    if (!firestore) return;
     deleteDocumentNonBlocking(doc(firestore, 'listing_submissions', id));
     setIsDetailOpen(false);
+    setSelectedId(null);
+    setEditDraft(null);
     toast({ title: "Soumission supprimée" });
   };
 
@@ -208,7 +220,11 @@ export default function AdminPage() {
   };
 
   if (isUserLoading || !user || user.uid !== ADMIN_UID) {
-    return <div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
   }
 
   const pendingSubs = submissions.filter(s => s.status === 'pending' || s.status === 'in_review');
@@ -226,13 +242,22 @@ export default function AdminPage() {
       <main className="container mx-auto p-4 md:p-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <Card className="bg-brand text-white border-none shadow-lg">
-            <CardHeader className="pb-2"><CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Demandes en attente</CardDescription><CardTitle className="text-4xl font-black">{pendingSubs.length}</CardTitle></CardHeader>
+            <CardHeader className="pb-2">
+              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Demandes en attente</CardDescription>
+              <CardTitle className="text-4xl font-black">{pendingSubs.length}</CardTitle>
+            </CardHeader>
           </Card>
           <Card className="shadow-lg">
-            <CardHeader className="pb-2"><CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis à modérer</CardDescription><CardTitle className="text-4xl font-black">{pendingComments.length}</CardTitle></CardHeader>
+            <CardHeader className="pb-2">
+              <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis à modérer</CardDescription>
+              <CardTitle className="text-4xl font-black">{pendingComments.length}</CardTitle>
+            </CardHeader>
           </Card>
           <Card className="shadow-lg bg-indigo-600 text-white border-none">
-            <CardHeader className="pb-2"><CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Total historiques</CardDescription><CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle></CardHeader>
+            <CardHeader className="pb-2">
+              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Total historiques</CardDescription>
+              <CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle>
+            </CardHeader>
           </Card>
         </div>
 
@@ -306,7 +331,7 @@ export default function AdminPage() {
                 <Card className="rounded-[2.5rem] border-2 border-dashed bg-muted/20">
                     <CardHeader><CardTitle className="text-xl font-black uppercase tracking-widest">Outils Maintenance</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
-                        <p className="text-sm font-bold text-muted-foreground">La migration des anciennes soumissions est terminée. Le système utilise désormais "listing_submissions".</p>
+                        <p className="text-sm font-bold text-muted-foreground">La gestion des soumissions centralisée utilise la collection "listing_submissions".</p>
                     </CardContent>
                 </Card>
              </div>
@@ -317,16 +342,16 @@ export default function AdminPage() {
       {/* MODALE DE RÉVISION ET PUBLICATION */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden rounded-[2.5rem] p-0 border-none shadow-2xl flex flex-col">
-          {selectedSubmission && (
+          {editDraft && (
             <>
               <DialogHeader className="bg-brand text-white p-8 shrink-0">
                 <div className="flex justify-between items-center">
                   <div className="space-y-1">
                     <div className="flex items-center gap-3">
                         <Badge className="bg-white/20 text-white uppercase text-[8px] tracking-widest border-none">Révision</Badge>
-                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{selectedSubmission.businessName}</DialogTitle>
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{editDraft.businessName}</DialogTitle>
                     </div>
-                    <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest">Soumis le {formatDate(selectedSubmission.createdAt)} via formulaire public</DialogDescription>
+                    <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest">Soumis le {formatDate(editDraft.createdAt)} via formulaire public</DialogDescription>
                   </div>
                   <Button variant="ghost" className="text-white hover:bg-white/10 rounded-full" onClick={() => setIsDetailOpen(false)}><X className="h-6 w-6" /></Button>
                 </div>
@@ -344,11 +369,11 @@ export default function AdminPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Titre de la fiche (businessName -> title)</Label>
-                                    <Input value={selectedSubmission.businessName} onChange={e => setSelectedSubmission({...selectedSubmission, businessName: e.target.value})} className="font-bold rounded-xl h-12" />
+                                    <Input value={editDraft.businessName} onChange={e => setEditDraft({...editDraft, businessName: e.target.value})} className="font-bold rounded-xl h-12" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Section App (Mappe vers les collections)</Label>
-                                    <Select value={selectedSubmission.appSectionRequested} onValueChange={v => setSelectedSubmission({...selectedSubmission, appSectionRequested: v})}>
+                                    <Select value={editDraft.appSectionRequested} onValueChange={v => setEditDraft({...editDraft, appSectionRequested: v})}>
                                         <SelectTrigger className="font-bold h-12 rounded-xl"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="shopping">Concession (Public)</SelectItem>
@@ -362,11 +387,11 @@ export default function AdminPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Spécialité / Catégorie (categoryRequested -> category)</Label>
-                                <Input value={selectedSubmission.categoryRequested} onChange={e => setSelectedSubmission({...selectedSubmission, categoryRequested: e.target.value})} className="font-bold rounded-xl h-12" />
+                                <Input value={editDraft.categoryRequested} onChange={e => setEditDraft({...editDraft, categoryRequested: e.target.value})} className="font-bold rounded-xl h-12" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (addressRaw -> address & addresss)</Label>
-                                <Textarea value={selectedSubmission.addressRaw} onChange={e => setSelectedSubmission({...selectedSubmission, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px]" />
+                                <Textarea value={editDraft.addressRaw} onChange={e => setEditDraft({...editDraft, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px]" />
                                 <p className="text-[8px] text-orange-500 font-bold ml-1">⚠️ Ce champ remplira automatiquement "addresss" pour la compatibilité système.</p>
                             </div>
                         </section>
@@ -379,15 +404,15 @@ export default function AdminPage() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Téléphone (phoneNumber)</Label>
-                                    <Input value={selectedSubmission.phone} onChange={e => setSelectedSubmission({...selectedSubmission, phone: e.target.value})} className="font-bold" />
+                                    <Input value={editDraft.phone} onChange={e => setEditDraft({...editDraft, phone: e.target.value})} className="font-bold" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Site Web (website)</Label>
-                                    <Input value={selectedSubmission.website} onChange={e => setSelectedSubmission({...selectedSubmission, website: e.target.value})} className="font-bold" />
+                                    <Input value={editDraft.website} onChange={e => setEditDraft({...editDraft, website: e.target.value})} className="font-bold" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">E-mail (email)</Label>
-                                    <Input value={selectedSubmission.email} onChange={e => setSelectedSubmission({...selectedSubmission, email: e.target.value})} className="font-bold" />
+                                    <Input value={editDraft.email} onChange={e => setEditDraft({...editDraft, email: e.target.value})} className="font-bold" />
                                 </div>
                             </div>
                         </section>
@@ -397,7 +422,7 @@ export default function AdminPage() {
                                 <Store className="h-4 w-4 text-brand" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Description (info)</h3>
                             </div>
-                            <Textarea value={selectedSubmission.description} onChange={e => setSelectedSubmission({...selectedSubmission, description: e.target.value})} className="font-bold rounded-xl min-h-[150px] bg-muted/20" />
+                            <Textarea value={editDraft.description} onChange={e => setEditDraft({...editDraft, description: e.target.value})} className="font-bold rounded-xl min-h-[150px] bg-muted/20" />
                         </section>
                     </div>
 
@@ -427,25 +452,27 @@ export default function AdminPage() {
                         <section className="space-y-4">
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Actions Administrateur</h3>
                             <div className="grid grid-cols-2 gap-2">
-                                <Button variant="outline" className="rounded-xl text-[9px] font-black uppercase h-12" onClick={() => handleUpdateStatus(selectedSubmission.id, 'in_review')} disabled={selectedSubmission.status === 'in_review'}>🔘 Examiner</Button>
-                                <Button variant="outline" className="rounded-xl text-[9px] font-black uppercase h-12 text-destructive hover:bg-destructive/10" onClick={() => handleUpdateStatus(selectedSubmission.id, 'rejected')}>❌ Rejeter</Button>
+                                <Button variant="outline" className={cn("rounded-xl text-[9px] font-black uppercase h-12", editDraft.status === 'in_review' && "bg-blue-50 border-blue-400")} onClick={() => handleUpdateStatus(editDraft.id, 'in_review')} disabled={editDraft.status === 'in_review'}>🔘 {editDraft.status === 'in_review' ? 'En cours' : 'Examiner'}</Button>
+                                <Button variant="outline" className="rounded-xl text-[9px] font-black uppercase h-12 text-destructive hover:bg-destructive/10" onClick={() => handleUpdateStatus(editDraft.id, 'rejected')} disabled={editDraft.status === 'rejected'}>❌ {editDraft.status === 'rejected' ? 'Rejeté' : 'Rejeter'}</Button>
                             </div>
                             <Button variant="secondary" className="w-full rounded-xl text-[9px] font-black uppercase h-12" onClick={handleSaveDraft}>
                                 <Save className="mr-2 h-4 w-4" /> Enregistrer brouillon
                             </Button>
                             <div className="pt-4">
-                                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-black uppercase tracking-widest h-16 shadow-xl" onClick={handlePublish} disabled={isPublishing}>
+                                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-black uppercase tracking-widest h-16 shadow-xl" onClick={handlePublish} disabled={isPublishing || editDraft.status === 'published'}>
                                     {isPublishing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Zap className="mr-2 h-5 w-5 fill-white" />}
                                     Valider & Publier la fiche
                                 </Button>
-                                {selectedSubmission.status === 'published' && (
+                                {editDraft.status === 'published' && (
                                     <p className="text-center text-green-600 text-[10px] font-black uppercase tracking-widest mt-4">✅ Déjà en ligne</p>
                                 )}
                             </div>
                         </section>
 
                         <div className="pt-10">
-                            <Button variant="ghost" className="w-full text-muted-foreground hover:text-destructive text-[10px] font-bold" onClick={() => handleDelete(selectedSubmission.id)}><Trash2 className="mr-2 h-4 w-4" /> Supprimer définitivement</Button>
+                            <Button variant="ghost" className="w-full text-muted-foreground hover:text-destructive text-[10px] font-bold flex items-center justify-center gap-2" onClick={() => handleDelete(editDraft.id)}>
+                                <Trash2 className="h-4 w-4" /> Supprimer définitivement
+                            </Button>
                         </div>
                     </div>
                 </div>
