@@ -75,11 +75,17 @@ export const UserMenu = () => {
           <>
             <div className="px-2 py-2 mb-2"><p className="text-sm font-black text-brand truncate">{pseudo}</p></div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="cursor-pointer font-bold"><UserIcon className="mr-2 h-4 w-4" /> Profil</DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer font-bold">
+              <Link href="/account" className="flex items-center w-full">
+                <UserIcon className="mr-2 h-4 w-4" /> Profil
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => signOut(auth)} className="cursor-pointer text-destructive">Déconnexion</DropdownMenuItem>
           </>
         ) : (
-          <DropdownMenuItem asChild className="cursor-pointer font-bold text-brand"><Link href="/login">Se connecter</Link></DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer font-bold text-brand">
+            <Link href="/login">Se connecter</Link>
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
