@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -93,14 +92,14 @@ export default function AdminPage() {
     return query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc'));
   }, [firestore, isAdmin]);
 
-  const { data: submissions = [], isLoading: isLoadingSubmissions } = useCollection<Submission>(submissionsQuery);
+  const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<Submission>(submissionsQuery);
 
   const commentsQuery = useMemoFirebase(() => {
     if (!firestore || !isAdmin) return null;
     return query(collection(firestore, 'pending_comments'), orderBy('date', 'desc'));
   }, [firestore, isAdmin]);
 
-  const { data: pendingComments = [] } = useCollection(commentsQuery);
+  const { data: pendingComments } = useCollection(commentsQuery);
 
   useEffect(() => {
     if (!isUserLoading && (!user || user.uid !== ADMIN_UID)) {
@@ -344,8 +343,10 @@ export default function AdminPage() {
     );
   }
 
-  const pendingSubs = submissions?.filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved') || [];
-  const processedSubs = submissions?.filter(s => s.status === 'published' || s.status === 'rejected') || [];
+  // Sécurisation des accès aux listes (fallback sur tableau vide)
+  const pendingSubs = (submissions || []).filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved');
+  const processedSubs = (submissions || []).filter(s => s.status === 'published' || s.status === 'rejected');
+  const pendingCommentsCount = (pendingComments || []).length;
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -367,7 +368,7 @@ export default function AdminPage() {
           <Card className="shadow-lg">
             <CardHeader className="pb-2">
               <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis modération</CardDescription>
-              <CardTitle className="text-4xl font-black">{pendingComments.length}</CardTitle>
+              <CardTitle className="text-4xl font-black">{pendingCommentsCount}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="shadow-lg bg-indigo-600 text-white border-none">
