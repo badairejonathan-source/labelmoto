@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useFirebase } from '@/firebase';
-import { collection, query, getDocs, doc, onSnapshot, orderBy, where, serverTimestamp } from 'firebase/firestore';
+import { useFirebase, useMemoFirebase, useCollection } from '@/firebase';
+import { collection, query, getDocs, doc, orderBy, where, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -60,15 +59,28 @@ export default function AdminPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [pendingComments, setPendingComments] = useState<any[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
-  
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<Submission | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [duplicates, setDuplicates] = useState<any[]>([]);
+
+  const isAdmin = user?.uid === ADMIN_UID;
+
+  // Use hook-based collection listeners for automatic contextual error handling
+  const submissionsQuery = useMemoFirebase(() => {
+    if (!firestore || !isAdmin) return null;
+    return query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc'));
+  }, [firestore, isAdmin]);
+
+  const { data: submissions = [], isLoading: isLoadingSubmissions } = useCollection<Submission>(submissionsQuery);
+
+  const commentsQuery = useMemoFirebase(() => {
+    if (!firestore || !isAdmin) return null;
+    return query(collection(firestore, 'pending_comments'), orderBy('date', 'desc'));
+  }, [firestore, isAdmin]);
+
+  const { data: pendingComments = [] } = useCollection(commentsQuery);
 
   useEffect(() => {
     if (!isUserLoading && (!user || user.uid !== ADMIN_UID)) {
@@ -76,37 +88,15 @@ export default function AdminPage() {
     }
   }, [user, isUserLoading, router]);
 
+  // Sync editDraft with incoming data changes if current item is updated
   useEffect(() => {
-    if (!firestore || !user || user.uid !== ADMIN_UID) return;
-
-    const unsubSubmissions = onSnapshot(
-      query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc')), 
-      (snap) => {
-        const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission));
-        setSubmissions(list);
-        setIsLoadingData(false);
-
-        if (selectedId) {
-            const updated = list.find(s => s.id === selectedId);
-            if (updated && updated.status !== editDraft?.status && !isPublishing) {
-                setEditDraft(prev => prev ? { ...prev, status: updated.status } : null);
-            }
-        }
+    if (selectedId && submissions && !isPublishing) {
+      const updated = submissions.find(s => s.id === selectedId);
+      if (updated && updated.status !== editDraft?.status) {
+        setEditDraft(prev => prev ? { ...prev, status: updated.status } : null);
       }
-    );
-
-    const unsubComments = onSnapshot(
-      query(collection(firestore, 'pending_comments'), orderBy('date', 'desc')), 
-      (snap) => {
-        setPendingComments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      }
-    );
-
-    return () => {
-      unsubSubmissions();
-      unsubComments();
-    };
-  }, [firestore, user, selectedId, isPublishing]);
+    }
+  }, [submissions, selectedId, isPublishing]);
 
   const findDuplicates = async (submission: Submission) => {
     if (!firestore) return;
@@ -248,8 +238,8 @@ export default function AdminPage() {
     );
   }
 
-  const pendingSubs = submissions.filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved');
-  const processedSubs = submissions.filter(s => s.status === 'published' || s.status === 'rejected');
+  const pendingSubs = submissions?.filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved') || [];
+  const processedSubs = submissions?.filter(s => s.status === 'published' || s.status === 'rejected') || [];
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -290,7 +280,7 @@ export default function AdminPage() {
           </TabsList>
 
           <TabsContent value="submissions">
-            {isLoadingData ? (
+            {isLoadingSubmissions ? (
                 <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>
             ) : pendingSubs.length === 0 ? (
               <div className="text-center py-20 bg-background rounded-[2.5rem] border-2 border-dashed">

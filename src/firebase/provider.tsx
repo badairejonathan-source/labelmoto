@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -8,6 +7,8 @@ import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { getAuthInstance, getFirestoreInstance } from './index';
 import { usePathname } from 'next/navigation';
+import { errorEmitter } from './error-emitter';
+import { FirestorePermissionError } from './errors';
 
 interface UserAuthState {
   user: User | null;
@@ -66,14 +67,27 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
         if (firebaseUser) {
           // Listen to user profile doc
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
-          const unsubscribeDoc = onSnapshot(userDocRef, (docSnap) => {
-            setUserAuthState({
-              user: firebaseUser,
-              profile: docSnap.exists() ? docSnap.data() : null,
-              isUserLoading: false,
-              userError: null
-            });
-          });
+          const unsubscribeDoc = onSnapshot(
+            userDocRef, 
+            (docSnap) => {
+              setUserAuthState({
+                user: firebaseUser,
+                profile: docSnap.exists() ? docSnap.data() : null,
+                isUserLoading: false,
+                userError: null
+              });
+            },
+            async (err) => {
+              if (err.code === 'permission-denied') {
+                const contextualError = new FirestorePermissionError({
+                  operation: 'get',
+                  path: userDocRef.path,
+                });
+                errorEmitter.emit('permission-error', contextualError);
+              }
+              setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
+            }
+          );
           return () => unsubscribeDoc();
         } else {
           setUserAuthState({ user: null, profile: null, isUserLoading: false, userError: null });
