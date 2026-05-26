@@ -15,17 +15,14 @@ service cloud.firestore {
     }
 
     /**
-     * Récupération dynamique du rôle depuis le document NOYAU Firestore.
-     */
-    function getRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
-    }
-
-    /**
-     * Vérification Admin basée sur le document noyau.
+     * Vérification Admin : document Firestore OU identifiants de secours prioritaires.
      */
     function isAdmin() {
-      return isSignedIn() && getRole() == "admin";
+      return isSignedIn() && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin")
+        || request.auth.uid == "A36FqeWBHjQBLKQMaMSiFVBzGV22"
+        || request.auth.token.email == "badjoe950@hotmail.com"
+      );
     }
 
     function isOwner(userId) {
