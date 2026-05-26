@@ -11,10 +11,14 @@ import { usePathname } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-// Liste des UIDs administrateurs de secours (Master Admins)
+// Liste des identifiants et e-mails administrateurs de secours (Master Admins)
 const ADMIN_UIDS = [
-  "A366V1X8Hqf1pA63nU3N8B7l8fD3", // UID principal
-  "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"  // UID secondaire de secours
+  "A366V1X8Hqf1pA63nU3N8B7l8fD3",
+  "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"
+];
+
+const ADMIN_EMAILS = [
+  "badjoe950@hotmail.com" // Administrateur principal identifié
 ];
 
 interface UserAuthState {
@@ -55,7 +59,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
     if (!isAuthActive) setIsAuthActive(true);
   };
 
-  // Activation automatique sur les routes protégées
   useEffect(() => {
     const privateRoutes = ['/account', '/admin', '/login', '/pro/register', '/verify-email', '/auth/action'];
     if (privateRoutes.some(route => pathname?.startsWith(route))) {
@@ -74,7 +77,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
       async (firebaseUser) => {
         if (firebaseUser) {
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
-          const isMasterAdmin = ADMIN_UIDS.includes(firebaseUser.uid);
+          const isMasterAdmin = ADMIN_UIDS.includes(firebaseUser.uid) || (firebaseUser.email && ADMIN_EMAILS.includes(firebaseUser.email));
           
           try {
             const docSnapInitial = await getDoc(userDocRef).catch(err => {
@@ -87,7 +90,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               throw err;
             });
             
-            // Migration paresseuse : Création du noyau si manquant
             if (!docSnapInitial.exists()) {
               console.log("🛠️ Migration paresseuse déclenchée pour:", firebaseUser.uid);
               
@@ -99,7 +101,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 getDoc(proRef).catch(() => ({ exists: () => false, data: () => null }))
               ]);
 
-              // Détermination du rôle
               let role = proSnap.exists() ? 'pro' : 'user';
               if (isMasterAdmin) {
                 role = 'admin';
@@ -133,21 +134,18 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
             console.error("Erreur lors de la migration utilisateur:", e);
           }
 
-          // Écoute temps-réel du document NOYAU identitaire
           const unsubscribeDoc = onSnapshot(
             userDocRef, 
             (docSnap) => {
               let profileData = docSnap.exists() ? docSnap.data() : null;
               
-              // PROTECTION CRITIQUE : Si c'est un Master Admin, on garantit le rôle admin
-              // même si le document Firestore n'est pas encore prêt ou synchro.
               if (isMasterAdmin) {
                 if (!profileData) {
                   profileData = { 
                     role: 'admin', 
                     uid: firebaseUser.uid, 
                     email: firebaseUser.email,
-                    displayName: firebaseUser.displayName || 'Admin Master'
+                    displayName: firebaseUser.displayName || 'Administrateur Principal'
                   };
                 } else {
                   profileData.role = 'admin';
@@ -162,11 +160,10 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             },
             (err) => {
-              // Fallback pour l'admin même en cas d'erreur de lecture
               if (isMasterAdmin) {
                 setUserAuthState({
                   user: firebaseUser,
-                  profile: { role: 'admin', uid: firebaseUser.uid },
+                  profile: { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email },
                   isUserLoading: false,
                   userError: null
                 });
