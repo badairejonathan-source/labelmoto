@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -33,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 interface Submission {
   id: string;
@@ -127,7 +126,7 @@ export default function AdminPage() {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
             path,
             operation: 'list'
-          }));
+          } satisfies SecurityRuleContext));
         }
         throw err;
       }
@@ -187,9 +186,7 @@ export default function AdminPage() {
 
       toast({ title: "Audit terminé", description: `${toMigrate.length} comptes à réconcilier détectés.` });
     } catch (e: any) {
-      if (e.code !== 'permission-denied') {
-        toast({ variant: "destructive", title: "Erreur audit", description: e.message });
-      }
+      // Error handled via emitter if needed
     } finally {
       setIsAuditing(false);
     }
@@ -210,7 +207,7 @@ export default function AdminPage() {
       for (const item of migrationStats.toMigrate) {
         const userRef = doc(firestore, 'users', item.uid);
         
-        batch.set(userRef, {
+        const dataToSet = {
           uid: item.uid,
           email: item.email || '',
           displayName: item.displayName,
@@ -222,7 +219,9 @@ export default function AdminPage() {
           createdAt: item.data?.createdAt || serverTimestamp(),
           updatedAt: serverTimestamp(),
           sourceProvider: 'legacy_migration_audit'
-        }, { merge: true });
+        };
+
+        batch.set(userRef, dataToSet, { merge: true });
 
         count++;
         if (count >= 450) break; 
@@ -233,7 +232,7 @@ export default function AdminPage() {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: 'users',
             operation: 'write'
-          }));
+          } satisfies SecurityRuleContext));
         }
         throw err;
       });
@@ -241,9 +240,7 @@ export default function AdminPage() {
       toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
       runAudit();
     } catch (e: any) {
-      if (e.code !== 'permission-denied') {
-        toast({ variant: "destructive", title: "Erreur migration", description: e.message });
-      }
+      // Error handled via emitter
     } finally {
       setIsApplyingMigration(false);
     }
@@ -262,7 +259,7 @@ export default function AdminPage() {
             errorEmitter.emit('permission-error', new FirestorePermissionError({
               path: colName,
               operation: 'list'
-            }));
+            } satisfies SecurityRuleContext));
           }
           throw err;
         });

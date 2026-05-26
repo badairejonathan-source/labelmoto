@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { getAuthInstance, getFirestoreInstance } from './index';
 import { usePathname } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 // Liste des identifiants et e-mails administrateurs de secours (Master Admins)
 const ADMIN_UIDS = [
@@ -85,7 +84,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 errorEmitter.emit('permission-error', new FirestorePermissionError({
                   path: userDocRef.path,
                   operation: 'get'
-                }));
+                } satisfies SecurityRuleContext));
               }
               throw err;
             });
@@ -97,8 +96,24 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               const proRef = doc(firestore, 'professionalProfiles', firebaseUser.uid);
               
               const [stdSnap, proSnap] = await Promise.all([
-                getDoc(stdRef).catch(() => ({ exists: () => false, data: () => null })),
-                getDoc(proRef).catch(() => ({ exists: () => false, data: () => null }))
+                getDoc(stdRef).catch((err) => {
+                   if (err.code === 'permission-denied') {
+                      errorEmitter.emit('permission-error', new FirestorePermissionError({
+                        path: stdRef.path,
+                        operation: 'get'
+                      } satisfies SecurityRuleContext));
+                   }
+                   return { exists: () => false, data: () => null };
+                }),
+                getDoc(proRef).catch((err) => {
+                   if (err.code === 'permission-denied') {
+                      errorEmitter.emit('permission-error', new FirestorePermissionError({
+                        path: proRef.path,
+                        operation: 'get'
+                      } satisfies SecurityRuleContext));
+                   }
+                   return { exists: () => false, data: () => null };
+                })
               ]);
 
               let role = proSnap.exists() ? 'pro' : 'user';
@@ -109,7 +124,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               const onboardingComplete = stdSnap.exists() || proSnap.exists() || role === 'admin';
               const existingData = (proSnap.exists() ? proSnap.data() : stdSnap.data()) || {};
 
-              await setDoc(userDocRef, {
+              const newUserNoyau = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
                 displayName: firebaseUser.displayName || existingData.pseudo || existingData.displayName || (role === 'admin' ? 'Administrateur' : 'Motard'),
@@ -121,17 +136,20 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 legacyMigrated: true,
                 emailVerifiedSync: firebaseUser.emailVerified,
                 sourceProvider: 'lazy_migration_login'
-              }, { merge: true }).catch(err => {
+              };
+
+              await setDoc(userDocRef, newUserNoyau, { merge: true }).catch(err => {
                 if (err.code === 'permission-denied') {
                   errorEmitter.emit('permission-error', new FirestorePermissionError({
                     path: userDocRef.path,
-                    operation: 'write'
-                  }));
+                    operation: 'write',
+                    requestResourceData: newUserNoyau
+                  } satisfies SecurityRuleContext));
                 }
               });
             }
           } catch (e) {
-            console.error("Erreur lors de la migration utilisateur:", e);
+            // Error already emitted if it was a permission error
           }
 
           const unsubscribeDoc = onSnapshot(
@@ -159,7 +177,14 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 userError: null
               });
             },
-            (err) => {
+            async (err) => {
+              if (err.code === 'permission-denied') {
+                errorEmitter.emit('permission-error', new FirestorePermissionError({
+                  path: userDocRef.path,
+                  operation: 'get'
+                } satisfies SecurityRuleContext));
+              }
+              
               if (isMasterAdmin) {
                 setUserAuthState({
                   user: firebaseUser,
@@ -168,12 +193,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                   userError: null
                 });
               } else {
-                if (err.code === 'permission-denied') {
-                  errorEmitter.emit('permission-error', new FirestorePermissionError({
-                    path: userDocRef.path,
-                    operation: 'get'
-                  }));
-                }
                 setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
               }
             }
