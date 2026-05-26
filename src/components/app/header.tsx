@@ -87,7 +87,7 @@ export const UserMenu = () => {
 
 const NavigationIcons = () => {
   return (
-    <div className="hidden lg:flex items-center gap-6 mr-4">
+    <div className="hidden lg:flex items-center gap-6">
       <Link href="/entretien" className="flex flex-col items-center gap-1 group">
         <div className="h-[56px] w-[56px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
            <Image src="/images/icon-entretien.webp" alt="Entretien" width={40} height={40} className="object-contain" />
@@ -316,14 +316,19 @@ const Header: React.FC<any> = ({
             </div>
 
             <div className="shrink-0 flex items-center">
-                <NavigationIcons />
                 <UserMenu />
             </div>
         </div>
 
+        <div className="w-full max-w-5xl mx-auto relative flex items-center gap-6">
+            <div className="flex-1">
+                {searchInput}
+            </div>
+            <NavigationIcons />
+        </div>
+        
         <div className="w-full max-w-3xl mx-auto relative">
-            {searchInput}
-            <QuickFilters />
+             <QuickFilters />
         </div>
     </div>
   );
