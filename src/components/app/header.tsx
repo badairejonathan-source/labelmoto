@@ -52,20 +52,20 @@ export const UserMenu = () => {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="relative h-[56px] w-[56px] md:h-[64px] md:w-[64px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95"
+          className="relative h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95"
         >
           {user ? (
-            <Avatar className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] border-2 border-brand">
+            <Avatar className="h-[57px] w-[57px] md:h-[65px] md:w-[65px] border-2 border-brand">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback className="bg-brand text-white text-xs font-black">{initial}</AvatarFallback>
             </Avatar>
           ) : (
-            <div className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] rounded-full flex items-center justify-center p-1">
+            <div className="h-[57px] w-[57px] md:h-[65px] md:w-[65px] rounded-full flex items-center justify-center p-1">
               <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
             </div>
           )}
           <div className="absolute -bottom-0.5 -right-0.5 bg-brand text-white rounded-full p-0.5 border-2 border-white">
-            <Menu className="h-2 w-2 md:h-3 w-3" />
+            <Menu className="h-3 w-3 md:h-4 w-4" />
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -88,18 +88,18 @@ export const UserMenu = () => {
 
 const NavigationIcons = () => {
   return (
-    <div className="hidden lg:flex items-center gap-6 ml-32">
+    <div className="hidden lg:flex items-center gap-8 ml-32">
       <Link href="/entretien" className="flex flex-col items-center gap-1 group">
-        <div className="h-[56px] w-[56px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
-           <Image src="/images/icon-entretien.webp" alt="Entretien" width={40} height={40} className="object-contain" />
+        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
+           <Image src="/images/icon-entretien.webp" alt="Entretien" width={52} height={52} className="object-contain" />
         </div>
-        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
       </Link>
       <Link href="/info" className="flex flex-col items-center gap-1 group">
-        <div className="h-[56px] w-[56px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
-           <Image src="/images/icon-conseils.webp" alt="Conseils" width={40} height={40} className="object-contain" />
+        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
+           <Image src="/images/icon-conseils.webp" alt="Conseils" width={52} height={52} className="object-contain" />
         </div>
-        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
       </Link>
     </div>
   );
@@ -303,9 +303,9 @@ const Header: React.FC<any> = ({
 
   return (
     <div className="w-full flex flex-col gap-6 md:gap-8">
-        <div className="flex items-center justify-between gap-2 w-full">
+        <div className="flex items-center justify-between gap-4 w-full">
             <div className="shrink-0">
-                <LabelMotoLogo className="h-auto w-[180px] sm:w-[220px] md:w-[280px]" />
+                <LabelMotoLogo className="h-auto w-[234px] sm:w-[286px] md:w-[364px]" />
             </div>
             
             <div className="flex-1 flex justify-center px-4">
@@ -320,7 +320,7 @@ const Header: React.FC<any> = ({
             </div>
         </div>
 
-        <div className="w-full max-w-5xl mx-auto relative flex items-center gap-6">
+        <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8">
             <div className="flex-1">
                 {searchInput}
             </div>
