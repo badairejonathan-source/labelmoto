@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useFirebase } from '@/firebase';
+import { useFirebase, useUser } from '@/firebase';
 import {
   applyActionCode,
   verifyPasswordResetCode,
@@ -36,7 +36,9 @@ type ActionState = 'loading' | 'success' | 'error' | 'resetPasswordForm' | 'rese
 
 function AuthActionHandler() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { auth } = useFirebase();
+  const { user } = useUser();
   const { toast } = useToast();
 
   const mode = searchParams.get('mode');
@@ -53,7 +55,6 @@ function AuthActionHandler() {
   });
 
   useEffect(() => {
-    // Si pas de paramètres, c'est une erreur directe
     if (!mode || !oobCode) {
       setState('error');
       setErrorMessage("Le lien semble incomplet ou a déjà été utilisé.");
@@ -64,20 +65,17 @@ function AuthActionHandler() {
       try {
         switch (mode) {
           case 'verifyEmail':
-            // Validation réelle auprès de Firebase
             await applyActionCode(auth, oobCode);
             setState('success');
             break;
 
           case 'resetPassword':
-            // Vérifie si le code est encore valide et récupère l'email
             const email = await verifyPasswordResetCode(auth, oobCode);
             setUserEmail(email);
             setState('resetPasswordForm');
             break;
 
           case 'recoverEmail':
-            // Annulation d'un changement d'email frauduleux
             await checkActionCode(auth, oobCode);
             await applyActionCode(auth, oobCode);
             setState('success');
@@ -85,7 +83,7 @@ function AuthActionHandler() {
 
           default:
             setState('error');
-            setErrorMessage("Action inconnue. Ce lien n'est plus valide.");
+            setErrorMessage("Action inconnue ou non supportée.");
         }
       } catch (error: any) {
         console.error("Auth action error:", error);
@@ -110,8 +108,9 @@ function AuthActionHandler() {
       await confirmPasswordReset(auth, oobCode, values.password);
       setState('resetPasswordSuccess');
       toast({ title: "Mot de passe modifié", description: "Votre nouveau mot de passe est actif." });
+      // Redirection auto après 3s
+      setTimeout(() => router.push('/login'), 3000);
     } catch (error: any) {
-      console.error("Confirm password error:", error);
       setState('resetPasswordForm');
       toast({ variant: 'destructive', title: "Erreur", description: "Impossible de modifier le mot de passe." });
     }
@@ -130,7 +129,7 @@ function AuthActionHandler() {
           <div className="p-16 text-center space-y-6">
             <Loader2 className="h-12 w-12 animate-spin text-brand mx-auto" />
             <p className="font-black uppercase tracking-widest text-[10px] text-muted-foreground animate-pulse">
-              Vérification du lien...
+              Traitement en cours...
             </p>
           </div>
         )}
@@ -144,13 +143,15 @@ function AuthActionHandler() {
               <CardTitle className="text-3xl font-black uppercase tracking-tighter">C'est validé !</CardTitle>
               <CardDescription className="text-white/80 font-bold">
                 {mode === 'verifyEmail' 
-                  ? "Votre adresse e-mail a été confirmée avec succès." 
-                  : "L'opération a été effectuée."}
+                  ? "Votre adresse e-mail a été confirmée. Bienvenue chez Label Moto." 
+                  : "L'opération a été effectuée avec succès."}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-10 text-center">
               <Button asChild className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg">
-                <Link href={continueUrl}>Accéder à mon compte <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Link href={user ? '/account' : '/login'}>
+                  {user ? "Accéder à mon compte" : "Se connecter maintenant"} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </CardContent>
           </>
@@ -206,9 +207,10 @@ function AuthActionHandler() {
                 <ShieldCheck className="h-10 w-10 text-white" />
               </div>
               <CardTitle className="text-3xl font-black uppercase tracking-tighter">C'est tout bon !</CardTitle>
-              <CardDescription className="text-white/80 font-bold">Votre mot de passe a bien été réinitialisé.</CardDescription>
+              <CardDescription className="text-white/80 font-bold">Votre mot de passe a bien été mis à jour.</CardDescription>
             </CardHeader>
             <CardContent className="p-10 text-center">
+              <p className="text-[10px] font-bold text-muted-foreground mb-6 uppercase tracking-widest">Redirection automatique vers la connexion...</p>
               <Button asChild className="w-full bg-green-600 hover:bg-green-700 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg">
                 <Link href="/login">Se connecter maintenant</Link>
               </Button>
