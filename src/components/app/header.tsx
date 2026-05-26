@@ -75,16 +75,16 @@ export const UserMenu = () => {
         <div className="grid grid-cols-2 gap-4 px-2 mb-6">
           <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
             <Link href="/entretien" className="flex flex-col items-center gap-2 group/nav">
-              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2">
-                 <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={44} height={44} className="object-contain" />
+              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2.5">
+                 <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Entretien</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
             <Link href="/info" className="flex flex-col items-center gap-2 group/nav">
-              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2">
-                 <Image src="/images/icon-conseils.webp" alt="Conseils" width={44} height={44} className="object-contain" />
+              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2.5">
+                 <Image src="/images/icon-conseils.webp" alt="Conseils" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Conseils</span>
             </Link>
@@ -120,14 +120,14 @@ const NavigationIcons = () => {
   return (
     <div className="hidden lg:flex items-center gap-8 ml-32">
       <Link href="/entretien" className="flex flex-col items-center gap-1 group">
-        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
-           <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={52} height={52} className="object-contain" />
+        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
+           <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={48} height={48} className="w-full h-full object-contain" />
         </div>
         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
       </Link>
       <Link href="/info" className="flex flex-col items-center gap-1 group">
-        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
-           <Image src="/images/icon-conseils.webp" alt="Conseils" width={52} height={52} className="object-contain" />
+        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
+           <Image src="/images/icon-conseils.webp" alt="Conseils" width={48} height={48} className="w-full h-full object-contain" />
         </div>
         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
       </Link>
