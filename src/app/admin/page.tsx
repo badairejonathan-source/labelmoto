@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -115,13 +116,18 @@ export default function AdminPage() {
   // Logic: Audit des données Firestore pour migration rétroactive
   const runAudit = async () => {
     if (!firestore) return;
+    console.group("🔍 Audit de Migration lancé");
     setIsAuditing(true);
     
     const fetchCollection = async (path: string) => {
+      console.log(`- Chargement de la collection: ${path}`);
       const colRef = collection(firestore, path);
       try {
-        return await getDocs(colRef);
+        const snap = await getDocs(colRef);
+        console.log(`  OK: ${snap.size} documents trouvés.`);
+        return snap;
       } catch (err: any) {
+        console.error(`  ERREUR sur ${path}:`, err);
         if (err.code === 'permission-denied') {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
             path,
@@ -172,6 +178,7 @@ export default function AdminPage() {
         }
       });
 
+      console.log(`✅ Audit terminé. ${toMigrate.length} orphelins détectés.`);
       setMigrationStats({
         totalAuthEstimate: usersSnap.size + toMigrate.length,
         usersCount: usersSnap.size,
@@ -184,22 +191,35 @@ export default function AdminPage() {
 
       toast({ title: "Audit terminé", description: `${toMigrate.length} comptes à réconcilier détectés.` });
     } catch (e: any) {
-      // Les erreurs de permission sont déjà émises par fetchCollection
+      console.error("❌ Échec critique de l'audit:", e);
     } finally {
       setIsAuditing(false);
+      console.groupEnd();
     }
   };
 
   const applyMigration = async () => {
-    if (!firestore || !migrationStats || migrationStats.toMigrate.length === 0) return;
+    console.group("🚀 Action: APPLY RECONCILIATION");
     
-    if (!window.confirm(`Confirmer la création de ${migrationStats.toMigrate.length} documents noyaux ? Cette action est irréversible.`)) {
+    if (!firestore || !migrationStats || !migrationStats.toMigrate || migrationStats.toMigrate.length === 0) {
+      console.warn("Fin précoce: Aucune donnée à migrer ou state absent.");
+      toast({ variant: "destructive", title: "Action impossible", description: "La liste des comptes à migrer est vide." });
+      console.groupEnd();
+      return;
+    }
+    
+    const count = migrationStats.toMigrate.length;
+    console.log(`Planifié: Migration de ${count} comptes.`);
+
+    if (!window.confirm(`Confirmer la création de ${count} documents noyaux ?`)) {
+      console.log("Action annulée par l'utilisateur.");
+      console.groupEnd();
       return;
     }
 
     setIsApplyingMigration(true);
     const batch = writeBatch(firestore);
-    let count = 0;
+    let itemsInBatch = 0;
 
     try {
       for (const item of migrationStats.toMigrate) {
@@ -219,23 +239,30 @@ export default function AdminPage() {
           sourceProvider: 'legacy_migration_audit'
         };
 
+        console.log(`- Préparation batch: users/${item.uid} (${item.displayName})`);
         batch.set(userRef, dataToSet, { merge: true });
+        itemsInBatch++;
 
-        count++;
-        if (count >= 450) break; // Firestore batch limit safety
+        if (itemsInBatch >= 450) {
+            console.warn("Limite de batch Firestore (500) approchée. On s'arrête à 450.");
+            break;
+        }
       }
 
+      console.log(`Envoi de ${itemsInBatch} écritures à Firestore...`);
       await batch.commit();
+      console.log("✅ Batch COMMIT réussi !");
       
-      toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
+      toast({ title: "Migration réussie", description: `${itemsInBatch} comptes réconciliés.` });
       // Rafraîchir l'audit pour vider la liste
       runAudit();
     } catch (err: any) {
+      console.error("❌ ERREUR lors du commit du batch:", err);
       if (err.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: 'users',
           operation: 'write',
-          requestResourceData: { count_attempted: count }
+          requestResourceData: { count_attempted: itemsInBatch }
         } satisfies SecurityRuleContext));
       } else {
         toast({ 
@@ -246,6 +273,7 @@ export default function AdminPage() {
       }
     } finally {
       setIsApplyingMigration(false);
+      console.groupEnd();
     }
   };
 
@@ -534,9 +562,12 @@ export default function AdminPage() {
                     </CardContent>
                     <CardFooter className="bg-muted/20 p-6">
                       <Button 
-                        onClick={applyMigration} 
-                        disabled={migrationStats.toMigrate.length === 0 || isApplyingMigration}
-                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl"
+                        onClick={() => {
+                            console.log("Clic sur le bouton APPLY détecté.");
+                            applyMigration();
+                        }} 
+                        disabled={(migrationStats.toMigrate?.length || 0) === 0 || isApplyingMigration}
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl transition-all active:scale-95"
                       >
                         {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4 fill-white" />}
                         Appliquer la Réconciliation (Apply)

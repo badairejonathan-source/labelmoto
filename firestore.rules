@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -16,6 +17,7 @@ service cloud.firestore {
 
     /**
      * Vérification Admin : document Firestore OU identifiants de secours prioritaires.
+     * Les UIDs et emails listés ici sont des "Master Admins" qui ont tous les droits.
      */
     function isAdmin() {
       return isSignedIn() && (
@@ -31,12 +33,8 @@ service cloud.firestore {
 
     // --- NOYAU IDENTITÉ (users) ---
     match /users/{userId} {
-      // Un admin peut tout faire sur les documents utilisateurs
-      // Un utilisateur peut gérer son propre document
-      allow get: if isOwner(userId) || isAdmin();
-      allow create, update: if isAdmin() || isOwner(userId);
-      allow delete: if isAdmin();
-      allow list: if isAdmin();
+      // Un admin a un contrôle total (list, create, get, update, delete)
+      allow read, write: if isAdmin() || isOwner(userId);
     }
 
     // --- COLLECTIONS PUBLIQUES ---
@@ -68,14 +66,10 @@ service cloud.firestore {
 
     // --- EXTENSIONS MÉTIER ---
     match /standardProfiles/{userId} {
-      allow get, create, update: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin();
-      allow delete: if isAdmin();
+      allow read, write: if isOwner(userId) || isAdmin();
     }
     match /professionalProfiles/{professionalId} {
-      allow get, create, update: if isOwner(professionalId) || isAdmin();
-      allow list: if isAdmin();
-      allow delete: if isAdmin();
+      allow read, write: if isOwner(professionalId) || isAdmin();
     }
 
     match /contact_messages/{messageId} {
