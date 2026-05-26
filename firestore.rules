@@ -32,12 +32,12 @@ service cloud.firestore {
     // --- NOYAU IDENTITÉ (users) ---
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
+      allow create: if isOwner(userId) || isAdmin();
       // On interdit de changer son propre rôle lors d'un update
       allow update: if isOwner(userId) && (
         (request.resource.data.role == resource.data.role && request.resource.data.uid == resource.data.uid)
         || isAdmin()
-      );
+      ) || isAdmin();
       allow list: if isAdmin();
     }
 
