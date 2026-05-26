@@ -5,21 +5,23 @@ import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebase } from '@/firebase';
 import { sendEmailVerification } from 'firebase/auth';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, CheckCircle2, ArrowRight, RefreshCw } from 'lucide-react';
+import { Loader2, Mail, ArrowRight, RefreshCw, CheckCircle2 } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 
 function VerifyEmailContent() {
-  const { user, auth } = useFirebase();
+  const { user, auth, firestore } = useFirebase();
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || user?.email;
   
   const [isResending, setIsResending] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
@@ -52,12 +54,29 @@ function VerifyEmailContent() {
 
   const checkVerification = async () => {
     if (!auth.currentUser) return;
-    await auth.currentUser.reload();
-    if (auth.currentUser.emailVerified) {
-      toast({ title: "Compte vérifié !", description: "Bienvenue officiellement sur Label Moto." });
-      router.push('/account');
-    } else {
-      toast({ title: "Pas encore vérifié", description: "Veuillez cliquer sur le lien reçu par e-mail." });
+    setIsChecking(true);
+    try {
+      // Force le rechargement de l'état utilisateur depuis Firebase Auth
+      await auth.currentUser.reload();
+      
+      if (auth.currentUser.emailVerified) {
+        // Synchronise l'état dans Firestore
+        await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
+            status: 'active',
+            emailVerifiedSync: true,
+            emailVerifiedAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        
+        toast({ title: "Compte vérifié !", description: "Bienvenue officiellement sur Label Moto." });
+        router.push('/account');
+      } else {
+        toast({ title: "Pas encore vérifié", description: "Veuillez cliquer sur le lien reçu par e-mail puis cliquez ici." });
+      }
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erreur de synchro", description: "Impossible de vérifier l'état du compte." });
+    } finally {
+      setIsChecking(false);
     }
   };
 
@@ -80,10 +99,11 @@ function VerifyEmailContent() {
           <CardContent className="p-10 space-y-8">
             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
                 <p className="text-sm font-bold text-muted-foreground leading-relaxed">
-                    Cliquez sur le lien dans l'e-mail pour activer votre compte et accéder à toutes les fonctionnalités (poster des avis, favoris, etc.).
+                    Cliquez sur le lien dans l'e-mail pour activer votre compte. Une fois fait, cliquez sur le bouton ci-dessous.
                 </p>
-                <Button onClick={checkVerification} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-full shadow-lg">
-                    J'ai validé mon email <ArrowRight className="ml-2 h-4 w-4" />
+                <Button onClick={checkVerification} disabled={isChecking} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-full shadow-lg">
+                    {isChecking ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                    J'ai validé mon email
                 </Button>
             </div>
 

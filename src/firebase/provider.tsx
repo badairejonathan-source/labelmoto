@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -49,7 +50,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
   };
 
   useEffect(() => {
-    const privateRoutes = ['/account', '/admin', '/login', '/pro/register', '/verify-email'];
+    const privateRoutes = ['/account', '/admin', '/login', '/pro/register', '/verify-email', '/auth/action'];
     if (privateRoutes.some(route => pathname?.startsWith(route))) {
       activateAuth();
     }
@@ -65,7 +66,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
       auth,
       (firebaseUser) => {
         if (firebaseUser) {
-          // Listen to user profile doc
+          // Écoute temps-réel du document utilisateur (source de vérité)
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           const unsubscribeDoc = onSnapshot(
             userDocRef, 
@@ -78,12 +79,11 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             },
             async (err) => {
+              // Si erreur de lecture, on vérifie si c'est normal (ex: document pas encore créé)
               if (err.code === 'permission-denied') {
-                const contextualError = new FirestorePermissionError({
-                  operation: 'get',
-                  path: userDocRef.path,
-                });
-                errorEmitter.emit('permission-error', contextualError);
+                 // On n'émet pas d'erreur critique ici car le document users/{uid} 
+                 // peut être en cours de création lors d'un signup
+                 console.warn("Permission non accordée pour le document utilisateur (peut-être en création)");
               }
               setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
             }
