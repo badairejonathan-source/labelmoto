@@ -1,7 +1,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, Firestore, getFirestore } from 'firebase/firestore';
+import { initializeFirestore, Firestore, getFirestore, memoryLocalCache } from 'firebase/firestore';
 
 // Singleton instances
 let firebaseApp: FirebaseApp;
@@ -39,14 +39,17 @@ export function getFirestoreInstance() {
   if (!firestore) {
     const { firebaseApp } = initializeFirebase();
     
-    // On force le long polling uniquement sur le client pour la stabilité dans Firebase Studio
+    // On force le long polling et le cache mémoire uniquement sur le client 
+    // pour la stabilité dans l'environnement Firebase Studio / Workstations.
     if (typeof window !== 'undefined') {
       try {
+        // initializeFirestore ne peut être appelé qu'une seule fois par App.
         firestore = initializeFirestore(firebaseApp, {
           experimentalForceLongPolling: true,
+          localCache: memoryLocalCache(), // Évite les conflits de persistance IndexedDB
         });
       } catch (err) {
-        // Fallback si déjà initialisé par ailleurs
+        // Fallback si déjà initialisé (ex: lors d'un Hot Module Replacement)
         firestore = getFirestore(firebaseApp);
       }
     } else {
