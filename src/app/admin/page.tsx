@@ -35,8 +35,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
-
 interface Submission {
   id: string;
   businessName: string;
@@ -146,11 +144,18 @@ export default function AdminPage() {
       const toMigrate: any[] = [];
       const conflicts: any[] = [];
 
-      // Analyse des Standard Profiles
+      // Analyse des Standard Profiles pour trouver les orphelins (ceux sans users/{uid})
       stdSnap.forEach(docSnap => {
         const data = docSnap.data();
         if (!usersMap.has(docSnap.id)) {
-          toMigrate.push({ uid: docSnap.id, email: data.email, type: 'user', source: 'standardProfiles', data });
+          toMigrate.push({ 
+            uid: docSnap.id, 
+            email: data.email, 
+            type: 'user', 
+            source: 'standardProfiles', 
+            data,
+            displayName: data.pseudo || data.displayName || 'Motard'
+          });
         }
       });
 
@@ -158,7 +163,14 @@ export default function AdminPage() {
       proSnap.forEach(docSnap => {
         const data = docSnap.data();
         if (!usersMap.has(docSnap.id)) {
-          toMigrate.push({ uid: docSnap.id, email: data.email, type: 'pro', source: 'professionalProfiles', data });
+          toMigrate.push({ 
+            uid: docSnap.id, 
+            email: data.email, 
+            type: 'pro', 
+            source: 'professionalProfiles', 
+            data,
+            displayName: data.companyName || data.pseudo || data.displayName || 'Pro'
+          });
         }
       });
 
@@ -196,19 +208,22 @@ export default function AdminPage() {
     try {
       for (const item of migrationStats.toMigrate) {
         const userRef = doc(firestore, 'users', item.uid);
+        
+        // On prépare le document noyau
         batch.set(userRef, {
           uid: item.uid,
           email: item.email || '',
-          displayName: item.data?.pseudo || item.data?.displayName || 'Ancien Membre',
+          displayName: item.displayName,
           role: item.type,
-          status: 'active', // On assume l'activité pour les anciens profils complétés
-          emailVerifiedSync: false, // Sera mis à jour à leur prochaine connexion
+          status: 'active',
+          emailVerifiedSync: false, // Sera mis à jour lors de leur prochain login
           onboardingComplete: true,
           legacyMigrated: true,
           createdAt: item.data?.createdAt || serverTimestamp(),
           updatedAt: serverTimestamp(),
-          sourceProvider: 'legacy_migration'
-        });
+          sourceProvider: 'legacy_migration_audit'
+        }, { merge: true });
+
         count++;
         // Firestore batch limit is 500
         if (count >= 450) break; 
@@ -225,7 +240,7 @@ export default function AdminPage() {
       });
       
       toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
-      runAudit(); // Refresh stats
+      runAudit(); // Rafraîchir les stats
     } catch (e: any) {
       if (e.code !== 'permission-denied') {
         toast({ variant: "destructive", title: "Erreur migration", description: e.message });
@@ -235,7 +250,7 @@ export default function AdminPage() {
     }
   };
 
-  // Logic: Doublons et publication (Existant conservé)
+  // Logic: Doublons et publication
   const findDuplicates = async (submission: Submission) => {
     if (!firestore) return;
     const collections = ['concessions', 'associations', 'relais'];
@@ -384,7 +399,6 @@ export default function AdminPage() {
     );
   }
 
-  // Sécurisation des accès aux listes (fallback sur tableau vide)
   const pendingSubs = (submissions || []).filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved');
   const processedSubs = (submissions || []).filter(s => s.status === 'published' || s.status === 'rejected');
   const pendingCommentsCount = (pendingComments || []).length;
@@ -527,7 +541,7 @@ export default function AdminPage() {
                         className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl"
                       >
                         {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4 fill-white" />}
-                        Appliquer la Réconciliation
+                        Appliquer la Réconciliation (Apply)
                       </Button>
                     </CardFooter>
                   </Card>
@@ -543,7 +557,7 @@ export default function AdminPage() {
                             {migrationStats.toMigrate.map((item, i) => (
                               <div key={i} className="p-6 flex items-center justify-between group hover:bg-muted/30 transition-colors">
                                 <div className="space-y-1">
-                                  <p className="font-black text-sm uppercase">{item.data?.pseudo || item.data?.displayName || "Ancien Membre"}</p>
+                                  <p className="font-black text-sm uppercase">{item.displayName}</p>
                                   <div className="flex items-center gap-3">
                                     <code className="text-[8px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{item.uid}</code>
                                     <Badge variant="outline" className="text-[7px] uppercase">{item.source}</Badge>
@@ -577,7 +591,7 @@ export default function AdminPage() {
                       <li className="flex gap-2">🔘 <p><strong>Migration Paresseuse</strong> : Un utilisateur sans document noyau est automatiquement réconcilié lors de sa prochaine connexion via le <code>FirebaseProvider</code>.</p></li>
                       <li className="flex gap-2">🔘 <p><strong>Intégrité des Données</strong> : Les profils métiers ne sont jamais supprimés ni modifiés. Seul le document <code>users/</code> (Identité) est créé ou enrichi.</p></li>
                       <li className="flex gap-2">🔘 <p><strong>Vérification Email</strong> : L'état vérifié sera resynchronisé au premier Login. En attendant, ils sont marqués <code>emailVerifiedSync: false</code>.</p></li>
-                      <li className="flex gap-2">🔘 <p><strong>Audit Bulk</strong> : Cette interface permet de traiter en masse les comptes "silencieux" qui ne se sont pas connectés depuis la mise à jour.</p></li>
+                      <li className="flex gap-2">🔘 <p><strong>Audit Bulk (Script)</strong> : Cette interface permet de traiter en masse les comptes "silencieux" qui ne se sont pas connectés depuis la mise à jour.</p></li>
                     </ul>
                   </div>
                 </div>

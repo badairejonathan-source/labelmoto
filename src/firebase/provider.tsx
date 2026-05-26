@@ -85,46 +85,32 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
             if (!docSnapInitial.exists()) {
               console.log("🛠️ Migration paresseuse déclenchée pour:", firebaseUser.uid);
               
-              // On cherche s'il a déjà un profil métier existant
+              // On cherche s'il a déjà un profil métier existant pour déterminer le rôle
               const stdRef = doc(firestore, 'standardProfiles', firebaseUser.uid);
               const proRef = doc(firestore, 'professionalProfiles', firebaseUser.uid);
               
               const [stdSnap, proSnap] = await Promise.all([
-                getDoc(stdRef).catch(err => {
-                  if (err.code === 'permission-denied') {
-                    errorEmitter.emit('permission-error', new FirestorePermissionError({
-                      path: stdRef.path,
-                      operation: 'get'
-                    }));
-                  }
-                  return { exists: () => false, data: () => null } as any;
-                }),
-                getDoc(proRef).catch(err => {
-                  if (err.code === 'permission-denied') {
-                    errorEmitter.emit('permission-error', new FirestorePermissionError({
-                      path: proRef.path,
-                      operation: 'get'
-                    }));
-                  }
-                  return { exists: () => false, data: () => null } as any;
-                })
+                getDoc(stdRef).catch(() => ({ exists: () => false, data: () => null })),
+                getDoc(proRef).catch(() => ({ exists: () => false, data: () => null }))
               ]);
 
               const role = proSnap.exists() ? 'pro' : 'user';
               const onboardingComplete = stdSnap.exists() || proSnap.exists();
+              const existingData = (proSnap.exists() ? proSnap.data() : stdSnap.data()) || {};
 
               // Création du noyau réconcilié
               await setDoc(userDocRef, {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
-                displayName: firebaseUser.displayName || (onboardingComplete ? (proSnap.data()?.pseudo || stdSnap.data()?.pseudo) : 'Motard'),
+                displayName: firebaseUser.displayName || existingData.pseudo || existingData.displayName || 'Motard',
                 role: role,
                 status: firebaseUser.emailVerified ? 'active' : 'pending_verification',
-                createdAt: serverTimestamp(),
+                createdAt: existingData.createdAt || serverTimestamp(),
                 updatedAt: serverTimestamp(),
                 onboardingComplete: onboardingComplete,
                 legacyMigrated: true,
-                emailVerifiedSync: firebaseUser.emailVerified
+                emailVerifiedSync: firebaseUser.emailVerified,
+                sourceProvider: 'lazy_migration_login'
               }, { merge: true }).catch(err => {
                 if (err.code === 'permission-denied') {
                   errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -135,7 +121,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             }
           } catch (e) {
-            // Error already emitted if it was a permission error
+            // Silently fail, profile tracking will retry on next state change
           }
 
           // Écoute temps-réel du document NOYAU identitaire
