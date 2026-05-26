@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -68,35 +69,46 @@ export const UserMenu = () => {
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 z-[3000] p-4 rounded-[2rem] border-2 shadow-2xl" align="end">
-        <DropdownMenuLabel className="text-[10px] uppercase font-black text-muted-foreground px-2">Navigation</DropdownMenuLabel>
-        <DropdownMenuItem asChild className="cursor-pointer font-bold">
-          <Link href="/entretien" className="flex items-center w-full">
-            <Wrench className="mr-2 h-4 w-4" /> Entretien
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer font-bold">
-          <Link href="/info" className="flex items-center w-full">
-            <FileText className="mr-2 h-4 w-4" /> Conseils
-          </Link>
-        </DropdownMenuItem>
+      <DropdownMenuContent className="w-64 z-[3000] p-6 rounded-[2.5rem] border-2 shadow-2xl" align="end">
+        <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-4 tracking-[0.2em]">Les Guides Moto</DropdownMenuLabel>
         
-        <DropdownMenuSeparator className="my-2" />
+        <div className="grid grid-cols-2 gap-4 px-2 mb-6">
+          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
+            <Link href="/entretien" className="flex flex-col items-center gap-2 group/nav">
+              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2">
+                 <Image src="/images/icon-entretien.webp" alt="Entretien" width={44} height={44} className="object-contain" />
+              </div>
+              <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Entretien</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
+            <Link href="/info" className="flex flex-col items-center gap-2 group/nav">
+              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2">
+                 <Image src="/images/icon-conseils.webp" alt="Conseils" width={44} height={44} className="object-contain" />
+              </div>
+              <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Conseils</span>
+            </Link>
+          </DropdownMenuItem>
+        </div>
         
-        <DropdownMenuLabel className="text-[10px] uppercase font-black text-muted-foreground px-2">Mon Compte</DropdownMenuLabel>
+        <DropdownMenuSeparator className="mx-2 mb-6 border-muted/50" />
+        
+        <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-2 tracking-[0.2em]">Votre Compte</DropdownMenuLabel>
         {user ? (
           <>
-            <div className="px-2 py-2 mb-2"><p className="text-sm font-black text-brand truncate">{pseudo}</p></div>
-            <DropdownMenuItem asChild className="cursor-pointer font-bold">
-              <Link href="/account" className="flex items-center w-full">
-                <UserIcon className="mr-2 h-4 w-4" /> Profil
+            <div className="px-2 mb-3"><p className="text-xs font-black text-brand truncate">{pseudo}</p></div>
+            <DropdownMenuItem asChild className="cursor-pointer font-bold rounded-xl mb-1 focus:bg-brand/5 focus:text-brand">
+              <Link href="/account" className="flex items-center w-full px-2 py-1.5">
+                <UserIcon className="mr-3 h-4 w-4" /> Profil
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => signOut(auth)} className="cursor-pointer text-destructive">Déconnexion</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut(auth)} className="cursor-pointer font-black uppercase text-[9px] tracking-widest text-destructive hover:bg-destructive/5 rounded-xl px-2 py-3 mt-2">
+              <LogOut className="mr-3 h-4 w-4" /> Déconnexion
+            </DropdownMenuItem>
           </>
         ) : (
-          <DropdownMenuItem asChild className="cursor-pointer font-bold text-brand">
-            <Link href="/login">Se connecter</Link>
+          <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-brand hover:bg-brand/5 rounded-xl px-4 py-4 mt-2 border-2 border-brand/10 border-dashed text-center">
+            <Link href="/login" className="w-full">Se connecter</Link>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>
