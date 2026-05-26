@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, Suspense, useEffect } from 'react';
@@ -11,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, RefreshCw, CheckCircle2 } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 function VerifyEmailContent() {
   const { user, auth, firestore } = useFirebase();
@@ -64,11 +67,22 @@ function VerifyEmailContent() {
       
       if (auth.currentUser.emailVerified) {
         // 2. Synchronise l'état dans Firestore (source de vérité identitaire)
-        await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
-            status: 'active',
-            emailVerifiedSync: true,
-            emailVerifiedAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
+        const userRef = doc(firestore, 'users', auth.currentUser.uid);
+        const updateData = {
+          status: 'active',
+          emailVerifiedSync: true,
+          emailVerifiedAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+
+        updateDoc(userRef, updateData).catch(async (err) => {
+          if (err.code === 'permission-denied') {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+              path: userRef.path,
+              operation: 'update',
+              requestResourceData: updateData
+            } satisfies SecurityRuleContext));
+          }
         });
         
         toast({ title: "Compte vérifié !", description: "Bienvenue officiellement sur Label Moto." });

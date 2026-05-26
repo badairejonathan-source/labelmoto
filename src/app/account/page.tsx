@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
@@ -22,6 +23,8 @@ import { Loader2, LogOut, ArrowLeft, User, Bike, Palette, Save, X, ShieldCheck, 
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 const badgeColors = [
   { id: 'brand', label: 'Orange Moto', class: 'bg-brand' },
@@ -104,51 +107,90 @@ function AccountContent() {
    */
   const handleChooseType = async (type: 'user' | 'pro') => {
     if (!user) return;
-    try {
-      // 1. Mise à jour du noyau
-      await updateDoc(doc(firestore, 'users', user.uid), {
-        role: type,
-        onboardingComplete: true,
-        updatedAt: serverTimestamp()
-      });
-      
-      // 2. Création de l'extension métier
-      const coll = type === 'pro' ? 'professionalProfiles' : 'standardProfiles';
-      await setDoc(doc(firestore, coll, user.uid), {
-        id: user.uid,
-        email: user.email,
-        displayName: user.displayName || 'Motard',
-        pseudo: user.displayName || 'Motard',
-        badgeColor: 'brand',
-        createdAt: serverTimestamp()
-      });
+    
+    // 1. Mise à jour du noyau
+    const userRef = doc(firestore, 'users', user.uid);
+    const userData = {
+      role: type,
+      onboardingComplete: true,
+      updatedAt: serverTimestamp()
+    };
+    
+    updateDoc(userRef, userData).catch(async (err) => {
+      if (err.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: userRef.path,
+          operation: 'update',
+          requestResourceData: userData
+        } satisfies SecurityRuleContext));
+      }
+    });
+    
+    // 2. Création de l'extension métier
+    const collName = type === 'pro' ? 'professionalProfiles' : 'standardProfiles';
+    const profileRef = doc(firestore, collName, user.uid);
+    const profileData = {
+      id: user.uid,
+      email: user.email,
+      displayName: user.displayName || 'Motard',
+      pseudo: user.displayName || 'Motard',
+      badgeColor: 'brand',
+      createdAt: serverTimestamp()
+    };
 
-      toast({ title: 'Type de compte défini !', description: 'Bienvenue sur Label Moto.' });
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erreur", description: "Une erreur est survenue lors de la création du profil." });
-    }
+    setDoc(profileRef, profileData, { merge: true }).catch(async (err) => {
+      if (err.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: profileRef.path,
+          operation: 'write',
+          requestResourceData: profileData
+        } satisfies SecurityRuleContext));
+      }
+    });
+
+    toast({ title: 'Type de compte défini !', description: 'Bienvenue sur Label Moto.' });
   };
 
   const onUpdateProfile: SubmitHandler<ProfileFormValues> = async (values) => {
     if (!user) return;
     const collectionName = isPro ? 'professionalProfiles' : 'standardProfiles';
     
-    try {
-      // Met à jour l'extension
-      await updateDoc(doc(firestore, collectionName, user.uid), {
-        ...values,
-        updatedAt: serverTimestamp()
-      });
-      // Met à jour le noyau (synchro displayName/pseudo)
-      await updateDoc(doc(firestore, 'users', user.uid), {
-        displayName: values.pseudo,
-        updatedAt: serverTimestamp()
-      });
-      toast({ title: 'Profil mis à jour !' });
-      setIsEditing(false);
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erreur lors de la mise à jour." });
-    }
+    const extRef = doc(firestore, collectionName, user.uid);
+    const extData = {
+      ...values,
+      updatedAt: serverTimestamp()
+    };
+
+    // Met à jour l'extension
+    updateDoc(extRef, extData).catch(async (err) => {
+      if (err.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: extRef.path,
+          operation: 'update',
+          requestResourceData: extData
+        } satisfies SecurityRuleContext));
+      }
+    });
+
+    // Met à jour le noyau (synchro displayName/pseudo)
+    const userRef = doc(firestore, 'users', user.uid);
+    const userData = {
+      displayName: values.pseudo,
+      updatedAt: serverTimestamp()
+    };
+    
+    updateDoc(userRef, userData).catch(async (err) => {
+      if (err.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: userRef.path,
+          operation: 'update',
+          requestResourceData: userData
+        } satisfies SecurityRuleContext));
+      }
+    });
+
+    toast({ title: 'Profil mis à jour !' });
+    setIsEditing(false);
   };
 
   if (isUserLoading || !user) {
