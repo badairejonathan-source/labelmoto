@@ -8,6 +8,8 @@ import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { getAuthInstance, getFirestoreInstance } from './index';
 import { usePathname } from 'next/navigation';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 interface UserAuthState {
   user: User | null;
@@ -69,16 +71,43 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           
           try {
-            const docSnapInitial = await getDoc(userDocRef);
+            const docSnapInitial = await getDoc(userDocRef).catch(err => {
+              if (err.code === 'permission-denied') {
+                errorEmitter.emit('permission-error', new FirestorePermissionError({
+                  path: userDocRef.path,
+                  operation: 'get'
+                }));
+              }
+              throw err;
+            });
             
             // Si le document noyau n'existe pas (compte legacy ou erreur d'inscription)
             if (!docSnapInitial.exists()) {
               console.log("🛠️ Migration paresseuse déclenchée pour:", firebaseUser.uid);
               
               // On cherche s'il a déjà un profil métier existant
+              const stdRef = doc(firestore, 'standardProfiles', firebaseUser.uid);
+              const proRef = doc(firestore, 'professionalProfiles', firebaseUser.uid);
+              
               const [stdSnap, proSnap] = await Promise.all([
-                getDoc(doc(firestore, 'standardProfiles', firebaseUser.uid)),
-                getDoc(doc(firestore, 'professionalProfiles', firebaseUser.uid))
+                getDoc(stdRef).catch(err => {
+                  if (err.code === 'permission-denied') {
+                    errorEmitter.emit('permission-error', new FirestorePermissionError({
+                      path: stdRef.path,
+                      operation: 'get'
+                    }));
+                  }
+                  return { exists: () => false, data: () => null } as any;
+                }),
+                getDoc(proRef).catch(err => {
+                  if (err.code === 'permission-denied') {
+                    errorEmitter.emit('permission-error', new FirestorePermissionError({
+                      path: proRef.path,
+                      operation: 'get'
+                    }));
+                  }
+                  return { exists: () => false, data: () => null } as any;
+                })
               ]);
 
               const role = proSnap.exists() ? 'pro' : 'user';
@@ -96,10 +125,17 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 onboardingComplete: onboardingComplete,
                 legacyMigrated: true,
                 emailVerifiedSync: firebaseUser.emailVerified
-              }, { merge: true });
+              }, { merge: true }).catch(err => {
+                if (err.code === 'permission-denied') {
+                  errorEmitter.emit('permission-error', new FirestorePermissionError({
+                    path: userDocRef.path,
+                    operation: 'write'
+                  }));
+                }
+              });
             }
           } catch (e) {
-            console.error("Erreur réconciliation auto:", e);
+            // Error already emitted if it was a permission error
           }
 
           // Écoute temps-réel du document NOYAU identitaire
@@ -114,8 +150,11 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             },
             (err) => {
-              if (err.code !== 'permission-denied') {
-                console.error("Erreur lecture profil Firestore:", err);
+              if (err.code === 'permission-denied') {
+                errorEmitter.emit('permission-error', new FirestorePermissionError({
+                  path: userDocRef.path,
+                  operation: 'get'
+                }));
               }
               setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
             }

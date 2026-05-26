@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -31,6 +32,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
 
@@ -84,7 +87,7 @@ export default function AdminPage() {
   const [isApplyingMigration, setIsApplyingMigration] = useState(false);
   const [migrationStats, setMigrationStats] = useState<MigrationStats | null>(null);
 
-  const isAdmin = user?.uid === ADMIN_UID;
+  const isAdmin = user?.profile?.role === 'admin';
 
   // Collection Listeners
   const submissionsQuery = useMemoFirebase(() => {
@@ -102,7 +105,7 @@ export default function AdminPage() {
   const { data: pendingComments } = useCollection(commentsQuery);
 
   useEffect(() => {
-    if (!isUserLoading && (!user || user.uid !== ADMIN_UID)) {
+    if (!isUserLoading && (!user || user.profile?.role !== 'admin')) {
       router.push('/login');
     }
   }, [user, isUserLoading, router]);
@@ -111,12 +114,29 @@ export default function AdminPage() {
   const runAudit = async () => {
     if (!firestore) return;
     setIsAuditing(true);
+    
+    // Helper to fetch with contextual error
+    const fetchCollection = async (path: string) => {
+      const colRef = collection(firestore, path);
+      try {
+        return await getDocs(colRef);
+      } catch (err: any) {
+        if (err.code === 'permission-denied') {
+          errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path,
+            operation: 'list'
+          }));
+        }
+        throw err;
+      }
+    };
+
     try {
       // 1. Récupération de tous les documents des 3 collections clés
       const [usersSnap, stdSnap, proSnap] = await Promise.all([
-        getDocs(collection(firestore, 'users')),
-        getDocs(collection(firestore, 'standardProfiles')),
-        getDocs(collection(firestore, 'professionalProfiles'))
+        fetchCollection('users'),
+        fetchCollection('standardProfiles'),
+        fetchCollection('professionalProfiles')
       ]);
 
       const usersMap = new Map();
@@ -154,7 +174,9 @@ export default function AdminPage() {
 
       toast({ title: "Audit terminé", description: `${toMigrate.length} comptes à réconcilier détectés.` });
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur audit", description: e.message });
+      if (e.code !== 'permission-denied') {
+        toast({ variant: "destructive", title: "Erreur audit", description: e.message });
+      }
     } finally {
       setIsAuditing(false);
     }
@@ -192,11 +214,22 @@ export default function AdminPage() {
         if (count >= 450) break; 
       }
 
-      await batch.commit();
+      await batch.commit().catch(err => {
+        if (err.code === 'permission-denied') {
+          errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: 'users',
+            operation: 'write'
+          }));
+        }
+        throw err;
+      });
+      
       toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
       runAudit(); // Refresh stats
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur migration", description: e.message });
+      if (e.code !== 'permission-denied') {
+        toast({ variant: "destructive", title: "Erreur migration", description: e.message });
+      }
     } finally {
       setIsApplyingMigration(false);
     }
@@ -211,7 +244,15 @@ export default function AdminPage() {
     for (const colName of collections) {
       if (submission.phone) {
         const q = query(collection(firestore, colName), where('phoneNumber', '==', submission.phone));
-        const snap = await getDocs(q);
+        const snap = await getDocs(q).catch(err => {
+          if (err.code === 'permission-denied') {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+              path: colName,
+              operation: 'list'
+            }));
+          }
+          throw err;
+        });
         snap.forEach(d => matches.push({ id: d.id, ...d.data(), col: colName }));
       }
     }
@@ -335,7 +376,7 @@ export default function AdminPage() {
     return formatDistanceToNow(date, { addSuffix: true, locale: fr });
   };
 
-  if (isUserLoading || !user || user.uid !== ADMIN_UID) {
+  if (isUserLoading || !user || user.profile?.role !== 'admin') {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-brand" />
