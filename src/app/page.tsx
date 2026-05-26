@@ -99,13 +99,13 @@ export default function LandingPage() {
                          <div className="w-full md:w-1/2 flex justify-center md:justify-end relative z-10">
                              <div className="relative transform translate-y-12 md:translate-y-20 md:translate-x-12 lg:translate-x-16 group">
                                 <Link href="/map" className="block transform hover:scale-105 transition-transform duration-300">
-                                    <div className="relative w-44 h-44 md:w-[330px] md:h-[330px]">
+                                    <div className="relative w-[226px] h-[226px] md:w-[380px] md:h-[380px]">
                                         <Image 
                                             src={hero.mapPreview.src} 
                                             alt="Carte de France des pros moto" 
                                             fill 
                                             className="rounded-2xl border-4 border-white shadow-2xl object-cover" 
-                                            sizes="(max-width: 768px) 176px, 330px" 
+                                            sizes="(max-width: 768px) 226px, 380px" 
                                             decoding="async"
                                         />
                                     </div>
