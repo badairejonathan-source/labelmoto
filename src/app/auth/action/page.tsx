@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2, AlertTriangle, KeyRound, ArrowRight } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertTriangle, KeyRound, ArrowRight, ShieldCheck } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -23,17 +23,19 @@ function AuthActionContent() {
 
   const mode = searchParams.get('mode');
   const oobCode = searchParams.get('oobCode');
+  // Le continueUrl peut être dans les params directs (si Custom Action URL) 
+  // ou extrait manuellement si on est dans la redirection Firebase standard.
   const continueUrl = searchParams.get('continueUrl') || '/account';
   
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'reset-password'>('loading');
-  const [message, setMessage] = useState('Traitement de votre demande...');
+  const [message, setMessage] = useState('Vérification en cours...');
   const [newPassword, setNewPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!oobCode || !mode) {
       setStatus('error');
-      setMessage("Le lien semble invalide ou expiré.");
+      setMessage("Le lien est invalide ou a déjà été utilisé.");
       return;
     }
 
@@ -43,7 +45,7 @@ function AuthActionContent() {
           case 'verifyEmail':
             await applyActionCode(auth, oobCode);
             
-            // Synchronisation Firestore si l'utilisateur est déjà dans la session
+            // Si l'utilisateur est connecté, on synchronise son document
             if (auth.currentUser) {
               await auth.currentUser.reload();
               await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
@@ -51,30 +53,32 @@ function AuthActionContent() {
                 emailVerifiedSync: true,
                 emailVerifiedAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
+              }).catch(() => {
+                // Erreur silencieuse si le document n'existe pas encore (onboarding non fini)
               });
             }
             
             setStatus('success');
-            setMessage("Votre adresse e-mail a été validée avec succès ! Bienvenue dans la communauté Label Moto.");
+            setMessage("Votre adresse e-mail a été validée ! Vous pouvez maintenant profiter pleinement de Label Moto.");
             break;
           
           case 'resetPassword':
             const email = await verifyPasswordResetCode(auth, oobCode);
             setStatus('reset-password');
-            setMessage(`Définissez votre nouveau mot de passe pour le compte ${email}`);
+            setMessage(`Définissez votre nouveau mot de passe pour ${email}`);
             break;
 
           default:
             setStatus('error');
-            setMessage("Cette action n'est pas reconnue par notre système.");
+            setMessage("Action non reconnue.");
         }
       } catch (e: any) {
         console.error("Auth Action Error:", e);
         setStatus('error');
         if (e.code === 'auth/invalid-action-code') {
-          setMessage("Ce lien a déjà été utilisé ou a expiré.");
+          setMessage("Ce lien a expiré. Merci de renouveler votre demande.");
         } else {
-          setMessage("Une erreur technique est survenue. Veuillez réessayer.");
+          setMessage("Une erreur est survenue lors de l'opération.");
         }
       }
     };
@@ -84,17 +88,16 @@ function AuthActionContent() {
 
   const handleResetPassword = async () => {
     if (newPassword.length < 6) {
-      toast({ variant: "destructive", title: "Mot de passe trop court", description: "Le mot de passe doit faire 6 caractères minimum." });
+      toast({ variant: "destructive", title: "Sécurité", description: "6 caractères minimum requis." });
       return;
     }
     setIsSubmitting(true);
     try {
       await confirmPasswordReset(auth, oobCode!, newPassword);
       setStatus('success');
-      setMessage("Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter en toute sécurité.");
-      toast({ title: "Succès !", description: "Mot de passe mis à jour." });
+      setMessage("Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.");
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur", description: "Impossible de réinitialiser le mot de passe." });
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de modifier le mot de passe." });
     } finally {
       setIsSubmitting(false);
     }
@@ -107,7 +110,7 @@ function AuthActionContent() {
       <div className="w-full max-w-md text-center">
         <div className="mb-10 flex justify-center"><div className="w-64"><LabelMotoLogo noBubble /></div></div>
         
-        <Card className="border-2 shadow-2xl rounded-[2.5rem] overflow-hidden">
+        <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-white">
           <CardHeader className={cn("text-white p-10 transition-colors duration-500", status === 'error' ? "bg-destructive" : "bg-brand")}>
             <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 {status === 'loading' && <Loader2 className="h-10 w-10 animate-spin" />}
@@ -127,10 +130,10 @@ function AuthActionContent() {
             {status === 'reset-password' && (
               <div className="space-y-4">
                 <div className="space-y-2 text-left">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Définir un mot de passe robuste</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nouveau mot de passe</label>
                   <Input 
                     type="password" 
-                    placeholder="Minimum 6 caractères" 
+                    placeholder="••••••••" 
                     className="h-14 rounded-xl font-bold border-2 focus:border-brand" 
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -150,6 +153,12 @@ function AuthActionContent() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
+            )}
+
+            {status === 'success' && mode === 'verifyEmail' && (
+               <div className="pt-4 flex items-center justify-center gap-2 text-green-600 font-black uppercase text-[9px] tracking-widest">
+                  <ShieldCheck className="h-4 w-4" /> Compte certifié
+               </div>
             )}
           </CardContent>
         </Card>
