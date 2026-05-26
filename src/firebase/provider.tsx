@@ -149,7 +149,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             }
           } catch (e) {
-            // Error already emitted if it was a permission error
+            // L'erreur est déjà émise si c'est une permission-denied
           }
 
           const unsubscribeDoc = onSnapshot(

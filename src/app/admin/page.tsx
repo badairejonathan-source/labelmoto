@@ -186,7 +186,7 @@ export default function AdminPage() {
 
       toast({ title: "Audit terminé", description: `${toMigrate.length} comptes à réconcilier détectés.` });
     } catch (e: any) {
-      // Error handled via emitter if needed
+      // Les erreurs de permission sont déjà émises par fetchCollection
     } finally {
       setIsAuditing(false);
     }
@@ -240,7 +240,7 @@ export default function AdminPage() {
       toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
       runAudit();
     } catch (e: any) {
-      // Error handled via emitter
+      // Erreur déjà émise ou gérée
     } finally {
       setIsApplyingMigration(false);
     }
@@ -263,7 +263,7 @@ export default function AdminPage() {
           }
           throw err;
         });
-        snap.forEach(d => matches.push({ id: d.id, ...d.data(), col: colName }));
+        if (snap) snap.forEach(d => matches.push({ id: d.id, ...d.data(), col: colName }));
       }
     }
     setDuplicates(matches);
@@ -409,25 +409,25 @@ export default function AdminPage() {
 
       <main className="container mx-auto p-4 md:p-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-          <Card className="bg-brand text-white border-none shadow-lg">
+          <Card className="bg-brand text-white border-none shadow-lg rounded-3xl">
             <CardHeader className="pb-2">
               <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Pros en attente</CardDescription>
               <CardTitle className="text-4xl font-black">{pendingSubs.length}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg">
+          <Card className="shadow-lg rounded-3xl">
             <CardHeader className="pb-2">
               <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis modération</CardDescription>
               <CardTitle className="text-4xl font-black">{pendingCommentsCount}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg bg-indigo-600 text-white border-none">
+          <Card className="shadow-lg bg-indigo-600 text-white border-none rounded-3xl">
             <CardHeader className="pb-2">
               <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Traités total</CardDescription>
               <CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg border-2 border-dashed border-orange-200">
+          <Card className="shadow-lg border-2 border-dashed border-orange-200 rounded-3xl">
             <CardHeader className="pb-2">
               <CardDescription className="font-black uppercase text-[10px] tracking-widest text-orange-600">Santé Données</CardDescription>
               <CardTitle className="text-2xl font-black flex items-center gap-2">

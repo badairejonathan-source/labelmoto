@@ -75,12 +75,10 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (err: FirestoreError) => {
-        // On utilise console.warn pour les problèmes de connectivité réseau
-        // afin de ne pas déclencher l'overlay d'erreur Next.js en mode dev.
-        // Firestore basculera automatiquement en mode hors-ligne.
+        // Suppression de console.error pour les erreurs de permission pour laisser l'émetteur gérer l'affichage
         if (err.code === 'unavailable') {
           console.warn("Firestore collection unavailable (offline mode):", err.message);
-        } else {
+        } else if (err.code !== 'permission-denied') {
           console.error("Firestore error in useCollection:", err);
         }
         
