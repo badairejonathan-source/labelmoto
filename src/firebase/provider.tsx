@@ -71,17 +71,27 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
 
     setUserAuthState(prev => ({ ...prev, isUserLoading: true }));
     const auth = getAuthInstance();
+    
+    // Variable persistante pour stocker le désabonnement du document utilisateur
+    let unsubscribeDoc: (() => void) | null = null;
 
     const unsubscribeAuth = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
+        // Nettoyage systématique de l'écouteur précédent lors d'un changement d'auth
+        if (unsubscribeDoc) {
+          unsubscribeDoc();
+          unsubscribeDoc = null;
+        }
+
         if (firebaseUser) {
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           const isMasterAdmin = ADMIN_UIDS.includes(firebaseUser.uid) || (firebaseUser.email && ADMIN_EMAILS.includes(firebaseUser.email));
           
           try {
             const docSnapInitial = await getDoc(userDocRef).catch(err => {
-              if (err.code === 'permission-denied') {
+              // On n'émet l'erreur que si l'utilisateur est toujours censé être connecté
+              if (err.code === 'permission-denied' && auth.currentUser) {
                 errorEmitter.emit('permission-error', new FirestorePermissionError({
                   path: userDocRef.path,
                   operation: 'get'
@@ -98,7 +108,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               
               const [stdSnap, proSnap] = await Promise.all([
                 getDoc(stdRef).catch((err) => {
-                   if (err.code === 'permission-denied') {
+                   if (err.code === 'permission-denied' && auth.currentUser) {
                       errorEmitter.emit('permission-error', new FirestorePermissionError({
                         path: stdRef.path,
                         operation: 'get'
@@ -107,7 +117,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                    return { exists: () => false, data: () => null };
                 }),
                 getDoc(proRef).catch((err) => {
-                   if (err.code === 'permission-denied') {
+                   if (err.code === 'permission-denied' && auth.currentUser) {
                       errorEmitter.emit('permission-error', new FirestorePermissionError({
                         path: proRef.path,
                         operation: 'get'
@@ -140,7 +150,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               };
 
               await setDoc(userDocRef, newUserNoyau, { merge: true }).catch(err => {
-                if (err.code === 'permission-denied') {
+                if (err.code === 'permission-denied' && auth.currentUser) {
                   errorEmitter.emit('permission-error', new FirestorePermissionError({
                     path: userDocRef.path,
                     operation: 'write',
@@ -150,10 +160,11 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             }
           } catch (e) {
-            // L'erreur est déjà émise si c'est une permission-denied
+            // Erreur gérée
           }
 
-          const unsubscribeDoc = onSnapshot(
+          // Démarrage du nouvel écouteur temps-réel
+          unsubscribeDoc = onSnapshot(
             userDocRef, 
             (docSnap) => {
               let profileData = docSnap.exists() ? docSnap.data() : null;
@@ -179,14 +190,15 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             },
             async (err) => {
-              if (err.code === 'permission-denied') {
+              // Condition critique : on n'émet l'erreur de permission que si le SDK Auth voit encore l'utilisateur
+              if (err.code === 'permission-denied' && auth.currentUser) {
                 errorEmitter.emit('permission-error', new FirestorePermissionError({
                   path: userDocRef.path,
                   operation: 'get'
                 } satisfies SecurityRuleContext));
               }
               
-              if (isMasterAdmin) {
+              if (isMasterAdmin && auth.currentUser) {
                 setUserAuthState({
                   user: firebaseUser,
                   profile: { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email },
@@ -198,7 +210,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               }
             }
           );
-          return () => unsubscribeDoc();
         } else {
           setUserAuthState({ user: null, profile: null, isUserLoading: false, userError: null });
         }
@@ -207,7 +218,11 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
         setUserAuthState({ user: null, profile: null, isUserLoading: false, userError: error });
       }
     );
-    return () => unsubscribeAuth();
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeDoc) unsubscribeDoc();
+    };
   }, [isAuthActive, firestore]);
 
   const contextValue = useMemo((): FirebaseContextState => ({
