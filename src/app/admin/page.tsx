@@ -13,7 +13,7 @@ import {
   Loader2, CheckCircle, ArrowLeft, 
   Store, Search, ChevronRight, X, ExternalLink, 
   Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
-  Database, AlertTriangle, FileSearch, ClipboardCheck
+  Database, AlertTriangle, FileSearch, ClipboardCheck, Clock
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -118,6 +118,7 @@ export default function AdminPage() {
   const runAudit = async () => {
     if (!firestore) return;
     setIsAuditing(true);
+    setReconciliationReport(null); // On reset le rapport précédent
     console.log("🔍 Démarrage de l'audit client...");
     
     try {
@@ -169,42 +170,45 @@ export default function AdminPage() {
 
   /**
    * Action réelle : APPEL AU BACKEND (Server Action)
+   * On instrumente totalement cette fonction.
    */
   const applyMigration = async () => {
     if (!user || !migrationStats) {
-        console.warn("⚠️ Impossible de lancer APPLY : user ou stats manquants.");
+        console.warn("⚠️ Impossible de lancer APPLY : données d'audit manquantes.");
         return;
     }
     
     if (migrationStats.toMigrate.length === 0) {
-      toast({ title: "Déjà à jour", description: "Aucun compte orphelin à réconcilier." });
+      toast({ title: "Déjà à jour", description: "Aucun compte orphelin détecté." });
       return;
     }
 
-    if (!window.confirm(`Confirmer la création de ${migrationStats.toMigrate.length} comptes via le serveur ?`)) return;
+    if (!window.confirm(`Confirmer la migration de ${migrationStats.toMigrate.length} comptes via le serveur ?`)) return;
 
     setIsApplyingMigration(true);
     setReconciliationReport(null);
-    console.log("🚀 Appel de la Server Action...");
+    console.group("🚀 Action: APPLY RECONCILIATION");
+    console.log("Admin UID:", user.uid);
+    console.log("Cibles prévues:", migrationStats.toMigrate.length);
 
     try {
-      // On envoie uniquement l'UID de l'admin, le serveur se charge du reste
       const result = await reconcileLegacyUsersAction(user.uid);
-      console.log("📩 Retour Server Action:", result);
+      console.log("📩 Rapport reçu du backend:", result);
       setReconciliationReport(result);
       
       if (result.success) {
-        toast({ title: "Réconciliation réussie !", description: `${result.stats.created} comptes créés.` });
-        // Rafraîchissement automatique de la vue après un court délai
-        setTimeout(() => runAudit(), 500);
+        toast({ title: "Opération terminée !", description: `${result.stats.created} comptes créés, ${result.stats.errors} erreurs.` });
+        // On attend un peu avant de relancer l'audit pour laisser le temps à Firestore de se propager
+        setTimeout(() => runAudit(), 1000);
       } else {
-        toast({ variant: "destructive", title: "Échec migration", description: result.message });
+        toast({ variant: "destructive", title: "Échec de l'action", description: result.message });
       }
     } catch (err: any) {
-      console.error("❌ Erreur critique Server Action:", err);
-      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur n'a pas répondu ou a crashé." });
+      console.error("❌ Erreur critique lors de l'appel backend:", err);
+      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur a rencontré un problème inattendu." });
     } finally {
       setIsApplyingMigration(false);
+      console.groupEnd();
     }
   };
 

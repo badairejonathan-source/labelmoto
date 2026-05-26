@@ -1,16 +1,21 @@
 /**
  * @fileOverview Initialisation sécurisée et robuste du SDK Firebase Admin pour le backend.
- * Implémente un singleton pour éviter les erreurs d'initialisations multiples en mode dev.
+ * Implémente un singleton global pour éviter les erreurs d'initialisations multiples.
  */
 import * as admin from 'firebase-admin';
 
+let adminApp: admin.app.App;
+
 export function getAdminApp() {
   if (admin.apps.length === 0) {
-    return admin.initializeApp({
+    adminApp = admin.initializeApp({
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "studio-4801889514-40ebd",
     });
+    console.log("[BACKEND] 🔥 Firebase Admin Initialisé avec succès.");
+  } else {
+    adminApp = admin.app();
   }
-  return admin.app();
+  return adminApp;
 }
 
 export function getAdminFirestore() {

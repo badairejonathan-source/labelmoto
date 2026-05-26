@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview Server Actions pour la réconciliation robuste des comptes.
- * Utilise le SDK Admin pour garantir le succès des écritures sans dépendre des Security Rules client.
+ * Implémente un tracing complet et une persistence des exécutions.
  */
 
 import { getAdminFirestore } from '@/lib/firebase-admin';
@@ -38,15 +38,16 @@ export interface ReconciliationReport {
  * Procède par écritures individuelles pour une meilleure traçabilité et fiabilité.
  */
 export async function reconcileLegacyUsersAction(callerUid: string): Promise<ReconciliationReport> {
+  const startedAt = new Date();
   const report: ReconciliationReport = {
     success: false,
-    message: "Démarrage de la réconciliation...",
-    timestamp: new Date().toISOString(),
+    message: "Initialisation...",
+    timestamp: startedAt.toISOString(),
     stats: { totalAnalyzed: 0, created: 0, ignored: 0, errors: 0 },
     details: []
   };
 
-  console.log(`[BACKEND] 🚀 Début réconciliation lancée par: ${callerUid}`);
+  console.log(`[RECONCILE] 🚀 Démarrage par admin: ${callerUid}`);
 
   try {
     const db = getAdminFirestore();
@@ -57,7 +58,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
     const isMaster = ADMIN_UIDS.includes(callerUid) || (callerData?.email && ADMIN_EMAILS.includes(callerData.email));
     
     if (!isMaster && callerData?.role !== 'admin') {
-      console.error(`[BACKEND] ❌ Accès refusé pour: ${callerUid}`);
+      console.error(`[RECONCILE] ❌ Accès refusé pour: ${callerUid}`);
       return { ...report, message: "Accès refusé. Droits administrateur requis.", success: false };
     }
 
@@ -75,8 +76,9 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
     ];
 
     report.stats.totalAnalyzed = allProfiles.length;
+    console.log(`[RECONCILE] 📊 Analyse de ${allProfiles.length} profils existants.`);
 
-    // 3. Traitement
+    // 3. Traitement Individuel pour résilience maximale
     for (const item of allProfiles) {
       const uid = item.snap.id;
       const data = item.snap.data();
@@ -90,6 +92,8 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
       const displayName = data.companyName || data.pseudo || data.displayName || (item.type === 'pro' ? 'Professionnel' : 'Motard');
 
       try {
+        console.log(`[RECONCILE] 🛠️ Traitement UID: ${uid} (${displayName})`);
+        
         // Préparation du document noyau users/{uid}
         const userRef = db.collection('users').doc(uid);
         
@@ -105,7 +109,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
            }
         }
 
-        // Écriture individuelle pour éviter les échecs de batch sur des données complexes
+        // Écriture individuelle
         await userRef.set({
           uid: uid,
           email: data.email || '',
@@ -122,30 +126,41 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
 
         report.stats.created++;
         report.details.push({ uid, status: 'created', name: displayName });
-        console.log(`[BACKEND] ✅ Créé: ${uid} (${displayName})`);
       } catch (err: any) {
-        console.error(`[BACKEND] ❌ Erreur sur l'UID ${uid}:`, err.message);
+        console.error(`[RECONCILE] ❌ Erreur UID ${uid}:`, err.message);
         report.stats.errors++;
         report.details.push({ uid, status: 'error', name: displayName, error: err.message });
       }
     }
 
-    console.log(`[BACKEND] ✅ Réconciliation terminée. Créés: ${report.stats.created}, Erreurs: ${report.stats.errors}`);
+    // 4. Persistence du rapport d'exécution (Preuve d'activité)
+    const finishedAt = new Date();
+    await db.collection('migration_runs').add({
+        startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+        finishedAt: admin.firestore.Timestamp.fromDate(finishedAt),
+        startedBy: callerUid,
+        status: report.stats.errors > 0 ? 'completed_with_errors' : 'success',
+        analyzedCount: report.stats.totalAnalyzed,
+        createdCount: report.stats.created,
+        skippedCount: report.stats.ignored,
+        errorCount: report.stats.errors,
+        details: report.details.slice(0, 100) // On limite la taille pour Firestore
+    });
+
+    console.log(`[RECONCILE] ✅ Terminé. Créés: ${report.stats.created}, Erreurs: ${report.stats.errors}`);
 
     try {
         revalidatePath('/admin');
-    } catch (e) {
-        // Ignorer l'erreur de revalidatePath si elle survient en mode dev
-    }
+    } catch (e) {}
 
     return { 
       ...report, 
       success: true, 
-      message: `Réconciliation terminée avec succès.`
+      message: `Réconciliation terminée.`
     };
 
   } catch (err: any) {
-    console.error("[BACKEND] ❌ Erreur critique lors de la réconciliation:", err);
+    console.error("[RECONCILE] ❌ Erreur critique:", err);
     return { 
       ...report, 
       success: false, 
