@@ -1,0 +1,117 @@
+
+'use client';
+
+import { useState, Suspense, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useFirebase } from '@/firebase';
+import { sendEmailVerification } from 'firebase/auth';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Mail, CheckCircle2, ArrowRight, RefreshCw } from 'lucide-react';
+import LabelMotoLogo from '@/components/app/logo';
+import Link from 'next/link';
+
+function VerifyEmailContent() {
+  const { user, auth } = useFirebase();
+  const { toast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get('email') || user?.email;
+  
+  const [isResending, setIsResending] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    if (user?.emailVerified) {
+      router.push('/account');
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+    let timer: any;
+    if (countdown > 0) {
+      timer = setInterval(() => setCountdown(c => c - 1), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [countdown]);
+
+  const handleResend = async () => {
+    if (!user || countdown > 0) return;
+    setIsResending(true);
+    try {
+      await sendEmailVerification(user);
+      toast({ title: "E-mail envoyé !", description: "Vérifiez vos spams si vous ne le recevez pas." });
+      setCountdown(60);
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erreur", description: "Trop de tentatives. Réessayez plus tard." });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const checkVerification = async () => {
+    if (!auth.currentUser) return;
+    await auth.currentUser.reload();
+    if (auth.currentUser.emailVerified) {
+      toast({ title: "Compte vérifié !", description: "Bienvenue officiellement sur Label Moto." });
+      router.push('/account');
+    } else {
+      toast({ title: "Pas encore vérifié", description: "Veuillez cliquer sur le lien reçu par e-mail." });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md text-center">
+        <div className="mb-10 flex justify-center"><div className="w-64"><LabelMotoLogo noBubble /></div></div>
+        
+        <Card className="border-2 shadow-2xl rounded-[2.5rem] overflow-hidden">
+          <CardHeader className="bg-brand text-white p-10">
+            <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <Mail className="h-10 w-10 text-white" />
+            </div>
+            <CardTitle className="text-3xl font-black uppercase tracking-tighter">Dernière étape !</CardTitle>
+            <CardDescription className="text-white/80 font-bold text-lg leading-tight">
+              Un e-mail de validation a été envoyé à :<br/>
+              <span className="text-white underline">{email}</span>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-10 space-y-8">
+            <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
+                <p className="text-sm font-bold text-muted-foreground leading-relaxed">
+                    Cliquez sur le lien dans l'e-mail pour activer votre compte et accéder à toutes les fonctionnalités (poster des avis, favoris, etc.).
+                </p>
+                <Button onClick={checkVerification} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-full shadow-lg">
+                    J'ai validé mon email <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
+
+            <div className="pt-4 space-y-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vous n'avez rien reçu ?</p>
+                <Button 
+                    variant="outline" 
+                    onClick={handleResend} 
+                    disabled={isResending || countdown > 0}
+                    className="w-full rounded-full border-brand text-brand hover:bg-brand/5 h-12 font-black uppercase text-[10px] tracking-widest"
+                >
+                    {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-3.5 w-3.5" />}
+                    {countdown > 0 ? `Attendre ${countdown}s` : "Renvoyer l'e-mail de validation"}
+                </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="mt-10">
+            <Link href="/login" className="text-muted-foreground hover:text-brand font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2">
+                <RefreshCw className="h-3 w-3" /> Changer de compte ou se reconnecter
+            </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>}><VerifyEmailContent /></Suspense>;
+}

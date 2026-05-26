@@ -1,13 +1,14 @@
 
-/**
- * Moto Trust Firestore Security Rules - Strict Workflow Protection
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
     }
 
     function isAdmin() {
@@ -18,64 +19,50 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // --- COLLECTIONS PUBLIQUES (LECTURE SEULE POUR TOUS, ÉCRITURE ADMIN) ---
+    // --- PROFILS NOYAU (users) ---
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow list: if isAdmin();
+    }
+
+    // --- COLLECTIONS PUBLIQUES ---
     match /concessions/{dealershipId} {
       allow read: if true;
       allow write: if isAdmin();
       match /comments/{commentId} {
         allow read: if true;
-        allow write: if isAdmin();
+        // Obligation d'avoir un email vérifié pour poster un avis final
+        allow write: if isEmailVerified() || isAdmin();
       }
     }
-    match /associations/{associationId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /relais/{relaisId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /motorcycle_sheets/{modelId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /articles/{articleId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
+    
+    match /associations/{associationId} { allow read: if true; allow write: if isAdmin(); }
+    match /relais/{relaisId} { allow read: if true; allow write: if isAdmin(); }
+    match /motorcycle_sheets/{modelId} { allow read: if true; allow write: if isAdmin(); }
+    match /articles/{articleId} { allow read: if true; allow write: if isAdmin(); }
 
-    // --- QUARANTAINE (listing_submissions) ---
-    // Les soumissions sont créées publiquement mais lisibles/modifiables uniquement par l'admin
+    // --- QUARANTAINE ---
     match /listing_submissions/{submissionId} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
     
-    // --- COMMENTAIRES EN ATTENTE ---
     match /pending_comments/{commentId} {
+      // Obligation d'être connecté pour soumettre un avis à la modération
       allow create: if isSignedIn();
       allow read, update, delete: if isAdmin();
     }
 
-    // --- PROFILS UTILISATEURS ---
+    // --- PROFILS DÉTAILLÉS ---
     match /standardProfiles/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      allow get, create, update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
     }
     match /professionalProfiles/{professionalId} {
-      allow get: if isOwner(professionalId) || isAdmin();
-      allow list: if isAdmin();
-      allow create: if isOwner(professionalId);
-      allow update: if isOwner(professionalId);
+      allow get, create, update: if isOwner(professionalId) || isAdmin();
       allow delete: if isAdmin();
-    }
-
-    // --- ROLES ADMIN ---
-    match /roles_admin/{uid} {
-      allow read, write: if isAdmin();
     }
   }
 }
