@@ -1,8 +1,9 @@
+
 'use client';
 
 import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Firestore, doc, onSnapshot } from 'firebase/firestore';
+import { Firestore, doc, onSnapshot, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { getAuthInstance, getFirestoreInstance } from './index';
@@ -62,10 +63,46 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
 
     const unsubscribeAuth = onAuthStateChanged(
       auth,
-      (firebaseUser) => {
+      async (firebaseUser) => {
         if (firebaseUser) {
-          // Écoute temps-réel du document NOYAU identitaire
+          // --- LOGIQUE DE MIGRATION PARESSEUSE (RECONCILIATION) ---
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
+          
+          try {
+            const docSnapInitial = await getDoc(userDocRef);
+            
+            // Si le document noyau n'existe pas (compte legacy ou erreur d'inscription)
+            if (!docSnapInitial.exists()) {
+              console.log("🛠️ Migration paresseuse déclenchée pour:", firebaseUser.uid);
+              
+              // On cherche s'il a déjà un profil métier existant
+              const [stdSnap, proSnap] = await Promise.all([
+                getDoc(doc(firestore, 'standardProfiles', firebaseUser.uid)),
+                getDoc(doc(firestore, 'professionalProfiles', firebaseUser.uid))
+              ]);
+
+              const role = proSnap.exists() ? 'pro' : 'user';
+              const onboardingComplete = stdSnap.exists() || proSnap.exists();
+
+              // Création du noyau réconcilié
+              await setDoc(userDocRef, {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                displayName: firebaseUser.displayName || (onboardingComplete ? (proSnap.data()?.pseudo || stdSnap.data()?.pseudo) : 'Motard'),
+                role: role,
+                status: firebaseUser.emailVerified ? 'active' : 'pending_verification',
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+                onboardingComplete: onboardingComplete,
+                legacyMigrated: true,
+                emailVerifiedSync: firebaseUser.emailVerified
+              }, { merge: true });
+            }
+          } catch (e) {
+            console.error("Erreur réconciliation auto:", e);
+          }
+
+          // Écoute temps-réel du document NOYAU identitaire
           const unsubscribeDoc = onSnapshot(
             userDocRef, 
             (docSnap) => {
@@ -77,7 +114,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             },
             (err) => {
-              // Permission denied est normal pendant la création du compte (signup)
               if (err.code !== 'permission-denied') {
                 console.error("Erreur lecture profil Firestore:", err);
               }

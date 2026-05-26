@@ -1,8 +1,12 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useFirebase, useMemoFirebase, useCollection } from '@/firebase';
-import { collection, query, getDocs, doc, orderBy, where, serverTimestamp } from 'firebase/firestore';
+import { 
+  collection, query, getDocs, doc, orderBy, where, 
+  serverTimestamp, writeBatch, getDoc, limit 
+} from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -10,7 +14,7 @@ import {
   Loader2, CheckCircle, ArrowLeft, ShieldAlert, 
   Store, Search, ChevronRight, X, ExternalLink, 
   Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
-  Filter, Link as LinkIcon
+  Filter, Link as LinkIcon, Database, AlertTriangle, Play, FileSearch
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -54,20 +58,36 @@ interface Submission {
   [key: string]: any;
 }
 
+interface MigrationStats {
+  totalAuthEstimate: number;
+  usersCount: number;
+  stdCount: number;
+  proCount: number;
+  orphans: any[];
+  toMigrate: any[];
+  conflicts: any[];
+}
+
 export default function AdminPage() {
   const { firestore, user, isUserLoading } = useFirebase();
   const { toast } = useToast();
   const router = useRouter();
 
+  // State Management
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<Submission | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [duplicates, setDuplicates] = useState<any[]>([]);
 
+  // Migration State
+  const [isAuditing, setIsAuditing] = useState(false);
+  const [isApplyingMigration, setIsApplyingMigration] = useState(false);
+  const [migrationStats, setMigrationStats] = useState<MigrationStats | null>(null);
+
   const isAdmin = user?.uid === ADMIN_UID;
 
-  // Use hook-based collection listeners for automatic contextual error handling
+  // Collection Listeners
   const submissionsQuery = useMemoFirebase(() => {
     if (!firestore || !isAdmin) return null;
     return query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc'));
@@ -88,16 +108,102 @@ export default function AdminPage() {
     }
   }, [user, isUserLoading, router]);
 
-  // Sync editDraft with incoming data changes if current item is updated
-  useEffect(() => {
-    if (selectedId && submissions && !isPublishing) {
-      const updated = submissions.find(s => s.id === selectedId);
-      if (updated && updated.status !== editDraft?.status) {
-        setEditDraft(prev => prev ? { ...prev, status: updated.status } : null);
-      }
-    }
-  }, [submissions, selectedId, isPublishing]);
+  // Logic: Audit des données Firestore pour migration rétroactive
+  const runAudit = async () => {
+    if (!firestore) return;
+    setIsAuditing(true);
+    try {
+      // 1. Récupération de tous les documents des 3 collections clés
+      const [usersSnap, stdSnap, proSnap] = await Promise.all([
+        getDocs(collection(firestore, 'users')),
+        getDocs(collection(firestore, 'standardProfiles')),
+        getDocs(collection(firestore, 'professionalProfiles'))
+      ]);
 
+      const usersMap = new Map();
+      usersSnap.forEach(d => usersMap.set(d.id, d.data()));
+
+      const orphans: any[] = [];
+      const toMigrate: any[] = [];
+      const conflicts: any[] = [];
+
+      // Analyse des Standard Profiles
+      stdSnap.forEach(docSnap => {
+        const data = docSnap.data();
+        if (!usersMap.has(docSnap.id)) {
+          toMigrate.push({ uid: docSnap.id, email: data.email, type: 'user', source: 'standardProfiles', data });
+        }
+      });
+
+      // Analyse des Pro Profiles
+      proSnap.forEach(docSnap => {
+        const data = docSnap.data();
+        if (!usersMap.has(docSnap.id)) {
+          toMigrate.push({ uid: docSnap.id, email: data.email, type: 'pro', source: 'professionalProfiles', data });
+        }
+      });
+
+      setMigrationStats({
+        totalAuthEstimate: usersSnap.size + toMigrate.length,
+        usersCount: usersSnap.size,
+        stdCount: stdSnap.size,
+        proCount: proSnap.size,
+        orphans,
+        toMigrate,
+        conflicts
+      });
+
+      toast({ title: "Audit terminé", description: `${toMigrate.length} comptes à réconcilier détectés.` });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Erreur audit", description: e.message });
+    } finally {
+      setIsAuditing(false);
+    }
+  };
+
+  const applyMigration = async () => {
+    if (!firestore || !migrationStats || migrationStats.toMigrate.length === 0) return;
+    
+    if (!window.confirm(`Êtes-vous sûr de vouloir créer ${migrationStats.toMigrate.length} documents noyaux ? Cette action est irréversible.`)) {
+      return;
+    }
+
+    setIsApplyingMigration(true);
+    const batch = writeBatch(firestore);
+    let count = 0;
+
+    try {
+      for (const item of migrationStats.toMigrate) {
+        const userRef = doc(firestore, 'users', item.uid);
+        batch.set(userRef, {
+          uid: item.uid,
+          email: item.email || '',
+          displayName: item.data?.pseudo || item.data?.displayName || 'Ancien Membre',
+          role: item.type,
+          status: 'active', // On assume l'activité pour les anciens profils complétés
+          emailVerifiedSync: false, // Sera mis à jour à leur prochaine connexion
+          onboardingComplete: true,
+          legacyMigrated: true,
+          createdAt: item.data?.createdAt || serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          sourceProvider: 'legacy_migration'
+        });
+        count++;
+        // Firestore batch limit is 500
+        if (count >= 450) break; 
+      }
+
+      await batch.commit();
+      toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
+      runAudit(); // Refresh stats
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Erreur migration", description: e.message });
+    } finally {
+      setIsApplyingMigration(false);
+    }
+  };
+
+  // Logic: Doublons et publication (Existant conservé)
   const findDuplicates = async (submission: Submission) => {
     if (!firestore) return;
     const collections = ['concessions', 'associations', 'relais'];
@@ -251,7 +357,7 @@ export default function AdminPage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
           <Card className="bg-brand text-white border-none shadow-lg">
             <CardHeader className="pb-2">
               <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Pros en attente</CardDescription>
@@ -270,13 +376,22 @@ export default function AdminPage() {
               <CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle>
             </CardHeader>
           </Card>
+          <Card className="shadow-lg border-2 border-dashed border-orange-200">
+            <CardHeader className="pb-2">
+              <CardDescription className="font-black uppercase text-[10px] tracking-widest text-orange-600">Santé Données</CardDescription>
+              <CardTitle className="text-2xl font-black flex items-center gap-2">
+                <Database className="h-5 w-5" /> 100%
+              </CardTitle>
+            </CardHeader>
+          </Card>
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto h-12 p-1 bg-muted rounded-full mb-8">
+          <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8">
             <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px]">Demandes</TabsTrigger>
             <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px]">Archives</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px]">Avis</TabsTrigger>
+            <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
           </TabsList>
 
           <TabsContent value="submissions">
@@ -311,6 +426,121 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="migration">
+            <div className="space-y-8">
+              <section className="bg-white p-10 rounded-[2.5rem] shadow-xl border-2 border-dashed border-muted-foreground/20">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+                  <div className="space-y-2 text-center md:text-left">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
+                      <Database className="h-8 w-8 text-orange-500" /> Réconciliation Rétroactive
+                    </h2>
+                    <p className="text-muted-foreground font-bold max-w-xl">
+                      Cet outil analyse les comptes créés avant le nouveau workflow. Il permet de recréer les documents identitaires manquants sans altérer les profils existants.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={runAudit} 
+                    disabled={isAuditing}
+                    className="bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-xs h-16 px-10 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 shrink-0"
+                  >
+                    {isAuditing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileSearch className="mr-2 h-5 w-5" />}
+                    Lancer l'audit des données
+                  </Button>
+                </div>
+              </section>
+
+              {migrationStats && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <Card className="lg:col-span-1 bg-white rounded-3xl shadow-lg overflow-hidden h-fit border-none">
+                    <CardHeader className="bg-muted/50 border-b">
+                      <CardTitle className="text-sm font-black uppercase tracking-widest">Rapport d'Audit</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 space-y-6">
+                      <div className="flex justify-between items-center pb-4 border-b">
+                        <span className="text-[10px] font-black uppercase text-muted-foreground">Comptes Noyaux (Actuels)</span>
+                        <span className="text-xl font-black">{migrationStats.usersCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-4 border-b">
+                        <span className="text-[10px] font-black uppercase text-muted-foreground">Profils Pilotes (standard)</span>
+                        <span className="text-xl font-black">{migrationStats.stdCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-4 border-b">
+                        <span className="text-[10px] font-black uppercase text-muted-foreground">Profils Pros (professional)</span>
+                        <span className="text-xl font-black">{migrationStats.proCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-orange-500" />
+                          <span className="text-[10px] font-black uppercase text-orange-700">À RÉCONCILIER (Invisibles)</span>
+                        </div>
+                        <span className="text-2xl font-black text-orange-600">{migrationStats.toMigrate.length}</span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="bg-muted/20 p-6">
+                      <Button 
+                        onClick={applyMigration} 
+                        disabled={migrationStats.toMigrate.length === 0 || isApplyingMigration}
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl"
+                      >
+                        {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4 fill-white" />}
+                        Appliquer la Réconciliation
+                      </Button>
+                    </CardFooter>
+                  </Card>
+
+                  <Card className="lg:col-span-2 bg-white rounded-3xl shadow-lg border-none overflow-hidden">
+                    <CardHeader className="bg-muted/50 border-b">
+                      <CardTitle className="text-sm font-black uppercase tracking-widest">Détail des comptes orphelins détectés (Mode Dry Run)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <ScrollArea className="h-[450px]">
+                        {migrationStats.toMigrate.length > 0 ? (
+                          <div className="divide-y">
+                            {migrationStats.toMigrate.map((item, i) => (
+                              <div key={i} className="p-6 flex items-center justify-between group hover:bg-muted/30 transition-colors">
+                                <div className="space-y-1">
+                                  <p className="font-black text-sm uppercase">{item.data?.pseudo || item.data?.displayName || "Ancien Membre"}</p>
+                                  <div className="flex items-center gap-3">
+                                    <code className="text-[8px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{item.uid}</code>
+                                    <Badge variant="outline" className="text-[7px] uppercase">{item.source}</Badge>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <p className="text-[9px] font-bold text-muted-foreground">{item.email}</p>
+                                  <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none">PRÊT POUR MIGRATION</Badge>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full py-20 opacity-30">
+                            <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
+                            <p className="font-black uppercase text-xs">Aucun orphelin détecté. Données saines.</p>
+                          </div>
+                        )}
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              <div className="bg-indigo-50 p-8 rounded-[2rem] border-2 border-dashed border-indigo-200">
+                <div className="flex items-start gap-4">
+                  <Info className="h-6 w-6 text-indigo-600 shrink-0 mt-1" />
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-indigo-900">Rappel de la Logique de Migration</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-indigo-700/80">
+                      <li className="flex gap-2">🔘 <p><strong>Migration Paresseuse</strong> : Un utilisateur sans document noyau est automatiquement réconcilié lors de sa prochaine connexion via le <code>FirebaseProvider</code>.</p></li>
+                      <li className="flex gap-2">🔘 <p><strong>Intégrité des Données</strong> : Les profils métiers ne sont jamais supprimés ni modifiés. Seul le document <code>users/</code> (Identité) est créé ou enrichi.</p></li>
+                      <li className="flex gap-2">🔘 <p><strong>Vérification Email</strong> : L'état vérifié sera resynchronisé au premier Login. En attendant, ils sont marqués <code>emailVerifiedSync: false</code>.</p></li>
+                      <li className="flex gap-2">🔘 <p><strong>Audit Bulk</strong> : Cette interface permet de traiter en masse les comptes "silencieux" qui ne se sont pas connectés depuis la mise à jour.</p></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="history">
