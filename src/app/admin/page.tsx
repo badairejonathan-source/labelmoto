@@ -118,6 +118,7 @@ export default function AdminPage() {
   const runAudit = async () => {
     if (!firestore) return;
     setIsAuditing(true);
+    console.log("🔍 Démarrage de l'audit client...");
     
     try {
       const [usersSnap, stdSnap, proSnap] = await Promise.all([
@@ -143,6 +144,8 @@ export default function AdminPage() {
         }
       });
 
+      console.log(`📊 Audit terminé. ${toMigrate.length} orphelins trouvés.`);
+
       setMigrationStats({
         totalAuthEstimate: usersSnap.size + toMigrate.length,
         usersCount: usersSnap.size,
@@ -152,6 +155,7 @@ export default function AdminPage() {
       });
 
     } catch (e: any) {
+        console.error("❌ Erreur audit:", e);
         if (e.code === 'permission-denied') {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: 'users_audit',
@@ -167,7 +171,10 @@ export default function AdminPage() {
    * Action réelle : APPEL AU BACKEND (Server Action)
    */
   const applyMigration = async () => {
-    if (!user || !migrationStats) return;
+    if (!user || !migrationStats) {
+        console.warn("⚠️ Impossible de lancer APPLY : user ou stats manquants.");
+        return;
+    }
     
     if (migrationStats.toMigrate.length === 0) {
       toast({ title: "Déjà à jour", description: "Aucun compte orphelin à réconcilier." });
@@ -178,20 +185,24 @@ export default function AdminPage() {
 
     setIsApplyingMigration(true);
     setReconciliationReport(null);
+    console.log("🚀 Appel de la Server Action...");
 
     try {
+      // On envoie uniquement l'UID de l'admin, le serveur se charge du reste
       const result = await reconcileLegacyUsersAction(user.uid);
+      console.log("📩 Retour Server Action:", result);
       setReconciliationReport(result);
       
       if (result.success) {
         toast({ title: "Réconciliation réussie !", description: `${result.stats.created} comptes créés.` });
-        // Rafraîchissement automatique de la vue
-        runAudit();
+        // Rafraîchissement automatique de la vue après un court délai
+        setTimeout(() => runAudit(), 500);
       } else {
         toast({ variant: "destructive", title: "Échec migration", description: result.message });
       }
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur a rencontré un problème inattendu." });
+      console.error("❌ Erreur critique Server Action:", err);
+      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur n'a pas répondu ou a crashé." });
     } finally {
       setIsApplyingMigration(false);
     }
@@ -338,7 +349,10 @@ export default function AdminPage() {
   if (isUserLoading || !user || profile?.role !== 'admin') {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-brand" />
+            <p className="font-black uppercase tracking-widest text-[10px] animate-pulse">Vérification des accès...</p>
+        </div>
       </div>
     );
   }
@@ -352,7 +366,7 @@ export default function AdminPage() {
       <header className="bg-background border-b shadow-sm sticky top-0 z-50">
         <div className="container mx-auto p-4 flex items-center justify-between">
           <div className="w-40 md:w-60"><LabelMotoLogo noBubble /></div>
-          <Button asChild variant="outline" size="sm"><Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au site</Link></Button>
+          <Button asChild variant="outline" size="sm" className="rounded-full"><Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au site</Link></Button>
         </div>
       </header>
 
@@ -364,10 +378,10 @@ export default function AdminPage() {
               <CardTitle className="text-4xl font-black">{pendingSubs.length}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg rounded-3xl">
+          <Card className="shadow-lg rounded-3xl bg-white border-none">
             <CardHeader className="pb-2">
               <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis modération</CardDescription>
-              <CardTitle className="text-4xl font-black">{pendingCommentsCount}</CardTitle>
+              <CardTitle className="text-4xl font-black text-foreground">{pendingCommentsCount}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="shadow-lg bg-indigo-600 text-white border-none rounded-3xl">
@@ -376,22 +390,22 @@ export default function AdminPage() {
               <CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg border-2 border-dashed border-orange-200 rounded-3xl">
+          <Card className="shadow-lg bg-white border-2 border-dashed border-orange-200 rounded-3xl">
             <CardHeader className="pb-2">
               <CardDescription className="font-black uppercase text-[10px] tracking-widest text-orange-600">Santé Données</CardDescription>
-              <CardTitle className="text-2xl font-black flex items-center gap-2">
-                <Database className="h-5 w-5" /> 100%
+              <CardTitle className="text-2xl font-black flex items-center gap-2 text-foreground">
+                <Database className="h-5 w-5 text-orange-400" /> 100%
               </CardTitle>
             </CardHeader>
           </Card>
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8">
-            <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px]">Demandes</TabsTrigger>
-            <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px]">Archives</TabsTrigger>
-            <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px]">Avis</TabsTrigger>
-            <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner">
+            <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px] tracking-widest">Demandes</TabsTrigger>
+            <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
+            <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
           </TabsList>
 
           <TabsContent value="submissions">
@@ -429,7 +443,7 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="migration">
-            <div className="space-y-8">
+            <div className="space-y-8 animate-in fade-in duration-500">
               <section className="bg-white p-10 rounded-[2.5rem] shadow-xl border-2 border-dashed border-muted-foreground/20">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8">
                   <div className="space-y-2 text-center md:text-left">
@@ -484,18 +498,30 @@ export default function AdminPage() {
                     </Card>
 
                     {reconciliationReport && (
-                        <Card className={cn("rounded-3xl border-2 shadow-2xl overflow-hidden", reconciliationReport.success ? "border-green-400 bg-green-50/10" : "border-red-400 bg-red-50/10")}>
+                        <Card className={cn("rounded-3xl border-2 shadow-2xl overflow-hidden animate-in zoom-in-95", reconciliationReport.success ? "border-green-400 bg-green-50/10" : "border-red-400 bg-red-50/10")}>
                              <CardHeader className={cn("p-6 text-white", reconciliationReport.success ? "bg-green-600" : "bg-red-600")}>
                                 <CardTitle className="text-xs font-black uppercase flex items-center gap-2">
-                                    <ClipboardCheck className="h-4 w-4" /> Rapport de dernière exécution
+                                    <ClipboardCheck className="h-4 w-4" /> Résultat de l'opération
                                 </CardTitle>
                              </CardHeader>
                              <CardContent className="p-6 space-y-4">
                                 <div className="grid grid-cols-2 gap-3 text-center">
-                                    <div className="bg-white p-2 rounded-xl border"><p className="text-[8px] font-black uppercase text-muted-foreground">Créés</p><p className="text-xl font-black text-green-600">{reconciliationReport.stats.created}</p></div>
-                                    <div className="bg-white p-2 rounded-xl border"><p className="text-[8px] font-black uppercase text-muted-foreground">Ignorés</p><p className="text-xl font-black text-muted-foreground">{reconciliationReport.stats.ignored}</p></div>
+                                    <div className="bg-white p-2 rounded-xl border">
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground">Créés</p>
+                                        <p className="text-xl font-black text-green-600">{reconciliationReport.stats.created}</p>
+                                    </div>
+                                    <div className="bg-white p-2 rounded-xl border">
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground">Ignorés</p>
+                                        <p className="text-xl font-black text-muted-foreground">{reconciliationReport.stats.ignored}</p>
+                                    </div>
                                 </div>
-                                <p className="text-[9px] font-bold text-muted-foreground text-center italic">Lancé à {new Date(reconciliationReport.timestamp).toLocaleTimeString()}</p>
+                                {reconciliationReport.stats.errors > 0 && (
+                                    <div className="p-2 bg-red-100 rounded-lg text-center">
+                                        <p className="text-[8px] font-black uppercase text-red-600">Erreurs</p>
+                                        <p className="text-lg font-black text-red-600">{reconciliationReport.stats.errors}</p>
+                                    </div>
+                                )}
+                                <p className="text-[9px] font-bold text-muted-foreground text-center italic mt-2">Terminé à {new Date(reconciliationReport.timestamp).toLocaleTimeString()}</p>
                              </CardContent>
                         </Card>
                     )}
@@ -518,14 +544,14 @@ export default function AdminPage() {
                                     <Badge variant="outline" className="text-[7px] uppercase">{item.source}</Badge>
                                   </div>
                                 </div>
-                                <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none uppercase font-black">À créer</Badge>
+                                <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none uppercase font-black">Prêt pour création</Badge>
                               </div>
                             ))}
                           </div>
                         ) : (
                           <div className="flex flex-col items-center justify-center h-full py-20 opacity-30">
                             <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
-                            <p className="font-black uppercase text-xs">Données saines.</p>
+                            <p className="font-black uppercase text-xs">Aucun orphelin détecté.</p>
                           </div>
                         )}
                       </ScrollArea>
@@ -537,7 +563,7 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="history">
-             <Card className="rounded-3xl shadow-lg overflow-hidden bg-background">
+             <Card className="rounded-3xl shadow-lg overflow-hidden bg-background border-none">
                <CardContent className="p-0">
                  <ScrollArea className="h-[600px]">
                    {processedSubs.map(sub => (
@@ -546,12 +572,12 @@ export default function AdminPage() {
                           <p className="font-black text-base uppercase tracking-tight">{sub.businessName}</p>
                           <div className="flex items-center gap-3">
                             <p className="text-[10px] text-muted-foreground font-bold">{sub.addressRaw}</p>
-                            <Badge variant="outline" className="text-[8px]">{sub.publishedCollection || 'Soumission'}</Badge>
+                            <Badge variant="outline" className="text-[8px] font-black uppercase">{sub.publishedCollection || 'Soumission'}</Badge>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
                            <Badge variant={sub.status === 'published' ? 'brand' : 'destructive'} className="text-[9px] uppercase tracking-widest font-black px-4">{sub.status}</Badge>
-                           <Button variant="ghost" size="icon" onClick={() => handleOpenDetail(sub)} className="rounded-full hover:bg-white"><ExternalLink className="h-4 w-4" /></Button>
+                           <Button variant="ghost" size="icon" onClick={() => handleOpenDetail(sub)} className="rounded-full hover:bg-white transition-all hover:scale-110"><ExternalLink className="h-4 w-4" /></Button>
                         </div>
                      </div>
                    ))}
@@ -563,7 +589,7 @@ export default function AdminPage() {
           <TabsContent value="comments">
              <div className="text-center py-20 bg-background rounded-[2.5rem] border-2 border-dashed">
                 <Info className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-                <p className="font-black uppercase text-muted-foreground">Module de modération des avis en cours de liaison.</p>
+                <p className="font-black uppercase text-muted-foreground tracking-widest text-xs">Module de modération des avis en cours de liaison.</p>
              </div>
           </TabsContent>
         </Tabs>
@@ -582,7 +608,7 @@ export default function AdminPage() {
                     </div>
                     <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest">Demande reçue {formatDate(editDraft.createdAt)}</DialogDescription>
                   </div>
-                  <Button variant="ghost" className="text-white hover:bg-white/10 rounded-full" onClick={() => setIsDetailOpen(false)}><X className="h-6 w-6" /></Button>
+                  <Button variant="ghost" className="text-white hover:bg-white/10 rounded-full h-12 w-12 p-0" onClick={() => setIsDetailOpen(false)}><X className="h-6 w-6" /></Button>
                 </div>
               </DialogHeader>
 
@@ -597,13 +623,13 @@ export default function AdminPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Nom (mappe vers title)</Label>
-                                    <Input value={editDraft.businessName} onChange={e => setEditDraft({...editDraft, businessName: e.target.value})} className="font-bold rounded-xl h-12" />
+                                    <Input value={editDraft.businessName} onChange={e => setEditDraft({...editDraft, businessName: e.target.value})} className="font-bold rounded-xl h-12 border-2" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Section App (Cible Collection)</Label>
                                     <Select value={editDraft.appSectionRequested} onValueChange={(v: any) => setEditDraft({...editDraft, appSectionRequested: v})}>
-                                        <SelectTrigger className="font-bold h-12 rounded-xl"><SelectValue /></SelectTrigger>
-                                        <SelectContent>
+                                        <SelectTrigger className="font-bold h-12 rounded-xl border-2"><SelectValue /></SelectTrigger>
+                                        <SelectContent className="rounded-xl border-2 z-[3200]">
                                             <SelectItem value="shopping">Concessionnaire</SelectItem>
                                             <SelectItem value="service">Atelier / Garage</SelectItem>
                                             <SelectItem value="both">Vente & Service</SelectItem>
@@ -615,12 +641,12 @@ export default function AdminPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Catégorie / Spécialité</Label>
-                                <Input value={editDraft.categoryRequested} onChange={e => setEditDraft({...editDraft, categoryRequested: e.target.value})} className="font-bold rounded-xl h-12" />
+                                <Input value={editDraft.categoryRequested} onChange={e => setEditDraft({...editDraft, categoryRequested: e.target.value})} className="font-bold rounded-xl h-12 border-2" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (mappe vers address)</Label>
-                                <Textarea value={editDraft.addressRaw} onChange={e => setEditDraft({...editDraft, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px]" />
-                                {editDraft.needsGeocoding && <p className="text-[8px] text-orange-500 font-bold ml-1">⚠️ Géocodage requis ou à vérifier.</p>}
+                                <Textarea value={editDraft.addressRaw} onChange={e => setEditDraft({...editDraft, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px] border-2" />
+                                {editDraft.needsGeocoding && <p className="text-[8px] text-orange-500 font-black uppercase tracking-widest ml-1 animate-pulse">⚠️ Géocodage requis ou à vérifier.</p>}
                             </div>
                         </section>
 
@@ -631,16 +657,16 @@ export default function AdminPage() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black ml-1">Téléphone (phoneNumber)</Label>
-                                    <Input value={editDraft.phone} onChange={e => setEditDraft({...editDraft, phone: e.target.value})} className="font-bold" />
+                                    <Label className="text-[9px] uppercase font-black ml-1">Téléphone</Label>
+                                    <Input value={editDraft.phone} onChange={e => setEditDraft({...editDraft, phone: e.target.value})} className="font-bold border-2 rounded-xl" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Site Web</Label>
-                                    <Input value={editDraft.website} onChange={e => setEditDraft({...editDraft, website: e.target.value})} className="font-bold" />
+                                    <Input value={editDraft.website} onChange={e => setEditDraft({...editDraft, website: e.target.value})} className="font-bold border-2 rounded-xl" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">E-mail</Label>
-                                    <Input value={editDraft.email} onChange={e => setEditDraft({...editDraft, email: e.target.value})} className="font-bold" />
+                                    <Input value={editDraft.email} onChange={e => setEditDraft({...editDraft, email: e.target.value})} className="font-bold border-2 rounded-xl" />
                                 </div>
                             </div>
                         </section>
@@ -654,10 +680,10 @@ export default function AdminPage() {
                                 placeholder="Ajouter une note de modération..." 
                                 value={editDraft.notesAdmin} 
                                 onChange={e => setEditDraft({...editDraft, notesAdmin: e.target.value})} 
-                                className="font-bold rounded-xl min-h-[100px] bg-muted/20" 
+                                className="font-bold rounded-xl min-h-[100px] bg-muted/20 border-2" 
                             />
                             {editDraft.publishedAt && (
-                                <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                                <div className="bg-green-50 p-4 rounded-xl border border-green-200">
                                     <p className="text-[10px] font-black text-green-700 uppercase tracking-widest">PUBLIÉ LE {formatDate(editDraft.publishedAt)}</p>
                                     <p className="text-[8px] font-bold text-green-600 mt-1">DOC ID: {editDraft.publishedDocId} | COLL: {editDraft.publishedCollection}</p>
                                 </div>
@@ -666,60 +692,64 @@ export default function AdminPage() {
                     </div>
 
                     <div className="lg:col-span-4 space-y-8">
-                        <Card className="bg-muted/30 border-2 border-dashed rounded-3xl overflow-hidden">
-                            <CardHeader className="bg-white/50 border-b py-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2"><Search className="h-4 w-4" /> Détection Doublons</h3>
+                        <Card className="bg-muted/30 border-2 border-dashed rounded-3xl overflow-hidden shadow-sm">
+                            <CardHeader className="bg-white/50 border-b py-4 px-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-foreground"><Search className="h-4 w-4 text-brand" /> Détection Doublons</h3>
                             </CardHeader>
                             <CardContent className="p-4 space-y-4">
                                 {duplicates.length > 0 ? (
                                     duplicates.map(d => (
-                                        <div key={d.id} className="bg-white p-3 rounded-xl border flex flex-col gap-2">
+                                        <div key={d.id} className="bg-white p-3 rounded-xl border-2 flex flex-col gap-2 shadow-sm">
                                             <div className="flex justify-between items-start gap-2">
                                                 <div className="min-w-0">
-                                                    <p className="font-black text-[10px] uppercase truncate">{d.title}</p>
-                                                    <p className="text-[8px] text-muted-foreground truncate">{d.phoneNumber}</p>
+                                                    <p className="font-black text-[10px] uppercase truncate text-foreground">{d.title}</p>
+                                                    <p className="text-[8px] text-muted-foreground truncate font-bold">{d.phoneNumber}</p>
                                                 </div>
-                                                <Badge className="bg-orange-100 text-orange-700 text-[7px] uppercase border-none shrink-0">{d.col}</Badge>
+                                                <Badge className="bg-orange-100 text-orange-700 text-[7px] uppercase border-none shrink-0 font-black">{d.col}</Badge>
                                             </div>
                                             <Button 
                                               variant="secondary" 
                                               size="sm" 
-                                              className={cn("h-7 text-[8px] font-black uppercase rounded-lg", editDraft.publishTargetId === d.id && "bg-brand text-white")}
+                                              className={cn("h-7 text-[8px] font-black uppercase rounded-lg border", editDraft.publishTargetId === d.id ? "bg-brand text-white border-brand" : "bg-muted text-muted-foreground")}
                                               onClick={() => handleLinkToDuplicate(d)}
                                             >
-                                              Lier pour mise à jour
+                                              {editDraft.publishTargetId === d.id ? "Lien établi ✔" : "Lier pour mise à jour"}
                                             </Button>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-[10px] italic text-muted-foreground text-center py-4">Aucun doublon trouvé.</p>
+                                    <div className="text-center py-6">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 italic">Aucun doublon trouvé</p>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
 
                         <section className="space-y-4">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Actions de Modération</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Actions de Modération</h3>
                             <div className="grid grid-cols-2 gap-2">
-                                <Button variant="outline" className={cn("rounded-xl text-[9px] font-black uppercase h-12", editDraft.status === 'in_review' && "bg-blue-50 border-blue-400")} onClick={() => handleUpdateStatus('in_review')} disabled={editDraft.status === 'in_review'}>🔘 {editDraft.status === 'in_review' ? 'En cours' : 'Examiner'}</Button>
-                                <Button variant="outline" className="rounded-xl text-[9px] font-black uppercase h-12 text-destructive hover:bg-destructive/10" onClick={() => handleUpdateStatus('rejected')} disabled={editDraft.status === 'rejected'}>❌ {editDraft.status === 'rejected' ? 'Rejeté' : 'Rejeter'}</Button>
+                                <Button variant="outline" className={cn("rounded-xl text-[9px] font-black uppercase h-12 border-2", editDraft.status === 'in_review' && "bg-blue-50 border-blue-400 text-blue-600")} onClick={() => handleUpdateStatus('in_review')} disabled={editDraft.status === 'in_review'}>🔘 {editDraft.status === 'in_review' ? 'En cours' : 'Examiner'}</Button>
+                                <Button variant="outline" className="rounded-xl text-[9px] font-black uppercase h-12 text-destructive hover:bg-destructive/10 border-2" onClick={() => handleUpdateStatus('rejected')} disabled={editDraft.status === 'rejected'}>❌ {editDraft.status === 'rejected' ? 'Rejeté' : 'Rejeter'}</Button>
                             </div>
-                            <Button variant="secondary" className="w-full rounded-xl text-[9px] font-black uppercase h-12" onClick={handleSaveDraft}>
+                            <Button variant="secondary" className="w-full rounded-xl text-[9px] font-black uppercase h-12 border-2" onClick={handleSaveDraft}>
                                 <Save className="mr-2 h-4 w-4" /> Enregistrer sans publier
                             </Button>
                             <div className="pt-4">
-                                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-black uppercase tracking-widest h-16 shadow-xl" onClick={handlePublish} disabled={isPublishing || editDraft.status === 'published'}>
+                                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-black uppercase tracking-widest h-16 shadow-xl transition-all hover:scale-105 active:scale-95" onClick={handlePublish} disabled={isPublishing || editDraft.status === 'published'}>
                                     {isPublishing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Zap className="mr-2 h-5 w-5 fill-white" />}
                                     {editDraft.publishTargetId ? "Mettre à jour la fiche liée" : "Valider & Publier la fiche"}
                                 </Button>
                                 {editDraft.status === 'published' && (
-                                    <p className="text-center text-green-600 text-[10px] font-black uppercase tracking-widest mt-4">✅ Fiche publiée</p>
+                                    <p className="text-center text-green-600 text-[10px] font-black uppercase tracking-[0.3em] mt-4 flex items-center justify-center gap-2">
+                                        <CheckCircle className="h-3 w-3" /> Fiche publiée
+                                    </p>
                                 )}
                             </div>
                         </section>
 
                         <div className="pt-10">
-                            <Button variant="ghost" className="w-full text-muted-foreground hover:text-destructive text-[10px] font-bold flex items-center justify-center gap-2" onClick={handleDelete}>
-                                <Trash2 className="h-4 w-4" /> Supprimer définitivement
+                            <Button variant="ghost" className="w-full text-muted-foreground hover:text-destructive text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-colors h-12 rounded-xl" onClick={handleDelete}>
+                                <Trash2 className="h-4 w-4" /> Supprimer la soumission
                             </Button>
                         </div>
                     </div>
