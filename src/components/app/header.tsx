@@ -1,10 +1,9 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText, LogOut } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText, LogOut, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -29,21 +28,17 @@ const brandsList = Object.keys(brandLogos);
 let globalDealersCache: any[] | null = null;
 
 export const UserMenu = () => {
-  const { user, activateAuth } = useUser();
+  const { user, profile, activateAuth } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
-  const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
-  const { data: stdProfile } = useDoc(stdRef);
-  const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
-  const { data: proProfile } = useDoc(proRef);
-
-  const activeProfile = proProfile || stdProfile;
-  const pseudo = activeProfile?.pseudo || user?.email?.split('@')[0] || '';
+  const activeProfile = profile;
+  const pseudo = activeProfile?.displayName || activeProfile?.pseudo || user?.email?.split('@')[0] || '';
   const initial = pseudo?.[0]?.toUpperCase() || '?';
+  const isAdmin = activeProfile?.role === 'admin';
 
   if (!mounted) return null;
 
@@ -97,6 +92,15 @@ export const UserMenu = () => {
         {user ? (
           <>
             <div className="px-2 mb-3"><p className="text-xs font-black text-brand truncate">{pseudo}</p></div>
+            
+            {isAdmin && (
+              <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-brand hover:bg-brand/5 rounded-xl mb-1 border border-brand/20">
+                <Link href="/admin" className="flex items-center w-full">
+                  <ShieldAlert className="mr-3 h-4 w-4" /> Espace Admin
+                </Link>
+              </DropdownMenuItem>
+            )}
+
             <DropdownMenuItem asChild className="cursor-pointer font-bold rounded-xl mb-1 focus:bg-brand/5 focus:text-brand">
               <Link href="/account" className="flex items-center w-full">
                 <UserIcon className="mr-3 h-4 w-4" /> Profil
