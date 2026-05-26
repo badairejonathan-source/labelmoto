@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useState, useEffect } from 'react';
 import { useFirebase, useMemoFirebase, useCollection } from '@/firebase';
@@ -13,7 +13,7 @@ import {
   Loader2, CheckCircle, ArrowLeft, 
   Store, Search, ChevronRight, X, ExternalLink, 
   Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
-  Database, AlertTriangle, FileSearch, ClipboardCheck, Clock
+  Database, AlertTriangle, FileSearch, ClipboardCheck, Terminal, Copy
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -24,7 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn, generateDealershipSlug } from '@/lib/utils';
-import { encodeGeohash, extractValidCoordinates } from '@/lib/geohash';
+import { extractValidCoordinates } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -33,9 +33,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
-
-// Import de la Server Action pour la migration backend
-import { reconcileLegacyUsersAction, type ReconciliationReport } from './actions';
 
 interface Submission {
   id: string;
@@ -82,9 +79,7 @@ export default function AdminPage() {
 
   // Migration State
   const [isAuditing, setIsAuditing] = useState(false);
-  const [isApplyingMigration, setIsApplyingMigration] = useState(false);
   const [migrationStats, setMigrationStats] = useState<MigrationStats | null>(null);
-  const [reconciliationReport, setReconciliationReport] = useState<ReconciliationReport | null>(null);
 
   const isAdmin = profile?.role === 'admin';
 
@@ -118,7 +113,6 @@ export default function AdminPage() {
   const runAudit = async () => {
     if (!firestore) return;
     setIsAuditing(true);
-    setReconciliationReport(null); // On reset le rapport précédent
     console.log("🔍 Démarrage de l'audit client...");
     
     try {
@@ -165,50 +159,6 @@ export default function AdminPage() {
         }
     } finally {
       setIsAuditing(false);
-    }
-  };
-
-  /**
-   * Action réelle : APPEL AU BACKEND (Server Action)
-   * On instrumente totalement cette fonction.
-   */
-  const applyMigration = async () => {
-    if (!user || !migrationStats) {
-        console.warn("⚠️ Impossible de lancer APPLY : données d'audit manquantes.");
-        return;
-    }
-    
-    if (migrationStats.toMigrate.length === 0) {
-      toast({ title: "Déjà à jour", description: "Aucun compte orphelin détecté." });
-      return;
-    }
-
-    if (!window.confirm(`Confirmer la migration de ${migrationStats.toMigrate.length} comptes via le serveur ?`)) return;
-
-    setIsApplyingMigration(true);
-    setReconciliationReport(null);
-    console.group("🚀 Action: APPLY RECONCILIATION");
-    console.log("Admin UID:", user.uid);
-    console.log("Cibles prévues:", migrationStats.toMigrate.length);
-
-    try {
-      const result = await reconcileLegacyUsersAction(user.uid);
-      console.log("📩 Rapport reçu du backend:", result);
-      setReconciliationReport(result);
-      
-      if (result.success) {
-        toast({ title: "Opération terminée !", description: `${result.stats.created} comptes créés, ${result.stats.errors} erreurs.` });
-        // On attend un peu avant de relancer l'audit pour laisser le temps à Firestore de se propager
-        setTimeout(() => runAudit(), 1000);
-      } else {
-        toast({ variant: "destructive", title: "Échec de l'action", description: result.message });
-      }
-    } catch (err: any) {
-      console.error("❌ Erreur critique lors de l'appel backend:", err);
-      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur a rencontré un problème inattendu." });
-    } finally {
-      setIsApplyingMigration(false);
-      console.groupEnd();
     }
   };
 
@@ -350,6 +300,11 @@ export default function AdminPage() {
     return formatDistanceToNow(date, { addSuffix: true, locale: fr });
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copié dans le presse-papier" });
+  };
+
   if (isUserLoading || !user || profile?.role !== 'admin') {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
@@ -452,10 +407,10 @@ export default function AdminPage() {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8">
                   <div className="space-y-2 text-center md:text-left">
                     <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
-                      <Database className="h-8 w-8 text-orange-500" /> Réconciliation Rétroactive
+                      <Database className="h-8 w-8 text-orange-500" /> Réconciliation CLI
                     </h2>
                     <p className="text-muted-foreground font-bold max-w-xl">
-                      Analyse des comptes historiques pour créer les documents d'identité (users/) manquants via le serveur.
+                      Utilisez le script CLI pour effectuer la migration réelle. L'audit ci-dessous est un Dry Run visuel.
                     </p>
                   </div>
                   <Button 
@@ -464,105 +419,95 @@ export default function AdminPage() {
                     className="bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-xs h-16 px-10 rounded-full shadow-2xl transition-all hover:scale-105 shrink-0"
                   >
                     {isAuditing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileSearch className="mr-2 h-5 w-5" />}
-                    Lancer l'audit (Dry Run)
+                    Actualiser l'audit
                   </Button>
                 </div>
               </section>
 
-              {migrationStats && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="lg:col-span-1 space-y-6">
-                    <Card className="bg-white rounded-3xl shadow-lg overflow-hidden h-fit border-none">
-                        <CardHeader className="bg-muted/50 border-b">
-                        <CardTitle className="text-sm font-black uppercase tracking-widest">Rapport d'Audit</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-8 space-y-6">
-                        <div className="flex justify-between items-center pb-4 border-b">
-                            <span className="text-[10px] font-black uppercase text-muted-foreground">Comptes Noyaux (users/)</span>
-                            <span className="text-xl font-black">{migrationStats.usersCount}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl border border-orange-100">
-                            <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-orange-500" />
-                            <span className="text-[10px] font-black uppercase text-orange-700">À RÉCONCILIER</span>
-                            </div>
-                            <span className="text-2xl font-black text-orange-600">{migrationStats.toMigrate.length}</span>
-                        </div>
-                        </CardContent>
-                        <CardFooter className="bg-muted/20 p-6">
-                        <Button 
-                            onClick={applyMigration} 
-                            disabled={migrationStats.toMigrate.length === 0 || isApplyingMigration}
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl transition-all active:scale-95"
-                        >
-                            {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4 fill-white" />}
-                            {isApplyingMigration ? "Migration en cours..." : "Appliquer via Backend (APPLY)"}
-                        </Button>
-                        </CardFooter>
-                    </Card>
-
-                    {reconciliationReport && (
-                        <Card className={cn("rounded-3xl border-2 shadow-2xl overflow-hidden animate-in zoom-in-95", reconciliationReport.success ? "border-green-400 bg-green-50/10" : "border-red-400 bg-red-50/10")}>
-                             <CardHeader className={cn("p-6 text-white", reconciliationReport.success ? "bg-green-600" : "bg-red-600")}>
-                                <CardTitle className="text-xs font-black uppercase flex items-center gap-2">
-                                    <ClipboardCheck className="h-4 w-4" /> Résultat de l'opération
-                                </CardTitle>
-                             </CardHeader>
-                             <CardContent className="p-6 space-y-4">
-                                <div className="grid grid-cols-2 gap-3 text-center">
-                                    <div className="bg-white p-2 rounded-xl border">
-                                        <p className="text-[8px] font-black uppercase text-muted-foreground">Créés</p>
-                                        <p className="text-xl font-black text-green-600">{reconciliationReport.stats.created}</p>
-                                    </div>
-                                    <div className="bg-white p-2 rounded-xl border">
-                                        <p className="text-[8px] font-black uppercase text-muted-foreground">Ignorés</p>
-                                        <p className="text-xl font-black text-muted-foreground">{reconciliationReport.stats.ignored}</p>
-                                    </div>
-                                </div>
-                                {reconciliationReport.stats.errors > 0 && (
-                                    <div className="p-2 bg-red-100 rounded-lg text-center">
-                                        <p className="text-[8px] font-black uppercase text-red-600">Erreurs</p>
-                                        <p className="text-lg font-black text-red-600">{reconciliationReport.stats.errors}</p>
-                                    </div>
-                                )}
-                                <p className="text-[9px] font-bold text-muted-foreground text-center italic mt-2">Terminé à {new Date(reconciliationReport.timestamp).toLocaleTimeString()}</p>
-                             </CardContent>
-                        </Card>
-                    )}
-                  </div>
-
-                  <Card className="lg:col-span-2 bg-white rounded-3xl shadow-lg border-none overflow-hidden">
-                    <CardHeader className="bg-muted/50 border-b">
-                      <CardTitle className="text-sm font-black uppercase tracking-widest">Détail des comptes orphelins (Dry Run)</CardTitle>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1 space-y-6">
+                  <Card className="bg-white rounded-3xl shadow-lg overflow-hidden h-fit border-none">
+                    <CardHeader className="bg-indigo-600 text-white">
+                      <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                        <Terminal className="h-4 w-4" /> Commandes CLI
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-0">
-                      <ScrollArea className="h-[550px]">
-                        {migrationStats.toMigrate.length > 0 ? (
-                          <div className="divide-y">
-                            {migrationStats.toMigrate.map((item, i) => (
-                              <div key={i} className="p-6 flex items-center justify-between group hover:bg-muted/30 transition-colors">
-                                <div className="space-y-1">
-                                  <p className="font-black text-sm uppercase">{item.name}</p>
-                                  <div className="flex items-center gap-3">
-                                    <code className="text-[8px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{item.uid}</code>
-                                    <Badge variant="outline" className="text-[7px] uppercase">{item.source}</Badge>
-                                  </div>
-                                </div>
-                                <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none uppercase font-black">Prêt pour création</Badge>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full py-20 opacity-30">
-                            <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
-                            <p className="font-black uppercase text-xs">Aucun orphelin détecté.</p>
-                          </div>
-                        )}
-                      </ScrollArea>
+                    <CardContent className="p-6 space-y-4">
+                      <div className="space-y-3">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground">1. Tester la migration (Dry)</p>
+                        <div className="bg-black text-green-400 p-3 rounded-xl font-mono text-[10px] flex justify-between items-center group">
+                          <code>npm run reconcile:dry</code>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 text-green-400 opacity-0 group-hover:opacity-100" onClick={() => copyToClipboard("npm run reconcile:dry")}><Copy className="h-3 w-3" /></Button>
+                        </div>
+                      </div>
+                      <div className="space-y-3 pt-2">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground">2. Appliquer réellement</p>
+                        <div className="bg-black text-orange-400 p-3 rounded-xl font-mono text-[10px] flex justify-between items-center group">
+                          <code>npm run reconcile:apply</code>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 text-orange-400 opacity-0 group-hover:opacity-100" onClick={() => copyToClipboard("npm run reconcile:apply")}><Copy className="h-3 w-3" /></Button>
+                        </div>
+                      </div>
+                      <div className="bg-muted/50 p-4 rounded-xl border border-dashed mt-4">
+                        <div className="flex gap-2 text-orange-600 items-start">
+                          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                          <p className="text-[9px] font-bold leading-relaxed italic">
+                            Les modifications via CLI ignorent les Security Rules et sont immédiates. Vérifiez l'audit avant d'appliquer.
+                          </p>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
+
+                  {migrationStats && (
+                    <Card className="bg-white rounded-3xl shadow-lg overflow-hidden h-fit border-none animate-in fade-in slide-in-from-left-4 duration-500">
+                      <CardHeader className="bg-muted/50 border-b">
+                        <CardTitle className="text-sm font-black uppercase tracking-widest">État de l'audit</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-6 space-y-4">
+                        <div className="flex justify-between items-center pb-2 border-b">
+                          <span className="text-[10px] font-black uppercase text-muted-foreground">Noyaux (users/)</span>
+                          <span className="text-xl font-black">{migrationStats.usersCount}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-orange-50 rounded-xl border border-orange-100">
+                          <span className="text-[10px] font-black uppercase text-orange-700">À RÉCONCILIER</span>
+                          <span className="text-2xl font-black text-orange-600">{migrationStats.toMigrate.length}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
-              )}
+
+                <Card className="lg:col-span-2 bg-white rounded-3xl shadow-lg border-none overflow-hidden">
+                  <CardHeader className="bg-muted/50 border-b">
+                    <CardTitle className="text-sm font-black uppercase tracking-widest">Liste des comptes orphelins (Dry Run)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <ScrollArea className="h-[550px]">
+                      {migrationStats && migrationStats.toMigrate.length > 0 ? (
+                        <div className="divide-y">
+                          {migrationStats.toMigrate.map((item, i) => (
+                            <div key={i} className="p-6 flex items-center justify-between group hover:bg-muted/30 transition-colors">
+                              <div className="space-y-1">
+                                <p className="font-black text-sm uppercase">{item.name}</p>
+                                <div className="flex items-center gap-3">
+                                  <code className="text-[8px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{item.uid}</code>
+                                  <Badge variant="outline" className="text-[7px] uppercase font-black">{item.source}</Badge>
+                                </div>
+                              </div>
+                              <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none uppercase font-black">Prêt</Badge>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full py-32 opacity-30">
+                          <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
+                          <p className="font-black uppercase text-xs">Aucun orphelin détecté.</p>
+                        </div>
+                      )}
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 
