@@ -87,7 +87,7 @@ export const UserMenu = () => {
 
 const NavigationIcons = () => {
   return (
-    <div className="hidden lg:flex items-center gap-6">
+    <div className="hidden lg:flex items-center gap-6 ml-32">
       <Link href="/entretien" className="flex flex-col items-center gap-1 group">
         <div className="h-[56px] w-[56px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
            <Image src="/images/icon-entretien.webp" alt="Entretien" width={40} height={40} className="object-contain" />
