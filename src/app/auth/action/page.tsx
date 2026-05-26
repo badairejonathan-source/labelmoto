@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2, AlertTriangle, KeyRound, ArrowRight, ShieldCheck, Home, RotateCcw } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertTriangle, KeyRound, ArrowRight, ShieldCheck, Home } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 
@@ -34,12 +34,8 @@ type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 type ActionState = 'loading' | 'success' | 'error' | 'resetPasswordForm' | 'resetPasswordSuccess';
 
-/**
- * Composant interne gérant la logique Firebase
- */
 function AuthActionHandler() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const { auth } = useFirebase();
   const { toast } = useToast();
 
@@ -57,6 +53,7 @@ function AuthActionHandler() {
   });
 
   useEffect(() => {
+    // Si pas de paramètres, c'est une erreur directe
     if (!mode || !oobCode) {
       setState('error');
       setErrorMessage("Le lien semble incomplet ou a déjà été utilisé.");
@@ -67,22 +64,23 @@ function AuthActionHandler() {
       try {
         switch (mode) {
           case 'verifyEmail':
+            // Validation réelle auprès de Firebase
             await applyActionCode(auth, oobCode);
             setState('success');
-            toast({ title: "Compte validé !", description: "Votre adresse e-mail a été confirmée." });
             break;
 
           case 'resetPassword':
+            // Vérifie si le code est encore valide et récupère l'email
             const email = await verifyPasswordResetCode(auth, oobCode);
             setUserEmail(email);
             setState('resetPasswordForm');
             break;
 
           case 'recoverEmail':
+            // Annulation d'un changement d'email frauduleux
             await checkActionCode(auth, oobCode);
             await applyActionCode(auth, oobCode);
             setState('success');
-            toast({ title: "Sécurité", description: "Le changement d'e-mail a été annulé avec succès." });
             break;
 
           default:
@@ -93,9 +91,9 @@ function AuthActionHandler() {
         console.error("Auth action error:", error);
         setState('error');
         if (error.code === 'auth/expired-action-code') {
-          setErrorMessage("Le lien a expiré. Merci de renouveler votre demande.");
+          setErrorMessage("Ce lien a expiré. Merci de renouveler votre demande.");
         } else if (error.code === 'auth/invalid-action-code') {
-          setErrorMessage("Ce lien est invalide ou a déjà été utilisé.");
+          setErrorMessage("Ce code de validation n'est plus valide ou a déjà été utilisé.");
         } else {
           setErrorMessage("Une erreur technique est survenue. Merci de réessayer plus tard.");
         }
@@ -103,7 +101,7 @@ function AuthActionHandler() {
     };
 
     handleAction();
-  }, [mode, oobCode, auth, toast]);
+  }, [mode, oobCode, auth]);
 
   const onResetSubmit = async (values: ResetPasswordValues) => {
     if (!oobCode) return;
@@ -111,8 +109,9 @@ function AuthActionHandler() {
     try {
       await confirmPasswordReset(auth, oobCode, values.password);
       setState('resetPasswordSuccess');
-      toast({ title: "Mot de passe modifié", description: "Vous pouvez maintenant vous connecter." });
+      toast({ title: "Mot de passe modifié", description: "Votre nouveau mot de passe est actif." });
     } catch (error: any) {
+      console.error("Confirm password error:", error);
       setState('resetPasswordForm');
       toast({ variant: 'destructive', title: "Erreur", description: "Impossible de modifier le mot de passe." });
     }
@@ -131,7 +130,7 @@ function AuthActionHandler() {
           <div className="p-16 text-center space-y-6">
             <Loader2 className="h-12 w-12 animate-spin text-brand mx-auto" />
             <p className="font-black uppercase tracking-widest text-[10px] text-muted-foreground animate-pulse">
-              Traitement en cours...
+              Vérification du lien...
             </p>
           </div>
         )}
@@ -142,11 +141,11 @@ function AuthActionHandler() {
               <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 className="h-10 w-10 text-white" />
               </div>
-              <CardTitle className="text-3xl font-black uppercase tracking-tighter">C'est fait !</CardTitle>
+              <CardTitle className="text-3xl font-black uppercase tracking-tighter">C'est validé !</CardTitle>
               <CardDescription className="text-white/80 font-bold">
                 {mode === 'verifyEmail' 
-                  ? "Votre adresse e-mail est maintenant validée." 
-                  : "L'opération a été effectuée avec succès."}
+                  ? "Votre adresse e-mail a été confirmée avec succès." 
+                  : "L'opération a été effectuée."}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-10 text-center">
@@ -167,7 +166,7 @@ function AuthActionHandler() {
                 <CardTitle className="text-2xl font-black uppercase tracking-tighter leading-none">Nouveau mot de passe</CardTitle>
               </div>
               <CardDescription className="text-white/80 font-bold">
-                Saisissez votre nouveau mot de passe pour <span className="text-white underline">{userEmail}</span>
+                Définissez votre nouveau mot de passe pour <span className="text-white underline">{userEmail}</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="p-10">
@@ -184,7 +183,7 @@ function AuthActionHandler() {
                   )} />
                   <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirmation</FormLabel>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirmez le mot de passe</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" {...field} />
                       </FormControl>
@@ -192,7 +191,7 @@ function AuthActionHandler() {
                     </FormItem>
                   )} />
                   <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg">
-                    Mettre à jour mon mot de passe
+                    Enregistrer le mot de passe
                   </Button>
                 </form>
               </Form>
@@ -206,8 +205,8 @@ function AuthActionHandler() {
               <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <ShieldCheck className="h-10 w-10 text-white" />
               </div>
-              <CardTitle className="text-3xl font-black uppercase tracking-tighter">Modifié !</CardTitle>
-              <CardDescription className="text-white/80 font-bold">Votre mot de passe a bien été mis à jour.</CardDescription>
+              <CardTitle className="text-3xl font-black uppercase tracking-tighter">C'est tout bon !</CardTitle>
+              <CardDescription className="text-white/80 font-bold">Votre mot de passe a bien été réinitialisé.</CardDescription>
             </CardHeader>
             <CardContent className="p-10 text-center">
               <Button asChild className="w-full bg-green-600 hover:bg-green-700 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg">
@@ -223,7 +222,7 @@ function AuthActionHandler() {
               <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <AlertTriangle className="h-10 w-10 text-white" />
               </div>
-              <CardTitle className="text-3xl font-black uppercase tracking-tighter">Erreur de lien</CardTitle>
+              <CardTitle className="text-3xl font-black uppercase tracking-tighter">Lien non valide</CardTitle>
             </CardHeader>
             <CardContent className="p-10 text-center space-y-8">
               <p className="font-bold text-muted-foreground leading-relaxed">
@@ -251,9 +250,6 @@ function AuthActionHandler() {
   );
 }
 
-/**
- * Page racine avec Suspense obligatoire
- */
 export default function AuthActionPage() {
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
