@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText, LogOut, ShieldAlert } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText, LogOut, ShieldAlert, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -47,7 +48,10 @@ export const UserMenu = () => {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="relative h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95"
+          className={cn(
+            "relative h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95",
+            isAdmin && "ring-2 ring-brand ring-offset-2"
+          )}
         >
           {user ? (
             <Avatar className="h-[57px] w-[57px] md:h-[65px] md:w-[65px] border-2 border-brand">
@@ -62,9 +66,30 @@ export const UserMenu = () => {
           <div className="absolute -bottom-0.5 -right-0.5 bg-brand text-white rounded-full p-0.5 border-2 border-white">
             <Menu className="h-3 w-3 md:h-4 w-4" />
           </div>
+          {isAdmin && (
+            <div className="absolute -top-1 -right-1 bg-indigo-600 text-white rounded-full p-1 border-2 border-white animate-pulse">
+                <ShieldAlert className="h-3 w-3" />
+            </div>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64 z-[3000] p-6 rounded-[2.5rem] border-2 shadow-2xl" align="end">
+        {isAdmin && (
+          <>
+            <DropdownMenuLabel className="text-[9px] uppercase font-black text-indigo-600 px-2 mb-2 tracking-[0.2em]">Administration</DropdownMenuLabel>
+            <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl mb-4 p-3 shadow-lg group">
+              <Link href="/admin" className="flex items-center w-full justify-between">
+                <div className="flex items-center gap-3">
+                    <Settings className="h-4 w-4 animate-spin-slow group-hover:rotate-90 transition-transform" /> 
+                    <span>ESPACE ADMIN</span>
+                </div>
+                <ShieldAlert className="h-4 w-4" />
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="mx-2 mb-4 border-muted/50" />
+          </>
+        )}
+
         <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-4 tracking-[0.2em]">Les Guides Moto</DropdownMenuLabel>
         
         <div className="grid grid-cols-2 gap-4 px-2 mb-6">
@@ -93,14 +118,6 @@ export const UserMenu = () => {
           <>
             <div className="px-2 mb-3"><p className="text-xs font-black text-brand truncate">{pseudo}</p></div>
             
-            {isAdmin && (
-              <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-brand hover:bg-brand/5 rounded-xl mb-1 border border-brand/20">
-                <Link href="/admin" className="flex items-center w-full">
-                  <ShieldAlert className="mr-3 h-4 w-4" /> Espace Admin
-                </Link>
-              </DropdownMenuItem>
-            )}
-
             <DropdownMenuItem asChild className="cursor-pointer font-bold rounded-xl mb-1 focus:bg-brand/5 focus:text-brand">
               <Link href="/account" className="flex items-center w-full">
                 <UserIcon className="mr-3 h-4 w-4" /> Profil
@@ -116,6 +133,15 @@ export const UserMenu = () => {
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>
+      <style jsx global>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 8s linear infinite;
+        }
+      `}</style>
     </DropdownMenu>
   );
 };

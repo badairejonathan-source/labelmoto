@@ -11,6 +11,9 @@ import { usePathname } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
+// UID de secours pour l'administrateur principal
+const MASTER_ADMIN_UID = "A366V1X8Hqf1pA63nU3N8B7l8fD3";
+
 interface UserAuthState {
   user: User | null;
   profile: any | null;
@@ -67,7 +70,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
       auth,
       async (firebaseUser) => {
         if (firebaseUser) {
-          // --- LOGIQUE DE MIGRATION PARESSEUSE (RECONCILIATION) ---
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           
           try {
@@ -81,11 +83,10 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               throw err;
             });
             
-            // Si le document noyau n'existe pas (compte legacy ou erreur d'inscription)
+            // Migration paresseuse : Création du noyau si manquant
             if (!docSnapInitial.exists()) {
               console.log("🛠️ Migration paresseuse déclenchée pour:", firebaseUser.uid);
               
-              // On cherche s'il a déjà un profil métier existant pour déterminer le rôle
               const stdRef = doc(firestore, 'standardProfiles', firebaseUser.uid);
               const proRef = doc(firestore, 'professionalProfiles', firebaseUser.uid);
               
@@ -94,15 +95,19 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 getDoc(proRef).catch(() => ({ exists: () => false, data: () => null }))
               ]);
 
-              const role = proSnap.exists() ? 'pro' : 'user';
-              const onboardingComplete = stdSnap.exists() || proSnap.exists();
+              // Détermination du rôle (avec secours Master Admin)
+              let role = proSnap.exists() ? 'pro' : 'user';
+              if (firebaseUser.uid === MASTER_ADMIN_UID) {
+                role = 'admin';
+              }
+
+              const onboardingComplete = stdSnap.exists() || proSnap.exists() || role === 'admin';
               const existingData = (proSnap.exists() ? proSnap.data() : stdSnap.data()) || {};
 
-              // Création du noyau réconcilié
               await setDoc(userDocRef, {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
-                displayName: firebaseUser.displayName || existingData.pseudo || existingData.displayName || 'Motard',
+                displayName: firebaseUser.displayName || existingData.pseudo || existingData.displayName || (role === 'admin' ? 'Administrateur' : 'Motard'),
                 role: role,
                 status: firebaseUser.emailVerified ? 'active' : 'pending_verification',
                 createdAt: existingData.createdAt || serverTimestamp(),
@@ -121,16 +126,23 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             }
           } catch (e) {
-            // Silently fail, profile tracking will retry on next state change
+            console.error("Erreur lors de la migration utilisateur:", e);
           }
 
           // Écoute temps-réel du document NOYAU identitaire
           const unsubscribeDoc = onSnapshot(
             userDocRef, 
             (docSnap) => {
+              let profileData = docSnap.exists() ? docSnap.data() : null;
+              
+              // Sécurité de secours : On force le rôle admin dans l'état local si c'est le MASTER UID
+              if (firebaseUser.uid === MASTER_ADMIN_UID && profileData) {
+                profileData.role = 'admin';
+              }
+
               setUserAuthState({
                 user: firebaseUser,
-                profile: docSnap.exists() ? docSnap.data() : null,
+                profile: profileData,
                 isUserLoading: false,
                 userError: null
               });
