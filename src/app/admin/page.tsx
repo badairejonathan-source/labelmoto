@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -10,7 +11,7 @@ import {
   Loader2, CheckCircle, ArrowLeft, ShieldAlert, 
   Store, Search, ChevronRight, X, ExternalLink, 
   Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
-  Filter
+  Filter, Link as LinkIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -50,6 +51,7 @@ interface Submission {
   publishedCollection?: string;
   publishedDocId?: string;
   publishedAt?: any;
+  publishTargetId?: string; // Utilisé pour lier à un doublon existant
   [key: string]: any;
 }
 
@@ -158,14 +160,17 @@ export default function AdminPage() {
       const data = editDraft;
       const coords = extractValidCoordinates(data);
       
-      // Mapping strict vers le schéma public actuel
-      const publicData = {
+      // 1. Détermination de l'ID cible (Doublon ou Nouvel ID)
+      const targetDocId = data.publishTargetId || data.id;
+      const isUpdate = !!data.publishTargetId;
+
+      // 2. Mapping strict vers le schéma public (Champs métier uniquement)
+      const publicData: any = {
         title: data.businessName,
         category: data.categoryRequested,
-        // Normalisation appSection
         appSection: data.appSectionRequested === 'both' ? 'shopping' : data.appSectionRequested,
-        address: data.addressRaw, // Futur champ normalisé
-        addresss: data.addressRaw, // Champ historique COMPATIBILITÉ CARTE
+        address: data.addressRaw, 
+        addresss: data.addressRaw, // COMPATIBILITÉ CARTE
         phoneNumber: data.phone,
         email: data.email,
         website: data.website || '',
@@ -177,32 +182,39 @@ export default function AdminPage() {
         geohash: coords ? encodeGeohash(coords.lat, coords.lng, 9) : null,
         slug: generateDealershipSlug({ title: data.businessName, address: data.addressRaw }),
         isClaimed: true,
-        currentStatus: 'OPERATIONAL',
         timestamp: serverTimestamp(),
-        rating: "0",
-        ratingNumber: 0,
-        reviewCount: 0,
         publishedAt: serverTimestamp(),
-        submissionId: data.id // Lien vers l'origine
+        submissionId: data.id 
       };
+
+      // 3. Initialisation des champs système UNIQUEMENT si c'est une création
+      if (!isUpdate) {
+        publicData.rating = "0";
+        publicData.ratingNumber = 0;
+        publicData.reviewCount = 0;
+        publicData.currentStatus = 'OPERATIONAL';
+      }
 
       const targetCol = data.appSectionRequested === 'association' ? 'associations' : 
                        (data.appSectionRequested === 'relais' ? 'relais' : 'concessions');
       
-      // Écriture de la fiche publique
-      await setDocumentNonBlocking(doc(firestore, targetCol, data.id), publicData, { merge: true });
+      // 4. Écriture de la fiche publique (MERGE obligatoire pour ne pas écraser les champs système existants)
+      await setDocumentNonBlocking(doc(firestore, targetCol, targetDocId), publicData, { merge: true });
       
-      // Mise à jour de la soumission (Historique)
+      // 5. Mise à jour de la soumission (CONSERVATION HISTORIQUE)
       await updateDocumentNonBlocking(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
         publishedAt: serverTimestamp(),
         publishedCollection: targetCol,
-        publishedDocId: data.id,
+        publishedDocId: targetDocId,
         reviewedBy: user?.uid,
         reviewedAt: serverTimestamp()
       });
       
-      toast({ title: "Fiche publiée avec succès !", description: `Visible dans la collection ${targetCol}` });
+      toast({ 
+        title: isUpdate ? "Fiche mise à jour !" : "Nouvelle fiche publiée !", 
+        description: `Cible : ${targetCol}/${targetDocId}` 
+      });
       setIsDetailOpen(false);
     } catch (e: any) {
       toast({ variant: "destructive", title: "Erreur de publication", description: e.message });
@@ -211,9 +223,15 @@ export default function AdminPage() {
     }
   };
 
+  const handleLinkToDuplicate = (dup: any) => {
+    if (!editDraft) return;
+    setEditDraft({ ...editDraft, publishTargetId: dup.id });
+    toast({ title: "Lien établi", description: `La publication mettra à jour la fiche ${dup.id}` });
+  };
+
   const handleDelete = () => {
     if (!selectedId || !firestore) return;
-    if (!window.confirm("Supprimer cette soumission définitivement ?")) return;
+    if (!window.confirm("Supprimer cette soumission définitivement ? (L'historique sera perdu)")) return;
     
     deleteDocumentNonBlocking(doc(firestore, 'listing_submissions', selectedId));
     setIsDetailOpen(false);
@@ -449,12 +467,23 @@ export default function AdminPage() {
                             <CardContent className="p-4 space-y-4">
                                 {duplicates.length > 0 ? (
                                     duplicates.map(d => (
-                                        <div key={d.id} className="bg-white p-3 rounded-xl border flex justify-between items-center">
-                                            <div className="min-w-0">
-                                                <p className="font-black text-[10px] uppercase truncate">{d.title}</p>
-                                                <p className="text-[8px] text-muted-foreground truncate">{d.phoneNumber}</p>
+                                        <div key={d.id} className="bg-white p-3 rounded-xl border flex flex-col gap-2">
+                                            <div className="flex justify-between items-start gap-2">
+                                                <div className="min-w-0">
+                                                    <p className="font-black text-[10px] uppercase truncate">{d.title}</p>
+                                                    <p className="text-[8px] text-muted-foreground truncate">{d.phoneNumber}</p>
+                                                </div>
+                                                <Badge className="bg-orange-100 text-orange-700 text-[7px] uppercase border-none shrink-0">{d.col}</Badge>
                                             </div>
-                                            <Badge className="bg-orange-100 text-orange-700 text-[7px] uppercase border-none shrink-0">{d.col}</Badge>
+                                            <Button 
+                                              variant="secondary" 
+                                              size="sm" 
+                                              className={cn("h-7 text-[8px] font-black uppercase rounded-lg", editDraft.publishTargetId === d.id && "bg-brand text-white")}
+                                              onClick={() => handleLinkToDuplicate(d)}
+                                            >
+                                              <LinkIcon className="mr-1 h-3 w-3" /> 
+                                              {editDraft.publishTargetId === d.id ? "Lien établi (MISE À JOUR)" : "Lier pour mise à jour"}
+                                            </Button>
                                         </div>
                                     ))
                                 ) : (
@@ -475,7 +504,7 @@ export default function AdminPage() {
                             <div className="pt-4">
                                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-black uppercase tracking-widest h-16 shadow-xl" onClick={handlePublish} disabled={isPublishing || editDraft.status === 'published'}>
                                     {isPublishing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Zap className="mr-2 h-5 w-5 fill-white" />}
-                                    Valider & Publier la fiche
+                                    {editDraft.publishTargetId ? "Mettre à jour la fiche liée" : "Valider & Publier la fiche"}
                                 </Button>
                                 {editDraft.status === 'published' && (
                                     <p className="text-center text-green-600 text-[10px] font-black uppercase tracking-widest mt-4">✅ Fiche publiée</p>
@@ -498,3 +527,4 @@ export default function AdminPage() {
     </div>
   );
 }
+

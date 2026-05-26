@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -7,6 +8,7 @@ import { slugify } from '@/lib/utils';
 
 /**
  * Schéma de validation strict pour les soumissions publiques.
+ * Normalisation de appSectionRequested avec des valeurs fermées cohérentes.
  */
 const submissionSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est trop court"),
@@ -55,7 +57,7 @@ export async function submitProAction(formData: FormData) {
   }
 
   try {
-    // Enregistrement dans le sas de quarantaine
+    // Enregistrement dans le sas de quarantaine (listing_submissions)
     const docRef = await addDoc(collection(firestore, 'listing_submissions'), {
       status: 'pending',
       createdAt: serverTimestamp(),
@@ -83,3 +85,4 @@ export async function submitProAction(formData: FormData) {
     return { error: "Une erreur technique est survenue lors de l'envoi." };
   }
 }
+
