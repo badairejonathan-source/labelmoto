@@ -147,7 +147,7 @@ export default function HomepageDeferred() {
                                     aria-label={`Lire l'article : ${article.display_title || article.title}`}
                                     className={cn(
                                         "group relative aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-xl border-2 bg-black transition-all duration-500 hover:shadow-brand/20",
-                                        isAsso ? "border-indigo-600/30 md:col-span-2 lg:col-span-1" : (isRelais ? "border-amber-600/30" : "border-brand/10")
+                                        isAsso ? "border-indigo-600/30" : (isRelais ? "border-amber-600/30" : "border-brand/10")
                                     )}
                                 >
                                     <Image 
