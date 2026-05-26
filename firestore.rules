@@ -71,10 +71,12 @@ service cloud.firestore {
     // --- EXTENSIONS MÉTIER ---
     match /standardProfiles/{userId} {
       allow get, create, update: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
       allow delete: if isAdmin();
     }
     match /professionalProfiles/{professionalId} {
       allow get, create, update: if isOwner(professionalId) || isAdmin();
+      allow list: if isAdmin();
       allow delete: if isAdmin();
     }
 
