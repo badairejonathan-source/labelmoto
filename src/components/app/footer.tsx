@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -7,10 +8,8 @@ import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
-const ADMIN_UID = "A36FqeWBHjQBLKQMaMSiFVBzGV22";
-
 const Footer = () => {
-  const { user } = useUser();
+  const { user, profile } = useUser();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
@@ -23,7 +22,7 @@ const Footer = () => {
   if (pathname === '/map') return null;
 
   const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
-  const isAdmin = mounted && user && user.uid === ADMIN_UID;
+  const isAdmin = mounted && profile?.role === 'admin';
 
   return (
     <footer className="bg-muted/30 border-t border-border/50">

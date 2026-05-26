@@ -27,7 +27,7 @@ import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlo
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { encodeGeohash, extractValidCoordinates } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -69,7 +69,7 @@ interface MigrationStats {
 }
 
 export default function AdminPage() {
-  const { firestore, user, isUserLoading } = useFirebase();
+  const { firestore, user, profile, isUserLoading } = useFirebase();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -85,7 +85,7 @@ export default function AdminPage() {
   const [isApplyingMigration, setIsApplyingMigration] = useState(false);
   const [migrationStats, setMigrationStats] = useState<MigrationStats | null>(null);
 
-  const isAdmin = user?.profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin';
 
   // Collection Listeners
   const submissionsQuery = useMemoFirebase(() => {
@@ -103,17 +103,21 @@ export default function AdminPage() {
   const { data: pendingComments } = useCollection(commentsQuery);
 
   useEffect(() => {
-    if (!isUserLoading && (!user || user.profile?.role !== 'admin')) {
-      router.push('/login');
+    if (!isUserLoading) {
+      if (!user) {
+        router.push('/login?callbackUrl=/admin');
+      } else if (profile && profile.role !== 'admin') {
+        toast({ variant: "destructive", title: "Accès refusé", description: "Vous n'avez pas les droits administrateur." });
+        router.push('/');
+      }
     }
-  }, [user, isUserLoading, router]);
+  }, [user, profile, isUserLoading, router, toast]);
 
   // Logic: Audit des données Firestore pour migration rétroactive
   const runAudit = async () => {
     if (!firestore) return;
     setIsAuditing(true);
     
-    // Helper to fetch with contextual error
     const fetchCollection = async (path: string) => {
       const colRef = collection(firestore, path);
       try {
@@ -130,7 +134,6 @@ export default function AdminPage() {
     };
 
     try {
-      // 1. Récupération de tous les documents des 3 collections clés
       const [usersSnap, stdSnap, proSnap] = await Promise.all([
         fetchCollection('users'),
         fetchCollection('standardProfiles'),
@@ -144,7 +147,6 @@ export default function AdminPage() {
       const toMigrate: any[] = [];
       const conflicts: any[] = [];
 
-      // Analyse des Standard Profiles pour trouver les orphelins (ceux sans users/{uid})
       stdSnap.forEach(docSnap => {
         const data = docSnap.data();
         if (!usersMap.has(docSnap.id)) {
@@ -159,7 +161,6 @@ export default function AdminPage() {
         }
       });
 
-      // Analyse des Pro Profiles
       proSnap.forEach(docSnap => {
         const data = docSnap.data();
         if (!usersMap.has(docSnap.id)) {
@@ -209,14 +210,13 @@ export default function AdminPage() {
       for (const item of migrationStats.toMigrate) {
         const userRef = doc(firestore, 'users', item.uid);
         
-        // On prépare le document noyau
         batch.set(userRef, {
           uid: item.uid,
           email: item.email || '',
           displayName: item.displayName,
           role: item.type,
           status: 'active',
-          emailVerifiedSync: false, // Sera mis à jour lors de leur prochain login
+          emailVerifiedSync: false,
           onboardingComplete: true,
           legacyMigrated: true,
           createdAt: item.data?.createdAt || serverTimestamp(),
@@ -225,7 +225,6 @@ export default function AdminPage() {
         }, { merge: true });
 
         count++;
-        // Firestore batch limit is 500
         if (count >= 450) break; 
       }
 
@@ -240,7 +239,7 @@ export default function AdminPage() {
       });
       
       toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
-      runAudit(); // Rafraîchir les stats
+      runAudit();
     } catch (e: any) {
       if (e.code !== 'permission-denied') {
         toast({ variant: "destructive", title: "Erreur migration", description: e.message });
@@ -250,7 +249,6 @@ export default function AdminPage() {
     }
   };
 
-  // Logic: Doublons et publication
   const findDuplicates = async (submission: Submission) => {
     if (!firestore) return;
     const collections = ['concessions', 'associations', 'relais'];
@@ -391,7 +389,7 @@ export default function AdminPage() {
     return formatDistanceToNow(date, { addSuffix: true, locale: fr });
   };
 
-  if (isUserLoading || !user || user.profile?.role !== 'admin') {
+  if (isUserLoading || !user || profile?.role !== 'admin') {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-brand" />
