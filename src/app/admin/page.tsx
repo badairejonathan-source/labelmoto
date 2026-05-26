@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,7 +13,7 @@ import {
   Loader2, CheckCircle, ArrowLeft, 
   Store, Search, ChevronRight, X, ExternalLink, 
   Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
-  Database, AlertTriangle, Play, FileSearch
+  Database, AlertTriangle, Play, FileSearch, ClipboardCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -36,7 +35,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 // Import de la Server Action pour la migration backend
-import { reconcileLegacyUsersAction } from './actions';
+import { reconcileLegacyUsersAction, type ReconciliationReport } from './actions';
 
 interface Submission {
   id: string;
@@ -85,6 +84,7 @@ export default function AdminPage() {
   const [isAuditing, setIsAuditing] = useState(false);
   const [isApplyingMigration, setIsApplyingMigration] = useState(false);
   const [migrationStats, setMigrationStats] = useState<MigrationStats | null>(null);
+  const [reconciliationReport, setReconciliationReport] = useState<ReconciliationReport | null>(null);
 
   const isAdmin = profile?.role === 'admin';
 
@@ -114,10 +114,9 @@ export default function AdminPage() {
     }
   }, [user, profile, isUserLoading, router, toast]);
 
-  // Logic: Audit visuel (Dry Run) - Toujours côté client pour le confort
+  // Logic: Audit visuel (Dry Run)
   const runAudit = async () => {
     if (!firestore) return;
-    console.group("🔍 Audit de Migration lancé (CLIENT)");
     setIsAuditing(true);
     
     try {
@@ -156,13 +155,12 @@ export default function AdminPage() {
     } catch (e: any) {
         if (e.code === 'permission-denied') {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: 'audit_migration',
+            path: 'users_audit',
             operation: 'list'
           } satisfies SecurityRuleContext));
         }
     } finally {
       setIsAuditing(false);
-      console.groupEnd();
     }
   };
 
@@ -172,23 +170,24 @@ export default function AdminPage() {
   const applyMigration = async () => {
     if (!user || !migrationStats || migrationStats.toMigrate.length === 0) return;
     
-    if (!window.confirm(`Lancer la migration de ${migrationStats.toMigrate.length} comptes via le serveur ?`)) return;
+    if (!window.confirm(`Confirmer la création de ${migrationStats.toMigrate.length} comptes via le serveur ?`)) return;
 
     setIsApplyingMigration(true);
-    console.log("🚀 Lancement de la migration BACKEND...");
+    setReconciliationReport(null);
 
     try {
       const result = await reconcileLegacyUsersAction(user.uid);
+      setReconciliationReport(result);
       
       if (result.success) {
-        toast({ title: "Migration réussie !", description: result.message + (result.count ? ` (${result.count} créés)` : '') });
-        // On relance l'audit pour vider la liste visuelle
+        toast({ title: "Réconciliation réussie !", description: `${result.stats.created} comptes créés.` });
+        // Rafraîchissement automatique de la vue
         runAudit();
       } else {
         toast({ variant: "destructive", title: "Échec migration", description: result.message });
       }
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur n'a pas pu traiter la demande." });
+      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur a rencontré un problème inattendu." });
     } finally {
       setIsApplyingMigration(false);
     }
@@ -434,7 +433,7 @@ export default function AdminPage() {
                       <Database className="h-8 w-8 text-orange-500" /> Réconciliation Rétroactive
                     </h2>
                     <p className="text-muted-foreground font-bold max-w-xl">
-                      Analyse des comptes historiques pour créer les documents d'identité (users/) manquants.
+                      Analyse des comptes historiques pour créer les documents d'identité (users/) manquants via le serveur.
                     </p>
                   </div>
                   <Button 
@@ -450,41 +449,60 @@ export default function AdminPage() {
 
               {migrationStats && (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <Card className="lg:col-span-1 bg-white rounded-3xl shadow-lg overflow-hidden h-fit border-none">
-                    <CardHeader className="bg-muted/50 border-b">
-                      <CardTitle className="text-sm font-black uppercase tracking-widest">Rapport d'Audit</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8 space-y-6">
-                      <div className="flex justify-between items-center pb-4 border-b">
-                        <span className="text-[10px] font-black uppercase text-muted-foreground">Comptes Noyaux (users/)</span>
-                        <span className="text-xl font-black">{migrationStats.usersCount}</span>
-                      </div>
-                      <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl border border-orange-100">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-orange-500" />
-                          <span className="text-[10px] font-black uppercase text-orange-700">À RÉCONCILIER</span>
+                  <div className="lg:col-span-1 space-y-6">
+                    <Card className="bg-white rounded-3xl shadow-lg overflow-hidden h-fit border-none">
+                        <CardHeader className="bg-muted/50 border-b">
+                        <CardTitle className="text-sm font-black uppercase tracking-widest">Rapport d'Audit</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-8 space-y-6">
+                        <div className="flex justify-between items-center pb-4 border-b">
+                            <span className="text-[10px] font-black uppercase text-muted-foreground">Comptes Noyaux (users/)</span>
+                            <span className="text-xl font-black">{migrationStats.usersCount}</span>
                         </div>
-                        <span className="text-2xl font-black text-orange-600">{migrationStats.toMigrate.length}</span>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="bg-muted/20 p-6">
-                      <Button 
-                        onClick={applyMigration} 
-                        disabled={migrationStats.toMigrate.length === 0 || isApplyingMigration}
-                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl transition-all active:scale-95"
-                      >
-                        {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4 fill-white" />}
-                        Appliquer via Backend (APPLY)
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                        <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                            <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-500" />
+                            <span className="text-[10px] font-black uppercase text-orange-700">À RÉCONCILIER</span>
+                            </div>
+                            <span className="text-2xl font-black text-orange-600">{migrationStats.toMigrate.length}</span>
+                        </div>
+                        </CardContent>
+                        <CardFooter className="bg-muted/20 p-6">
+                        <Button 
+                            onClick={applyMigration} 
+                            disabled={migrationStats.toMigrate.length === 0 || isApplyingMigration}
+                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl transition-all active:scale-95"
+                        >
+                            {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4 fill-white" />}
+                            {isApplyingMigration ? "Migration en cours..." : "Appliquer via Backend (APPLY)"}
+                        </Button>
+                        </CardFooter>
+                    </Card>
+
+                    {reconciliationReport && (
+                        <Card className={cn("rounded-3xl border-2 shadow-2xl overflow-hidden", reconciliationReport.success ? "border-green-400 bg-green-50/10" : "border-red-400 bg-red-50/10")}>
+                             <CardHeader className={cn("p-6 text-white", reconciliationReport.success ? "bg-green-600" : "bg-red-600")}>
+                                <CardTitle className="text-xs font-black uppercase flex items-center gap-2">
+                                    <ClipboardCheck className="h-4 w-4" /> Rapport de dernière exécution
+                                </CardTitle>
+                             </CardHeader>
+                             <CardContent className="p-6 space-y-4">
+                                <div className="grid grid-cols-2 gap-3 text-center">
+                                    <div className="bg-white p-2 rounded-xl border"><p className="text-[8px] font-black uppercase text-muted-foreground">Créés</p><p className="text-xl font-black text-green-600">{reconciliationReport.stats.created}</p></div>
+                                    <div className="bg-white p-2 rounded-xl border"><p className="text-[8px] font-black uppercase text-muted-foreground">Ignorés</p><p className="text-xl font-black text-muted-foreground">{reconciliationReport.stats.ignored}</p></div>
+                                </div>
+                                <p className="text-[9px] font-bold text-muted-foreground text-center italic">Lancé à {new Date(reconciliationReport.timestamp).toLocaleTimeString()}</p>
+                             </CardContent>
+                        </Card>
+                    )}
+                  </div>
 
                   <Card className="lg:col-span-2 bg-white rounded-3xl shadow-lg border-none overflow-hidden">
                     <CardHeader className="bg-muted/50 border-b">
                       <CardTitle className="text-sm font-black uppercase tracking-widest">Détail des comptes orphelins (Dry Run)</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
-                      <ScrollArea className="h-[450px]">
+                      <ScrollArea className="h-[550px]">
                         {migrationStats.toMigrate.length > 0 ? (
                           <div className="divide-y">
                             {migrationStats.toMigrate.map((item, i) => (
@@ -496,7 +514,7 @@ export default function AdminPage() {
                                     <Badge variant="outline" className="text-[7px] uppercase">{item.source}</Badge>
                                   </div>
                                 </div>
-                                <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none">À CRÉER</Badge>
+                                <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none uppercase font-black">À créer</Badge>
                               </div>
                             ))}
                           </div>
@@ -511,20 +529,6 @@ export default function AdminPage() {
                   </Card>
                 </div>
               )}
-
-              <div className="bg-indigo-50 p-8 rounded-[2rem] border-2 border-dashed border-indigo-200">
-                <div className="flex items-start gap-4">
-                  <Info className="h-6 w-6 text-indigo-600 shrink-0 mt-1" />
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-indigo-900">Fonctionnement du Refactor Backend</h3>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-indigo-700/80">
-                      <li className="flex gap-2">🔘 <p><strong>Stabilité</strong> : La réconciliation ne dépend plus de votre navigateur ni des règles Firestore client.</p></li>
-                      <li className="flex gap-2">🔘 <p><strong>Sécurité</strong> : Seul un Master Admin peut appeler l'action serveur.</p></li>
-                      <li className="flex gap-2">🔘 <p><strong>Intégrité</strong> : Le serveur recalcule lui-même l'audit avant d'appliquer les écritures batch (Admin SDK).</p></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
             </div>
           </TabsContent>
 
