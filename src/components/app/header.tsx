@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
 import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc, useFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -140,6 +140,7 @@ const Header: React.FC<any> = ({
     searchOnly = false
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { firestore } = useFirebase();
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -327,9 +328,11 @@ const Header: React.FC<any> = ({
             <NavigationIcons />
         </div>
         
-        <div className="w-full max-w-3xl mx-auto relative">
-             <QuickFilters />
-        </div>
+        {pathname !== '/map' && (
+            <div className="w-full max-w-3xl mx-auto relative">
+                 <QuickFilters />
+            </div>
+        )}
     </div>
   );
 };
