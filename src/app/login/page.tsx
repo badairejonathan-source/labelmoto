@@ -11,8 +11,6 @@ import { useFirebase } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  sendEmailVerification,
   updateProfile,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -26,7 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, KeyRound, ArrowLeft, User } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
-import { getActionCodeSettings } from '@/lib/auth-config';
+import { sendCustomVerificationEmailAction, sendCustomPasswordResetEmailAction } from '@/app/auth/actions';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Adresse e-mail invalide.' }),
@@ -107,12 +105,10 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      // 3. Envoi du mail de vérification avec SETTINGS PERSONNALISÉS
-      // On redirige vers l'onboarding après validation
-      const settings = getActionCodeSettings('/account');
-      await sendEmailVerification(userCredential.user, settings);
+      // 3. PHASE 2 : Envoi via Server Action (Resend + HTML Template)
+      await sendCustomVerificationEmailAction(values.email);
       
-      toast({ title: 'Compte créé !', description: 'Vérifiez votre boîte de réception pour valider votre inscription.' });
+      toast({ title: 'Compte créé !', description: 'Un e-mail de bienvenue a été envoyé.' });
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (error: any) {
       toast({
@@ -132,11 +128,14 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      // Utilisation des paramètres personnalisés pour le reset mot de passe
-      const settings = getActionCodeSettings('/login');
-      await sendPasswordResetEmail(auth, resetEmail, settings);
-      toast({ title: 'E-mail envoyé !', description: 'Consultez votre boîte mail pour réinitialiser votre mot de passe.' });
-      setIsResetDialogOpen(false);
+      // PHASE 2 : Reset mot de passe custom HTML
+      const result = await sendCustomPasswordResetEmailAction(resetEmail);
+      if (result.success) {
+        toast({ title: 'E-mail envoyé !', description: 'Consultez votre boîte mail pour choisir votre nouveau mot de passe.' });
+        setIsResetDialogOpen(false);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Erreur', description: "Impossible d'envoyer l'e-mail." });
     } finally {

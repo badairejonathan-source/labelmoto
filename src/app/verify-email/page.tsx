@@ -4,7 +4,6 @@
 import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebase } from '@/firebase';
-import { sendEmailVerification } from 'firebase/auth';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +13,7 @@ import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
-import { getActionCodeSettings } from '@/lib/auth-config';
+import { sendCustomVerificationEmailAction } from '@/app/auth/actions';
 
 function VerifyEmailContent() {
   const { user, auth, firestore } = useFirebase();
@@ -43,17 +42,19 @@ function VerifyEmailContent() {
   }, [countdown]);
 
   const handleResend = async () => {
-    if (!user || countdown > 0) return;
+    if (!email || countdown > 0) return;
     setIsResending(true);
     try {
-      // Forcer le handler personnalisé lors du renvoi
-      const settings = getActionCodeSettings('/account');
-      await sendEmailVerification(user, settings);
-      
-      toast({ title: "E-mail envoyé !", description: "Vérifiez vos spams si vous ne le recevez pas." });
-      setCountdown(60);
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erreur", description: "Trop de tentatives. Réessayez plus tard." });
+      // PHASE 2 : Renvoi via Server Action (Resend + HTML)
+      const result = await sendCustomVerificationEmailAction(email);
+      if (result.success) {
+        toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (et vos spams)." });
+        setCountdown(60);
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de renvoyer le lien. Réessayez plus tard." });
     } finally {
       setIsResending(false);
     }
@@ -111,14 +112,14 @@ function VerifyEmailContent() {
             </div>
             <CardTitle className="text-3xl font-black uppercase tracking-tighter">Dernière étape !</CardTitle>
             <CardDescription className="text-white/80 font-bold text-lg leading-tight">
-              Un e-mail de validation a été envoyé à :<br/>
+              Un bel e-mail de validation a été envoyé à :<br/>
               <span className="text-white underline">{email}</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="p-10 space-y-8">
             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
                 <p className="text-sm font-bold text-muted-foreground leading-relaxed text-center">
-                    Cliquez sur le lien dans l'e-mail pour activer votre compte. Une fois fait, cliquez sur le bouton ci-dessous.
+                    Cliquez sur le bouton dans l'e-mail pour activer votre compte. Une fois fait, cliquez ici.
                 </p>
                 <Button onClick={checkVerification} disabled={isChecking} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-14 rounded-full shadow-lg transition-transform active:scale-95">
                     {isChecking ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
@@ -135,7 +136,7 @@ function VerifyEmailContent() {
                     className="w-full rounded-full border-brand text-brand hover:bg-brand/5 h-12 font-black uppercase text-[10px] tracking-widest"
                 >
                     {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-3.5 w-3.5" />}
-                    {countdown > 0 ? `Attendre ${countdown}s` : "Renvoyer l'e-mail de validation"}
+                    {countdown > 0 ? `Attendre ${countdown}s` : "Renvoyer l'e-mail premium"}
                 </Button>
             </div>
           </CardContent>
