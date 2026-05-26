@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Service d'envoi d'emails via Resend.
  * Centralise la logique de notification transactionnelle.

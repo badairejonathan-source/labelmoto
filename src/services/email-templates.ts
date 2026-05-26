@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Templates HTML premium pour les emails Label Moto.
  * Design responsive, épuré et brandé.
@@ -61,7 +60,7 @@ export const getPasswordResetEmailTemplate = (link: string) => layout(`
   <h1>Nouveau mot de passe</h1>
   <p>Bonjour,</p>
   <p>Vous avez demandé à réinitialiser le mot de passe de votre compte <strong>Label Moto</strong>.</p>
-  <p>Cliquez sur le bouton ci-dessous pour choisir votre nouveau mot de passe :</p>
+  <p>Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe :</p>
   <div class="button-container">
     <a href="${link}" class="button">Réinitialiser mon mot de passe</a>
   </div>
