@@ -75,7 +75,7 @@ export const UserMenu = () => {
           <>
             <div className="px-2 py-2 mb-2"><p className="text-sm font-black text-brand truncate">{pseudo}</p></div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="cursor-pointer font-bold"><Link href="/account"><UserIcon className="mr-2 h-4 w-4" /> Profil</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer font-bold"><UserIcon className="mr-2 h-4 w-4" /> Profil</DropdownMenuItem>
             <DropdownMenuItem onClick={() => signOut(auth)} className="cursor-pointer text-destructive">Déconnexion</DropdownMenuItem>
           </>
         ) : (
@@ -254,7 +254,7 @@ const Header: React.FC<any> = ({
             <Input 
                 type="text" 
                 placeholder={placeholderText} 
-                className="pr-16 md:pr-20 rounded-full shadow-2xl bg-white/95 focus:bg-white border-none px-6 md:px-10 h-12 md:h-14 font-bold text-sm md:text-base transition-all"
+                className="pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-none px-6 md:px-10 h-12 md:h-14 font-bold text-sm md:text-base transition-all"
                 value={searchTerm} 
                 onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }}
                 onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}
@@ -267,15 +267,15 @@ const Header: React.FC<any> = ({
                 autoComplete="off"
             />
             {searchTerm && (
-                <button onClick={clearSearch} className="absolute right-14 md:right-16 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand">
+                <button onClick={clearSearch} className="absolute right-20 md:right-24 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand">
                     <X className="h-4 w-4" />
                 </button>
             )}
             <Button 
-                className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[44px] w-[44px] md:h-[52px] md:w-[52px] shadow-lg hover:scale-105 active:scale-95 transition-all" 
+                className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[70px] w-[70px] shadow-lg hover:scale-105 active:scale-95 transition-all" 
                 onClick={() => { onSearch(); setShowSuggestions(false); }}
             >
-                <Search className="h-5 w-5 md:h-6 md:w-6" />
+                <Search className="h-8 w-8" />
             </Button>
         </div>
 
