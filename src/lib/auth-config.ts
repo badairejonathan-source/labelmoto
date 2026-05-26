@@ -10,11 +10,11 @@ const APP_URL = 'https://labelmoto.fr';
 
 /**
  * Paramètres pour les e-mails de vérification et de réinitialisation.
- * Configure uniquement la destination FINALE après le handler /auth/action.
+ * On indique à Firebase uniquement la destination FINALE après traitement par le handler.
  */
 export const getActionCodeSettings = (finalPath: string = '/account'): ActionCodeSettings => {
   return {
-    // Cette URL doit être autorisée dans la console Firebase (Authorized Domains)
+    // Cette URL doit être autorisée dans la console Firebase
     url: `${APP_URL}${finalPath}`,
     handleCodeInApp: true,
   };

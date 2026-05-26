@@ -91,9 +91,9 @@ function AuthActionHandler() {
         if (error.code === 'auth/expired-action-code') {
           setErrorMessage("Ce lien a expiré. Merci de renouveler votre demande.");
         } else if (error.code === 'auth/invalid-action-code') {
-          setErrorMessage("Ce code de validation n'est plus valide ou a déjà été utilisé.");
+          setErrorMessage("Ce code n'est plus valide ou a déjà été utilisé.");
         } else {
-          setErrorMessage("Une erreur technique est survenue. Merci de réessayer plus tard.");
+          setErrorMessage("Une erreur technique est survenue.");
         }
       }
     };
@@ -108,7 +108,6 @@ function AuthActionHandler() {
       await confirmPasswordReset(auth, oobCode, values.password);
       setState('resetPasswordSuccess');
       toast({ title: "Mot de passe modifié", description: "Votre nouveau mot de passe est actif." });
-      // Redirection auto après 3s
       setTimeout(() => router.push('/login'), 3000);
     } catch (error: any) {
       setState('resetPasswordForm');
@@ -210,7 +209,7 @@ function AuthActionHandler() {
               <CardDescription className="text-white/80 font-bold">Votre mot de passe a bien été mis à jour.</CardDescription>
             </CardHeader>
             <CardContent className="p-10 text-center">
-              <p className="text-[10px] font-bold text-muted-foreground mb-6 uppercase tracking-widest">Redirection automatique vers la connexion...</p>
+              <p className="text-[10px] font-bold text-muted-foreground mb-6 uppercase tracking-widest">Redirection vers la connexion...</p>
               <Button asChild className="w-full bg-green-600 hover:bg-green-700 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg">
                 <Link href="/login">Se connecter maintenant</Link>
               </Button>
@@ -234,9 +233,6 @@ function AuthActionHandler() {
                 <Button asChild variant="outline" className="font-black uppercase tracking-widest text-[10px] h-12 rounded-xl border-2">
                   <Link href="/login">Retourner à la connexion</Link>
                 </Button>
-                <Button asChild variant="ghost" className="font-black uppercase tracking-widest text-[10px] h-12 rounded-xl">
-                  <Link href="/contact">Contacter le support</Link>
-                </Button>
               </div>
             </CardContent>
           </>
@@ -255,12 +251,7 @@ function AuthActionHandler() {
 export default function AuthActionPage() {
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
-      <Suspense fallback={
-        <div className="flex flex-col items-center gap-6">
-          <Loader2 className="h-12 w-12 animate-spin text-brand" />
-          <p className="font-black uppercase tracking-widest text-[10px] text-muted-foreground animate-pulse">Initialisation...</p>
-        </div>
-      }>
+      <Suspense fallback={<Loader2 className="h-12 w-12 animate-spin text-brand" />}>
         <AuthActionHandler />
       </Suspense>
     </div>
