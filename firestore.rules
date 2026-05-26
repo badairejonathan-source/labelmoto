@@ -23,6 +23,8 @@ service cloud.firestore {
       return isSignedIn() && (
         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin")
         || request.auth.uid == "A36FqeWBHjQBLKQMaMSiFVBzGV22"
+        || request.auth.uid == "A366V1X8Hqf1pA63nU3N8B7l8fD3"
+        || request.auth.uid == "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"
         || request.auth.token.email == "badjoe950@hotmail.com"
       );
     }
@@ -33,8 +35,10 @@ service cloud.firestore {
 
     // --- NOYAU IDENTITÉ (users) ---
     match /users/{userId} {
-      // Un admin a un contrôle total (list, create, get, update, delete)
-      allow read, write: if isAdmin() || isOwner(userId);
+      // Sécurité stricte : Un admin peut tout faire. L'utilisateur peut lire son profil et le mettre à jour.
+      // On NE permet PLUS la création par n'importe qui pour la migration (géré par le backend désormais).
+      allow create: if isOwner(userId) || isAdmin();
+      allow read, update, delete: if isAdmin() || isOwner(userId);
     }
 
     // --- COLLECTIONS PUBLIQUES ---
@@ -66,10 +70,12 @@ service cloud.firestore {
 
     // --- EXTENSIONS MÉTIER ---
     match /standardProfiles/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      allow read: if isAdmin() || isOwner(userId);
+      allow write: if isOwner(userId) || isAdmin();
     }
     match /professionalProfiles/{professionalId} {
-      allow read, write: if isOwner(professionalId) || isAdmin();
+      allow read: if isAdmin() || isOwner(professionalId);
+      allow write: if isOwner(professionalId) || isAdmin();
     }
 
     match /contact_messages/{messageId} {

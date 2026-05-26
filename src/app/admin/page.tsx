@@ -1,20 +1,20 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useFirebase, useMemoFirebase, useCollection } from '@/firebase';
 import { 
   collection, query, getDocs, doc, orderBy, where, 
-  serverTimestamp, writeBatch, getDoc, limit 
+  limit 
 } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  Loader2, CheckCircle, ArrowLeft, ShieldAlert, 
+  Loader2, CheckCircle, ArrowLeft, 
   Store, Search, ChevronRight, X, ExternalLink, 
   Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
-  Filter, Link as LinkIcon, Database, AlertTriangle, Play, FileSearch
+  Database, AlertTriangle, Play, FileSearch
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -34,6 +34,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+
+// Import de la Server Action pour la migration backend
+import { reconcileLegacyUsersAction } from './actions';
 
 interface Submission {
   id: string;
@@ -63,9 +66,7 @@ interface MigrationStats {
   usersCount: number;
   stdCount: number;
   proCount: number;
-  orphans: any[];
   toMigrate: any[];
-  conflicts: any[];
 }
 
 export default function AdminPage() {
@@ -113,167 +114,83 @@ export default function AdminPage() {
     }
   }, [user, profile, isUserLoading, router, toast]);
 
-  // Logic: Audit des données Firestore pour migration rétroactive
+  // Logic: Audit visuel (Dry Run) - Toujours côté client pour le confort
   const runAudit = async () => {
     if (!firestore) return;
-    console.group("🔍 Audit de Migration lancé");
+    console.group("🔍 Audit de Migration lancé (CLIENT)");
     setIsAuditing(true);
     
-    const fetchCollection = async (path: string) => {
-      console.log(`- Chargement de la collection: ${path}`);
-      const colRef = collection(firestore, path);
-      try {
-        const snap = await getDocs(colRef);
-        console.log(`  OK: ${snap.size} documents trouvés.`);
-        return snap;
-      } catch (err: any) {
-        console.error(`  ERREUR sur ${path}:`, err);
-        if (err.code === 'permission-denied') {
-          errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path,
-            operation: 'list'
-          } satisfies SecurityRuleContext));
-        }
-        throw err;
-      }
-    };
-
     try {
       const [usersSnap, stdSnap, proSnap] = await Promise.all([
-        fetchCollection('users'),
-        fetchCollection('standardProfiles'),
-        fetchCollection('professionalProfiles')
+        getDocs(collection(firestore, 'users')),
+        getDocs(collection(firestore, 'standardProfiles')),
+        getDocs(collection(firestore, 'professionalProfiles'))
       ]);
 
-      const usersMap = new Map();
-      usersSnap.forEach(d => usersMap.set(d.id, d.data()));
-
+      const usersIds = new Set(usersSnap.docs.map(d => d.id));
       const toMigrate: any[] = [];
 
       stdSnap.forEach(docSnap => {
-        const data = docSnap.data();
-        if (!usersMap.has(docSnap.id)) {
-          toMigrate.push({ 
-            uid: docSnap.id, 
-            email: data.email, 
-            type: 'user', 
-            source: 'standardProfiles', 
-            data,
-            displayName: data.pseudo || data.displayName || 'Motard'
-          });
+        if (!usersIds.has(docSnap.id)) {
+          toMigrate.push({ uid: docSnap.id, source: 'standard', name: docSnap.data().pseudo || 'Motard' });
+          usersIds.add(docSnap.id);
         }
       });
 
       proSnap.forEach(docSnap => {
-        const data = docSnap.data();
-        if (!usersMap.has(docSnap.id)) {
-          toMigrate.push({ 
-            uid: docSnap.id, 
-            email: data.email, 
-            type: 'pro', 
-            source: 'professionalProfiles', 
-            data,
-            displayName: data.companyName || data.pseudo || data.displayName || 'Pro'
-          });
+        if (!usersIds.has(docSnap.id)) {
+          toMigrate.push({ uid: docSnap.id, source: 'professional', name: docSnap.data().companyName || 'Pro' });
+          usersIds.add(docSnap.id);
         }
       });
 
-      console.log(`✅ Audit terminé. ${toMigrate.length} orphelins détectés.`);
       setMigrationStats({
         totalAuthEstimate: usersSnap.size + toMigrate.length,
         usersCount: usersSnap.size,
         stdCount: stdSnap.size,
         proCount: proSnap.size,
-        orphans: [],
         toMigrate,
-        conflicts: []
       });
 
-      toast({ title: "Audit terminé", description: `${toMigrate.length} comptes à réconcilier détectés.` });
+      toast({ title: "Audit terminé", description: `${toMigrate.length} orphelins détectés.` });
     } catch (e: any) {
-      console.error("❌ Échec critique de l'audit:", e);
+        if (e.code === 'permission-denied') {
+          errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: 'audit_migration',
+            operation: 'list'
+          } satisfies SecurityRuleContext));
+        }
     } finally {
       setIsAuditing(false);
       console.groupEnd();
     }
   };
 
+  /**
+   * Action réelle : APPEL AU BACKEND (Server Action)
+   */
   const applyMigration = async () => {
-    console.group("🚀 Action: APPLY RECONCILIATION");
+    if (!user || !migrationStats || migrationStats.toMigrate.length === 0) return;
     
-    if (!firestore || !migrationStats || !migrationStats.toMigrate || migrationStats.toMigrate.length === 0) {
-      console.warn("Fin précoce: Aucune donnée à migrer ou state absent.");
-      toast({ variant: "destructive", title: "Action impossible", description: "La liste des comptes à migrer est vide." });
-      console.groupEnd();
-      return;
-    }
-    
-    const count = migrationStats.toMigrate.length;
-    console.log(`Planifié: Migration de ${count} comptes.`);
-
-    if (!window.confirm(`Confirmer la création de ${count} documents noyaux ?`)) {
-      console.log("Action annulée par l'utilisateur.");
-      console.groupEnd();
-      return;
-    }
+    if (!window.confirm(`Lancer la migration de ${migrationStats.toMigrate.length} comptes via le serveur ?`)) return;
 
     setIsApplyingMigration(true);
-    const batch = writeBatch(firestore);
-    let itemsInBatch = 0;
+    console.log("🚀 Lancement de la migration BACKEND...");
 
     try {
-      for (const item of migrationStats.toMigrate) {
-        const userRef = doc(firestore, 'users', item.uid);
-        
-        const dataToSet = {
-          uid: item.uid,
-          email: item.email || '',
-          displayName: item.displayName,
-          role: item.type,
-          status: 'active',
-          emailVerifiedSync: false,
-          onboardingComplete: true,
-          legacyMigrated: true,
-          createdAt: item.data?.createdAt || serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          sourceProvider: 'legacy_migration_audit'
-        };
-
-        console.log(`- Préparation batch: users/${item.uid} (${item.displayName})`);
-        batch.set(userRef, dataToSet, { merge: true });
-        itemsInBatch++;
-
-        if (itemsInBatch >= 450) {
-            console.warn("Limite de batch Firestore (500) approchée. On s'arrête à 450.");
-            break;
-        }
-      }
-
-      console.log(`Envoi de ${itemsInBatch} écritures à Firestore...`);
-      await batch.commit();
-      console.log("✅ Batch COMMIT réussi !");
+      const result = await reconcileLegacyUsersAction(user.uid);
       
-      toast({ title: "Migration réussie", description: `${itemsInBatch} comptes réconciliés.` });
-      // Rafraîchir l'audit pour vider la liste
-      runAudit();
-    } catch (err: any) {
-      console.error("❌ ERREUR lors du commit du batch:", err);
-      if (err.code === 'permission-denied') {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-          path: 'users',
-          operation: 'write',
-          requestResourceData: { count_attempted: itemsInBatch }
-        } satisfies SecurityRuleContext));
+      if (result.success) {
+        toast({ title: "Migration réussie !", description: result.message + (result.count ? ` (${result.count} créés)` : '') });
+        // On relance l'audit pour vider la liste visuelle
+        runAudit();
       } else {
-        toast({ 
-          variant: "destructive", 
-          title: "Échec de la réconciliation", 
-          description: err.message || "Une erreur technique est survenue." 
-        });
+        toast({ variant: "destructive", title: "Échec migration", description: result.message });
       }
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Erreur technique", description: "Le serveur n'a pas pu traiter la demande." });
     } finally {
       setIsApplyingMigration(false);
-      console.groupEnd();
     }
   };
 
@@ -311,9 +228,9 @@ export default function AdminPage() {
     if (!firestore || !selectedId) return;
     updateDocumentNonBlocking(doc(firestore, 'listing_submissions', selectedId), { 
         status: newStatus, 
-        updatedAt: serverTimestamp(),
+        updatedAt: new Date(),
         reviewedBy: user?.uid,
-        reviewedAt: serverTimestamp()
+        reviewedAt: new Date()
     });
     setEditDraft(prev => prev ? { ...prev, status: newStatus } : null);
     toast({ title: `Statut mis à jour : ${newStatus}` });
@@ -323,7 +240,7 @@ export default function AdminPage() {
     if (!firestore || !editDraft) return;
     updateDocumentNonBlocking(doc(firestore, 'listing_submissions', editDraft.id), {
         ...editDraft,
-        updatedAt: serverTimestamp()
+        updatedAt: new Date()
     });
     toast({ title: "Modifications enregistrées" });
   };
@@ -344,7 +261,6 @@ export default function AdminPage() {
         category: data.categoryRequested,
         appSection: data.appSectionRequested === 'both' ? 'shopping' : data.appSectionRequested,
         address: data.addressRaw, 
-        addresss: data.addressRaw,
         phoneNumber: data.phone,
         email: data.email,
         website: data.website || '',
@@ -356,8 +272,7 @@ export default function AdminPage() {
         geohash: coords ? encodeGeohash(coords.lat, coords.lng, 9) : null,
         slug: generateDealershipSlug({ title: data.businessName, address: data.addressRaw }),
         isClaimed: true,
-        timestamp: serverTimestamp(),
-        publishedAt: serverTimestamp(),
+        publishedAt: new Date(),
         submissionId: data.id 
       };
 
@@ -375,11 +290,11 @@ export default function AdminPage() {
       
       await updateDocumentNonBlocking(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
-        publishedAt: serverTimestamp(),
+        publishedAt: new Date(),
         publishedCollection: targetCol,
         publishedDocId: targetDocId,
         reviewedBy: user?.uid,
-        reviewedAt: serverTimestamp()
+        reviewedAt: new Date()
       });
       
       toast({ 
@@ -519,16 +434,16 @@ export default function AdminPage() {
                       <Database className="h-8 w-8 text-orange-500" /> Réconciliation Rétroactive
                     </h2>
                     <p className="text-muted-foreground font-bold max-w-xl">
-                      Cet outil analyse les comptes créés avant le nouveau workflow. Il permet de recréer les documents identitaires manquants sans altérer les profils existants.
+                      Analyse des comptes historiques pour créer les documents d'identité (users/) manquants.
                     </p>
                   </div>
                   <Button 
                     onClick={runAudit} 
                     disabled={isAuditing}
-                    className="bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-xs h-16 px-10 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 shrink-0"
+                    className="bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-xs h-16 px-10 rounded-full shadow-2xl transition-all hover:scale-105 shrink-0"
                   >
                     {isAuditing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileSearch className="mr-2 h-5 w-5" />}
-                    Lancer l'audit des données
+                    Lancer l'audit (Dry Run)
                   </Button>
                 </div>
               </section>
@@ -541,43 +456,32 @@ export default function AdminPage() {
                     </CardHeader>
                     <CardContent className="p-8 space-y-6">
                       <div className="flex justify-between items-center pb-4 border-b">
-                        <span className="text-[10px] font-black uppercase text-muted-foreground">Comptes Noyaux (Actuels)</span>
+                        <span className="text-[10px] font-black uppercase text-muted-foreground">Comptes Noyaux (users/)</span>
                         <span className="text-xl font-black">{migrationStats.usersCount}</span>
-                      </div>
-                      <div className="flex justify-between items-center pb-4 border-b">
-                        <span className="text-[10px] font-black uppercase text-muted-foreground">Profils Pilotes (standard)</span>
-                        <span className="text-xl font-black">{migrationStats.stdCount}</span>
-                      </div>
-                      <div className="flex justify-between items-center pb-4 border-b">
-                        <span className="text-[10px] font-black uppercase text-muted-foreground">Profils Pros (professional)</span>
-                        <span className="text-xl font-black">{migrationStats.proCount}</span>
                       </div>
                       <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl border border-orange-100">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-orange-500" />
-                          <span className="text-[10px] font-black uppercase text-orange-700">À RÉCONCILIER (Invisibles)</span>
+                          <span className="text-[10px] font-black uppercase text-orange-700">À RÉCONCILIER</span>
                         </div>
                         <span className="text-2xl font-black text-orange-600">{migrationStats.toMigrate.length}</span>
                       </div>
                     </CardContent>
                     <CardFooter className="bg-muted/20 p-6">
                       <Button 
-                        onClick={() => {
-                            console.log("Clic sur le bouton APPLY détecté.");
-                            applyMigration();
-                        }} 
-                        disabled={(migrationStats.toMigrate?.length || 0) === 0 || isApplyingMigration}
+                        onClick={applyMigration} 
+                        disabled={migrationStats.toMigrate.length === 0 || isApplyingMigration}
                         className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-xl transition-all active:scale-95"
                       >
-                        {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4 fill-white" />}
-                        Appliquer la Réconciliation (Apply)
+                        {isApplyingMigration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4 fill-white" />}
+                        Appliquer via Backend (APPLY)
                       </Button>
                     </CardFooter>
                   </Card>
 
                   <Card className="lg:col-span-2 bg-white rounded-3xl shadow-lg border-none overflow-hidden">
                     <CardHeader className="bg-muted/50 border-b">
-                      <CardTitle className="text-sm font-black uppercase tracking-widest">Détail des comptes orphelins détectés (Mode Dry Run)</CardTitle>
+                      <CardTitle className="text-sm font-black uppercase tracking-widest">Détail des comptes orphelins (Dry Run)</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                       <ScrollArea className="h-[450px]">
@@ -586,23 +490,20 @@ export default function AdminPage() {
                             {migrationStats.toMigrate.map((item, i) => (
                               <div key={i} className="p-6 flex items-center justify-between group hover:bg-muted/30 transition-colors">
                                 <div className="space-y-1">
-                                  <p className="font-black text-sm uppercase">{item.displayName}</p>
+                                  <p className="font-black text-sm uppercase">{item.name}</p>
                                   <div className="flex items-center gap-3">
                                     <code className="text-[8px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{item.uid}</code>
                                     <Badge variant="outline" className="text-[7px] uppercase">{item.source}</Badge>
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                  <p className="text-[9px] font-bold text-muted-foreground">{item.email}</p>
-                                  <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none">PRÊT POUR MIGRATION</Badge>
-                                </div>
+                                <Badge className="bg-blue-100 text-blue-700 text-[8px] border-none">À CRÉER</Badge>
                               </div>
                             ))}
                           </div>
                         ) : (
                           <div className="flex flex-col items-center justify-center h-full py-20 opacity-30">
                             <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
-                            <p className="font-black uppercase text-xs">Aucun orphelin détecté. Données saines.</p>
+                            <p className="font-black uppercase text-xs">Données saines.</p>
                           </div>
                         )}
                       </ScrollArea>
@@ -615,12 +516,11 @@ export default function AdminPage() {
                 <div className="flex items-start gap-4">
                   <Info className="h-6 w-6 text-indigo-600 shrink-0 mt-1" />
                   <div className="space-y-4">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-indigo-900">Rappel de la Logique de Migration</h3>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-indigo-900">Fonctionnement du Refactor Backend</h3>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-indigo-700/80">
-                      <li className="flex gap-2">🔘 <p><strong>Migration Paresseuse</strong> : Un utilisateur sans document noyau est automatiquement réconcilié lors de sa prochaine connexion via le <code>FirebaseProvider</code>.</p></li>
-                      <li className="flex gap-2">🔘 <p><strong>Intégrité des Données</strong> : Les profils métiers ne sont jamais supprimés ni modifiés. Seul le document <code>users/</code> (Identité) est créé ou enrichi.</p></li>
-                      <li className="flex gap-2">🔘 <p><strong>Vérification Email</strong> : L'état vérifié sera resynchronisé au premier Login. En attendant, ils sont marqués <code>emailVerifiedSync: false</code>.</p></li>
-                      <li className="flex gap-2">🔘 <p><strong>Audit Bulk (Script)</strong> : Cette interface permet de traiter en masse les comptes "silencieux" qui ne se sont pas connectés depuis la mise à jour.</p></li>
+                      <li className="flex gap-2">🔘 <p><strong>Stabilité</strong> : La réconciliation ne dépend plus de votre navigateur ni des règles Firestore client.</p></li>
+                      <li className="flex gap-2">🔘 <p><strong>Sécurité</strong> : Seul un Master Admin peut appeler l'action serveur.</p></li>
+                      <li className="flex gap-2">🔘 <p><strong>Intégrité</strong> : Le serveur recalcule lui-même l'audit avant d'appliquer les écritures batch (Admin SDK).</p></li>
                     </ul>
                   </div>
                 </div>
@@ -710,7 +610,7 @@ export default function AdminPage() {
                                 <Input value={editDraft.categoryRequested} onChange={e => setEditDraft({...editDraft, categoryRequested: e.target.value})} className="font-bold rounded-xl h-12" />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (mappe vers address et addresss)</Label>
+                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (mappe vers address)</Label>
                                 <Textarea value={editDraft.addressRaw} onChange={e => setEditDraft({...editDraft, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px]" />
                                 {editDraft.needsGeocoding && <p className="text-[8px] text-orange-500 font-bold ml-1">⚠️ Géocodage requis ou à vérifier.</p>}
                             </div>
@@ -779,8 +679,7 @@ export default function AdminPage() {
                                               className={cn("h-7 text-[8px] font-black uppercase rounded-lg", editDraft.publishTargetId === d.id && "bg-brand text-white")}
                                               onClick={() => handleLinkToDuplicate(d)}
                                             >
-                                              <LinkIcon className="mr-1 h-3 w-3" /> 
-                                              {editDraft.publishTargetId === d.id ? "Lien établi (MISE À JOUR)" : "Lier pour mise à jour"}
+                                              Lier pour mise à jour
                                             </Button>
                                         </div>
                                     ))
