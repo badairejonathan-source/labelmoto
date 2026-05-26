@@ -1,25 +1,26 @@
 
 /**
  * @fileOverview Configuration centralisée pour les actions d'authentification Firebase.
- * Optimisé pour éviter les URLs trop longues et les redirections imbriquées.
+ * Gère les paramètres des liens envoyés par e-mail (Validation, Reset).
  */
 
 import { ActionCodeSettings } from 'firebase/auth';
 
+// Domaine principal de l'application
 const APP_URL = 'https://labelmoto.fr';
 
 /**
- * Paramètres pour l'email de vérification et de reset.
- * @param finalRedirectPath Le chemin vers lequel l'utilisateur sera envoyé APRÈS l'action (ex: /account).
+ * Paramètres pour les e-mails de vérification et de réinitialisation.
+ * Configure l'URL de redirection finale vers notre handler personnalisé.
  */
 export const getActionCodeSettings = (finalRedirectPath: string = '/account'): ActionCodeSettings => {
-  // On simplifie : l'URL pointée par Firebase sera notre handler d'action,
-  // qui saura ensuite où rediriger grâce au paramètre 'continueUrl'.
-  const handlerUrl = `${APP_URL}/auth/action?continueUrl=${encodeURIComponent(APP_URL + finalRedirectPath)}`;
+  // L'URL d'action pointera vers notre page /auth/action
+  // Firebase y ajoutera automatiquement les paramètres 'mode' et 'oobCode'
+  const actionUrl = `${APP_URL}/auth/action?continueUrl=${encodeURIComponent(APP_URL + finalRedirectPath)}`;
   
   return {
-    url: handlerUrl,
-    handleCodeInApp: true,
+    url: actionUrl,
+    handleCodeInApp: true, // Permet d'ouvrir le lien directement si l'app est installée (iOS/Android)
   };
 };
 
