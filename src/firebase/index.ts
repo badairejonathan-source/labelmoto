@@ -3,7 +3,7 @@ import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { initializeFirestore, Firestore, getFirestore, memoryLocalCache } from 'firebase/firestore';
 
-// Singleton instances
+// Singleton instances pour le serveur et fallback
 let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
@@ -23,37 +23,51 @@ export function initializeFirebase() {
 
 /**
  * Lazy getter for Auth instance.
+ * Utilise un cache global sur window en client-side pour survivre au HMR.
  */
 export function getAuthInstance() {
+  if (typeof window !== 'undefined' && (window as any)._firebaseAuth) {
+    return (window as any)._firebaseAuth;
+  }
+
   if (!auth) {
     const { firebaseApp } = initializeFirebase();
     auth = getAuth(firebaseApp);
+    if (typeof window !== 'undefined') {
+      (window as any)._firebaseAuth = auth;
+    }
   }
   return auth;
 }
 
 /**
  * Lazy getter for Firestore instance.
+ * Implémente un singleton global sur window pour éviter l'erreur "INTERNAL ASSERTION FAILED"
+ * causée par les ré-initialisations multiples dans l'environnement de développement.
  */
 export function getFirestoreInstance() {
+  if (typeof window !== 'undefined' && (window as any)._firebaseFirestore) {
+    return (window as any)._firebaseFirestore;
+  }
+
   if (!firestore) {
     const { firebaseApp } = initializeFirebase();
     
-    // On force le long polling et le cache mémoire uniquement sur le client 
-    // pour la stabilité dans l'environnement Firebase Studio / Workstations.
     if (typeof window !== 'undefined') {
       try {
-        // initializeFirestore ne peut être appelé qu'une seule fois par App.
+        // On utilise initializeFirestore pour forcer les réglages de stabilité.
+        // Le cache mémoire évite les corruptions de base IndexedDB dans les environnements cloud.
         firestore = initializeFirestore(firebaseApp, {
           experimentalForceLongPolling: true,
-          localCache: memoryLocalCache(), // Évite les conflits de persistance IndexedDB
+          localCache: memoryLocalCache(),
         });
       } catch (err) {
-        // Fallback si déjà initialisé (ex: lors d'un Hot Module Replacement)
+        // Fallback si déjà initialisé
         firestore = getFirestore(firebaseApp);
       }
+      (window as any)._firebaseFirestore = firestore;
     } else {
-      // Sur le serveur (Sitemap, Metadata), on utilise les réglages par défaut
+      // Version serveur (Sitemap, Metadata)
       firestore = getFirestore(firebaseApp);
     }
   }
