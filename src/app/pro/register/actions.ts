@@ -1,9 +1,8 @@
-
 'use server';
 
 import { z } from 'zod';
-import { getFirestoreInstance } from '@/firebase/index';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getAdminFirestore } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
 import { slugify } from '@/lib/utils';
 import { extractValidCoordinates } from '@/lib/geohash';
 
@@ -22,7 +21,7 @@ const submissionSchema = z.object({
 });
 
 export async function submitProAction(formData: FormData) {
-  const firestore = getFirestoreInstance();
+  console.log("[SUBMIT-PRO] 🚀 Réception d'une nouvelle demande de référencement.");
   
   const rawData = {
     businessName: formData.get('name'),
@@ -49,12 +48,14 @@ export async function submitProAction(formData: FormData) {
   }
 
   try {
+    // Utilisation stricte du SDK Admin pour la base de données côté serveur
+    const db = getAdminFirestore();
     const coords = extractValidCoordinates({ address: validated.data.addressRaw });
 
-    const docRef = await addDoc(collection(firestore, 'listing_submissions'), {
+    const docRef = await db.collection('listing_submissions').add({
       status: 'pending',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       source: 'public_form',
       businessName: validated.data.businessName,
       categoryRequested: validated.data.categoryRequested,
@@ -74,9 +75,10 @@ export async function submitProAction(formData: FormData) {
       isClaimedRequested: true
     });
 
+    console.log(`[SUBMIT-PRO] ✅ Soumission enregistrée avec l'ID: ${docRef.id}`);
     return { success: true, submissionId: docRef.id };
-  } catch (e) {
-    console.error("Submission Error:", e);
-    return { error: "Une erreur technique est survenue lors de l'envoi." };
+  } catch (e: any) {
+    console.error("[SUBMIT-PRO] ❌ Erreur Firestore Admin:", e.message);
+    return { error: "Une erreur technique est survenue lors de l'enregistrement." };
   }
 }
