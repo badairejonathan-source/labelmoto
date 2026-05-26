@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -114,17 +115,17 @@ const QuickFilters = () => {
   ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 mt-6">
+    <div className="flex flex-wrap justify-center gap-6 mt-6">
       {filters.map((f) => (
         <button 
           key={f.id} 
           onClick={() => router.push(`/map?filter=${f.id}`)}
-          className="flex flex-col items-center gap-1.5 group"
+          className="flex flex-col items-center gap-2 group"
         >
-          <div className="h-12 w-12 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20">
-            <f.icon className={cn("h-5 w-5", f.color)} />
+          <div className="h-[70px] w-[70px] rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20">
+            <f.icon className={cn("h-8 w-8", f.color)} />
           </div>
-          <span className="text-[8px] font-black uppercase tracking-tight text-muted-foreground group-hover:text-brand">{f.label}</span>
+          <span className="text-[9px] font-black uppercase tracking-tight text-muted-foreground group-hover:text-brand">{f.label}</span>
         </button>
       ))}
     </div>
@@ -235,7 +236,6 @@ const Header: React.FC<any> = ({
         queryParams.set('search', s.label);
         router.push(`/map?${queryParams.toString()}`);
     } else {
-        // Déclenche la mise à jour sur la carte
         setTimeout(() => onSearch(), 10);
     }
   };
