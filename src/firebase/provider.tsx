@@ -11,8 +11,11 @@ import { usePathname } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-// UID de secours pour l'administrateur principal
-const MASTER_ADMIN_UID = "A366V1X8Hqf1pA63nU3N8B7l8fD3";
+// Liste des UIDs administrateurs de secours (Master Admins)
+const ADMIN_UIDS = [
+  "A366V1X8Hqf1pA63nU3N8B7l8fD3", // UID principal
+  "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"  // UID secondaire de secours
+];
 
 interface UserAuthState {
   user: User | null;
@@ -71,6 +74,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
       async (firebaseUser) => {
         if (firebaseUser) {
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
+          const isMasterAdmin = ADMIN_UIDS.includes(firebaseUser.uid);
           
           try {
             const docSnapInitial = await getDoc(userDocRef).catch(err => {
@@ -95,9 +99,9 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 getDoc(proRef).catch(() => ({ exists: () => false, data: () => null }))
               ]);
 
-              // Détermination du rôle (avec secours Master Admin)
+              // Détermination du rôle
               let role = proSnap.exists() ? 'pro' : 'user';
-              if (firebaseUser.uid === MASTER_ADMIN_UID) {
+              if (isMasterAdmin) {
                 role = 'admin';
               }
 
@@ -135,9 +139,19 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
             (docSnap) => {
               let profileData = docSnap.exists() ? docSnap.data() : null;
               
-              // Sécurité de secours : On force le rôle admin dans l'état local si c'est le MASTER UID
-              if (firebaseUser.uid === MASTER_ADMIN_UID && profileData) {
-                profileData.role = 'admin';
+              // PROTECTION CRITIQUE : Si c'est un Master Admin, on garantit le rôle admin
+              // même si le document Firestore n'est pas encore prêt ou synchro.
+              if (isMasterAdmin) {
+                if (!profileData) {
+                  profileData = { 
+                    role: 'admin', 
+                    uid: firebaseUser.uid, 
+                    email: firebaseUser.email,
+                    displayName: firebaseUser.displayName || 'Admin Master'
+                  };
+                } else {
+                  profileData.role = 'admin';
+                }
               }
 
               setUserAuthState({
@@ -148,13 +162,23 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               });
             },
             (err) => {
-              if (err.code === 'permission-denied') {
-                errorEmitter.emit('permission-error', new FirestorePermissionError({
-                  path: userDocRef.path,
-                  operation: 'get'
-                }));
+              // Fallback pour l'admin même en cas d'erreur de lecture
+              if (isMasterAdmin) {
+                setUserAuthState({
+                  user: firebaseUser,
+                  profile: { role: 'admin', uid: firebaseUser.uid },
+                  isUserLoading: false,
+                  userError: null
+                });
+              } else {
+                if (err.code === 'permission-denied') {
+                  errorEmitter.emit('permission-error', new FirestorePermissionError({
+                    path: userDocRef.path,
+                    operation: 'get'
+                  }));
+                }
+                setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
               }
-              setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
             }
           );
           return () => unsubscribeDoc();
