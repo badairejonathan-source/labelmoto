@@ -16,6 +16,7 @@ service cloud.firestore {
 
     /**
      * Vérification Admin : document Firestore OU identifiants de secours prioritaires (Master Admins).
+     * Les Master Admins ont tous les droits pour garantir la maintenance du système.
      */
     function isAdmin() {
       return isSignedIn() && (

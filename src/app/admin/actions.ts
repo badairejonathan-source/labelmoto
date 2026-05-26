@@ -84,7 +84,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
 
       if (existingUserIds.has(uid)) {
         report.stats.ignored++;
-        report.details.push({ uid, status: 'ignored', name: displayName });
+        // On ne loggue pas tous les ignorés pour ne pas saturer le rapport, sauf si nécessaire
         continue;
       }
 
@@ -107,11 +107,10 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
       pendingWrites++;
       report.stats.created++;
       report.details.push({ uid, status: 'created', name: displayName });
-      existingUserIds.add(uid); // Sécurité contre les doublons si même UID dans std et pro
+      existingUserIds.add(uid); 
 
       // Limite Batch Firestore (500)
       if (pendingWrites >= 450) {
-          console.warn("[BACKEND] Limite de batch atteinte (450), exécution partielle...");
           await batch.commit();
           pendingWrites = 0;
       }
@@ -119,7 +118,6 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
 
     // 3. Commit final
     if (pendingWrites > 0) {
-      console.log(`[BACKEND] Tentative de commit de ${pendingWrites} écritures...`);
       await batch.commit();
     }
 

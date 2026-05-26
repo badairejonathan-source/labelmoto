@@ -13,7 +13,7 @@ import {
   Loader2, CheckCircle, ArrowLeft, 
   Store, Search, ChevronRight, X, ExternalLink, 
   Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
-  Database, AlertTriangle, Play, FileSearch, ClipboardCheck
+  Database, AlertTriangle, FileSearch, ClipboardCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -151,7 +151,6 @@ export default function AdminPage() {
         toMigrate,
       });
 
-      toast({ title: "Audit terminé", description: `${toMigrate.length} orphelins détectés.` });
     } catch (e: any) {
         if (e.code === 'permission-denied') {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -168,8 +167,13 @@ export default function AdminPage() {
    * Action réelle : APPEL AU BACKEND (Server Action)
    */
   const applyMigration = async () => {
-    if (!user || !migrationStats || migrationStats.toMigrate.length === 0) return;
+    if (!user || !migrationStats) return;
     
+    if (migrationStats.toMigrate.length === 0) {
+      toast({ title: "Déjà à jour", description: "Aucun compte orphelin à réconcilier." });
+      return;
+    }
+
     if (!window.confirm(`Confirmer la création de ${migrationStats.toMigrate.length} comptes via le serveur ?`)) return;
 
     setIsApplyingMigration(true);
