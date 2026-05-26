@@ -1,10 +1,9 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -70,11 +69,24 @@ export const UserMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64 z-[3000] p-4 rounded-[2rem] border-2 shadow-2xl" align="end">
+        <DropdownMenuLabel className="text-[10px] uppercase font-black text-muted-foreground px-2">Navigation</DropdownMenuLabel>
+        <DropdownMenuItem asChild className="cursor-pointer font-bold">
+          <Link href="/entretien" className="flex items-center w-full">
+            <Wrench className="mr-2 h-4 w-4" /> Entretien
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer font-bold">
+          <Link href="/info" className="flex items-center w-full">
+            <FileText className="mr-2 h-4 w-4" /> Conseils
+          </Link>
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator className="my-2" />
+        
         <DropdownMenuLabel className="text-[10px] uppercase font-black text-muted-foreground px-2">Mon Compte</DropdownMenuLabel>
         {user ? (
           <>
             <div className="px-2 py-2 mb-2"><p className="text-sm font-black text-brand truncate">{pseudo}</p></div>
-            <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer font-bold">
               <Link href="/account" className="flex items-center w-full">
                 <UserIcon className="mr-2 h-4 w-4" /> Profil
