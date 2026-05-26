@@ -39,19 +39,18 @@ function AuthActionContent() {
       try {
         switch (mode) {
           case 'verifyEmail':
-            // Validation du code par Firebase Auth
+            // 1. Validation du code par Firebase Auth
             await applyActionCode(auth, oobCode);
             
-            // Si l'utilisateur est déjà connecté localement, on synchronise Firestore immédiatement
+            // 2. Si l'utilisateur est déjà connecté localement, on resynchronise Firestore
             if (auth.currentUser) {
+              await auth.currentUser.reload();
               await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
                 status: 'active',
                 emailVerifiedSync: true,
                 emailVerifiedAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
               });
-              // Recharge le jeton Auth local pour débloquer les rules clients
-              await auth.currentUser.reload();
             }
             
             setStatus('success');
@@ -89,7 +88,7 @@ function AuthActionContent() {
       setMessage("Votre mot de passe a été modifié avec succès. Connectez-vous avec vos nouveaux identifiants.");
       toast({ title: "Succès !", description: "Mot de passe mis à jour." });
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur", description: "Impossible de réinitialiser le mot de passe. Le lien a peut-être déjà été utilisé." });
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de réinitialiser le mot de passe." });
     } finally {
       setIsSubmitting(false);
     }
@@ -140,10 +139,6 @@ function AuthActionContent() {
               <Button asChild className="w-full bg-foreground hover:bg-brand text-white h-14 rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg transition-transform active:scale-95">
                 <Link href="/login">Continuer vers la connexion <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
-            )}
-
-            {status === 'loading' && (
-              <div className="py-4"><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">Veuillez patienter pendant le traitement...</p></div>
             )}
           </CardContent>
         </Card>

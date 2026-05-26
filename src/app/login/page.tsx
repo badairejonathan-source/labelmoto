@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -50,7 +50,7 @@ function LoginContent() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { auth, firestore, user } = useFirebase();
+  const { auth, firestore } = useFirebase();
   const { toast } = useToast();
 
   const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -89,12 +89,11 @@ function LoginContent() {
   const onRegisterSubmit = async (values: z.infer<typeof registerSchema>) => {
     setIsLoading(true);
     try {
+      // 1. Création du compte Auth
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      
-      // Mise à jour du profil local Auth
       await updateProfile(userCredential.user, { displayName: values.fullName });
 
-      // Création du document NOYAU dans Firestore
+      // 2. Création du document NOYAU Firestore (Source de vérité identitaire)
       await setDoc(doc(firestore, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
         email: values.email,
@@ -106,7 +105,7 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      // Envoi du mail de vérification
+      // 3. Envoi du mail de vérification
       await sendEmailVerification(userCredential.user);
       
       toast({ title: 'Compte créé !', description: 'Vérifiez votre boîte de réception pour valider votre inscription.' });

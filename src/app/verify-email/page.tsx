@@ -23,7 +23,7 @@ function VerifyEmailContent() {
   const [isChecking, setIsChecking] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
-  // Redirection automatique si déjà vérifié (basé sur le jeton local)
+  // Redirection auto si déjà vérifié
   useEffect(() => {
     if (user?.emailVerified) {
       router.push('/account');
@@ -53,19 +53,17 @@ function VerifyEmailContent() {
   };
 
   /**
-   * Action CRITIQUE : Force le rechargement de l'utilisateur Firebase Auth
-   * pour détecter le changement d'état de vérification, puis synchronise Firestore.
+   * Action manuelle de resynchronisation forcée.
    */
   const checkVerification = async () => {
     if (!auth.currentUser) return;
     setIsChecking(true);
     try {
-      // 1. Force le rechargement depuis les serveurs Firebase Auth
+      // 1. Force le rechargement de l'objet utilisateur Auth (côté Firebase)
       await auth.currentUser.reload();
       
       if (auth.currentUser.emailVerified) {
-        // 2. Synchronise l'état dans le document NOYAU Firestore
-        // Cela permet aux Security Rules basées sur Firestore d'être cohérentes
+        // 2. Synchronise l'état dans Firestore (source de vérité identitaire)
         await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
             status: 'active',
             emailVerifiedSync: true,

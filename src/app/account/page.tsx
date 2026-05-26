@@ -155,9 +155,7 @@ function AccountContent() {
     return <div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
   }
 
-  // Affichage du choix de rôle si l'onboarding n'est pas fait
   const showChoice = profile && !profile.onboardingComplete;
-
   const selectedColor = badgeColors.find(c => c.id === (isEditing ? form.watch('badgeColor') : activeDetailProfile?.badgeColor)) || badgeColors[0];
 
   return (
@@ -183,7 +181,7 @@ function AccountContent() {
                     <div className="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><Palette className="text-brand h-10 w-10" /></div>
                     <CardTitle className="text-2xl font-black uppercase tracking-tight">Professionnel</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-8 flex-grow text-center"><p className="text-sm text-muted-foreground font-bold leading-relaxed">Référencez votre établissement, gérez vos photos et gagnez en visibilité.</p></CardContent>
+                  <CardContent className="px-8 flex-grow text-center"><p className="text-sm text-muted-foreground font-bold leading-relaxed">Référencez votre établissement et gagnez en visibilité.</p></CardContent>
                   <CardFooter className="p-8"><Button variant="outline" className="w-full font-black uppercase text-[10px] h-12 rounded-full border-2">C'est mon métier</Button></CardFooter>
                 </Card>
                 <Card className="flex flex-col border-2 hover:border-brand transition-all cursor-pointer rounded-[2.5rem] overflow-hidden group shadow-lg" onClick={() => handleChooseType('user')}>
@@ -191,7 +189,7 @@ function AccountContent() {
                     <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><Bike className="text-blue-500 h-10 w-10" /></div>
                     <CardTitle className="text-2xl font-black uppercase tracking-tight">Motard</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-8 flex-grow text-center"><p className="text-sm text-muted-foreground font-bold leading-relaxed">Donnez votre avis, trouvez les meilleurs garages et gérez votre entretien.</p></CardContent>
+                  <CardContent className="px-8 flex-grow text-center"><p className="text-sm text-muted-foreground font-bold leading-relaxed">Donnez votre avis et trouvez les meilleurs garages.</p></CardContent>
                   <CardFooter className="p-8"><Button variant="outline" className="w-full font-black uppercase text-[10px] h-12 rounded-full border-2">Je suis un pilote</Button></CardFooter>
                 </Card>
               </CardContent>
@@ -279,15 +277,6 @@ function AccountContent() {
                         <p className="text-2xl font-black uppercase tracking-tight">{activeDetailProfile?.motorcycleModel || "Non renseignée"}</p>
                       </div>
                     </div>
-                    {isPro && proProfile && (
-                      <div className="space-y-4 pt-10 border-t-2 border-dashed">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">🏢 Établissement</p>
-                        <div className="bg-muted/30 p-8 rounded-[2rem] border-2 border-dashed">
-                          <p className="text-2xl font-black uppercase tracking-tight leading-none mb-2">{proProfile.companyName || "Nom non défini"}</p>
-                          <p className="text-sm font-black text-muted-foreground opacity-60 uppercase tracking-widest">{proProfile.firstName} {proProfile.lastName}</p>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 )}
               </CardContent>

@@ -9,7 +9,6 @@ service cloud.firestore {
 
     /**
      * Vérification directe sur le jeton d'authentification Firebase.
-     * C'est la méthode la plus rapide et la plus sûre car elle est signée cryptographiquement.
      */
     function isEmailVerified() {
       return isSignedIn() && request.auth.token.email_verified == true;
@@ -17,16 +16,13 @@ service cloud.firestore {
 
     /**
      * Récupération dynamique du rôle depuis le document NOYAU Firestore.
-     * Cette méthode est flexible car elle permet de changer le rôle sans forcer
-     * l'utilisateur à se reconnecter (contrairement aux Custom Claims).
      */
     function getRole() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
 
     /**
-     * Prêt pour migration Custom Claims : plus tard, on pourra simplement faire
-     * return isSignedIn() && request.auth.token.admin == true;
+     * Vérification Admin basée sur le document noyau.
      */
     function isAdmin() {
       return isSignedIn() && getRole() == "admin";
@@ -37,12 +33,10 @@ service cloud.firestore {
     }
 
     // --- NOYAU IDENTITÉ (users) ---
-    // Source de vérité : l'utilisateur peut toujours lire son propre document identity
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      // On autorise l'utilisateur à mettre à jour certains champs système (sync email)
-      // mais on interdit de changer son propre rôle lors d'un update
+      // On interdit de changer son propre rôle lors d'un update
       allow update: if isOwner(userId) && (
         (request.resource.data.role == resource.data.role && request.resource.data.uid == resource.data.uid)
         || isAdmin()
@@ -57,7 +51,6 @@ service cloud.firestore {
       match /comments/{commentId} {
         allow read: if true;
         // OBLIGATION : Seuls les comptes avec email vérifié peuvent poster un avis
-        // Cela garantit la qualité de la donnée et limite le spam.
         allow write: if isEmailVerified() || isAdmin();
       }
     }
@@ -69,16 +62,16 @@ service cloud.firestore {
 
     // --- QUARANTAINE & SOUMISSIONS ---
     match /listing_submissions/{submissionId} {
-      allow create: if true; // Soumission publique autorisée
+      allow create: if true; 
       allow read, update, delete: if isAdmin();
     }
     
     match /pending_comments/{commentId} {
-      allow create: if isSignedIn(); // N'importe quel utilisateur connecté peut soumettre
+      allow create: if isSignedIn(); 
       allow read, update, delete: if isAdmin();
     }
 
-    // --- EXTENSIONS MÉTIER (Profils spécifiques) ---
+    // --- EXTENSIONS MÉTIER ---
     match /standardProfiles/{userId} {
       allow get, create, update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();

@@ -1,14 +1,12 @@
 'use client';
 
-import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore, doc, onSnapshot } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { getAuthInstance, getFirestoreInstance } from './index';
 import { usePathname } from 'next/navigation';
-import { errorEmitter } from './error-emitter';
-import { FirestorePermissionError } from './errors';
 
 interface UserAuthState {
   user: User | null;
@@ -48,7 +46,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
     if (!isAuthActive) setIsAuthActive(true);
   };
 
-  // Activer l'auth si on est sur une route protégée
+  // Activation automatique sur les routes protégées
   useEffect(() => {
     const privateRoutes = ['/account', '/admin', '/login', '/pro/register', '/verify-email', '/auth/action'];
     if (privateRoutes.some(route => pathname?.startsWith(route))) {
@@ -66,7 +64,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
       auth,
       (firebaseUser) => {
         if (firebaseUser) {
-          // Écoute temps-réel du document utilisateur (source de vérité)
+          // Écoute temps-réel du document NOYAU identitaire
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           const unsubscribeDoc = onSnapshot(
             userDocRef, 
@@ -78,12 +76,10 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 userError: null
               });
             },
-            async (err) => {
-              // Si erreur de lecture, on vérifie si c'est normal (ex: document pas encore créé)
-              if (err.code === 'permission-denied') {
-                 // On n'émet pas d'erreur critique ici car le document users/{uid} 
-                 // peut être en cours de création lors d'un signup
-                 console.warn("Permission non accordée pour le document utilisateur (peut-être en création)");
+            (err) => {
+              // Permission denied est normal pendant la création du compte (signup)
+              if (err.code !== 'permission-denied') {
+                console.error("Erreur lecture profil Firestore:", err);
               }
               setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
             }
