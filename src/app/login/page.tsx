@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, Suspense, useEffect } from 'react';
@@ -92,10 +91,10 @@ function LoginContent() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
-      // Update local profile
+      // Mise à jour du profil local Auth
       await updateProfile(userCredential.user, { displayName: values.fullName });
 
-      // Create central user document
+      // Création du document NOYAU dans Firestore
       await setDoc(doc(firestore, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
         email: values.email,
@@ -107,6 +106,7 @@ function LoginContent() {
         onboardingComplete: false
       });
       
+      // Envoi du mail de vérification
       await sendEmailVerification(userCredential.user);
       
       toast({ title: 'Compte créé !', description: 'Vérifiez votre boîte de réception pour valider votre inscription.' });

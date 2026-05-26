@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -49,6 +48,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
     if (!isAuthActive) setIsAuthActive(true);
   };
 
+  // Activer l'auth si on est sur une route protégée
   useEffect(() => {
     const privateRoutes = ['/account', '/admin', '/login', '/pro/register', '/verify-email', '/auth/action'];
     if (privateRoutes.some(route => pathname?.startsWith(route))) {

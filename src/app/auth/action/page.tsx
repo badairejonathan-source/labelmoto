@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle2, AlertTriangle, KeyRound, ArrowRight } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 function AuthActionContent() {
   const router = useRouter();
@@ -38,9 +39,10 @@ function AuthActionContent() {
       try {
         switch (mode) {
           case 'verifyEmail':
+            // Validation du code par Firebase Auth
             await applyActionCode(auth, oobCode);
             
-            // Si l'utilisateur est déjà connecté, on force la sync Firestore immédiate
+            // Si l'utilisateur est déjà connecté localement, on synchronise Firestore immédiatement
             if (auth.currentUser) {
               await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
                 status: 'active',
@@ -48,6 +50,7 @@ function AuthActionContent() {
                 emailVerifiedAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
               });
+              // Recharge le jeton Auth local pour débloquer les rules clients
               await auth.currentUser.reload();
             }
             

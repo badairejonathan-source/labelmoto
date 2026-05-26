@@ -64,7 +64,7 @@ function VerifyEmailContent() {
       await auth.currentUser.reload();
       
       if (auth.currentUser.emailVerified) {
-        // 2. Synchronise l'état dans le document NOUYAU Firestore
+        // 2. Synchronise l'état dans le document NOYAU Firestore
         // Cela permet aux Security Rules basées sur Firestore d'être cohérentes
         await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
             status: 'active',

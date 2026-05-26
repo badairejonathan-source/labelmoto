@@ -41,8 +41,12 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      // On interdit à l'utilisateur de changer son propre rôle lors d'un update
-      allow update: if isOwner(userId) && (request.resource.data.role == resource.data.role || isAdmin());
+      // On autorise l'utilisateur à mettre à jour certains champs système (sync email)
+      // mais on interdit de changer son propre rôle lors d'un update
+      allow update: if isOwner(userId) && (
+        (request.resource.data.role == resource.data.role && request.resource.data.uid == resource.data.uid)
+        || isAdmin()
+      );
       allow list: if isAdmin();
     }
 
