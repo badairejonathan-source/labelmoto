@@ -1,3 +1,4 @@
+
 export interface MapPoint {
   id: string;
   latitude: number;
@@ -7,7 +8,6 @@ export interface MapPoint {
   title: string;
   slug?: string;
   geohash?: string;
-  // Données de preview incluses pour éviter les fetchs inutiles dans la liste
   imgUrl?: string;
   rating?: string | number;
 }
@@ -15,12 +15,14 @@ export interface MapPoint {
 export interface Dealership {
   id: string;
   slug?: string;
-  placeUrl: string;
+  placeUrl?: string;
+  plusCode?: string;
   title: string;
   address: string;
+  addresss?: string; // Compatibilité triple 's'
   website: string;
   phoneNumber: string;
-  pnoneNumber?: string; // Support for typo in some data
+  pnoneNumber?: string;
   email: string;
   imgUrl: string;
   img_url?: string;
@@ -38,10 +40,17 @@ export interface Dealership {
   longitude?: number;
   position?: [number, number];
   rating?: string;
+  ratingNumber?: number;
+  reviewCount?: number;
   category?: string;
   appSection?: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   brands?: string[];
-  // Association specific fields
+  isClaimed?: boolean;
+  timestamp?: any;
+  publishedAt?: any;
+  submissionId?: string;
+  currentStatus?: string;
+  info?: string;
   emails?: string[];
   facebookUrl?: string;
   instagramUrl?: string;
@@ -51,9 +60,5 @@ export interface Dealership {
   targetAudience?: string[];
   sourceUrl?: string;
   verificationStatus?: string;
-  info?: string;
-  // Relais specific
-  reviewCount?: number;
-  plusCode?: string;
   [key: string]: any;
 }

@@ -51,7 +51,7 @@ interface Submission {
   publishedCollection?: string;
   publishedDocId?: string;
   publishedAt?: any;
-  publishTargetId?: string; // Utilisé pour lier à un doublon existant
+  publishTargetId?: string;
   [key: string]: any;
 }
 
@@ -86,7 +86,6 @@ export default function AdminPage() {
         setSubmissions(list);
         setIsLoadingData(false);
 
-        // Sync modal if open and it's a server-side status change
         if (selectedId) {
             const updated = list.find(s => s.id === selectedId);
             if (updated && updated.status !== editDraft?.status && !isPublishing) {
@@ -160,17 +159,15 @@ export default function AdminPage() {
       const data = editDraft;
       const coords = extractValidCoordinates(data);
       
-      // 1. Détermination de l'ID cible (Doublon ou Nouvel ID)
       const targetDocId = data.publishTargetId || data.id;
       const isUpdate = !!data.publishTargetId;
 
-      // 2. Mapping strict vers le schéma public (Champs métier uniquement)
       const publicData: any = {
         title: data.businessName,
         category: data.categoryRequested,
         appSection: data.appSectionRequested === 'both' ? 'shopping' : data.appSectionRequested,
         address: data.addressRaw, 
-        addresss: data.addressRaw, // COMPATIBILITÉ CARTE
+        addresss: data.addressRaw,
         phoneNumber: data.phone,
         email: data.email,
         website: data.website || '',
@@ -187,7 +184,6 @@ export default function AdminPage() {
         submissionId: data.id 
       };
 
-      // 3. Initialisation des champs système UNIQUEMENT si c'est une création
       if (!isUpdate) {
         publicData.rating = "0";
         publicData.ratingNumber = 0;
@@ -198,10 +194,8 @@ export default function AdminPage() {
       const targetCol = data.appSectionRequested === 'association' ? 'associations' : 
                        (data.appSectionRequested === 'relais' ? 'relais' : 'concessions');
       
-      // 4. Écriture de la fiche publique (MERGE obligatoire pour ne pas écraser les champs système existants)
       await setDocumentNonBlocking(doc(firestore, targetCol, targetDocId), publicData, { merge: true });
       
-      // 5. Mise à jour de la soumission (CONSERVATION HISTORIQUE)
       await updateDocumentNonBlocking(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
         publishedAt: serverTimestamp(),
@@ -231,7 +225,7 @@ export default function AdminPage() {
 
   const handleDelete = () => {
     if (!selectedId || !firestore) return;
-    if (!window.confirm("Supprimer cette soumission définitivement ? (L'historique sera perdu)")) return;
+    if (!window.confirm("Supprimer cette soumission définitivement ?")) return;
     
     deleteDocumentNonBlocking(doc(firestore, 'listing_submissions', selectedId));
     setIsDetailOpen(false);
@@ -362,7 +356,6 @@ export default function AdminPage() {
         </Tabs>
       </main>
 
-      {/* MODALE DE RÉVISION ET PUBLICATION */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden rounded-[2.5rem] p-0 border-none shadow-2xl flex flex-col z-[3000]">
           {editDraft && (
@@ -487,7 +480,7 @@ export default function AdminPage() {
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-[10px] italic text-muted-foreground text-center py-4">Aucun doublon trouvé par téléphone.</p>
+                                    <p className="text-[10px] italic text-muted-foreground text-center py-4">Aucun doublon trouvé.</p>
                                 )}
                             </CardContent>
                         </Card>
@@ -527,4 +520,3 @@ export default function AdminPage() {
     </div>
   );
 }
-

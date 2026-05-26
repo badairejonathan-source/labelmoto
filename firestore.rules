@@ -1,5 +1,6 @@
+
 /**
- * Moto Trust Firestore Security Rules
+ * Moto Trust Firestore Security Rules - Strict Workflow Protection
  */
 rules_version = '2';
 service cloud.firestore {
@@ -43,12 +44,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // --- SOUMISSIONS PROS (SAS DE QUARANTAINE) ---
+    // --- QUARANTAINE (listing_submissions) ---
+    // Les soumissions sont créées publiquement mais lisibles/modifiables uniquement par l'admin
     match /listing_submissions/{submissionId} {
-      allow create: if true; // Autorisé via Server Actions
+      allow create: if true;
       allow read, update, delete: if isAdmin();
     }
     
+    // --- COMMENTAIRES EN ATTENTE ---
     match /pending_comments/{commentId} {
       allow create: if isSignedIn();
       allow read, update, delete: if isAdmin();
@@ -70,6 +73,7 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // --- ROLES ADMIN ---
     match /roles_admin/{uid} {
       allow read, write: if isAdmin();
     }
