@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
@@ -10,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2, AlertTriangle, KeyRound, Mail, ArrowRight } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertTriangle, KeyRound, ArrowRight } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 
@@ -40,7 +39,8 @@ function AuthActionContent() {
         switch (mode) {
           case 'verifyEmail':
             await applyActionCode(auth, oobCode);
-            // Synchronisation avec Firestore si l'utilisateur est connecté
+            
+            // Si l'utilisateur est déjà connecté, on force la sync Firestore immédiate
             if (auth.currentUser) {
               await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
                 status: 'active',
@@ -48,15 +48,17 @@ function AuthActionContent() {
                 emailVerifiedAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
               });
+              await auth.currentUser.reload();
             }
+            
             setStatus('success');
-            setMessage("Votre adresse e-mail a été validée avec succès !");
+            setMessage("Votre adresse e-mail a été validée avec succès ! Vous pouvez maintenant profiter pleinement de Label Moto.");
             break;
           
           case 'resetPassword':
             const email = await verifyPasswordResetCode(auth, oobCode);
             setStatus('reset-password');
-            setMessage(`Réinitialisation pour ${email}`);
+            setMessage(`Définissez votre nouveau mot de passe pour le compte ${email}`);
             break;
 
           default:
@@ -65,7 +67,7 @@ function AuthActionContent() {
         }
       } catch (e: any) {
         setStatus('error');
-        setMessage(e.message || "Une erreur est survenue.");
+        setMessage(e.message || "Une erreur est survenue lors de l'action.");
       }
     };
 
@@ -81,10 +83,10 @@ function AuthActionContent() {
     try {
       await confirmPasswordReset(auth, oobCode!, newPassword);
       setStatus('success');
-      setMessage("Votre mot de passe a été modifié avec succès.");
-      toast({ title: "Succès !", description: "Vous pouvez maintenant vous connecter." });
+      setMessage("Votre mot de passe a été modifié avec succès. Connectez-vous avec vos nouveaux identifiants.");
+      toast({ title: "Succès !", description: "Mot de passe mis à jour." });
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur", description: "Impossible de réinitialiser le mot de passe." });
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de réinitialiser le mot de passe. Le lien a peut-être déjà été utilisé." });
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +98,7 @@ function AuthActionContent() {
         <div className="mb-10 flex justify-center"><div className="w-64"><LabelMotoLogo noBubble /></div></div>
         
         <Card className="border-2 shadow-2xl rounded-[2.5rem] overflow-hidden">
-          <CardHeader className="bg-brand text-white p-10">
+          <CardHeader className={cn("text-white p-10", status === 'error' ? "bg-destructive" : "bg-brand")}>
             <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 {status === 'loading' && <Loader2 className="h-10 w-10 animate-spin" />}
                 {status === 'success' && <CheckCircle2 className="h-10 w-10" />}
@@ -126,19 +128,19 @@ function AuthActionContent() {
                 </div>
                 <Button onClick={handleResetPassword} disabled={isSubmitting} className="w-full bg-brand h-12 rounded-full font-black uppercase tracking-widest text-[10px]">
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Confirmer le changement
+                    Enregistrer le mot de passe
                 </Button>
               </div>
             )}
 
             {(status === 'success' || status === 'error') && (
-              <Button asChild className="w-full bg-foreground h-12 rounded-full font-black uppercase tracking-widest text-[10px]">
-                <Link href="/login">Retour à la connexion <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Button asChild className="w-full bg-foreground hover:bg-brand text-white h-14 rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg transition-transform active:scale-95">
+                <Link href="/login">Continuer vers la connexion <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
             )}
 
             {status === 'loading' && (
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">Veuillez patienter...</p>
+              <div className="py-4"><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">Veuillez patienter pendant le traitement...</p></div>
             )}
           </CardContent>
         </Card>

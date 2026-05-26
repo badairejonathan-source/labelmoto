@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, Suspense, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, ArrowRight, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Loader2, Mail, RefreshCw, CheckCircle2 } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 
@@ -24,6 +23,7 @@ function VerifyEmailContent() {
   const [isChecking, setIsChecking] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
+  // Redirection automatique si déjà vérifié (basé sur le jeton local)
   useEffect(() => {
     if (user?.emailVerified) {
       router.push('/account');
@@ -52,15 +52,20 @@ function VerifyEmailContent() {
     }
   };
 
+  /**
+   * Action CRITIQUE : Force le rechargement de l'utilisateur Firebase Auth
+   * pour détecter le changement d'état de vérification, puis synchronise Firestore.
+   */
   const checkVerification = async () => {
     if (!auth.currentUser) return;
     setIsChecking(true);
     try {
-      // Force le rechargement de l'état utilisateur depuis Firebase Auth
+      // 1. Force le rechargement depuis les serveurs Firebase Auth
       await auth.currentUser.reload();
       
       if (auth.currentUser.emailVerified) {
-        // Synchronise l'état dans Firestore
+        // 2. Synchronise l'état dans le document NOUYAU Firestore
+        // Cela permet aux Security Rules basées sur Firestore d'être cohérentes
         await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
             status: 'active',
             emailVerifiedSync: true,
@@ -98,11 +103,11 @@ function VerifyEmailContent() {
           </CardHeader>
           <CardContent className="p-10 space-y-8">
             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
-                <p className="text-sm font-bold text-muted-foreground leading-relaxed">
+                <p className="text-sm font-bold text-muted-foreground leading-relaxed text-center">
                     Cliquez sur le lien dans l'e-mail pour activer votre compte. Une fois fait, cliquez sur le bouton ci-dessous.
                 </p>
-                <Button onClick={checkVerification} disabled={isChecking} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-full shadow-lg">
-                    {isChecking ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                <Button onClick={checkVerification} disabled={isChecking} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-14 rounded-full shadow-lg transition-transform active:scale-95">
+                    {isChecking ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
                     J'ai validé mon email
                 </Button>
             </div>

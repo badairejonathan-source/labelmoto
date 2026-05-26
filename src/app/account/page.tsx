@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useEffect, useState, useMemo, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -15,7 +14,7 @@ import Header from '@/components/app/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -57,12 +56,12 @@ function AccountContent() {
 
   const callbackUrl = searchParams.get('callbackUrl');
 
-  // Specific detailed profiles references
+  // Chargement des EXTENSIONS MÉTIER si elles existent
   const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
-  const { data: proProfile, isLoading: isProLoading } = useDoc(proRef);
+  const { data: proProfile } = useDoc(proRef);
 
   const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
-  const { data: stdProfile, isLoading: isStdLoading } = useDoc(stdRef);
+  const { data: stdProfile } = useDoc(stdRef);
 
   const activeDetailProfile = proProfile || stdProfile;
   const isPro = profile?.role === 'pro' || !!proProfile;
@@ -72,6 +71,7 @@ function AccountContent() {
     defaultValues: { pseudo: '', motorcycleModel: '', badgeColor: 'brand', firstName: '', lastName: '', companyName: '' },
   });
 
+  // Guard de vérification email
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push(`/login${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`);
@@ -98,15 +98,21 @@ function AccountContent() {
     router.push('/');
   };
 
+  /**
+   * Action de Onboarding : Met à jour le NOYAU users/{uid}
+   * et crée le document d'EXTENSION correspondant.
+   */
   const handleChooseType = async (type: 'user' | 'pro') => {
     if (!user) return;
     try {
+      // 1. Mise à jour du noyau
       await updateDoc(doc(firestore, 'users', user.uid), {
         role: type,
         onboardingComplete: true,
         updatedAt: serverTimestamp()
       });
       
+      // 2. Création de l'extension métier
       const coll = type === 'pro' ? 'professionalProfiles' : 'standardProfiles';
       await setDoc(doc(firestore, coll, user.uid), {
         id: user.uid,
@@ -119,7 +125,7 @@ function AccountContent() {
 
       toast({ title: 'Type de compte défini !', description: 'Bienvenue sur Label Moto.' });
     } catch (e) {
-      toast({ variant: "destructive", title: "Erreur", description: "Une erreur est survenue." });
+      toast({ variant: "destructive", title: "Erreur", description: "Une erreur est survenue lors de la création du profil." });
     }
   };
 
@@ -128,10 +134,12 @@ function AccountContent() {
     const collectionName = isPro ? 'professionalProfiles' : 'standardProfiles';
     
     try {
+      // Met à jour l'extension
       await updateDoc(doc(firestore, collectionName, user.uid), {
         ...values,
         updatedAt: serverTimestamp()
       });
+      // Met à jour le noyau (synchro displayName/pseudo)
       await updateDoc(doc(firestore, 'users', user.uid), {
         displayName: values.pseudo,
         updatedAt: serverTimestamp()
@@ -139,7 +147,7 @@ function AccountContent() {
       toast({ title: 'Profil mis à jour !' });
       setIsEditing(false);
     } catch (e) {
-      toast({ variant: "destructive", title: "Erreur" });
+      toast({ variant: "destructive", title: "Erreur lors de la mise à jour." });
     }
   };
 
@@ -147,7 +155,7 @@ function AccountContent() {
     return <div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
   }
 
-  // View logic: if role is still default 'user' but onboarding not complete, show choice
+  // Affichage du choix de rôle si l'onboarding n'est pas fait
   const showChoice = profile && !profile.onboardingComplete;
 
   const selectedColor = badgeColors.find(c => c.id === (isEditing ? form.watch('badgeColor') : activeDetailProfile?.badgeColor)) || badgeColors[0];
@@ -226,21 +234,21 @@ function AccountContent() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <FormField control={form.control} name="pseudo" render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><User className="h-3.5 w-3.5" /> Pseudo</FormLabel>
+                              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><User className="h-3.5 w-3.5" /> Pseudo</label>
                               <FormControl><Input placeholder="Votre pseudo" className="font-bold h-12 rounded-xl" {...field} /></FormControl>
                               <FormMessage />
                             </FormItem>
                         )} />
                         <FormField control={form.control} name="motorcycleModel" render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Bike className="h-3.5 w-3.5" /> Ma Moto</FormLabel>
+                              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Bike className="h-3.5 w-3.5" /> Ma Moto</label>
                               <FormControl><Input placeholder="Ex: Yamaha MT-07" className="font-bold h-12 rounded-xl" {...field} /></FormControl>
                               <FormMessage />
                             </FormItem>
                         )} />
                         <FormField control={form.control} name="badgeColor" render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Palette className="h-3.5 w-3.5" /> Couleur du badge</FormLabel>
+                              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Palette className="h-3.5 w-3.5" /> Couleur du badge</label>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl><SelectTrigger className="font-bold h-12 rounded-xl"><SelectValue placeholder="Choisir" /></SelectTrigger></FormControl>
                                 <SelectContent className="z-[3000]">
