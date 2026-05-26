@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2, AlertTriangle, KeyRound, Mail, ArrowRight, ShieldCheck, Home } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertTriangle, KeyRound, Mail, ArrowRight, ShieldCheck, Home, RotateCcw } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 
@@ -42,7 +42,6 @@ function AuthActionContent() {
 
   const mode = searchParams.get('mode');
   const oobCode = searchParams.get('oobCode');
-  // Le continueUrl est fourni par Firebase à partir de nos ActionCodeSettings.url
   const continueUrl = searchParams.get('continueUrl') || '/account';
 
   const [state, setState] = useState<ActionState>('loading');
@@ -57,7 +56,7 @@ function AuthActionContent() {
   useEffect(() => {
     if (!mode || !oobCode) {
       setState('error');
-      setErrorMessage("Le lien est invalide ou incomplet. Assurez-vous d'avoir cliqué sur le lien entier reçu par e-mail.");
+      setErrorMessage("Le lien semble incomplet ou a déjà été utilisé.");
       return;
     }
 
@@ -67,7 +66,7 @@ function AuthActionContent() {
           case 'verifyEmail':
             await applyActionCode(auth, oobCode);
             setState('success');
-            toast({ title: "E-mail validé !", description: "Votre compte est désormais actif." });
+            toast({ title: "Compte validé !", description: "Votre adresse e-mail a été confirmée." });
             break;
 
           case 'resetPassword':
@@ -91,9 +90,9 @@ function AuthActionContent() {
         console.error("Auth action error:", error);
         setState('error');
         if (error.code === 'auth/expired-action-code') {
-          setErrorMessage("Le lien a expiré. Merci de renouveler votre demande depuis l'application.");
+          setErrorMessage("Le lien a expiré. Merci de renouveler votre demande.");
         } else if (error.code === 'auth/invalid-action-code') {
-          setErrorMessage("Le lien est invalide ou a déjà été utilisé.");
+          setErrorMessage("Ce lien est invalide ou a déjà été utilisé.");
         } else {
           setErrorMessage("Une erreur technique est survenue. Merci de réessayer plus tard.");
         }
@@ -109,10 +108,10 @@ function AuthActionContent() {
     try {
       await confirmPasswordReset(auth, oobCode, values.password);
       setState('resetPasswordSuccess');
-      toast({ title: "Mot de passe modifié", description: "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe." });
+      toast({ title: "Mot de passe modifié", description: "Vous pouvez maintenant vous connecter." });
     } catch (error: any) {
       setState('resetPasswordForm');
-      toast({ variant: 'destructive', title: "Erreur", description: "Impossible de modifier le mot de passe. Le lien a peut-être expiré." });
+      toast({ variant: 'destructive', title: "Erreur", description: "Impossible de modifier le mot de passe." });
     }
   };
 
@@ -127,10 +126,10 @@ function AuthActionContent() {
 
         <Card className="border-2 shadow-2xl rounded-[2.5rem] overflow-hidden bg-white">
           {state === 'loading' && (
-            <div className="p-16 text-center space-y-4">
+            <div className="p-16 text-center space-y-6">
               <Loader2 className="h-12 w-12 animate-spin text-brand mx-auto" />
               <p className="font-black uppercase tracking-widest text-[10px] text-muted-foreground animate-pulse">
-                Vérification en cours...
+                Traitement en cours...
               </p>
             </div>
           )}
@@ -141,11 +140,11 @@ function AuthActionContent() {
                 <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <CheckCircle2 className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-3xl font-black uppercase tracking-tighter">C'est validé !</CardTitle>
+                <CardTitle className="text-3xl font-black uppercase tracking-tighter">C'est fait !</CardTitle>
                 <CardDescription className="text-white/80 font-bold">
                   {mode === 'verifyEmail' 
-                    ? "Votre adresse e-mail a été confirmée avec succès." 
-                    : "L'opération a été effectuée."}
+                    ? "Votre adresse e-mail est maintenant validée." 
+                    : "L'opération a été effectuée avec succès."}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-10 text-center">
@@ -166,7 +165,7 @@ function AuthActionContent() {
                   <CardTitle className="text-2xl font-black uppercase tracking-tighter leading-none">Nouveau mot de passe</CardTitle>
                 </div>
                 <CardDescription className="text-white/80 font-bold">
-                  Saisissez votre nouveau mot de passe pour {userEmail}
+                  Saisissez votre nouveau mot de passe pour <span className="text-white underline">{userEmail}</span>
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-10">
@@ -191,7 +190,7 @@ function AuthActionContent() {
                       </FormItem>
                     )} />
                     <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg">
-                      Mettre à jour le mot de passe
+                      Mettre à jour mon mot de passe
                     </Button>
                   </form>
                 </Form>
@@ -222,7 +221,7 @@ function AuthActionContent() {
                 <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <AlertTriangle className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-3xl font-black uppercase tracking-tighter">Oups !</CardTitle>
+                <CardTitle className="text-3xl font-black uppercase tracking-tighter">Erreur de lien</CardTitle>
               </CardHeader>
               <CardContent className="p-10 text-center space-y-8">
                 <p className="font-bold text-muted-foreground leading-relaxed">
