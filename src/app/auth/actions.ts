@@ -13,19 +13,25 @@ import { getActionCodeSettings } from '@/lib/auth-config';
  * Génère et envoie un email de validation HTML personnalisé.
  */
 export async function sendCustomVerificationEmailAction(email: string) {
+  console.log(`[AUTH-ACTION] 🚀 sendCustomVerificationEmailAction démarrée pour: ${email}`);
   try {
     const auth = getAdminAuth();
     const settings = getActionCodeSettings('/account');
     
-    // 1. Génération du lien sécurisé via Firebase Admin
+    console.log(`[AUTH-ACTION] 🛠️ Génération du lien de vérification Firebase...`);
     const link = await auth.generateEmailVerificationLink(email, settings);
+    console.log(`[AUTH-ACTION] 🔗 Lien généré avec succès.`);
     
-    // 2. Envoi via notre service custom (Resend)
     const result = await emailService.sendVerification(email, link);
     
-    return { success: result.success };
+    if (!result.success) {
+      console.error(`[AUTH-ACTION] ❌ Échec de l'envoi de l'email:`, result.error);
+      return { success: false, error: result.error };
+    }
+
+    return { success: true };
   } catch (error: any) {
-    console.error("[AUTH-ACTION-ERROR] generateEmailVerificationLink:", error.message);
+    console.error("[AUTH-ACTION] ❌ Erreur Admin SDK:", error.message);
     return { success: false, error: error.message };
   }
 }
@@ -34,19 +40,25 @@ export async function sendCustomVerificationEmailAction(email: string) {
  * Génère et envoie un email de reset mot de passe HTML personnalisé.
  */
 export async function sendCustomPasswordResetEmailAction(email: string) {
+  console.log(`[AUTH-ACTION] 🚀 sendCustomPasswordResetEmailAction démarrée pour: ${email}`);
   try {
     const auth = getAdminAuth();
     const settings = getActionCodeSettings('/login');
     
-    // 1. Génération du lien sécurisé via Firebase Admin
+    console.log(`[AUTH-ACTION] 🛠️ Génération du lien de reset Firebase...`);
     const link = await auth.generatePasswordResetLink(email, settings);
+    console.log(`[AUTH-ACTION] 🔗 Lien généré avec succès.`);
     
-    // 2. Envoi via notre service custom (Resend)
     const result = await emailService.sendPasswordReset(email, link);
     
-    return { success: result.success };
+    if (!result.success) {
+      console.error(`[AUTH-ACTION] ❌ Échec de l'envoi de l'email:`, result.error);
+      return { success: false, error: result.error };
+    }
+
+    return { success: true };
   } catch (error: any) {
-    console.error("[AUTH-ACTION-ERROR] generatePasswordResetLink:", error.message);
+    console.error("[AUTH-ACTION] ❌ Erreur Admin SDK:", error.message);
     return { success: false, error: error.message };
   }
 }

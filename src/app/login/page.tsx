@@ -105,10 +105,19 @@ function LoginContent() {
       });
       
       // 3. PHASE 2 : Envoi via Server Action (Resend + HTML Template)
-      await sendCustomVerificationEmailAction(values.email);
+      const result = await sendCustomVerificationEmailAction(values.email);
       
-      toast({ title: 'Compte créé !', description: 'Un e-mail de bienvenue a été envoyé.' });
-      router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+      if (result.success) {
+        toast({ title: 'Compte créé !', description: 'Un e-mail de bienvenue a été envoyé.' });
+        router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+      } else {
+        toast({ 
+          variant: 'destructive', 
+          title: 'Inscription réussie, mais...', 
+          description: "Nous n'avons pas pu envoyer l'e-mail de validation : " + result.error 
+        });
+        router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+      }
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -133,10 +142,10 @@ function LoginContent() {
         toast({ title: 'E-mail envoyé !', description: 'Consultez votre boîte mail pour choisir votre nouveau mot de passe.' });
         setIsResetDialogOpen(false);
       } else {
-        throw new Error(result.error);
+        toast({ variant: 'destructive', title: 'Erreur', description: result.error || "Impossible d'envoyer l'e-mail." });
       }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible d'envoyer l'e-mail." });
+      toast({ variant: 'destructive', title: 'Erreur', description: "Une erreur technique est survenue." });
     } finally {
       setIsResetting(false);
     }
