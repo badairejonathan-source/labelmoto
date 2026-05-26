@@ -14,6 +14,7 @@ import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { getActionCodeSettings } from '@/lib/auth-config';
 
 function VerifyEmailContent() {
   const { user, auth, firestore } = useFirebase();
@@ -45,7 +46,10 @@ function VerifyEmailContent() {
     if (!user || countdown > 0) return;
     setIsResending(true);
     try {
-      await sendEmailVerification(user);
+      // Forcer le handler personnalisé lors du renvoi
+      const settings = getActionCodeSettings('/account');
+      await sendEmailVerification(user, settings);
+      
       toast({ title: "E-mail envoyé !", description: "Vérifiez vos spams si vous ne le recevez pas." });
       setCountdown(60);
     } catch (e) {
@@ -62,11 +66,9 @@ function VerifyEmailContent() {
     if (!auth.currentUser) return;
     setIsChecking(true);
     try {
-      // 1. Force le rechargement de l'objet utilisateur Auth (côté Firebase)
       await auth.currentUser.reload();
       
       if (auth.currentUser.emailVerified) {
-        // 2. Synchronise l'état dans Firestore (source de vérité identitaire)
         const userRef = doc(firestore, 'users', auth.currentUser.uid);
         const updateData = {
           status: 'active',

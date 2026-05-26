@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, Suspense } from 'react';
@@ -25,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, KeyRound, ArrowLeft, User } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
+import { getActionCodeSettings } from '@/lib/auth-config';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Adresse e-mail invalide.' }),
@@ -93,7 +95,7 @@ function LoginContent() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       await updateProfile(userCredential.user, { displayName: values.fullName });
 
-      // 2. Création du document NOYAU Firestore (Source de vérité identitaire)
+      // 2. Création du document NOYAU Firestore
       await setDoc(doc(firestore, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
         email: values.email,
@@ -105,8 +107,10 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      // 3. Envoi du mail de vérification
-      await sendEmailVerification(userCredential.user);
+      // 3. Envoi du mail de vérification avec SETTINGS PERSONNALISÉS
+      // On redirige vers l'onboarding après validation
+      const settings = getActionCodeSettings('/account');
+      await sendEmailVerification(userCredential.user, settings);
       
       toast({ title: 'Compte créé !', description: 'Vérifiez votre boîte de réception pour valider votre inscription.' });
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
@@ -128,7 +132,9 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      await sendPasswordResetEmail(auth, resetEmail);
+      // Utilisation des paramètres personnalisés pour le reset mot de passe
+      const settings = getActionCodeSettings('/login');
+      await sendPasswordResetEmail(auth, resetEmail, settings);
       toast({ title: 'E-mail envoyé !', description: 'Consultez votre boîte mail pour réinitialiser votre mot de passe.' });
       setIsResetDialogOpen(false);
     } catch (error: any) {
