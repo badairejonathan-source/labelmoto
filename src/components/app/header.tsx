@@ -76,7 +76,7 @@ export const UserMenu = () => {
           <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
             <Link href="/entretien" className="flex flex-col items-center gap-2 group/nav">
               <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2">
-                 <Image src="/images/icon-entretien.webp" alt="Entretien" width={44} height={44} className="object-contain" />
+                 <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={44} height={44} className="object-contain" />
               </div>
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Entretien</span>
             </Link>
@@ -98,7 +98,7 @@ export const UserMenu = () => {
           <>
             <div className="px-2 mb-3"><p className="text-xs font-black text-brand truncate">{pseudo}</p></div>
             <DropdownMenuItem asChild className="cursor-pointer font-bold rounded-xl mb-1 focus:bg-brand/5 focus:text-brand">
-              <Link href="/account" className="flex items-center w-full px-2 py-1.5">
+              <Link href="/account" className="flex items-center w-full">
                 <UserIcon className="mr-3 h-4 w-4" /> Profil
               </Link>
             </DropdownMenuItem>
@@ -121,7 +121,7 @@ const NavigationIcons = () => {
     <div className="hidden lg:flex items-center gap-8 ml-32">
       <Link href="/entretien" className="flex flex-col items-center gap-1 group">
         <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
-           <Image src="/images/icon-entretien.webp" alt="Entretien" width={52} height={52} className="object-contain" />
+           <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={52} height={52} className="object-contain" />
         </div>
         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
       </Link>
