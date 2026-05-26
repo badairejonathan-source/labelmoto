@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
+import { cn } from '@/lib/utils';
 
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: any[] | null = null;
@@ -81,6 +82,52 @@ export const UserMenu = () => {
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const NavigationIcons = () => {
+  return (
+    <div className="hidden lg:flex items-center gap-6 mr-4">
+      <Link href="/entretien" className="flex flex-col items-center gap-1 group">
+        <div className="h-[56px] w-[56px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
+           <Image src="/images/icon-entretien.webp" alt="Entretien" width={40} height={40} className="object-contain" />
+        </div>
+        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
+      </Link>
+      <Link href="/info" className="flex flex-col items-center gap-1 group">
+        <div className="h-[56px] w-[56px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2">
+           <Image src="/images/icon-conseils.webp" alt="Conseils" width={40} height={40} className="object-contain" />
+        </div>
+        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
+      </Link>
+    </div>
+  );
+};
+
+const QuickFilters = () => {
+  const router = useRouter();
+  const filters = [
+    { id: 'shopping', label: 'Concess', icon: Bike, color: 'text-brand' },
+    { id: 'service', label: 'Atelier', icon: Wrench, color: 'text-brand' },
+    { id: 'association', label: 'Asso', icon: Users, color: 'text-indigo-600' },
+    { id: 'relais', label: 'Relais', icon: Utensils, color: 'text-amber-600' },
+  ];
+
+  return (
+    <div className="flex flex-wrap justify-center gap-4 mt-6">
+      {filters.map((f) => (
+        <button 
+          key={f.id} 
+          onClick={() => router.push(`/map?filter=${f.id}`)}
+          className="flex flex-col items-center gap-1.5 group"
+        >
+          <div className="h-12 w-12 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20">
+            <f.icon className={cn("h-5 w-5", f.color)} />
+          </div>
+          <span className="text-[8px] font-black uppercase tracking-tight text-muted-foreground group-hover:text-brand">{f.label}</span>
+        </button>
+      ))}
+    </div>
   );
 };
 
@@ -268,13 +315,15 @@ const Header: React.FC<any> = ({
                 </div>
             </div>
 
-            <div className="shrink-0">
+            <div className="shrink-0 flex items-center">
+                <NavigationIcons />
                 <UserMenu />
             </div>
         </div>
 
         <div className="w-full max-w-3xl mx-auto relative">
             {searchInput}
+            <QuickFilters />
         </div>
     </div>
   );
