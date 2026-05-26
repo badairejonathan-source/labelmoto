@@ -12,6 +12,7 @@ import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/e
 
 // Liste des identifiants et e-mails administrateurs de secours (Master Admins)
 const ADMIN_UIDS = [
+  "A36FqeWBHjQBLKQMaMSiFVBzGV22", // Administrateur identifié
   "A366V1X8Hqf1pA63nU3N8B7l8fD3",
   "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"
 ];
