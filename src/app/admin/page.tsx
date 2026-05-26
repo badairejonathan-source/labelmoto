@@ -142,9 +142,7 @@ export default function AdminPage() {
       const usersMap = new Map();
       usersSnap.forEach(d => usersMap.set(d.id, d.data()));
 
-      const orphans: any[] = [];
       const toMigrate: any[] = [];
-      const conflicts: any[] = [];
 
       stdSnap.forEach(docSnap => {
         const data = docSnap.data();
@@ -179,9 +177,9 @@ export default function AdminPage() {
         usersCount: usersSnap.size,
         stdCount: stdSnap.size,
         proCount: proSnap.size,
-        orphans,
+        orphans: [],
         toMigrate,
-        conflicts
+        conflicts: []
       });
 
       toast({ title: "Audit terminé", description: `${toMigrate.length} comptes à réconcilier détectés.` });
@@ -195,7 +193,7 @@ export default function AdminPage() {
   const applyMigration = async () => {
     if (!firestore || !migrationStats || migrationStats.toMigrate.length === 0) return;
     
-    if (!window.confirm(`Êtes-vous sûr de vouloir créer ${migrationStats.toMigrate.length} documents noyaux ? Cette action est irréversible.`)) {
+    if (!window.confirm(`Confirmer la création de ${migrationStats.toMigrate.length} documents noyaux ? Cette action est irréversible.`)) {
       return;
     }
 
@@ -224,23 +222,28 @@ export default function AdminPage() {
         batch.set(userRef, dataToSet, { merge: true });
 
         count++;
-        if (count >= 450) break; 
+        if (count >= 450) break; // Firestore batch limit safety
       }
 
-      await batch.commit().catch(err => {
-        if (err.code === 'permission-denied') {
-          errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: 'users',
-            operation: 'write'
-          } satisfies SecurityRuleContext));
-        }
-        throw err;
-      });
+      await batch.commit();
       
       toast({ title: "Migration réussie", description: `${count} comptes réconciliés.` });
+      // Rafraîchir l'audit pour vider la liste
       runAudit();
-    } catch (e: any) {
-      // Erreur déjà émise ou gérée
+    } catch (err: any) {
+      if (err.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: 'users',
+          operation: 'write',
+          requestResourceData: { count_attempted: count }
+        } satisfies SecurityRuleContext));
+      } else {
+        toast({ 
+          variant: "destructive", 
+          title: "Échec de la réconciliation", 
+          description: err.message || "Une erreur technique est survenue." 
+        });
+      }
     } finally {
       setIsApplyingMigration(false);
     }

@@ -31,13 +31,11 @@ service cloud.firestore {
 
     // --- NOYAU IDENTITÉ (users) ---
     match /users/{userId} {
+      // Un admin peut tout faire sur les documents utilisateurs
+      // Un utilisateur peut gérer son propre document
       allow get: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) || isAdmin();
-      // On interdit de changer son propre rôle lors d'un update
-      allow update: if isOwner(userId) && (
-        (request.resource.data.role == resource.data.role && request.resource.data.uid == resource.data.uid)
-        || isAdmin()
-      ) || isAdmin();
+      allow create, update: if isAdmin() || isOwner(userId);
+      allow delete: if isAdmin();
       allow list: if isAdmin();
     }
 
