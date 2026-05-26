@@ -6,7 +6,7 @@ import * as admin from 'firebase-admin';
 export function getAdminFirestore() {
   if (admin.apps.length === 0) {
     admin.initializeApp({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      projectId: "studio-4801889514-40ebd",
     });
   }
   return admin.firestore();
@@ -15,7 +15,7 @@ export function getAdminFirestore() {
 export function getAdminAuth() {
   if (admin.apps.length === 0) {
     admin.initializeApp({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      projectId: "studio-4801889514-40ebd",
     });
   }
   return admin.auth();

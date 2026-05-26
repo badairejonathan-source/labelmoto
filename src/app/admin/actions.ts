@@ -30,7 +30,7 @@ export interface ReconciliationReport {
     ignored: number;
     errors: number;
   };
-  details: { uid: string; status: 'created' | 'ignored' | 'error'; name: string }[];
+  details: { uid: string; status: 'created' | 'ignored' | 'error'; name: string; error?: string }[];
 }
 
 /**
@@ -56,7 +56,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
     
     if (!isMaster && callerData?.role !== 'admin') {
       console.error(`[BACKEND] ❌ Accès refusé pour: ${callerUid}`);
-      return { ...report, message: "Accès refusé. Droits administrateur requis." };
+      return { ...report, message: "Accès refusé. Droits administrateur requis.", success: false };
     }
 
     // 2. Audit interne (recalcul complet côté serveur)
@@ -67,7 +67,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
     ]);
 
     const existingUserIds = new Set(usersSnap.docs.map(d => d.id));
-    const batch = db.batch();
+    let batch = db.batch();
     let pendingWrites = 0;
 
     const allProfiles = [
@@ -80,54 +80,75 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
     for (const item of allProfiles) {
       const uid = item.snap.id;
       const data = item.snap.data();
-      const displayName = data.companyName || data.pseudo || data.displayName || (item.type === 'pro' ? 'Pro' : 'Motard');
-
+      
+      // On ignore les comptes déjà présents dans users/
       if (existingUserIds.has(uid)) {
         report.stats.ignored++;
-        // On ne loggue pas tous les ignorés pour ne pas saturer le rapport, sauf si nécessaire
         continue;
       }
 
-      // Préparation du document noyau users/{uid}
-      const userRef = db.collection('users').doc(uid);
-      batch.set(userRef, {
-        uid: uid,
-        email: data.email || '',
-        displayName: displayName,
-        role: item.type,
-        status: 'active',
-        emailVerifiedSync: false,
-        onboardingComplete: true,
-        legacyMigrated: true,
-        createdAt: data.createdAt || admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        sourceProvider: 'backend_reconciliation_v2'
-      }, { merge: true });
+      const displayName = data.companyName || data.pseudo || data.displayName || (item.type === 'pro' ? 'Professionnel' : 'Motard');
 
-      pendingWrites++;
-      report.stats.created++;
-      report.details.push({ uid, status: 'created', name: displayName });
-      existingUserIds.add(uid); 
+      try {
+        // Préparation du document noyau users/{uid}
+        const userRef = db.collection('users').doc(uid);
+        
+        // Sécurisation de la date de création (conversion si c'est un Timestamp Firestore Client)
+        let creationDate = admin.firestore.FieldValue.serverTimestamp();
+        if (data.createdAt) {
+           if (typeof data.createdAt.toDate === 'function') {
+             creationDate = data.createdAt.toDate();
+           } else if (data.createdAt instanceof Date) {
+             creationDate = data.createdAt;
+           } else if (data.createdAt.seconds) {
+             creationDate = new Date(data.createdAt.seconds * 1000);
+           }
+        }
 
-      // Limite Batch Firestore (500)
-      if (pendingWrites >= 450) {
-          await batch.commit();
-          pendingWrites = 0;
+        batch.set(userRef, {
+          uid: uid,
+          email: data.email || '',
+          displayName: displayName,
+          role: item.type,
+          status: 'active',
+          emailVerifiedSync: false,
+          onboardingComplete: true,
+          legacyMigrated: true,
+          createdAt: creationDate,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          sourceProvider: 'backend_reconciliation_v3'
+        }, { merge: true });
+
+        pendingWrites++;
+        report.stats.created++;
+        report.details.push({ uid, status: 'created', name: displayName });
+        existingUserIds.add(uid);
+
+        // Limite Batch Firestore (500)
+        if (pendingWrites >= 450) {
+            await batch.commit();
+            batch = db.batch();
+            pendingWrites = 0;
+        }
+      } catch (err: any) {
+        console.error(`[BACKEND] ❌ Erreur sur l'UID ${uid}:`, err.message);
+        report.stats.errors++;
+        report.details.push({ uid, status: 'error', name: displayName, error: err.message });
       }
     }
 
-    // 3. Commit final
+    // 3. Commit final si des écritures restent
     if (pendingWrites > 0) {
       await batch.commit();
     }
 
-    console.log(`[BACKEND] ✅ Réconciliation terminée. Créés: ${report.stats.created}, Ignorés: ${report.stats.ignored}`);
+    console.log(`[BACKEND] ✅ Réconciliation terminée. Créés: ${report.stats.created}, Erreurs: ${report.stats.errors}`);
 
     revalidatePath('/admin');
     return { 
       ...report, 
       success: true, 
-      message: `Réconciliation terminée avec succès. ${report.stats.created} comptes créés.`
+      message: `Réconciliation terminée. ${report.stats.created} créés, ${report.stats.errors} erreurs.`
     };
 
   } catch (err: any) {
@@ -135,7 +156,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
     return { 
       ...report, 
       success: false, 
-      message: "Erreur technique serveur lors de l'exécution.", 
+      message: "Erreur technique serveur : " + (err.message || "inconnue"), 
     };
   }
 }
