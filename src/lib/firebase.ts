@@ -1,10 +1,10 @@
-// src/lib/firebase.ts
+'use client';
+/**
+ * @fileOverview Utilitaire Firebase Client.
+ * FORCÉ EN 'use client' pour éviter tout import accidentel par le serveur.
+ */
 import { getFirestoreInstance, initializeFirebase } from "@/firebase/index";
 
-/**
- * Robust Firebase initialization for server-side utilities (like sitemap).
- * Reuses the central logic from @/firebase to avoid double initialization and environment errors.
- */
 const { firebaseApp } = initializeFirebase();
 
 export const getFirebaseServices = () => {
@@ -14,5 +14,4 @@ export const getFirebaseServices = () => {
   };
 };
 
-// Export correct db instance using the singleton getter
 export const db = getFirestoreInstance();

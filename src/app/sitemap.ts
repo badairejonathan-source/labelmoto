@@ -1,18 +1,17 @@
-// src/app/sitemap.ts
 import { MetadataRoute } from 'next'
-import { db } from '@/lib/firebase' 
-import { collection, getDocs } from 'firebase/firestore'
+import { getAdminFirestore } from '@/lib/firebase-admin'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://labelmoto.fr'
+  const db = getAdminFirestore();
 
   let concessionUrls: MetadataRoute.Sitemap = []
   let articleUrls: MetadataRoute.Sitemap = []
   let motoUrls: MetadataRoute.Sitemap = []
 
   try {
-    // 1. Récupération Concessions (Priorité aux SLUGS pour l'indexation)
-    const concessionsSnap = await getDocs(collection(db, 'concessions'))
+    // 1. Récupération Concessions via Admin SDK
+    const concessionsSnap = await db.collection('concessions').get();
     concessionUrls = concessionsSnap.docs.map((doc) => {
       const data = doc.data();
       const slugOrId = data.slug || doc.id;
@@ -24,8 +23,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       };
     })
 
-    // 2. Récupération Articles (Conseils)
-    const articlesSnap = await getDocs(collection(db, 'articles'))
+    // 2. Récupération Articles
+    const articlesSnap = await db.collection('articles').get();
     articleUrls = articlesSnap.docs.map((doc) => ({
       url: `${baseUrl}/info/${doc.id}`,
       lastModified: new Date(),
@@ -33,8 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }))
 
-    // 3. Récupération Motorcycle Sheets (Fiches Techniques)
-    const motoSnap = await getDocs(collection(db, 'motorcycle_sheets'))
+    // 3. Récupération Motorcycle Sheets
+    const motoSnap = await db.collection('motorcycle_sheets').get();
     motoUrls = motoSnap.docs.map((doc) => ({
       url: `${baseUrl}/fiches/${doc.id}`,
       lastModified: new Date(),
@@ -42,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }))
   } catch (error) {
-    console.error("Erreur lors de la génération de la sitemap Firestore:", error)
+    console.error("Erreur lors de la génération de la sitemap Firebase Admin:", error)
   }
 
   // Pages statiques de base
