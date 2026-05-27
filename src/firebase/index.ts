@@ -60,10 +60,11 @@ export function getFirestoreInstance() {
       }
       
       (window as any)._firebaseFirestore = firestore;
-      } else {
-        // Fallback serveur minimal
-        firestore = getFirestore(firebaseApp);
-      }
+    } else {
+      // Fallback serveur minimal
+      firestore = getFirestore(firebaseApp);
+    }
+  }
   return firestore;
 }
 
