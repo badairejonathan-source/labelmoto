@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useFirebase } from '@/firebase';
+import { useFirebase } from '@/firebase/client';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -65,6 +65,7 @@ function LoginContent() {
   });
 
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
+    if (!auth) return;
     setIsLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -86,13 +87,12 @@ function LoginContent() {
   };
 
   const onRegisterSubmit = async (values: z.infer<typeof registerSchema>) => {
+    if (!auth || !firestore) return;
     setIsLoading(true);
     try {
-      // 1. Création du compte Auth
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       await updateProfile(userCredential.user, { displayName: values.fullName });
 
-      // 2. Création du document NOYAU Firestore
       await setDoc(doc(firestore, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
         email: values.email,
@@ -104,7 +104,6 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      // 3. PHASE 2 : Envoi via Server Action (Resend + HTML Template)
       const result = await sendCustomVerificationEmailAction(values.email);
       
       if (result.success) {
@@ -136,7 +135,6 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      // PHASE 2 : Reset mot de passe custom HTML
       const result = await sendCustomPasswordResetEmailAction(resetEmail);
       if (result.success) {
         toast({ title: 'E-mail envoyé !', description: 'Consultez votre boîte mail pour choisir votre nouveau mot de passe.' });

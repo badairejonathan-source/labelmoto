@@ -1,12 +1,11 @@
-
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore, useMemoFirebase } from '@/firebase/client';
 import { signOut } from 'firebase/auth';
 import { doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { useDoc } from '@/firebase/firestore/use-doc';
+import { useDoc } from '@/firebase/client';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -23,8 +22,8 @@ import { Loader2, LogOut, ArrowLeft, User, Bike, Palette, Save, X, ShieldCheck, 
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/client';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/client';
 
 const badgeColors = [
   { id: 'brand', label: 'Orange Moto', class: 'bg-brand' },
@@ -60,10 +59,10 @@ function AccountContent() {
   const callbackUrl = searchParams.get('callbackUrl');
 
   // Chargement des EXTENSIONS MÉTIER si elles existent
-  const proRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
+  const proRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
   const { data: proProfile } = useDoc(proRef);
 
-  const stdRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
+  const stdRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdRef);
 
   const activeDetailProfile = proProfile || stdProfile;
@@ -97,18 +96,15 @@ function AccountContent() {
   }, [activeDetailProfile, profile, user, proProfile]);
 
   const handleLogout = async () => {
-    await signOut(auth);
-    router.push('/');
+    if (auth) {
+      await signOut(auth);
+      router.push('/');
+    }
   };
 
-  /**
-   * Action de Onboarding : Met à jour le NOYAU users/{uid}
-   * et crée le document d'EXTENSION correspondant.
-   */
   const handleChooseType = async (type: 'user' | 'pro') => {
-    if (!user) return;
+    if (!user || !firestore) return;
     
-    // 1. Mise à jour du noyau
     const userRef = doc(firestore, 'users', user.uid);
     const userData = {
       role: type,
@@ -126,7 +122,6 @@ function AccountContent() {
       }
     });
     
-    // 2. Création de l'extension métier
     const collName = type === 'pro' ? 'professionalProfiles' : 'standardProfiles';
     const profileRef = doc(firestore, collName, user.uid);
     const profileData = {
@@ -152,7 +147,7 @@ function AccountContent() {
   };
 
   const onUpdateProfile: SubmitHandler<ProfileFormValues> = async (values) => {
-    if (!user) return;
+    if (!user || !firestore) return;
     const collectionName = isPro ? 'professionalProfiles' : 'standardProfiles';
     
     const extRef = doc(firestore, collectionName, user.uid);
@@ -161,7 +156,6 @@ function AccountContent() {
       updatedAt: serverTimestamp()
     };
 
-    // Met à jour l'extension
     updateDoc(extRef, extData).catch(async (err) => {
       if (err.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -172,7 +166,6 @@ function AccountContent() {
       }
     });
 
-    // Met à jour le noyau (synchro displayName/pseudo)
     const userRef = doc(firestore, 'users', user.uid);
     const userData = {
       displayName: values.pseudo,

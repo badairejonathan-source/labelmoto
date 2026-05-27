@@ -7,7 +7,7 @@ import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
-import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc, useFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc, useFirebase } from '@/firebase/client';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import {
@@ -359,8 +359,8 @@ const Header: React.FC<any> = ({
   }
 
   return (
-    <div className="w-full flex flex-col gap-6 md:gap-8">
-        <div className="flex items-center justify-between gap-4 w-full">
+    <div className="w-full flex flex-col gap-6 md:gap-8 pt-4">
+        <div className="flex items-center justify-between gap-4 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
             <div className="shrink-0">
                 <LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" />
             </div>
@@ -377,7 +377,7 @@ const Header: React.FC<any> = ({
             </div>
         </div>
 
-        <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8">
+        <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
             <div className="flex-1">
                 {searchInput}
             </div>
@@ -385,7 +385,7 @@ const Header: React.FC<any> = ({
         </div>
         
         {pathname !== '/map' && (
-            <div className="w-full max-w-3xl mx-auto relative">
+            <div className="w-full max-w-3xl mx-auto relative px-4 md:px-0">
                  <QuickFilters />
             </div>
         )}

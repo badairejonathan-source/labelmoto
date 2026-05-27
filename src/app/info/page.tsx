@@ -9,7 +9,7 @@ import Header from '@/components/app/header';
 import { Loader2, Map, FileText, ChevronRight, Home, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase/client';
 import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -26,7 +26,6 @@ const getArticleCategories = (article: any) => {
     const title = (article.display_title || article.title || "").toLowerCase();
     const cats: string[] = [];
     
-    // PERMIS A2 : Tout ce qui touche aux débutants, à l'occasion, à l'assurance, au gabarit et au budget
     if (
         id.includes('a2') || 
         id.includes('occasion') || 
@@ -42,12 +41,10 @@ const getArticleCategories = (article: any) => {
         cats.push('A2');
     }
     
-    // ÉVÉNEMENTS : Sport, circuits, rassemblements
     if (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('circuit')) {
         cats.push('EVENT');
     }
     
-    // CONSEILS : Guides techniques, gabarit, réglementation (ZFE), entretien + guides d'achat/assurance par demande utilisateur
     if (
         id.includes('taille') || 
         id.includes('zfe') || 
@@ -62,7 +59,6 @@ const getArticleCategories = (article: any) => {
         cats.push('TIPS');
     }
 
-    // Sécurité : si aucune catégorie n'est détectée
     if (cats.length === 0) cats.push('TIPS');
     
     return cats;
@@ -71,7 +67,7 @@ const getArticleCategories = (article: any) => {
 const ArticleCard = ({ article, priority = false }: { article: any, priority?: boolean }) => {
     const imageUrl = React.useMemo(() => {
         const id = (article.id || '').toLowerCase();
-        const title = (article.display_title || article.title || "").toLowerCase();
+        const title = (article.title || '').toLowerCase();
 
         if (id.includes('association') || title.includes('association')) return "/images/article-motars-association.webp";
         if (id.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
@@ -124,7 +120,7 @@ function InfoPageComponent() {
     const [activeCategory, setActiveCategory] = useState('ALL');
     
     const firestore = useFirestore();
-    const articlesRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
+    const articlesRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
     const { data: allArticles, isLoading } = useCollection(articlesRef);
 
     const handleSearchTermChange = (newTerm: string) => setSearchTerm(newTerm);
@@ -179,7 +175,6 @@ function InfoPageComponent() {
                         <div className="mt-4 w-20 h-1.5 bg-brand mx-auto rounded-full" />
                     </div>
 
-                    {/* FILTRES CATEGORIES */}
                     <div className="flex flex-wrap justify-center gap-3 mb-12">
                         {CATEGORIES.map((cat) => (
                             <Button

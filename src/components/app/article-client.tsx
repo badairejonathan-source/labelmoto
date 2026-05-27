@@ -33,7 +33,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase/client';
 import { doc, collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -129,7 +129,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const title = (article.display_title || article.title || "").toLowerCase();
 
     if (articleId.includes('association') || title.includes('association')) return "/images/article-motars-association.webp";
-    if (articleId.includes('motogp') || articleId.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
+    if (articleId.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
     if (articleId.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
     if (articleId.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";

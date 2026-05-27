@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { FileText, CheckCircle, ArrowRight, Zap } from 'lucide-react';
 import placeholderData from '@/app/lib/placeholder-images.json';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase/client';
 import { collection, query, limit } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -38,14 +38,9 @@ export default function HomepageDeferred() {
         return [...featuredArticles]
             .filter(a => {
                 const id = a.id.toLowerCase();
-                const title = (a.display_title || a.title || "").toLowerCase();
-                
-                // EXCLUSION : On retire spécifiquement le MotoGP de l'ACTU Home comme demandé
                 if (id.includes('motogp') || id.includes('gp-france')) {
                     return false;
                 }
-
-                // On inclut les relais motards et associations dans l'actu
                 return (id.includes('event') || id.includes('association') || id.includes('relais'));
             })
             .sort(sortArticlesByDate)
@@ -57,24 +52,18 @@ export default function HomepageDeferred() {
         return [...featuredArticles]
             .filter(a => {
                 const id = a.id.toLowerCase();
-                const title = (a.display_title || a.title || "").toLowerCase();
-                
-                // On n'affiche pas les news/events/relais ici
                 const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association') || id.includes('relais');
-                
-                // On exclut aussi l'article technique d'entretien qui a sa propre page
                 return !isNews && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
             })
             .sort(sortArticlesByDate)
             .slice(0, 3);
     }, [featuredArticles]);
 
-    // Redirection intelligente : si pas connecté, on passe par login avec callback vers /pro/register
     const proRegisterLink = user ? "/pro/register" : `/login?callbackUrl=${encodeURIComponent('/pro/register')}`;
 
     const getArticleImage = (article: any) => {
         const id = (article.id || '').toLowerCase();
-        const title = (article.display_title || article.title || "").toLowerCase();
+        const title = (article.title || '').toLowerCase();
         if (id.includes('association') || title.includes('association')) return placeholderData.articles.association.src;
         if (id.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
@@ -158,7 +147,6 @@ export default function HomepageDeferred() {
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     />
                                     
-                                    {/* Badge NOUVEAU en haut à droite */}
                                     <div className="absolute top-6 right-6 z-20">
                                         <span className="bg-white/95 backdrop-blur-sm text-brand px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border border-brand/20 animate-bounce-subtle">
                                             Nouveau

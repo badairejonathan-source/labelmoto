@@ -2,7 +2,7 @@
 
 import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useFirebase } from '@/firebase';
+import { useFirebase } from '@/firebase/client';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,8 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, RefreshCw, CheckCircle2 } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/client';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/client';
 import { sendCustomVerificationEmailAction } from '@/app/auth/actions';
 
 function VerifyEmailContent() {
@@ -25,7 +25,6 @@ function VerifyEmailContent() {
   const [isChecking, setIsChecking] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
-  // Redirection auto si déjà vérifié
   useEffect(() => {
     if (user?.emailVerified) {
       router.push('/account');
@@ -44,7 +43,6 @@ function VerifyEmailContent() {
     if (!email || countdown > 0) return;
     setIsResending(true);
     try {
-      // PHASE 2 : Renvoi via Server Action (Resend + HTML)
       const result = await sendCustomVerificationEmailAction(email);
       if (result.success) {
         toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (et vos spams)." });
@@ -59,11 +57,8 @@ function VerifyEmailContent() {
     }
   };
 
-  /**
-   * Action manuelle de resynchronisation forcée.
-   */
   const checkVerification = async () => {
-    if (!auth.currentUser) return;
+    if (!auth?.currentUser || !firestore) return;
     setIsChecking(true);
     try {
       await auth.currentUser.reload();

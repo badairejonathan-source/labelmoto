@@ -1,10 +1,9 @@
-
 'use client';
 
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Youtube, Shield } from 'lucide-react';
 import LabelMotoLogo from './logo';
-import { useUser } from '@/firebase';
+import { useUser } from '@/firebase/client';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 

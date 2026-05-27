@@ -12,13 +12,13 @@ import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/e
 
 // Liste des identifiants et e-mails administrateurs de secours (Master Admins)
 const ADMIN_UIDS = [
-  "A36FqeWBHjQBLKQMaMSiFVBzGV22", // Administrateur identifié
+  "A36FqeWBHjQBLKQMaMSiFVBzGV22",
   "A366V1X8Hqf1pA63nU3N8B7l8fD3",
   "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"
 ];
 
 const ADMIN_EMAILS = [
-  "badjoe950@hotmail.com" // Administrateur principal identifié
+  "badjoe950@hotmail.com"
 ];
 
 interface UserAuthState {
@@ -39,12 +39,14 @@ export interface FirebaseContextState extends UserAuthState {
 
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
-export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: FirebaseApp }> = ({
+export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: FirebaseApp | null }> = ({
   children,
   firebaseApp,
 }) => {
   const pathname = usePathname();
   const [isAuthActive, setIsAuthActive] = useState(false);
+  const [firestore, setFirestore] = useState<Firestore | null>(null);
+  const [auth, setAuth] = useState<Auth | null>(null);
   
   const [userAuthState, setUserAuthState] = useState<UserAuthState>({
     user: null,
@@ -53,7 +55,11 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
     userError: null,
   });
 
-  const firestore = useMemo(() => getFirestoreInstance(), []);
+  // Initialisation différée des services (Client-side only)
+  useEffect(() => {
+    setFirestore(getFirestoreInstance());
+    setAuth(getAuthInstance());
+  }, []);
 
   const activateAuth = () => {
     if (!isAuthActive) setIsAuthActive(true);
@@ -67,18 +73,15 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
   }, [pathname]);
 
   useEffect(() => {
-    if (!isAuthActive || !firestore) return;
+    if (!isAuthActive || !firestore || !auth) return;
 
     setUserAuthState(prev => ({ ...prev, isUserLoading: true }));
-    const auth = getAuthInstance();
     
-    // Variable persistante pour stocker le désabonnement du document utilisateur
     let unsubscribeDoc: (() => void) | null = null;
 
     const unsubscribeAuth = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
-        // Nettoyage systématique de l'écouteur précédent lors d'un changement d'auth
         if (unsubscribeDoc) {
           unsubscribeDoc();
           unsubscribeDoc = null;
@@ -90,7 +93,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
           
           try {
             const docSnapInitial = await getDoc(userDocRef).catch(err => {
-              // On n'émet l'erreur que si l'utilisateur est toujours censé être connecté
               if (err.code === 'permission-denied' && auth.currentUser) {
                 errorEmitter.emit('permission-error', new FirestorePermissionError({
                   path: userDocRef.path,
@@ -101,36 +103,16 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
             });
             
             if (!docSnapInitial.exists()) {
-              console.log("🛠️ Migration paresseuse déclenchée pour:", firebaseUser.uid);
-              
               const stdRef = doc(firestore, 'standardProfiles', firebaseUser.uid);
               const proRef = doc(firestore, 'professionalProfiles', firebaseUser.uid);
               
               const [stdSnap, proSnap] = await Promise.all([
-                getDoc(stdRef).catch((err) => {
-                   if (err.code === 'permission-denied' && auth.currentUser) {
-                      errorEmitter.emit('permission-error', new FirestorePermissionError({
-                        path: stdRef.path,
-                        operation: 'get'
-                      } satisfies SecurityRuleContext));
-                   }
-                   return { exists: () => false, data: () => null };
-                }),
-                getDoc(proRef).catch((err) => {
-                   if (err.code === 'permission-denied' && auth.currentUser) {
-                      errorEmitter.emit('permission-error', new FirestorePermissionError({
-                        path: proRef.path,
-                        operation: 'get'
-                      } satisfies SecurityRuleContext));
-                   }
-                   return { exists: () => false, data: () => null };
-                })
+                getDoc(stdRef).catch(() => ({ exists: () => false, data: () => null })),
+                getDoc(proRef).catch(() => ({ exists: () => false, data: () => null }))
               ]);
 
               let role = proSnap.exists() ? 'pro' : 'user';
-              if (isMasterAdmin) {
-                role = 'admin';
-              }
+              if (isMasterAdmin) role = 'admin';
 
               const onboardingComplete = stdSnap.exists() || proSnap.exists() || role === 'admin';
               const existingData = (proSnap.exists() ? proSnap.data() : stdSnap.data()) || {};
@@ -159,52 +141,27 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
                 }
               });
             }
-          } catch (e) {
-            // Erreur gérée
-          }
+          } catch (e) {}
 
-          // Démarrage du nouvel écouteur temps-réel
           unsubscribeDoc = onSnapshot(
             userDocRef, 
             (docSnap) => {
               let profileData = docSnap.exists() ? docSnap.data() : null;
-              
               if (isMasterAdmin) {
                 if (!profileData) {
-                  profileData = { 
-                    role: 'admin', 
-                    uid: firebaseUser.uid, 
-                    email: firebaseUser.email,
-                    displayName: firebaseUser.displayName || 'Administrateur Principal'
-                  };
+                  profileData = { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email };
                 } else {
                   profileData.role = 'admin';
                 }
               }
-
-              setUserAuthState({
-                user: firebaseUser,
-                profile: profileData,
-                isUserLoading: false,
-                userError: null
-              });
+              setUserAuthState({ user: firebaseUser, profile: profileData, isUserLoading: false, userError: null });
             },
             async (err) => {
-              // Condition critique : on n'émet l'erreur de permission que si le SDK Auth voit encore l'utilisateur
               if (err.code === 'permission-denied' && auth.currentUser) {
-                errorEmitter.emit('permission-error', new FirestorePermissionError({
-                  path: userDocRef.path,
-                  operation: 'get'
-                } satisfies SecurityRuleContext));
+                errorEmitter.emit('permission-error', new FirestorePermissionError({ path: userDocRef.path, operation: 'get' } satisfies SecurityRuleContext));
               }
-              
               if (isMasterAdmin && auth.currentUser) {
-                setUserAuthState({
-                  user: firebaseUser,
-                  profile: { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email },
-                  isUserLoading: false,
-                  userError: null
-                });
+                setUserAuthState({ user: firebaseUser, profile: { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email }, isUserLoading: false, userError: null });
               } else {
                 setUserAuthState(prev => ({ ...prev, isUserLoading: false, userError: err }));
               }
@@ -223,17 +180,17 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
       unsubscribeAuth();
       if (unsubscribeDoc) unsubscribeDoc();
     };
-  }, [isAuthActive, firestore]);
+  }, [isAuthActive, firestore, auth]);
 
   const contextValue = useMemo((): FirebaseContextState => ({
-    areServicesAvailable: !!firebaseApp,
+    areServicesAvailable: !!firebaseApp && !!firestore && !!auth,
     firebaseApp,
     firestore,
-    auth: isAuthActive ? getAuthInstance() : null,
+    auth,
     ...userAuthState,
     isAuthActive,
     activateAuth,
-  }), [firebaseApp, firestore, userAuthState, isAuthActive]);
+  }), [firebaseApp, firestore, auth, userAuthState, isAuthActive]);
 
   return (
     <FirebaseContext.Provider value={contextValue}>
@@ -246,12 +203,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
 export const useFirebase = () => {
   const context = useContext(FirebaseContext);
   if (context === undefined) throw new Error('useFirebase must be used within a FirebaseProvider.');
-  return {
-    ...context,
-    firebaseApp: context.firebaseApp,
-    firestore: context.firestore,
-    auth: context.auth,
-  };
+  return context;
 };
 
 export const useAuth = () => {

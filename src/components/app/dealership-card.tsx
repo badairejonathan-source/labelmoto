@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, memo } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, X, Store, Users, Utensils, ChevronRight } from 'lucide-react';
@@ -8,9 +8,8 @@ import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useFirestore, useMemoFirebase } from '@/firebase';
+import { useFirestore, useMemoFirebase, useDoc } from '@/firebase/client';
 import { doc } from 'firebase/firestore';
-import { useDoc } from '@/firebase/firestore/use-doc';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
@@ -36,7 +35,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const [imgError, setImgError] = useState(false);
   const firestore = useFirestore();
 
-  // Détails complets chargés uniquement lors de la sélection
   const docRef = useMemoFirebase(() => {
     if (!isSelected || !firestore) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
@@ -73,7 +71,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
       )}
     >
       <div className="flex items-stretch min-h-[140px]">
-        {/* IMAGE PREVIEW */}
         <div 
           className={cn(
             "relative w-32 sm:w-36 md:w-44 overflow-hidden bg-muted/30 flex items-center justify-center shrink-0 border-r", 
@@ -104,7 +101,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
           )}
         </div>
 
-        {/* CONTENT */}
         <div className="flex flex-col justify-center flex-1 p-4 cursor-pointer" onClick={onClick}>
           <div className="mb-2">
             <h3 className="font-black text-sm md:text-base uppercase leading-tight line-clamp-2">{point.title}</h3>
@@ -120,7 +116,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
             </span>
           </div>
 
-          {/* ACTIONS RAPIDES */}
           <div className="flex items-center gap-2 mt-auto">
             {isSelected && isDetailLoading ? (
               <div className="flex gap-2"><Skeleton className="h-9 w-9 rounded-full" /><Skeleton className="h-9 w-9 rounded-full" /></div>
@@ -150,7 +145,6 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
         </div>
       </div>
       
-      {/* Zoom Dialog Accessible */}
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden bg-black/95 border-none z-[3000]">
           <DialogHeader className="sr-only">

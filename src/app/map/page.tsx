@@ -1,9 +1,7 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
@@ -12,8 +10,8 @@ import LabelMotoLogo from '@/components/app/logo';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
-import { extractValidCoordinates } from "@/lib/geohash";
-import { useFirebase, useMemoFirebase, useDoc } from '@/firebase';
+import { extractValidCoordinates, encodeGeohash } from "@/lib/geohash";
+import { useFirebase, useMemoFirebase, useDoc } from '@/firebase/client';
 import { collection, getDocs, query, limit, doc } from "firebase/firestore";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -174,9 +172,6 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
-  /**
-   * Analyseur de recherche multi-critères
-   */
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
     const lowerQuery = normalizeText(searchTerm);
@@ -187,13 +182,11 @@ function MapPageComponent() {
     let postalCode: string | null = null;
     let city: string | null = null;
 
-    // 1. Détection Code Postal (Exactement 5 chiffres)
     const cpMatch = lowerQuery.match(/\b\d{5}\b/);
     if (cpMatch) {
       postalCode = cpMatch[0];
     }
 
-    // 2. Détection Département (si pas de CP ou token isolé de 2-3 chiffres)
     const deptRegex = /^(0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-46])$/;
     for (const token of tokens) {
       if (deptRegex.test(token.toUpperCase()) && token.length <= 3) {
@@ -202,10 +195,8 @@ function MapPageComponent() {
       }
     }
 
-    // 3. Détection de la Marque
     brand = MOTORCYCLE_BRANDS.find(b => lowerQuery.includes(normalizeText(b))) || null;
 
-    // 4. Déduction de la Ville (ce qui reste)
     let cityTokens = tokens.filter(t => 
       t !== postalCode && 
       t !== dept && 
@@ -216,7 +207,6 @@ function MapPageComponent() {
       city = cityTokens.join(" ");
     }
 
-    // Calcul de la localisation cible pour le recentrage
     let targetGeo: { coords: [number, number], zoom: number } | null = null;
 
     if (postalCode) {
@@ -414,7 +404,6 @@ function MapPageComponent() {
                 onSearchTermChange={(val: string) => {
                     setSearchTerm(val);
                     setSelectionSource('external');
-                    // NO AUTOMATIC RECENTERING ON EMPTY SEARCH
                 }} 
                 onSearch={() => setSelectionSource('external')} 
             />

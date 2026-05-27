@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -9,8 +8,8 @@ import { MapPin, Phone, Globe, Clock, Home, ChevronRight, Star, MessageSquare, U
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Dealership } from '@/lib/types';
-import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase, useUser, useDoc, addDocumentNonBlocking } from '@/firebase/client';
+import { collection, query, orderBy, serverTimestamp, doc } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -21,10 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useRouter } from 'next/navigation';
-import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc } from 'firebase/firestore';
 
 interface DealershipDetailClientProps {
   pro: Dealership;
@@ -46,10 +42,9 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-  // Check profile presence
-  const proProfileRef = useMemoFirebase(() => user ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
+  const proProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
   const { data: proProfile } = useDoc(proProfileRef);
-  const stdProfileRef = useMemoFirebase(() => user ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
+  const stdProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdProfileRef);
   
   const activeProfile = proProfile || stdProfile;
@@ -66,12 +61,10 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
     defaultValues: { rating: 5, content: '' },
   });
 
-  // Handle automatic return logic after login/profile creation
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.hash === '#leave-review') {
       if (user && activeProfile) {
         setIsReviewDialogOpen(true);
-        // Nettoyer l'URL
         window.history.replaceState(null, '', window.location.pathname);
       }
     }
@@ -180,7 +173,6 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
               </div>
             </div>
 
-            {/* BLOC HORAIRES (Placé ici avant les avis selon la demande) */}
             <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
               <CardHeader className="bg-muted/50 p-6 border-b">
                 <CardTitle className="text-sm font-black uppercase flex items-center gap-3">
@@ -197,7 +189,6 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
               </CardContent>
             </Card>
 
-            {/* SECTION AVIS */}
             <section id="reviews" className="scroll-mt-28 space-y-8 pt-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-4 border-brand pb-4 gap-4">
                 <div className="flex items-center gap-3">
@@ -212,7 +203,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                   onClick={handleLeaveReviewClick}
                   className="bg-foreground text-white hover:bg-brand rounded-full font-black uppercase text-[10px] tracking-widest px-8 h-12 shadow-xl transition-all hover:scale-105 active:scale-95"
                 >
-                  🔘 Laisser un avis
+                  Laisser un avis
                 </Button>
               </div>
 
@@ -263,14 +254,13 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
             <div className="bg-brand/5 p-8 rounded-[2rem] border-2 border-brand/20 text-center space-y-4">
               <p className="text-xs font-black uppercase tracking-widest text-brand">Besoin d'un autre pro ?</p>
               <Button asChild className="w-full bg-brand rounded-full font-black uppercase text-[10px] tracking-widest py-6">
-                <Link href="/map">🔘 Retour à la carte interactive</Link>
+                <Link href="/map">Retour à la carte interactive</Link>
               </Button>
             </div>
           </aside>
         </div>
       </main>
 
-      {/* Review Dialog */}
       <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="bg-brand text-white p-8 md:p-10">

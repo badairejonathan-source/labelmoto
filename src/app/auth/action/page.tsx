@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useFirebase, useUser } from '@/firebase';
+import { useFirebase, useUser } from '@/firebase/client';
 import {
   applyActionCode,
   verifyPasswordResetCode,
@@ -65,19 +65,19 @@ function AuthActionHandler() {
       try {
         switch (mode) {
           case 'verifyEmail':
-            await applyActionCode(auth, oobCode);
+            await applyActionCode(auth!, oobCode);
             setState('success');
             break;
 
           case 'resetPassword':
-            const email = await verifyPasswordResetCode(auth, oobCode);
+            const email = await verifyPasswordResetCode(auth!, oobCode);
             setUserEmail(email);
             setState('resetPasswordForm');
             break;
 
           case 'recoverEmail':
-            await checkActionCode(auth, oobCode);
-            await applyActionCode(auth, oobCode);
+            await checkActionCode(auth!, oobCode);
+            await applyActionCode(auth!, oobCode);
             setState('success');
             break;
 
@@ -98,11 +98,13 @@ function AuthActionHandler() {
       }
     };
 
-    handleAction();
+    if (auth) {
+      handleAction();
+    }
   }, [mode, oobCode, auth]);
 
   const onResetSubmit = async (values: ResetPasswordValues) => {
-    if (!oobCode) return;
+    if (!oobCode || !auth) return;
     setState('loading');
     try {
       await confirmPasswordReset(auth, oobCode, values.password);

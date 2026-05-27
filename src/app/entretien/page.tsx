@@ -7,18 +7,15 @@ import Link from 'next/link';
 
 import ArticleClient from '@/components/app/article-client';
 import { cn } from '@/lib/utils';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase/client';
 import { collection } from 'firebase/firestore';
-
-// Note: Standard SEO title "Entretien moto : programmes de révision et budgets par modèle" 
-// is usually handled in a higher level page metadata for this route if refactored to server component.
 
 export default function EntretienPage() {
   const router = useRouter();
   const [expandedBrands, setExpandedBrands] = useState<string[]>([]);
   
   const firestore = useFirestore();
-  const sheetsRef = useMemoFirebase(() => collection(firestore, 'motorcycle_sheets'), [firestore]);
+  const sheetsRef = useMemoFirebase(() => firestore ? collection(firestore, 'motorcycle_sheets') : null, [firestore]);
   const { data: allSheets, isLoading: isCatalogLoading } = useCollection(sheetsRef);
 
   const brandsData = useMemo(() => {

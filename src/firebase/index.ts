@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * @fileOverview Point d'entrée Firebase Client.
- * AJOUT DE 'use client' pour forcer Next.js à isoler ce module du bundle serveur.
+ * @fileOverview Point d'entrée technique minimal pour Firebase Client.
+ * Les hooks et utilitaires sont exportés via @/firebase/client.
  */
 
 import { firebaseConfig } from '@/firebase/config';
@@ -15,7 +15,19 @@ let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 
+/**
+ * Vérifie si le code s'exécute sur le serveur.
+ * Retourne true si c'est le cas.
+ */
+function isServer() {
+  return typeof window === 'undefined';
+}
+
 export function initializeFirebase() {
+  if (isServer()) {
+    return { firebaseApp: null as unknown as FirebaseApp };
+  }
+  
   if (getApps().length > 0) {
     firebaseApp = getApp();
   } else {
@@ -24,8 +36,12 @@ export function initializeFirebase() {
   return { firebaseApp };
 }
 
-export function getAuthInstance() {
-  if (typeof window !== 'undefined' && (window as any)._firebaseAuth) {
+export function getAuthInstance(): Auth | null {
+  if (isServer()) {
+    return null;
+  }
+  
+  if ((window as any)._firebaseAuth) {
     return (window as any)._firebaseAuth;
   }
 
@@ -33,15 +49,17 @@ export function getAuthInstance() {
     const { firebaseApp: app } = initializeFirebase();
     if (!app) return null;
     auth = getAuth(app);
-    if (typeof window !== 'undefined') {
-      (window as any)._firebaseAuth = auth;
-    }
+    (window as any)._firebaseAuth = auth;
   }
   return auth;
 }
 
-export function getFirestoreInstance() {
-  if (typeof window !== 'undefined' && (window as any)._firebaseFirestore) {
+export function getFirestoreInstance(): Firestore | null {
+  if (isServer()) {
+    return null;
+  }
+
+  if ((window as any)._firebaseFirestore) {
     return (window as any)._firebaseFirestore;
   }
 
@@ -49,29 +67,16 @@ export function getFirestoreInstance() {
     const { firebaseApp: app } = initializeFirebase();
     if (!app) return null;
     
-    if (typeof window !== 'undefined') {
-      try {
-        firestore = initializeFirestore(firebaseApp, {
-          experimentalForceLongPolling: true,
-          localCache: memoryLocalCache(),
-        });
-      } catch (err) {
-        firestore = getFirestore(firebaseApp);
-      }
-      
-      (window as any)._firebaseFirestore = firestore;
-    } else {
-      // Fallback serveur minimal
-      firestore = getFirestore(firebaseApp);
+    try {
+      firestore = initializeFirestore(app, {
+        experimentalForceLongPolling: true,
+        localCache: memoryLocalCache(),
+      });
+    } catch (err) {
+      firestore = getFirestore(app);
     }
+    
+    (window as any)._firebaseFirestore = firestore;
   }
   return firestore;
 }
-
-export { useFirebase, useAuth, useFirestore, useFirebaseApp, useMemoFirebase, useUser } from './provider';
-export * from './firestore/use-collection';
-export * from './firestore/use-doc';
-export * from './non-blocking-updates';
-export * from './non-blocking-login';
-export * from './errors';
-export * from './error-emitter';

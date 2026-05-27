@@ -1,7 +1,7 @@
- 'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirebase, useMemoFirebase, useCollection } from '@/firebase';
+import { useFirebase, useMemoFirebase, useCollection } from '@/firebase/client';
 import { 
   collection, query, getDocs, doc, orderBy, where, 
   limit 
@@ -22,17 +22,17 @@ import { fr } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
-import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { cn, generateDealershipSlug } from '@/lib/utils';
-import { extractValidCoordinates } from '@/lib/geohash';
+import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/client';
+import { cn, generateDealershipSlug, slugify } from '@/lib/utils';
+import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/client';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/client';
 
 interface Submission {
   id: string;
@@ -70,20 +70,17 @@ export default function AdminPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  // State Management
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<Submission | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [duplicates, setDuplicates] = useState<any[]>([]);
 
-  // Migration State
   const [isAuditing, setIsAuditing] = useState(false);
   const [migrationStats, setMigrationStats] = useState<MigrationStats | null>(null);
 
   const isAdmin = profile?.role === 'admin';
 
-  // Collection Listeners
   const submissionsQuery = useMemoFirebase(() => {
     if (!firestore || !isAdmin) return null;
     return query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc'));
@@ -109,11 +106,9 @@ export default function AdminPage() {
     }
   }, [user, profile, isUserLoading, router, toast]);
 
-  // Logic: Audit visuel (Dry Run)
   const runAudit = async () => {
     if (!firestore) return;
     setIsAuditing(true);
-    console.log("🔍 Démarrage de l'audit client...");
     
     try {
       const [usersSnap, stdSnap, proSnap] = await Promise.all([
@@ -139,8 +134,6 @@ export default function AdminPage() {
         }
       });
 
-      console.log(`📊 Audit terminé. ${toMigrate.length} orphelins trouvés.`);
-
       setMigrationStats({
         totalAuthEstimate: usersSnap.size + toMigrate.length,
         usersCount: usersSnap.size,
@@ -150,7 +143,6 @@ export default function AdminPage() {
       });
 
     } catch (e: any) {
-        console.error("❌ Erreur audit:", e);
         if (e.code === 'permission-denied') {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: 'users_audit',
@@ -356,7 +348,7 @@ export default function AdminPage() {
                 <Database className="h-5 w-5 text-orange-400" /> 100%
               </CardTitle>
             </CardHeader>
-          </Card>
+          </div>
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">

@@ -20,13 +20,10 @@ import {
   Scale,
   ShieldCheck,
   Zap,
-  Cpu,
-  RefreshCw,
   LayoutGrid,
   FileText,
   ClipboardList,
-  CircleDot,
-  ChevronDown
+  CircleDot
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -42,7 +39,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase/client';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -86,7 +83,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   const returnLabel = "RETOUR AU CATALOGUE";
 
   const firestore = useFirestore();
-  const ficheRef = useMemoFirebase(() => firestore ? doc(firestore, 'motorcycle_sheets', modelId) : null, [firestore, modelId]);
+  const ficheRef = useMemoFirebase(() => (firestore && modelId) ? doc(firestore, 'motorcycle_sheets', modelId) : null, [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
   useEffect(() => { 
@@ -147,24 +144,9 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Accueil",
-          "item": "https://labelmoto.fr"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Catalogue",
-          "item": "https://labelmoto.fr/entretien"
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": displayData.modelName,
-          "item": `https://labelmoto.fr/fiches/${modelId}`
-        }
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://labelmoto.fr" },
+        { "@type": "ListItem", "position": 2, "name": "Catalogue", "item": "https://labelmoto.fr/entretien" },
+        { "@type": "ListItem", "position": 3, "name": displayData.modelName, "item": `https://labelmoto.fr/fiches/${modelId}` }
       ]
     };
   }, [displayData, modelId]);
