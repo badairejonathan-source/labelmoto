@@ -67,7 +67,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
   }, [pathname]);
 
   useEffect(() => {
-    if (!isAuthActive) return;
+    if (!isAuthActive || !firestore) return;
 
     setUserAuthState(prev => ({ ...prev, isUserLoading: true }));
     const auth = getAuthInstance();
@@ -248,14 +248,22 @@ export const useFirebase = () => {
   if (context === undefined) throw new Error('useFirebase must be used within a FirebaseProvider.');
   return {
     ...context,
-    firebaseApp: context.firebaseApp!,
-    firestore: context.firestore!,
-    auth: context.auth!,
+    firebaseApp: context.firebaseApp,
+    firestore: context.firestore,
+    auth: context.auth,
   };
 };
 
-export const useAuth = () => getAuthInstance();
-export const useFirestore = () => getFirestoreInstance();
+export const useAuth = () => {
+  const context = useContext(FirebaseContext);
+  return context?.auth || null;
+};
+
+export const useFirestore = () => {
+  const context = useContext(FirebaseContext);
+  return context?.firestore || null;
+};
+
 export const useUser = () => {
   const context = useContext(FirebaseContext);
   if (context === undefined) throw new Error('useUser must be used within a FirebaseProvider.');

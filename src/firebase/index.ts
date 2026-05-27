@@ -30,8 +30,9 @@ export function getAuthInstance() {
   }
 
   if (!auth) {
-    const { firebaseApp } = initializeFirebase();
-    auth = getAuth(firebaseApp);
+    const { firebaseApp: app } = initializeFirebase();
+    if (!app) return null;
+    auth = getAuth(app);
     if (typeof window !== 'undefined') {
       (window as any)._firebaseAuth = auth;
     }
@@ -45,7 +46,8 @@ export function getFirestoreInstance() {
   }
 
   if (!firestore) {
-    const { firebaseApp } = initializeFirebase();
+    const { firebaseApp: app } = initializeFirebase();
+    if (!app) return null;
     
     if (typeof window !== 'undefined') {
       try {
@@ -56,12 +58,12 @@ export function getFirestoreInstance() {
       } catch (err) {
         firestore = getFirestore(firebaseApp);
       }
+      
       (window as any)._firebaseFirestore = firestore;
-    } else {
-      // Fallback serveur minimal (normalement jamais appelé grâce à 'use client')
-      firestore = getFirestore(firebaseApp);
-    }
-  }
+      } else {
+        // Fallback serveur minimal
+        firestore = getFirestore(firebaseApp);
+      }
   return firestore;
 }
 

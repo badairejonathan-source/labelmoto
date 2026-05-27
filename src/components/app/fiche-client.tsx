@@ -86,7 +86,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   const returnLabel = "RETOUR AU CATALOGUE";
 
   const firestore = useFirestore();
-  const ficheRef = useMemoFirebase(() => doc(firestore, 'motorcycle_sheets', modelId), [firestore, modelId]);
+  const ficheRef = useMemoFirebase(() => firestore ? doc(firestore, 'motorcycle_sheets', modelId) : null, [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
   useEffect(() => { 
@@ -190,15 +190,11 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     return pool.filter(m => m.id !== modelId && m.cc >= minCC && m.cc <= maxCC).sort(() => 0.5 - Math.random()).slice(0, 4);
   }, [modelId, displayData]);
 
-  if (isLoading) return (
+  if (isLoading || !displayData) return (
     <div className="min-h-screen bg-background">
         <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
         <main className="container mx-auto px-4 py-8"><div className="max-w-5xl mx-auto space-y-8 pt-28"><Skeleton className="h-4 w-40" /><Skeleton className="h-12 w-full rounded-full" /><Skeleton className="aspect-video w-full rounded-[2.5rem]" /></div></main>
     </div>
-  );
-
-  if (!fiche || !displayData) return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase">Fiche non trouvée</h1><Button asChild className="bg-brand rounded-full px-8 font-black uppercase text-xs h-12 shadow-xl"><Link href="/entretien">Retour au catalogue</Link></Button></div>
   );
 
   return (

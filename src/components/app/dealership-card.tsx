@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, memo } from 'react';
@@ -9,7 +8,7 @@ import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useFirebase, useMemoFirebase } from '@/firebase';
+import { useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -35,11 +34,11 @@ const categoryDisplay: { [key: string]: string } = {
 const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = false, onClick, onOpenDetails, className }) => {
   const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const { firestore } = useFirebase();
+  const firestore = useFirestore();
 
   // Détails complets chargés uniquement lors de la sélection
   const docRef = useMemoFirebase(() => {
-    if (!isSelected) return null;
+    if (!isSelected || !firestore) return null;
     const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
     return doc(firestore, col, point.id);
   }, [firestore, point.id, point.appSection, isSelected]);

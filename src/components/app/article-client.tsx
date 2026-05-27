@@ -107,10 +107,10 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const { user } = useUser();
 
   const firestore = useFirestore();
-  const articleRef = useMemoFirebase(() => doc(firestore, 'articles', id), [firestore, id]);
+  const articleRef = useMemoFirebase(() => firestore ? doc(firestore, 'articles', id) : null, [firestore, id]);
   const { data: article, isLoading } = useDoc(articleRef);
 
-  const articlesListRef = useMemoFirebase(() => collection(firestore, 'articles'), [firestore]);
+  const articlesListRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
   const { data: allArticles, isLoading: isArticlesListLoading } = useCollection(articlesListRef);
 
   const registerLink = user ? "/pro/register" : "/login";
@@ -626,7 +626,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     );
   };
 
-  if (isLoading) return (
+  if (isLoading || !article) return (
     <div className="min-h-screen bg-background">
         {showHeader && <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />}
         <main className="container mx-auto px-4 py-8">
@@ -644,8 +644,6 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         </main>
     </div>
   );
-
-  if (!article) return (<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center px-4"><h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">Article non trouvé</h1><Button asChild className="rounded-full px-8 font-black uppercase tracking-widest text-xs"><Link href="/info">Retour aux articles</Link></Button></div>);
 
   const rootSchedule = article.schedule_card || article.schedule;
 
