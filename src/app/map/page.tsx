@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -75,17 +76,17 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
         <div className="grid grid-cols-3 gap-2">
            {pro.phoneNumber && (
              <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
-               <a href={`tel:${pro.phoneNumber}`}><Phone className="mr-1 h-3 w-3 md:h-4 md:w-4" /> Appeler</a>
+               <a href={`tel:${pro.phoneNumber}`}><Phone className="mr-1 h-3 w-3 md:h-4 w-4" /> Appeler</a>
              </Button>
            )}
            {pro.website && (
              <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
-               <a href={pro.website} target="_blank" rel="noopener noreferrer"><Globe className="mr-1 h-3 w-3 md:h-4 md:w-4" /> Site</a>
+               <a href={pro.website} target="_blank" rel="noopener noreferrer"><Globe className="mr-1 h-3 w-3 md:h-4 w-4" /> Site</a>
              </Button>
            )}
            <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
               <Link href={`/concessions/${pro.slug || pro.id}#reviews`}>
-                <MessageSquare className="mr-1 h-3 w-3 md:h-4 md:w-4" /> Avis
+                <MessageSquare className="mr-1 h-3 w-3 md:h-4 w-4" /> Avis
               </Link>
            </Button>
         </div>
@@ -193,7 +194,6 @@ function MapPageComponent() {
     }
 
     // 2. Détection Département (si pas de CP ou token isolé de 2-3 chiffres)
-    // On cherche les tokens qui correspondent au format département (01-95, 2A, 2B, 97x)
     const deptRegex = /^(0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-46])$/;
     for (const token of tokens) {
       if (deptRegex.test(token.toUpperCase()) && token.length <= 3) {
@@ -227,7 +227,6 @@ function MapPageComponent() {
       const loc = Object.entries(locationsData).find(([k]) => k.startsWith(dept));
       if (loc) targetGeo = { coords: loc[1].center, zoom: 9 };
     } else if (city) {
-      // Recherche de la ville dans notre base statique
       for (const [deptKey, info] of Object.entries(locationsData)) {
         const foundCity = info.cities.find(c => normalizeText(c) === city || city?.includes(normalizeText(c)));
         if (foundCity) {
@@ -251,30 +250,23 @@ function MapPageComponent() {
         const pDept = getItemDepartment(p);
         const pBrands = (p.brands || []).map(b => normalizeText(b));
         const pTitle = normalizeText(p.title);
-        const pAddress = normalizeText((p as any).address || "");
 
-        // RÈGLE MARQUE : Doit matcher si une marque est demandée
         if (brand) {
           const normBrand = normalizeText(brand);
           const matchesBrand = pTitle.includes(normBrand) || pBrands.some(b => b.includes(normBrand));
           if (!matchesBrand) return false;
         }
 
-        // RÈGLE DÉPARTEMENT : Filtrage strict si un département est spécifié
         if (dept) {
           if (pDept !== dept) return false;
         }
 
-        // RÈGLE VIEWPORT (Ville / CP) : 
-        // Si on a recentré la carte sur une zone spécifique, on peut optionnellement 
-        // restreindre aux points visibles si le zoom est élevé.
         if (targetGeo && mapBounds && mapZoom >= 10) {
            const lat = p.latitude;
            const lng = p.longitude;
            const isInViewport = lat >= mapBounds.getSouth() && lat <= mapBounds.getNorth() &&
                               lng >= mapBounds.getWest() && lng <= mapBounds.getEast();
            
-           // Note: on ne filtre par viewport QUE si on a un CP ou une Ville (pas pour département seul)
            if ((postalCode || searchIntent.city) && !isInViewport) return false;
         }
 
@@ -422,7 +414,7 @@ function MapPageComponent() {
                 onSearchTermChange={(val: string) => {
                     setSearchTerm(val);
                     setSelectionSource('external');
-                    if (!val) { setMapZoom(6); setMapCenter([46.5, 2.2]); }
+                    // NO AUTOMATIC RECENTERING ON EMPTY SEARCH
                 }} 
                 onSearch={() => setSelectionSource('external')} 
             />

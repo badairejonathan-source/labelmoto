@@ -304,9 +304,6 @@ const Header: React.FC<any> = ({
   const clearSearch = () => {
     onSearchTermChange('');
     setShowSuggestions(false);
-    if (window.location.pathname === '/map') {
-        router.replace('/map');
-    }
   };
 
   const searchInput = (
