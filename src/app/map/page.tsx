@@ -10,7 +10,7 @@ import Header, { UserMenu } from '@/components/app/header';
 import LabelMotoLogo from '@/components/app/logo';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
-import { cn } from "@/lib/utils";
+import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, getDocs, query, limit, doc } from "firebase/firestore";
@@ -21,6 +21,11 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 
 const brandsList = Object.keys(brandLogos);
+const MOTORCYCLE_BRANDS = [
+  "Honda", "Yamaha", "Kawasaki", "Suzuki", "BMW", "BMW Motorrad", 
+  "Ducati", "Triumph", "Harley-Davidson", "KTM", "Aprilia", 
+  "Moto Guzzi", "Royal Enfield", "Indian", "Piaggio", "Vespa", "Can-Am", "CFMoto"
+];
 
 const MapComponent = dynamic(
   () => import('@/components/app/map-component').then((mod) => mod.default), 
@@ -31,7 +36,11 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   const { firestore } = useFirebase();
   const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
   
-  const docRef = useMemoFirebase(() => doc(firestore, col, dealershipId), [firestore, col, dealershipId]);
+  const docRef = useMemoFirebase(() => {
+    if (!firestore || !dealershipId) return null;
+    return doc(firestore, col, dealershipId);
+  }, [firestore, col, dealershipId]);
+  
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
   if (isLoading) return <div className="p-8 space-y-6"><Skeleton className="h-48 w-full rounded-3xl" /><Skeleton className="h-8 w-3/4" /></div>;
@@ -115,9 +124,7 @@ function MapPageComponent() {
 
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  
   const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
-  
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
   const [isDetailView, setIsDetailView] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -125,6 +132,7 @@ function MapPageComponent() {
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>('external');
   const [isLocating, setIsLocating] = useState(false);
+  const [mapBounds, setMapBounds] = useState<any>(null);
 
   const isMobile = width !== undefined && width < 1024;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 600 : (drawerHeight === 'half' ? 300 : 160)) : 0;
@@ -165,92 +173,114 @@ function MapPageComponent() {
     fetchAll();
   }, [firestore]);
 
+  /**
+   * Analyseur de recherche multi-critères
+   */
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
-    const lower = searchTerm.toLowerCase().trim();
+    const lowerQuery = normalizeText(searchTerm);
+    const tokens = lowerQuery.split(" ");
     
-    // 1. Détection Prioritaire Département (2 chiffres seuls)
-    const deptMatch = lower.match(/^\d{2}$/);
-    if (deptMatch) {
-        const deptCode = deptMatch[0];
-        const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode));
-        if (deptKey) {
-            const loc = (locationsData as any)[deptKey];
-            return { brand: null, geo: { type: 'dept', value: deptCode, coords: loc.center, zoom: 9 }, original: lower };
-        }
+    let brand: string | null = null;
+    let dept: string | null = null;
+    let postalCode: string | null = null;
+    let city: string | null = null;
+
+    // 1. Détection Code Postal (Exactement 5 chiffres)
+    const cpMatch = lowerQuery.match(/\b\d{5}\b/);
+    if (cpMatch) {
+      postalCode = cpMatch[0];
     }
 
-    // 2. Détection de la marque
-    const brand = brandsList.find(b => lower.includes(b.toLowerCase()));
-    let geoQuery = lower;
-    if (brand) geoQuery = lower.replace(brand.toLowerCase(), '').trim();
-
-    // 3. Détection de la zone géographique (Dépt, CP, Ville)
-    let geo = { type: 'text', value: geoQuery, coords: null as [number, number] | null, zoom: 12 };
-
-    const longDeptMatch = geoQuery.match(/\b(\d{2})\b/);
-    if (longDeptMatch) {
-        const deptCode = longDeptMatch[1];
-        const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode));
-        if (deptKey) {
-            const loc = (locationsData as any)[deptKey];
-            geo = { type: 'dept', value: deptCode, coords: loc.center, zoom: 9 };
-        }
-    } 
-    else if (geoQuery.match(/\b(\d{5})\b/)) {
-        const cp = geoQuery.match(/\b(\d{5})\b/)?.[0];
-        const deptCode = cp?.substring(0, 2);
-        const deptKey = Object.keys(locationsData).find(k => k.startsWith(deptCode || ''));
-        if (deptKey) {
-            const loc = (locationsData as any)[deptKey];
-            geo = { type: 'cp', value: cp || '', coords: loc.center, zoom: 13 };
-        }
-    } 
-    else if (geoQuery) {
-        for (const [dept, info] of Object.entries(locationsData)) {
-            const city = info.cities.find(c => geoQuery.includes(c.toLowerCase()) || c.toLowerCase().includes(geoQuery));
-            if (city) { geo = { type: 'city', value: city, coords: info.center, zoom: 13 }; break; }
-        }
+    // 2. Détection Département (si pas de CP ou token isolé de 2-3 chiffres)
+    // On cherche les tokens qui correspondent au format département (01-95, 2A, 2B, 97x)
+    const deptRegex = /^(0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-46])$/;
+    for (const token of tokens) {
+      if (deptRegex.test(token.toUpperCase()) && token.length <= 3) {
+        dept = token.toUpperCase();
+        break;
+      }
     }
 
-    return { brand, geo, original: lower };
+    // 3. Détection de la Marque
+    brand = MOTORCYCLE_BRANDS.find(b => lowerQuery.includes(normalizeText(b))) || null;
+
+    // 4. Déduction de la Ville (ce qui reste)
+    let cityTokens = tokens.filter(t => 
+      t !== postalCode && 
+      t !== dept && 
+      (!brand || !normalizeText(brand).includes(t))
+    );
+    
+    if (cityTokens.length > 0) {
+      city = cityTokens.join(" ");
+    }
+
+    // Calcul de la localisation cible pour le recentrage
+    let targetGeo: { coords: [number, number], zoom: number } | null = null;
+
+    if (postalCode) {
+      const deptCode = postalCode.substring(0, 2);
+      const loc = Object.entries(locationsData).find(([k]) => k.startsWith(deptCode));
+      if (loc) targetGeo = { coords: loc[1].center, zoom: 12 };
+    } else if (dept) {
+      const loc = Object.entries(locationsData).find(([k]) => k.startsWith(dept));
+      if (loc) targetGeo = { coords: loc[1].center, zoom: 9 };
+    } else if (city) {
+      // Recherche de la ville dans notre base statique
+      for (const [deptKey, info] of Object.entries(locationsData)) {
+        const foundCity = info.cities.find(c => normalizeText(c) === city || city?.includes(normalizeText(c)));
+        if (foundCity) {
+          targetGeo = { coords: info.center, zoom: 12 };
+          break;
+        }
+      }
+    }
+
+    return { brand, dept, postalCode, city, targetGeo, original: lowerQuery };
   }, [searchTerm]);
 
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
         const section = p.appSection === 'both' ? 'shopping' : p.appSection;
         if (!activeFilters.includes(section)) return false;
+        
         if (!searchIntent) return true;
         
-        const { brand, geo } = searchIntent;
-        const titleLower = p.title.toLowerCase();
-        const addressLower = (p as any).address?.toLowerCase() || "";
-        const pBrands = p.brands || [];
-        
-        // Logique Marque : doit matcher le titre OU la liste des marques officielles
-        const matchesBrand = !brand || 
-                             titleLower.includes(brand.toLowerCase()) || 
-                             pBrands.some(b => b.toLowerCase() === brand.toLowerCase());
-        
-        if (!matchesBrand) return false;
+        const { brand, dept, postalCode, targetGeo } = searchIntent;
+        const pDept = getItemDepartment(p);
+        const pBrands = (p.brands || []).map(b => normalizeText(b));
+        const pTitle = normalizeText(p.title);
+        const pAddress = normalizeText((p as any).address || "");
 
-        // Logique Géo : Si on a une marque mais PAS de géo spécifiée -> on affiche tout (matchesGeo = true)
-        if (geo.type === 'text' && !geo.value) return true;
-
-        let matchesGeo = true;
-        if (geo.type === 'dept') {
-            matchesGeo = addressLower.includes(geo.value);
-        } else if (geo.type === 'cp') {
-            matchesGeo = addressLower.includes(geo.value);
-        } else if (geo.type === 'city') {
-            matchesGeo = addressLower.includes(geo.value.toLowerCase());
-        } else if (geo.type === 'text' && geo.value) {
-            matchesGeo = titleLower.includes(geo.value) || addressLower.includes(geo.value);
+        // RÈGLE MARQUE : Doit matcher si une marque est demandée
+        if (brand) {
+          const normBrand = normalizeText(brand);
+          const matchesBrand = pTitle.includes(normBrand) || pBrands.some(b => b.includes(normBrand));
+          if (!matchesBrand) return false;
         }
-        
-        return matchesGeo;
+
+        // RÈGLE DÉPARTEMENT : Filtrage strict si un département est spécifié
+        if (dept) {
+          if (pDept !== dept) return false;
+        }
+
+        // RÈGLE VIEWPORT (Ville / CP) : 
+        // Si on a recentré la carte sur une zone spécifique, on peut optionnellement 
+        // restreindre aux points visibles si le zoom est élevé.
+        if (targetGeo && mapBounds && mapZoom >= 10) {
+           const lat = p.latitude;
+           const lng = p.longitude;
+           const isInViewport = lat >= mapBounds.getSouth() && lat <= mapBounds.getNorth() &&
+                              lng >= mapBounds.getWest() && lng <= mapBounds.getEast();
+           
+           // Note: on ne filtre par viewport QUE si on a un CP ou une Ville (pas pour département seul)
+           if ((postalCode || searchIntent.city) && !isInViewport) return false;
+        }
+
+        return true;
     });
-  }, [points, searchIntent, activeFilters]);
+  }, [points, searchIntent, activeFilters, mapBounds, mapZoom]);
 
   const listPoints = useMemo(() => {
     return [...filteredPoints]
@@ -294,29 +324,11 @@ function MapPageComponent() {
   }, [filteredPoints, mapZoom, selectedId]);
 
   useEffect(() => {
-    if (searchIntent && selectionSource === 'external') {
-        if (searchIntent.geo.coords) {
-            setMapCenter(searchIntent.geo.coords);
-            setMapZoom(searchIntent.geo.zoom);
-        } else if (searchIntent.brand && !searchIntent.geo.value) {
-            // Uniquement une marque cherchée sans géo -> on affiche toute la France
-            setMapCenter([46.5, 2.2]);
-            setMapZoom(6);
-        }
+    if (searchIntent && searchIntent.targetGeo && selectionSource === 'external') {
+        setMapCenter(searchIntent.targetGeo.coords);
+        setMapZoom(searchIntent.targetGeo.zoom);
     }
   }, [searchIntent, selectionSource]);
-
-  useEffect(() => {
-    if (selectedId && selectionSource === 'marker') {
-      const timer = setTimeout(() => {
-        const element = document.getElementById(`card-${selectedId}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedId, selectionSource, listPoints]);
 
   const handleFilterToggle = (f: string) => {
     setActiveFilters(prev => {
@@ -396,7 +408,7 @@ function MapPageComponent() {
         <MapComponent 
             points={filteredPoints} labelPoints={labelPoints} center={mapCenter} zoom={mapZoom} selectedId={selectedId} selectionSource={selectionSource}
             onMarkerClick={handleMarkerClick} onMapClick={() => { setSelectedId(null); setIsDetailView(false); }}
-            onMapChange={(c, z) => { setMapCenter(c); setMapZoom(z); setSelectionSource(null); }}
+            onMapChange={(c, z, b) => { setMapCenter(c); setMapZoom(z); setMapBounds(b); setSelectionSource(null); }}
             onUserInteraction={handleUserInteraction} bottomPadding={bottomPadding} leftPadding={leftPadding}
             isLocating={isLocating} onLocateEnd={() => setIsLocating(false)} onLocationFound={(c) => { setMapCenter(c); setSelectionSource('external'); }}
         />

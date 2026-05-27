@@ -1,9 +1,47 @@
-
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+/**
+ * Normalise un texte pour la recherche :
+ * - Minuscules
+ * - Suppression des accents
+ * - Remplacement des tirets/underscores par des espaces
+ * - Suppression des espaces multiples
+ */
+export function normalizeText(value: string | null | undefined): string {
+  if (!value) return "";
+  return value
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[-_]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Extrait de manière fiable le département d'un établissement.
+ * Priorité : Champ department/departement > Extraction du code postal.
+ */
+export function getItemDepartment(item: any): string | null {
+  const dept = item.department || item.departement;
+  if (dept) return dept.toString().padStart(2, '0').slice(0, 3);
+
+  const postalCode = item.postalCode || item.codePostal || item.zipCode || item.address?.match(/\b\d{5}\b/)?.[0];
+  if (!postalCode) return null;
+
+  const pc = postalCode.toString().trim();
+  if (pc.startsWith("97")) return pc.slice(0, 3); // DOM-TOM
+  if (pc.startsWith("20")) {
+    // La Corse est un cas spécial, souvent traitée comme 2A/2B mais commence par 20
+    return pc.slice(0, 2); 
+  }
+  return pc.slice(0, 2);
 }
 
 /**
