@@ -7,7 +7,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Loader2, Mail, RefreshCw, CheckCircle2, Sparkles } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/client';
@@ -20,6 +20,7 @@ function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || user?.email;
+  const isNewAccount = searchParams.get('new') === '1';
   
   const [isResending, setIsResending] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
@@ -43,6 +44,7 @@ function VerifyEmailContent() {
     if (!email || countdown > 0) return;
     setIsResending(true);
     try {
+      // UTILISE LE FLUX PREMIUM : Firebase Admin SDK + Resend
       const result = await sendCustomVerificationEmailAction(email);
       if (result.success) {
         toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (et vos spams)." });
@@ -102,18 +104,21 @@ function VerifyEmailContent() {
         <Card className="border-2 shadow-2xl rounded-[2.5rem] overflow-hidden">
           <CardHeader className="bg-brand text-white p-10">
             <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <Mail className="h-10 w-10 text-white" />
+                {isNewAccount ? <Sparkles className="h-10 w-10 text-white" /> : <Mail className="h-10 w-10 text-white" />}
             </div>
-            <CardTitle className="text-3xl font-black uppercase tracking-tighter">Dernière étape !</CardTitle>
+            <CardTitle className="text-3xl font-black uppercase tracking-tighter">
+              {isNewAccount ? "Compte créé !" : "Vérifiez vos e-mails"}
+            </CardTitle>
             <CardDescription className="text-white/80 font-bold text-lg leading-tight">
-              Un bel e-mail de validation a été envoyé à :<br/>
-              <span className="text-white underline">{email}</span>
+              {isNewAccount 
+                ? "Cliquez sur 'Renvoyer l’e-mail de validation' pour recevoir votre lien premium."
+                : `Lien de validation envoyé à : ${email}`}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-10 space-y-8">
             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
                 <p className="text-sm font-bold text-muted-foreground leading-relaxed text-center">
-                    Cliquez sur le bouton dans l'e-mail pour activer votre compte. Une fois fait, cliquez ici.
+                    Une fois que vous aurez cliqué sur le bouton dans l'e-mail, cliquez ici pour finaliser.
                 </p>
                 <Button onClick={checkVerification} disabled={isChecking} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-14 rounded-full shadow-lg transition-transform active:scale-95">
                     {isChecking ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
@@ -122,15 +127,15 @@ function VerifyEmailContent() {
             </div>
 
             <div className="pt-4 space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vous n'avez rien reçu ?</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Action requise :</p>
                 <Button 
                     variant="outline" 
                     onClick={handleResend} 
                     disabled={isResending || countdown > 0}
-                    className="w-full rounded-full border-brand text-brand hover:bg-brand/5 h-12 font-black uppercase text-[10px] tracking-widest"
+                    className="w-full rounded-full border-brand text-brand hover:bg-brand/5 h-12 font-black uppercase text-[10px] tracking-widest shadow-sm"
                 >
                     {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-3.5 w-3.5" />}
-                    {countdown > 0 ? `Attendre ${countdown}s` : "Renvoyer l'e-mail premium"}
+                    {countdown > 0 ? `Attendre ${countdown}s` : "Renvoyer l'e-mail de validation"}
                 </Button>
             </div>
           </CardContent>
@@ -138,7 +143,7 @@ function VerifyEmailContent() {
 
         <div className="mt-10">
             <Link href="/login" className="text-muted-foreground hover:text-brand font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2">
-                <RefreshCw className="h-3 w-3" /> Changer de compte ou se reconnecter
+                <RefreshCw className="h-3 w-3" /> Retourner à la connexion
             </Link>
         </div>
       </div>

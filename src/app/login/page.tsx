@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, KeyRound, ArrowLeft, User } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
-import { sendCustomVerificationEmailAction, sendCustomPasswordResetEmailAction } from '@/app/auth/actions';
+import { sendCustomPasswordResetEmailAction } from '@/app/auth/actions';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Adresse e-mail invalide.' }),
@@ -104,19 +104,11 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      const result = await sendCustomVerificationEmailAction(values.email);
+      // LOGIQUE SIMPLIFIÉE : On ne déclenche plus l'email premium ici.
+      // On redirige simplement vers la page de vérification qui gère le flux.
+      toast({ title: 'Compte créé !', description: 'Bienvenue sur Label Moto.' });
+      router.push(`/verify-email?email=${encodeURIComponent(values.email)}&new=1`);
       
-      if (result.success) {
-        toast({ title: 'Compte créé !', description: 'Un e-mail de bienvenue a été envoyé.' });
-        router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
-      } else {
-        toast({ 
-          variant: 'destructive', 
-          title: 'Inscription réussie, mais...', 
-          description: "Nous n'avons pas pu envoyer l'e-mail de validation : " + result.error 
-        });
-        router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
-      }
     } catch (error: any) {
       toast({
         variant: 'destructive',
