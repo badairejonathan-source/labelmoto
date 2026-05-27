@@ -2,12 +2,13 @@
 
 import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useFirebase } from '@/firebase/client';
+import { useFirebase, useUser } from '@/firebase/client';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, RefreshCw, CheckCircle2, Sparkles } from 'lucide-react';
+import { Loader2, Mail, RefreshCw, CheckCircle2, Sparkles, AlertTriangle } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/client';
@@ -15,22 +16,29 @@ import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/c
 import { sendCustomVerificationEmailAction } from '@/app/auth/actions';
 
 function VerifyEmailContent() {
-  const { user, auth, firestore } = useFirebase();
+  const { auth, firestore } = useFirebase();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || user?.email;
-  const isNewAccount = searchParams.get('new') === '1';
   
+  // Priorité : URL > User Auth > État local (pour forcer)
+  const [emailInput, setEmailInput] = useState(searchParams.get('email') || '');
   const [isResending, setIsResending] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [countdown, setCountdown] = useState(0);
+
+  const effectiveEmail = emailInput || user?.email;
+  const isNewAccount = searchParams.get('new') === '1';
 
   useEffect(() => {
     if (user?.emailVerified) {
       router.push('/account');
     }
-  }, [user, router]);
+    if (!emailInput && user?.email) {
+      setEmailInput(user.email);
+    }
+  }, [user, router, emailInput]);
 
   useEffect(() => {
     let timer: any;
@@ -41,26 +49,34 @@ function VerifyEmailContent() {
   }, [countdown]);
 
   const handleResend = async () => {
-    if (!email || countdown > 0) return;
+    if (!effectiveEmail || countdown > 0) {
+      toast({ variant: "destructive", title: "Email manquant", description: "Veuillez renseigner votre adresse e-mail." });
+      return;
+    }
+    
     setIsResending(true);
     try {
-      // UTILISE LE FLUX PREMIUM : Firebase Admin SDK + Resend
-      const result = await sendCustomVerificationEmailAction(email);
+      console.log(`[VERIFY-PAGE] Demande d'envoi pour : ${effectiveEmail}`);
+      const result = await sendCustomVerificationEmailAction(effectiveEmail);
+      
       if (result.success) {
         toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (et vos spams)." });
         setCountdown(60);
       } else {
-        throw new Error(result.error);
+        toast({ variant: "destructive", title: "Erreur", description: result.error || "Impossible d'envoyer l'e-mail." });
       }
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur", description: "Impossible de renvoyer le lien. Réessayez plus tard." });
+      toast({ variant: "destructive", title: "Erreur technique", description: "Une erreur est survenue lors de l'appel au serveur." });
     } finally {
       setIsResending(false);
     }
   };
 
   const checkVerification = async () => {
-    if (!auth?.currentUser || !firestore) return;
+    if (!auth?.currentUser || !firestore) {
+        toast({ variant: "destructive", title: "Session expirée", description: "Veuillez vous reconnecter." });
+        return;
+    }
     setIsChecking(true);
     try {
       await auth.currentUser.reload();
@@ -74,7 +90,7 @@ function VerifyEmailContent() {
           updatedAt: serverTimestamp()
         };
 
-        updateDoc(userRef, updateData).catch(async (err) => {
+        await updateDoc(userRef, updateData).catch(async (err) => {
           if (err.code === 'permission-denied') {
             errorEmitter.emit('permission-error', new FirestorePermissionError({
               path: userRef.path,
@@ -110,12 +126,25 @@ function VerifyEmailContent() {
               {isNewAccount ? "Compte créé !" : "Vérifiez vos e-mails"}
             </CardTitle>
             <CardDescription className="text-white/80 font-bold text-lg leading-tight">
-              {isNewAccount 
-                ? "Cliquez sur 'Renvoyer l’e-mail de validation' pour recevoir votre lien premium."
-                : `Lien de validation envoyé à : ${email}`}
+                {effectiveEmail ? `Lien envoyé à : ${effectiveEmail}` : "Prêt à valider votre compte ?"}
             </CardDescription>
           </CardHeader>
+
           <CardContent className="p-10 space-y-8">
+            {!effectiveEmail && !isUserLoading && (
+                <div className="bg-orange-50 p-4 rounded-xl border border-orange-200 flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-orange-700 font-bold text-xs uppercase tracking-widest">
+                        <AlertTriangle className="h-4 w-4" /> Adresse manquante
+                    </div>
+                    <Input 
+                        placeholder="Saisissez votre e-mail" 
+                        value={emailInput} 
+                        onChange={(e) => setEmailInput(e.target.value)}
+                        className="font-bold"
+                    />
+                </div>
+            )}
+
             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
                 <p className="text-sm font-bold text-muted-foreground leading-relaxed text-center">
                     Une fois que vous aurez cliqué sur le bouton dans l'e-mail, cliquez ici pour finaliser.
@@ -131,7 +160,7 @@ function VerifyEmailContent() {
                 <Button 
                     variant="outline" 
                     onClick={handleResend} 
-                    disabled={isResending || countdown > 0}
+                    disabled={isResending || countdown > 0 || (!effectiveEmail && !isUserLoading)}
                     className="w-full rounded-full border-brand text-brand hover:bg-brand/5 h-12 font-black uppercase text-[10px] tracking-widest shadow-sm"
                 >
                     {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-3.5 w-3.5" />}
