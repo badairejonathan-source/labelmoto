@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
@@ -363,7 +362,7 @@ const Header: React.FC<any> = ({
     <div className="w-full flex flex-col gap-6 md:gap-8">
         <div className="flex items-center justify-between gap-4 w-full">
             <div className="shrink-0">
-                <LabelMotoLogo className="h-auto w-[234px] sm:w-[286px] md:w-[364px]" />
+                <LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" />
             </div>
             
             <div className="flex-1 flex justify-center px-4">
