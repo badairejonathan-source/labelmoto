@@ -89,8 +89,11 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
 
         if (firebaseUser) {
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
-          // Sécurité : Un administrateur doit impérativement avoir un e-mail vérifié.
-          const isMasterAdmin = firebaseUser.emailVerified && (ADMIN_UIDS.includes(firebaseUser.uid) || (firebaseUser.email && ADMIN_EMAILS.includes(firebaseUser.email)));
+          // Sécurité : Un administrateur doit impérativement avoir un e-mail vérifié pour obtenir le rôle admin
+          const isMasterAdmin = firebaseUser.emailVerified && (
+            ADMIN_UIDS.includes(firebaseUser.uid) || 
+            (firebaseUser.email && ADMIN_EMAILS.includes(firebaseUser.email))
+          );
           
           try {
             const docSnapInitial = await getDoc(userDocRef).catch(err => {
@@ -148,6 +151,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
             userDocRef, 
             (docSnap) => {
               let profileData = docSnap.exists() ? docSnap.data() : null;
+              // On force le rôle admin dans le profile si c'est un Master Admin vérifié
               if (isMasterAdmin) {
                 if (!profileData) {
                   profileData = { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email };
@@ -161,7 +165,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               if (err.code === 'permission-denied' && auth.currentUser) {
                 errorEmitter.emit('permission-error', new FirestorePermissionError({ path: userDocRef.path, operation: 'get' } satisfies SecurityRuleContext));
               }
-              // Fallback admin si vérifié même sans doc noyau
               if (isMasterAdmin && auth.currentUser) {
                 setUserAuthState({ user: firebaseUser, profile: { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email }, isUserLoading: false, userError: null });
               } else {

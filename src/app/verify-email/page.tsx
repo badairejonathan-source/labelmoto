@@ -56,13 +56,14 @@ function VerifyEmailContent() {
     
     setIsResending(true);
     try {
+      // Flux natif Firebase (stable)
       const settings = getActionCodeSettings('/account');
       await sendEmailVerification(auth.currentUser, settings as any);
-      toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (et vos spams)." });
+      toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (envoi natif Google)." });
       setCountdown(60);
     } catch (e: any) {
       console.error("[VERIFY-EMAIL] Erreur native:", e);
-      toast({ variant: "destructive", title: "Erreur", description: "Une erreur est survenue lors de l'envoi." });
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de renvoyer le lien de validation." });
     } finally {
       setIsResending(false);
     }

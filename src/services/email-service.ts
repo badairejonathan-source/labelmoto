@@ -6,7 +6,6 @@ import { Resend } from 'resend';
 import { getPasswordResetEmailTemplate } from './email-templates';
 
 const resendKey = process.env.RESEND_API_KEY;
-const resend = new Resend(resendKey);
 
 const FROM_EMAIL = 'Label Moto <contact@labelmoto.fr>';
 
@@ -22,6 +21,9 @@ export const emailService = {
     }
 
     try {
+      // Instanciation à l'intérieur pour éviter de crasher au chargement du module si la clé est absente
+      const resend = new Resend(resendKey);
+      
       const { data, error } = await resend.emails.send({
         from: FROM_EMAIL,
         to: email,

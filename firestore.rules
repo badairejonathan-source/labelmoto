@@ -16,7 +16,7 @@ service cloud.firestore {
 
     /**
      * Vérification Admin : document Firestore OU identifiants de secours prioritaires (Master Admins).
-     * SÉCURITÉ : Un administrateur doit impérativement avoir son e-mail vérifié.
+     * SÉCURITÉ : Un administrateur doit impérativement avoir son e-mail vérifié pour accéder aux données sensibles.
      */
     function isAdmin() {
       return isEmailVerified() && (
