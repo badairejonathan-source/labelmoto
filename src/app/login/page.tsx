@@ -97,6 +97,7 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
+      // Appel de l'action isolée
       const result = await sendCustomPasswordResetEmailAction(resetEmail);
       if (result.success) {
         toast({ 
@@ -112,7 +113,11 @@ function LoginContent() {
         });
       }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de traiter la demande." });
+      toast({ 
+        variant: 'destructive', 
+        title: 'Erreur', 
+        description: "Impossible de traiter la demande. Erreur d'initialisation serveur." 
+      });
     } finally {
       setIsResetting(false);
     }
