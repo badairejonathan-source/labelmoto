@@ -13,7 +13,7 @@ const APP_URL = 'https://labelmoto.fr';
 
 /**
  * Paramètres pour les e-mails.
- * handleCodeInApp doit être FALSE pour le web pour éviter les erreurs de redirection.
+ * handleCodeInApp doit être FALSE pour le web pour garantir la redirection navigateur.
  */
 export const getActionCodeSettings = (finalPath: string = '/account'): ActionSettings => {
   return {

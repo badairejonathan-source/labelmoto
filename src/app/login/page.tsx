@@ -117,13 +117,13 @@ function LoginContent() {
     try {
       const result = await sendCustomPasswordResetEmailAction(resetEmail);
       if (result.success) {
-        toast({ title: 'E-mail de récupération envoyé !', description: 'Consultez votre boîte mail.' });
+        toast({ title: 'E-mail de récupération envoyé !', description: 'Consultez votre boîte mail (premium Resend).' });
         setIsResetDialogOpen(false);
       } else {
-        toast({ variant: 'destructive', title: 'Erreur', description: result.error });
+        toast({ variant: 'destructive', title: 'Erreur technique', description: result.error });
       }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible d'envoyer l'e-mail." });
+      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible d'appeler le serveur." });
     } finally {
       setIsResetting(false);
     }
@@ -134,7 +134,7 @@ function LoginContent() {
       <div className="w-full max-w-md">
         <div className="mb-10 flex justify-center">
             <div className="w-64 md:w-72">
-                <LabelMotoLogo />
+                <LabelMotoLogo noBubble />
             </div>
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -214,7 +214,7 @@ function LoginContent() {
 
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8">
-          <DialogHeader><DialogTitle className="text-xl font-black uppercase">Récupération de compte</DialogTitle><DialogDescription className="font-bold">Indiquez votre email pour recevoir le lien de réinitialisation.</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle className="text-xl font-black uppercase">Récupération de compte</DialogTitle><DialogDescription className="font-bold">Indiquez votre email pour recevoir le lien de réinitialisation (premium Resend).</DialogDescription></DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Votre E-mail</label>
@@ -223,7 +223,7 @@ function LoginContent() {
           </div>
           <DialogFooter className="flex flex-col sm:flex-row gap-3">
             <Button variant="ghost" onClick={() => setIsResetDialogOpen(false)} className="font-bold rounded-full">Annuler</Button>
-            <Button className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-12 rounded-full px-8" onClick={handleResetPassword} disabled={isResetting}>{isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Envoyer le lien</Button>
+            <Button className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-12 rounded-full px-8" onClick={handleResetPassword} disabled={isResetting}>{isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Envoyer le lien premium</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

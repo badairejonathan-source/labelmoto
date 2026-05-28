@@ -3,6 +3,7 @@
 import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebase, useUser } from '@/firebase/client';
+import { sendEmailVerification } from 'firebase/auth';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +14,7 @@ import LabelMotoLogo from '@/components/app/logo';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/client';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/client';
-import { sendCustomVerificationEmailAction } from '@/app/auth/actions';
+import { getActionCodeSettings } from '@/lib/auth-config';
 
 function VerifyEmailContent() {
   const { auth, firestore } = useFirebase();
@@ -22,7 +23,6 @@ function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // Priorité : URL > User Auth > État local (pour forcer)
   const [emailInput, setEmailInput] = useState(searchParams.get('email') || '');
   const [isResending, setIsResending] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
@@ -49,24 +49,20 @@ function VerifyEmailContent() {
   }, [countdown]);
 
   const handleResend = async () => {
-    if (!effectiveEmail || countdown > 0) {
-      toast({ variant: "destructive", title: "Email manquant", description: "Veuillez renseigner votre adresse e-mail." });
+    if (!auth?.currentUser) {
+      toast({ variant: "destructive", title: "Non connecté", description: "Veuillez vous reconnecter pour renvoyer le lien." });
       return;
     }
     
     setIsResending(true);
     try {
-      console.log(`[VERIFY-PAGE] Demande d'envoi pour : ${effectiveEmail}`);
-      const result = await sendCustomVerificationEmailAction(effectiveEmail);
-      
-      if (result.success) {
-        toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (et vos spams)." });
-        setCountdown(60);
-      } else {
-        toast({ variant: "destructive", title: "Erreur", description: result.error || "Impossible d'envoyer l'e-mail." });
-      }
+      const settings = getActionCodeSettings('/account');
+      await sendEmailVerification(auth.currentUser, settings as any);
+      toast({ title: "E-mail envoyé !", description: "Vérifiez votre boîte mail (et vos spams)." });
+      setCountdown(60);
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur technique", description: "Une erreur est survenue lors de l'appel au serveur." });
+      console.error("[VERIFY-EMAIL] Erreur native:", e);
+      toast({ variant: "destructive", title: "Erreur", description: "Une erreur est survenue lors de l'envoi." });
     } finally {
       setIsResending(false);
     }
@@ -147,7 +143,7 @@ function VerifyEmailContent() {
 
             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
                 <p className="text-sm font-bold text-muted-foreground leading-relaxed text-center">
-                    Une fois que vous aurez cliqué sur le bouton dans l'e-mail, cliquez ici pour finaliser.
+                    Une fois que vous aurez cliqué sur le lien reçu par e-mail, cliquez ici pour finaliser.
                 </p>
                 <Button onClick={checkVerification} disabled={isChecking} className="w-full bg-foreground hover:bg-brand text-white font-black uppercase tracking-widest text-[10px] h-14 rounded-full shadow-lg transition-transform active:scale-95">
                     {isChecking ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
@@ -160,7 +156,7 @@ function VerifyEmailContent() {
                 <Button 
                     variant="outline" 
                     onClick={handleResend} 
-                    disabled={isResending || countdown > 0 || (!effectiveEmail && !isUserLoading)}
+                    disabled={isResending || countdown > 0 || !auth?.currentUser}
                     className="w-full rounded-full border-brand text-brand hover:bg-brand/5 h-12 font-black uppercase text-[10px] tracking-widest shadow-sm"
                 >
                     {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-3.5 w-3.5" />}

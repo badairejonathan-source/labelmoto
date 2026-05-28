@@ -1,13 +1,12 @@
 'use server';
 
 /**
- * @fileOverview Server Actions pour l'authentification.
- * ISOLATION : Utilise exclusivement Firebase Admin. Aucun import de 'firebase/auth' (client).
+ * @fileOverview Server Actions pour l'authentification premium (Resend).
+ * ISOLATION : Utilise exclusivement Firebase Admin.
  */
 
 import { getAdminAuth } from '@/lib/firebase-admin';
 import { emailService } from '@/services/email-service';
-import { getActionCodeSettings } from '@/lib/auth-config';
 
 /**
  * Génère et envoie un email de reset mot de passe HTML personnalisé via Resend.
@@ -23,31 +22,33 @@ export async function sendCustomPasswordResetEmailAction(email: string) {
     try {
       await auth.getUserByEmail(cleanEmail);
     } catch (e) {
-      // Pour la sécurité, on ne dit pas si l'email existe, mais on log l'erreur
       console.warn(`[AUTH-ACTION] ⚠️ Utilisateur non trouvé pour reset: ${cleanEmail}`);
-      return { success: true }; // On retourne true pour éviter le fishing d'emails
+      return { success: true }; // Protection contre le phishing d'emails
     }
 
-    // Config web stricte
-    const settings = getActionCodeSettings('/login');
+    // Config web stricte (isolée pour éviter les fuites d'imports client)
+    const settings = {
+      url: 'https://labelmoto.fr/login',
+      handleCodeInApp: false,
+    };
     
-    console.log(`[AUTH-ACTION] 🔗 Génération du lien de récupération...`);
-    const link = await auth.generatePasswordResetLink(cleanEmail, settings as any);
+    console.log(`[AUTH-ACTION] 🔗 Génération du lien via Admin SDK...`);
+    const link = await auth.generatePasswordResetLink(cleanEmail, settings);
     
-    console.log(`[AUTH-ACTION] 📧 Envoi via Resend...`);
+    console.log(`[AUTH-ACTION] 📧 Envoi via Resend API...`);
     const result = await emailService.sendPasswordReset(cleanEmail, link);
     
     if (!result.success) {
-      throw new Error(result.error || "Échec de l'envoi");
+      throw new Error(result.error || "Échec technique de l'envoi");
     }
 
     console.log(`[AUTH-ACTION] ✅ Succès reset pour: ${cleanEmail}`);
     return { success: true };
   } catch (error: any) {
-    console.error("[AUTH-ACTION] ❌ ERREUR RESET:", error.message);
+    console.error("[AUTH-ACTION] ❌ ERREUR CRITIQUE RESET:", error.message);
     return { 
       success: false, 
-      error: "Une erreur technique est survenue. Merci de réessayer plus tard." 
+      error: error.message || "Une erreur technique est survenue." 
     };
   }
 }

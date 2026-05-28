@@ -13,30 +13,30 @@ const FROM_EMAIL = 'Label Moto <contact@labelmoto.fr>';
 export const emailService = {
   /**
    * Envoie l'email de récupération de mot de passe.
-   * Supprime tout mock pour garantir un diagnostic réel.
+   * Pas de mock : retourne une erreur explicite si la config est absente.
    */
   async sendPasswordReset(email: string, link: string) {
     if (!resendKey) {
-      console.error("[EMAIL-SERVICE] ❌ Erreur : RESEND_API_KEY manquante dans l'environnement.");
-      return { success: false, error: "Configuration serveur incomplète." };
+      console.error("[EMAIL-SERVICE] ❌ Erreur : RESEND_API_KEY manquante.");
+      return { success: false, error: "Configuration serveur (API Key) manquante." };
     }
 
     try {
-      const response = await resend.emails.send({
+      const { data, error } = await resend.emails.send({
         from: FROM_EMAIL,
         to: email,
         subject: 'Réinitialisation de votre mot de passe Label Moto',
         html: getPasswordResetEmailTemplate(link),
       });
 
-      if (response.error) {
-        console.error("[EMAIL-SERVICE] ❌ Erreur Resend:", response.error);
-        return { success: false, error: response.error.message };
+      if (error) {
+        console.error("[EMAIL-SERVICE] ❌ Erreur API Resend:", error);
+        return { success: false, error: error.message };
       }
 
-      return { success: true };
+      return { success: true, data };
     } catch (error: any) {
-      console.error("[EMAIL-SERVICE] ❌ Erreur critique:", error.message);
+      console.error("[EMAIL-SERVICE] ❌ Erreur d'appel Resend:", error.message);
       return { success: false, error: error.message };
     }
   }

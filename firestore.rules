@@ -16,10 +16,10 @@ service cloud.firestore {
 
     /**
      * Vérification Admin : document Firestore OU identifiants de secours prioritaires (Master Admins).
-     * Les Master Admins ont tous les droits pour garantir la maintenance du système.
+     * SÉCURITÉ : Un administrateur doit impérativement avoir son e-mail vérifié.
      */
     function isAdmin() {
-      return isSignedIn() && (
+      return isEmailVerified() && (
         request.auth.uid == "A36FqeWBHjQBLKQMaMSiFVBzGV22"
         || request.auth.uid == "A366V1X8Hqf1pA63nU3N8B7l8fD3"
         || request.auth.uid == "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"
@@ -34,9 +34,6 @@ service cloud.firestore {
 
     // --- NOYAU IDENTITÉ (users) ---
     match /users/{userId} {
-      // Un utilisateur peut créer son propre document lors du premier login (onboarding).
-      // Un admin peut lister et gérer tous les comptes.
-      // La réconciliation massive se fait via Backend (Admin SDK) et ignore ces règles.
       allow create: if isOwner(userId);
       allow read, update, delete: if isAdmin() || isOwner(userId);
       allow list: if isAdmin();
