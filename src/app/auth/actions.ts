@@ -121,7 +121,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
         finishedAt: admin.firestore.Timestamp.fromDate(finishedAt),
         startedBy: callerUid,
         status: report.stats.errors > 0 ? 'completed_with_errors' : 'success',
-        analyzedCount: report.stats.totalAnalyzed,
+        analyzedCount: report.totalAnalyzed,
         createdCount: report.stats.created,
         skippedCount: report.stats.ignored,
         errorCount: report.stats.errors,
