@@ -120,10 +120,18 @@ function LoginContent() {
         toast({ title: 'E-mail de récupération envoyé !', description: 'Consultez votre boîte mail (premium Resend).' });
         setIsResetDialogOpen(false);
       } else {
-        toast({ variant: 'destructive', title: 'Erreur technique', description: result.error });
+        toast({ 
+          variant: 'destructive', 
+          title: 'Envoi échoué', 
+          description: result.error || "Le serveur n'a pas pu traiter la demande." 
+        });
       }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible d'appeler le serveur." });
+      toast({ 
+        variant: 'destructive', 
+        title: 'Erreur technique', 
+        description: "L'appel au service de messagerie a échoué." 
+      });
     } finally {
       setIsResetting(false);
     }
