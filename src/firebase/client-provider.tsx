@@ -2,7 +2,7 @@
 
 import React, { useMemo, type ReactNode } from 'react';
 import { FirebaseProvider } from './provider';
-import { initializeFirebase } from './index';
+import { initializeFirebaseClient } from './config-client';
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -10,8 +10,7 @@ interface FirebaseClientProviderProps {
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const { firebaseApp } = useMemo(() => {
-    // Only initialize the base App. Services are now lazy.
-    return initializeFirebase();
+    return initializeFirebaseClient();
   }, []);
 
   return (

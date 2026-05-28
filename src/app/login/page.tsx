@@ -3,9 +3,6 @@
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { useFirebase } from '@/firebase/client';
 import {
   createUserWithEmailAndPassword,
@@ -23,22 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, KeyRound, ArrowLeft, User } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
-import { sendCustomPasswordResetEmailAction } from '@/app/auth/actions';
-
-const loginSchema = z.object({
-  email: z.string().email({ message: 'Adresse e-mail invalide.' }),
-  password: z.string().min(6, { message: 'Le mot de passe doit contenir au moins 6 caractères.' }),
-});
-
-const registerSchema = z.object({
-  fullName: z.string().min(3, { message: 'Nom complet requis.' }),
-  email: z.string().email({ message: 'Adresse e-mail invalide.' }),
-  password: z.string().min(6, { message: 'Le mot de passe doit contenir au moins 6 caractères.' }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas.",
-  path: ["confirmPassword"],
-});
+import { sendCustomPasswordResetEmailAction } from '@/app/auth/reset-password-actions';
 
 function LoginContent() {
   const [activeTab, setActiveTab] = useState('login');
@@ -54,7 +36,7 @@ function LoginContent() {
 
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-  const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
+  const onLoginSubmit = async (values: any) => {
     if (!auth) return;
     setIsLoading(true);
     try {
@@ -76,7 +58,7 @@ function LoginContent() {
     }
   };
 
-  const onRegisterSubmit = async (values: z.infer<typeof registerSchema>) => {
+  const onRegisterSubmit = async (values: any) => {
     if (!auth || !firestore) return;
     setIsLoading(true);
     try {
@@ -109,8 +91,8 @@ function LoginContent() {
   };
 
   const handleResetPassword = async () => {
-    if (!resetEmail || !z.string().email().safeParse(resetEmail).success) {
-      toast({ variant: 'destructive', title: 'Erreur', description: 'Veuillez saisir une adresse e-mail valide.' });
+    if (!resetEmail) {
+      toast({ variant: 'destructive', title: 'Erreur', description: 'Veuillez saisir une adresse e-mail.' });
       return;
     }
     setIsResetting(true);
@@ -119,22 +101,18 @@ function LoginContent() {
       if (result.success) {
         toast({ 
           title: 'Vérifiez votre boîte mail', 
-          description: 'Si un compte existe pour cet e-mail, un lien de réinitialisation vient de vous être envoyé.' 
+          description: 'Si un compte existe, un lien de réinitialisation vient de vous être envoyé.' 
         });
         setIsResetDialogOpen(false);
       } else {
         toast({ 
           variant: 'destructive', 
           title: 'Envoi échoué', 
-          description: result.error || "Le serveur n'a pas pu traiter la demande." 
+          description: String(result.error || "Erreur technique serveur") 
         });
       }
     } catch (error: any) {
-      toast({ 
-        variant: 'destructive', 
-        title: 'Erreur technique', 
-        description: "Impossible de contacter le service de messagerie." 
-      });
+      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de traiter la demande." });
     } finally {
       setIsResetting(false);
     }

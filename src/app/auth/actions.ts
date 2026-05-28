@@ -1,64 +1,15 @@
 'use server';
 
 /**
- * @fileOverview Server Actions pour l'authentification et l'administration.
- * ISOLATION : Utilise exclusivement Firebase Admin pour éviter les fuites client.
+ * @fileOverview Server Actions pour l'administration et la réconciliation.
+ * Le flux Reset Password a été déplacé dans reset-password-actions.ts pour isolation.
  */
 
-import { getAdminAuth, getAdminFirestore } from '@/lib/firebase-admin';
-import { emailService } from '@/services/email-service';
+import { getAdminFirestore } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { revalidatePath } from 'next/cache';
 
-/**
- * Génère un lien de réinitialisation via Admin SDK et l'envoie via Resend.
- * Flux 100% Serveur.
- */
-export async function sendCustomPasswordResetEmailAction(email: string) {
-  const cleanEmail = email.trim().toLowerCase();
-  console.log(`[AUTH-ACTION] 🚀 Début du flux Reset Password pour: ${cleanEmail}`);
-
-  try {
-    const auth = getAdminAuth();
-    
-    // 1. Vérification de l'existence de l'utilisateur (Sécurité Admin)
-    try {
-      await auth.getUserByEmail(cleanEmail);
-    } catch (e: any) {
-      console.warn(`[AUTH-ACTION] ⚠️ Utilisateur non trouvé : ${cleanEmail}`);
-      // On retourne un succès factice pour éviter le phishing d'emails (standard de sécurité)
-      return { success: true };
-    }
-
-    // 2. Configuration du lien de retour (URL de production)
-    const settings = {
-      url: 'https://labelmoto.fr/login',
-      handleCodeInApp: false, // Strictement FALSE pour redirection navigateur
-    };
-    
-    console.log(`[AUTH-ACTION] 🔗 Génération du lien Firebase Admin...`);
-    const link = await auth.generatePasswordResetLink(cleanEmail, settings);
-    
-    console.log(`[AUTH-ACTION] 📧 Appel du service Resend...`);
-    const result = await emailService.sendPasswordReset(cleanEmail, link);
-    
-    if (!result.success) {
-      throw new Error(result.error || "Échec de l'envoi e-mail");
-    }
-
-    return { success: true };
-  } catch (error: any) {
-    console.error("[AUTH-ACTION] ❌ ERREUR RESET PASSWORD:", error.message);
-    return { 
-      success: false, 
-      error: error.message || "Une erreur technique serveur est survenue." 
-    };
-  }
-}
-
-// --- LOGIQUE DE RÉCONCILIATION ---
-
-// Liste des Master Admins autorisés (Synchronisée avec les règles de sécurité)
+// Liste des Master Admins autorisés
 const ADMIN_UIDS = [
   "A36FqeWBHjQBLKQMaMSiFVBzGV22",
   "A366V1X8Hqf1pA63nU3N8B7l8fD3",
@@ -158,6 +109,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
         report.stats.created++;
         report.details.push({ uid, status: 'created', name: displayName });
       } catch (err: any) {
+        console.error(`[RECONCILE] ❌ Erreur UID ${uid}:`, err.message);
         report.stats.errors++;
         report.details.push({ uid, status: 'error', name: displayName, error: err.message });
       }

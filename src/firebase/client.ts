@@ -1,8 +1,7 @@
 'use client';
 
 /**
- * @fileOverview Point d'entrée sécurisé pour le SDK Firebase Client.
- * À utiliser exclusivement dans les Client Components ('use client').
+ * @fileOverview Point d'entrée unique pour le SDK Firebase Client.
  */
 
 export { useFirebase, useAuth, useFirestore, useFirebaseApp, useMemoFirebase, useUser } from './provider';

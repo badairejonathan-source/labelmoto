@@ -5,12 +5,11 @@ import { FirebaseApp } from 'firebase/app';
 import { Firestore, doc, onSnapshot, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
-import { getAuthInstance, getFirestoreInstance } from './index';
+import { getAuthInstance, getFirestoreInstance } from './config-client';
 import { usePathname } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
-// Liste des identifiants et e-mails administrateurs de secours (Master Admins)
 const ADMIN_UIDS = [
   "A36FqeWBHjQBLKQMaMSiFVBzGV22",
   "A366V1X8Hqf1pA63nU3N8B7l8fD3",
@@ -55,7 +54,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
     userError: null,
   });
 
-  // Initialisation différée des services (Client-side only)
   useEffect(() => {
     setFirestore(getFirestoreInstance());
     setAuth(getAuthInstance());
@@ -89,7 +87,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
 
         if (firebaseUser) {
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
-          // Sécurité : Un administrateur doit impérativement avoir un e-mail vérifié pour obtenir le rôle admin
           const isMasterAdmin = firebaseUser.emailVerified && (
             ADMIN_UIDS.includes(firebaseUser.uid) || 
             (firebaseUser.email && ADMIN_EMAILS.includes(firebaseUser.email))
@@ -151,7 +148,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
             userDocRef, 
             (docSnap) => {
               let profileData = docSnap.exists() ? docSnap.data() : null;
-              // On force le rôle admin dans le profile si c'est un Master Admin vérifié
               if (isMasterAdmin) {
                 if (!profileData) {
                   profileData = { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email };
