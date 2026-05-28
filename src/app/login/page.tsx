@@ -54,16 +54,6 @@ function LoginContent() {
 
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-  const loginForm = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
-  });
-
-  const registerForm = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' },
-  });
-
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
     if (!auth) return;
     setIsLoading(true);
@@ -79,7 +69,7 @@ function LoginContent() {
       toast({
         variant: 'destructive',
         title: 'Connexion échouée',
-        description: error.code === 'auth/invalid-credential' ? 'Email ou mot de passe incorrect.' : error.message,
+        description: 'Email ou mot de passe incorrect.',
       });
     } finally {
       setIsLoading(false);
@@ -104,8 +94,6 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      // LOGIQUE SIMPLIFIÉE : On ne déclenche plus l'email premium ici.
-      // On redirige simplement vers la page de vérification qui gère le flux.
       toast({ title: 'Compte créé !', description: 'Bienvenue sur Label Moto.' });
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}&new=1`);
       
@@ -113,7 +101,7 @@ function LoginContent() {
       toast({
         variant: 'destructive',
         title: "Erreur d'inscription",
-        description: error.code === 'auth/email-already-in-use' ? 'Cette adresse e-mail est déjà utilisée.' : error.message,
+        description: error.code === 'auth/email-already-in-use' ? 'Cette adresse e-mail est déjà utilisée.' : 'Une erreur est survenue.',
       });
     } finally {
       setIsLoading(false);
@@ -129,13 +117,13 @@ function LoginContent() {
     try {
       const result = await sendCustomPasswordResetEmailAction(resetEmail);
       if (result.success) {
-        toast({ title: 'E-mail envoyé !', description: 'Consultez votre boîte mail pour choisir votre nouveau mot de passe.' });
+        toast({ title: 'E-mail de récupération envoyé !', description: 'Consultez votre boîte mail.' });
         setIsResetDialogOpen(false);
       } else {
-        toast({ variant: 'destructive', title: 'Erreur', description: result.error || "Impossible d'envoyer l'e-mail." });
+        toast({ variant: 'destructive', title: 'Erreur', description: result.error });
       }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Erreur', description: "Une erreur technique est survenue." });
+      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible d'envoyer l'e-mail." });
     } finally {
       setIsResetting(false);
     }
@@ -151,8 +139,8 @@ function LoginContent() {
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-14 p-1 bg-muted rounded-full mb-8 shadow-inner">
-            <TabsTrigger value="login" className="rounded-full font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-lg">Connexion</TabsTrigger>
-            <TabsTrigger value="register" className="rounded-full font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-lg">Inscription</TabsTrigger>
+            <TabsTrigger value="login" className="rounded-full font-black uppercase text-[10px] tracking-widest">Connexion</TabsTrigger>
+            <TabsTrigger value="register" className="rounded-full font-black uppercase text-[10px] tracking-widest">Inscription</TabsTrigger>
           </TabsList>
           
           <TabsContent value="login">
@@ -162,30 +150,22 @@ function LoginContent() {
                 <CardDescription className="font-bold">Accédez à vos avis et vos fiches personnalisées.</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
-                <Form {...loginForm}>
-                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
-                    <FormField control={loginForm.control} name="email" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</FormLabel>
-                          <FormControl><div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" {...field} /></div></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    <FormField control={loginForm.control} name="password" render={({ field }) => (
-                        <FormItem>
-                          <div className="flex justify-between items-center">
-                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mot de passe</FormLabel>
-                            <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[9px] font-black uppercase text-brand hover:underline">Mot de passe oublié ?</button>
-                          </div>
-                          <FormControl><div className="relative"><KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="password" placeholder="••••••••" className="pl-10 font-bold h-12 rounded-xl" {...field} /></div></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg transition-transform active:scale-[0.98]" disabled={isLoading}>
-                      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Se connecter
-                    </Button>
-                  </form>
-                </Form>
+                <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(e.currentTarget); onLoginSubmit(Object.fromEntries(d) as any); }} className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</label>
+                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mot de passe</label>
+                      <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[9px] font-black uppercase text-brand hover:underline">Mot de passe oublié ?</button>
+                    </div>
+                    <div className="relative"><KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="password" type="password" placeholder="••••••••" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                  </div>
+                  <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg transition-transform active:scale-[0.98]" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Se connecter
+                  </Button>
+                </form>
               </CardContent>
             </Card>
           </TabsContent>
@@ -197,43 +177,29 @@ function LoginContent() {
                 <CardDescription className="font-bold">Partagez votre passion et suivez vos pros préférés.</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
-                <Form {...registerForm}>
-                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-6">
-                    <FormField control={registerForm.control} name="fullName" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nom Complet / Pseudo</FormLabel>
-                          <FormControl><div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Jean Moto" className="pl-10 font-bold h-12 rounded-xl" {...field} /></div></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    <FormField control={registerForm.control} name="email" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</FormLabel>
-                          <FormControl><div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" {...field} /></div></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={registerForm.control} name="password" render={({ field }) => (
-                            <FormItem>
-                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mot de passe</FormLabel>
-                            <FormControl><Input type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" {...field} /></FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={registerForm.control} name="confirmPassword" render={({ field }) => (
-                            <FormItem>
-                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirmation</FormLabel>
-                            <FormControl><Input type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" {...field} /></FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )} />
+                <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(e.currentTarget); onRegisterSubmit(Object.fromEntries(d) as any); }} className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nom Complet / Pseudo</label>
+                    <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="fullName" placeholder="Jean Moto" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</label>
+                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mot de passe</label>
+                      <Input name="password" type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" required />
                     </div>
-                    <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg" disabled={isLoading}>
-                      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Créer mon compte
-                    </Button>
-                  </form>
-                </Form>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirmation</label>
+                      <Input name="confirmPassword" type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" required />
+                    </div>
+                  </div>
+                  <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Créer mon compte
+                  </Button>
+                </form>
               </CardContent>
             </Card>
           </TabsContent>
