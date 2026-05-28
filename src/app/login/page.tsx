@@ -20,7 +20,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, KeyRound, ArrowLeft, User } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
-import { sendCustomPasswordResetEmailAction } from '@/app/auth/reset-password-actions';
 
 function LoginContent() {
   const [activeTab, setActiveTab] = useState('login');
@@ -97,8 +96,16 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      const result = await sendCustomPasswordResetEmailAction(resetEmail);
-      if (result.success) {
+      // APPEL À LA ROUTE API ISOLÉE
+      const response = await fetch('/api/auth/password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail })
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
         toast({ 
           title: 'Vérifiez votre boîte mail', 
           description: 'Si un compte existe, un lien de réinitialisation vient de vous être envoyé.' 
@@ -115,7 +122,7 @@ function LoginContent() {
       toast({ 
         variant: 'destructive', 
         title: 'Erreur', 
-        description: "Impossible de traiter la demande." 
+        description: "Impossible de contacter le service de réinitialisation." 
       });
     } finally {
       setIsResetting(false);
