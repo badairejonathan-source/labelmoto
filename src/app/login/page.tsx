@@ -125,7 +125,7 @@ function LoginContent() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-md">
         <div className="mb-10 flex justify-center">
             <div className="w-64 md:w-72">
                 <LabelMotoLogo noBubble />
