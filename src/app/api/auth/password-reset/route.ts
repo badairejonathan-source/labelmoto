@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getAdminAuth } from '@/lib/firebase-admin';
 import { Resend } from 'resend';
-import { getPasswordResetEmailTemplate } from '@/services/email-templates';
 
 /**
- * @fileOverview Route API pour la réinitialisation de mot de passe.
- * Isolation totale pour éviter les fuites de SDK Firebase Client.
+ * @fileOverview TEST DIAGNOSTIQUE BINAIRE.
+ * AUCUNE DEPENDANCE FIREBASE ADMIN ICI.
+ * But : Vérifier si Resend peut envoyer un mail sans crasher le runtime.
  */
 
 export async function POST(request: Request) {
-  console.log("[PASSWORD_RESET_API] [STEP_1] Route appelée");
+  console.log("[DIAG_RESEND] Route API appelée (SANS FIREBASE)");
   
   try {
     const { email } = await request.json();
@@ -18,60 +17,55 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Email manquant" }, { status: 400 });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
     const resendKey = process.env.RESEND_API_KEY;
 
     if (!resendKey) {
-      console.error("[PASSWORD_RESET_API] [ERROR] RESEND_API_KEY manquante");
-      return NextResponse.json({ ok: false, error: "Configuration serveur manquante (Resend API Key)" }, { status: 500 });
+      console.error("[DIAG_RESEND] RESEND_API_KEY manquante");
+      return NextResponse.json({ 
+        ok: false, 
+        step: "RESEND_ONLY_FAIL", 
+        error: "Variable d'environnement RESEND_API_KEY absente du serveur." 
+      }, { status: 500 });
     }
 
-    console.log("[PASSWORD_RESET_API] [STEP_2] Initialisation Admin Auth");
-    const auth = getAdminAuth();
-
-    // 1. Vérification de l'existence de l'utilisateur
-    let user;
-    try {
-      user = await auth.getUserByEmail(cleanEmail);
-      console.log("[PASSWORD_RESET_API] [STEP_3] Utilisateur trouvé:", user.uid);
-    } catch (e: any) {
-      console.log("[PASSWORD_RESET_API] [STEP_3_SKIP] Utilisateur non trouvé (Silencieux pour sécurité)");
-      // Anti-phishing : on retourne un succès même si l'user n'existe pas
-      return NextResponse.json({ ok: true, message: "Email envoyé si le compte existe" });
-    }
-
-    // 2. Génération du lien natif Firebase
-    console.log("[PASSWORD_RESET_API] [STEP_4] Génération lien Firebase");
-    const resetLink = await auth.generatePasswordResetLink(cleanEmail, {
-      url: 'https://labelmoto.fr/login',
-      handleCodeInApp: false
-    });
-
-    // 3. Envoi via Resend
-    console.log("[PASSWORD_RESET_API] [STEP_5] Envoi via Resend");
+    console.log("[DIAG_RESEND] Initialisation Resend...");
     const resend = new Resend(resendKey);
     
+    console.log("[DIAG_RESEND] Envoi du mail de test à:", email);
     const { data, error } = await resend.emails.send({
       from: 'Label Moto <contact@labelmoto.fr>',
-      to: cleanEmail,
-      subject: 'Réinitialisation de votre mot de passe Label Moto',
-      html: getPasswordResetEmailTemplate(resetLink),
+      to: email.trim().toLowerCase(),
+      subject: 'TEST DIAGNOSTIC RESEND LABEL MOTO',
+      html: `
+        <h1>Test Diagnostic OK</h1>
+        <p>Ce mail confirme que l'infrastructure Resend fonctionne sans Firebase Admin.</p>
+        <p>Date : ${new Date().toISOString()}</p>
+      `,
     });
 
     if (error) {
-      console.error("[PASSWORD_RESET_API] [ERROR_RESEND]", error);
-      return NextResponse.json({ ok: false, error: `Erreur Resend: ${error.message}` }, { status: 500 });
+      console.error("[DIAG_RESEND] Erreur API Resend:", error);
+      return NextResponse.json({ 
+        ok: false, 
+        step: "RESEND_ONLY_FAIL", 
+        error: `Resend API Error: ${error.message}` 
+      }, { status: 500 });
     }
 
-    console.log("[PASSWORD_RESET_API] [STEP_6] Succès final");
-    return NextResponse.json({ ok: true, message: "Email envoyé avec succès" });
+    console.log("[DIAG_RESEND] Succès : mail envoyé.");
+    return NextResponse.json({ 
+      ok: true, 
+      step: "RESEND_ONLY_OK", 
+      message: "Mail de test envoyé avec succès via Resend." 
+    });
 
   } catch (err: any) {
-    console.error("[PASSWORD_RESET_API] [FATAL_CRASH]", err.message);
+    console.error("[DIAG_RESEND] CRASH FATAL DU RUNTIME:", err.message);
     return NextResponse.json({ 
       ok: false, 
-      error: `Erreur technique: ${err.message}`,
-      step: "CRASH_API"
+      step: "RUNTIME_CRASH", 
+      error: err.message,
+      stack: err.stack 
     }, { status: 500 });
   }
 }

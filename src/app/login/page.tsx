@@ -13,7 +13,6 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -96,7 +95,6 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      // APPEL À LA ROUTE API ISOLÉE
       const response = await fetch('/api/auth/password-reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,22 +105,22 @@ function LoginContent() {
 
       if (result.ok) {
         toast({ 
-          title: 'Vérifiez votre boîte mail', 
-          description: 'Si un compte existe, un lien de réinitialisation vient de vous être envoyé.' 
+          title: 'Vérification réussie', 
+          description: `Diagnostic: ${result.step}. Le mail de test a été envoyé.` 
         });
         setIsResetDialogOpen(false);
       } else {
         toast({ 
           variant: 'destructive', 
-          title: 'Envoi échoué', 
-          description: String(result.error || "Erreur technique serveur") 
+          title: 'Diagnostic échoué', 
+          description: `Erreur: ${result.error || "Inconnue"} (Step: ${result.step})` 
         });
       }
     } catch (error: any) {
       toast({ 
         variant: 'destructive', 
-        title: 'Erreur', 
-        description: "Impossible de contacter le service de réinitialisation." 
+        title: 'Erreur technique', 
+        description: error.message || "Impossible de contacter l'API de diagnostic." 
       });
     } finally {
       setIsResetting(false);
@@ -214,7 +212,7 @@ function LoginContent() {
 
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8">
-          <DialogHeader><DialogTitle className="text-xl font-black uppercase">Récupération de compte</DialogTitle><DialogDescription className="font-bold">Indiquez votre email pour recevoir le lien de réinitialisation premium.</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle className="text-xl font-black uppercase">Diagnostic d'envoi</DialogTitle><DialogDescription className="font-bold">Ce test vérifie uniquement l'envoi via Resend (SANS Firebase).</DialogDescription></DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Votre E-mail</label>
@@ -223,7 +221,7 @@ function LoginContent() {
           </div>
           <DialogFooter className="flex flex-col sm:flex-row gap-3">
             <Button variant="ghost" onClick={() => setIsResetDialogOpen(false)} className="font-bold rounded-full">Annuler</Button>
-            <Button className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-12 rounded-full px-8" onClick={handleResetPassword} disabled={isResetting}>{isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Envoyer le lien</Button>
+            <Button className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-12 rounded-full px-8" onClick={handleResetPassword} disabled={isResetting}>{isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Lancer le test</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
