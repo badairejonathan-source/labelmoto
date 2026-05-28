@@ -8,7 +8,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -96,11 +95,18 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      // Retour à la stabilité : flux natif Firebase Client (Email envoyé par Google)
-      await sendPasswordResetEmail(auth!, resetEmail, {
-        url: 'https://labelmoto.fr/login',
-        handleCodeInApp: false
+      // Appel de la Route API isolée (Resend + Admin SDK)
+      const response = await fetch('/api/auth/password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail }),
       });
+      
+      const result = await response.json();
+      
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "Impossible de traiter la demande.");
+      }
       
       toast({ 
         title: 'E-mail envoyé', 
@@ -108,11 +114,11 @@ function LoginContent() {
       });
       setIsResetDialogOpen(false);
     } catch (error: any) {
-      console.error("Native Reset Error:", error);
+      console.error("Reset Error:", error);
       toast({ 
         variant: 'destructive', 
-        title: 'Impossible d\'envoyer le lien', 
-        description: 'Vérifiez l\'adresse e-mail ou réessayez plus tard.' 
+        title: 'Erreur', 
+        description: error.message || "Une erreur est survenue lors de l'envoi.", 
       });
     } finally {
       setIsResetting(false);
@@ -145,7 +151,7 @@ function LoginContent() {
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">E-mail</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required />
+                      <input name="email" type="email" placeholder="votre@email.com" className="w-full pl-10 pr-4 font-bold h-12 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-brand/50" required />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -155,7 +161,7 @@ function LoginContent() {
                     </div>
                     <div className="relative">
                       <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input name="password" type="password" placeholder="••••••••" className="pl-10 font-bold h-12 rounded-xl" required />
+                      <input name="password" type="password" placeholder="••••••••" className="w-full pl-10 pr-4 font-bold h-12 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-brand/50" required />
                     </div>
                   </div>
                   <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg transition-transform active:scale-[0.98]" disabled={isLoading}>
@@ -178,24 +184,24 @@ function LoginContent() {
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Nom Complet / Pseudo</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input name="fullName" placeholder="Jean Moto" className="pl-10 font-bold h-12 rounded-xl" required />
+                      <input name="fullName" placeholder="Jean Moto" className="w-full pl-10 pr-4 font-bold h-12 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-brand/50" required />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">E-mail</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required />
+                      <input name="email" type="email" placeholder="votre@email.com" className="w-full pl-10 pr-4 font-bold h-12 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-brand/50" required />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Mot de passe</label>
-                      <Input name="password" type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" required />
+                      <input name="password" type="password" placeholder="••••••••" className="w-full px-4 font-bold h-12 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-brand/50" required />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Confirmation</label>
-                      <Input name="confirmPassword" type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" required />
+                      <input name="confirmPassword" type="password" placeholder="••••••••" className="w-full px-4 font-bold h-12 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-brand/50" required />
                     </div>
                   </div>
                   <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg" disabled={isLoading}>
@@ -225,7 +231,7 @@ function LoginContent() {
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Votre E-mail</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
+                  <input type="email" placeholder="votre@email.com" className="w-full pl-10 pr-4 font-bold h-12 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-brand/50" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
                 </div>
             </div>
           </div>
