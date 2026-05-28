@@ -8,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -89,36 +90,34 @@ function LoginContent() {
   };
 
   const handleResetPassword = async () => {
+    if (!auth) return;
     if (!resetEmail) {
       toast({ variant: 'destructive', title: 'Erreur', description: 'Veuillez saisir une adresse e-mail.' });
       return;
     }
+    
     setIsResetting(true);
     try {
-      // Appel de la Route API isolée (Resend + Admin SDK)
-      const response = await fetch('/api/auth/password-reset', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resetEmail }),
+      // Flux 100% natif Firebase Client
+      await sendPasswordResetEmail(auth, resetEmail.trim().toLowerCase(), {
+        url: 'https://labelmoto.fr/login',
+        handleCodeInApp: false
       });
-      
-      const result = await response.json();
-      
-      if (!response.ok || !result.ok) {
-        throw new Error(result.error || "Impossible de traiter la demande.");
-      }
       
       toast({ 
         title: 'E-mail envoyé', 
-        description: 'Vérifiez votre boîte mail pour réinitialiser votre mot de passe.' 
+        description: 'Vérifiez votre boîte mail pour réinitialiser votre mot de passe (envoi natif Google).' 
       });
       setIsResetDialogOpen(false);
     } catch (error: any) {
       console.error("Reset Error:", error);
+      let message = "Une erreur est survenue lors de l'envoi.";
+      if (error.code === 'auth/user-not-found') message = "Aucun compte ne correspond à cet e-mail.";
+      
       toast({ 
         variant: 'destructive', 
         title: 'Erreur', 
-        description: error.message || "Une erreur est survenue lors de l'envoi.", 
+        description: message, 
       });
     } finally {
       setIsResetting(false);
@@ -224,7 +223,7 @@ function LoginContent() {
         <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8">
           <DialogHeader>
             <DialogTitle className="text-xl font-black uppercase">Réinitialisation</DialogTitle>
-            <DialogDescription className="font-bold">Vous allez recevoir un lien sécurisé pour choisir un nouveau mot de passe.</DialogDescription>
+            <DialogDescription className="font-bold">Vous allez recevoir un lien sécurisé par e-mail pour choisir un nouveau mot de passe.</DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
