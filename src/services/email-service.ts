@@ -6,7 +6,6 @@
 import { Resend } from 'resend';
 import { getPasswordResetEmailTemplate } from './email-templates';
 
-const resendKey = process.env.RESEND_API_KEY;
 const FROM_EMAIL = 'Label Moto <contact@labelmoto.fr>';
 
 export const emailService = {
@@ -15,13 +14,15 @@ export const emailService = {
    * Retourne une erreur explicite si la configuration est absente.
    */
   async sendPasswordReset(email: string, link: string) {
+    const resendKey = process.env.RESEND_API_KEY;
+    
     if (!resendKey) {
       console.error("[EMAIL-SERVICE] ❌ Erreur : RESEND_API_KEY manquante dans l'environnement.");
-      return { success: false, error: "Configuration serveur (API Key) manquante." };
+      return { success: false, error: "Configuration serveur (API Key) manquante pour l'envoi d'e-mails." };
     }
 
     try {
-      // Instanciation interne pour éviter les crashs au chargement du module
+      // Instanciation à la demande pour éviter les crashs à l'initialisation du module
       const resend = new Resend(resendKey);
       
       const { data, error } = await resend.emails.send({
@@ -36,11 +37,11 @@ export const emailService = {
         return { success: false, error: error.message };
       }
 
-      console.log(`[EMAIL-SERVICE] ✅ Email de reset envoyé à: ${email}`);
+      console.log(`[EMAIL-SERVICE] ✅ Email de reset envoyé avec succès à: ${email}`);
       return { success: true, data };
     } catch (error: any) {
       console.error("[EMAIL-SERVICE] ❌ Erreur critique d'envoi:", error.message);
-      return { success: false, error: error.message || "Une erreur technique est survenue lors de l'envoi." };
+      return { success: false, error: error.message || "Une erreur technique est survenue lors de l'envoi du mail." };
     }
   }
 };
