@@ -8,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -95,32 +96,23 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      const response = await fetch('/api/auth/password-reset', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resetEmail })
+      // Retour à la stabilité : flux natif Firebase Client (Email envoyé par Google)
+      await sendPasswordResetEmail(auth!, resetEmail, {
+        url: 'https://labelmoto.fr/login',
+        handleCodeInApp: false
       });
-
-      const result = await response.json();
-
-      if (result.ok) {
-        toast({ 
-          title: 'Vérification réussie', 
-          description: `Diagnostic: ${result.step}. Le mail de test a été envoyé.` 
-        });
-        setIsResetDialogOpen(false);
-      } else {
-        toast({ 
-          variant: 'destructive', 
-          title: 'Diagnostic échoué', 
-          description: `Erreur: ${result.error || "Inconnue"} (Step: ${result.step})` 
-        });
-      }
+      
+      toast({ 
+        title: 'E-mail envoyé', 
+        description: 'Vérifiez votre boîte mail pour réinitialiser votre mot de passe.' 
+      });
+      setIsResetDialogOpen(false);
     } catch (error: any) {
+      console.error("Native Reset Error:", error);
       toast({ 
         variant: 'destructive', 
-        title: 'Erreur technique', 
-        description: error.message || "Impossible de contacter l'API de diagnostic." 
+        title: 'Impossible d\'envoyer le lien', 
+        description: 'Vérifiez l\'adresse e-mail ou réessayez plus tard.' 
       });
     } finally {
       setIsResetting(false);
@@ -144,21 +136,27 @@ function LoginContent() {
           <TabsContent value="login">
             <Card className="border-2 shadow-2xl rounded-[2rem] overflow-hidden bg-white">
               <CardHeader className="bg-muted/50 border-b p-8">
-                <CardTitle className="text-2xl font-black uppercase tracking-tighter">Heureux de vous revoir</CardTitle>
+                <CardTitle className="text-2xl font-black uppercase tracking-tighter leading-none">Heureux de vous revoir</CardTitle>
                 <CardDescription className="font-bold">Accédez à vos avis et vos fiches personnalisées.</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
                 <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(e.currentTarget); onLoginSubmit(Object.fromEntries(d) as any); }} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</label>
-                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">E-mail</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center px-1">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mot de passe</label>
                       <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[9px] font-black uppercase text-brand hover:underline">Mot de passe oublié ?</button>
                     </div>
-                    <div className="relative"><KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="password" type="password" placeholder="••••••••" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input name="password" type="password" placeholder="••••••••" className="pl-10 font-bold h-12 rounded-xl" required />
+                    </div>
                   </div>
                   <Button type="submit" className="w-full bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-14 rounded-xl shadow-lg transition-transform active:scale-[0.98]" disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Se connecter
@@ -171,26 +169,32 @@ function LoginContent() {
           <TabsContent value="register">
             <Card className="border-2 shadow-2xl rounded-[2rem] overflow-hidden bg-white">
               <CardHeader className="bg-muted/50 border-b p-8">
-                <CardTitle className="text-2xl font-black uppercase tracking-tighter">Rejoindre la communauté</CardTitle>
+                <CardTitle className="text-2xl font-black uppercase tracking-tighter leading-none">Rejoindre la communauté</CardTitle>
                 <CardDescription className="font-bold">Partagez votre passion et suivez vos pros préférés.</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
                 <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(e.currentTarget); onRegisterSubmit(Object.fromEntries(d) as any); }} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nom Complet / Pseudo</label>
-                    <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="fullName" placeholder="Jean Moto" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Nom Complet / Pseudo</label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input name="fullName" placeholder="Jean Moto" className="pl-10 font-bold h-12 rounded-xl" required />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</label>
-                    <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required /></div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">E-mail</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input name="email" type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" required />
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mot de passe</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Mot de passe</label>
                       <Input name="password" type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" required />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirmation</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Confirmation</label>
                       <Input name="confirmPassword" type="password" placeholder="••••••••" className="font-bold h-12 rounded-xl" required />
                     </div>
                   </div>
@@ -212,16 +216,24 @@ function LoginContent() {
 
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8">
-          <DialogHeader><DialogTitle className="text-xl font-black uppercase">Diagnostic d'envoi</DialogTitle><DialogDescription className="font-bold">Ce test vérifie uniquement l'envoi via Resend (SANS Firebase).</DialogDescription></DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black uppercase">Réinitialisation</DialogTitle>
+            <DialogDescription className="font-bold">Vous allez recevoir un lien sécurisé pour choisir un nouveau mot de passe.</DialogDescription>
+          </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Votre E-mail</label>
-                <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} /></div>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input type="email" placeholder="votre@email.com" className="pl-10 font-bold h-12 rounded-xl" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
+                </div>
             </div>
           </div>
           <DialogFooter className="flex flex-col sm:flex-row gap-3">
             <Button variant="ghost" onClick={() => setIsResetDialogOpen(false)} className="font-bold rounded-full">Annuler</Button>
-            <Button className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-12 rounded-full px-8" onClick={handleResetPassword} disabled={isResetting}>{isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Lancer le test</Button>
+            <Button className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-xs h-12 rounded-full px-8 shadow-lg shadow-brand/20" onClick={handleResetPassword} disabled={isResetting}>
+              {isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Envoyer le lien
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
