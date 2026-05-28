@@ -97,7 +97,6 @@ function LoginContent() {
     }
     setIsResetting(true);
     try {
-      // Appel de l'action isolée
       const result = await sendCustomPasswordResetEmailAction(resetEmail);
       if (result.success) {
         toast({ 
@@ -116,7 +115,7 @@ function LoginContent() {
       toast({ 
         variant: 'destructive', 
         title: 'Erreur', 
-        description: "Impossible de traiter la demande. Erreur d'initialisation serveur." 
+        description: "Impossible de traiter la demande." 
       });
     } finally {
       setIsResetting(false);
@@ -125,7 +124,7 @@ function LoginContent() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-md">
+      <div className="w-full max-w-md">
         <div className="mb-10 flex justify-center">
             <div className="w-64 md:w-72">
                 <LabelMotoLogo noBubble />
@@ -138,7 +137,7 @@ function LoginContent() {
           </TabsList>
           
           <TabsContent value="login">
-            <Card className="border-2 shadow-2xl rounded-[2rem] overflow-hidden">
+            <Card className="border-2 shadow-2xl rounded-[2rem] overflow-hidden bg-white">
               <CardHeader className="bg-muted/50 border-b p-8">
                 <CardTitle className="text-2xl font-black uppercase tracking-tighter">Heureux de vous revoir</CardTitle>
                 <CardDescription className="font-bold">Accédez à vos avis et vos fiches personnalisées.</CardDescription>
@@ -165,7 +164,7 @@ function LoginContent() {
           </TabsContent>
 
           <TabsContent value="register">
-            <Card className="border-2 shadow-2xl rounded-[2rem] overflow-hidden">
+            <Card className="border-2 shadow-2xl rounded-[2rem] overflow-hidden bg-white">
               <CardHeader className="bg-muted/50 border-b p-8">
                 <CardTitle className="text-2xl font-black uppercase tracking-tighter">Rejoindre la communauté</CardTitle>
                 <CardDescription className="font-bold">Partagez votre passion et suivez vos pros préférés.</CardDescription>
