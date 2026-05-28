@@ -1,17 +1,17 @@
 /**
- * @fileOverview CE FICHIER EST DÉPRÉCIÉ ET DANGEREUX.
+ * @fileOverview CE FICHIER EST DÉSACTIVÉ.
  * L'initialisation top-level provoquait des fuites du SDK Client vers le serveur.
- * Toute utilisation de ce fichier doit être remplacée par :
- * - @/firebase/config-client (pour le Client)
- * - @/lib/firebase-admin (pour le Serveur)
+ * Si vous voyez ce message dans une erreur, c'est qu'un fichier serveur tente 
+ * d'importer le SDK Client via ce chemin obsolète.
+ * 
+ * SOLUTIONS :
+ * - Côté Client : import { ... } from '@/firebase/client'
+ * - Côté Serveur : import { ... } from '@/lib/firebase-admin'
  */
 
 export const db = null;
 export const firebaseApp = null;
 
 export const getFirebaseServices = () => {
-  throw new Error(
-    "UTILISATION INTERDITE : src/lib/firebase.ts a été neutralisé pour stopper les erreurs 'INTERNAL'. " +
-    "Utilisez @/firebase/client ou @/lib/firebase-admin selon l'environnement."
-  );
+  throw new Error("ACCÈS INTERDIT : Tentative d'utilisation de src/lib/firebase.ts côté serveur.");
 };

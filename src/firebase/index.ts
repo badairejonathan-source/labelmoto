@@ -1,8 +1,11 @@
 'use client';
 
 /**
- * @fileOverview ANCIEN POINT D'ENTRÉE NEUTRALISÉ.
- * Redirige vers config-client.ts pour éviter les initialisations multiples.
+ * @fileOverview POINT D'ENTRÉE NEUTRALISÉ.
+ * Ce fichier est vidé pour éviter que les Server Actions n'importent par accident 
+ * le SDK Client via un import global '@/firebase'.
+ * 
+ * Utilisez explicitement '@/firebase/client' pour les composants UI.
  */
 
-export * from './config-client';
+export {};

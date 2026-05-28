@@ -1,8 +1,9 @@
 'use server';
 
 /**
- * @fileOverview Server Action 100% isolée pour le reset de mot de passe.
+ * @fileOverview Server Action ISOLÉE pour le reset de mot de passe.
  * SÉCURITÉ : N'importe AUCUN fichier de src/firebase/* (SDK Client).
+ * Seul point d'entrée pour Resend + Admin SDK.
  */
 
 import { getAdminAuth } from '@/lib/firebase-admin';
@@ -24,6 +25,7 @@ export async function sendCustomPasswordResetEmailAction(email: string) {
     }
 
     const settings = {
+      // URL brute de production pour éviter tout import de config client
       url: 'https://labelmoto.fr/login',
       handleCodeInApp: false, 
     };

@@ -1,15 +1,14 @@
 'use server';
 
 /**
- * @fileOverview Server Actions pour l'administration et la réconciliation.
- * Le flux Reset Password a été déplacé dans reset-password-actions.ts pour isolation.
+ * @fileOverview Server Actions pour l'administration.
+ * TOUTE LA LOGIQUE DE RESET PASSWORD A ÉTÉ DÉPLACÉE DANS reset-password-actions.ts.
  */
 
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { revalidatePath } from 'next/cache';
 
-// Liste des Master Admins autorisés
 const ADMIN_UIDS = [
   "A36FqeWBHjQBLKQMaMSiFVBzGV22",
   "A366V1X8Hqf1pA63nU3N8B7l8fD3",
@@ -50,7 +49,7 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
     const isMaster = ADMIN_UIDS.includes(callerUid) || (callerData?.email && ADMIN_EMAILS.includes(callerData.email));
     
     if (!isMaster && callerData?.role !== 'admin') {
-      return { ...report, message: "Accès refusé. Droits administrateur requis.", success: false };
+      return { ...report, message: "Accès refusé.", success: false };
     }
 
     const [usersSnap, stdSnap, proSnap] = await Promise.all([
@@ -85,8 +84,6 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
         if (data.createdAt) {
            if (typeof data.createdAt.toDate === 'function') {
              creationDate = data.createdAt.toDate();
-           } else if (data.createdAt instanceof Date) {
-             creationDate = data.createdAt;
            } else if (data.createdAt.seconds) {
              creationDate = new Date(data.createdAt.seconds * 1000);
            }
@@ -98,38 +95,22 @@ export async function reconcileLegacyUsersAction(callerUid: string): Promise<Rec
           displayName: displayName,
           role: item.type,
           status: 'active',
-          emailVerifiedSync: false,
           onboardingComplete: true,
           legacyMigrated: true,
           createdAt: creationDate,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          sourceProvider: 'backend_reconciliation_v4_robust'
+          sourceProvider: 'backend_reconciliation_v5'
         }, { merge: true });
 
         report.stats.created++;
         report.details.push({ uid, status: 'created', name: displayName });
       } catch (err: any) {
-        console.error(`[RECONCILE] ❌ Erreur UID ${uid}:`, err.message);
         report.stats.errors++;
         report.details.push({ uid, status: 'error', name: displayName, error: err.message });
       }
     }
 
-    const finishedAt = new Date();
-    await db.collection('migration_runs').add({
-        startedAt: admin.firestore.Timestamp.fromDate(startedAt),
-        finishedAt: admin.firestore.Timestamp.fromDate(finishedAt),
-        startedBy: callerUid,
-        status: report.stats.errors > 0 ? 'completed_with_errors' : 'success',
-        analyzedCount: report.totalAnalyzed,
-        createdCount: report.stats.created,
-        skippedCount: report.stats.ignored,
-        errorCount: report.stats.errors,
-        details: report.details.slice(0, 100)
-    });
-
     try { revalidatePath('/admin'); } catch (e) {}
-
     return { ...report, success: true, message: `Réconciliation terminée.` };
   } catch (err: any) {
     return { ...report, success: false, message: "Erreur technique : " + err.message };
