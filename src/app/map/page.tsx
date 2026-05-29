@@ -141,32 +141,39 @@ function MapPageComponent() {
     const fetchAll = async () => {
       if (!firestore) return;
       const collections = ['concessions', 'associations', 'relais'];
-      const snaps = await Promise.all(collections.map(c => getDocs(query(collection(firestore, c), limit(10000)))));
+      
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
 
-      snaps.forEach((snap, idx) => {
-        snap.docs.forEach(doc => {
-          if (seenIds.has(doc.id)) return;
-          seenIds.add(doc.id);
-          const data = doc.data();
-          const coords = extractValidCoordinates(data);
-          if (!coords) return;
-          allPoints.push({
-            id: doc.id,
-            latitude: coords.lat,
-            longitude: coords.lng,
-            category: data.category || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : 'concession')),
-            appSection: data.appSection || (idx === 1 ? 'association' : (idx === 2 ? 'relais' : 'shopping')),
-            title: data.title || doc.id,
-            slug: data.slug,
-            rating: data.rating,
-            imgUrl: data.imageUrl || data.imgUrl,
-            address: data.address || "",
-            brands: data.brands || []
-          } as MapPoint);
-        });
-      });
+      // Chargement séquentiel robuste : l'échec d'une collection ne bloque pas les autres
+      for (let i = 0; i < collections.length; i++) {
+        const colName = collections[i];
+        try {
+          const snap = await getDocs(query(collection(firestore, colName), limit(2000)));
+          snap.docs.forEach(doc => {
+            if (seenIds.has(doc.id)) return;
+            const data = doc.data();
+            const coords = extractValidCoordinates(data);
+            if (!coords) return;
+            seenIds.add(doc.id);
+            allPoints.push({
+              id: doc.id,
+              latitude: coords.lat,
+              longitude: coords.lng,
+              category: data.category || (i === 1 ? 'association' : (i === 2 ? 'relais' : 'concession')),
+              appSection: data.appSection || (i === 1 ? 'association' : (i === 2 ? 'relais' : 'shopping')),
+              title: data.title || doc.id,
+              slug: data.slug,
+              rating: data.rating,
+              imgUrl: data.imageUrl || data.imgUrl,
+              address: data.address || "",
+              brands: data.brands || []
+            } as MapPoint);
+          });
+        } catch (e) {
+          console.warn(`[MAP] Échec du chargement de la collection ${colName}:`, e);
+        }
+      }
       setPoints(allPoints);
     };
     fetchAll();

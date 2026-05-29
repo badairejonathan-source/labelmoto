@@ -8,7 +8,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, Firestore, getFirestore, memoryLocalCache } from 'firebase/firestore';
+import { getFirestore, Firestore } from 'firebase/firestore';
 
 let firebaseApp: FirebaseApp;
 let auth: Auth;
@@ -44,14 +44,8 @@ export function getFirestoreInstance(): Firestore | null {
 
   if (!firestore) {
     const { firebaseApp: app } = initializeFirebaseClient();
-    try {
-      firestore = initializeFirestore(app, {
-        experimentalForceLongPolling: true,
-        localCache: memoryLocalCache(),
-      });
-    } catch (err) {
-      firestore = getFirestore(app);
-    }
+    // Utilisation de la configuration standard pour maximiser la stabilité
+    firestore = getFirestore(app);
   }
   return firestore;
 }

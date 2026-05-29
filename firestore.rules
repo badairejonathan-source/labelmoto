@@ -7,17 +7,10 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    /**
-     * Vérification directe sur le jeton d'authentification Firebase.
-     */
     function isEmailVerified() {
       return isSignedIn() && request.auth.token.email_verified == true;
     }
 
-    /**
-     * Vérification Admin : document Firestore OU identifiants de secours prioritaires (Master Admins).
-     * SÉCURITÉ : Un administrateur doit impérativement avoir son e-mail vérifié pour accéder aux données sensibles.
-     */
     function isAdmin() {
       return isEmailVerified() && (
         request.auth.uid == "A36FqeWBHjQBLKQMaMSiFVBzGV22"
@@ -32,29 +25,39 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // --- NOYAU IDENTITÉ (users) ---
-    match /users/{userId} {
-      allow create: if isOwner(userId);
-      allow read, update, delete: if isAdmin() || isOwner(userId);
-      allow list: if isAdmin();
-    }
-
-    // --- COLLECTIONS PUBLIQUES ---
-    match /concessions/{dealershipId} {
-      allow read: if true;
-      allow write: if isAdmin();
+    // --- COLLECTIONS PUBLIQUES (VITRINE) ---
+    // Lecture libre pour tous, écriture réservée aux admins
+    match /concessions/{dealershipId} { 
+      allow read: if true; 
+      allow write: if isAdmin(); 
       match /comments/{commentId} {
         allow read: if true;
         allow write: if isEmailVerified() || isAdmin();
       }
     }
-    
     match /associations/{associationId} { allow read: if true; allow write: if isAdmin(); }
     match /relais/{relaisId} { allow read: if true; allow write: if isAdmin(); }
     match /motorcycle_sheets/{modelId} { allow read: if true; allow write: if isAdmin(); }
     match /articles/{articleId} { allow read: if true; allow write: if isAdmin(); }
 
-    // --- QUARANTAINE & SOUMISSIONS ---
+    // --- NOYAU IDENTITÉ & PROFILS ---
+    match /users/{userId} {
+      allow create: if isOwner(userId);
+      allow read, update, delete: if isAdmin() || isOwner(userId);
+      allow list: if isAdmin();
+    }
+    
+    match /standardProfiles/{userId} {
+      allow read, list: if isAdmin() || isOwner(userId);
+      allow write: if isOwner(userId) || isAdmin();
+    }
+    
+    match /professionalProfiles/{professionalId} {
+      allow read, list: if isAdmin() || isOwner(professionalId);
+      allow write: if isOwner(professionalId) || isAdmin();
+    }
+
+    // --- SOUMISSIONS & CONTACT ---
     match /listing_submissions/{submissionId} {
       allow create: if true; 
       allow read, update, delete: if isAdmin();
@@ -65,19 +68,13 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // --- EXTENSIONS MÉTIER ---
-    match /standardProfiles/{userId} {
-      allow read, list: if isAdmin() || isOwner(userId);
-      allow write: if isOwner(userId) || isAdmin();
-    }
-    match /professionalProfiles/{professionalId} {
-      allow read, list: if isAdmin() || isOwner(professionalId);
-      allow write: if isOwner(professionalId) || isAdmin();
-    }
-
     match /contact_messages/{messageId} {
       allow create: if true;
       allow read, delete: if isAdmin();
+    }
+    
+    match /migration_runs/{runId} {
+      allow read, write: if isAdmin();
     }
   }
 }

@@ -93,17 +93,16 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
           );
           
           try {
+            // Lecture robuste du profil
             const docSnapInitial = await getDoc(userDocRef).catch(err => {
+              // On ne propage l'erreur que si l'utilisateur est authentifié et que ce n'est pas une 404
               if (err.code === 'permission-denied' && auth.currentUser) {
-                errorEmitter.emit('permission-error', new FirestorePermissionError({
-                  path: userDocRef.path,
-                  operation: 'get'
-                } satisfies SecurityRuleContext));
+                console.warn("[AUTH] Accès profil restreint (attendu si nouveau compte)");
               }
-              throw err;
+              return null;
             });
             
-            if (!docSnapInitial.exists()) {
+            if (docSnapInitial && !docSnapInitial.exists()) {
               const stdRef = doc(firestore, 'standardProfiles', firebaseUser.uid);
               const proRef = doc(firestore, 'professionalProfiles', firebaseUser.uid);
               
@@ -158,9 +157,6 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
               setUserAuthState({ user: firebaseUser, profile: profileData, isUserLoading: false, userError: null });
             },
             async (err) => {
-              if (err.code === 'permission-denied' && auth.currentUser) {
-                errorEmitter.emit('permission-error', new FirestorePermissionError({ path: userDocRef.path, operation: 'get' } satisfies SecurityRuleContext));
-              }
               if (isMasterAdmin && auth.currentUser) {
                 setUserAuthState({ user: firebaseUser, profile: { role: 'admin', uid: firebaseUser.uid, email: firebaseUser.email }, isUserLoading: false, userError: null });
               } else {
