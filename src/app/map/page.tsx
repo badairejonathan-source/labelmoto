@@ -19,7 +19,6 @@ import Link from 'next/link';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 
-const brandsList = Object.keys(brandLogos);
 const MOTORCYCLE_BRANDS = [
   "Honda", "Yamaha", "Kawasaki", "Suzuki", "BMW", "BMW Motorrad", 
   "Ducati", "Triumph", "Harley-Davidson", "KTM", "Aprilia", 
@@ -123,7 +122,7 @@ function MapPageComponent() {
 
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service']);
+  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service', 'association', 'relais']);
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
   const [isDetailView, setIsDetailView] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -144,17 +143,33 @@ function MapPageComponent() {
       
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
+      
+      // LOGS DIAGNOSTIC MAP
+      let totalConcessions = 0;
+      let totalAssociations = 0;
+      let totalRelais = 0;
+      let totalRejectedCoords = 0;
 
-      // Chargement séquentiel robuste : l'échec d'une collection ne bloque pas les autres
       for (let i = 0; i < collections.length; i++) {
         const colName = collections[i];
         try {
-          const snap = await getDocs(query(collection(firestore, colName), limit(2000)));
+          // Augmentation de la limite à 10000 pour éviter toute perte de documents
+          const snap = await getDocs(query(collection(firestore, colName), limit(10000)));
+          
+          if (colName === 'concessions') totalConcessions = snap.size;
+          if (colName === 'associations') totalAssociations = snap.size;
+          if (colName === 'relais') totalRelais = snap.size;
+
           snap.docs.forEach(doc => {
             if (seenIds.has(doc.id)) return;
             const data = doc.data();
             const coords = extractValidCoordinates(data);
-            if (!coords) return;
+            
+            if (!coords) {
+              totalRejectedCoords++;
+              return;
+            }
+
             seenIds.add(doc.id);
             allPoints.push({
               id: doc.id,
@@ -174,6 +189,13 @@ function MapPageComponent() {
           console.warn(`[MAP] Échec du chargement de la collection ${colName}:`, e);
         }
       }
+
+      console.log(`[MAP_DEBUG_1] Total concessions récupérées: ${totalConcessions}`);
+      console.log(`[MAP_DEBUG_2] Total associations récupérées: ${totalAssociations}`);
+      console.log(`[MAP_DEBUG_3] Total relais récupérés: ${totalRelais}`);
+      console.log(`[MAP_DEBUG_4] Total docs rejetés (coordonnées invalides): ${totalRejectedCoords}`);
+      console.log(`[MAP_DEBUG_6] Total markers finaux envoyés: ${allPoints.length}`);
+
       setPoints(allPoints);
     };
     fetchAll();
@@ -237,7 +259,7 @@ function MapPageComponent() {
   }, [searchTerm]);
 
   const filteredPoints = useMemo(() => {
-    return points.filter(p => {
+    const results = points.filter(p => {
         const section = p.appSection === 'both' ? 'shopping' : p.appSection;
         if (!activeFilters.includes(section)) return false;
         
@@ -258,17 +280,20 @@ function MapPageComponent() {
           if (pDept !== dept) return false;
         }
 
-        if (targetGeo && mapBounds && mapZoom >= 10) {
+        // Le filtrage par viewport ne s'applique que lors d'une recherche précise (Ville ou CP)
+        if (targetGeo && mapBounds && mapZoom >= 10 && (postalCode || searchIntent.city)) {
            const lat = p.latitude;
            const lng = p.longitude;
            const isInViewport = lat >= mapBounds.getSouth() && lat <= mapBounds.getNorth() &&
                               lng >= mapBounds.getWest() && lng <= mapBounds.getEast();
            
-           if ((postalCode || searchIntent.city) && !isInViewport) return false;
+           if (!isInViewport) return false;
         }
 
         return true;
     });
+
+    return results;
   }, [points, searchIntent, activeFilters, mapBounds, mapZoom]);
 
   const listPoints = useMemo(() => {
@@ -280,7 +305,7 @@ function MapPageComponent() {
             const distB = Math.pow(b.latitude - mapCenter[0], 2) + Math.pow(b.longitude - mapCenter[1], 2);
             return distA - distB;
         })
-        .slice(0, 25);
+        .slice(0, 50); // Augmenté à 50 pour la liste latérale
   }, [filteredPoints, mapCenter, selectedId]);
 
   const labelPoints = useMemo(() => {

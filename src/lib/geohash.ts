@@ -82,9 +82,26 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
   let lat: number | null = null;
   let lng: number | null = null;
 
-  // Recherche multi-champs pour compatibilité historique
-  const rawLat = data.latitude ?? data.lat ?? data.location?.lat ?? data.pos?.lat ?? data.position?.[0];
-  const rawLng = data.longitude ?? data.lng ?? data.location?.lng ?? data.pos?.lng ?? data.position?.[1];
+  // Recherche multi-champs exhaustive pour capturer toutes les variantes possibles (historiques ou mal mappées)
+  const rawLat = 
+    data.latitude ?? 
+    data.lat ?? 
+    data.lat_deg ??
+    data.location?.lat ?? 
+    data.location?.latitude ??
+    data.pos?.lat ?? 
+    data.position?.[0];
+
+  const rawLng = 
+    data.longitude ?? 
+    data.lng ?? 
+    data.lon ??
+    data.long ??
+    data.lng_deg ??
+    data.location?.lng ?? 
+    data.location?.longitude ??
+    data.pos?.lng ?? 
+    data.position?.[1];
 
   if (rawLat !== undefined && rawLat !== null && rawLat !== "") {
     lat = typeof rawLat === 'number' ? rawLat : parseFloat(String(rawLat).replace(',', '.'));
@@ -96,8 +113,8 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
   if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
     // Vérification des bornes géographiques valides
     if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      // Évite les coordonnées 0,0 qui sont souvent des erreurs de saisie
-      if (Math.abs(lat) < 0.0001 && Math.abs(lng) < 0.0001) return null;
+      // On accepte désormais les points très proches de 0,0 sauf s'ils sont strictement (0,0)
+      if (lat === 0 && lng === 0) return null;
       return { lat, lng };
     }
   }
