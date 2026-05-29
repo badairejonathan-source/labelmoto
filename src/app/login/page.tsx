@@ -98,7 +98,7 @@ function LoginContent() {
     
     setIsResetting(true);
     try {
-      // Flux 100% natif Firebase Client
+      // Flux 100% natif Firebase Client - Zéro dépendance serveur
       await sendPasswordResetEmail(auth, resetEmail.trim().toLowerCase(), {
         url: 'https://labelmoto.fr/login',
         handleCodeInApp: false
@@ -106,7 +106,7 @@ function LoginContent() {
       
       toast({ 
         title: 'E-mail envoyé', 
-        description: 'Vérifiez votre boîte mail pour réinitialiser votre mot de passe (envoi natif Google).' 
+        description: 'Vérifiez votre boîte mail pour réinitialiser votre mot de passe (envoi sécurisé Google).' 
       });
       setIsResetDialogOpen(false);
     } catch (error: any) {
@@ -220,7 +220,7 @@ function LoginContent() {
       </div>
 
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8">
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-8">
           <DialogHeader>
             <DialogTitle className="text-xl font-black uppercase">Réinitialisation</DialogTitle>
             <DialogDescription className="font-bold">Vous allez recevoir un lien sécurisé par e-mail pour choisir un nouveau mot de passe.</DialogDescription>
