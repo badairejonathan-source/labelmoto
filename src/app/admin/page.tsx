@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/client';
-import { cn, generateDealershipSlug, slugify } from '@/lib/utils';
+import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { errorEmitter } from '@/firebase/client';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/client';
+import { FirestorePermissionError } from '@/firebase/client';
 
 interface Submission {
   id: string;
@@ -147,7 +147,7 @@ export default function AdminPage() {
           errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: 'users_audit',
             operation: 'list'
-          } satisfies SecurityRuleContext));
+          }));
         }
     } finally {
       setIsAuditing(false);
@@ -167,7 +167,7 @@ export default function AdminPage() {
             errorEmitter.emit('permission-error', new FirestorePermissionError({
               path: colName,
               operation: 'list'
-            } satisfies SecurityRuleContext));
+            }));
           }
           throw err;
         });
@@ -317,7 +317,9 @@ export default function AdminPage() {
       <header className="bg-background border-b shadow-sm sticky top-0 z-50">
         <div className="container mx-auto p-4 flex items-center justify-between">
           <div className="w-40 md:w-60"><LabelMotoLogo noBubble /></div>
-          <Button asChild variant="outline" size="sm" className="rounded-full"><Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au site</Link></Button>
+          <Button asChild variant="outline" size="sm" className="rounded-full">
+            <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au site</Link>
+          </Button>
         </div>
       </header>
 
@@ -348,7 +350,7 @@ export default function AdminPage() {
                 <Database className="h-5 w-5 text-orange-400" /> 100%
               </CardTitle>
             </CardHeader>
-          </div>
+          </Card>
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
@@ -568,7 +570,7 @@ export default function AdminPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Section App (Cible Collection)</Label>
-                                    <Select value={editDraft.appSectionRequested} onValueChange={(v: any) => setEditDraft({...editDraft, appSectionRequested: v})}>
+                                    <Select value={editDraft.appSectionRequested} onValueChange={(v) => setEditDraft({...editDraft, appSectionRequested: v as any})}>
                                         <SelectTrigger className="font-bold h-12 rounded-xl border-2"><SelectValue /></SelectTrigger>
                                         <SelectContent className="rounded-xl border-2 z-[3200]">
                                             <SelectItem value="shopping">Concessionnaire</SelectItem>
