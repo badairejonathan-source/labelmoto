@@ -9,6 +9,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   sendPasswordResetEmail,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -61,9 +62,13 @@ function LoginContent() {
     if (!auth || !firestore) return;
     setIsLoading(true);
     try {
+      // 1. Création du compte Firebase
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      
+      // 2. Mise à jour du nom d'affichage
       await updateProfile(userCredential.user, { displayName: values.fullName });
 
+      // 3. Création du document noyau utilisateur
       await setDoc(doc(firestore, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
         email: values.email,
@@ -75,10 +80,27 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      toast({ title: 'Compte créé !', description: 'Bienvenue sur Label Moto.' });
+      // 4. Envoi automatique du mail de validation (Natif Firebase)
+      try {
+        await sendEmailVerification(userCredential.user, {
+          url: 'https://labelmoto.fr/account',
+          handleCodeInApp: false
+        });
+        toast({ title: 'Compte créé !', description: 'Un e-mail de validation vient de vous être envoyé.' });
+      } catch (verifyError: any) {
+        console.error("[REGISTER] Auto-verify email failed:", verifyError);
+        toast({ 
+          variant: 'default', 
+          title: 'Compte créé', 
+          description: "L'e-mail de validation n'a pas pu être envoyé automatiquement. Utilisez le bouton de renvoi." 
+        });
+      }
+
+      // 5. Redirection vers la page de vérification
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}&new=1`);
       
     } catch (error: any) {
+      console.error("[REGISTER] Error:", error);
       toast({
         variant: 'destructive',
         title: "Erreur d'inscription",
@@ -98,7 +120,7 @@ function LoginContent() {
     
     setIsResetting(true);
     try {
-      // Flux 100% natif Firebase Client - Zéro dépendance serveur
+      // Flux 100% natif Firebase Client - Stabilité maximale
       await sendPasswordResetEmail(auth, resetEmail.trim().toLowerCase(), {
         url: 'https://labelmoto.fr/login',
         handleCodeInApp: false
