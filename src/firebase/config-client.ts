@@ -8,7 +8,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { getFirestore, Firestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 
 let firebaseApp: FirebaseApp;
 let auth: Auth;
@@ -44,8 +44,14 @@ export function getFirestoreInstance(): Firestore | null {
 
   if (!firestore) {
     const { firebaseApp: app } = initializeFirebaseClient();
-    // Utilisation de la configuration standard pour maximiser la stabilité
-    firestore = getFirestore(app);
+    // Activation du long polling pour contourner les restrictions réseau de l'environnement Studio
+    // et utilisation d'un cache persistant pour la robustesse hors-ligne.
+    firestore = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager(),
+      }),
+      experimentalForceLongPolling: true,
+    });
   }
   return firestore;
 }

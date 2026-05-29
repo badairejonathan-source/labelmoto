@@ -7,15 +7,9 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isEmailVerified() {
-      return isSignedIn() && request.auth.token.email_verified == true;
-    }
-
     function isAdmin() {
-      return isEmailVerified() && (
-        request.auth.uid == "A36FqeWBHjQBLKQMaMSiFVBzGV22"
-        || request.auth.uid == "A366V1X8Hqf1pA63nU3N8B7l8fD3"
-        || request.auth.uid == "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"
+      return isSignedIn() && (
+        request.auth.uid in ["A36FqeWBHjQBLKQMaMSiFVBzGV22", "A366V1X8Hqf1pA63nU3N8B7l8fD3", "f7xVfH8R8mS5v8H7N3nU3N8B7l8f"]
         || request.auth.token.email == "badjoe950@hotmail.com"
         || (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin")
       );
@@ -27,53 +21,54 @@ service cloud.firestore {
 
     // --- COLLECTIONS PUBLIQUES (VITRINE) ---
     // Lecture libre pour tous, écriture réservée aux admins
-    match /concessions/{dealershipId} { 
+    match /concessions/{id} { 
       allow read: if true; 
       allow write: if isAdmin(); 
       match /comments/{commentId} {
         allow read: if true;
-        allow write: if isEmailVerified() || isAdmin();
+        allow create: if isSignedIn();
+        allow write: if isAdmin();
       }
     }
-    match /associations/{associationId} { allow read: if true; allow write: if isAdmin(); }
-    match /relais/{relaisId} { allow read: if true; allow write: if isAdmin(); }
-    match /motorcycle_sheets/{modelId} { allow read: if true; allow write: if isAdmin(); }
-    match /articles/{articleId} { allow read: if true; allow write: if isAdmin(); }
+    match /associations/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /relais/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /motorcycle_sheets/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /articles/{id} { allow read: if true; allow write: if isAdmin(); }
 
     // --- NOYAU IDENTITÉ & PROFILS ---
     match /users/{userId} {
       allow create: if isOwner(userId);
-      allow read, update, delete: if isAdmin() || isOwner(userId);
+      allow read, update: if isAdmin() || isOwner(userId);
       allow list: if isAdmin();
     }
     
     match /standardProfiles/{userId} {
-      allow read, list: if isAdmin() || isOwner(userId);
-      allow write: if isOwner(userId) || isAdmin();
+      allow read: if isAdmin() || isOwner(userId);
+      allow write: if isAdmin() || isOwner(userId);
     }
     
-    match /professionalProfiles/{professionalId} {
-      allow read, list: if isAdmin() || isOwner(professionalId);
-      allow write: if isOwner(professionalId) || isAdmin();
+    match /professionalProfiles/{userId} {
+      allow read: if isAdmin() || isOwner(userId);
+      allow write: if isAdmin() || isOwner(userId);
     }
 
     // --- SOUMISSIONS & CONTACT ---
-    match /listing_submissions/{submissionId} {
+    match /listing_submissions/{id} {
       allow create: if true; 
       allow read, update, delete: if isAdmin();
     }
     
-    match /pending_comments/{commentId} {
+    match /pending_comments/{id} {
       allow create: if isSignedIn(); 
       allow read, update, delete: if isAdmin();
     }
 
-    match /contact_messages/{messageId} {
+    match /contact_messages/{id} {
       allow create: if true;
       allow read, delete: if isAdmin();
     }
     
-    match /migration_runs/{runId} {
+    match /migration_runs/{id} {
       allow read, write: if isAdmin();
     }
   }
