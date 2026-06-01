@@ -32,7 +32,7 @@ interface MapComponentProps {
   deptCounts?: DeptCounts | null;
 }
 
-const GEOJSON_URL = 'https://france-geojson.gregoiredavid.fr/repo/departements.geojson';
+const GEOJSON_URL = '/departements.geojson';
 const ZOOM_THRESHOLD = 9;
 
 const getColor = (count: number): string => {
