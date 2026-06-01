@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
@@ -14,7 +14,7 @@ import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase, useMemoFirebase, useDoc } from '@/firebase/client';
 import { initializeFirebaseClient } from '@/firebase/config-client';
 import { collection, getDocs, query, limit, doc, getDoc, getFirestore } from "firebase/firestore";
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import locationsData from '@/data/locations.json';
@@ -115,6 +115,10 @@ function MapPageComponent() {
   const { width } = useWindowSize();
   const { firestore } = useFirebase();
 
+  // Ref pour le scroll auto de la liste (point 4)
+  const listScrollRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [deptCounts, setDeptCounts] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
@@ -127,6 +131,7 @@ function MapPageComponent() {
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>('external');
   const [isLocating, setIsLocating] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
+  const [deptToFit, setDeptToFit] = useState<string | null>(null);
 
   const isMobile = width !== undefined && width < 1024;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 600 : (drawerHeight === 'half' ? 300 : 160)) : 0;
@@ -139,10 +144,7 @@ function MapPageComponent() {
       const collections = ['concessions', 'associations', 'relais'];
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
-      let totalConcessions = 0;
-      let totalAssociations = 0;
-      let totalRelais = 0;
-      let totalRejectedCoords = 0;
+      let totalConcessions = 0, totalAssociations = 0, totalRelais = 0, totalRejectedCoords = 0;
 
       for (let i = 0; i < collections.length; i++) {
         const colName = collections[i];
@@ -176,7 +178,6 @@ function MapPageComponent() {
           console.warn(`[MAP] Échec du chargement de la collection ${colName}:`, e);
         }
       }
-
       console.log(`[MAP_DEBUG_1] Total concessions récupérées: ${totalConcessions}`);
       console.log(`[MAP_DEBUG_2] Total associations récupérées: ${totalAssociations}`);
       console.log(`[MAP_DEBUG_3] Total relais récupérés: ${totalRelais}`);
@@ -194,15 +195,24 @@ function MapPageComponent() {
     const db = getFirestore(firebaseApp);
     getDoc(doc(db, 'cache', 'departements_count'))
       .then(snap => {
-        if (snap.exists()) {
-          setDeptCounts(snap.data().counts);
-          console.log('✅ Cache départements chargé');
-        } else {
-          console.log('ℹ️ Pas de cache départements — lancez la Cloud Function une première fois');
-        }
+        if (snap.exists()) { setDeptCounts(snap.data().counts); console.log('✅ Cache départements chargé'); }
       })
       .catch(e => console.warn('Cache départements non disponible:', e));
   }, []);
+
+  // Scroll auto vers la fiche sélectionnée (point 4)
+  useEffect(() => {
+    if (!selectedId) return;
+    const timer = setTimeout(() => {
+      const cardEl = cardRefs.current[selectedId];
+      const container = listScrollRef.current;
+      if (cardEl && container) {
+        const cardTop = cardEl.offsetTop - container.offsetTop;
+        container.scrollTo({ top: cardTop - 16, behavior: 'smooth' });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [selectedId]);
 
   const searchIntent = useMemo(() => {
     if (!searchTerm) return null;
@@ -233,18 +243,36 @@ function MapPageComponent() {
       const deptCode = postalCode.substring(0, 2);
       const loc = Object.entries(locationsData).find(([k]) => k.startsWith(deptCode));
       if (loc) targetGeo = { coords: (loc[1] as any).center, zoom: 12 };
-    } else if (dept) {
-      const loc = Object.entries(locationsData).find(([k]) => k.startsWith(dept));
-      if (loc) targetGeo = { coords: (loc[1] as any).center, zoom: 9 };
-    } else if (city) {
+    } else if (!dept && city) {
       for (const [, info] of Object.entries(locationsData)) {
-        const foundCity = (info as any).cities.find((c: string) => normalizeText(c) === city || city?.includes(normalizeText(c)));
-        if (foundCity) { targetGeo = { coords: (info as any).center, zoom: 12 }; break; }
+        const foundCity = (info as any).cities.find((c: string) =>
+          normalizeText(c) === city || city?.includes(normalizeText(c))
+        );
+        if (foundCity) { targetGeo = { coords: (info as any).center, zoom: 11 }; break; }
       }
+    } else if (dept && city) {
+      const loc = Object.entries(locationsData).find(([k]) => k.startsWith(dept));
+      if (loc) targetGeo = { coords: (loc[1] as any).center, zoom: 11 };
     }
 
     return { brand, dept, postalCode, city, targetGeo, original: lowerQuery };
   }, [searchTerm]);
+
+  // Navigation carte selon intention de recherche
+  useEffect(() => {
+    if (!searchIntent || selectionSource !== 'external') return;
+
+    if (searchIntent.dept && !searchIntent.postalCode) {
+      const rawDept = searchIntent.dept.toUpperCase();
+      const deptCode = rawDept.length === 1 ? `0${rawDept}` : rawDept;
+      setDeptToFit(null);
+      setTimeout(() => setDeptToFit(deptCode), 10);
+    } else if (searchIntent.targetGeo) {
+      setMapCenter(searchIntent.targetGeo.coords);
+      setMapZoom(searchIntent.targetGeo.zoom);
+      setDeptToFit(null);
+    }
+  }, [searchIntent, selectionSource]);
 
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
@@ -303,13 +331,6 @@ function MapPageComponent() {
     return results;
   }, [filteredPoints, mapZoom, selectedId]);
 
-  useEffect(() => {
-    if (searchIntent && searchIntent.targetGeo && selectionSource === 'external') {
-      setMapCenter(searchIntent.targetGeo.coords);
-      setMapZoom(searchIntent.targetGeo.zoom);
-    }
-  }, [searchIntent, selectionSource]);
-
   const handleFilterToggle = (f: string) => {
     setActiveFilters(prev => {
       const newFilters = prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f];
@@ -322,12 +343,13 @@ function MapPageComponent() {
     });
   };
 
-  const handleMarkerClick = (id: string) => {
+  const handleMarkerClick = useCallback((id: string) => {
     const p = points.find(x => x.id === id);
     if (p) { setMapCenter([p.latitude, p.longitude]); setSelectionSource('marker'); }
     setSelectedId(id);
     if (isMobile) setDrawerHeight('half');
-  };
+    // Le scroll auto est géré par le useEffect sur selectedId
+  }, [points, isMobile]);
 
   const handleUserInteraction = () => {
     if (isMobile) setDrawerHeight('collapsed');
@@ -372,6 +394,33 @@ function MapPageComponent() {
     return <div className="flex items-center justify-center gap-8"><div className="flex gap-4">{filters.map(renderFilter)}</div></div>;
   };
 
+  // Composant de liste avec ref pour scroll auto
+  const ListContent = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between px-2 mb-4">
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{filteredPoints.length} Résultats trouvés</span>
+      </div>
+      {listPoints.map(p => (
+        <div
+          key={p.id}
+          ref={el => { cardRefs.current[p.id] = el; }}
+        >
+          <DealershipCardItem
+            point={p}
+            isSelected={p.id === selectedId}
+            onClick={() => handleMarkerClick(p.id)}
+            onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); }}
+          />
+        </div>
+      ))}
+      {filteredPoints.length === 0 && (
+        <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
+          <p className="font-black uppercase tracking-tight text-muted-foreground">Aucun résultat</p>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
@@ -392,6 +441,8 @@ function MapPageComponent() {
           onLocateEnd={() => setIsLocating(false)}
           onLocationFound={(c) => { setMapCenter(c); setSelectionSource('external'); }}
           deptCounts={deptCounts}
+          deptToFit={deptToFit}
+          isMobile={isMobile}
         />
       </div>
 
@@ -409,9 +460,7 @@ function MapPageComponent() {
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
           <div className="px-10 py-8 shrink-0 flex items-center justify-between border-b border-muted/30">
-            <div className="shrink-0">
-              <LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" />
-            </div>
+            <div className="shrink-0"><LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" /></div>
             <div className="flex-1 text-center px-4">
               <p className="text-[9px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
               <p className="text-[11px] font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
@@ -424,23 +473,12 @@ function MapPageComponent() {
               <FilterButtons />
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
+          {/* Liste avec ref pour scroll auto (point 4) */}
+          <div ref={listScrollRef} className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
             {isDetailView && selectedId ? (
               <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
             ) : (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between px-2 mb-4">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{filteredPoints.length} Résultats trouvés</span>
-                </div>
-                {listPoints.map(p => (
-                  <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); }} />
-                ))}
-                {filteredPoints.length === 0 && (
-                  <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
-                    <p className="font-black uppercase tracking-tight text-muted-foreground">Aucun résultat</p>
-                  </div>
-                )}
-              </div>
+              <ListContent />
             )}
           </div>
         </aside>
@@ -450,13 +488,21 @@ function MapPageComponent() {
         <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]'))}>
           <div className="h-full flex flex-col">
             <div className="shrink-0 overflow-visible"><FilterButtons mobile /></div>
-            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            {/* Liste mobile avec ref pour scroll auto (point 4) */}
+            <div ref={listScrollRef} className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               {isDetailView && selectedId ? (
                 <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('half'); }} />
               ) : (
                 <div className="space-y-4">
                   {listPoints.map(p => (
-                    <DealershipCardItem key={p.id} point={p} isSelected={p.id === selectedId} onClick={() => handleMarkerClick(p.id)} onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); setDrawerHeight('full'); }} />
+                    <div key={p.id} ref={el => { cardRefs.current[p.id] = el; }}>
+                      <DealershipCardItem
+                        point={p}
+                        isSelected={p.id === selectedId}
+                        onClick={() => handleMarkerClick(p.id)}
+                        onOpenDetails={(id) => { setSelectedId(id); setIsDetailView(true); setDrawerHeight('full'); }}
+                      />
+                    </div>
                   ))}
                   {filteredPoints.length === 0 && (
                     <div className="text-center py-10 opacity-50"><p className="font-black uppercase text-xs">Aucun résultat</p></div>

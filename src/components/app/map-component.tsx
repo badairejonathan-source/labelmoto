@@ -30,6 +30,8 @@ interface MapComponentProps {
   onLocationFound?: (coords: [number, number]) => void;
   selectionSource: 'marker' | 'card' | 'external' | null;
   deptCounts?: DeptCounts | null;
+  deptToFit?: string | null;
+  isMobile?: boolean;
 }
 
 const GEOJSON_URL = '/departements.geojson';
@@ -59,7 +61,7 @@ const MapComponent = ({
   onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0,
   isLocating = false, onLocateEnd = () => {}, onLocationFound = () => {},
-  selectionSource, deptCounts = null
+  selectionSource, deptCounts = null, deptToFit = null, isMobile = false
 }: MapComponentProps) => {
 
   const mapRef = useRef<L.Map | null>(null);
@@ -71,6 +73,7 @@ const MapComponent = ({
   const labelMarkersRef = useRef<L.Marker[]>([]);
   const geojsonDataRef = useRef<any>(null);
   const currentZoomRef = useRef<number>(zoom);
+  const hoveredLayerRef = useRef<L.Layer | null>(null);
 
   // Initialisation carte
   useEffect(() => {
@@ -133,15 +136,81 @@ const MapComponent = ({
     };
   }, []);
 
-  // Choropleth — affiché seulement si deptCounts disponible ET zoom < ZOOM_THRESHOLD
+  // Zoom sur les bounds exactes d'un département
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !deptToFit) return;
+
+    const fitDept = async () => {
+      if (!geojsonDataRef.current) {
+        try {
+          const res = await fetch(GEOJSON_URL);
+          if (!res.ok) return;
+          geojsonDataRef.current = await res.json();
+        } catch (e) {
+          console.error('❌ Erreur chargement GeoJSON pour fitBounds:', e);
+          return;
+        }
+      }
+
+      const feature = geojsonDataRef.current?.features?.find(
+        (f: any) => f.properties?.code === deptToFit
+      );
+
+      if (!feature) {
+        console.warn(`Département ${deptToFit} non trouvé dans le GeoJSON`);
+        return;
+      }
+
+      isUpdatingFromProps.current = true;
+      const layer = L.geoJSON(feature);
+      const bounds = layer.getBounds();
+
+      if (isMobile) {
+        // Mobile : pas de padding latéral, zoom min 10 pour voir les marqueurs
+        map.fitBounds(bounds, {
+          paddingTopLeft: [20, 60],
+          paddingBottomRight: [20, 200],
+          animate: true,
+          duration: 0.8,
+          maxZoom: 10,
+        });
+      } else {
+        // Desktop : padding gauche pour le panneau de 520px
+        map.fitBounds(bounds, {
+          paddingTopLeft: [leftPadding + 40, 40],
+          paddingBottomRight: [60, 40],
+          animate: true,
+          duration: 0.8,
+        });
+      }
+
+      setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
+    };
+
+    fitDept();
+  }, [deptToFit, leftPadding, isMobile]);
+
+  // Choropleth avec surbrillance au survol
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !deptCounts) return;
 
+    const normalStyle = (feature: any) => {
+      const code = feature?.properties?.code;
+      const count = deptCounts[code]?.total || 0;
+      return { fillColor: getColor(count), weight: 1, color: 'white', fillOpacity: 0.65 };
+    };
+
+    const hoverStyle = {
+      weight: 2,
+      color: '#333',
+      fillOpacity: 0.85,
+    };
+
     const buildChoropleth = () => {
       if (!geojsonDataRef.current) return;
 
-      // Nettoyer ancienne couche
       if (geojsonLayerRef.current) {
         map.removeLayer(geojsonLayerRef.current);
         geojsonLayerRef.current = null;
@@ -153,16 +222,7 @@ const MapComponent = ({
       if (currentZoom >= ZOOM_THRESHOLD) return;
 
       geojsonLayerRef.current = L.geoJSON(geojsonDataRef.current, {
-        style: (feature) => {
-          const code = feature?.properties?.code;
-          const count = deptCounts[code]?.total || 0;
-          return {
-            fillColor: getColor(count),
-            weight: 1,
-            color: 'white',
-            fillOpacity: 0.65,
-          };
-        },
+        style: normalStyle,
         onEachFeature: (feature, layer) => {
           const code = feature.properties?.code;
           const nom = feature.properties?.nom;
@@ -170,13 +230,7 @@ const MapComponent = ({
           const counts = deptCounts[code];
 
           layer.bindTooltip(
-            `<b>${nom}</b><br/>
-             ${count} fiche${count > 1 ? 's' : ''}<br/>
-             <small>
-               ${counts?.concessions || 0} concessions •
-               ${counts?.associations || 0} asso •
-               ${counts?.relais || 0} relais
-             </small>`,
+            `<b>${nom}</b><br/>${count} fiche${count > 1 ? 's' : ''}<br/><small>${counts?.concessions || 0} concessions • ${counts?.associations || 0} asso • ${counts?.relais || 0} relais</small>`,
             { sticky: true }
           );
 
@@ -196,14 +250,29 @@ const MapComponent = ({
             labelMarker.addTo(map);
           }
 
+          // Surbrillance au survol (point 3)
+          layer.on('mouseover', () => {
+            (layer as L.Path).setStyle({ ...hoverStyle });
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              (layer as L.Path).bringToFront();
+            }
+          });
+
+          layer.on('mouseout', () => {
+            (layer as L.Path).setStyle(normalStyle(feature));
+          });
+
           layer.on('click', () => {
-            map.fitBounds((layer as L.Polygon).getBounds(), { padding: [40, 40] });
+            map.fitBounds((layer as L.Polygon).getBounds(), {
+              paddingTopLeft: isMobile ? [20, 60] : [leftPadding + 40, 40],
+              paddingBottomRight: isMobile ? [20, 200] : [60, 40],
+              maxZoom: isMobile ? 10 : undefined,
+            });
           });
         },
       }).addTo(map);
     };
 
-    // Charger GeoJSON une seule fois
     const loadAndBuild = async () => {
       if (!geojsonDataRef.current) {
         try {
@@ -220,7 +289,6 @@ const MapComponent = ({
 
     loadAndBuild();
 
-    // Réagir aux changements de zoom
     const handleZoom = () => {
       const z = map.getZoom();
       if (z >= ZOOM_THRESHOLD) {
@@ -245,9 +313,9 @@ const MapComponent = ({
       labelMarkersRef.current.forEach(m => map.removeLayer(m));
       labelMarkersRef.current = [];
     };
-  }, [deptCounts]);
+  }, [deptCounts, isMobile, leftPadding]);
 
-  // Marqueurs — seulement si zoom >= ZOOM_THRESHOLD
+  // Marqueurs
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
