@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'leaflet/dist/leaflet.css';
@@ -9,6 +8,10 @@ import React, { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { MapPoint } from '@/lib/types';
+
+interface DeptCounts {
+  [code: string]: { total: number; concessions: number; associations: number; relais: number };
+}
 
 interface MapComponentProps {
   points: MapPoint[];
@@ -26,7 +29,22 @@ interface MapComponentProps {
   onLocateEnd?: () => void;
   onLocationFound?: (coords: [number, number]) => void;
   selectionSource: 'marker' | 'card' | 'external' | null;
+  deptCounts?: DeptCounts | null;
 }
+
+const GEOJSON_URL = 'https://france-geojson.gregoiredavid.fr/repo/departements.geojson';
+const ZOOM_THRESHOLD = 9;
+
+const getColor = (count: number): string => {
+  return count > 500 ? '#800026' :
+         count > 200 ? '#BD0026' :
+         count > 100 ? '#E31A1C' :
+         count > 50  ? '#FC4E2A' :
+         count > 20  ? '#FD8D3C' :
+         count > 10  ? '#FEB24C' :
+         count > 5   ? '#FED976' :
+         '#FFEDA0';
+};
 
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: number, bottomPadding: number, targetZoom: number): L.LatLng => {
   const centerPoint = map.project(latlng, targetZoom);
@@ -39,17 +57,22 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 const MapComponent = ({
   points = [], labelPoints = [], center, zoom, selectedId,
   onMarkerClick, onMapClick, onMapChange,
-  onUserInteraction, bottomPadding = 0, leftPadding = 0, isLocating = false, onLocateEnd = () => {},
-  onLocationFound = () => {},
-  selectionSource
+  onUserInteraction, bottomPadding = 0, leftPadding = 0,
+  isLocating = false, onLocateEnd = () => {}, onLocationFound = () => {},
+  selectionSource, deptCounts = null
 }: MapComponentProps) => {
-  
+
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markerMapRef = useRef<Record<string, L.Marker>>({});
   const isUpdatingFromProps = useRef(false);
+  const geojsonLayerRef = useRef<L.GeoJSON | null>(null);
+  const labelMarkersRef = useRef<L.Marker[]>([]);
+  const geojsonDataRef = useRef<any>(null);
+  const currentZoomRef = useRef<number>(zoom);
 
+  // Initialisation carte
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -64,7 +87,9 @@ const MapComponent = ({
       maxZoom: 20
     }).addTo(map);
 
-    const initialCenter = selectionSource ? getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom) : L.latLng(center);
+    const initialCenter = selectionSource
+      ? getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom)
+      : L.latLng(center);
     map.setView(initialCenter, zoom, { animate: false });
 
     const clusterGroup = L.markerClusterGroup({
@@ -74,27 +99,27 @@ const MapComponent = ({
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
     });
-    
+
     map.addLayer(clusterGroup);
     clusterGroupRef.current = clusterGroup;
     mapRef.current = map;
 
-    const handleTouchStart = () => { 
-        if (!isUpdatingFromProps.current) onUserInteraction?.(); 
+    const handleTouchStart = () => {
+      if (!isUpdatingFromProps.current) onUserInteraction?.();
     };
-    
+
     containerRef.current?.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
     containerRef.current?.addEventListener('mousedown', handleTouchStart, { capture: true });
 
     map.on('movestart zoomstart', () => {
-        if (!isUpdatingFromProps.current) {
-            onUserInteraction?.();
-        }
+      if (!isUpdatingFromProps.current) onUserInteraction?.();
     });
 
     map.on('moveend zoomend', () => {
       if (map && !isUpdatingFromProps.current) {
-        onMapChange([map.getCenter().lat, map.getCenter().lng], map.getZoom(), map.getBounds());
+        const z = map.getZoom();
+        currentZoomRef.current = z;
+        onMapChange([map.getCenter().lat, map.getCenter().lng], z, map.getBounds());
       }
     });
 
@@ -108,12 +133,130 @@ const MapComponent = ({
     };
   }, []);
 
+  // Choropleth — affiché seulement si deptCounts disponible ET zoom < ZOOM_THRESHOLD
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !deptCounts) return;
+
+    const buildChoropleth = () => {
+      if (!geojsonDataRef.current) return;
+
+      // Nettoyer ancienne couche
+      if (geojsonLayerRef.current) {
+        map.removeLayer(geojsonLayerRef.current);
+        geojsonLayerRef.current = null;
+      }
+      labelMarkersRef.current.forEach(m => map.removeLayer(m));
+      labelMarkersRef.current = [];
+
+      const currentZoom = map.getZoom();
+      if (currentZoom >= ZOOM_THRESHOLD) return;
+
+      geojsonLayerRef.current = L.geoJSON(geojsonDataRef.current, {
+        style: (feature) => {
+          const code = feature?.properties?.code;
+          const count = deptCounts[code]?.total || 0;
+          return {
+            fillColor: getColor(count),
+            weight: 1,
+            color: 'white',
+            fillOpacity: 0.65,
+          };
+        },
+        onEachFeature: (feature, layer) => {
+          const code = feature.properties?.code;
+          const nom = feature.properties?.nom;
+          const count = deptCounts[code]?.total || 0;
+          const counts = deptCounts[code];
+
+          layer.bindTooltip(
+            `<b>${nom}</b><br/>
+             ${count} fiche${count > 1 ? 's' : ''}<br/>
+             <small>
+               ${counts?.concessions || 0} concessions •
+               ${counts?.associations || 0} asso •
+               ${counts?.relais || 0} relais
+             </small>`,
+            { sticky: true }
+          );
+
+          const centroid = (layer as L.Polygon).getBounds().getCenter();
+          if (count > 0) {
+            const labelMarker = L.marker(centroid, {
+              icon: L.divIcon({
+                className: 'dept-label',
+                html: `<span>${count}</span>`,
+                iconSize: [60, 24],
+                iconAnchor: [30, 12],
+              }),
+              interactive: false,
+              zIndexOffset: -1000,
+            });
+            labelMarkersRef.current.push(labelMarker);
+            labelMarker.addTo(map);
+          }
+
+          layer.on('click', () => {
+            map.fitBounds((layer as L.Polygon).getBounds(), { padding: [40, 40] });
+          });
+        },
+      }).addTo(map);
+    };
+
+    // Charger GeoJSON une seule fois
+    const loadAndBuild = async () => {
+      if (!geojsonDataRef.current) {
+        try {
+          const res = await fetch(GEOJSON_URL);
+          if (!res.ok) throw new Error('GeoJSON fetch failed');
+          geojsonDataRef.current = await res.json();
+        } catch (e) {
+          console.error('❌ Erreur chargement GeoJSON:', e);
+          return;
+        }
+      }
+      buildChoropleth();
+    };
+
+    loadAndBuild();
+
+    // Réagir aux changements de zoom
+    const handleZoom = () => {
+      const z = map.getZoom();
+      if (z >= ZOOM_THRESHOLD) {
+        if (geojsonLayerRef.current) {
+          map.removeLayer(geojsonLayerRef.current);
+          geojsonLayerRef.current = null;
+        }
+        labelMarkersRef.current.forEach(m => map.removeLayer(m));
+        labelMarkersRef.current = [];
+      } else {
+        if (!geojsonLayerRef.current) buildChoropleth();
+      }
+    };
+
+    map.on('zoomend', handleZoom);
+    return () => {
+      map.off('zoomend', handleZoom);
+      if (geojsonLayerRef.current) {
+        map.removeLayer(geojsonLayerRef.current);
+        geojsonLayerRef.current = null;
+      }
+      labelMarkersRef.current.forEach(m => map.removeLayer(m));
+      labelMarkersRef.current = [];
+    };
+  }, [deptCounts]);
+
+  // Marqueurs — seulement si zoom >= ZOOM_THRESHOLD
   useEffect(() => {
     const clusterGroup = clusterGroupRef.current;
     if (!clusterGroup || !mapRef.current) return;
 
     clusterGroup.clearLayers();
     markerMapRef.current = {};
+
+    const currentZoom = mapRef.current.getZoom();
+    if (currentZoom < ZOOM_THRESHOLD && deptCounts) return;
 
     points.forEach((point) => {
       const isSelected = point.id === selectedId;
@@ -126,11 +269,11 @@ const MapComponent = ({
         L.DomEvent.stopPropagation(e);
         onMarkerClick(point.id);
       });
-      
+
       markerMapRef.current[point.id] = marker;
       clusterGroup.addLayer(marker);
     });
-  }, [points, labelPoints, selectedId]); 
+  }, [points, labelPoints, selectedId, deptCounts]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -139,7 +282,7 @@ const MapComponent = ({
     isUpdatingFromProps.current = true;
     const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, map.getZoom());
     map.flyTo(finalCenter, map.getZoom(), { duration: 0.8 });
-    
+
     setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
   }, [center, leftPadding, bottomPadding, selectionSource]);
 
