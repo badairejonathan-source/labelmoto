@@ -27,3 +27,6 @@ env:
   - variable: NEXT_PUBLIC_GA_ID
     value: "G-3YLES1XL71"
     availability: ["BUILD", "RUNTIME"]
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
+    availability: ["RUNTIME"]
