@@ -28,5 +28,5 @@ env:
     value: "G-3YLES1XL71"
     availability: ["BUILD", "RUNTIME"]
   - variable: CRON_SECRET
-    secret: CRON_SECRET
+    value: "labelmoto-secret-2024-xK9mP2qR"
     availability: ["RUNTIME"]
