@@ -1,5 +1,3 @@
-
-
 /* Styles spécifiques à la carte Leaflet - Chargés uniquement sur la page /map */
 
 .leaflet-container .leaflet-tile-pane {
@@ -61,3 +59,114 @@
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 20px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(234, 88, 12, 0.3); }
+
+/* ============================================================
+   Popup Leaflet — fond blanc opaque + style Label Moto
+   ============================================================ */
+.leaflet-popup-content-wrapper {
+  background: white !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06) !important;
+  border: none !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 14px 16px !important;
+  font-family: inherit !important;
+  min-width: 180px;
+}
+
+.leaflet-popup-tip-container {
+  margin-top: -1px;
+}
+
+.leaflet-popup-tip {
+  background: white !important;
+  box-shadow: none !important;
+}
+
+.leaflet-popup-close-button {
+  color: #999 !important;
+  font-size: 16px !important;
+  padding: 6px 8px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #ea580c !important;
+}
+
+.leaflet-popup-content h4 {
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px 0;
+  color: #111;
+  line-height: 1.3;
+  padding-right: 16px;
+}
+
+.leaflet-popup-content p {
+  font-size: 11px;
+  margin: 3px 0;
+  color: #666;
+  font-weight: 600;
+}
+
+.leaflet-popup-content p strong {
+  color: #333;
+  font-weight: 800;
+}
+
+.leaflet-popup-content img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 8px;
+  display: block;
+}
+
+.leaflet-popup-content a {
+  display: block;
+  margin-top: 10px;
+  padding: 7px 12px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: white !important;
+  background: #ea580c;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none !important;
+  transition: background 0.2s;
+}
+
+.leaflet-popup-content a:hover {
+  background: #c2410c;
+}
+
+/* ============================================================
+   Labels départements sur le choropleth
+   ============================================================ */
+.dept-label {
+  background: none !important;
+  border: none !important;
+}
+
+.dept-label span {
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+  background-color: rgba(30, 30, 30, 0.72);
+  padding: 3px 7px;
+  border-radius: 5px;
+  display: inline-block;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  letter-spacing: 0.02em;
+}
