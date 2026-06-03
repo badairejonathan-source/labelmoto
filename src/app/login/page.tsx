@@ -8,9 +8,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  sendPasswordResetEmail,
   sendEmailVerification,
 } from 'firebase/auth';
+import { callSendPasswordResetEmail } from '@/lib/email-functions';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
@@ -121,10 +121,7 @@ function LoginContent() {
     setIsResetting(true);
     try {
       // Flux 100% natif Firebase Client - Stabilité maximale
-      await sendPasswordResetEmail(auth, resetEmail.trim().toLowerCase(), {
-        url: 'https://labelmoto.fr/login',
-        handleCodeInApp: false
-      });
+      await callSendPasswordResetEmail(resetEmail.trim().toLowerCase());
       
       toast({ 
         title: 'E-mail envoyé', 
