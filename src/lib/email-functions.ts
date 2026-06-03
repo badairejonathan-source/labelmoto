@@ -1,9 +1,10 @@
+'use client';
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { getApp } from "firebase/app";
+import { initializeFirebaseClient } from "@/firebase/config-client";
 
 function getFunctionsInstance() {
-  const app = getApp();
-  return getFunctions(app, "us-central1");
+  const { firebaseApp } = initializeFirebaseClient();
+  return getFunctions(firebaseApp, "us-central1");
 }
 
 export async function callSendPasswordResetEmail(email: string): Promise<void> {
