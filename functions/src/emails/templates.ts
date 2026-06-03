@@ -18,7 +18,7 @@ const layout = (content: string) => `
     .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
     .card { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #E2E8F0; }
     .logo { margin-bottom: 32px; text-align: center; }
-    .logo img { height: 40px; }
+    .logo img { height: 40px; max-width: 180px; width: auto; }
     h1 { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 24px; text-align: center; }
     p { font-size: 16px; line-height: 1.6; margin-bottom: 24px; color: #475569; }
     .button-container { text-align: center; margin: 32px 0; }

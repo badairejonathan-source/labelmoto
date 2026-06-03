@@ -40,11 +40,16 @@ export const sendWelcomeEmail = onDocumentCreated(
 export const sendPasswordResetEmail = onCall(
   {secrets: [RESEND_API_KEY]},
   async (request) => {
+    console.log("sendPasswordResetEmail called with:", JSON.stringify(request.data));
     const resend = new Resend(RESEND_API_KEY.value());
     const email = request.data.email as string;
+    console.log("Email received:", email);
     if (!email) throw new HttpsError("invalid-argument", "Email requis");
 
-    const resetLink = await getAuth().generatePasswordResetLink(email);
+    const resetLink = await getAuth().generatePasswordResetLink(email, {
+      url: "https://labelmoto.fr/login",
+    });
+    console.log("Reset link OK:", resetLink.substring(0, 50));
     const html = getPasswordResetEmailTemplate(resetLink);
     await resend.emails.send({
       from: FROM_EMAIL,
@@ -52,6 +57,7 @@ export const sendPasswordResetEmail = onCall(
       subject: "Label Moto - Reinitialisation de ton mot de passe",
       html,
     });
+    console.log("Email sent successfully");
     return {success: true};
   }
 );

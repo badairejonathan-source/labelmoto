@@ -8,7 +8,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  sendEmailVerification,
 } from 'firebase/auth';
 import { callSendPasswordResetEmail } from '@/lib/email-functions';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -80,21 +79,8 @@ function LoginContent() {
         onboardingComplete: false
       });
       
-      // 4. Envoi automatique du mail de validation (Natif Firebase)
-      try {
-        await sendEmailVerification(userCredential.user, {
-          url: 'https://labelmoto.fr/account',
-          handleCodeInApp: false
-        });
-        toast({ title: 'Compte créé !', description: 'Un e-mail de validation vient de vous être envoyé.' });
-      } catch (verifyError: any) {
-        console.error("[REGISTER] Auto-verify email failed:", verifyError);
-        toast({ 
-          variant: 'default', 
-          title: 'Compte créé', 
-          description: "L'e-mail de validation n'a pas pu être envoyé automatiquement. Utilisez le bouton de renvoi." 
-        });
-      }
+      // 4. Email de validation envoyé automatiquement par Cloud Function sendWelcomeEmail
+      toast({ title: 'Compte créé !', description: 'Un e-mail de validation vient de vous être envoyé.' });
 
       // 5. Redirection vers la page de vérification
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}&new=1`);
