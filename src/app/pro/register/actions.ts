@@ -126,7 +126,7 @@ export async function submitProAction(formData: FormData) {
 
     return { success: true, submissionId: docRef.id };
   } catch (e: any) {
-    console.error("[SUBMIT-PRO] ❌ Erreur Firestore Admin:", e.message);
-    return { error: "Une erreur technique est survenue lors de l'enregistrement." };
+    console.error("[SUBMIT-PRO] ❌ ERREUR COMPLETE:", e.message, e.code, e.stack);
+    return { error: e.message || "Une erreur technique est survenue lors de l'enregistrement." };
   }
 }
