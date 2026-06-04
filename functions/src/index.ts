@@ -64,9 +64,9 @@ export const sendPasswordResetEmail = onCall(
 );
 
 const COLLECTION_URL_MAP: Record<string, string> = {
-  associations: "associations",
+  associations: "concessions",
   concessions: "concessions",
-  relais: "relais",
+  relais: "concessions",
 };
 
 export const sendFicheValideeEmail = onDocumentUpdated(
