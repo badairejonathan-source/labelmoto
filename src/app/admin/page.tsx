@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/client';
+import { updateDoc } from 'firebase/firestore';
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -249,7 +250,7 @@ export default function AdminPage() {
       
       await setDocumentNonBlocking(doc(firestore, targetCol, targetDocId), publicData, { merge: true });
       
-      await updateDocumentNonBlocking(doc(firestore, 'listing_submissions', data.id), { 
+      await updateDoc(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
         publishedAt: new Date(),
         publishedCollection: targetCol,
