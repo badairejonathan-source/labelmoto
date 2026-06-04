@@ -38,9 +38,12 @@ export async function submitProAction(formData: FormData) {
     hp_field: formData.get('hp_field'),
   };
 
+  console.log('[SUBMIT-PRO] rawData reçu:', JSON.stringify(rawData));
+  console.log('[SUBMIT-PRO] rawData reçu:', JSON.stringify(rawData));
   const validated = submissionSchema.safeParse(rawData);
 
   if (!validated.success) {
+    console.log('[SUBMIT-PRO] ❌ Zod errors:', JSON.stringify(validated.error.errors));
     return { error: validated.error.errors[0].message };
   }
 

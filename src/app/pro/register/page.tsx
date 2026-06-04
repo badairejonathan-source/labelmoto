@@ -26,7 +26,12 @@ function RegisterProContent() {
     setIsPending(true);
     
     const formData = new FormData(e.currentTarget);
-    if (user?.email) { formData.set('email', user.email); }
+    if (!user?.email) {
+      toast({ title: "Erreur", description: "Vous devez être connecté pour soumettre une fiche.", variant: "destructive" });
+      setIsPending(false);
+      return;
+    }
+    formData.set('email', user.email);
     const result = await submitProAction(formData);
 
     if (result?.error) {

@@ -67,3 +67,18 @@ export const getPasswordResetEmailTemplate = (link: string) => layout(`
   <p style="font-size: 13px; color: #EF4444;"><strong>Sécurité :</strong> Si vous n'avez pas fait cette demande, quelqu'un a peut-être saisi votre adresse e-mail par erreur. Votre compte reste protégé tant que vous ne cliquez pas sur ce lien.</p>
   <span class="secondary-link">Lien alternatif : ${link}</span>
 `);
+
+export const getFicheValideeEmailTemplate = (businessName: string, ficheUrl: string) => layout(`
+  <h1>Ta fiche est en ligne !</h1>
+  <p>Bonjour,</p>
+  <p>Bonne nouvelle ! La fiche de <strong>${businessName}</strong> vient d'être validée et publiée sur <strong>Label Moto</strong>.</p>
+  <p>Elle est désormais visible par toute la communauté motarde. Clique ci-dessous pour la consulter :</p>
+  <div class="button-container">
+    <a href="${ficheUrl}" class="button">Voir ma fiche</a>
+  </div>
+  <div style="background:#FFF7ED;border:1px solid #FDBA74;border-radius:12px;padding:16px 20px;margin:24px 0;">
+    <p style="margin:0;color:#9A3412;font-size:14px;">💡 <strong>Astuce :</strong> Partage le lien de ta fiche sur tes réseaux pour maximiser ta visibilité auprès des motards !</p>
+  </div>
+  <p style="font-size:13px;color:#94A3B8;">Une erreur sur ta fiche ? Écris-nous à <a href="mailto:contact@labelmoto.fr" style="color:${BRAND_COLOR}">contact@labelmoto.fr</a></p>
+  <span class="secondary-link">Lien direct : ${ficheUrl}</span>
+`);

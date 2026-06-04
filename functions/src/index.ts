@@ -1,6 +1,6 @@
 
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {onDocumentCreated} from "firebase-functions/v2/firestore";
+import {onDocumentCreated, onDocumentUpdated} from "firebase-functions/v2/firestore";
 import {setGlobalOptions} from "firebase-functions";
 import {defineSecret} from "firebase-functions/params";
 import {getAuth} from "firebase-admin/auth";
@@ -9,6 +9,7 @@ import {Resend} from "resend";
 import {
   getVerificationEmailTemplate,
   getPasswordResetEmailTemplate,
+  getFicheValideeEmailTemplate,
 } from "./emails/templates";
 
 initializeApp();
@@ -59,6 +60,47 @@ export const sendPasswordResetEmail = onCall(
     });
     console.log("Email sent successfully");
     return {success: true};
+  }
+);
+
+const COLLECTION_URL_MAP: Record<string, string> = {
+  associations: "associations",
+  concessions: "concessions",
+  relais: "relais",
+};
+
+export const sendFicheValideeEmail = onDocumentUpdated(
+  {document: "listing_submissions/{submissionId}", secrets: [RESEND_API_KEY]},
+  async (event) => {
+    const before = event.data?.before.data();
+    const after = event.data?.after.data();
+    if (!before || !after) return;
+    if (before.status === "published") return;
+    if (after.status !== "published") return;
+
+    const email = after.email;
+    if (!email) {
+      console.warn("sendFicheValideeEmail: pas d'email dans la submission");
+      return;
+    }
+
+    const publishedCollection = after.publishedCollection;
+    const publishedDocId = after.publishedDocId;
+    const businessName = after.businessName || after.slugCandidate || "votre établissement";
+    const urlSegment = COLLECTION_URL_MAP[publishedCollection as string];
+    const ficheUrl = urlSegment && publishedDocId
+      ? `https://labelmoto.fr/pro/${urlSegment}/${publishedDocId}`
+      : "https://labelmoto.fr";
+
+    const resend = new Resend(RESEND_API_KEY.value());
+    const html = getFicheValideeEmailTemplate(businessName, ficheUrl);
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: "Label Moto - Ta fiche est en ligne ! 🏍️",
+      html,
+    });
+    console.log(`Email envoyé à ${email} pour ${ficheUrl}`);
   }
 );
 
