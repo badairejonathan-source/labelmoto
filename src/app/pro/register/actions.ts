@@ -5,7 +5,7 @@ import { getAdminFirestore } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { slugify } from '@/lib/utils';
 import { extractValidCoordinates } from '@/lib/geohash';
-import { Resend } from 'resend';
+// import { Resend } from 'resend';
 
 const submissionSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est trop court"),
