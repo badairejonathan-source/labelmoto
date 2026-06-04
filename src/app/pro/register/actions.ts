@@ -5,6 +5,7 @@ import { getAdminFirestore } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { slugify } from '@/lib/utils';
 import { extractValidCoordinates } from '@/lib/geohash';
+import { Resend } from 'resend';
 
 const submissionSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est trop court"),
@@ -76,6 +77,44 @@ export async function submitProAction(formData: FormData) {
     });
 
     console.log(`[SUBMIT-PRO] ✅ Soumission enregistrée avec l'ID: ${docRef.id}`);
+
+    // Envoi email de confirmation via Resend
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: 'Label Moto <noreply@labelmoto.fr>',
+        to: validated.data.email,
+        subject: 'Label Moto - Demande de référencement reçue',
+        html: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"/></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f4f5;margin:0;padding:0;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <div style="background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);padding:32px 40px;text-align:center;">
+      <img src="https://labelmoto.fr/images/logo-moto.webp" alt="Label Moto" width="200" height="53" style="width:200px;height:53px;"/>
+    </div>
+    <div style="padding:40px;">
+      <h1 style="font-size:22px;font-weight:800;color:#18181b;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.03em;">Demande reçue !</h1>
+      <div style="width:40px;height:3px;background:#f97316;margin:0 0 20px;border-radius:2px;"></div>
+      <p style="color:#52525b;font-size:15px;line-height:1.7;margin:0 0 16px;">Bonjour,</p>
+      <p style="color:#52525b;font-size:15px;line-height:1.7;margin:0 0 24px;">Nous avons bien reçu votre demande de référencement pour <strong>${validated.data.businessName}</strong>. Notre équipe va examiner votre dossier sous <strong>48h</strong>.</p>
+      <div style="background:#fff7ed;border-left:3px solid #f97316;padding:16px 20px;border-radius:0 8px 8px 0;margin:0 0 28px;">
+        <p style="color:#18181b;font-size:14px;font-weight:700;margin:0 0 4px;">Récapitulatif de votre demande</p>
+        <p style="color:#71717a;font-size:13px;margin:0;">Établissement : ${validated.data.businessName}</p>
+        <p style="color:#71717a;font-size:13px;margin:4px 0 0;">Adresse : ${validated.data.addressRaw}</p>
+      </div>
+      <p style="color:#a1a1aa;font-size:13px;margin:0;text-align:center;">Vous serez contacté à cette adresse email une fois votre fiche validée.</p>
+    </div>
+    <div style="padding:20px 40px;background:#f9f9fb;border-top:2px solid #f97316;">
+      <p style="color:#71717a;font-size:12px;margin:0;">Label Moto - La référence pour la communauté moto</p>
+    </div>
+  </div>
+</body></html>`
+      });
+      console.log('[SUBMIT-PRO] ✅ Email de confirmation envoyé');
+    } catch (emailErr: any) {
+      console.error('[SUBMIT-PRO] ⚠️ Email non envoyé:', emailErr.message);
+    }
+
     return { success: true, submissionId: docRef.id };
   } catch (e: any) {
     console.error("[SUBMIT-PRO] ❌ Erreur Firestore Admin:", e.message);

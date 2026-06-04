@@ -29,4 +29,7 @@ env:
     availability: ["BUILD", "RUNTIME"]
   - variable: CRON_SECRET
     value: "labelmoto-secret-2024-xK9mP2qR"
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+    availability: ["RUNTIME"]
     availability: ["RUNTIME"]

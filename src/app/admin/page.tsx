@@ -213,7 +213,8 @@ export default function AdminPage() {
       const data = editDraft;
       const coords = extractValidCoordinates(data);
       
-      const targetDocId = data.publishTargetId || data.id;
+      const generatedSlug = generateDealershipSlug({ title: data.businessName, address: data.addressRaw });
+      const targetDocId = data.publishTargetId || generatedSlug;
       const isUpdate = !!data.publishTargetId;
 
       const publicData: any = {
@@ -230,7 +231,7 @@ export default function AdminPage() {
         latitude: coords?.lat || null,
         longitude: coords?.lng || null,
         geohash: coords ? encodeGeohash(coords.lat, coords.lng, 9) : null,
-        slug: generateDealershipSlug({ title: data.businessName, address: data.addressRaw }),
+        slug: generatedSlug,
         isClaimed: true,
         publishedAt: new Date(),
         submissionId: data.id 
