@@ -12,18 +12,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, Send, Info } from 'lucide-react';
 import LabelMotoLogo from '@/components/app/logo';
+import { useUser } from '@/firebase/client';
 import { submitProAction } from './actions';
 
 function RegisterProContent() {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
+  const { user } = useUser();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsPending(true);
     
     const formData = new FormData(e.currentTarget);
+    if (user?.email) { formData.set('email', user.email); }
     const result = await submitProAction(formData);
 
     if (result?.error) {
@@ -100,8 +103,11 @@ function RegisterProContent() {
                     <Input name="phone" type="tel" required placeholder="01 23 45 67 89" className="font-bold h-12 rounded-xl" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">E-mail de contact (privé)</label>
-                    <Input name="email" type="email" required placeholder="contact@etablissement.fr" className="font-bold h-12 rounded-xl" />
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">E-mail de contact</label>
+                    <div className="flex items-center h-12 px-4 rounded-xl border border-input bg-muted/50">
+                      <span className="font-bold text-sm text-muted-foreground">{user?.email}</span>
+                      <span className="text-[10px] text-brand font-black uppercase ml-auto">Compte Label Moto</span>
+                    </div>
                   </div>
                 </div>
 
