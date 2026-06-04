@@ -5,7 +5,7 @@ import { getAdminFirestore } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { slugify } from '@/lib/utils';
 import { extractValidCoordinates } from '@/lib/geohash';
-import { Resend } from 'resend';
+// Email via fetch natif - pas de package resend
 
 const submissionSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est trop court"),
@@ -80,11 +80,16 @@ export async function submitProAction(formData: FormData) {
 
     // Envoi email de confirmation via Resend
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: 'Label Moto <noreply@labelmoto.fr>',
-        to: validated.data.email,
-        subject: 'Label Moto - Demande de référencement reçue',
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'Label Moto <noreply@labelmoto.fr>',
+          to: [validated.data.email],
+          subject: 'Label Moto - Demande de referencement recue',
         html: `<!DOCTYPE html>
 <html><head><meta charset="utf-8"/></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f4f5;margin:0;padding:0;">
@@ -109,6 +114,7 @@ export async function submitProAction(formData: FormData) {
     </div>
   </div>
 </body></html>`
+        }),
       });
       console.log('[SUBMIT-PRO] ✅ Email de confirmation envoyé');
     } catch (emailErr: any) {
