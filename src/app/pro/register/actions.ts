@@ -58,8 +58,8 @@ export async function submitProAction(formData: FormData) {
 
     const docRef = await db.collection('listing_submissions').add({
       status: 'pending',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       source: 'public_form',
       businessName: validated.data.businessName,
       categoryRequested: validated.data.categoryRequested,

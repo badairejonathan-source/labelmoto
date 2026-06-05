@@ -89,7 +89,7 @@ export const sendFicheValideeEmail = onDocumentUpdated(
     const businessName = after.businessName || after.slugCandidate || "votre établissement";
     const urlSegment = COLLECTION_URL_MAP[publishedCollection as string];
     const ficheUrl = urlSegment && publishedDocId
-      ? `https://labelmoto.fr/pro/${urlSegment}/${publishedDocId}`
+      ? `https://labelmoto.fr/concessions/${publishedDocId}`
       : "https://labelmoto.fr";
 
     const resend = new Resend(RESEND_API_KEY.value());
