@@ -547,7 +547,7 @@ export default function AdminPage() {
       </main>
 
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden rounded-[2.5rem] p-0 border-none shadow-2xl flex flex-col z-[3000]">
+        <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto rounded-[2.5rem] p-0 border-none shadow-2xl flex flex-col z-[3000]">
           {editDraft && (
             <>
               <DialogHeader className="bg-brand text-white p-8 shrink-0">
