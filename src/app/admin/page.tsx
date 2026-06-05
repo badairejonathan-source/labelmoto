@@ -563,7 +563,7 @@ export default function AdminPage() {
                 </div>
               </DialogHeader>
 
-              <ScrollArea className="flex-grow">
+              <div className="flex-grow">
                 <div className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
                     <div className="lg:col-span-8 space-y-10">
                         <section className="space-y-6">
@@ -736,7 +736,7 @@ export default function AdminPage() {
                         </div>
                     </div>
                 </div>
-              </ScrollArea>
+              </div>
             </>
           )}
         </DialogContent>
