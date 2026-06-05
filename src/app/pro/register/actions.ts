@@ -20,6 +20,8 @@ const submissionSchema = z.object({
   instagram: z.string().url().optional().or(z.literal('')),
   hp_field: z.string().max(0, "Spam détecté").optional(),
   horaires: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal('')),
+  googleMapsUrl: z.string().url().optional().or(z.literal('')),
 });
 
 export async function submitProAction(formData: FormData) {
@@ -38,6 +40,8 @@ export async function submitProAction(formData: FormData) {
     instagram: formData.get('instagram'),
     hp_field: formData.get('hp_field'),
     horaires: formData.get('horaires'),
+    imageUrl: formData.get('imageUrl'),
+    googleMapsUrl: formData.get('googleMapsUrl'),
   };
 
   console.log('[SUBMIT-PRO] rawData reçu:', JSON.stringify(rawData));
@@ -79,6 +83,8 @@ export async function submitProAction(formData: FormData) {
       longitude: coords?.lng || null,
       notesAdmin: '',
       horaires: validated.data.horaires ? JSON.parse(validated.data.horaires) : {},
+      imageUrl: validated.data.imageUrl || '',
+      googleMapsUrl: validated.data.googleMapsUrl || '',
       isClaimedRequested: true
     });
 

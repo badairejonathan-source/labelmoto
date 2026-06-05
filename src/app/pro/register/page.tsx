@@ -125,6 +125,18 @@ function RegisterProContent() {
                   <Input name="website" type="url" placeholder="https://www.votre-site.fr" className="font-bold h-12 rounded-xl" />
                 </div>
 
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Photo de l'établissement (optionnel)</label>
+                  <Input name="imageUrl" type="url" placeholder="https://exemple.com/photo.jpg" className="font-bold h-12 rounded-xl" />
+                  <p className="text-[10px] text-muted-foreground px-1">Lien direct vers une photo de votre établissement (façade, devanture...)</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Lien Google Maps (optionnel)</label>
+                  <Input name="googleMapsUrl" type="url" placeholder="https://maps.google.com/..." className="font-bold h-12 rounded-xl" />
+                  <p className="text-[10px] text-muted-foreground px-1">Collez le lien de votre fiche Google Maps si vous en avez une — cela accélère la validation.</p>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-6">
                    <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Facebook</label>
