@@ -183,7 +183,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                 {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
                   <div key={day} className="flex justify-between items-center text-xs font-bold border-b border-dashed border-muted last:border-0 pb-1.5 pt-1.5">
                     <span className="capitalize text-muted-foreground">{day}</span>
-                    <span className="text-foreground font-black">{pro[day] || 'Fermé'}</span>
+                    <span className="text-foreground font-black">{(pro.horaires && pro.horaires[day]) || pro[day] || 'Fermé'}</span>
                   </div>
                 ))}
               </CardContent>
