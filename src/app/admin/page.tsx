@@ -47,6 +47,9 @@ interface Submission {
   description?: string;
   facebook?: string;
   instagram?: string;
+  imageUrl?: string;
+  googleMapsUrl?: string;
+  horaires?: Record<string, string>;
   status: 'pending' | 'in_review' | 'approved' | 'rejected' | 'published';
   createdAt?: any;
   slugCandidate?: string;
@@ -228,6 +231,9 @@ export default function AdminPage() {
         website: data.website || '',
         facebookUrl: data.facebook || '',
         instagramUrl: data.instagram || '',
+        imgUrl: data.imageUrl || '',
+        googleMapsUrl: data.googleMapsUrl || '',
+        horaires: data.horaires || {},
         info: data.description || '',
         latitude: coords?.lat || null,
         longitude: coords?.lng || null,
@@ -614,6 +620,37 @@ export default function AdminPage() {
                                     <Input value={editDraft.email} onChange={e => setEditDraft({...editDraft, email: e.target.value})} className="font-bold border-2 rounded-xl" />
                                 </div>
                             </div>
+                        </section>
+
+                        <section className="space-y-6">
+                            <div className="flex items-center gap-3 border-b pb-2">
+                                <Globe className="h-4 w-4 text-brand" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Médias & Liens</h3>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black ml-1">Photo URL</Label>
+                                    <Input value={editDraft.imageUrl || ''} onChange={e => setEditDraft({...editDraft, imageUrl: e.target.value})} placeholder="https://..." className="font-bold border-2 rounded-xl" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black ml-1">Google Maps URL</Label>
+                                    <Input value={editDraft.googleMapsUrl || ''} onChange={e => setEditDraft({...editDraft, googleMapsUrl: e.target.value})} placeholder="https://maps.google.com/..." className="font-bold border-2 rounded-xl" />
+                                    {editDraft.googleMapsUrl && <a href={editDraft.googleMapsUrl} target="_blank" rel="noreferrer" className="text-[9px] text-brand font-black underline ml-1">Ouvrir dans Google Maps →</a>}
+                                </div>
+                            </div>
+                            {editDraft.horaires && Object.keys(editDraft.horaires).length > 0 && (
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black ml-1">Horaires déclarés</Label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {Object.entries(editDraft.horaires).map(([jour, h]) => (
+                                            <div key={jour} className="flex items-center gap-2 bg-muted/30 px-3 py-2 rounded-lg">
+                                                <span className="text-[9px] font-black uppercase w-20 text-muted-foreground capitalize">{jour}</span>
+                                                <span className="text-[10px] font-bold">{h || 'Fermé'}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </section>
 
                         <section className="space-y-6">
