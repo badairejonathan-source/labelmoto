@@ -90,7 +90,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     );
   }
 
-  if (type === 'id' && pro.slug) {
+  if (type === 'id' && pro.slug && pro.slug !== pro.id) {
     redirect(`/concessions/${pro.slug}`);
   }
 
