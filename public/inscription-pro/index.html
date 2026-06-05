@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créez votre fiche pro — Label Moto</title>
+<meta name="description" content="Référencez votre activité moto sur Label Moto. Concession, atelier, garage, association — visible par toute la communauté moto française.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --orange: #E87722; --orange-dark: #C4601A; --dark: #1a1a1a; --bg: #F4F1ED; --text: #1C1A18; --text-muted: #7A7268; --white: #ffffff; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Barlow", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  body::after { content: ""; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: repeating-linear-gradient(-55deg, transparent, transparent 40px, rgba(232,119,34,0.025) 40px, rgba(232,119,34,0.025) 42px); pointer-events: none; z-index: 0; }
+  .wrap { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 0 24px; }
+  .topbar { padding: 28px 0 0; display: flex; align-items: center; justify-content: space-between; }
+  .logo-img { height: 56px; width: auto; display: block; }
+  .topbar-tag { font-family: "Barlow Condensed", sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); border: 1px solid rgba(232,119,34,0.4); padding: 4px 10px; border-radius: 20px; background: rgba(232,119,34,0.06); }
+  .hero { padding: 52px 0 36px; }
+  .hero-kicker { font-family: "Barlow Condensed", sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .hero-kicker::before { content: ""; display: block; width: 24px; height: 2px; background: var(--orange); border-radius: 2px; }
+  .hero-title { font-family: "Barlow Condensed", sans-serif; font-weight: 900; font-size: clamp(48px, 12vw, 72px); line-height: 0.95; text-transform: uppercase; color: var(--dark); margin-bottom: 24px; }
+  .hero-title .accent { color: var(--orange); }
+  .hero-title .line2 { display: block; color: var(--text-muted); font-size: clamp(32px, 8vw, 48px); }
+  .hero-desc { font-size: 16px; line-height: 1.7; color: var(--text-muted); max-width: 420px; margin-bottom: 36px; }
+  .hero-desc strong { color: var(--text); font-weight: 600; }
+  .steps { display: flex; flex-direction: column; margin-bottom: 40px; background: var(--white); border-radius: 14px; border: 0.5px solid rgba(0,0,0,0.08); overflow: hidden; }
+  .step { display: flex; gap: 16px; align-items: flex-start; padding: 18px 20px; border-bottom: 0.5px solid rgba(0,0,0,0.06); }
+  .step:last-child { border-bottom: none; }
+  .step-num { font-family: "Barlow Condensed", sans-serif; font-weight: 900; font-size: 32px; color: var(--orange); line-height: 1; min-width: 36px; flex-shrink: 0; }
+  .step-title { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--dark); margin-bottom: 4px; }
+  .step-desc { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+  .cta-wrap { margin-bottom: 40px; }
+  .cta-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; background: var(--orange); color: #fff; font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; padding: 20px 32px; border-radius: 8px; border: none; cursor: pointer; }
+  .cta-sub { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 12px; }
+  .proofs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 48px; }
+  .proof-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 16px 14px; text-align: center; }
+  .proof-num { font-family: "Barlow Condensed", sans-serif; font-weight: 900; font-size: 24px; color: var(--orange); line-height: 1; margin-bottom: 4px; }
+  .proof-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+  .footer { border-top: 0.5px solid rgba(0,0,0,0.08); padding: 24px 0 32px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .footer-brand { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+  .footer-brand span { color: var(--orange); }
+  .footer-link { font-size: 13px; color: var(--text-muted); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <img src="/images/logo-moto.webp" alt="Label Moto" class="logo-img">
+    <div class="topbar-tag">Annuaire national</div>
+  </div>
+  <div class="hero">
+    <div class="hero-kicker">Professionnels moto</div>
+    <h1 class="hero-title">Votre fiche<br><span class="accent">pro</span><span class="line2">en 3 minutes.</span></h1>
+    <p class="hero-desc">Rejoignez <strong>l'annuaire national des professionnels moto</strong>. Concession, atelier, garage, association, transporteur — soyez visible par toute la communauté moto française.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-num">01</div><div><div class="step-title">Créez votre compte gratuit</div><div class="step-desc">30 secondes, juste un e-mail et un mot de passe. C'est gratuit.</div></div></div>
+    <div class="step"><div class="step-num">02</div><div><div class="step-title">Remplissez votre fiche</div><div class="step-desc">Nom, adresse, spécialités, horaires, photos — tout en un seul endroit.</div></div></div>
+    <div class="step"><div class="step-num">03</div><div><div class="step-title">Publiez et soyez trouvé</div><div class="step-desc">Votre fiche est vérifiée sous 48h puis visible sur la carte nationale.</div></div></div>
+  </div>
+  <div class="cta-wrap">
+    <a href="https://labelmoto.fr/pro/register?utm_source=instagram&utm_medium=dm&utm_campaign=fiche_pro" class="cta-btn">Créer ma fiche professionnelle</a>
+    <div class="cta-sub">Gratuit · Sans engagement · 3 minutes</div>
+  </div>
+  <div class="proofs">
+    <div class="proof-card"><div class="proof-num">5 000+</div><div class="proof-label">Pros référencés</div></div>
+    <div class="proof-card"><div class="proof-num">96</div><div class="proof-label">Départements couverts</div></div>
+    <div class="proof-card"><div class="proof-num">48h</div><div class="proof-label">Validation fiche</div></div>
+  </div>
+  <div class="footer">
+    <div class="footer-brand">Label<span> Moto</span> — L'annuaire des pros</div>
+    <a href="https://labelmoto.fr" class="footer-link">labelmoto.fr →</a>
+  </div>
+</div>
+</body>
+</html>
