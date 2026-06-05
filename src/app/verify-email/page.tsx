@@ -30,10 +30,11 @@ function VerifyEmailContent() {
 
   const effectiveEmail = emailInput || user?.email;
   const isNewAccount = searchParams.get('new') === '1';
+  const callbackUrl = searchParams.get('callbackUrl') || '/account';
 
   useEffect(() => {
     if (user?.emailVerified) {
-      router.push('/account');
+      router.push(callbackUrl);
     }
     if (!emailInput && user?.email) {
       setEmailInput(user.email);
@@ -98,7 +99,7 @@ function VerifyEmailContent() {
         });
         
         toast({ title: "Compte vérifié !", description: "Bienvenue officiellement sur Label Moto." });
-        router.push('/account');
+        router.push(callbackUrl);
       } else {
         toast({ title: "Pas encore vérifié", description: "Veuillez cliquer sur le lien reçu par e-mail puis cliquez ici." });
       }
