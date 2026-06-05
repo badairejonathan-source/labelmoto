@@ -20,9 +20,22 @@ function RegisterProContent() {
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
   const { user } = useUser();
-  const [horaires, setHoraires] = useState<Record<string, string>>({
-    lundi: '', mardi: '', mercredi: '', jeudi: '', vendredi: '', samedi: '', dimanche: ''
+  const [horaires, setHoraires] = useState<Record<string, {om:string,fm:string,oa:string,fa:string,ferme:boolean}>>({
+    lundi:    {om:'',fm:'',oa:'',fa:'',ferme:false},
+    mardi:    {om:'',fm:'',oa:'',fa:'',ferme:false},
+    mercredi: {om:'',fm:'',oa:'',fa:'',ferme:false},
+    jeudi:    {om:'',fm:'',oa:'',fa:'',ferme:false},
+    vendredi: {om:'',fm:'',oa:'',fa:'',ferme:false},
+    samedi:   {om:'',fm:'',oa:'',fa:'',ferme:false},
+    dimanche: {om:'',fm:'',oa:'',fa:'',ferme:true},
   });
+  const heures = ['','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00'];
+  const formatHoraire = (h: {om:string,fm:string,oa:string,fa:string,ferme:boolean}) => {
+    if (h.ferme) return 'Fermé';
+    const matin = h.om && h.fm ? h.om+'-'+h.fm : '';
+    const aprem = h.oa && h.fa ? h.oa+'-'+h.fa : '';
+    return [matin, aprem].filter(Boolean).join(', ');
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,7 +48,9 @@ function RegisterProContent() {
       return;
     }
     formData.set('email', user.email);
-    formData.set('horaires', JSON.stringify(horaires));
+    const horairesFinal: Record<string,string> = {};
+    Object.entries(horaires).forEach(([j,h]) => { horairesFinal[j] = formatHoraire(h); });
+    formData.set('horaires', JSON.stringify(horairesFinal));
     const result = await submitProAction(formData);
 
     if (result?.error) {
@@ -150,20 +165,40 @@ function RegisterProContent() {
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Horaires d'ouverture</label>
-                  <div className="grid gap-2">
-                    {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(jour => (
-                      <div key={jour} className="grid grid-cols-3 items-center gap-3">
-                        <span className="text-xs font-black uppercase tracking-widest text-muted-foreground capitalize">{jour}</span>
-                        <Input
-                          placeholder="09:00-12:30"
-                          value={horaires[jour]}
-                          onChange={e => setHoraires(h => ({ ...h, [jour]: e.target.value }))}
-                          className="font-bold h-10 rounded-xl text-sm col-span-2"
-                        />
+                  <div className="grid gap-3">
+                    {(Object.keys(horaires) as Array<keyof typeof horaires>).map(jour => (
+                      <div key={jour} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-black uppercase tracking-widest text-muted-foreground capitalize">{jour}</span>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked={horaires[jour].ferme} onChange={e => setHoraires(h => ({...h, [jour]: {...h[jour], ferme: e.target.checked}}))} className="rounded" />
+                            <span className="text-[10px] font-black uppercase text-muted-foreground">Fermé</span>
+                          </label>
+                        </div>
+                        {!horaires[jour].ferme && (
+                          <div className="grid grid-cols-4 gap-2">
+                            <select value={horaires[jour].om} onChange={e => setHoraires(h => ({...h, [jour]: {...h[jour], om: e.target.value}}))} className="h-10 rounded-xl border border-input bg-background px-2 text-sm font-bold">
+                              <option value="">Ouv.</option>
+                              {heures.filter(Boolean).map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                            <select value={horaires[jour].fm} onChange={e => setHoraires(h => ({...h, [jour]: {...h[jour], fm: e.target.value}}))} className="h-10 rounded-xl border border-input bg-background px-2 text-sm font-bold">
+                              <option value="">Ferm.</option>
+                              {heures.filter(Boolean).map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                            <select value={horaires[jour].oa} onChange={e => setHoraires(h => ({...h, [jour]: {...h[jour], oa: e.target.value}}))} className="h-10 rounded-xl border border-input bg-background px-2 text-sm font-bold">
+                              <option value="">Ouv.</option>
+                              {heures.filter(Boolean).map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                            <select value={horaires[jour].fa} onChange={e => setHoraires(h => ({...h, [jour]: {...h[jour], fa: e.target.value}}))} className="h-10 rounded-xl border border-input bg-background px-2 text-sm font-bold">
+                              <option value="">Ferm.</option>
+                              {heures.filter(Boolean).map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
-                  <p className="text-[10px] text-muted-foreground px-1">Format : 09:00-12:30, 14:00-19:00 — laisser vide si fermé</p>
+                  <p className="text-[10px] text-muted-foreground px-1">Matin : ouverture → fermeture &nbsp;|&nbsp; Après-midi : ouverture → fermeture</p>
                 </div>
 
                 <div className="space-y-2">
