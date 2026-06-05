@@ -41,6 +41,7 @@ function LoginContent() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       if (!userCredential.user.emailVerified) {
+        localStorage.setItem("postAuthRedirect", callbackUrl);
         router.push(`/verify-email?email=${encodeURIComponent(values.email)}&callbackUrl=${encodeURIComponent(callbackUrl)}`);
       } else {
         toast({ title: 'Bon retour parmi nous !' });
@@ -83,7 +84,8 @@ function LoginContent() {
       toast({ title: 'Compte créé !', description: 'Un e-mail de validation vient de vous être envoyé.' });
 
       // 5. Redirection vers la page de vérification
-      router.push(`/verify-email?email=${encodeURIComponent(values.email)}&new=1&callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      localStorage.setItem("postAuthRedirect", callbackUrl);
+        router.push(`/verify-email?email=${encodeURIComponent(values.email)}&new=1&callbackUrl=${encodeURIComponent(callbackUrl)}`);
       
     } catch (error: any) {
       console.error("[REGISTER] Error:", error);

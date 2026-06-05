@@ -30,10 +30,11 @@ function VerifyEmailContent() {
 
   const effectiveEmail = emailInput || user?.email;
   const isNewAccount = searchParams.get('new') === '1';
-  const callbackUrl = searchParams.get('callbackUrl') || '/account';
+  const callbackUrl = searchParams.get('callbackUrl') || (typeof window !== 'undefined' ? localStorage.getItem('postAuthRedirect') : null) || '/account';
 
   useEffect(() => {
     if (user?.emailVerified) {
+      localStorage.removeItem('postAuthRedirect');
       router.push(callbackUrl);
     }
     if (!emailInput && user?.email) {
@@ -99,7 +100,8 @@ function VerifyEmailContent() {
         });
         
         toast({ title: "Compte vérifié !", description: "Bienvenue officiellement sur Label Moto." });
-        router.push(callbackUrl);
+        localStorage.removeItem('postAuthRedirect');
+      router.push(callbackUrl);
       } else {
         toast({ title: "Pas encore vérifié", description: "Veuillez cliquer sur le lien reçu par e-mail puis cliquez ici." });
       }
