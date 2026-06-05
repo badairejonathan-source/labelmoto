@@ -20,6 +20,9 @@ function RegisterProContent() {
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
   const { user } = useUser();
+  const [horaires, setHoraires] = useState<Record<string, string>>({
+    lundi: '', mardi: '', mercredi: '', jeudi: '', vendredi: '', samedi: '', dimanche: ''
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,6 +35,7 @@ function RegisterProContent() {
       return;
     }
     formData.set('email', user.email);
+    formData.set('horaires', JSON.stringify(horaires));
     const result = await submitProAction(formData);
 
     if (result?.error) {
@@ -130,6 +134,24 @@ function RegisterProContent() {
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Instagram</label>
                     <Input name="instagram" type="url" placeholder="Lien profil Insta" className="font-bold h-12 rounded-xl" />
                   </div>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Horaires d'ouverture</label>
+                  <div className="grid gap-2">
+                    {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(jour => (
+                      <div key={jour} className="grid grid-cols-3 items-center gap-3">
+                        <span className="text-xs font-black uppercase tracking-widest text-muted-foreground capitalize">{jour}</span>
+                        <Input
+                          placeholder="09:00-12:30"
+                          value={horaires[jour]}
+                          onChange={e => setHoraires(h => ({ ...h, [jour]: e.target.value }))}
+                          className="font-bold h-10 rounded-xl text-sm col-span-2"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground px-1">Format : 09:00-12:30, 14:00-19:00 — laisser vide si fermé</p>
                 </div>
 
                 <div className="space-y-2">

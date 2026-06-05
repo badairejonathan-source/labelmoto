@@ -1,6 +1,7 @@
 
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {onDocumentCreated, onDocumentUpdated} from "firebase-functions/v2/firestore";
+import {getFirestore} from "firebase-admin/firestore";
 import {setGlobalOptions} from "firebase-functions";
 import {defineSecret} from "firebase-functions/params";
 import {getAuth} from "firebase-admin/auth";
@@ -88,9 +89,17 @@ export const sendFicheValideeEmail = onDocumentUpdated(
     const publishedDocId = after.publishedDocId;
     const businessName = after.businessName || after.slugCandidate || "votre établissement";
     const urlSegment = COLLECTION_URL_MAP[publishedCollection as string];
-    const ficheUrl = urlSegment && publishedDocId
-      ? `https://labelmoto.fr/concessions/${publishedDocId}`
-      : "https://labelmoto.fr";
+    let ficheUrl = "https://labelmoto.fr";
+    if (urlSegment && publishedDocId) {
+      try {
+        const db = getFirestore();
+        const docSnap = await db.collection(publishedCollection).doc(publishedDocId).get();
+        const slug = docSnap.exists ? (docSnap.data()?.slug || publishedDocId) : publishedDocId;
+        ficheUrl = `https://labelmoto.fr/concessions/${slug}`;
+      } catch(e) {
+        ficheUrl = `https://labelmoto.fr/concessions/${publishedDocId}`;
+      }
+    }
 
     const resend = new Resend(RESEND_API_KEY.value());
     const html = getFicheValideeEmailTemplate(businessName, ficheUrl);

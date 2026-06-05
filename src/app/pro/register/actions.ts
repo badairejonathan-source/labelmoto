@@ -19,6 +19,7 @@ const submissionSchema = z.object({
   facebook: z.string().url().optional().or(z.literal('')),
   instagram: z.string().url().optional().or(z.literal('')),
   hp_field: z.string().max(0, "Spam détecté").optional(),
+  horaires: z.string().optional(),
 });
 
 export async function submitProAction(formData: FormData) {
@@ -36,6 +37,7 @@ export async function submitProAction(formData: FormData) {
     facebook: formData.get('facebook'),
     instagram: formData.get('instagram'),
     hp_field: formData.get('hp_field'),
+    horaires: formData.get('horaires'),
   };
 
   console.log('[SUBMIT-PRO] rawData reçu:', JSON.stringify(rawData));
@@ -76,6 +78,7 @@ export async function submitProAction(formData: FormData) {
       latitude: coords?.lat || null,
       longitude: coords?.lng || null,
       notesAdmin: '',
+      horaires: validated.data.horaires ? JSON.parse(validated.data.horaires) : {},
       isClaimedRequested: true
     });
 
