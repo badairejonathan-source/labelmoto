@@ -446,7 +446,12 @@ function MapPageComponent() {
 
   const handleMarkerClick = useCallback((id: string) => {
     const p = points.find(x => x.id === id);
-    if (p) { setMapCenter([p.latitude, p.longitude]); setSelectionSource('marker'); }
+    if (p) {
+      setMapCenter([p.latitude, p.longitude]);
+      setSelectionSource('marker');
+      // Forcer zoom minimum pour sortir du choropleth
+      setMapZoom(prev => Math.max(prev, 12));
+    }
     setSelectedId(id);
     if (isMobile) setDrawerHeight('half');
   }, [points, isMobile]);
