@@ -198,7 +198,8 @@ const MapComponent = ({
           paddingBottomRight: [20, 200],
           animate: true,
           duration: 0.8,
-          maxZoom: 10,
+          minZoom: 9,
+          maxZoom: 11,
         });
       } else {
         map.fitBounds(bounds, {
@@ -206,6 +207,7 @@ const MapComponent = ({
           paddingBottomRight: [60, 40],
           animate: true,
           duration: 0.8,
+          minZoom: 9,
         });
       }
       map.once("zoomend", () => {
