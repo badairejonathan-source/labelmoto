@@ -86,6 +86,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
               className="object-cover transition-transform group-hover:scale-105 duration-700" 
               onError={() => setImgError(true)} 
               referrerPolicy="no-referrer"
+              unoptimized
               sizes="(max-width: 768px) 120px, 180px"
             />
           ) : (
