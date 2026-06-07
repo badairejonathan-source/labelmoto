@@ -350,7 +350,8 @@ function MapPageComponent() {
   }, [searchTerm]);
 
   useEffect(() => {
-    if (!searchIntent || selectionSource !== 'external') return;
+    if (!searchIntent) return; // Ne rien faire si recherche vide
+    if (selectionSource !== 'external') return;
 
     if (searchIntent.dept && !searchIntent.postalCode) {
       const rawDept = searchIntent.dept.toUpperCase();
