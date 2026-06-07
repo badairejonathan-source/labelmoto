@@ -79,20 +79,19 @@ export function getGeohashCells(south: number, west: number, north: number, east
 export function extractValidCoordinates(data: any): { lat: number; lng: number } | null {
   if (!data) return null;
 
-  let lat: number | null = null;
-  let lng: number | null = null;
-
-  // Recherche multi-champs exhaustive pour capturer toutes les variantes possibles (historiques ou mal mappées)
-  const rawLat = 
+  // 1. Recherche multi-champs exhaustive
+  let rawLat: any = 
     data.latitude ?? 
     data.lat ?? 
     data.lat_deg ??
     data.location?.lat ?? 
     data.location?.latitude ??
     data.pos?.lat ?? 
-    data.position?.[0];
+    data.coords?.latitude ??
+    data.coordinates?.latitude ??
+    (Array.isArray(data.position) ? data.position[0] : null);
 
-  const rawLng = 
+  let rawLng: any = 
     data.longitude ?? 
     data.lng ?? 
     data.lon ??
@@ -101,20 +100,29 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
     data.location?.lng ?? 
     data.location?.longitude ??
     data.pos?.lng ?? 
-    data.position?.[1];
+    data.coords?.longitude ??
+    data.coordinates?.longitude ??
+    (Array.isArray(data.position) ? data.position[1] : null);
 
-  if (rawLat !== undefined && rawLat !== null && rawLat !== "") {
-    lat = typeof rawLat === 'number' ? rawLat : parseFloat(String(rawLat).replace(',', '.'));
-  }
-  if (rawLng !== undefined && rawLng !== null && rawLng !== "") {
-    lng = typeof rawLng === 'number' ? rawLng : parseFloat(String(rawLng).replace(',', '.'));
-  }
+  // 2. Fonction de parsing robuste (gère les virgules et espaces)
+  const parse = (v: any): number => {
+    if (v === undefined || v === null || v === "") return NaN;
+    if (typeof v === 'number') return v;
+    if (typeof v === 'string') {
+        return parseFloat(v.replace(',', '.').replace(/\s/g, ''));
+    }
+    return NaN;
+  };
 
-  if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
-    // Vérification des bornes géographiques valides
+  const lat = parse(rawLat);
+  const lng = parse(rawLng);
+
+  // 3. Validation géographique stricte
+  if (!isNaN(lat) && !isNaN(lng)) {
+    // On exclut (0,0) qui est souvent une valeur par défaut erronée
+    if (lat === 0 && lng === 0) return null;
+    
     if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      // On accepte désormais les points très proches de 0,0 sauf s'ils sont strictement (0,0)
-      if (lat === 0 && lng === 0) return null;
       return { lat, lng };
     }
   }

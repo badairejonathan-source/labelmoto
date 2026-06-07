@@ -30,19 +30,20 @@ const MOTORCYCLE_BRANDS = [
 // IndexedDB Cache — stocke les fiches sur l'appareil utilisateur
 // ============================================================
 const IDB_NAME = 'LabelMotoDB';
-const IDB_VERSION = 3;
+const IDB_VERSION = 4; // BUMP VERSION FOR FRESH SYNC
 const IDB_STORE = 'points';
 const IDB_KEY = 'all_points';
-const CACHE_TTL = 60 * 60 * 1000; // 1 heure // 30 minutes
+const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
 async function openIDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(IDB_NAME, IDB_VERSION);
     req.onupgradeneeded = (e) => {
       const db = (e.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(IDB_STORE)) {
-        db.createObjectStore(IDB_STORE);
+      if (db.objectStoreNames.contains(IDB_STORE)) {
+        db.deleteObjectStore(IDB_STORE);
       }
+      db.createObjectStore(IDB_STORE);
     };
     req.onsuccess = (e) => resolve((e.target as IDBOpenDBRequest).result);
     req.onerror = (e) => reject((e.target as IDBOpenDBRequest).error);
@@ -60,10 +61,8 @@ async function getCachedPoints(): Promise<MapPoint[] | null> {
       req.onsuccess = (e) => {
         const result = (e.target as IDBRequest).result;
         if (result && result.timestamp && Date.now() - result.timestamp < CACHE_TTL) {
-          console.log(`✅ Cache IndexedDB valide — ${result.points.length} fiches chargées en local`);
           resolve(result.points);
         } else {
-          if (result) store.delete(IDB_KEY);
           resolve(null);
         }
       };
@@ -78,16 +77,9 @@ async function setCachedPoints(points: MapPoint[]): Promise<void> {
   if (typeof window === 'undefined') return;
   try {
     const db = await openIDB();
-    return new Promise((resolve) => {
-      const tx = db.transaction(IDB_STORE, 'readwrite');
-      const store = tx.objectStore(IDB_STORE);
-      store.put({ points, timestamp: Date.now() }, IDB_KEY);
-      tx.oncomplete = () => {
-        console.log(`✅ ${points.length} fiches mises en cache IndexedDB`);
-        resolve();
-      };
-      tx.onerror = () => resolve();
-    });
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    const store = tx.objectStore(IDB_STORE);
+    store.put({ points, timestamp: Date.now() }, IDB_KEY);
   } catch {
     // Silencieux
   }
@@ -197,7 +189,7 @@ function MapPageComponent() {
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
   const [mapZoom, setMapZoom] = useState(6);
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
-  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>('external');
+  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(searchParams.get('selectedId') ? 'external' : null);
   const [isLocating, setIsLocating] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
@@ -208,26 +200,18 @@ function MapPageComponent() {
   const leftPadding = !isMobile ? 544 : 0;
 
   // ============================================================
-  // Chargement des points avec cache IndexedDB
+  // Chargement et Diagnostic MAP_DEBUG
   // ============================================================
   useEffect(() => {
     const fetchAll = async () => {
       if (!firestore) return;
-
-      // 1. Essayer le cache IndexedDB d'abord
       const cached = await getCachedPoints();
       if (cached && cached.length > 0) {
         setPoints(cached);
         setIsLoadingPoints(false);
-
-        // Revalider silencieusement en arrière-plan après 5s
-        setTimeout(async () => {
-          await fetchFromFirestore(true);
-        }, 5000);
+        setTimeout(() => fetchFromFirestore(true), 5000);
         return;
       }
-
-      // 2. Pas de cache — charger depuis Firestore
       setIsLoadingPoints(true);
       await fetchFromFirestore(false);
     };
@@ -237,23 +221,42 @@ function MapPageComponent() {
       const collections = ['concessions', 'associations', 'relais'];
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
+      
+      let debugCounters = {
+        concessions: 0,
+        associations: 0,
+        relais: 0,
+        invalidCoords: 0,
+        invalidType: 0
+      };
 
       for (let i = 0; i < collections.length; i++) {
         const colName = collections[i];
         try {
-          const snap = await getDocs(query(collection(firestore, colName), limit(10000)));
+          const snap = await getDocs(query(collection(firestore, colName), limit(20000)));
+          if (colName === 'concessions') debugCounters.concessions = snap.size;
+          if (colName === 'associations') debugCounters.associations = snap.size;
+          if (colName === 'relais') debugCounters.relais = snap.size;
+
           snap.docs.forEach(d => {
             if (seenIds.has(d.id)) return;
             const data = d.data();
             const coords = extractValidCoordinates(data);
-            if (!coords) return;
+            
+            if (!coords) {
+              debugCounters.invalidCoords++;
+              return;
+            }
+
+            const appSection = data.appSection || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'shopping'));
+            
             seenIds.add(d.id);
             allPoints.push({
               id: d.id,
               latitude: coords.lat,
               longitude: coords.lng,
-              category: data.category || (i === 1 ? 'association' : (i === 2 ? 'relais' : 'concession')),
-              appSection: data.appSection || (i === 1 ? 'association' : (i === 2 ? 'relais' : 'shopping')),
+              category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
+              appSection: appSection,
               title: data.title || d.id,
               slug: data.slug,
               rating: data.rating,
@@ -263,16 +266,22 @@ function MapPageComponent() {
             } as MapPoint);
           });
         } catch (e) {
-          console.warn(`[MAP] Échec collection ${colName}:`, e);
+          console.warn(`[MAP] Erreur collection ${colName}:`, e);
         }
       }
 
+      // DIAGNOSTIC LOGS
+      console.log(`[MAP_DEBUG_1] Total Concessions: ${debugCounters.concessions}`);
+      console.log(`[MAP_DEBUG_2] Total Associations: ${debugCounters.associations}`);
+      console.log(`[MAP_DEBUG_3] Total Relais: ${debugCounters.relais}`);
+      console.log(`[MAP_DEBUG_4] Rejetés (Coords Invalides): ${debugCounters.invalidCoords}`);
+      console.log(`[MAP_DEBUG_5] Rejetés (Format/Type): ${debugCounters.invalidType}`);
+      console.log(`[MAP_DEBUG_6] Total Markers Finaux: ${allPoints.length}`);
+
       if (allPoints.length > 0) {
         setPoints(allPoints);
-        // Sauvegarder dans IndexedDB en arrière-plan
         setCachedPoints(allPoints);
       }
-
       if (!silent) setIsLoadingPoints(false);
     };
 
@@ -350,7 +359,7 @@ function MapPageComponent() {
   }, [searchTerm]);
 
   useEffect(() => {
-    if (!searchIntent) return; // Ne rien faire si recherche vide
+    if (!searchIntent) return;
     if (selectionSource !== 'external') return;
 
     if (searchIntent.dept && !searchIntent.postalCode) {
@@ -382,6 +391,7 @@ function MapPageComponent() {
       }
       if (dept && pDept !== dept) return false;
 
+      // Uniquement si on a un focus géographique explicite
       if (targetGeo && mapBounds && mapZoom >= 10 && (postalCode || searchIntent.city)) {
         const isInViewport = p.latitude >= mapBounds.getSouth() && p.latitude <= mapBounds.getNorth() &&
                              p.longitude >= mapBounds.getWest() && p.longitude <= mapBounds.getEast();
