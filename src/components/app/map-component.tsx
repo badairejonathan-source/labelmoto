@@ -74,6 +74,7 @@ const MapComponent = ({
   const labelMarkersRef = useRef<L.Marker[]>([]);
   const geojsonDataRef = useRef<any>(null);
   const currentZoomRef = useRef<number>(zoom);
+  const deptFitZoomRef = useRef<number | null>(null);
 
   // Initialisation carte
   useEffect(() => {
@@ -207,6 +208,9 @@ const MapComponent = ({
           duration: 0.8,
         });
       }
+      map.once("zoomend", () => {
+        deptFitZoomRef.current = map.getZoom();
+      });
       setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     };
 
@@ -306,6 +310,9 @@ const MapComponent = ({
 
     const handleZoom = () => {
       const z = map.getZoom();
+      const threshold = deptFitZoomRef.current !== null
+        ? Math.max(ZOOM_THRESHOLD, deptFitZoomRef.current - 2)
+        : ZOOM_THRESHOLD;
       if (z >= ZOOM_THRESHOLD) {
         if (geojsonLayerRef.current) {
           map.removeLayer(geojsonLayerRef.current);
@@ -313,7 +320,8 @@ const MapComponent = ({
         }
         labelMarkersRef.current.forEach(m => map.removeLayer(m));
         labelMarkersRef.current = [];
-      } else {
+      } else if (z < threshold) {
+        deptFitZoomRef.current = null;
         if (!geojsonLayerRef.current) buildChoropleth();
       }
     };
