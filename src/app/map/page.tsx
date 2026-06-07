@@ -33,7 +33,7 @@ const IDB_NAME = 'LabelMotoDB';
 const IDB_VERSION = 1;
 const IDB_STORE = 'points';
 const IDB_KEY = 'all_points';
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+const CACHE_TTL = 60 * 60 * 1000; // 1 heure // 30 minutes
 
 async function openIDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
