@@ -51,7 +51,8 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const categoryLabel = categoryDisplay[point.category] || point.category;
 
   const rawImgUrl = point.imgUrl || fullDetails?.imgUrl || fullDetails?.imageUrl || "";
-  const actualImgUrl = rawImgUrl ? `/api/image-proxy?url=${encodeURIComponent(rawImgUrl)}` : "";
+  const isStreetView = rawImgUrl.includes("streetviewpixels") || rawImgUrl.includes("streetview");
+  const actualImgUrl = rawImgUrl && isStreetView ? `/api/image-proxy?url=${encodeURIComponent(rawImgUrl)}` : "";
   const slugOrId = fullDetails?.slug || point.slug || point.id;
 
   const handleDetailsClick = (e: React.MouseEvent) => {
