@@ -30,7 +30,7 @@ const MOTORCYCLE_BRANDS = [
 // IndexedDB Cache — stocke les fiches sur l'appareil utilisateur
 // ============================================================
 const IDB_NAME = 'LabelMotoDB';
-const IDB_VERSION = 1;
+const IDB_VERSION = 2;
 const IDB_STORE = 'points';
 const IDB_KEY = 'all_points';
 const CACHE_TTL = 60 * 60 * 1000; // 1 heure // 30 minutes
