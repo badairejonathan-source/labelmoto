@@ -457,9 +457,16 @@ function MapPageComponent() {
   }, [points, isMobile]);
 
   const handleSuggestionSelect = (lat, lng, bbox) => {
-    if (bbox) { setBboxToFit(null); setTimeout(() => setBboxToFit(bbox), 10); setDeptToFit(null); }
-    else { setMapCenter([lat, lng]); setMapZoom(13); }
-    setSelectionSource("external");
+    if (bbox) {
+      setBboxToFit(null);
+      setTimeout(() => setBboxToFit(bbox), 10);
+      setDeptToFit(null);
+      setSelectionSource("external");
+    } else {
+      setMapCenter([lat, lng]);
+      setMapZoom(14);
+      setSelectionSource("marker");
+    }
   };
 
   const handleUserInteraction = () => {
