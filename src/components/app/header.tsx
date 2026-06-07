@@ -383,7 +383,12 @@ const Header: React.FC<any> = ({
   }, [searchTerm, generateSuggestions]);
 
   const handleSuggestionClick = (s: Suggestion) => {
-    onSearchTermChange(s.label);
+    const isGeo = s.type === "city" || s.type === "dept" || s.type === "cp" || s.type === "arrondissement";
+    if (isGeo) {
+      onSearchTermChange("");
+    } else {
+      onSearchTermChange(s.label);
+    }
     setShowSuggestions(false);
     setSelectedIndex(-1);
 
