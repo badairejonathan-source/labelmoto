@@ -406,11 +406,7 @@ const Header: React.FC<any> = ({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showSuggestions || suggestions.length === 0) {
-      if (e.key === 'Enter') {
-      if (suggestions.length > 0) { handleSuggestionClick(suggestions[0]); }
-      else { onSearch(); setShowSuggestions(false); }
-      return;
-    }
+      if (e.key === 'Enter') { onSearch(); setShowSuggestions(false); }
       return;
     }
     if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1)); }
