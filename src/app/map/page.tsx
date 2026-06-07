@@ -551,6 +551,7 @@ function MapPageComponent() {
             searchTerm={searchTerm}
             onSearchTermChange={(val: string) => { setSearchTerm(val); setSelectionSource('external'); }}
             onSearch={() => setSelectionSource('external')}
+            onSuggestionSelect={handleSuggestionSelect}
           />
         </div>
       </div>
