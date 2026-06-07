@@ -201,6 +201,7 @@ function MapPageComponent() {
   const [isLocating, setIsLocating] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
+  const [bboxToFit, setBboxToFit] = useState<[number, number, number, number] | null>(null);
 
   const isMobile = width !== undefined && width < 1024;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 600 : (drawerHeight === 'half' ? 300 : 160)) : 0;
@@ -439,6 +440,12 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('half');
   }, [points, isMobile]);
 
+  const handleSuggestionSelect = (lat, lng, bbox) => {
+    if (bbox) { setBboxToFit(null); setTimeout(() => setBboxToFit(bbox), 10); setDeptToFit(null); }
+    else { setMapCenter([lat, lng]); setMapZoom(13); }
+    setSelectionSource("external");
+  };
+
   const handleUserInteraction = () => {
     if (isMobile) setDrawerHeight('collapsed');
   };
@@ -532,6 +539,7 @@ function MapPageComponent() {
           onLocationFound={(c) => { setMapCenter(c); setSelectionSource('external'); }}
           deptCounts={deptCounts}
           deptToFit={deptToFit}
+          bboxToFit={bboxToFit}
           isMobile={isMobile}
         />
       </div>
