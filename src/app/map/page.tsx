@@ -26,6 +26,75 @@ const MOTORCYCLE_BRANDS = [
   "Moto Guzzi", "Royal Enfield", "Indian", "Piaggio", "Vespa", "Can-Am", "CFMoto"
 ];
 
+// ============================================================
+// IndexedDB Cache — stocke les fiches sur l'appareil utilisateur
+// ============================================================
+const IDB_NAME = 'LabelMotoDB';
+const IDB_VERSION = 1;
+const IDB_STORE = 'points';
+const IDB_KEY = 'all_points';
+const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+
+async function openIDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = (e.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE);
+      }
+    };
+    req.onsuccess = (e) => resolve((e.target as IDBOpenDBRequest).result);
+    req.onerror = (e) => reject((e.target as IDBOpenDBRequest).error);
+  });
+}
+
+async function getCachedPoints(): Promise<MapPoint[] | null> {
+  if (typeof window === 'undefined') return null;
+  try {
+    const db = await openIDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(IDB_STORE, 'readonly');
+      const store = tx.objectStore(IDB_STORE);
+      const req = store.get(IDB_KEY);
+      req.onsuccess = (e) => {
+        const result = (e.target as IDBRequest).result;
+        if (result && result.timestamp && Date.now() - result.timestamp < CACHE_TTL) {
+          console.log(`✅ Cache IndexedDB valide — ${result.points.length} fiches chargées en local`);
+          resolve(result.points);
+        } else {
+          if (result) store.delete(IDB_KEY);
+          resolve(null);
+        }
+      };
+      req.onerror = () => resolve(null);
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function setCachedPoints(points: MapPoint[]): Promise<void> {
+  if (typeof window === 'undefined') return;
+  try {
+    const db = await openIDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      const store = tx.objectStore(IDB_STORE);
+      store.put({ points, timestamp: Date.now() }, IDB_KEY);
+      tx.oncomplete = () => {
+        console.log(`✅ ${points.length} fiches mises en cache IndexedDB`);
+        resolve();
+      };
+      tx.onerror = () => resolve();
+    });
+  } catch {
+    // Silencieux
+  }
+}
+
+// ============================================================
+
 const MapComponent = dynamic(
   () => import('@/components/app/map-component').then((mod) => mod.default),
   { ssr: false, loading: () => <div className="w-full h-full flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div> }
@@ -115,11 +184,11 @@ function MapPageComponent() {
   const { width } = useWindowSize();
   const { firestore } = useFirebase();
 
-  // Ref pour le scroll auto de la liste (point 4)
   const listScrollRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const [points, setPoints] = useState<MapPoint[]>([]);
+  const [isLoadingPoints, setIsLoadingPoints] = useState(true);
   const [deptCounts, setDeptCounts] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service', 'association', 'relais']);
@@ -137,28 +206,46 @@ function MapPageComponent() {
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 600 : (drawerHeight === 'half' ? 300 : 160)) : 0;
   const leftPadding = !isMobile ? 544 : 0;
 
-  // Chargement des points
+  // ============================================================
+  // Chargement des points avec cache IndexedDB
+  // ============================================================
   useEffect(() => {
     const fetchAll = async () => {
+      if (!firestore) return;
+
+      // 1. Essayer le cache IndexedDB d'abord
+      const cached = await getCachedPoints();
+      if (cached && cached.length > 0) {
+        setPoints(cached);
+        setIsLoadingPoints(false);
+
+        // Revalider silencieusement en arrière-plan après 5s
+        setTimeout(async () => {
+          await fetchFromFirestore(true);
+        }, 5000);
+        return;
+      }
+
+      // 2. Pas de cache — charger depuis Firestore
+      setIsLoadingPoints(true);
+      await fetchFromFirestore(false);
+    };
+
+    const fetchFromFirestore = async (silent: boolean) => {
       if (!firestore) return;
       const collections = ['concessions', 'associations', 'relais'];
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
-      let totalConcessions = 0, totalAssociations = 0, totalRelais = 0, totalRejectedCoords = 0;
 
       for (let i = 0; i < collections.length; i++) {
         const colName = collections[i];
         try {
           const snap = await getDocs(query(collection(firestore, colName), limit(10000)));
-          if (colName === 'concessions') totalConcessions = snap.size;
-          if (colName === 'associations') totalAssociations = snap.size;
-          if (colName === 'relais') totalRelais = snap.size;
-
           snap.docs.forEach(d => {
             if (seenIds.has(d.id)) return;
             const data = d.data();
             const coords = extractValidCoordinates(data);
-            if (!coords) { totalRejectedCoords++; return; }
+            if (!coords) return;
             seenIds.add(d.id);
             allPoints.push({
               id: d.id,
@@ -175,16 +262,19 @@ function MapPageComponent() {
             } as MapPoint);
           });
         } catch (e) {
-          console.warn(`[MAP] Échec du chargement de la collection ${colName}:`, e);
+          console.warn(`[MAP] Échec collection ${colName}:`, e);
         }
       }
-      console.log(`[MAP_DEBUG_1] Total concessions récupérées: ${totalConcessions}`);
-      console.log(`[MAP_DEBUG_2] Total associations récupérées: ${totalAssociations}`);
-      console.log(`[MAP_DEBUG_3] Total relais récupérés: ${totalRelais}`);
-      console.log(`[MAP_DEBUG_4] Total docs rejetés (coordonnées invalides): ${totalRejectedCoords}`);
-      console.log(`[MAP_DEBUG_6] Total markers finaux envoyés: ${allPoints.length}`);
-      setPoints(allPoints);
+
+      if (allPoints.length > 0) {
+        setPoints(allPoints);
+        // Sauvegarder dans IndexedDB en arrière-plan
+        setCachedPoints(allPoints);
+      }
+
+      if (!silent) setIsLoadingPoints(false);
     };
+
     fetchAll();
   }, [firestore]);
 
@@ -195,12 +285,12 @@ function MapPageComponent() {
     const db = getFirestore(firebaseApp);
     getDoc(doc(db, 'cache', 'departements_count'))
       .then(snap => {
-        if (snap.exists()) { setDeptCounts(snap.data().counts); console.log('✅ Cache départements chargé'); }
+        if (snap.exists()) setDeptCounts(snap.data().counts);
       })
-      .catch(e => console.warn('Cache départements non disponible:', e));
+      .catch(() => {});
   }, []);
 
-  // Scroll auto vers la fiche sélectionnée (point 4)
+  // Scroll auto vers la fiche sélectionnée
   useEffect(() => {
     if (!selectedId) return;
     const timer = setTimeout(() => {
@@ -258,7 +348,6 @@ function MapPageComponent() {
     return { brand, dept, postalCode, city, targetGeo, original: lowerQuery };
   }, [searchTerm]);
 
-  // Navigation carte selon intention de recherche
   useEffect(() => {
     if (!searchIntent || selectionSource !== 'external') return;
 
@@ -348,7 +437,6 @@ function MapPageComponent() {
     if (p) { setMapCenter([p.latitude, p.longitude]); setSelectionSource('marker'); }
     setSelectedId(id);
     if (isMobile) setDrawerHeight('half');
-    // Le scroll auto est géré par le useEffect sur selectedId
   }, [points, isMobile]);
 
   const handleUserInteraction = () => {
@@ -394,17 +482,19 @@ function MapPageComponent() {
     return <div className="flex items-center justify-center gap-8"><div className="flex gap-4">{filters.map(renderFilter)}</div></div>;
   };
 
-  // Composant de liste avec ref pour scroll auto
   const ListContent = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between px-2 mb-4">
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{filteredPoints.length} Résultats trouvés</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          {isLoadingPoints ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-3 w-3 animate-spin" /> Chargement...
+            </span>
+          ) : `${filteredPoints.length} Résultats trouvés`}
+        </span>
       </div>
       {listPoints.map(p => (
-        <div
-          key={p.id}
-          ref={el => { cardRefs.current[p.id] = el; }}
-        >
+        <div key={p.id} ref={el => { cardRefs.current[p.id] = el; }}>
           <DealershipCardItem
             point={p}
             isSelected={p.id === selectedId}
@@ -413,7 +503,7 @@ function MapPageComponent() {
           />
         </div>
       ))}
-      {filteredPoints.length === 0 && (
+      {!isLoadingPoints && filteredPoints.length === 0 && (
         <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
           <p className="font-black uppercase tracking-tight text-muted-foreground">Aucun résultat</p>
         </div>
@@ -473,7 +563,6 @@ function MapPageComponent() {
               <FilterButtons />
             </div>
           </div>
-          {/* Liste avec ref pour scroll auto (point 4) */}
           <div ref={listScrollRef} className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
             {isDetailView && selectedId ? (
               <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
@@ -488,7 +577,6 @@ function MapPageComponent() {
         <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-[0_-15px_50px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]'))}>
           <div className="h-full flex flex-col">
             <div className="shrink-0 overflow-visible"><FilterButtons mobile /></div>
-            {/* Liste mobile avec ref pour scroll auto (point 4) */}
             <div ref={listScrollRef} className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               {isDetailView && selectedId ? (
                 <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('half'); }} />
@@ -504,7 +592,7 @@ function MapPageComponent() {
                       />
                     </div>
                   ))}
-                  {filteredPoints.length === 0 && (
+                  {!isLoadingPoints && filteredPoints.length === 0 && (
                     <div className="text-center py-10 opacity-50"><p className="font-black uppercase text-xs">Aucun résultat</p></div>
                   )}
                 </div>

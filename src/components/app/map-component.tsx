@@ -239,7 +239,7 @@ const MapComponent = ({
             const labelMarker = L.marker(centroid, {
               icon: L.divIcon({
                 className: 'dept-label',
-                html: `<span>${count}</span>`,
+                html: `<span>${code}</span>`,
                 iconSize: [60, 24],
                 iconAnchor: [30, 12],
               }),
