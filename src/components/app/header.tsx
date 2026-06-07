@@ -7,16 +7,12 @@ import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
-import { useUser, useAuth, useFirestore, useFirebase } from '@/firebase/client';
+import { useUser, useAuth, useFirebase } from '@/firebase/client';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import locationsData from '@/data/locations.json';
@@ -27,39 +23,21 @@ import { cn } from '@/lib/utils';
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: any[] | null = null;
 
-// Normalise le texte pour la comparaison floue (accents, casse, espaces)
 function normalizeStr(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // supprime les accents
-    .replace(/[^a-z0-9\s]/g, '')
-    .trim();
+  return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, '').trim();
 }
 
-// Calcule un score de similarité simple
 function similarityScore(query: string, target: string): number {
   const q = normalizeStr(query);
   const t = normalizeStr(target);
   if (t === q) return 100;
   if (t.startsWith(q)) return 90;
   if (t.includes(q)) return 70;
-  // Tolérance aux fautes : vérifie si chaque token de la query est dans la target
   const tokens = q.split(/\s+/);
-  const matchedTokens = tokens.filter(tok => tok.length > 1 && t.includes(tok));
-  if (matchedTokens.length === tokens.length) return 60;
-  if (matchedTokens.length > 0) return 40;
+  const matched = tokens.filter(tok => tok.length > 1 && t.includes(tok));
+  if (matched.length === tokens.length) return 60;
+  if (matched.length > 0) return 40;
   return 0;
-}
-
-// Extrait le code département depuis un code postal
-function deptCodeFromPostal(postal: string): string {
-  if (postal.startsWith('97')) return postal.substring(0, 3);
-  if (postal.startsWith('20')) {
-    const num = parseInt(postal);
-    return num <= 20190 ? '2A' : '2B';
-  }
-  return postal.substring(0, 2).padStart(2, '0');
 }
 
 interface Suggestion {
@@ -69,6 +47,7 @@ interface Suggestion {
   lat?: number;
   lng?: number;
   zoom?: number;
+  bbox?: [number, number, number, number]; // [west, south, east, north]
   id?: string;
   score?: number;
 }
@@ -77,26 +56,17 @@ export const UserMenu = () => {
   const { user, profile, activateAuth } = useUser();
   const auth = useAuth();
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => { setMounted(true); }, []);
 
-  const activeProfile = profile;
-  const pseudo = activeProfile?.displayName || activeProfile?.pseudo || user?.email?.split('@')[0] || '';
+  const pseudo = profile?.displayName || profile?.pseudo || user?.email?.split('@')[0] || '';
   const initial = pseudo?.[0]?.toUpperCase() || '?';
-  const isAdmin = activeProfile?.role === 'admin';
-
+  const isAdmin = profile?.role === 'admin';
   if (!mounted) return null;
 
   return (
     <DropdownMenu onOpenChange={(open) => open && activateAuth()}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className={cn(
-            "relative h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95",
-            isAdmin && "ring-2 ring-brand ring-offset-2"
-          )}
-        >
+        <Button variant="ghost" className={cn("relative h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95", isAdmin && "ring-2 ring-brand ring-offset-2")}>
           {user ? (
             <Avatar className="h-[57px] w-[57px] md:h-[65px] md:w-[65px] border-2 border-brand">
               <AvatarImage src={user.photoURL || undefined} />
@@ -121,12 +91,9 @@ export const UserMenu = () => {
         {isAdmin && (
           <>
             <DropdownMenuLabel className="text-[9px] uppercase font-black text-indigo-600 px-2 mb-2 tracking-[0.2em]">Administration</DropdownMenuLabel>
-            <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl mb-4 p-3 shadow-lg group">
+            <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl mb-4 p-3 shadow-lg">
               <Link href="/admin" className="flex items-center w-full justify-between">
-                <div className="flex items-center gap-3">
-                  <Settings className="h-4 w-4" />
-                  <span>ESPACE ADMIN</span>
-                </div>
+                <div className="flex items-center gap-3"><Settings className="h-4 w-4" /><span>ESPACE ADMIN</span></div>
                 <ShieldAlert className="h-4 w-4" />
               </Link>
             </DropdownMenuItem>
@@ -135,17 +102,17 @@ export const UserMenu = () => {
         )}
         <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-4 tracking-[0.2em]">Les Guides Moto</DropdownMenuLabel>
         <div className="grid grid-cols-2 gap-4 px-2 mb-6">
-          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
+          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent cursor-pointer">
             <Link href="/entretien" className="flex flex-col items-center gap-2 group/nav">
-              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2.5">
+              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 p-2.5">
                 <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Entretien</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
+          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent cursor-pointer">
             <Link href="/info" className="flex flex-col items-center gap-2 group/nav">
-              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2.5">
+              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 p-2.5">
                 <Image src="/images/icon-conseils.webp" alt="Conseils" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Conseils</span>
@@ -158,9 +125,7 @@ export const UserMenu = () => {
           <>
             <div className="px-2 mb-3"><p className="text-xs font-black text-brand truncate">{pseudo}</p></div>
             <DropdownMenuItem asChild className="cursor-pointer font-bold rounded-xl mb-1 focus:bg-brand/5 focus:text-brand">
-              <Link href="/account" className="flex items-center w-full">
-                <UserIcon className="mr-3 h-4 w-4" /> Profil
-              </Link>
+              <Link href="/account" className="flex items-center w-full"><UserIcon className="mr-3 h-4 w-4" /> Profil</Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => auth && signOut(auth)} className="cursor-pointer font-black uppercase text-[9px] tracking-widest text-destructive hover:bg-destructive/5 rounded-xl px-2 py-3 mt-2">
               <LogOut className="mr-3 h-4 w-4" /> Déconnexion
@@ -183,13 +148,13 @@ export const UserMenu = () => {
 const NavigationIcons = () => (
   <div className="hidden lg:flex items-center gap-8 ml-32">
     <Link href="/entretien" className="flex flex-col items-center gap-1 group">
-      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
+      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 p-2.5">
         <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={48} height={48} className="w-full h-full object-contain" />
       </div>
       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
     </Link>
     <Link href="/info" className="flex flex-col items-center gap-1 group">
-      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
+      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 p-2.5">
         <Image src="/images/icon-conseils.webp" alt="Conseils" width={48} height={48} className="w-full h-full object-contain" />
       </div>
       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
@@ -226,10 +191,15 @@ const SuggestionIcon = ({ type }: { type: string }) => {
   return <MapPin className="w-4 h-4" />;
 };
 
+// Génère une bbox approximative autour d'un point selon le type
+function generateBbox(lat: number, lng: number, type: string): [number, number, number, number] {
+  const delta = type === 'dept' ? 0.5 : type === 'city' ? 0.05 : 0.02;
+  return [lng - delta, lat - delta, lng + delta, lat + delta];
+}
+
 const Header: React.FC<any> = ({
-  searchTerm,
-  onSearchTermChange,
-  onSearch,
+  searchTerm, onSearchTermChange, onSearch,
+  onSuggestionSelect,
   placeholderText = "Recherche par département, ville, marque...",
   searchOnly = false
 }) => {
@@ -245,21 +215,17 @@ const Header: React.FC<any> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const geoDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Charge les concessions pour la recherche par nom
   useEffect(() => {
     const fetchDealers = async () => {
       if (!firestore || globalDealersCache || !isFocused) return;
       try {
         const snapshot = await getDocs(query(collection(firestore, 'concessions'), limit(3000)));
-        const dealers = snapshot.docs.map(doc => ({
-          type: 'dealer',
-          label: doc.data().title || doc.id,
-          subLabel: doc.data().address,
-          lat: doc.data().latitude,
-          lng: doc.data().longitude,
-          id: doc.id,
-          zoom: 15,
+        const dealers = snapshot.docs.map(d => ({
+          type: 'dealer', label: d.data().title || d.id,
+          subLabel: d.data().address, lat: d.data().latitude, lng: d.data().longitude,
+          id: d.id, zoom: 15,
         }));
         globalDealersCache = dealers;
         setAllDealers(dealers);
@@ -268,19 +234,16 @@ const Header: React.FC<any> = ({
     fetchDealers();
   }, [firestore, isFocused]);
 
-  // Ferme les suggestions si clic extérieur
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-        setSelectedIndex(-1);
+        setShowSuggestions(false); setSelectedIndex(-1);
       }
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Génère les suggestions en combinant sources locales + API géocodage
   const generateSuggestions = useCallback(async (term: string) => {
     if (term.trim().length < 2) { setSuggestions([]); return; }
 
@@ -294,43 +257,42 @@ const Header: React.FC<any> = ({
       if (!seen.has(key)) { seen.add(key); results.push(s); }
     };
 
-    // 1. Code postal exact (5 chiffres)
+    // 1. Code postal exact
     if (/^\d{5}$/.test(raw)) {
-      const deptCode = deptCodeFromPostal(raw);
-      // Arrondissements Paris/Lyon/Marseille
-      const arrMap: Record<string, { city: string; lat: number; lng: number }> = {
-        '75001': { city: 'Paris 1er', lat: 48.8603, lng: 2.3477 },
-        '75002': { city: 'Paris 2e', lat: 48.8670, lng: 2.3490 },
-        '75003': { city: 'Paris 3e', lat: 48.8638, lng: 2.3609 },
-        '75004': { city: 'Paris 4e', lat: 48.8533, lng: 2.3522 },
-        '75005': { city: 'Paris 5e', lat: 48.8462, lng: 2.3508 },
-        '75006': { city: 'Paris 6e', lat: 48.8497, lng: 2.3322 },
-        '75007': { city: 'Paris 7e', lat: 48.8566, lng: 2.3094 },
-        '75008': { city: 'Paris 8e', lat: 48.8745, lng: 2.3079 },
-        '75009': { city: 'Paris 9e', lat: 48.8763, lng: 2.3387 },
-        '75010': { city: 'Paris 10e', lat: 48.8763, lng: 2.3600 },
-        '75011': { city: 'Paris 11e', lat: 48.8590, lng: 2.3789 },
-        '75012': { city: 'Paris 12e', lat: 48.8450, lng: 2.3897 },
-        '75013': { city: 'Paris 13e', lat: 48.8314, lng: 2.3642 },
-        '75014': { city: 'Paris 14e', lat: 48.8298, lng: 2.3254 },
-        '75015': { city: 'Paris 15e', lat: 48.8413, lng: 2.2932 },
-        '75016': { city: 'Paris 16e', lat: 48.8631, lng: 2.2754 },
-        '75017': { city: 'Paris 17e', lat: 48.8876, lng: 2.3150 },
-        '75018': { city: 'Paris 18e', lat: 48.8926, lng: 2.3444 },
-        '75019': { city: 'Paris 19e', lat: 48.8831, lng: 2.3788 },
-        '75020': { city: 'Paris 20e', lat: 48.8655, lng: 2.3976 },
+      const arrMap: Record<string, { city: string; lat: number; lng: number; bbox: [number,number,number,number] }> = {
+        '75001': { city: 'Paris 1er', lat: 48.8603, lng: 2.3477, bbox: [2.339,48.855,2.357,48.866] },
+        '75002': { city: 'Paris 2e', lat: 48.8670, lng: 2.3490, bbox: [2.341,48.862,2.357,48.872] },
+        '75003': { city: 'Paris 3e', lat: 48.8638, lng: 2.3609, bbox: [2.352,48.858,2.370,48.869] },
+        '75004': { city: 'Paris 4e', lat: 48.8533, lng: 2.3522, bbox: [2.344,48.847,2.361,48.859] },
+        '75005': { city: 'Paris 5e', lat: 48.8462, lng: 2.3508, bbox: [2.341,48.840,2.361,48.852] },
+        '75006': { city: 'Paris 6e', lat: 48.8497, lng: 2.3322, bbox: [2.322,48.844,2.343,48.856] },
+        '75007': { city: 'Paris 7e', lat: 48.8566, lng: 2.3094, bbox: [2.295,48.850,2.325,48.864] },
+        '75008': { city: 'Paris 8e', lat: 48.8745, lng: 2.3079, bbox: [2.296,48.867,2.321,48.882] },
+        '75009': { city: 'Paris 9e', lat: 48.8763, lng: 2.3387, bbox: [2.328,48.870,2.349,48.883] },
+        '75010': { city: 'Paris 10e', lat: 48.8763, lng: 2.3600, bbox: [2.349,48.868,2.372,48.884] },
+        '75011': { city: 'Paris 11e', lat: 48.8590, lng: 2.3789, bbox: [2.364,48.852,2.394,48.866] },
+        '75012': { city: 'Paris 12e', lat: 48.8450, lng: 2.3897, bbox: [2.369,48.832,2.412,48.858] },
+        '75013': { city: 'Paris 13e', lat: 48.8314, lng: 2.3642, bbox: [2.344,48.817,2.385,48.846] },
+        '75014': { city: 'Paris 14e', lat: 48.8298, lng: 2.3254, bbox: [2.311,48.820,2.340,48.840] },
+        '75015': { city: 'Paris 15e', lat: 48.8413, lng: 2.2932, bbox: [2.277,48.825,2.311,48.858] },
+        '75016': { city: 'Paris 16e', lat: 48.8631, lng: 2.2754, bbox: [2.249,48.845,2.304,48.882] },
+        '75017': { city: 'Paris 17e', lat: 48.8876, lng: 2.3150, bbox: [2.296,48.879,2.334,48.896] },
+        '75018': { city: 'Paris 18e', lat: 48.8926, lng: 2.3444, bbox: [2.326,48.882,2.367,48.904] },
+        '75019': { city: 'Paris 19e', lat: 48.8831, lng: 2.3788, bbox: [2.362,48.873,2.399,48.897] },
+        '75020': { city: 'Paris 20e', lat: 48.8655, lng: 2.3976, bbox: [2.382,48.857,2.414,48.875] },
       };
       if (arrMap[raw]) {
-        addIfNew({ type: 'arrondissement', label: arrMap[raw].city, subLabel: `Code postal ${raw}`, lat: arrMap[raw].lat, lng: arrMap[raw].lng, zoom: 14 });
+        const a = arrMap[raw];
+        addIfNew({ type: 'arrondissement', label: a.city, subLabel: `Code postal ${raw}`, lat: a.lat, lng: a.lng, zoom: 14, bbox: a.bbox });
       }
-      // Cherche le département correspondant
+      const deptCode = raw.startsWith('97') ? raw.substring(0, 3) : raw.substring(0, 2).padStart(2, '0');
       const loc = Object.entries(locationsData).find(([k]) => k.startsWith(deptCode));
       if (loc) {
-        addIfNew({ type: 'cp', label: raw, subLabel: `Code postal — ${(loc[1] as any).center ? loc[0].split(' - ')[1] : ''}`, lat: (loc[1] as any).center[0], lng: (loc[1] as any).center[1], zoom: 13 });
+        addIfNew({ type: 'cp', label: raw, subLabel: `Code postal — ${loc[0].split(' - ')[1] || ''}`, lat: (loc[1] as any).center[0], lng: (loc[1] as any).center[1], zoom: 13, bbox: generateBbox((loc[1] as any).center[0], (loc[1] as any).center[1], 'city') });
       }
     }
 
-    // 2. Code département (2 chiffres ou 2A/2B)
+    // 2. Code département
     const isDeptCode = /^(0[1-9]|[1-8]\d|9[0-5]|2[aAbB]|97[1-6])$/.test(raw);
     if (isDeptCode) {
       const deptKey = raw.toUpperCase().padStart(2, '0');
@@ -342,15 +304,13 @@ const Header: React.FC<any> = ({
       });
     }
 
-    // 3. Marques (recherche floue)
+    // 3. Marques
     brandsList.forEach(brand => {
       const score = similarityScore(normalized, brand);
-      if (score >= 40) {
-        addIfNew({ type: 'brand', label: brand, subLabel: 'Marque Moto', score });
-      }
+      if (score >= 40) addIfNew({ type: 'brand', label: brand, subLabel: 'Marque Moto', score });
     });
 
-    // 4. Départements par nom (recherche floue)
+    // 4. Départements et villes locales
     Object.entries(locationsData).forEach(([dept, info]) => {
       const deptName = dept.split(' - ')[1] || dept;
       const deptCode = dept.split(' - ')[0];
@@ -358,28 +318,24 @@ const Header: React.FC<any> = ({
       if (score >= 50) {
         addIfNew({ type: 'dept', label: deptName, subLabel: `Département ${deptCode}`, lat: (info as any).center[0], lng: (info as any).center[1], zoom: 9, score });
       }
-      // Villes dans locations.json
       (info as any).cities?.forEach((city: string) => {
         const cityScore = similarityScore(normalized, city);
         if (cityScore >= 50) {
-          addIfNew({ type: 'city', label: city, subLabel: deptName, lat: (info as any).center[0], lng: (info as any).center[1], zoom: 12, score: cityScore });
+          addIfNew({ type: 'city', label: city, subLabel: deptName, lat: (info as any).center[0], lng: (info as any).center[1], zoom: 12, score: cityScore, bbox: generateBbox((info as any).center[0], (info as any).center[1], 'city') });
         }
       });
     });
 
-    // 5. Établissements (recherche floue)
+    // 5. Établissements
     allDealers.forEach(d => {
       const score = similarityScore(normalized, d.label);
-      if (score >= 50) {
-        addIfNew({ ...d, score });
-      }
+      if (score >= 50) addIfNew({ ...d, score });
     });
 
-    // Trier par score décroissant
     results.sort((a, b) => (b.score || 0) - (a.score || 0));
     setSuggestions(results.slice(0, 10));
 
-    // 6. API géocodage pour les villes non trouvées localement
+    // 6. API géocodage pour villes manquantes
     const cityResults = results.filter(r => r.type === 'city' || r.type === 'dept');
     if (cityResults.length < 3 && normalized.length >= 3 && !/^\d+$/.test(raw)) {
       if (geoDebounceRef.current) clearTimeout(geoDebounceRef.current);
@@ -392,13 +348,15 @@ const Header: React.FC<any> = ({
           const geoResults: Suggestion[] = [];
           data.features?.forEach((f: any) => {
             const city = f.properties.city || f.properties.label;
-            const deptCode = f.properties.context?.split(',')[0]?.trim();
             const deptName = f.properties.context?.split(',')[1]?.trim() || '';
             const [lng, lat] = f.geometry.coordinates;
+            // Construire une bbox approximative autour du point
+            const delta = 0.04;
+            const bbox: [number, number, number, number] = [lng - delta, lat - delta, lng + delta, lat + delta];
             const key = `city:${normalizeStr(city)}`;
             if (!seen.has(key)) {
               seen.add(key);
-              geoResults.push({ type: 'city', label: city, subLabel: deptName || `Dept. ${deptCode}`, lat, lng, zoom: 12, score: 80 });
+              geoResults.push({ type: 'city', label: city, subLabel: deptName, lat, lng, zoom: 13, bbox, score: 80 });
             }
           });
           if (geoResults.length > 0) {
@@ -411,7 +369,6 @@ const Header: React.FC<any> = ({
             });
           }
         } catch (e) {
-          // Silencieux — l'API est optionnelle
         } finally {
           setIsLoadingGeo(false);
         }
@@ -419,35 +376,31 @@ const Header: React.FC<any> = ({
     }
   }, [allDealers]);
 
-  // Debounce de la recherche
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      generateSuggestions(searchTerm);
-    }, 150);
+    debounceRef.current = setTimeout(() => generateSuggestions(searchTerm), 150);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchTerm, generateSuggestions]);
 
   const handleSuggestionClick = (s: Suggestion) => {
-    // Construit le terme de recherche avec label
-    const term = s.type === 'cp' ? s.label : s.label;
-    onSearchTermChange(term);
+    onSearchTermChange(s.label);
     setShowSuggestions(false);
     setSelectedIndex(-1);
 
     if (window.location.pathname !== '/map') {
       const queryParams = new URLSearchParams();
-      if (s.lat && s.lng) {
-        queryParams.set('lat', s.lat.toString());
-        queryParams.set('lng', s.lng.toString());
-        if (s.zoom) queryParams.set('zoom', s.zoom.toString());
-      }
+      if (s.lat && s.lng) { queryParams.set('lat', s.lat.toString()); queryParams.set('lng', s.lng.toString()); }
+      if (s.zoom) queryParams.set('zoom', s.zoom.toString());
       if (s.id) queryParams.set('selectedId', s.id);
-      queryParams.set('search', term);
+      queryParams.set('search', s.label);
       router.push(`/map?${queryParams.toString()}`);
     } else {
-      setTimeout(() => onSearch(), 10);
+      // Sur la page /map — déclencher fitBounds via onSuggestionSelect
+      if (onSuggestionSelect && s.lat && s.lng) {
+        setTimeout(() => onSuggestionSelect(s.lat!, s.lng!, s.bbox), 10);
+      } else {
+        setTimeout(() => onSearch(), 10);
+      }
     }
   };
 
@@ -456,31 +409,18 @@ const Header: React.FC<any> = ({
       if (e.key === 'Enter') { onSearch(); setShowSuggestions(false); }
       return;
     }
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setSelectedIndex(prev => Math.max(prev - 1, -1)); }
+    else if (e.key === 'Enter') {
       e.preventDefault();
-      setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex(prev => Math.max(prev - 1, -1));
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-        handleSuggestionClick(suggestions[selectedIndex]);
-      } else {
-        onSearch();
-        setShowSuggestions(false);
-      }
-    } else if (e.key === 'Escape') {
-      setShowSuggestions(false);
-      setSelectedIndex(-1);
+      if (selectedIndex >= 0 && suggestions[selectedIndex]) handleSuggestionClick(suggestions[selectedIndex]);
+      else { onSearch(); setShowSuggestions(false); }
     }
+    else if (e.key === 'Escape') { setShowSuggestions(false); setSelectedIndex(-1); }
   };
 
   const clearSearch = () => {
-    onSearchTermChange('');
-    setSuggestions([]);
-    setShowSuggestions(false);
-    setSelectedIndex(-1);
+    onSearchTermChange(''); setSuggestions([]); setShowSuggestions(false); setSelectedIndex(-1);
     inputRef.current?.focus();
   };
 
@@ -496,9 +436,7 @@ const Header: React.FC<any> = ({
           onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
           onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}
           onKeyDown={handleKeyDown}
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck={false}
+          autoComplete="off" autoCorrect="off" spellCheck={false}
         />
         {searchTerm && (
           <button onClick={clearSearch} className="absolute right-20 md:right-24 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors">
@@ -518,28 +456,18 @@ const Header: React.FC<any> = ({
           {suggestions.map((s, idx) => (
             <button
               key={idx}
-              className={cn(
-                "w-full flex items-center gap-4 px-6 py-4 text-left group transition-colors",
-                idx === selectedIndex ? "bg-brand/10" : "hover:bg-muted"
-              )}
+              className={cn("w-full flex items-center gap-4 px-6 py-4 text-left group transition-colors", idx === selectedIndex ? "bg-brand/10" : "hover:bg-muted")}
               onClick={() => handleSuggestionClick(s)}
               onMouseEnter={() => setSelectedIndex(idx)}
             >
-              <div className={cn(
-                "shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-                idx === selectedIndex
-                  ? "bg-brand text-white"
-                  : "bg-brand/10 text-brand group-hover:bg-brand group-hover:text-white"
-              )}>
+              <div className={cn("shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors", idx === selectedIndex ? "bg-brand text-white" : "bg-brand/10 text-brand group-hover:bg-brand group-hover:text-white")}>
                 <SuggestionIcon type={s.type} />
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
                 {s.subLabel && <span className="text-[9px] text-muted-foreground truncate uppercase font-bold">{s.subLabel}</span>}
               </div>
-              {s.type === 'brand' && (
-                <span className="ml-auto text-[8px] font-black uppercase text-brand/50 shrink-0">Marque</span>
-              )}
+              {s.type === 'brand' && <span className="ml-auto text-[8px] font-black uppercase text-brand/50 shrink-0">Marque</span>}
             </button>
           ))}
           {isLoadingGeo && (
@@ -558,29 +486,21 @@ const Header: React.FC<any> = ({
   return (
     <div className="w-full flex flex-col gap-6 md:gap-8 pt-4">
       <div className="flex items-center justify-between gap-4 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-        <div className="shrink-0">
-          <LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" />
-        </div>
+        <div className="shrink-0"><LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" /></div>
         <div className="flex-1 flex justify-center px-4">
           <div className="hidden md:block bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
             <p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
             <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
           </div>
         </div>
-        <div className="shrink-0 flex items-center">
-          <UserMenu />
-        </div>
+        <div className="shrink-0 flex items-center"><UserMenu /></div>
       </div>
-
       <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
         <div className="flex-1">{searchInput}</div>
         <NavigationIcons />
       </div>
-
       {pathname !== '/map' && (
-        <div className="w-full max-w-3xl mx-auto relative px-4 md:px-0">
-          <QuickFilters />
-        </div>
+        <div className="w-full max-w-3xl mx-auto relative px-4 md:px-0"><QuickFilters /></div>
       )}
     </div>
   );

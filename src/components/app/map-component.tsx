@@ -31,6 +31,7 @@ interface MapComponentProps {
   selectionSource: 'marker' | 'card' | 'external' | null;
   deptCounts?: DeptCounts | null;
   deptToFit?: string | null;
+  bboxToFit?: [number, number, number, number] | null; // [west, south, east, north]
   isMobile?: boolean;
 }
 
@@ -61,7 +62,7 @@ const MapComponent = ({
   onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0,
   isLocating = false, onLocateEnd = () => {}, onLocationFound = () => {},
-  selectionSource, deptCounts = null, deptToFit = null, isMobile = false
+  selectionSource, deptCounts = null, deptToFit = null, bboxToFit = null, isMobile = false
 }: MapComponentProps) => {
 
   const mapRef = useRef<L.Map | null>(null);
@@ -73,7 +74,6 @@ const MapComponent = ({
   const labelMarkersRef = useRef<L.Marker[]>([]);
   const geojsonDataRef = useRef<any>(null);
   const currentZoomRef = useRef<number>(zoom);
-  const hoveredLayerRef = useRef<L.Layer | null>(null);
 
   // Initialisation carte
   useEffect(() => {
@@ -136,7 +136,36 @@ const MapComponent = ({
     };
   }, []);
 
-  // Zoom sur les bounds exactes d'un département
+  // fitBounds sur une bbox ville [west, south, east, north]
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !bboxToFit) return;
+
+    const [west, south, east, north] = bboxToFit;
+    const bounds = L.latLngBounds([south, west], [north, east]);
+
+    isUpdatingFromProps.current = true;
+    if (isMobile) {
+      map.fitBounds(bounds, {
+        paddingTopLeft: [20, 60],
+        paddingBottomRight: [20, 200],
+        animate: true,
+        duration: 0.8,
+        maxZoom: 13,
+      });
+    } else {
+      map.fitBounds(bounds, {
+        paddingTopLeft: [leftPadding + 40, 40],
+        paddingBottomRight: [60, 40],
+        animate: true,
+        duration: 0.8,
+        maxZoom: 13,
+      });
+    }
+    setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
+  }, [bboxToFit, leftPadding, isMobile]);
+
+  // fitBounds sur les limites exactes d'un département
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !deptToFit) return;
@@ -156,18 +185,13 @@ const MapComponent = ({
       const feature = geojsonDataRef.current?.features?.find(
         (f: any) => f.properties?.code === deptToFit
       );
-
-      if (!feature) {
-        console.warn(`Département ${deptToFit} non trouvé dans le GeoJSON`);
-        return;
-      }
+      if (!feature) return;
 
       isUpdatingFromProps.current = true;
       const layer = L.geoJSON(feature);
       const bounds = layer.getBounds();
 
       if (isMobile) {
-        // Mobile : pas de padding latéral, zoom min 10 pour voir les marqueurs
         map.fitBounds(bounds, {
           paddingTopLeft: [20, 60],
           paddingBottomRight: [20, 200],
@@ -176,7 +200,6 @@ const MapComponent = ({
           maxZoom: 10,
         });
       } else {
-        // Desktop : padding gauche pour le panneau de 520px
         map.fitBounds(bounds, {
           paddingTopLeft: [leftPadding + 40, 40],
           paddingBottomRight: [60, 40],
@@ -184,7 +207,6 @@ const MapComponent = ({
           duration: 0.8,
         });
       }
-
       setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
     };
 
@@ -202,11 +224,7 @@ const MapComponent = ({
       return { fillColor: getColor(count), weight: 1, color: 'white', fillOpacity: 0.65 };
     };
 
-    const hoverStyle = {
-      weight: 2,
-      color: '#333',
-      fillOpacity: 0.85,
-    };
+    const hoverStyle = { weight: 2, color: '#333', fillOpacity: 0.85 };
 
     const buildChoropleth = () => {
       if (!geojsonDataRef.current) return;
@@ -235,22 +253,19 @@ const MapComponent = ({
           );
 
           const centroid = (layer as L.Polygon).getBounds().getCenter();
-          if (count > 0) {
-            const labelMarker = L.marker(centroid, {
-              icon: L.divIcon({
-                className: 'dept-label',
-                html: `<span>${code}</span>`,
-                iconSize: [60, 24],
-                iconAnchor: [30, 12],
-              }),
-              interactive: false,
-              zIndexOffset: -1000,
-            });
-            labelMarkersRef.current.push(labelMarker);
-            labelMarker.addTo(map);
-          }
+          const labelMarker = L.marker(centroid, {
+            icon: L.divIcon({
+              className: 'dept-label',
+              html: `<span>${code}</span>`,
+              iconSize: [60, 24],
+              iconAnchor: [30, 12],
+            }),
+            interactive: false,
+            zIndexOffset: -1000,
+          });
+          labelMarkersRef.current.push(labelMarker);
+          labelMarker.addTo(map);
 
-          // Surbrillance au survol (point 3)
           layer.on('mouseover', () => {
             (layer as L.Path).setStyle({ ...hoverStyle });
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -343,13 +358,15 @@ const MapComponent = ({
     });
   }, [points, labelPoints, selectedId, deptCounts]);
 
+  // Centrage + zoom au clic marqueur
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !selectionSource) return;
 
     isUpdatingFromProps.current = true;
-    const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, map.getZoom());
-    map.flyTo(finalCenter, map.getZoom(), { duration: 0.8 });
+    const targetZoom = selectionSource === 'marker' ? Math.max(map.getZoom(), 14) : map.getZoom();
+    const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, targetZoom);
+    map.flyTo(finalCenter, targetZoom, { duration: 0.8 });
 
     setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
   }, [center, leftPadding, bottomPadding, selectionSource]);
