@@ -461,12 +461,11 @@ function MapPageComponent() {
       setBboxToFit(null);
       setTimeout(() => setBboxToFit(bbox), 10);
       setDeptToFit(null);
-      setSelectionSource("external");
     } else {
       setMapCenter([lat, lng]);
       setMapZoom(14);
-      setSelectionSource("marker");
     }
+    setSelectionSource("external");
   };
 
   const handleUserInteraction = () => {
