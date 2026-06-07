@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, FileText, LogOut, ShieldAlert, Settings } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, LogOut, ShieldAlert, Settings, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
-import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc, useFirebase } from '@/firebase/client';
+import { useUser, useAuth, useFirestore, useFirebase } from '@/firebase/client';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import {
@@ -21,16 +21,61 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
-import { collection, query, getDocs, limit, doc } from 'firebase/firestore';
+import { collection, query, getDocs, limit } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: any[] | null = null;
 
+// Normalise le texte pour la comparaison floue (accents, casse, espaces)
+function normalizeStr(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // supprime les accents
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim();
+}
+
+// Calcule un score de similarité simple
+function similarityScore(query: string, target: string): number {
+  const q = normalizeStr(query);
+  const t = normalizeStr(target);
+  if (t === q) return 100;
+  if (t.startsWith(q)) return 90;
+  if (t.includes(q)) return 70;
+  // Tolérance aux fautes : vérifie si chaque token de la query est dans la target
+  const tokens = q.split(/\s+/);
+  const matchedTokens = tokens.filter(tok => tok.length > 1 && t.includes(tok));
+  if (matchedTokens.length === tokens.length) return 60;
+  if (matchedTokens.length > 0) return 40;
+  return 0;
+}
+
+// Extrait le code département depuis un code postal
+function deptCodeFromPostal(postal: string): string {
+  if (postal.startsWith('97')) return postal.substring(0, 3);
+  if (postal.startsWith('20')) {
+    const num = parseInt(postal);
+    return num <= 20190 ? '2A' : '2B';
+  }
+  return postal.substring(0, 2).padStart(2, '0');
+}
+
+interface Suggestion {
+  type: 'dept' | 'city' | 'cp' | 'brand' | 'dealer' | 'arrondissement';
+  label: string;
+  subLabel?: string;
+  lat?: number;
+  lng?: number;
+  zoom?: number;
+  id?: string;
+  score?: number;
+}
+
 export const UserMenu = () => {
   const { user, profile, activateAuth } = useUser();
   const auth = useAuth();
-  const firestore = useFirestore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
@@ -45,8 +90,8 @@ export const UserMenu = () => {
   return (
     <DropdownMenu onOpenChange={(open) => open && activateAuth()}>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className={cn(
             "relative h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95",
             isAdmin && "ring-2 ring-brand ring-offset-2"
@@ -67,7 +112,7 @@ export const UserMenu = () => {
           </div>
           {isAdmin && (
             <div className="absolute -top-1 -right-1 bg-indigo-600 text-white rounded-full p-1 border-2 border-white animate-pulse">
-                <ShieldAlert className="h-3 w-3" />
+              <ShieldAlert className="h-3 w-3" />
             </div>
           )}
         </Button>
@@ -79,8 +124,8 @@ export const UserMenu = () => {
             <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl mb-4 p-3 shadow-lg group">
               <Link href="/admin" className="flex items-center w-full justify-between">
                 <div className="flex items-center gap-3">
-                    <Settings className="h-4 w-4 animate-spin-slow group-hover:rotate-90 transition-transform" /> 
-                    <span>ESPACE ADMIN</span>
+                  <Settings className="h-4 w-4" />
+                  <span>ESPACE ADMIN</span>
                 </div>
                 <ShieldAlert className="h-4 w-4" />
               </Link>
@@ -88,14 +133,12 @@ export const UserMenu = () => {
             <DropdownMenuSeparator className="mx-2 mb-4 border-muted/50" />
           </>
         )}
-
         <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-4 tracking-[0.2em]">Les Guides Moto</DropdownMenuLabel>
-        
         <div className="grid grid-cols-2 gap-4 px-2 mb-6">
           <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
             <Link href="/entretien" className="flex flex-col items-center gap-2 group/nav">
               <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2.5">
-                 <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={40} height={40} className="w-full h-full object-contain" />
+                <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Entretien</span>
             </Link>
@@ -103,26 +146,23 @@ export const UserMenu = () => {
           <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent focus:text-inherit cursor-pointer">
             <Link href="/info" className="flex flex-col items-center gap-2 group/nav">
               <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 group-hover/nav:border-brand/20 p-2.5">
-                 <Image src="/images/icon-conseils.webp" alt="Conseils" width={40} height={40} className="w-full h-full object-contain" />
+                <Image src="/images/icon-conseils.webp" alt="Conseils" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Conseils</span>
             </Link>
           </DropdownMenuItem>
         </div>
-        
         <DropdownMenuSeparator className="mx-2 mb-6 border-muted/50" />
-        
         <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-2 tracking-[0.2em]">Votre Compte</DropdownMenuLabel>
         {user ? (
           <>
             <div className="px-2 mb-3"><p className="text-xs font-black text-brand truncate">{pseudo}</p></div>
-            
             <DropdownMenuItem asChild className="cursor-pointer font-bold rounded-xl mb-1 focus:bg-brand/5 focus:text-brand">
               <Link href="/account" className="flex items-center w-full">
                 <UserIcon className="mr-3 h-4 w-4" /> Profil
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => signOut(auth)} className="cursor-pointer font-black uppercase text-[9px] tracking-widest text-destructive hover:bg-destructive/5 rounded-xl px-2 py-3 mt-2">
+            <DropdownMenuItem onClick={() => auth && signOut(auth)} className="cursor-pointer font-black uppercase text-[9px] tracking-widest text-destructive hover:bg-destructive/5 rounded-xl px-2 py-3 mt-2">
               <LogOut className="mr-3 h-4 w-4" /> Déconnexion
             </DropdownMenuItem>
           </>
@@ -133,36 +173,29 @@ export const UserMenu = () => {
         )}
       </DropdownMenuContent>
       <style jsx global>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 8s linear infinite;
-        }
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
       `}</style>
     </DropdownMenu>
   );
 };
 
-const NavigationIcons = () => {
-  return (
-    <div className="hidden lg:flex items-center gap-8 ml-32">
-      <Link href="/entretien" className="flex flex-col items-center gap-1 group">
-        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
-           <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={48} height={48} className="w-full h-full object-contain" />
-        </div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
-      </Link>
-      <Link href="/info" className="flex flex-col items-center gap-1 group">
-        <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
-           <Image src="/images/icon-conseils.webp" alt="Conseils" width={48} height={48} className="w-full h-full object-contain" />
-        </div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
-      </Link>
-    </div>
-  );
-};
+const NavigationIcons = () => (
+  <div className="hidden lg:flex items-center gap-8 ml-32">
+    <Link href="/entretien" className="flex flex-col items-center gap-1 group">
+      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
+        <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={48} height={48} className="w-full h-full object-contain" />
+      </div>
+      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
+    </Link>
+    <Link href="/info" className="flex flex-col items-center gap-1 group">
+      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20 p-2.5">
+        <Image src="/images/icon-conseils.webp" alt="Conseils" width={48} height={48} className="w-full h-full object-contain" />
+      </div>
+      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
+    </Link>
+  </div>
+);
 
 const QuickFilters = () => {
   const router = useRouter();
@@ -172,15 +205,10 @@ const QuickFilters = () => {
     { id: 'association', label: 'Asso', icon: Users, color: 'text-indigo-600' },
     { id: 'relais', label: 'Relais', icon: Utensils, color: 'text-amber-600' },
   ];
-
   return (
     <div className="flex flex-wrap justify-center gap-6 mt-6">
       {filters.map((f) => (
-        <button 
-          key={f.id} 
-          onClick={() => router.push(`/map?filter=${f.id}`)}
-          className="flex flex-col items-center gap-2 group"
-        >
+        <button key={f.id} onClick={() => router.push(`/map?filter=${f.id}`)} className="flex flex-col items-center gap-2 group">
           <div className="h-[70px] w-[70px] rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-brand/20">
             <f.icon className={cn("h-8 w-8", f.color)} />
           </div>
@@ -191,204 +219,369 @@ const QuickFilters = () => {
   );
 };
 
-const Header: React.FC<any> = ({ 
-    searchTerm, 
-    onSearchTermChange, 
-    onSearch, 
-    placeholderText = "Recherche par département, ville, marque...",
-    searchOnly = false
+const SuggestionIcon = ({ type }: { type: string }) => {
+  if (type === 'dealer') return <Store className="w-4 h-4" />;
+  if (type === 'brand') return <Bike className="w-4 h-4" />;
+  if (type === 'arrondissement') return <Building2 className="w-4 h-4" />;
+  return <MapPin className="w-4 h-4" />;
+};
+
+const Header: React.FC<any> = ({
+  searchTerm,
+  onSearchTermChange,
+  onSearch,
+  placeholderText = "Recherche par département, ville, marque...",
+  searchOnly = false
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { firestore } = useFirebase();
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allDealers, setAllDealers] = useState<any[]>(globalDealersCache || []);
   const [isFocused, setIsFocused] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isLoadingGeo, setIsLoadingGeo] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const deferredSearchTerm = useDeferredValue(searchTerm);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const geoDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Charge les concessions pour la recherche par nom
   useEffect(() => {
     const fetchDealers = async () => {
-        if (!firestore || globalDealersCache || !isFocused) return;
-        try {
-            const snapshot = await getDocs(query(collection(firestore, 'concessions'), limit(2000)));
-            const dealers = snapshot.docs.map(doc => ({
-                type: 'dealer',
-                label: doc.data().title || doc.id,
-                subLabel: doc.data().address,
-                lat: doc.data().latitude,
-                lng: doc.data().longitude,
-                id: doc.id
-            }));
-            globalDealersCache = dealers;
-            setAllDealers(dealers);
-        } catch (e) {}
+      if (!firestore || globalDealersCache || !isFocused) return;
+      try {
+        const snapshot = await getDocs(query(collection(firestore, 'concessions'), limit(3000)));
+        const dealers = snapshot.docs.map(doc => ({
+          type: 'dealer',
+          label: doc.data().title || doc.id,
+          subLabel: doc.data().address,
+          lat: doc.data().latitude,
+          lng: doc.data().longitude,
+          id: doc.id,
+          zoom: 15,
+        }));
+        globalDealersCache = dealers;
+        setAllDealers(dealers);
+      } catch (e) {}
     };
     fetchDealers();
   }, [firestore, isFocused]);
 
+  // Ferme les suggestions si clic extérieur
   useEffect(() => {
-    if (deferredSearchTerm.trim().length < 1) { setSuggestions([]); return; }
-    const lower = deferredSearchTerm.toLowerCase().trim();
-    const results: any[] = [];
+    const handleClick = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
-    // Priorité 1 : Département (2 chiffres)
-    if (lower.match(/^\d{2}$/)) {
-        Object.entries(locationsData).forEach(([dept, info]) => {
-            if (dept.startsWith(lower)) {
-                results.push({ type: 'dept', label: dept, subLabel: "Département", lat: info.center[0], lng: info.center[1], zoom: 9 });
-            }
-        });
+  // Génère les suggestions en combinant sources locales + API géocodage
+  const generateSuggestions = useCallback(async (term: string) => {
+    if (term.trim().length < 2) { setSuggestions([]); return; }
+
+    const raw = term.trim();
+    const normalized = normalizeStr(raw);
+    const results: Suggestion[] = [];
+    const seen = new Set<string>();
+
+    const addIfNew = (s: Suggestion) => {
+      const key = `${s.type}:${normalizeStr(s.label)}`;
+      if (!seen.has(key)) { seen.add(key); results.push(s); }
+    };
+
+    // 1. Code postal exact (5 chiffres)
+    if (/^\d{5}$/.test(raw)) {
+      const deptCode = deptCodeFromPostal(raw);
+      // Arrondissements Paris/Lyon/Marseille
+      const arrMap: Record<string, { city: string; lat: number; lng: number }> = {
+        '75001': { city: 'Paris 1er', lat: 48.8603, lng: 2.3477 },
+        '75002': { city: 'Paris 2e', lat: 48.8670, lng: 2.3490 },
+        '75003': { city: 'Paris 3e', lat: 48.8638, lng: 2.3609 },
+        '75004': { city: 'Paris 4e', lat: 48.8533, lng: 2.3522 },
+        '75005': { city: 'Paris 5e', lat: 48.8462, lng: 2.3508 },
+        '75006': { city: 'Paris 6e', lat: 48.8497, lng: 2.3322 },
+        '75007': { city: 'Paris 7e', lat: 48.8566, lng: 2.3094 },
+        '75008': { city: 'Paris 8e', lat: 48.8745, lng: 2.3079 },
+        '75009': { city: 'Paris 9e', lat: 48.8763, lng: 2.3387 },
+        '75010': { city: 'Paris 10e', lat: 48.8763, lng: 2.3600 },
+        '75011': { city: 'Paris 11e', lat: 48.8590, lng: 2.3789 },
+        '75012': { city: 'Paris 12e', lat: 48.8450, lng: 2.3897 },
+        '75013': { city: 'Paris 13e', lat: 48.8314, lng: 2.3642 },
+        '75014': { city: 'Paris 14e', lat: 48.8298, lng: 2.3254 },
+        '75015': { city: 'Paris 15e', lat: 48.8413, lng: 2.2932 },
+        '75016': { city: 'Paris 16e', lat: 48.8631, lng: 2.2754 },
+        '75017': { city: 'Paris 17e', lat: 48.8876, lng: 2.3150 },
+        '75018': { city: 'Paris 18e', lat: 48.8926, lng: 2.3444 },
+        '75019': { city: 'Paris 19e', lat: 48.8831, lng: 2.3788 },
+        '75020': { city: 'Paris 20e', lat: 48.8655, lng: 2.3976 },
+      };
+      if (arrMap[raw]) {
+        addIfNew({ type: 'arrondissement', label: arrMap[raw].city, subLabel: `Code postal ${raw}`, lat: arrMap[raw].lat, lng: arrMap[raw].lng, zoom: 14 });
+      }
+      // Cherche le département correspondant
+      const loc = Object.entries(locationsData).find(([k]) => k.startsWith(deptCode));
+      if (loc) {
+        addIfNew({ type: 'cp', label: raw, subLabel: `Code postal — ${(loc[1] as any).center ? loc[0].split(' - ')[1] : ''}`, lat: (loc[1] as any).center[0], lng: (loc[1] as any).center[1], zoom: 13 });
+      }
     }
 
-    // Priorité 2 : Code Postal (5 chiffres)
-    if (lower.match(/^\d{5}$/)) {
-        const deptCode = lower.substring(0, 2);
-        Object.entries(locationsData).forEach(([dept, info]) => {
-            if (dept.startsWith(deptCode)) {
-                results.push({ type: 'cp', label: lower, subLabel: `Zone ${dept.split(' - ')[1]}`, lat: info.center[0], lng: info.center[1], zoom: 12 });
-            }
-        });
+    // 2. Code département (2 chiffres ou 2A/2B)
+    const isDeptCode = /^(0[1-9]|[1-8]\d|9[0-5]|2[aAbB]|97[1-6])$/.test(raw);
+    if (isDeptCode) {
+      const deptKey = raw.toUpperCase().padStart(2, '0');
+      Object.entries(locationsData).forEach(([dept, info]) => {
+        const code = dept.split(' - ')[0];
+        if (code.toUpperCase() === deptKey || code.toUpperCase() === raw.toUpperCase()) {
+          addIfNew({ type: 'dept', label: dept.split(' - ')[1], subLabel: `Département ${code}`, lat: (info as any).center[0], lng: (info as any).center[1], zoom: 9, score: 100 });
+        }
+      });
     }
 
-    // Priorité 3 : Marques
+    // 3. Marques (recherche floue)
     brandsList.forEach(brand => {
-        if (brand.toLowerCase().includes(lower)) {
-            results.push({ type: 'brand', label: brand, subLabel: "Marque Moto" });
-        }
+      const score = similarityScore(normalized, brand);
+      if (score >= 40) {
+        addIfNew({ type: 'brand', label: brand, subLabel: 'Marque Moto', score });
+      }
     });
 
-    // Priorité 4 : Villes & Départements (Texte)
+    // 4. Départements par nom (recherche floue)
     Object.entries(locationsData).forEach(([dept, info]) => {
-        if (dept.toLowerCase().includes(lower) && !results.some(r => r.label === dept)) {
-            results.push({ type: 'dept', label: dept, subLabel: "Département", lat: info.center[0], lng: info.center[1], zoom: 9 });
+      const deptName = dept.split(' - ')[1] || dept;
+      const deptCode = dept.split(' - ')[0];
+      const score = similarityScore(normalized, deptName);
+      if (score >= 50) {
+        addIfNew({ type: 'dept', label: deptName, subLabel: `Département ${deptCode}`, lat: (info as any).center[0], lng: (info as any).center[1], zoom: 9, score });
+      }
+      // Villes dans locations.json
+      (info as any).cities?.forEach((city: string) => {
+        const cityScore = similarityScore(normalized, city);
+        if (cityScore >= 50) {
+          addIfNew({ type: 'city', label: city, subLabel: deptName, lat: (info as any).center[0], lng: (info as any).center[1], zoom: 12, score: cityScore });
         }
-        info.cities.forEach(city => {
-            if (city.toLowerCase().includes(lower)) {
-                results.push({ type: 'city', label: city, subLabel: dept.split(' - ')[1], lat: info.center[0], lng: info.center[1], zoom: 12 });
-            }
-        });
+      });
     });
 
-    // Priorité 5 : Établissements
+    // 5. Établissements (recherche floue)
     allDealers.forEach(d => {
-        if (d.label.toLowerCase().includes(lower)) {
-            results.push(d);
-        }
+      const score = similarityScore(normalized, d.label);
+      if (score >= 50) {
+        addIfNew({ ...d, score });
+      }
     });
 
+    // Trier par score décroissant
+    results.sort((a, b) => (b.score || 0) - (a.score || 0));
     setSuggestions(results.slice(0, 10));
-  }, [deferredSearchTerm, allDealers]);
 
-  const handleSuggestionClick = (s: any) => {
-    onSearchTermChange(s.label);
-    setShowSuggestions(false);
-    
-    if (window.location.pathname !== '/map') {
-        const queryParams = new URLSearchParams();
-        if (s.lat && s.lng) {
-            queryParams.set('lat', s.lat.toString());
-            queryParams.set('lng', s.lng.toString());
-            if (s.zoom) queryParams.set('zoom', s.zoom.toString());
+    // 6. API géocodage pour les villes non trouvées localement
+    const cityResults = results.filter(r => r.type === 'city' || r.type === 'dept');
+    if (cityResults.length < 3 && normalized.length >= 3 && !/^\d+$/.test(raw)) {
+      if (geoDebounceRef.current) clearTimeout(geoDebounceRef.current);
+      geoDebounceRef.current = setTimeout(async () => {
+        try {
+          setIsLoadingGeo(true);
+          const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(raw)}&type=municipality&limit=5&autocomplete=1`);
+          if (!res.ok) return;
+          const data = await res.json();
+          const geoResults: Suggestion[] = [];
+          data.features?.forEach((f: any) => {
+            const city = f.properties.city || f.properties.label;
+            const deptCode = f.properties.context?.split(',')[0]?.trim();
+            const deptName = f.properties.context?.split(',')[1]?.trim() || '';
+            const [lng, lat] = f.geometry.coordinates;
+            const key = `city:${normalizeStr(city)}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              geoResults.push({ type: 'city', label: city, subLabel: deptName || `Dept. ${deptCode}`, lat, lng, zoom: 12, score: 80 });
+            }
+          });
+          if (geoResults.length > 0) {
+            setSuggestions(prev => {
+              const combined = [...geoResults, ...prev];
+              const dedup = combined.filter((s, i, arr) =>
+                arr.findIndex(x => normalizeStr(x.label) === normalizeStr(s.label)) === i
+              );
+              return dedup.slice(0, 10);
+            });
+          }
+        } catch (e) {
+          // Silencieux — l'API est optionnelle
+        } finally {
+          setIsLoadingGeo(false);
         }
-        if (s.id) queryParams.set('selectedId', s.id);
-        queryParams.set('search', s.label);
-        router.push(`/map?${queryParams.toString()}`);
+      }, 300);
+    }
+  }, [allDealers]);
+
+  // Debounce de la recherche
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      generateSuggestions(searchTerm);
+    }, 150);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchTerm, generateSuggestions]);
+
+  const handleSuggestionClick = (s: Suggestion) => {
+    // Construit le terme de recherche avec label
+    const term = s.type === 'cp' ? s.label : s.label;
+    onSearchTermChange(term);
+    setShowSuggestions(false);
+    setSelectedIndex(-1);
+
+    if (window.location.pathname !== '/map') {
+      const queryParams = new URLSearchParams();
+      if (s.lat && s.lng) {
+        queryParams.set('lat', s.lat.toString());
+        queryParams.set('lng', s.lng.toString());
+        if (s.zoom) queryParams.set('zoom', s.zoom.toString());
+      }
+      if (s.id) queryParams.set('selectedId', s.id);
+      queryParams.set('search', term);
+      router.push(`/map?${queryParams.toString()}`);
     } else {
-        setTimeout(() => onSearch(), 10);
+      setTimeout(() => onSearch(), 10);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || suggestions.length === 0) {
+      if (e.key === 'Enter') { onSearch(); setShowSuggestions(false); }
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => Math.max(prev - 1, -1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+        handleSuggestionClick(suggestions[selectedIndex]);
+      } else {
+        onSearch();
+        setShowSuggestions(false);
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
     }
   };
 
   const clearSearch = () => {
     onSearchTermChange('');
+    setSuggestions([]);
     setShowSuggestions(false);
+    setSelectedIndex(-1);
+    inputRef.current?.focus();
   };
 
   const searchInput = (
     <div className="w-full relative" ref={suggestionsRef}>
-        <div className="relative group">
-            <Input 
-                type="text" 
-                placeholder={placeholderText} 
-                className="pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-none px-6 md:px-10 h-12 md:h-14 font-bold text-sm md:text-base transition-all"
-                value={searchTerm} 
-                onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); }}
-                onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    onSearch();
-                    setShowSuggestions(false);
-                  }
-                }}
-                autoComplete="off"
-            />
-            {searchTerm && (
-                <button onClick={clearSearch} className="absolute right-20 md:right-24 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand">
-                    <X className="h-4 w-4" />
-                </button>
-            )}
-            <Button 
-                className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[70px] w-[70px] shadow-lg hover:scale-105 active:scale-95 transition-all" 
-                onClick={() => { onSearch(); setShowSuggestions(false); }}
-            >
-                <Search className="h-8 w-8" />
-            </Button>
-        </div>
-
-        {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[2rem] shadow-2xl z-[1600] max-h-[50vh] overflow-y-auto py-3 border-2 border-white">
-                {suggestions.map((s, idx) => (
-                    <button key={idx} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-muted text-left group" onClick={() => handleSuggestionClick(s)}>
-                        <div className="shrink-0 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
-                            {s.type === 'dealer' ? <Store className="w-4 h-4" /> : s.type === 'brand' ? <Bike className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                            <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
-                            {s.subLabel && <span className="text-[9px] text-muted-foreground truncate uppercase font-bold">{s.subLabel}</span>}
-                        </div>
-                    </button>
-                ))}
-            </div>
+      <div className="relative group">
+        <Input
+          ref={inputRef}
+          type="text"
+          placeholder={placeholderText}
+          className="pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-none px-6 md:px-10 h-12 md:h-14 font-bold text-sm md:text-base transition-all"
+          value={searchTerm}
+          onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
+          onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}
+          onKeyDown={handleKeyDown}
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+        />
+        {searchTerm && (
+          <button onClick={clearSearch} className="absolute right-20 md:right-24 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors">
+            <X className="h-4 w-4" />
+          </button>
         )}
+        <Button
+          className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[70px] w-[70px] shadow-lg hover:scale-105 active:scale-95 transition-all"
+          onClick={() => { onSearch(); setShowSuggestions(false); }}
+        >
+          <Search className="h-8 w-8" />
+        </Button>
+      </div>
+
+      {showSuggestions && (suggestions.length > 0 || isLoadingGeo) && (
+        <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[2rem] shadow-2xl z-[1600] max-h-[60vh] overflow-y-auto py-3 border-2 border-white">
+          {suggestions.map((s, idx) => (
+            <button
+              key={idx}
+              className={cn(
+                "w-full flex items-center gap-4 px-6 py-4 text-left group transition-colors",
+                idx === selectedIndex ? "bg-brand/10" : "hover:bg-muted"
+              )}
+              onClick={() => handleSuggestionClick(s)}
+              onMouseEnter={() => setSelectedIndex(idx)}
+            >
+              <div className={cn(
+                "shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                idx === selectedIndex
+                  ? "bg-brand text-white"
+                  : "bg-brand/10 text-brand group-hover:bg-brand group-hover:text-white"
+              )}>
+                <SuggestionIcon type={s.type} />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-black text-foreground truncate uppercase">{s.label}</span>
+                {s.subLabel && <span className="text-[9px] text-muted-foreground truncate uppercase font-bold">{s.subLabel}</span>}
+              </div>
+              {s.type === 'brand' && (
+                <span className="ml-auto text-[8px] font-black uppercase text-brand/50 shrink-0">Marque</span>
+              )}
+            </button>
+          ))}
+          {isLoadingGeo && (
+            <div className="px-6 py-3 flex items-center gap-3 text-muted-foreground">
+              <div className="w-4 h-4 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
+              <span className="text-[10px] font-bold uppercase">Recherche en cours...</span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
-  if (searchOnly) {
-    return searchInput;
-  }
+  if (searchOnly) return searchInput;
 
   return (
     <div className="w-full flex flex-col gap-6 md:gap-8 pt-4">
-        <div className="flex items-center justify-between gap-4 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-            <div className="shrink-0">
-                <LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" />
-            </div>
-            
-            <div className="flex-1 flex justify-center px-4">
-                <div className="hidden md:block bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
-                    <p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
-                    <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
-                </div>
-            </div>
-
-            <div className="shrink-0 flex items-center">
-                <UserMenu />
-            </div>
+      <div className="flex items-center justify-between gap-4 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+        <div className="shrink-0">
+          <LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" />
         </div>
-
-        <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
-            <div className="flex-1">
-                {searchInput}
-            </div>
-            <NavigationIcons />
+        <div className="flex-1 flex justify-center px-4">
+          <div className="hidden md:block bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
+            <p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
+            <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
+          </div>
         </div>
-        
-        {pathname !== '/map' && (
-            <div className="w-full max-w-3xl mx-auto relative px-4 md:px-0">
-                 <QuickFilters />
-            </div>
-        )}
+        <div className="shrink-0 flex items-center">
+          <UserMenu />
+        </div>
+      </div>
+
+      <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
+        <div className="flex-1">{searchInput}</div>
+        <NavigationIcons />
+      </div>
+
+      {pathname !== '/map' && (
+        <div className="w-full max-w-3xl mx-auto relative px-4 md:px-0">
+          <QuickFilters />
+        </div>
+      )}
     </div>
   );
 };
