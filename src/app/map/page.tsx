@@ -463,7 +463,6 @@ function MapPageComponent() {
       setDeptToFit(null);
     } else {
       setMapCenter([lat, lng]);
-      setMapZoom(14);
     }
     setSelectionSource("external");
   };
