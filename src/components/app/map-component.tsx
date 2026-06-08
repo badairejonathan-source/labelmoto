@@ -349,7 +349,8 @@ const MapComponent = ({
     markerMapRef.current = {};
 
     const currentZoom = mapRef.current.getZoom();
-    if (currentZoom < ZOOM_THRESHOLD && deptCounts) return;
+    const effectiveZoom = Math.max(currentZoom, zoom);
+    if (effectiveZoom < ZOOM_THRESHOLD && deptCounts) return;
 
     points.forEach((point) => {
       const isSelected = point.id === selectedId;
