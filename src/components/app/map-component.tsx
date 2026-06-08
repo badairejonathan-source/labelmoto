@@ -277,7 +277,7 @@ const MapComponent = ({
             zIndexOffset: -1000,
           });
           labelMarkersRef.current.push(labelMarker);
-          labelMarker.addTo(map);
+          try { if (map && map.getContainer() && document.body.contains(map.getContainer())) labelMarker.addTo(map); } catch(e) {}
 
           layer.on('mouseover', () => {
             (layer as L.Path).setStyle({ ...hoverStyle });
