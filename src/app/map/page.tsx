@@ -233,7 +233,7 @@ function MapPageComponent() {
       for (let i = 0; i < collections.length; i++) {
         const colName = collections[i];
         try {
-          const snap = await getDocs(query(collection(firestore, colName), limit(20000)));
+          const snap = await getDocs(collection(firestore, colName));
           if (colName === 'concessions') debugCounters.concessions = snap.size;
           if (colName === 'associations') debugCounters.associations = snap.size;
           if (colName === 'relais') debugCounters.relais = snap.size;
