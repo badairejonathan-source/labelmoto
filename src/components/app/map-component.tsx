@@ -347,6 +347,8 @@ const MapComponent = ({
 
     clusterGroup.clearLayers();
     markerMapRef.current = {};
+    const currentZoom = mapRef.current.getZoom();
+    if (currentZoom < ZOOM_THRESHOLD && deptCounts) return;
 
 
 
