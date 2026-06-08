@@ -196,7 +196,7 @@ function MapPageComponent() {
   const [bboxToFit, setBboxToFit] = useState<[number, number, number, number] | null>(null);
 
   const isMobile = width !== undefined && width < 1024;
-  const bottomPadding = isMobile ? (drawerHeight === 'full' ? 600 : (drawerHeight === 'half' ? 300 : 160)) : 0;
+  const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 250 : 140)) : 0;
   const leftPadding = !isMobile ? 544 : 0;
 
   // ============================================================

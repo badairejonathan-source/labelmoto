@@ -163,7 +163,14 @@ const MapComponent = ({
         maxZoom: 13,
       });
     }
-    setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
+    setTimeout(() => {
+      isUpdatingFromProps.current = false;
+      // Forcer refresh des marqueurs après zoom ville
+      const z = map.getZoom();
+      if (z >= ZOOM_THRESHOLD && clusterGroupRef.current) {
+        map.fire('zoomend');
+      }
+    }, 900);
   }, [bboxToFit, leftPadding, isMobile]);
 
   // fitBounds sur les limites exactes d'un département
