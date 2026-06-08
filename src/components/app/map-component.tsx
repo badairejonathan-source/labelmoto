@@ -348,9 +348,7 @@ const MapComponent = ({
     clusterGroup.clearLayers();
     markerMapRef.current = {};
 
-    const currentZoom = mapRef.current.getZoom();
-    const effectiveZoom = Math.max(currentZoom, zoom);
-    if (effectiveZoom < ZOOM_THRESHOLD && deptCounts) return;
+
 
     points.forEach((point) => {
       const isSelected = point.id === selectedId;
