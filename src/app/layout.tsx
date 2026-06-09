@@ -47,10 +47,10 @@ export const metadata: Metadata = {
     description: "Trouvez un pro de confiance et gérez l'entretien de votre moto facilement partout en France.",
     images: [
       {
-        url: "/images/logo-moto.webp",
+        url: "/images/og-image.webp",
         width: 1200,
         height: 630,
-        alt: "Label Moto - Plateforme Nationale Moto",
+        alt: "Label Moto - L'annuaire national des professionnels moto en France",
       },
     ],
   },
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Label Moto : l'annuaire de référence pour les motards",
     description: "L'annuaire national complet : entretien, conseils et professionnels de confiance.",
-    images: ["/images/logo-moto.webp"],
+    images: ["/images/og-image.webp"],
   },
   robots: {
     index: true,
