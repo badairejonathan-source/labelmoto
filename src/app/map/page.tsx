@@ -362,7 +362,7 @@ function MapPageComponent() {
     if (!searchIntent) return;
     if (selectionSource !== 'external') return;
 
-    if (searchIntent.dept && !searchIntent.postalCode) {
+    if (searchIntent.dept && !searchIntent.postalCode && !searchIntent.city) {
       const rawDept = searchIntent.dept.toUpperCase();
       const deptCode = rawDept.length === 1 ? `0${rawDept}` : rawDept;
       setDeptToFit(null);

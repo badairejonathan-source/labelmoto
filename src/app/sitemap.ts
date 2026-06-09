@@ -10,8 +10,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let motoUrls: MetadataRoute.Sitemap = []
 
   try {
+    if (process.env.NODE_ENV !== 'production') throw new Error('Skip in dev');
     // 1. Récupération Concessions via Admin SDK
-    const concessionsSnap = await db.collection('concessions').get();
+    const concessionsSnap = await db.collection('concessions').limit(5000).get();
     concessionUrls = concessionsSnap.docs.map((doc) => {
       const data = doc.data();
       const slugOrId = data.slug || doc.id;
