@@ -104,16 +104,66 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     ]
   };
 
-  const localBusinessLd = {
+  // Conversion horaires Label Moto → format schema.org openingHours
+  const JOURS_SCHEMA: Record<string, string> = {
+    lundi: 'Mo', mardi: 'Tu', mercredi: 'We', jeudi: 'Th',
+    vendredi: 'Fr', samedi: 'Sa', dimanche: 'Su'
+  };
+  function buildOpeningHours(pro: Dealership): string[] {
+    const result: string[] = [];
+    for (const [jour, code] of Object.entries(JOURS_SCHEMA)) {
+      const horaire: string = (pro.horaires && pro.horaires[jour]) || (pro as any)[jour] || '';
+      if (!horaire || horaire.toLowerCase() === 'fermé' || horaire.toLowerCase() === 'ferme') continue;
+      // Format: "09:00-12:00, 14:00-18:00" → ["Mo 09:00-12:00", "Mo 14:00-18:00"]
+      const plages = horaire.split(',').map((s: string) => s.trim()).filter(Boolean);
+      for (const plage of plages) {
+        if (plage.includes('-')) result.push(`${code} ${plage.trim()}`);
+      }
+    }
+    return result;
+  }
+  // Extraction ville/CP depuis l'adresse
+  function parseAddress(address: string) {
+    const parts = address ? address.split(',').map(s => s.trim()) : [];
+    const last = parts[parts.length - 1] || '';
+    const match = last.match(/^(\d{5})?\s*(.+)?$/);
+    return {
+      streetAddress: parts.slice(0, -1).join(', ') || address,
+      postalCode: match?.[1] || '',
+      addressLocality: match?.[2]?.trim() || last,
+    };
+  }
+  const addr = parseAddress(pro.address || '');
+  const openingHours = buildOpeningHours(pro);
+  const proType = pro.category?.toLowerCase().includes('concession') || pro.appSection === 'shopping'
+    ? 'AutoDealer' : 'AutoRepair';
+
+  const localBusinessLd: Record<string, any> = {
     "@context": "https://schema.org",
-    "@type": pro.category?.toLowerCase().includes('concession') ? 'AutoDealer' : 'AutoRepair',
+    "@type": proType,
     "name": pro.title,
-    "description": `Retrouvez ${pro.title}, professionnel moto à ${pro.address}. Coordonnées et horaires sur Label Moto.`,
+    "description": `${pro.title} — professionnel moto${pro.brands?.length ? ' spécialisé ' + pro.brands.join(', ') : ''} situé à ${addr.addressLocality || pro.address}. Coordonnées, horaires et services sur Label Moto.`,
     "url": `https://labelmoto.fr/concessions/${pro.slug || pro.id}`,
-    "telephone": pro.phoneNumber,
-    "address": { "@type": "PostalAddress", "streetAddress": pro.address },
-    "image": pro.imageUrl || pro.imgUrl || "https://labelmoto.fr/images/logo-moto.webp",
-    "geo": { "@type": "GeoCoordinates", "latitude": pro.latitude, "longitude": pro.longitude }
+    "telephone": pro.phoneNumber || pro.pnoneNumber,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": addr.streetAddress,
+      "postalCode": addr.postalCode,
+      "addressLocality": addr.addressLocality,
+      "addressCountry": "FR"
+    },
+    "image": pro.imageUrl || pro.imgUrl || pro.img_url || "https://labelmoto.fr/images/logo-moto.webp",
+    "geo": { "@type": "GeoCoordinates", "latitude": pro.latitude, "longitude": pro.longitude },
+    "sameAs": [pro.website, pro.facebookUrl, pro.instagramUrl, pro.placeUrl].filter(Boolean),
+    "isPartOf": { "@type": "WebSite", "name": "Label Moto", "url": "https://labelmoto.fr" },
+  };
+  if (openingHours.length > 0) localBusinessLd["openingHours"] = openingHours;
+  if (pro.brands?.length) localBusinessLd["brand"] = pro.brands.map(b => ({ "@type": "Brand", "name": b }));
+  if (pro.rating) localBusinessLd["aggregateRating"] = {
+    "@type": "AggregateRating",
+    "ratingValue": pro.rating,
+    "reviewCount": pro.reviewCount || pro.ratingNumber || 1,
+    "bestRating": "5"
   };
 
   return (
