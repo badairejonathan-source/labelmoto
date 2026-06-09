@@ -60,11 +60,19 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return { title: "Établissement non trouvé | Label Moto" };
   }
 
-  const title = `${pro.title} à ${pro.address?.split(',').pop()?.trim() || ''} | Professionnel moto`;
-  const description = `Retrouvez ${pro.title}, professionnel moto. Coordonnées, horaires et services sur Label Moto.`;
+  // Extraction ville depuis adresse pour le titre
+  const addrParts = (pro.address || '').split(',').map((s: string) => s.trim());
+  const cpSegIdx = addrParts.findIndex((p: string) => /\d{5}/.test(p));
+  const ville = cpSegIdx !== -1
+    ? addrParts[cpSegIdx].replace(/\d{5}\s*/, '').trim()
+    : addrParts[addrParts.length - 1] || '';
+
+  const brandsStr = pro.brands?.length ? ' — ' + pro.brands.join(', ') : '';
+  const title = `${pro.title}${ville ? ' à ' + ville : ''}${brandsStr} | Professionnel moto`;
+  const description = `${pro.title} : retrouvez les horaires, coordonnées et services de ce professionnel moto${ville ? ' à ' + ville : ''}. Annuaire Label Moto.`;
 
   return {
-    title: `${title} | Label Moto`,
+    title: title,
     description: description,
     alternates: {
       canonical: `/concessions/${pro.slug || pro.id}`,
@@ -125,12 +133,23 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   // Extraction ville/CP depuis l'adresse
   function parseAddress(address: string) {
     const parts = address ? address.split(',').map(s => s.trim()) : [];
+    // Chercher le segment contenant un code postal français (5 chiffres)
+    const cpIdx = parts.findIndex(p => /\d{5}/.test(p));
+    if (cpIdx !== -1) {
+      const cpPart = parts[cpIdx];
+      const cpMatch = cpPart.match(/(\d{5})\s*(.*)/);
+      return {
+        streetAddress: parts.slice(0, cpIdx).join(', ') || address,
+        postalCode: cpMatch?.[1] || '',
+        addressLocality: cpMatch?.[2]?.trim() || '',
+      };
+    }
+    // Fallback : pas de code postal trouvé
     const last = parts[parts.length - 1] || '';
-    const match = last.match(/^(\d{5})?\s*(.+)?$/);
     return {
       streetAddress: parts.slice(0, -1).join(', ') || address,
-      postalCode: match?.[1] || '',
-      addressLocality: match?.[2]?.trim() || last,
+      postalCode: '',
+      addressLocality: last,
     };
   }
   const addr = parseAddress(pro.address || '');

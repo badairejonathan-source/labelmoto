@@ -16,9 +16,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     concessionUrls = concessionsSnap.docs.map((doc) => {
       const data = doc.data();
       const slugOrId = data.slug || doc.id;
+      const ts = data.updatedAt || data.publishedAt || data.timestamp;
+      const lastModified = ts?.toDate ? ts.toDate() : new Date();
       return {
         url: `${baseUrl}/concessions/${slugOrId}`,
-        lastModified: new Date(),
+        lastModified,
         changeFrequency: 'weekly' as const,
         priority: 0.7,
       };
