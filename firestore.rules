@@ -32,6 +32,7 @@ service cloud.firestore {
     }
     match /associations/{id} { allow read: if true; allow write: if isAdmin(); }
     match /relais/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /creators/{id} { allow read: if true; allow write: if isAdmin(); }
     match /motorcycle_sheets/{id} { allow read: if true; allow write: if isAdmin(); }
     match /articles/{id} { allow read: if true; allow write: if isAdmin(); }
 

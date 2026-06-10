@@ -94,7 +94,7 @@ const MapComponent = dynamic(
 
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
   const { firestore } = useFirebase();
-  const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : 'concessions');
+  const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : (point?.appSection === 'creator' ? 'creators' : 'concessions'));
 
   const docRef = useMemoFirebase(() => {
     if (!firestore || !dealershipId) return null;
@@ -141,7 +141,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
             </Button>
           )}
           <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
-            <Link href={`/concessions/${pro.slug || pro.id}#reviews`}>
+            <Link href={point?.appSection === 'creator' ? `/creators/${pro.slug || pro.id}` : `/concessions/${pro.slug || pro.id}#reviews`}>
               <MessageSquare className="mr-1 h-3 w-3 md:h-4 w-4" /> Avis
             </Link>
           </Button>
@@ -161,7 +161,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
           </div>
         </div>
         <div className="pt-6 border-t border-dashed">
-          <Link href={`/concessions/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-2xl hover:bg-brand/5 group transition-colors">
+          <Link href={point?.appSection === 'creator' ? `/creators/${pro.slug || pro.id}` : `/concessions/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-2xl hover:bg-brand/5 group transition-colors">
             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Ouvrir la fiche complète</span>
             <ChevronRight className="inline-block h-3 w-3 ml-2 text-muted-foreground group-hover:text-brand" />
           </Link>
