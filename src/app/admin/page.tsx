@@ -251,10 +251,36 @@ export default function AdminPage() {
         publicData.currentStatus = 'OPERATIONAL';
       }
 
-      const targetCol = data.appSectionRequested === 'association' ? 'associations' : 
+      let targetCol = data.appSectionRequested === 'association' ? 'associations' : 
                        (data.appSectionRequested === 'relais' ? 'relais' : 'concessions');
-      
-      await setDocumentNonBlocking(doc(firestore, targetCol, targetDocId), publicData, { merge: true });
+
+      // Cas spécial : créateur
+      if (data.type === 'creator') {
+        targetCol = 'creators';
+        const creatorSlug = (data.slugCandidate || data.displayName || 'creator').toLowerCase().replace(/\s+/g, '-');
+        const creatorDocId = data.publishTargetId || creatorSlug;
+        const creatorData: any = {
+          title: data.displayName || data.businessName,
+          displayName: data.displayName || data.businessName,
+          activite: data.activite || '',
+          specialite: data.specialite || '',
+          ville: data.ville || '',
+          departement: data.departement || '',
+          instagram: data.instagram || '',
+          email: data.email,
+          description: data.description || '',
+          photoUrl: data.photoUrl || '',
+          appSection: 'creator',
+          category: data.activite || 'Créateur moto',
+          slug: creatorSlug,
+          isClaimed: true,
+          publishedAt: new Date(),
+          submissionId: data.id,
+        };
+        await setDocumentNonBlocking(doc(firestore, 'creators', creatorDocId), creatorData, { merge: true });
+      } else {
+        await setDocumentNonBlocking(doc(firestore, targetCol, targetDocId), publicData, { merge: true });
+      }
       
       await updateDoc(doc(firestore, 'listing_submissions', data.id), { 
         status: 'published', 
