@@ -68,6 +68,7 @@ const COLLECTION_URL_MAP: Record<string, string> = {
   associations: "concessions",
   concessions: "concessions",
   relais: "concessions",
+  creators: "creators",
 };
 
 export const sendFicheValideeEmail = onDocumentUpdated(
@@ -87,7 +88,7 @@ export const sendFicheValideeEmail = onDocumentUpdated(
 
     const publishedCollection = after.publishedCollection;
     const publishedDocId = after.publishedDocId;
-    const businessName = after.businessName || after.slugCandidate || "votre établissement";
+    const businessName = after.displayName || after.businessName || after.slugCandidate || "votre établissement";
     const urlSegment = COLLECTION_URL_MAP[publishedCollection as string];
     let ficheUrl = "https://labelmoto.fr";
     if (urlSegment && publishedDocId) {
@@ -95,9 +96,11 @@ export const sendFicheValideeEmail = onDocumentUpdated(
         const db = getFirestore();
         const docSnap = await db.collection(publishedCollection).doc(publishedDocId).get();
         const slug = docSnap.exists ? (docSnap.data()?.slug || publishedDocId) : publishedDocId;
-        ficheUrl = `https://labelmoto.fr/concessions/${slug}`;
+        const baseUrl = publishedCollection === 'creators' ? 'creators' : 'concessions';
+        ficheUrl = `https://labelmoto.fr/${baseUrl}/${slug}`;
       } catch(e) {
-        ficheUrl = `https://labelmoto.fr/concessions/${publishedDocId}`;
+        const baseUrl = publishedCollection === 'creators' ? 'creators' : 'concessions';
+        ficheUrl = `https://labelmoto.fr/${baseUrl}/${publishedDocId}`;
       }
     }
 
