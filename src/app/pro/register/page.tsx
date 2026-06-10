@@ -96,7 +96,7 @@ function RegisterProContent() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Type de structure</label>
-                    <Select name="appSection" defaultValue="shopping">
+                    <Select name="appSection" defaultValue="shopping" onValueChange={(val) => { if (val === 'creator') router.push('/creators/register'); }}>
                       <SelectTrigger className="font-bold h-12 rounded-xl">
                         <SelectValue placeholder="Choisir un type" />
                       </SelectTrigger>
@@ -106,6 +106,7 @@ function RegisterProContent() {
                         <SelectItem value="both">Mixte (Vente & Service)</SelectItem>
                         <SelectItem value="association">Association / Club</SelectItem>
                         <SelectItem value="relais">Relais Motard (Hôtel/Resto)</SelectItem>
+                        <SelectItem value="creator">Photographe / Vidéaste</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
