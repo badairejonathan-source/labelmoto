@@ -347,7 +347,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             <div className="bg-muted/50 p-8 border-t border-muted">
                 <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="shrink-0 w-full md:w-48 aspect-square relative rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted group/map">
-                        <Image src="/images/apercucartezoom.webp" alt="Carte" fill className="object-cover transition-transform group-hover/map:scale-110" />
+                        <Image src="/images/apercucartezoom.webp" alt="Carte" fill className="object-cover transition-transform group-hover/map:scale-110" loading="lazy"/>
                         <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
                             <MapPin className="h-8 w-8 text-white drop-shadow-lg" />
                         </div>
@@ -531,7 +531,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             <div className="flex flex-col md:flex-row items-center gap-6">
                 {(isAssociationCta || isRelaisCta) && !isRegistrationCta && (
                   <div className="relative w-full md:w-64 aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0">
-                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" />
+                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" loading="lazy"/>
                   </div>
                 )}
                 <Button asChild className="w-full md:w-auto bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
@@ -693,7 +693,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
                 <div className="my-8 p-8 bg-brand/5 rounded-[2rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={150} height={48} /></div>
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={150} height={48} loading="lazy"/></div>
                   <div className="flex items-center gap-3 mb-6"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.5em] m-0 text-muted-foreground">Au sommaire :</h2></div>
                   <nav><ul className="space-y-4">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-base font-black text-foreground hover:text-brand transition-all"><div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-3.5 w-3.5" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span></a></li>); })}</ul></nav>
                 </div>
@@ -707,7 +707,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <div className="mt-16 pt-8 border-t border-brand/20">
                       <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
                       <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
-                      <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={110} height={110} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-10" /></div>
+                      <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={110} height={110} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-10" loading="lazy"/></div>
                   </div>
               )}
             </article>
@@ -718,7 +718,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                   <CardHeader className="bg-brand text-white p-5"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-sm"><Map className="h-5 w-5" /> Trouver un pro</CardTitle></CardHeader>
                   <CardContent className="p-4 text-center space-y-3">
                     <div className="relative aspect-video rounded-xl overflow-hidden border-4 border-muted shadow-lg group cursor-pointer" onClick={() => router.push('/map')}>
-                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" sizes="(max-width: 1024px) 100vw, 400px" />
+                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" sizes="(max-width: 1024px) 100vw, 400px" loading="lazy"/>
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-8 w-8 text-white" /></div>
                     </div>
                     <p className="text-xs font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>

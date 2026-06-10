@@ -139,13 +139,11 @@ export default function HomepageDeferred() {
                                         isAsso ? "border-indigo-600/30" : (isRelais ? "border-amber-600/30" : "border-brand/10")
                                     )}
                                 >
-                                    <Image 
-                                        src={getArticleImage(article)} 
+                                    <Image src={getArticleImage(article)} 
                                         alt="" 
                                         fill 
                                         className="object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                    />
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" loading="lazy"/>
                                     
                                     <div className="absolute top-6 right-6 z-20">
                                         <span className="bg-white/95 backdrop-blur-sm text-brand px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border border-brand/20 animate-bounce-subtle">
@@ -201,13 +199,11 @@ export default function HomepageDeferred() {
                                     className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1"
                                 >
                                     <div className="relative aspect-video overflow-hidden bg-muted">
-                                        <Image 
-                                            src={getArticleImage(article)} 
+                                        <Image src={getArticleImage(article)} 
                                             alt="" 
                                             fill 
                                             className="object-cover transition-transform duration-700 group-hover:scale-110" 
-                                            sizes="(max-width: 768px) 100vw, 33vw"
-                                        />
+                                            sizes="(max-width: 768px) 100vw, 33vw" loading="lazy"/>
                                     </div>
                                     <div className="p-6 flex flex-col flex-grow">
                                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3 font-black uppercase tracking-widest">
@@ -234,7 +230,7 @@ export default function HomepageDeferred() {
                         <div className="flex flex-col items-center gap-3">
                             <Button asChild variant="ghost" size="icon" aria-label="Voir tous les articles et guides" className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-brand transition-all border-4 md:border-8 border-white hover:border-white group">
                                 <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={56} height={56} className="h-10 w-10 md:h-14 md:w-14 object-contain transition-transform group-hover:rotate-12 group-hover:brightness-0 group-hover:invert" />
+                                    <Image src="/images/icon-conseils.webp" alt="" width={56} height={56} className="h-10 w-10 md:h-14 md:w-14 object-contain transition-transform group-hover:rotate-12 group-hover:brightness-0 group-hover:invert" loading="lazy"/>
                                     <span className="sr-only">Voir tous les articles</span>
                                 </Link>
                             </Button>
@@ -265,7 +261,7 @@ export default function HomepageDeferred() {
                             <div className="space-y-6 text-base md:text-lg text-gray-200 font-bold leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
                                 <p>Parce que chaque minute passée à chercher un garage est une minute de moins à pencher dans les virages, nous avons créé LABEL MOTO. Notre mission : rendre votre vie de motard plus fluide, plus connectée et surtout, plus fiable.</p>
                                 <p>Trouvez en un clic votre future bécane, réservez un essai en concession, ou dénichez le préparateur qui saura sublimer votre machine. Que ce soit pour un entretien de routine ou l’équipement de votre vie, accédez uniquement à des professionnels sélectionnés.</p>
-                                <p className="font-black text-white pt-4 text-xl uppercase tracking-widest italic">L'équipe Label Moto <Image src="/images/Stamp-LM.webp" alt="Signature" width={48} height={48} className="inline-block -mt-2.5 opacity-90 scale-125 ml-2" /></p>
+                                <p className="font-black text-white pt-4 text-xl uppercase tracking-widest italic">L'équipe Label Moto <Image src="/images/Stamp-LM.webp" alt="Signature" width={48} height={48} className="inline-block -mt-2.5 opacity-90 scale-125 ml-2" loading="lazy"/></p>
                             </div>
                         </div>
                     </div>

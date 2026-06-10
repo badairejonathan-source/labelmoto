@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Youtube, Shield } from 'lucide-react';
 import LabelMotoLogo from './logo';
-import { useUser } from '@/firebase/client';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 const Footer = () => {
-  const { user, profile } = useUser();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
@@ -20,8 +18,7 @@ const Footer = () => {
 
   if (pathname === '/map') return null;
 
-  const proRegisterLink = (mounted && user) ? "/pro/register" : "/login";
-  const isAdmin = mounted && profile?.role === 'admin';
+  const proRegisterLink = "/login?callbackUrl=/pro/register";
 
   return (
     <footer className="bg-muted/30 border-t border-border/50">
@@ -63,9 +60,6 @@ const Footer = () => {
             <h3 className="font-black text-foreground mb-4 uppercase text-[10px] tracking-[0.2em]">Espace Pro</h3>
             <ul className="space-y-3">
               <li><Link href={proRegisterLink} className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Inscrire mon établissement</Link></li>
-              {isAdmin && (
-                <li><Link href="/admin" className="text-brand hover:opacity-80 font-black uppercase tracking-widest text-[9px]">Espace Admin</Link></li>
-              )}
               <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Partenariats</Link></li>
             </ul>
           </div>
