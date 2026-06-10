@@ -7,7 +7,7 @@ import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header, { UserMenu } from '@/components/app/header';
 import LabelMotoLogo from '@/components/app/logo';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon } from 'lucide-react';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -183,7 +183,7 @@ function MapPageComponent() {
   const [isLoadingPoints, setIsLoadingPoints] = useState(true);
   const [deptCounts, setDeptCounts] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service', 'association', 'relais']);
+  const [activeFilters, setActiveFilters] = useState<string[]>(['shopping', 'service', 'association', 'relais', 'creator']);
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
   const [isDetailView, setIsDetailView] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -218,7 +218,7 @@ function MapPageComponent() {
 
     const fetchFromFirestore = async (silent: boolean) => {
       if (!firestore) return;
-      const collections = ['concessions', 'associations', 'relais'];
+      const collections = ['concessions', 'associations', 'relais', 'creators'];
       const allPoints: MapPoint[] = [];
       const seenIds = new Set<string>();
       
@@ -226,6 +226,7 @@ function MapPageComponent() {
         concessions: 0,
         associations: 0,
         relais: 0,
+        creators: 0,
         invalidCoords: 0,
         invalidType: 0
       };
@@ -237,6 +238,7 @@ function MapPageComponent() {
           if (colName === 'concessions') debugCounters.concessions = snap.size;
           if (colName === 'associations') debugCounters.associations = snap.size;
           if (colName === 'relais') debugCounters.relais = snap.size;
+          if (colName === 'creators') debugCounters.creators = snap.size;
 
           snap.docs.forEach(d => {
             if (seenIds.has(d.id)) return;
@@ -248,14 +250,14 @@ function MapPageComponent() {
               return;
             }
 
-            const appSection = data.appSection || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'shopping'));
+            const appSection = data.appSection || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : (colName === 'creators' ? 'creator' : 'shopping')));
             
             seenIds.add(d.id);
             allPoints.push({
               id: d.id,
               latitude: coords.lat,
               longitude: coords.lng,
-              category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : 'concession')),
+              category: data.category || (colName === 'associations' ? 'association' : (colName === 'relais' ? 'relais' : (colName === 'creators' ? 'creator' : 'concession'))),
               appSection: appSection,
               title: data.title || d.id,
               slug: data.slug,
@@ -478,7 +480,8 @@ function MapPageComponent() {
       { id: 'shopping', label: 'CONCESS', icon: Bike },
       { id: 'service', label: 'ATELIER', icon: Wrench },
       { id: 'association', label: 'ASSO', icon: Users },
-      { id: 'relais', label: 'RELAIS', icon: Utensils }
+      { id: 'relais', label: 'RELAIS', icon: Utensils },
+      { id: 'creator', label: 'CRÉATEURS', icon: Camera }
     ];
 
     const toggleDrawer = () => {
