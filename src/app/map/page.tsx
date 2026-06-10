@@ -456,15 +456,17 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('half');
   }, [points, isMobile]);
 
-  const handleSuggestionSelect = (lat, lng, bbox) => {
+  const handleSuggestionSelect = (lat, lng, bbox, dealerId) => {
     if (bbox) {
       setBboxToFit(null);
       setTimeout(() => setBboxToFit(bbox), 10);
       setDeptToFit(null);
+    } else if (dealerId) {
+      handleMarkerClick(dealerId);
     } else {
       setMapCenter([lat, lng]);
+      setSelectionSource("external");
     }
-    setSelectionSource("external");
   };
 
   const handleUserInteraction = () => {

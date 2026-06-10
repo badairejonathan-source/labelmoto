@@ -402,7 +402,7 @@ const Header: React.FC<any> = ({
     } else {
       // Sur la page /map — déclencher fitBounds via onSuggestionSelect
       if (onSuggestionSelect && s.lat && s.lng) {
-        setTimeout(() => onSuggestionSelect(s.lat!, s.lng!, s.bbox), 10);
+        setTimeout(() => onSuggestionSelect(s.lat!, s.lng!, s.bbox, s.id), 10);
       } else {
         setTimeout(() => onSearch(), 10);
       }
