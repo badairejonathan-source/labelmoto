@@ -106,6 +106,61 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   if (isLoading) return <div className="p-8 space-y-6"><Skeleton className="h-48 w-full rounded-3xl" /><Skeleton className="h-8 w-3/4" /></div>;
   if (!pro) return null;
 
+  // Affichage spécifique créateur
+  if (point?.appSection === 'creator') {
+    return (
+      <div className="bg-white rounded-[2.5rem] p-8 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
+        <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-8 transition-colors">
+          <ArrowLeft className="h-4 w-4" /> Retour à la liste
+        </button>
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            {(pro as any).photoUrl ? (
+              <img src={(pro as any).photoUrl} alt={pro.title} className="w-16 h-16 rounded-full object-cover border-4 border-brand" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-brand/20 flex items-center justify-center border-4 border-brand">
+                <span className="text-2xl font-black text-brand">{pro.title?.[0]?.toUpperCase()}</span>
+              </div>
+            )}
+            <div>
+              <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-1">{pro.title}</h3>
+              <p className="text-sm font-black uppercase text-brand italic">{(pro as any).activite || pro.category}</p>
+            </div>
+          </div>
+          {(pro as any).description && (
+            <p className="text-sm text-muted-foreground leading-relaxed">{(pro as any).description}</p>
+          )}
+          <div className="space-y-3">
+            {(pro as any).instagram && (
+              <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-2xl">
+                <Camera className="h-4 w-4 text-brand shrink-0" />
+                <a href={`https://instagram.com/${(pro as any).instagram.replace('@','')}`} target="_blank" rel="noreferrer" className="font-bold text-brand text-sm hover:underline">{(pro as any).instagram}</a>
+              </div>
+            )}
+            {(pro as any).ville && (
+              <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-2xl">
+                <MapPin className="h-4 w-4 text-brand shrink-0" />
+                <span className="font-bold text-sm">{(pro as any).ville}</span>
+              </div>
+            )}
+            {(pro as any).specialite && (
+              <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-2xl">
+                <span className="text-[10px] font-black uppercase text-muted-foreground w-16 shrink-0">Spécialité</span>
+                <span className="font-bold text-sm">{(pro as any).specialite}</span>
+              </div>
+            )}
+          </div>
+          <div className="pt-4 border-t border-dashed">
+            <Link href={`/creators/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-2xl hover:bg-brand/5 group transition-colors">
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Voir le profil complet</span>
+              <ChevronRight className="inline-block h-3 w-3 ml-2 text-muted-foreground group-hover:text-brand" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-[2.5rem] p-8 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
       <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-8 transition-colors">
