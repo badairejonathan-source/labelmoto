@@ -277,6 +277,7 @@ function MapPageComponent() {
       console.log(`[MAP_DEBUG_2] Total Associations: ${debugCounters.associations}`);
       console.log(`[MAP_DEBUG_3] Total Relais: ${debugCounters.relais}`);
       console.log(`[MAP_DEBUG_4] Rejetés (Coords Invalides): ${debugCounters.invalidCoords}`);
+      console.log(`[MAP_DEBUG_CREATORS] Total Creators: ${debugCounters.creators}`);
       console.log(`[MAP_DEBUG_5] Rejetés (Format/Type): ${debugCounters.invalidType}`);
       console.log(`[MAP_DEBUG_6] Total Markers Finaux: ${allPoints.length}`);
 
