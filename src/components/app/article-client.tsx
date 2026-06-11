@@ -500,7 +500,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const isRelaisCta = targetSlug === 'carte-relais-motards' || label.toLowerCase().includes('relais');
     const isRegistrationCta = label.toLowerCase().includes('ajouter mon association') || label.toLowerCase().includes('inscrire') || label.toLowerCase().includes('ajouter une adresse');
 
-    let href = targetSlug ? (targetSlug.startsWith('http') ? targetSlug : cta.target_type === 'motorcycle_sheet' ? `/fiches/${targetSlug}` : cta.target_type === 'page' ? `/${targetSlug}` : `/info/${targetSlug}`) : "/map";
+    let href = targetSlug ? (targetSlug.startsWith('http') ? targetSlug : `/info/${targetSlug}`) : "/map";
     
     if (targetSlug === 'carte-associations-moto') {
         href = "/map?filter=association";
