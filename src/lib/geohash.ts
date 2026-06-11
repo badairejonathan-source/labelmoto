@@ -49,16 +49,9 @@ export function encodeGeohash(lat: number, lng: number, precision: number = 9): 
 
 /**
  * Calcule les Geohashes nécessaires pour couvrir un rectangle (viewport).
- * @param south Latitude sud
- * @param west Longitude ouest
- * @param north Latitude nord
- * @param east Longitude est
- * @param precision Longueur du hash (4 = ~20km, 5 = ~5km)
  */
 export function getGeohashCells(south: number, west: number, north: number, east: number, precision: number = 4): string[] {
   const hashes = new Set<string>();
-  
-  // Échantillonnage adapté à la précision demandée
   const step = precision === 4 ? 0.15 : 0.04;
 
   for (let lat = south - step/2; lat <= north + step; lat += step) {
@@ -73,23 +66,23 @@ export function getGeohashCells(south: number, west: number, north: number, east
 }
 
 /**
- * Extrait et valide des coordonnées numériques depuis un objet de données hétérogène.
- * Gère les types string, number, les virgules et les objets imbriqués.
+ * Extrait et valide des coordonnées numériques de manière ultra-robuste.
+ * Gère les types string, number, les virgules, les tableaux et les objets imbriqués.
  */
 export function extractValidCoordinates(data: any): { lat: number; lng: number } | null {
   if (!data) return null;
 
-  // 1. Recherche multi-champs exhaustive
+  // 1. Recherche exhaustive des champs potentiels
   let rawLat: any = 
     data.latitude ?? 
     data.lat ?? 
     data.lat_deg ??
     data.location?.lat ?? 
     data.location?.latitude ??
-    data.pos?.lat ?? 
     data.coords?.latitude ??
-    data.coordinates?.latitude ??
-    (Array.isArray(data.position) ? data.position[0] : null);
+    data.pos?.lat ?? 
+    (Array.isArray(data.position) ? data.position[0] : null) ??
+    (Array.isArray(data.coordinates) ? data.coordinates[1] : null); // Note: GeoJSON est [lng, lat]
 
   let rawLng: any = 
     data.longitude ?? 
@@ -99,16 +92,17 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
     data.lng_deg ??
     data.location?.lng ?? 
     data.location?.longitude ??
-    data.pos?.lng ?? 
     data.coords?.longitude ??
-    data.coordinates?.longitude ??
-    (Array.isArray(data.position) ? data.position[1] : null);
+    data.pos?.lng ?? 
+    (Array.isArray(data.position) ? data.position[1] : null) ??
+    (Array.isArray(data.coordinates) ? data.coordinates[0] : null);
 
   // 2. Fonction de parsing robuste (gère les virgules et espaces)
   const parse = (v: any): number => {
     if (v === undefined || v === null || v === "") return NaN;
     if (typeof v === 'number') return v;
     if (typeof v === 'string') {
+        // Remplacer virgule par point et supprimer espaces
         return parseFloat(v.replace(',', '.').replace(/\s/g, ''));
     }
     return NaN;
@@ -119,7 +113,7 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
 
   // 3. Validation géographique stricte
   if (!isNaN(lat) && !isNaN(lng)) {
-    // On exclut (0,0) qui est souvent une valeur par défaut erronée
+    // Exclure (0,0) souvent erroné
     if (lat === 0 && lng === 0) return null;
     
     if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
