@@ -353,14 +353,9 @@ function MapPageComponent() {
     const db = getFirestore(firebaseApp);
     getDoc(doc(db, 'cache', 'departements_count'))
       .then(snap => {
-        if (snap.exists()) {
-          console.log('[DEPT] deptCounts chargé:', Object.keys(snap.data().counts || {}).length, 'départements');
-          setDeptCounts(snap.data().counts);
-        } else {
-          console.warn('[DEPT] document departements_count introuvable');
-        }
+        if (snap.exists()) setDeptCounts(snap.data().counts);
       })
-      .catch((err) => { console.error('[DEPT] Erreur chargement deptCounts:', err); });
+      .catch(() => {});
   }, []);
 
   // Scroll auto vers la fiche sélectionnée
