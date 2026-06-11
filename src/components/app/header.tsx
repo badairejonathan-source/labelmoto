@@ -1,20 +1,19 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, LogOut, ShieldAlert, Settings, Building2 } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
-import { useUser, useAuth, useFirebase } from '@/firebase/client';
-import { signOut } from 'firebase/auth';
+import { useFirebase } from '@/firebase/client';
+const UserMenuLazy = dynamic(() => import('@/components/app/user-menu'), { 
+  ssr: false,
+  loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
+});
 import { useRouter, usePathname } from 'next/navigation';
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit } from 'firebase/firestore';
@@ -52,98 +51,6 @@ interface Suggestion {
   score?: number;
 }
 
-export const UserMenu = () => {
-  const { user, profile, activateAuth } = useUser();
-  const auth = useAuth();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
-  const pseudo = profile?.displayName || profile?.pseudo || user?.email?.split('@')[0] || '';
-  const initial = pseudo?.[0]?.toUpperCase() || '?';
-  const isAdmin = profile?.role === 'admin';
-  if (!mounted) return null;
-
-  return (
-    <DropdownMenu onOpenChange={(open) => open && activateAuth()}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className={cn("relative h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full p-0 flex items-center justify-center shadow-xl border-2 border-white bg-white hover:bg-white transition-all hover:scale-105 active:scale-95", isAdmin && "ring-2 ring-brand ring-offset-2")}>
-          {user ? (
-            <Avatar className="h-[57px] w-[57px] md:h-[65px] md:w-[65px] border-2 border-brand">
-              <AvatarImage src={user.photoURL || undefined} />
-              <AvatarFallback className="bg-brand text-white text-xs font-black">{initial}</AvatarFallback>
-            </Avatar>
-          ) : (
-            <div className="h-[57px] w-[57px] md:h-[65px] md:w-[65px] rounded-full flex items-center justify-center p-1">
-              <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" />
-            </div>
-          )}
-          <div className="absolute -bottom-0.5 -right-0.5 bg-brand text-white rounded-full p-0.5 border-2 border-white">
-            <Menu className="h-3 w-3 md:h-4 w-4" />
-          </div>
-          {isAdmin && (
-            <div className="absolute -top-1 -right-1 bg-indigo-600 text-white rounded-full p-1 border-2 border-white animate-pulse">
-              <ShieldAlert className="h-3 w-3" />
-            </div>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 z-[3000] p-6 rounded-[2.5rem] border-2 shadow-2xl" align="end">
-        {isAdmin && (
-          <>
-            <DropdownMenuLabel className="text-[9px] uppercase font-black text-indigo-600 px-2 mb-2 tracking-[0.2em]">Administration</DropdownMenuLabel>
-            <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl mb-4 p-3 shadow-lg">
-              <Link href="/admin" className="flex items-center w-full justify-between">
-                <div className="flex items-center gap-3"><Settings className="h-4 w-4" /><span>ESPACE ADMIN</span></div>
-                <ShieldAlert className="h-4 w-4" />
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="mx-2 mb-4 border-muted/50" />
-          </>
-        )}
-        <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-4 tracking-[0.2em]">Les Guides Moto</DropdownMenuLabel>
-        <div className="grid grid-cols-2 gap-4 px-2 mb-6">
-          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent cursor-pointer">
-            <Link href="/entretien" className="flex flex-col items-center gap-2 group/nav">
-              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 p-2.5">
-                <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={40} height={40} className="w-full h-full object-contain" />
-              </div>
-              <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Entretien</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent cursor-pointer">
-            <Link href="/info" className="flex flex-col items-center gap-2 group/nav">
-              <div className="h-16 w-16 rounded-full bg-white shadow-lg border-2 border-white flex items-center justify-center transition-all group-hover/nav:scale-110 p-2.5">
-                <Image src="/images/icon-conseils.webp" alt="Conseils" width={40} height={40} className="w-full h-full object-contain" />
-              </div>
-              <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover/nav:text-brand text-center">Conseils</span>
-            </Link>
-          </DropdownMenuItem>
-        </div>
-        <DropdownMenuSeparator className="mx-2 mb-6 border-muted/50" />
-        <DropdownMenuLabel className="text-[9px] uppercase font-black text-muted-foreground px-2 mb-2 tracking-[0.2em]">Votre Compte</DropdownMenuLabel>
-        {user ? (
-          <>
-            <div className="px-2 mb-3"><p className="text-xs font-black text-brand truncate">{pseudo}</p></div>
-            <DropdownMenuItem asChild className="cursor-pointer font-bold rounded-xl mb-1 focus:bg-brand/5 focus:text-brand">
-              <Link href="/account" className="flex items-center w-full"><UserIcon className="mr-3 h-4 w-4" /> Profil</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => auth && signOut(auth)} className="cursor-pointer font-black uppercase text-[9px] tracking-widest text-destructive hover:bg-destructive/5 rounded-xl px-2 py-3 mt-2">
-              <LogOut className="mr-3 h-4 w-4" /> Déconnexion
-            </DropdownMenuItem>
-          </>
-        ) : (
-          <DropdownMenuItem asChild className="cursor-pointer font-black uppercase text-[10px] tracking-widest text-brand hover:bg-brand/5 rounded-xl px-4 py-4 mt-2 border-2 border-brand/10 border-dashed text-center">
-            <Link href="/login" className="w-full">Se connecter</Link>
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-      <style jsx global>{`
-        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
-      `}</style>
-    </DropdownMenu>
-  );
-};
 
 const NavigationIcons = () => (
   <div className="hidden lg:flex items-center gap-8 ml-32">
@@ -498,7 +405,7 @@ const Header: React.FC<any> = ({
             <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
           </div>
         </div>
-        <div className="shrink-0 flex items-center"><UserMenu /></div>
+        <div className="shrink-0 flex items-center"><UserMenuLazy /></div>
       </div>
       <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
         <div className="flex-1">{searchInput}</div>
