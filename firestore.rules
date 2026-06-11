@@ -35,6 +35,8 @@ service cloud.firestore {
     match /creators/{id} { allow read: if true; allow write: if isAdmin(); }
     match /motorcycle_sheets/{id} { allow read: if true; allow write: if isAdmin(); }
     match /articles/{id} { allow read: if true; allow write: if isAdmin(); }
+    // Cache public (choropleth départements)
+    match /cache/{id} { allow read: if true; allow write: if isAdmin(); }
 
     // --- NOYAU IDENTITÉ & PROFILS ---
     match /users/{userId} {
