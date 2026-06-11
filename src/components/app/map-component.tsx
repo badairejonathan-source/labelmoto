@@ -230,6 +230,7 @@ const MapComponent = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !deptCounts) return;
+    if (map.getZoom() < ZOOM_THRESHOLD && clusterGroupRef.current) { clusterGroupRef.current.clearLayers(); }
 
     const normalStyle = (feature: any) => {
       const code = feature?.properties?.code;
