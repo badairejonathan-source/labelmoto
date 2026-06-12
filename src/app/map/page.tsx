@@ -541,7 +541,6 @@ function MapPageComponent() {
     { key: '972 - Martinique', label: 'Martinique' },
     { key: '973 - Guyane', label: 'Guyane' },
     { key: '974 - La Réunion', label: 'La Réunion' },
-    { key: '976 - Mayotte', label: 'Mayotte' },
   ].map(t => ({ ...t, center: (locationsData as any)[t.key]?.center }))
    .filter(t => t.center);
   const handleDomTomSelect = (center: [number, number]) => {

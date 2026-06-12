@@ -25,6 +25,7 @@ const AdCard: React.FC<AdCardProps> = ({ article, isPublicity = false }) => {
     const id = article.id?.toLowerCase() || '';
     const title = (article.title || '').toLowerCase();
 
+    if (id.includes('125') || title.includes('125')) return "/images/article-moto-125cc.webp";
     if (id.includes('association') || title.includes('association')) return "/images/article-motars-association.webp";
     if (id.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
     if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";

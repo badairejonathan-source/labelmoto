@@ -128,6 +128,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
 
+    if (articleId.includes('125') || title.includes('125')) return "/images/article-moto-125cc.webp";
     if (articleId.includes('association') || title.includes('association')) return "/images/article-motars-association.webp";
     if (articleId.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
     if (articleId.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
