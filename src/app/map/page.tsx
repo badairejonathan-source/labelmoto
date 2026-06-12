@@ -11,7 +11,7 @@ const UserMenu = dynamic(() => import('@/components/app/user-menu'), {
   loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
 });
 import LabelMotoLogo from '@/components/app/logo';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera } from 'lucide-react';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera, Palmtree } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -249,6 +249,7 @@ function MapPageComponent() {
   const [mapZoom, setMapZoom] = useState(6);
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(searchParams.get('selectedId') ? 'external' : null);
+  const [showDomTomMenu, setShowDomTomMenu] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
@@ -535,6 +536,20 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('collapsed');
   };
 
+  const DOMTOM_TERRITORIES = [
+    { key: '971 - Guadeloupe', label: 'Guadeloupe' },
+    { key: '972 - Martinique', label: 'Martinique' },
+    { key: '973 - Guyane', label: 'Guyane' },
+    { key: '974 - La Réunion', label: 'La Réunion' },
+    { key: '976 - Mayotte', label: 'Mayotte' },
+  ].map(t => ({ ...t, center: (locationsData as any)[t.key]?.center }))
+   .filter(t => t.center);
+  const handleDomTomSelect = (center: [number, number]) => {
+    setMapCenter(center);
+    setMapZoom(10);
+    setSelectionSource('external');
+    setShowDomTomMenu(false);
+  };
   const FilterButtons = ({ mobile = false }) => {
     const filters = [
       { id: 'shopping', label: 'CONCESS', icon: Bike },
@@ -697,6 +712,20 @@ function MapPageComponent() {
         </div>
       )}
 
+      <button
+        className={cn("absolute right-6 z-[500] h-12 w-12 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-60" : "bottom-28")}
+        onClick={() => setShowDomTomMenu(prev => !prev)}
+      >
+        <Palmtree className="h-6 w-6" />
+      </button>
+      {showDomTomMenu && (
+        <div className={cn("absolute right-6 z-[1500] bg-white rounded-2xl shadow-2xl border p-2 flex flex-col gap-1 min-w-[180px]", isMobile ? "bottom-[296px]" : "bottom-[176px]")}>
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 pt-1 pb-2">DOM-TOM</p>
+          {DOMTOM_TERRITORIES.map(t => (
+            <button key={t.key} onClick={() => handleDomTomSelect(t.center)} className="text-left px-3 py-2 rounded-xl hover:bg-muted/40 text-sm font-medium transition-colors">{t.label}</button>
+          ))}
+        </div>
+      )}
       <button
         className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")}
         onClick={() => setIsLocating(true)}
