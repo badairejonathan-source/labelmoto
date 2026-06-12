@@ -11,7 +11,7 @@ const UserMenu = dynamic(() => import('@/components/app/user-menu'), {
   loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
 });
 import LabelMotoLogo from '@/components/app/logo';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera, Palmtree } from 'lucide-react';
+import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
 import { extractValidCoordinates } from "@/lib/geohash";
@@ -656,6 +656,22 @@ function MapPageComponent() {
           />
         </div>
       </div>
+      <div className="absolute top-24 right-6 z-[1400]">
+        <button
+          onClick={() => setShowDomTomMenu(prev => !prev)}
+          className="bg-white text-brand shadow-2xl border-2 border-white rounded-full px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:scale-105"
+        >
+          DOMTOM
+        </button>
+        {showDomTomMenu && (
+          <div className="mt-2 bg-white rounded-2xl shadow-2xl border p-2 flex flex-col gap-1 min-w-[180px]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 pt-1 pb-2">DOM-TOM</p>
+            {DOMTOM_TERRITORIES.map(t => (
+              <button key={t.key} onClick={() => handleDomTomSelect(t.center)} className="text-left px-3 py-2 rounded-xl hover:bg-muted/40 text-sm font-medium transition-colors">{t.label}</button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {!isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
@@ -712,20 +728,6 @@ function MapPageComponent() {
         </div>
       )}
 
-      <button
-        className={cn("absolute right-6 z-[500] h-12 w-12 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-60" : "bottom-28")}
-        onClick={() => setShowDomTomMenu(prev => !prev)}
-      >
-        <Palmtree className="h-6 w-6" />
-      </button>
-      {showDomTomMenu && (
-        <div className={cn("absolute right-6 z-[1500] bg-white rounded-2xl shadow-2xl border p-2 flex flex-col gap-1 min-w-[180px]", isMobile ? "bottom-[296px]" : "bottom-[176px]")}>
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 pt-1 pb-2">DOM-TOM</p>
-          {DOMTOM_TERRITORIES.map(t => (
-            <button key={t.key} onClick={() => handleDomTomSelect(t.center)} className="text-left px-3 py-2 rounded-xl hover:bg-muted/40 text-sm font-medium transition-colors">{t.label}</button>
-          ))}
-        </div>
-      )}
       <button
         className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")}
         onClick={() => setIsLocating(true)}
