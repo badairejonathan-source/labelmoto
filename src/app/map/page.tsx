@@ -6,7 +6,10 @@ import { Button } from '@/components/ui/button';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
-import UserMenu from '@/components/app/user-menu';
+const UserMenu = dynamic(() => import('@/components/app/user-menu'), {
+  ssr: false,
+  loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
+});
 import LabelMotoLogo from '@/components/app/logo';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
