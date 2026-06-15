@@ -11,7 +11,9 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "reconcile:dry": "tsx src/scripts/reconcile-users.ts",
-    "reconcile:apply": "tsx src/scripts/reconcile-users.ts --apply"
+    "reconcile:apply": "tsx src/scripts/reconcile-users.ts --apply",
+    "geocode:dry": "tsx src/scripts/geocode-missing.ts",
+    "geocode:apply": "tsx src/scripts/geocode-missing.ts --apply"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",

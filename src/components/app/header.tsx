@@ -18,6 +18,7 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { collection, query, getDocs, limit } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
+import { extractValidCoordinates } from '@/lib/geohash';
 
 const brandsList = Object.keys(brandLogos);
 let globalDealersCache: any[] | null = null;
@@ -128,12 +129,26 @@ const Header: React.FC<any> = ({
     const fetchDealers = async () => {
       if (!firestore || globalDealersCache || !isFocused) return;
       try {
-        const snapshot = await getDocs(query(collection(firestore, 'concessions'), limit(3000)));
-        const dealers = snapshot.docs.map(d => ({
-          type: 'dealer', label: d.data().title || d.id,
-          subLabel: d.data().address, lat: d.data().latitude, lng: d.data().longitude,
-          id: d.id, zoom: 15,
-        }));
+        const collections = ['concessions', 'associations', 'relais', 'creators'];
+        const dealers: any[] = [];
+        const seenIds = new Set<string>();
+        for (const colName of collections) {
+          try {
+            const snapshot = await getDocs(query(collection(firestore, colName), limit(3000)));
+            snapshot.docs.forEach(d => {
+              if (seenIds.has(d.id)) return;
+              const data = d.data();
+              const coords = extractValidCoordinates(data);
+              if (!coords) return;
+              seenIds.add(d.id);
+              dealers.push({
+                type: 'dealer', label: data.title || d.id,
+                subLabel: data.address, lat: coords.lat, lng: coords.lng,
+                id: d.id, zoom: 15,
+              });
+            });
+          } catch (e) {}
+        }
         globalDealersCache = dealers;
         setAllDealers(dealers);
       } catch (e) {}
