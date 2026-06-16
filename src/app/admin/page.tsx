@@ -34,6 +34,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { errorEmitter } from '@/firebase/client';
 import { FirestorePermissionError } from '@/firebase/client';
+import ListingsManager from '@/components/app/listings-manager';
 
 interface Submission {
   id: string;
@@ -215,7 +216,21 @@ export default function AdminPage() {
     
     try {
       const data = editDraft;
-      const coords = extractValidCoordinates(data);
+      // Géocodage via API serveur (URL Google puis adresse Nominatim), fallback coords existantes
+      let coords = extractValidCoordinates(data);
+      if (!coords) {
+        try {
+          const geoRes = await fetch('/api/geocode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ address: data.addressRaw, placeUrl: data.placeUrl, googleMapsUrl: data.googleMapsUrl }),
+          });
+          const geoData = await geoRes.json();
+          if (geoData.success && Number.isFinite(geoData.lat) && Number.isFinite(geoData.lng)) {
+            coords = { lat: geoData.lat, lng: geoData.lng };
+          }
+        } catch (e) { console.warn('Géocodage échoué:', e); }
+      }
       
       const generatedSlug = generateDealershipSlug({ title: data.businessName, address: data.addressRaw });
       const targetDocId = data.publishTargetId || generatedSlug;
@@ -388,9 +403,10 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner">
+          <TabsList className="grid w-full grid-cols-5 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner">
             <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px] tracking-widest">Demandes</TabsTrigger>
             <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
+            <TabsTrigger value="listings" className="rounded-full font-black uppercase text-[10px] tracking-widest">Fiches</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
             <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
           </TabsList>
@@ -429,6 +445,9 @@ export default function AdminPage() {
             )}
           </TabsContent>
 
+          <TabsContent value="listings">
+            <ListingsManager />
+          </TabsContent>
           <TabsContent value="migration">
             <div className="space-y-8 animate-in fade-in duration-500">
               <section className="bg-white p-10 rounded-[2.5rem] shadow-xl border-2 border-dashed border-muted-foreground/20">
