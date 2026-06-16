@@ -36,6 +36,7 @@ import { errorEmitter } from '@/firebase/client';
 import { FirestorePermissionError } from '@/firebase/client';
 import ListingsManager from '@/components/app/listings-manager';
 import AddListing from '@/components/app/add-listing';
+import ModificationRequests from '@/components/app/modification-requests';
 
 interface Submission {
   id: string;
@@ -404,11 +405,12 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner">
+          <TabsList className="grid w-full grid-cols-7 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner">
             <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px] tracking-widest">Demandes</TabsTrigger>
             <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
             <TabsTrigger value="listings" className="rounded-full font-black uppercase text-[10px] tracking-widest">Fiches</TabsTrigger>
             <TabsTrigger value="add" className="rounded-full font-black uppercase text-[10px] tracking-widest">Ajouter</TabsTrigger>
+            <TabsTrigger value="modifs" className="rounded-full font-black uppercase text-[10px] tracking-widest">Modifs</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
             <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
           </TabsList>
@@ -452,6 +454,9 @@ export default function AdminPage() {
           </TabsContent>
           <TabsContent value="add">
             <AddListing />
+          </TabsContent>
+          <TabsContent value="modifs">
+            <ModificationRequests />
           </TabsContent>
           <TabsContent value="migration">
             <div className="space-y-8 animate-in fade-in duration-500">
