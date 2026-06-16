@@ -134,7 +134,7 @@ const Header: React.FC<any> = ({
         const seenIds = new Set<string>();
         for (const colName of collections) {
           try {
-            const snapshot = await getDocs(query(collection(firestore, colName), limit(3000)));
+            const snapshot = await getDocs(query(collection(firestore, colName), limit(8000)));
             snapshot.docs.forEach(d => {
               if (seenIds.has(d.id)) return;
               const data = d.data();
