@@ -102,6 +102,12 @@ export default function AdminPage() {
 
   const { data: pendingComments } = useCollection(commentsQuery);
 
+  const modifsQuery = useMemoFirebase(() => {
+    if (!firestore || !isAdmin) return null;
+    return query(collection(firestore, 'modification_requests'), where('status', '==', 'pending'));
+  }, [firestore, isAdmin]);
+  const { data: pendingModifs } = useCollection(modifsQuery);
+
   useEffect(() => {
     if (!isUserLoading) {
       if (!user) {
@@ -362,6 +368,7 @@ export default function AdminPage() {
   const pendingSubs = (submissions || []).filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved');
   const processedSubs = (submissions || []).filter(s => s.status === 'published' || s.status === 'rejected');
   const pendingCommentsCount = (pendingComments || []).length;
+  const pendingModifsCount = (pendingModifs || []).length;
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -410,7 +417,7 @@ export default function AdminPage() {
             <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
             <TabsTrigger value="listings" className="rounded-full font-black uppercase text-[10px] tracking-widest">Fiches</TabsTrigger>
             <TabsTrigger value="add" className="rounded-full font-black uppercase text-[10px] tracking-widest">Ajouter</TabsTrigger>
-            <TabsTrigger value="modifs" className="rounded-full font-black uppercase text-[10px] tracking-widest">Modifs</TabsTrigger>
+            <TabsTrigger value="modifs" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-1.5">Modifs{pendingModifsCount > 0 && <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[9px] font-black">{pendingModifsCount}</span>}</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
             <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
           </TabsList>

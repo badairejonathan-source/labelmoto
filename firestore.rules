@@ -61,6 +61,12 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
     
+    // --- DEMANDES DE MODIFICATION DE FICHE (revendication pro) ---
+    match /modification_requests/{id} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
     match /pending_comments/{id} {
       allow create: if isSignedIn(); 
       allow read, update, delete: if isAdmin();
