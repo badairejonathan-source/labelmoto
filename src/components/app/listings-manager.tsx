@@ -25,6 +25,7 @@ interface ListingItem {
   facebookUrl: string;
   latitude: number | null;
   longitude: number | null;
+  lundi: string; mardi: string; mercredi: string; jeudi: string; vendredi: string; samedi: string; dimanche: string;
 }
 
 function normalize(s: string): string {
@@ -67,6 +68,8 @@ export default function ListingsManager() {
             facebookUrl: data.facebookUrl || '',
             latitude: typeof data.latitude === 'number' ? data.latitude : null,
             longitude: typeof data.longitude === 'number' ? data.longitude : null,
+            lundi: data.lundi || '', mardi: data.mardi || '', mercredi: data.mercredi || '',
+            jeudi: data.jeudi || '', vendredi: data.vendredi || '', samedi: data.samedi || '', dimanche: data.dimanche || '',
           });
         });
       } catch (e) { console.warn('Erreur chargement', colName, e); }
@@ -99,6 +102,8 @@ export default function ListingsManager() {
         googleMapsUrl: editing.googleMapsUrl,
         instagramUrl: editing.instagramUrl,
         facebookUrl: editing.facebookUrl,
+        lundi: editing.lundi, mardi: editing.mardi, mercredi: editing.mercredi,
+        jeudi: editing.jeudi, vendredi: editing.vendredi, samedi: editing.samedi, dimanche: editing.dimanche,
         ...(editing.latitude !== null ? { latitude: editing.latitude } : {}),
         ...(editing.longitude !== null ? { longitude: editing.longitude } : {}),
       });
@@ -212,6 +217,18 @@ export default function ListingsManager() {
               <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Email</Label><Input value={editing.email} onChange={e => setEditing({ ...editing, email: e.target.value })} className="font-bold rounded-xl border-2" /></div>
               <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Site web</Label><Input value={editing.website} onChange={e => setEditing({ ...editing, website: e.target.value })} className="font-bold rounded-xl border-2" /></div>
               <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">URL Google Maps</Label><Input value={editing.googleMapsUrl} onChange={e => setEditing({ ...editing, googleMapsUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
+              <div className="border-t pt-3">
+                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1 mb-2 block">Horaires</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Lundi</span><Input value={editing.lundi} onChange={e => setEditing({ ...editing, lundi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Mardi</span><Input value={editing.mardi} onChange={e => setEditing({ ...editing, mardi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Mercredi</span><Input value={editing.mercredi} onChange={e => setEditing({ ...editing, mercredi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Jeudi</span><Input value={editing.jeudi} onChange={e => setEditing({ ...editing, jeudi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Vendredi</span><Input value={editing.vendredi} onChange={e => setEditing({ ...editing, vendredi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Samedi</span><Input value={editing.samedi} onChange={e => setEditing({ ...editing, samedi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Dimanche</span><Input value={editing.dimanche} onChange={e => setEditing({ ...editing, dimanche: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Instagram</Label><Input value={editing.instagramUrl} onChange={e => setEditing({ ...editing, instagramUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
                 <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Facebook</Label><Input value={editing.facebookUrl} onChange={e => setEditing({ ...editing, facebookUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>

@@ -47,6 +47,7 @@ export default function AddListing() {
   const [form, setForm] = useState({
     title: '', address: '', category: '', phoneNumber: '', email: '',
     website: '', googleMapsUrl: '', instagramUrl: '', facebookUrl: '', info: '',
+    lundi: '', mardi: '', mercredi: '', jeudi: '', vendredi: '', samedi: '', dimanche: '',
     collectionName: 'concessions', appSection: 'service',
   });
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -107,6 +108,8 @@ export default function AddListing() {
         instagramUrl: form.instagramUrl.trim(),
         facebookUrl: form.facebookUrl.trim(),
         info: form.info.trim(),
+        lundi: form.lundi.trim(), mardi: form.mardi.trim(), mercredi: form.mercredi.trim(),
+        jeudi: form.jeudi.trim(), vendredi: form.vendredi.trim(), samedi: form.samedi.trim(), dimanche: form.dimanche.trim(),
         latitude: coords.lat,
         longitude: coords.lng,
         geohash: encodeGeohash(coords.lat, coords.lng, 9),
@@ -130,7 +133,7 @@ export default function AddListing() {
   };
 
   const resetForm = () => {
-    setForm({ title: '', address: '', category: '', phoneNumber: '', email: '', website: '', googleMapsUrl: '', instagramUrl: '', facebookUrl: '', info: '', collectionName: 'concessions', appSection: 'service' });
+    setForm({ title: '', address: '', category: '', phoneNumber: '', email: '', website: '', googleMapsUrl: '', instagramUrl: '', facebookUrl: '', info: '', lundi: '', mardi: '', mercredi: '', jeudi: '', vendredi: '', samedi: '', dimanche: '', collectionName: 'concessions', appSection: 'service' });
     setCoords(null);
     setCreatedSlug(null);
   };
@@ -199,6 +202,18 @@ export default function AddListing() {
         <div className="grid grid-cols-2 gap-3">
           <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Instagram</Label><Input value={form.instagramUrl} onChange={e => set('instagramUrl', e.target.value)} className="font-bold rounded-xl border-2" /></div>
           <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Facebook</Label><Input value={form.facebookUrl} onChange={e => set('facebookUrl', e.target.value)} className="font-bold rounded-xl border-2" /></div>
+        </div>
+        <div className="border-t pt-3 mt-1">
+          <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1 mb-2 block">Horaires (ex: 09:00-12:30, 14:00-18:00 ou Fermé)</Label>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Lundi</span><Input value={form.lundi} onChange={e => set('lundi', e.target.value)} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+            <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Mardi</span><Input value={form.mardi} onChange={e => set('mardi', e.target.value)} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+            <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Mercredi</span><Input value={form.mercredi} onChange={e => set('mercredi', e.target.value)} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+            <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Jeudi</span><Input value={form.jeudi} onChange={e => set('jeudi', e.target.value)} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+            <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Vendredi</span><Input value={form.vendredi} onChange={e => set('vendredi', e.target.value)} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+            <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Samedi</span><Input value={form.samedi} onChange={e => set('samedi', e.target.value)} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+            <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Dimanche</span><Input value={form.dimanche} onChange={e => set('dimanche', e.target.value)} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
+          </div>
         </div>
         <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Description</Label><Textarea value={form.info} onChange={e => set('info', e.target.value)} className="font-bold rounded-xl border-2 min-h-[70px]" /></div>
 
