@@ -1,10 +1,46 @@
+// src/components/app/footer.tsx
+// Ajout d'une section "Garages moto par ville" avec les 30 villes
+
 'use client';
 
 import Link from 'next/link';
-import { Facebook, Instagram, Twitter, Youtube, Shield } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Shield } from 'lucide-react';
 import LabelMotoLogo from './logo';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+
+const VILLES_FOOTER = [
+  { slug: 'paris',            name: 'Paris' },
+  { slug: 'marseille',        name: 'Marseille' },
+  { slug: 'lyon',             name: 'Lyon' },
+  { slug: 'toulouse',         name: 'Toulouse' },
+  { slug: 'nice',             name: 'Nice' },
+  { slug: 'nantes',           name: 'Nantes' },
+  { slug: 'montpellier',      name: 'Montpellier' },
+  { slug: 'strasbourg',       name: 'Strasbourg' },
+  { slug: 'bordeaux',         name: 'Bordeaux' },
+  { slug: 'lille',            name: 'Lille' },
+  { slug: 'rennes',           name: 'Rennes' },
+  { slug: 'reims',            name: 'Reims' },
+  { slug: 'toulon',           name: 'Toulon' },
+  { slug: 'grenoble',         name: 'Grenoble' },
+  { slug: 'dijon',            name: 'Dijon' },
+  { slug: 'angers',           name: 'Angers' },
+  { slug: 'nimes',            name: 'Nîmes' },
+  { slug: 'aix-en-provence',  name: 'Aix-en-Provence' },
+  { slug: 'clermont-ferrand', name: 'Clermont-Ferrand' },
+  { slug: 'rouen',            name: 'Rouen' },
+  { slug: 'amiens',           name: 'Amiens' },
+  { slug: 'metz',             name: 'Metz' },
+  { slug: 'brest',            name: 'Brest' },
+  { slug: 'tours',            name: 'Tours' },
+  { slug: 'limoges',          name: 'Limoges' },
+  { slug: 'perpignan',        name: 'Perpignan' },
+  { slug: 'caen',             name: 'Caen' },
+  { slug: 'nancy',            name: 'Nancy' },
+  { slug: 'saint-etienne',    name: 'Saint-Étienne' },
+  { slug: 'pau',              name: 'Pau' },
+];
 
 const Footer = () => {
   const pathname = usePathname();
@@ -23,14 +59,34 @@ const Footer = () => {
   return (
     <footer className="bg-muted/30 border-t border-border/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-sm">
-        
+
+        {/* ── Section villes ── */}
+        <div className="mb-10 pb-10 border-b border-border/50">
+          <h3 className="font-black text-foreground mb-5 uppercase text-[10px] tracking-[0.2em] flex items-center gap-2">
+            <span className="text-brand">🏍️</span>
+            Garages moto par ville
+          </h3>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {VILLES_FOOTER.map(({ slug, name }) => (
+              <Link
+                key={slug}
+                href={`/garages-moto/${slug}`}
+                className="text-muted-foreground hover:text-brand transition-colors font-bold text-[9px] uppercase tracking-widest whitespace-nowrap"
+              >
+                {name}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Colonnes principales ── */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           <div className="md:col-span-1 space-y-4">
             <div className="w-48 sm:w-56 shrink-0">
-                <LabelMotoLogo noBubble />
+              <LabelMotoLogo noBubble />
             </div>
             <p className="text-[11px] font-bold text-muted-foreground leading-relaxed">
-              Label Moto est l'annuaire national indépendant des motards en France. Nous référençons concessions, ateliers et relais pour simplifier votre passion.
+              Label Moto est l&apos;annuaire national indépendant des motards en France. Nous référençons concessions, ateliers et relais pour simplifier votre passion.
             </p>
             <div className="flex items-center gap-2 text-brand font-black text-[9px] uppercase tracking-widest">
               <Shield className="h-3 w-3" />
@@ -46,16 +102,16 @@ const Footer = () => {
               <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Contactez-nous</Link></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-black text-foreground mb-4 uppercase text-[10px] tracking-[0.2em]">Ressources</h3>
             <ul className="space-y-3">
-              <li><Link href="/info" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Guides & Conseils</Link></li>
+              <li><Link href="/info" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Guides &amp; Conseils</Link></li>
               <li><Link href="/map" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Trouver un pro</Link></li>
               <li><Link href="/entretien" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Catalogues Entretien</Link></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-black text-foreground mb-4 uppercase text-[10px] tracking-[0.2em]">Espace Pro</h3>
             <ul className="space-y-3">
@@ -65,6 +121,7 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* ── Bas de footer ── */}
         <div className="border-t border-border/50 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
@@ -74,31 +131,35 @@ const Footer = () => {
                 </p>
               )}
             </div>
-            
             <div className="flex items-center space-x-6">
               <span className="sr-only">Réseaux sociaux</span>
-              <Link 
-                href="https://www.instagram.com/labelmoto.fr/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                aria-label="Suivez Label Moto sur Instagram" 
+              <Link
+                href="https://www.instagram.com/labelmoto.fr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Suivez Label Moto sur Instagram"
                 className="text-muted-foreground hover:text-brand transition-colors"
               >
                 <Instagram className="h-5 w-5" />
               </Link>
-              <button disabled aria-label="Facebook (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30"><Facebook className="h-5 w-5" /></button>
-              <button disabled aria-label="Youtube (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30"><Youtube className="h-5 w-5" /></button>
+              <button disabled aria-label="Facebook (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30">
+                <Facebook className="h-5 w-5" />
+              </button>
+              <button disabled aria-label="Youtube (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30">
+                <Youtube className="h-5 w-5" />
+              </button>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-8 text-[11px] sm:text-xs font-bold border-t border-dashed border-border/50 pt-6">
-            <Link href="/terms" className="text-muted-foreground hover:text-brand transition-colors">Conditions d'utilisation</Link>
-            <Link href="/privacy" className="text-muted-foreground hover:text-brand transition-colors">Confidentialité & Cookies</Link>
+            <Link href="/terms" className="text-muted-foreground hover:text-brand transition-colors">Conditions d&apos;utilisation</Link>
+            <Link href="/privacy" className="text-muted-foreground hover:text-brand transition-colors">Confidentialité &amp; Cookies</Link>
             <Link href="/legal" className="text-muted-foreground hover:text-brand transition-colors">Mentions Légales</Link>
             <Link href="/accessibility" className="text-muted-foreground hover:text-brand transition-colors">Accessibilité</Link>
             <Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors">Contact</Link>
           </div>
         </div>
+
       </div>
     </footer>
   );
