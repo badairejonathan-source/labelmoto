@@ -64,7 +64,7 @@ async function getProsForCity(departement: string): Promise<Pro[]> {
     const cols = ['concessions', 'associations', 'relais'] as const;
     const all: Pro[] = [];
     for (const col of cols) {
-      const snap = await db.collection(col).where('departement', '==', departement).limit(60).get();
+      const snap = await db.collection(col).where('departement', '==', departement).limit(300).get();
       snap.docs.forEach(doc => {
         const d = doc.data();
         all.push({
