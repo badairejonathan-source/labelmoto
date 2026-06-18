@@ -68,6 +68,7 @@ export default function HomepageDeferred() {
         const id = (article.id || '').toLowerCase();
         const title = (article.title || '').toLowerCase();
         
+        if (id.includes('scooter') || title.includes('scooter')) return "/images/article-scooter-125.png";
         if (id.includes('125') || title.includes('125')) return "/images/article-moto-125cc.webp";
         if (id.includes('association') || title.includes('association')) return placeholderData.articles.association.src;
         if (id.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
