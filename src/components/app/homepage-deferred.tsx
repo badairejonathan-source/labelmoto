@@ -127,45 +127,39 @@ export default function HomepageDeferred() {
                         </div>
                         <h2 id="actu-title" className="text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter leading-none">ACTU</h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[250px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {newsArticles.map((article) => {
                             const isAsso = article.id.toLowerCase().includes('association');
                             const isRelais = article.id.toLowerCase().includes('relais');
+                            const badgeLabel = isAsso ? 'COMMUNAUTÉ' : (isRelais ? 'RELAIS MOTARDS' : 'À LA UNE');
                             return (
-                                <Link 
-                                    key={article.id} 
-                                    href={`/info/${article.id}`} 
+                                <Link
+                                    key={article.id}
+                                    href={`/info/${article.id}`}
                                     aria-label={`Lire l'article : ${article.display_title || article.title}`}
-                                    className={cn(
-                                        "group relative aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-xl border-2 bg-black transition-all duration-500 hover:shadow-brand/20",
-                                        isAsso ? "border-indigo-600/30" : (isRelais ? "border-amber-600/30" : "border-brand/10")
-                                    )}
+                                    className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1"
                                 >
-                                    <Image src={getArticleImage(article)} 
-                                        alt="" 
-                                        fill 
-                                        className="object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" loading="lazy"/>
-                                    
-                                    <div className="absolute top-6 right-6 z-20">
-                                        <span className="bg-white/95 backdrop-blur-sm text-brand px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border border-brand/20 animate-bounce-subtle">
-                                            Nouveau
-                                        </span>
-                                    </div>
-
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                                    <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full">
-                                        <div className="flex flex-wrap gap-2 mb-3">
-                                            <span className={cn(
-                                                "inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg",
-                                                isAsso ? "bg-indigo-600 text-white animate-pulse" : (isRelais ? "bg-amber-600 text-white" : "bg-brand text-white")
-                                            )}>
-                                                {isAsso ? 'COMMUNAUTÉ' : (isRelais ? 'RELAIS MOTARDS' : 'À LA UNE')}
-                                            </span>
+                                    <div className="relative aspect-video overflow-hidden bg-muted">
+                                        <Image src={getArticleImage(article)}
+                                            alt=""
+                                            fill
+                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                            sizes="(max-width: 768px) 100vw, 33vw" loading="lazy"/>
+                                        <div className="absolute top-4 right-4 z-20">
+                                            <span className="bg-white/95 backdrop-blur-sm text-brand px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border border-brand/20">Nouveau</span>
                                         </div>
-                                        <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand transition-colors">
-                                            {article.display_title || article.title}
-                                        </h3>
+                                    </div>
+                                    <div className="p-6 flex flex-col flex-grow">
+                                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3 font-black uppercase tracking-widest">
+                                            <FileText className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
+                                            <span>Par {article.author || "L'équipe Label Moto"}</span>
+                                        </div>
+                                        <h3 className="text-xl font-black text-foreground leading-tight group-hover:text-brand transition-colors line-clamp-2 mb-3 uppercase tracking-tight">{article.display_title || article.title}</h3>
+                                        <p className="text-sm md:text-base text-muted-foreground line-clamp-3 mb-4 flex-grow leading-relaxed font-bold">{article.description || article.intro_conclusion || ""}</p>
+                                        <div className="flex items-center gap-2 text-brand text-xs font-black uppercase tracking-widest mt-auto group-hover:gap-4 transition-all">
+                                            <span>Lire l'article</span>
+                                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                        </div>
                                     </div>
                                 </Link>
                             );
