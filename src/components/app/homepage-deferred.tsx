@@ -33,29 +33,32 @@ export default function HomepageDeferred() {
         return getTime(b) - getTime(a);
     };
 
+    // === ENCART ACTU : liste manuelle des IDs (ordre = ordre d'affichage) ===
+    const ACTU_IDS = [
+        'meilleur-scooter-125-2026-comparatif-complet',
+        'meilleures-motos-125cc-2026-guide-complet',
+        'relais-motards-france-labelmoto-balades-ete',
+    ];
+    // === ENCART A2 : liste manuelle des IDs ===
+    const A2_IDS = [
+        'achat-moto-occasion-guide-complet-pour-eviter-les-pieges',
+        'combien-coute-vraiment-une-moto-par-mois',
+        'meilleure-moto-a2-quelle-moto-choisir-pour-debuter',
+    ];
+
     const newsArticles = React.useMemo(() => {
         if (!featuredArticles) return [];
-        return [...featuredArticles]
-            .filter(a => {
-                const id = a.id.toLowerCase();
-                if (id.includes('motogp') || id.includes('gp-france')) {
-                    return false;
-                }
-                return (id.includes('event') || id.includes('association') || id.includes('relais'));
-            })
-            .sort(sortArticlesByDate)
+        return ACTU_IDS
+            .map(id => featuredArticles.find(a => a.id === id))
+            .filter(Boolean)
             .slice(0, 3);
     }, [featuredArticles]);
 
     const a2Articles = React.useMemo(() => {
         if (!featuredArticles) return [];
-        return [...featuredArticles]
-            .filter(a => {
-                const id = a.id.toLowerCase();
-                const isNews = id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('association') || id.includes('relais');
-                return !isNews && id !== 'entretien-moto-intervalles-prix-conseils-par-modele';
-            })
-            .sort(sortArticlesByDate)
+        return A2_IDS
+            .map(id => featuredArticles.find(a => a.id === id))
+            .filter(Boolean)
             .slice(0, 3);
     }, [featuredArticles]);
 
