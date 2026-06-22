@@ -68,8 +68,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     : addrParts[addrParts.length - 1] || '';
 
   const brandsStr = pro.brands?.length ? ' — ' + pro.brands.join(', ') : '';
-  const title = `${pro.title}${ville ? ' à ' + ville : ''}${brandsStr} | Professionnel moto`;
-  const description = `${pro.title} : retrouvez les horaires, coordonnées et services de ce professionnel moto${ville ? ' à ' + ville : ''}. Annuaire Label Moto.`;
+  const title = `${pro.title}${ville ? ' à ' + ville : ''}${brandsStr} — Avis, horaires & contact | LabelMoto`;
+  const description = `${pro.title}${ville ? ' à ' + ville : ''} : avis, horaires d'ouverture, téléphone et adresse. Contactez ce professionnel moto directement sur LabelMoto, l'annuaire moto de référence.`;
 
   return {
     title: title,
