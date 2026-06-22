@@ -13,8 +13,8 @@ export interface CityData {
 export const CITIES: CityData[] = [
   {
     slug: 'paris', name: 'Paris', departement: '75', region: 'Île-de-France',
-    metaTitle: "Garage moto Paris : 250+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Paris parmi 252 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Paris — Trouvez le meilleur atelier | LabelMoto',
+    metaDescription: "Trouvez un garage moto ou concessionnaire de confiance à Paris. Avis vérifiés, horaires, contacts directs. LabelMoto — l'annuaire des motards parisiens.",
     h1: 'Garages moto et concessionnaires à Paris : trouvez le bon pro en un clic',
     intro: [
       "Paris concentre plus de 300 000 deux-roues motorisés, ce qui en fait la ville la plus dense de France pour les motards. Trouver un garage moto fiable à Paris devrait être simple — en réalité, entre les ateliers surchargés, les délais interminables et les tarifs opaques, beaucoup de motards parisiens perdent un temps précieux.",
@@ -29,8 +29,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'marseille', name: 'Marseille', departement: '13', region: "Provence-Alpes-Côte d'Azur",
-    metaTitle: "Garage moto Marseille : 160+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Marseille parmi 164 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Marseille — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Trouvez le meilleur garage moto ou concessionnaire à Marseille. Avis vérifiés, contacts directs, horaires à jour. LabelMoto, l'annuaire moto de confiance.",
     h1: 'Garages moto et concessionnaires à Marseille : les pros sélectionnés par LabelMoto',
     intro: [
       "Marseille et sa métropole sont parmi les zones les plus actives de France pour les deux-roues. Le relief accidenté, le soleil quasi-permanent et la densité urbaine en font une ville idéale pour la moto — et un marché très fourni en ateliers et concessions.",
@@ -45,8 +45,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'lyon', name: 'Lyon', departement: '69', region: 'Auvergne-Rhône-Alpes',
-    metaTitle: "Garage moto Lyon : 140+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Lyon parmi 140 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Lyon — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Trouvez un garage moto fiable à Lyon. Concessionnaires, ateliers indépendants, avis vérifiés et horaires. LabelMoto, l'annuaire des motards lyonnais.",
     h1: 'Garages moto et concessionnaires à Lyon : les meilleurs pros de la métropole',
     intro: [
       "Lyon est l'une des villes les plus motos de France : sa situation au carrefour des routes vers les Alpes et la Méditerranée, combinée à une communauté de motards très active, en fait un marché riche en professionnels de qualité.",
@@ -61,8 +61,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'toulouse', name: 'Toulouse', departement: '31', region: 'Occitanie',
-    metaTitle: "Garage moto Toulouse : 120+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Toulouse parmi 129 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Toulouse — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Toulouse : trouvez le bon professionnel avec LabelMoto. Avis, horaires, contacts vérifiés pour les motards toulousains.",
     h1: 'Garages moto et concessionnaires à Toulouse : trouvez votre pro en Occitanie',
     intro: [
       "Toulouse, ville étudiante et dynamique, est aussi une ville de motards. Avec les Pyrénées à portée et les routes de Gascogne, la communauté moto toulousaine est dense et exigeante en matière de qualité de service.",
@@ -77,8 +77,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'nice', name: 'Nice', departement: '06', region: "Provence-Alpes-Côte d'Azur",
-    metaTitle: "Garage moto Nice : 160+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Nice parmi 165 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: "Garages moto Nice — Ateliers et concessionnaires Côte d'Azur | LabelMoto",
+    metaDescription: "Garage moto et concessionnaire à Nice et sur la Côte d'Azur. Avis vérifiés, horaires, contacts directs. LabelMoto, l'annuaire moto de référence.",
     h1: "Garages moto et concessionnaires à Nice et sur la Côte d'Azur",
     intro: [
       "Nice et la Côte d'Azur offrent un cadre exceptionnel : routes en corniche, arrière-pays montagneux, climat favorable presque toute l'année. La saison moto est particulièrement longue, ce qui implique une forte demande sur les garages locaux.",
@@ -93,8 +93,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'nantes', name: 'Nantes', departement: '44', region: 'Pays de la Loire',
-    metaTitle: "Garage moto Nantes : 90+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Nantes parmi 91 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Nantes — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Nantes. Trouvez le bon professionnel avec LabelMoto : avis vérifiés, horaires réels, contacts directs.",
     h1: 'Garages moto et concessionnaires à Nantes : les pros de la Loire-Atlantique',
     intro: [
       "Nantes est une ville où la moto prend de plus en plus de place pour les trajets domicile-travail. La communauté motarde nantaise est active, avec des clubs nombreux et de belles routes à portée.",
@@ -109,8 +109,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'montpellier', name: 'Montpellier', departement: '34', region: 'Occitanie',
-    metaTitle: "Garage moto Montpellier : 120+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Montpellier parmi 124 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Montpellier — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Montpellier. Avis, horaires, contacts directs. LabelMoto, l'annuaire moto de référence en Occitanie.",
     h1: "Garages moto et concessionnaires à Montpellier : les pros de l'Hérault",
     intro: [
       "Montpellier et son agglomération sont très favorables à la moto : le climat méditerranéen permet de rouler presque toute l'année, et les routes de l'arrière-pays héraultais offrent des itinéraires exceptionnels.",
@@ -125,8 +125,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'strasbourg', name: 'Strasbourg', departement: '67', region: 'Grand Est',
-    metaTitle: "Garage moto Strasbourg : 70+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Strasbourg parmi 78 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Strasbourg — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Strasbourg. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Alsace.",
     h1: "Garages moto et concessionnaires à Strasbourg : les pros d'Alsace",
     intro: [
       "Strasbourg et l'Alsace sont une destination moto de premier ordre : les routes des Vosges, la Route des Crêtes et la proximité de l'Allemagne et de la Suisse en font un territoire exceptionnel.",
@@ -141,8 +141,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'bordeaux', name: 'Bordeaux', departement: '33', region: 'Nouvelle-Aquitaine',
-    metaTitle: "Garage moto Bordeaux : 130+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Bordeaux parmi 137 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Bordeaux — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Bordeaux. Trouvez le bon pro avec LabelMoto : avis vérifiés, horaires à jour, contacts directs.",
     h1: 'Garages moto et concessionnaires à Bordeaux : les pros de la Gironde',
     intro: [
       "Bordeaux et sa métropole offrent aux motards un terrain de jeu exceptionnel : les Landes, le bassin d'Arcachon, les routes du vignoble bordelais et les Pyrénées à quelques heures.",
@@ -157,8 +157,8 @@ export const CITIES: CityData[] = [
   },
   {
     slug: 'lille', name: 'Lille', departement: '59', region: 'Hauts-de-France',
-    metaTitle: "Garage moto Lille : 130+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Lille parmi 132 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Lille — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Lille. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence dans les Hauts-de-France.",
     h1: 'Garages moto et concessionnaires à Lille : les pros du Nord',
     intro: [
       "Lille et sa métropole transfrontalière constituent un carrefour moto majeur : la proximité avec la Belgique, les Ardennes et la côte de la Manche offre de nombreuses possibilités de balade.",
@@ -184,8 +184,8 @@ export function getAllCitySlugs(): string[] {
 CITIES.push(
   {
     slug: 'rennes', name: 'Rennes', departement: '35', region: 'Bretagne',
-    metaTitle: "Garage moto Rennes : 70+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Rennes parmi 73 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Rennes — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Rennes. Avis vérifiés, horaires, contacts directs. LabelMoto, l'annuaire moto de référence en Bretagne.",
     h1: 'Garages moto et concessionnaires à Rennes : les pros de Bretagne',
     intro: [
       "Rennes et la métropole bretonne offrent aux motards un terrain de jeu varié : côtes sauvages, forêts de Brocéliande, routes sinueuses du Morbihan à portée. La communauté motarde rennaise est active et bien organisée.",
@@ -200,8 +200,8 @@ CITIES.push(
   },
   {
     slug: 'reims', name: 'Reims', departement: '51', region: 'Grand Est',
-    metaTitle: "Garage moto Reims : 30+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Reims parmi 39 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Reims — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Reims. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence dans la Marne.",
     h1: 'Garages moto et concessionnaires à Reims : les pros de la Marne',
     intro: [
       "Reims et sa région offrent aux motards des routes champêtres remarquables : la Route du Champagne, les forêts ardennaises et les plaines de la Marne. Une ville carrefour entre Paris, Bruxelles et Strasbourg.",
@@ -216,8 +216,8 @@ CITIES.push(
   },
   {
     slug: 'toulon', name: 'Toulon', departement: '83', region: "Provence-Alpes-Côte d'Azur",
-    metaTitle: "Garage moto Toulon : 140+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Toulon parmi 148 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Toulon — Ateliers et concessionnaires Var | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Toulon et dans le Var. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Toulon : les pros du Var',
     intro: [
       "Toulon et le département du Var sont un paradis pour les motards : le littoral méditerranéen, le Massif des Maures, le Verdon et les gorges du Var offrent des routes parmi les plus belles de France.",
@@ -232,8 +232,8 @@ CITIES.push(
   },
   {
     slug: 'grenoble', name: 'Grenoble', departement: '38', region: 'Auvergne-Rhône-Alpes',
-    metaTitle: "Garage moto Grenoble : 40+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Grenoble parmi 47 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Grenoble — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Grenoble. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Isère.",
     h1: 'Garages moto et concessionnaires à Grenoble : les pros de l\'Isère',
     intro: [
       "Grenoble est une capitale européenne de la moto de montagne : entourée par les Alpes, le Vercors et la Chartreuse, elle offre aux motards des routes techniques et des paysages exceptionnels à moins de 30 minutes du centre.",
@@ -248,8 +248,8 @@ CITIES.push(
   },
   {
     slug: 'dijon', name: 'Dijon', departement: '21', region: 'Bourgogne-Franche-Comté',
-    metaTitle: "Garage moto Dijon : 50+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Dijon parmi 51 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Dijon — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Dijon. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Bourgogne.",
     h1: 'Garages moto et concessionnaires à Dijon : les pros de Bourgogne',
     intro: [
       "Dijon et la Bourgogne offrent aux motards des routes mythiques : la Route des Grands Crus, les routes sinueuses du Morvan et la proximité du Jura font de la région un terrain de jeu idéal.",
@@ -264,8 +264,8 @@ CITIES.push(
   },
   {
     slug: 'angers', name: 'Angers', departement: '49', region: 'Pays de la Loire',
-    metaTitle: "Garage moto Angers : 20+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Angers parmi 28 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Angers — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Angers. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Maine-et-Loire.",
     h1: 'Garages moto et concessionnaires à Angers : les pros du Maine-et-Loire',
     intro: [
       "Angers et la vallée de la Loire offrent aux motards un cadre exceptionnel : les châteaux de la Loire, le bocage vendéen et les coteaux du Layon composent des itinéraires variés et accessibles toute la saison.",
@@ -280,8 +280,8 @@ CITIES.push(
   },
   {
     slug: 'nimes', name: 'Nîmes', departement: '30', region: 'Occitanie',
-    metaTitle: "Garage moto Nîmes : 80+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Nîmes parmi 85 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Nîmes — Ateliers et concessionnaires Gard | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Nîmes et dans le Gard. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Nîmes : les pros du Gard',
     intro: [
       "Nîmes et le département du Gard sont très favorables à la moto : le climat méditerranéen, les Cévennes à portée, les Gorges du Gardon et la Camargue offrent des itinéraires remarquables.",
@@ -296,8 +296,8 @@ CITIES.push(
   },
   {
     slug: 'aix-en-provence', name: 'Aix-en-Provence', departement: '13', region: "Provence-Alpes-Côte d'Azur",
-    metaTitle: "Garage moto Aix-en-Provence : 160+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Aix-en-Provence parmi 164 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Aix-en-Provence — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Aix-en-Provence. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Provence.",
     h1: 'Garages moto et concessionnaires à Aix-en-Provence : les pros de Provence',
     intro: [
       "Aix-en-Provence est une ville à taille humaine avec une forte culture moto : la Sainte-Victoire, le Luberon, les Alpilles et le Verdon sont accessibles en moins d'une heure. Le climat provençal permet de rouler presque toute l'année.",
@@ -312,8 +312,8 @@ CITIES.push(
   },
   {
     slug: 'clermont-ferrand', name: 'Clermont-Ferrand', departement: '63', region: 'Auvergne-Rhône-Alpes',
-    metaTitle: "Garage moto Clermont-Ferrand : 90+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Clermont-Ferrand parmi 93 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Clermont-Ferrand — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Clermont-Ferrand. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Auvergne.",
     h1: 'Garages moto et concessionnaires à Clermont-Ferrand : les pros d\'Auvergne',
     intro: [
       "Clermont-Ferrand est entourée de volcans et de routes mythiques : la Chaîne des Puys, le Puy de Dôme, les gorges de la Sioule et les plateaux du Cantal en font une base idéale pour les motards qui aiment les grands espaces.",
@@ -328,8 +328,8 @@ CITIES.push(
   },
   {
     slug: 'rouen', name: 'Rouen', departement: '76', region: 'Normandie',
-    metaTitle: "Garage moto Rouen : 90+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Rouen parmi 96 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Rouen — Ateliers et concessionnaires Normandie | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Rouen et en Normandie. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Rouen : les pros de Normandie',
     intro: [
       "Rouen et la Normandie sont une région moto incontournable : les falaises d'Étretat, la côte normande, le bocage et les routes de la Vallée de la Seine offrent des itinéraires variés et souvent peu fréquentés.",
@@ -344,8 +344,8 @@ CITIES.push(
   },
   {
     slug: 'amiens', name: 'Amiens', departement: '80', region: 'Hauts-de-France',
-    metaTitle: "Garage moto Amiens : 30+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Amiens parmi 34 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Amiens — Ateliers et concessionnaires | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Amiens. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence dans la Somme.",
     h1: 'Garages moto et concessionnaires à Amiens : les pros de la Somme',
     intro: [
       "Amiens et la Somme offrent aux motards des routes tranquilles et des paysages typiques du nord de la France : baie de Somme, forêt de Crécy, chemins des Flandres. Une région idéale pour les randonnées moto.",
@@ -360,8 +360,8 @@ CITIES.push(
   },
   {
     slug: 'metz', name: 'Metz', departement: '57', region: 'Grand Est',
-    metaTitle: "Garage moto Metz : 70+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Metz parmi 71 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Metz — Ateliers et concessionnaires Moselle | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Metz et en Moselle. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Metz : les pros de Moselle',
     intro: [
       "Metz et la Moselle sont un carrefour moto en plein cœur de l'Europe : la proximité du Luxembourg, de l'Allemagne et de la Belgique ouvre des possibilités de balade transfrontalières uniques.",
@@ -376,8 +376,8 @@ CITIES.push(
   },
   {
     slug: 'brest', name: 'Brest', departement: '29', region: 'Bretagne',
-    metaTitle: "Garage moto Brest : 40+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Brest parmi 49 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Brest — Ateliers et concessionnaires Finistère | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Brest et dans le Finistère. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Brest : les pros du Finistère',
     intro: [
       "Brest et le Finistère sont au bout du monde et c'est exactement ce que recherchent les motards : des routes côtières spectaculaires, la presqu'île de Crozon, les monts d'Arrée et les caps bretons offrent des itinéraires inoubliables.",
@@ -392,8 +392,8 @@ CITIES.push(
   },
   {
     slug: 'tours', name: 'Tours', departement: '37', region: 'Centre-Val de Loire',
-    metaTitle: "Garage moto Tours : 30+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Tours parmi 31 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Tours — Ateliers et concessionnaires Indre-et-Loire | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Tours et en Indre-et-Loire. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Tours : les pros d\'Indre-et-Loire',
     intro: [
       "Tours et la Touraine offrent aux motards un cadre exceptionnel : les châteaux de la Loire, les vignobles de Vouvray et de Chinon, et les routes forestières de la Sologne composent des itinéraires d'une grande beauté.",
@@ -408,8 +408,8 @@ CITIES.push(
   },
   {
     slug: 'limoges', name: 'Limoges', departement: '87', region: 'Nouvelle-Aquitaine',
-    metaTitle: "Garage moto Limoges : 40+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Limoges parmi 47 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Limoges — Ateliers et concessionnaires Haute-Vienne | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Limoges. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Haute-Vienne.",
     h1: 'Garages moto et concessionnaires à Limoges : les pros de Haute-Vienne',
     intro: [
       "Limoges et le Limousin sont une région moto attachante : les plateaux du Massif Central, les gorges de la Vézère et les routes tranquilles du Périgord vert attirent les motards qui aiment les grands espaces préservés.",
@@ -424,8 +424,8 @@ CITIES.push(
   },
   {
     slug: 'perpignan', name: 'Perpignan', departement: '66', region: 'Occitanie',
-    metaTitle: "Garage moto Perpignan : 50+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Perpignan parmi 54 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Perpignan — Ateliers et concessionnaires Pyrénées-Orientales | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Perpignan. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence dans les Pyrénées-Orientales.",
     h1: 'Garages moto et concessionnaires à Perpignan : les pros des Pyrénées-Orientales',
     intro: [
       "Perpignan et les Pyrénées-Orientales offrent aux motards un cadre exceptionnel : la mer Méditerranée, les Pyrénées catalanes, la Cerdagne et la Côte Vermeille composent des itinéraires variés dans un climat ensoleillé.",
@@ -440,8 +440,8 @@ CITIES.push(
   },
   {
     slug: 'caen', name: 'Caen', departement: '14', region: 'Normandie',
-    metaTitle: "Garage moto Caen : 40+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Caen parmi 47 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Caen — Ateliers et concessionnaires Calvados | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Caen et dans le Calvados. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Caen : les pros du Calvados',
     intro: [
       "Caen et le Calvados sont une destination moto attachante : les plages du Débarquement, le bocage normand, les routes de la côte fleurie et les circuits mythiques (circuit de Carole...) attirent de nombreux passionnés.",
@@ -456,8 +456,8 @@ CITIES.push(
   },
   {
     slug: 'nancy', name: 'Nancy', departement: '54', region: 'Grand Est',
-    metaTitle: "Garage moto Nancy : 30+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Nancy parmi 38 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Nancy — Ateliers et concessionnaires Meurthe-et-Moselle | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Nancy. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence en Meurthe-et-Moselle.",
     h1: 'Garages moto et concessionnaires à Nancy : les pros de Meurthe-et-Moselle',
     intro: [
       "Nancy et la Lorraine offrent aux motards des routes verdoyantes et des paysages préservés : les Vosges à l'est, la Moselle sinueuse, les forêts lorraines et la proximité de l'Alsace composent des itinéraires de qualité.",
@@ -472,8 +472,8 @@ CITIES.push(
   },
   {
     slug: 'saint-etienne', name: 'Saint-Étienne', departement: '42', region: 'Auvergne-Rhône-Alpes',
-    metaTitle: "Garage moto Saint-Étienne : 50+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Saint-Étienne parmi 51 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Saint-Étienne — Ateliers et concessionnaires Loire | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Saint-Étienne. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence dans la Loire.",
     h1: 'Garages moto et concessionnaires à Saint-Étienne : les pros de la Loire',
     intro: [
       "Saint-Étienne et la Loire sont bien placées pour les motards : le Pilat, les Gorges de la Loire, les routes du Forez et la proximité de Lyon offrent des itinéraires variés entre plaine et montagne.",
@@ -488,8 +488,8 @@ CITIES.push(
   },
   {
     slug: 'pau', name: 'Pau', departement: '64', region: 'Nouvelle-Aquitaine',
-    metaTitle: "Garage moto Pau : 90+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Pau parmi 92 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: 'Garages moto Pau — Ateliers et concessionnaires Pyrénées-Atlantiques | LabelMoto',
+    metaDescription: "Garage moto et concessionnaire à Pau et dans les Pyrénées-Atlantiques. Avis vérifiés, horaires, contacts. LabelMoto, l'annuaire moto de référence.",
     h1: 'Garages moto et concessionnaires à Pau : les pros des Pyrénées-Atlantiques',
     intro: [
       "Pau est la porte d'entrée des Pyrénées pour les motards : le col du Tourmalet, l'Aubisque, l'Osquich et les routes basques et béarnaises sont accessibles en moins d'une heure. C'est l'une des plus belles régions moto de France.",
