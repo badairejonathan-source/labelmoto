@@ -23,7 +23,8 @@ import {
   LayoutGrid,
   FileText,
   ClipboardList,
-  CircleDot
+  CircleDot,
+  Wallet
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -131,6 +132,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       },
       serviceSchedule: sg.service_schedule || fiche.service_schedule || [],
       consumables: sg.consumables || fiche.consumables || [],
+      maintenanceCost: sg.maintenance_cost_summary || fiche.maintenance_cost_summary || null,
       faq: sg.faq || fiche.faq || [],
       knownIssues: sg.known_issues || fiche.known_issues || [],
       longevityTips: sg.longevity_tips || fiche.longevity_tips || [],
@@ -276,6 +278,37 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </Table>
                     </CardContent>
                 </Card>
+
+                {displayData.maintenanceCost && (
+                  <Card className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-brand to-orange-600">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="flex items-center gap-3 mb-5">
+                        <Wallet className="h-6 w-6 text-white" />
+                        <h3 className="text-sm md:text-lg font-black uppercase tracking-widest text-white">Budget entretien sur la duree</h3>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                        <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                          <p className="text-white/70 text-[9px] font-black uppercase tracking-widest mb-1">Cout sur 60 000 km</p>
+                          <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.maintenanceCost.total_60000km || "—"}</p>
+                        </div>
+                        <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                          <p className="text-white/70 text-[9px] font-black uppercase tracking-widest mb-1">Cout au km</p>
+                          <p className="text-white text-xl md:text-2xl font-black tracking-tighter">{displayData.maintenanceCost.cost_per_km || "—"}</p>
+                        </div>
+                        <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                          <p className="text-white/70 text-[9px] font-black uppercase tracking-widest mb-1">Intervalle</p>
+                          <p className="text-white text-[11px] md:text-xs font-black leading-tight pt-1">{displayData.maintenanceCost.interval_rule || "—"}</p>
+                        </div>
+                      </div>
+                      {displayData.maintenanceCost.note && (
+                        <p className="text-white/80 text-[10px] md:text-xs font-medium leading-relaxed italic border-t border-white/20 pt-4">
+                          {displayData.maintenanceCost.note}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
                 {displayData.consumables.length > 0 && (
                   <Card className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-card">
                     <CardHeader className="bg-muted/50 py-6 px-10 border-b"><CardTitle className="text-sm font-black uppercase text-foreground flex items-center gap-4"><Droplets className="h-5 w-5 text-brand" /> DURÉE DE VIE DES CONSOMMABLES</CardTitle></CardHeader>
