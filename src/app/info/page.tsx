@@ -80,6 +80,7 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
         if (id.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
         if (id.includes('relais')) return "/images/article-relais-motards.webp";
+        if (id.includes('scooter')) return "/images/article-scooter-125.png";
         if (id.includes('entree-de-gamme')) return "/images/casques-entree-de-gamme-2026.webp";
         if (id.includes('milieu-de-gamme')) return "/images/casques-milieu-de-gamme-2026.webp";
         if (id.includes('haut-de-gamme') && id.includes('casques')) return "/images/casques-haut-de-gamme-2026.webp";
