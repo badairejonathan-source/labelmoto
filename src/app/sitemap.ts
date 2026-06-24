@@ -1,17 +1,19 @@
 import { MetadataRoute } from 'next'
 import { getAdminFirestore } from '@/lib/firebase-admin'
+import { getAllCitySlugs } from '@/app/lib/cities'
+import { getAllDepartmentSlugs } from '@/app/lib/departments'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://labelmoto.fr'
   const db = getAdminFirestore();
-
   let concessionUrls: MetadataRoute.Sitemap = []
   let articleUrls: MetadataRoute.Sitemap = []
   let motoUrls: MetadataRoute.Sitemap = []
 
   try {
     if (process.env.NODE_ENV !== 'production') throw new Error('Skip in dev');
-    // 1. Récupération Concessions via Admin SDK
+
+    // 1. Concessions
     const concessionsSnap = await db.collection('concessions').limit(5000).get();
     concessionUrls = concessionsSnap.docs.map((doc) => {
       const data = doc.data();
@@ -26,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       };
     })
 
-    // 2. Récupération Articles
+    // 2. Articles
     const articlesSnap = await db.collection('articles').get();
     articleUrls = articlesSnap.docs.map((doc) => ({
       url: `${baseUrl}/info/${doc.id}`,
@@ -35,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }))
 
-    // 3. Récupération Motorcycle Sheets
+    // 3. Fiches techniques moto
     const motoSnap = await db.collection('motorcycle_sheets').get();
     motoUrls = motoSnap.docs.map((doc) => ({
       url: `${baseUrl}/fiches/${doc.id}`,
@@ -43,13 +45,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     }))
+
   } catch (error) {
     console.error("Erreur lors de la génération de la sitemap Firebase Admin:", error)
   }
 
-  // Pages statiques de base
+  // Pages statiques
   const staticPages: MetadataRoute.Sitemap = [
-    '', '/about', '/contact', '/legal', '/map', 
+    '', '/about', '/contact', '/legal', '/map',
     '/entretien', '/info', '/selection', '/terms', '/privacy', '/accessibility'
   ].map(route => ({
     url: `${baseUrl}${route}`,
@@ -58,5 +61,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }))
 
-  return [...staticPages, ...concessionUrls, ...articleUrls, ...motoUrls]
+  // Pages villes (30 villes)
+  const cityUrls: MetadataRoute.Sitemap = getAllCitySlugs().map(slug => ({
+    url: `${baseUrl}/garages-moto/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }))
+
+  // Pages départements (101 départements)
+  const deptUrls: MetadataRoute.Sitemap = getAllDepartmentSlugs().map(slug => ({
+    url: `${baseUrl}/garages-moto/departement/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+
+  return [...staticPages, ...cityUrls, ...deptUrls, ...concessionUrls, ...articleUrls, ...motoUrls]
 }
