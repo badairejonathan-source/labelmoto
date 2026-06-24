@@ -129,6 +129,10 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const title = (article.display_title || article.title || "").toLowerCase();
 
     if (articleId.includes('scooter') || title.includes('scooter')) return "/images/article-scooter-125.png";
+    if (articleId.includes('meilleurs-casques') && articleId.includes('entree')) return "/images/casques-entree-de-gamme-2026.webp";
+    if (articleId.includes('meilleurs-casques') && articleId.includes('milieu')) return "/images/casques-milieu-de-gamme-2026.webp";
+    if (articleId.includes('meilleurs-casques') && articleId.includes('haut')) return "/images/casques-haut-de-gamme-2026.webp";
+    if (articleId.includes('meilleurs-casques')) return "/images/casque-meilleur-casque-2026.webp";
     if (articleId.includes('125') || title.includes('125')) return "/images/article-moto-125cc.webp";
     if (articleId.includes('association') || title.includes('association')) return "/images/article-motars-association.webp";
     if (articleId.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
