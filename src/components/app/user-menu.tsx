@@ -40,7 +40,23 @@ export default function UserMenu() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-64" align="end" forceMount>
+        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Guide</DropdownMenuLabel>
+        <div className="grid grid-cols-2 gap-2 px-2 pb-2">
+          <Link href="/entretien" className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-brand/10 transition-colors group">
+            <div className="h-12 w-12 rounded-full bg-white shadow border-2 border-border flex items-center justify-center p-1.5">
+              <img src="/images/icon-entretienrevision.webp" alt="Entretien" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
+          </Link>
+          <Link href="/info" className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-brand/10 transition-colors group">
+            <div className="h-12 w-12 rounded-full bg-white shadow border-2 border-border flex items-center justify-center p-1.5">
+              <img src="/images/icon-conseils.webp" alt="Conseils" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
+          </Link>
+        </div>
+        <DropdownMenuSeparator />
         {user ? (
           <>
             <DropdownMenuLabel className="font-black">{pseudo || user.email}</DropdownMenuLabel>

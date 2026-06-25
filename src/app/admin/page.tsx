@@ -412,7 +412,7 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <TabsList className="grid w-full grid-cols-7 max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner">
+          <TabsList className="flex w-full overflow-x-auto max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner gap-1 scrollbar-hide">
             <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px] tracking-widest">Demandes</TabsTrigger>
             <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
             <TabsTrigger value="listings" className="rounded-full font-black uppercase text-[10px] tracking-widest">Fiches</TabsTrigger>
