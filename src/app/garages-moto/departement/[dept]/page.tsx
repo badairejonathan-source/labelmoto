@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import { getDepartmentBySlug, getAllDepartmentSlugs, DEPARTMENTS } from '@/app/lib/departments';
+import { CITIES } from '@/app/lib/cities';
 
 interface Pro {
   id: string;
@@ -45,7 +46,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = `Garage moto ${department.name} (${department.code}) — Concessions & ateliers | LabelMoto`;
   const description = `Trouvez votre garage moto dans le ${department.name} (${department.code}) : concessions, ateliers et réparateurs référencés par LabelMoto. Avis, horaires et contacts directs.`;
-  const canonical = `https://labelmoto.fr/garages-moto/departement/${department.slug}`;
+  const cityForDept = CITIES.find(c => c.departement === department.code);
+  const canonical = cityForDept
+    ? `https://labelmoto.fr/garages-moto/${cityForDept.slug}`
+    : `https://labelmoto.fr/garages-moto/departement/${department.slug}`;
 
   return {
     title,
