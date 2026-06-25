@@ -90,7 +90,7 @@ const InternalLinkCard = ({ title, description, link, icon: Icon }: any) => (
           <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title}</h4>
           <p className="text-sm font-bold text-muted-foreground leading-snug">{description}</p>
         </div>
-        <Button asChild className="bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0">
+        <Button asChild className="w-full md:w-auto bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
           <Link href={link} className="flex items-center gap-2">
             Voir le guide complet <ChevronRight className="h-4 w-4" />
           </Link>
@@ -218,7 +218,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {rows.map((row: any, ri: number) => (
                 <TableRow key={`tr-${key}-${ri}`} className="hover:bg-muted/30">
                   {headers.map((header: string, hi: number) => (
-                    <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:sm leading-tight">
+                    <TableCell key={`td-${key}-${ri}-${hi}`} className="py-3 px-3 md:py-4 md:px-4 text-foreground font-black text-[10px] md:text-sm leading-tight whitespace-nowrap">
                       {String(getCellValue(row, header, hi))}
                     </TableCell>
                   ))}
@@ -416,6 +416,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 </div>
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
+              {card.image && (
+                <div className="relative w-full h-48 overflow-hidden">
+                  <img src={card.image} alt={card.title || ''} className="w-full h-full object-cover" loading="lazy" />
+                </div>
+              )}
               <CardContent className="p-6 space-y-6 flex-grow">
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
                 {listItems && Array.isArray(listItems) && (
