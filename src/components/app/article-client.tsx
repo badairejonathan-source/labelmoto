@@ -417,8 +417,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
               {card.image && (
-                <div className="relative w-full h-64 overflow-hidden bg-gray-50">
-                  <img src={card.image} alt={card.title || ''} className="w-full h-full object-contain p-2" loading="lazy" />
+                <div className="relative w-full overflow-hidden bg-[#f8f7f5]" style={{aspectRatio:'4/3'}}>
+                  <img src={card.image} alt={card.title || ''} className="w-full h-full object-cover" loading="lazy" />
                 </div>
               )}
               <CardContent className="p-6 space-y-6 flex-grow">
