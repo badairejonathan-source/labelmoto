@@ -37,7 +37,7 @@ export default function HomepageDeferred() {
     const ACTU_IDS = [
         'meilleur-scooter-125-2026-comparatif-complet',
         'meilleures-motos-125cc-2026-guide-complet',
-        'relais-motards-france-labelmoto-balades-ete',
+        'meilleurs-casques-moto-2026',
     ];
     // === ENCART A2 : liste manuelle des IDs ===
     const A2_IDS = [
@@ -80,6 +80,10 @@ export default function HomepageDeferred() {
         if (id.includes('budget') || title.includes('budget')) return "/images/motard-budget-reel.webp";
         if (id.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
         if (id.includes('relais')) return "/images/article-relais-motards.webp";
+        if (id.includes('casques-entree') || (id.includes('meilleurs-casques') && id.includes('entree'))) return "/images/casques-entree-de-gamme-2026.webp";
+        if (id.includes('meilleurs-casques') && id.includes('milieu')) return "/images/casques-milieu-de-gamme-2026.webp";
+        if (id.includes('meilleurs-casques') && id.includes('haut')) return "/images/casques-haut-de-gamme-2026.webp";
+        if (id.includes('meilleurs-casques')) return "/images/casque-meilleur-casque-2026.webp";
         
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
