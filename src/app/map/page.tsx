@@ -294,7 +294,11 @@ function MapPageComponent() {
       for (let i = 0; i < collections.length; i++) {
         const colName = collections[i];
         try {
-          const snap = await getDocs(collection(firestore, colName));
+          const isFirstLoad = !silent;
+          const colQuery = isFirstLoad && colName === 'concessions'
+            ? query(collection(firestore, colName), limit(1000))
+            : collection(firestore, colName);
+          const snap = await getDocs(colQuery);
           if (colName === 'concessions') debugCounters.concessions = snap.size;
           if (colName === 'associations') debugCounters.associations = snap.size;
           if (colName === 'relais') debugCounters.relais = snap.size;
@@ -345,7 +349,10 @@ function MapPageComponent() {
         setPoints(allPoints);
         setCachedPoints(allPoints);
       }
-      if (!silent) setIsLoadingPoints(false);
+      if (!silent) {
+        setIsLoadingPoints(false);
+        setTimeout(() => fetchFromFirestore(true), 100);
+      }
     };
 
     fetchAll();
