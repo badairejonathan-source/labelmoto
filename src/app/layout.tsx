@@ -7,6 +7,7 @@ import Footer from "@/components/app/footer";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CookieConsent from "@/components/app/cookie-consent";
 import Script from "next/script";
+import MobileBottomNav from "@/components/app/mobile-bottom-nav";
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -125,12 +126,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={cn("bg-background font-sans antialiased", inter.className)}>
+      <body className={cn("bg-background font-sans antialiased pb-16 md:pb-0", inter.className)}>
         <FirebaseClientProvider>
           {children}
           <CookieConsent />
           <Footer />
           <Toaster />
+          <MobileBottomNav />
         </FirebaseClientProvider>
       </body>
     </html>

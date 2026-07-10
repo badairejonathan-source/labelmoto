@@ -662,7 +662,7 @@ function MapPageComponent() {
           />
         </div>
       </div>
-      <div className="absolute top-24 right-6 z-[1400]">
+      <div className={cn("absolute right-6 z-[1400]", isMobile ? "top-56" : "top-24")}>
         <button
           onClick={() => setShowDomTomMenu(prev => !prev)}
           className="bg-white text-brand shadow-2xl border-2 border-white rounded-full px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:scale-105"

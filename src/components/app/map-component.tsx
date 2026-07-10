@@ -394,11 +394,25 @@ const MapComponent = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isLocating) return;
-    map.once('locationfound', (e) => {
+
+    const handleLocationFound = (e: L.LocationEvent) => {
       onLocationFound([e.latlng.lat, e.latlng.lng]);
       onLocateEnd();
-    });
+    };
+
+    const handleLocationError = () => {
+      console.warn('Géolocalisation refusée ou indisponible');
+      onLocateEnd();
+    };
+
+    map.once('locationfound', handleLocationFound);
+    map.once('locationerror', handleLocationError);
     map.locate({ setView: true, maxZoom: 14 });
+
+    return () => {
+      map.off('locationfound', handleLocationFound);
+      map.off('locationerror', handleLocationError);
+    };
   }, [isLocating]);
 
   return <div ref={containerRef} className="w-full h-full bg-muted/10" />;
