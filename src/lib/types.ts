@@ -46,6 +46,7 @@ export interface Dealership {
   appSection?: 'shopping' | 'service' | 'both' | 'association' | 'relais';
   brands?: string[];
   isClaimed?: boolean;
+  country?: string;
   timestamp?: any;
   publishedAt?: any;
   submissionId?: string;
