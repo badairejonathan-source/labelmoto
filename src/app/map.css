@@ -1,7 +1,7 @@
 /* Styles spécifiques à la carte Leaflet - Chargés uniquement sur la page /map */
 
 .leaflet-container .leaflet-tile-pane {
-  filter: saturate(0.7) brightness(1.06) contrast(0.95);
+  /* CartoDB Positron — aucun filtre nécessaire */
 }
 
 .custom-marker {
@@ -159,14 +159,14 @@
 }
 
 .dept-label span {
-  font-size: 12px;
-  font-weight: 900;
+  font-size: 10px;
+  font-weight: 800;
   color: #fff;
-  background-color: rgba(30, 30, 30, 0.72);
-  padding: 3px 7px;
-  border-radius: 5px;
+  background-color: rgba(30, 30, 30, 0.50);
+  padding: 2px 5px;
+  border-radius: 4px;
   display: inline-block;
   white-space: nowrap;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   letter-spacing: 0.02em;
 }

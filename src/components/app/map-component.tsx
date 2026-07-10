@@ -39,14 +39,13 @@ const GEOJSON_URL = '/departements.geojson';
 const ZOOM_THRESHOLD = 9;
 
 const getColor = (count: number): string => {
-  return count > 500 ? '#800026' :
-         count > 200 ? '#BD0026' :
-         count > 100 ? '#E31A1C' :
-         count > 50  ? '#FC4E2A' :
-         count > 20  ? '#FD8D3C' :
-         count > 10  ? '#FEB24C' :
-         count > 5   ? '#FED976' :
-         '#FFEDA0';
+  return count > 200 ? '#1e3a5f' :
+         count > 100 ? '#2d5f8f' :
+         count > 50  ? '#4a82b5' :
+         count > 20  ? '#7aaed4' :
+         count > 10  ? '#aacde8' :
+         count > 5   ? '#d0e7f5' :
+                       '#eef6fb';
 };
 
 const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: number, bottomPadding: number, targetZoom: number): L.LatLng => {
@@ -86,8 +85,9 @@ const MapComponent = ({
       zoomControl: false,
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap France',
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
       maxZoom: 20
     }).addTo(map);
 
@@ -235,10 +235,10 @@ const MapComponent = ({
     const normalStyle = (feature: any) => {
       const code = feature?.properties?.code;
       const count = deptCounts[code]?.total || 0;
-      return { fillColor: getColor(count), weight: 1, color: 'white', fillOpacity: 0.65 };
+      return { fillColor: getColor(count), weight: 1, color: 'white', fillOpacity: 0.38 };
     };
 
-    const hoverStyle = { weight: 2, color: '#333', fillOpacity: 0.85 };
+    const hoverStyle = { weight: 2, color: '#333', fillOpacity: 0.6 };
 
     const buildChoropleth = () => {
       if (!geojsonDataRef.current) return;
