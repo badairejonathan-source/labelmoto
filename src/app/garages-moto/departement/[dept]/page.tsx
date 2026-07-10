@@ -44,8 +44,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const department = getDepartmentBySlug(dept);
   if (!department) return { title: 'Page introuvable | LabelMoto' };
 
-  const title = `Garage moto ${department.name} (${department.code}) — Concessions & ateliers | LabelMoto`;
-  const description = `Trouvez votre garage moto dans le ${department.name} (${department.code}) : concessions, ateliers et réparateurs référencés par LabelMoto. Avis, horaires et contacts directs.`;
+  const count = await getCountForDepartment(department.code);
+  const countLabel = count > 0 ? `${count} adresses` : 'nos adresses';
+  const title = `Garages moto ${department.name} (${department.code}) : ${countLabel} vérifiées | LabelMoto`;
+  const description = `Trouvez votre garage moto dans le ${department.name} (${department.code}) parmi ${count > 0 ? count + ' professionnels référencés' : 'nos professionnels'} : concessions, ateliers et relais motards. Avis, horaires et contacts sur LabelMoto.`;
   const cityForDept = CITIES.find(c => c.departement === department.code);
   const canonical = cityForDept
     ? `https://labelmoto.fr/garages-moto/${cityForDept.slug}`
@@ -71,6 +73,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: ['https://labelmoto.fr/images/og-image.webp'],
     },
   };
+}
+
+async function getCountForDepartment(code: string): Promise<number> {
+  try {
+    const db = getAdminFirestore();
+    const cols = ['concessions', 'associations', 'relais'] as const;
+    let total = 0;
+    for (const col of cols) {
+      const snap = await db.collection(col).where('departement', '==', code).count().get();
+      total += snap.data().count;
+    }
+    return total;
+  } catch {
+    return 0;
+  }
 }
 
 async function getProsForDepartment(code: string): Promise<Pro[]> {

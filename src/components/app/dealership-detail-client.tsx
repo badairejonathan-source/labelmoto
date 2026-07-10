@@ -13,6 +13,7 @@ import { collection, query, orderBy, serverTimestamp, doc } from 'firebase/fires
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { trackEvent } from '@/lib/analytics';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
@@ -142,7 +143,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                   <MapPin className="h-6 w-6 text-brand shrink-0" />
                   <div>
                     <p className="font-black text-lg uppercase tracking-tight">{pro.address}</p>
-                    <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer">Calculer l'itinéraire</a></Button>
+                    <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('clic_itineraire', { pro: pro.title, source: 'fiche' })}>Calculer l'itinéraire</a></Button>
                   </div>
                 </div>
               </div>
@@ -150,7 +151,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
               <div className="grid grid-cols-2 gap-4">
                 {pro.phoneNumber && (
                   <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                    <a href={`tel:${pro.phoneNumber}`} className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6">
+                    <a href={`tel:${pro.phoneNumber}`} className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => trackEvent('clic_telephone', { pro: pro.title, source: 'fiche' })}>
                       <Phone className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
                       <div className="text-left min-w-0">
                         <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Appeler</p>
@@ -161,7 +162,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                 )}
                 {pro.website && (
                   <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                    <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6">
+                    <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => trackEvent('clic_site_web', { pro: pro.title, source: 'fiche' })}>
                       <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
                       <div className="text-left min-w-0">
                         <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Site Web</p>
