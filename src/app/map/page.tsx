@@ -742,7 +742,17 @@ function MapPageComponent() {
 
 
       <button
-        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center transition-all", isMobile ? "bottom-44" : "bottom-10")}
+        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center")}
+        style={{
+          bottom: isMobile
+            ? drawerHeight === 'full'
+              ? 'calc(85vh + 20px)'
+              : drawerHeight === 'half'
+              ? 'calc(50vh + 20px)'
+              : '210px'
+            : '40px',
+          transition: 'bottom 0.5s ease-out',
+        }}
         onClick={() => setIsLocating(true)}
       >
         <Compass className={cn("h-8 w-8", isLocating && "animate-spin")} />
