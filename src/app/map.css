@@ -170,3 +170,11 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   letter-spacing: 0.02em;
 }
+/* Scroll horizontal filtres — scrollbar masquée */
+.filter-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.filter-scroll::-webkit-scrollbar {
+  display: none;
+}

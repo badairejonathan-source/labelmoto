@@ -593,8 +593,8 @@ function MapPageComponent() {
               ↓ Choisissez un type de professionnel
             </p>
           )}
-          <div className="grid grid-cols-4 items-start justify-between gap-1 relative z-10">
-            {filters.map(f => <div key={f.id} className="col-span-1 flex justify-center">{renderFilter(f)}</div>)}
+          <div className="flex overflow-x-auto gap-4 px-2 pb-1 relative z-10 filter-scroll">
+            {filters.map(f => <div key={f.id} className="flex-shrink-0">{renderFilter(f)}</div>)}
           </div>
         </div>
       );
