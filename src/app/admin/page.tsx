@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/client';
+import AdminProspection from '@/components/app/admin-prospection';
 import { updateDoc } from 'firebase/firestore';
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
@@ -420,6 +421,7 @@ export default function AdminPage() {
             <TabsTrigger value="modifs" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-1.5">Modifs{pendingModifsCount > 0 && <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[9px] font-black">{pendingModifsCount}</span>}</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
             <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
+            <TabsTrigger value="prospection" className="rounded-full font-black uppercase text-[10px] tracking-widest">📊 Prospection</TabsTrigger>
           </TabsList>
 
           <TabsContent value="submissions">
@@ -604,6 +606,9 @@ export default function AdminPage() {
                 <Info className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-20" />
                 <p className="font-black uppercase text-muted-foreground tracking-widest text-xs">Module de modération des avis en cours de liaison.</p>
              </div>
+          </TabsContent>
+          <TabsContent value="prospection">
+            <AdminProspection />
           </TabsContent>
         </Tabs>
       </main>
