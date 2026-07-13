@@ -742,9 +742,11 @@ function MapPageComponent() {
 
 
       <button
-        className={cn("absolute right-6 z-[500] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center")}
+        className={cn("absolute right-6 z-[1300] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center")}
         style={{
-          bottom: isMobile
+          bottom: width === undefined
+            ? '210px'  // valeur sûre pendant l'hydration
+            : isMobile
             ? drawerHeight === 'full'
               ? 'calc(85vh + 20px)'
               : drawerHeight === 'half'
