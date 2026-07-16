@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getAdminFirestore } from '@/lib/firebase-admin';
+import { CITIES } from '@/app/lib/cities';
 
 interface PageProps {
   params: Promise<{ marque: string }>;
@@ -259,6 +260,18 @@ export default async function EntretienMarquePage({ params }: PageProps) {
           >
             Concessionnaires {meta.name} →
           </Link>
+        </div>
+
+        {/* Villes */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border">
+          <h2 className="text-xl font-black uppercase tracking-tight mb-4">Trouver un concessionnaire {meta.name} par ville</h2>
+          <div className="flex flex-wrap gap-2">
+            {CITIES.slice(0, 16).map(city => (
+              <Link key={city.slug} href={`/garages-moto/${city.slug}`} className="px-3 py-1.5 bg-muted/30 rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-brand/10 hover:text-brand transition-colors">
+                {city.name}
+              </Link>
+            ))}
+          </div>
         </div>
 
         {/* FAQ */}

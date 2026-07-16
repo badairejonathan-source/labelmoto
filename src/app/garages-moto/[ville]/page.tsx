@@ -256,6 +256,19 @@ export default async function GaragesMotoParsVille({ params }: PageProps) {
           </section>
 
           <section className="mb-10">
+            <h2 className="text-sm font-black text-foreground uppercase tracking-[0.2em] mb-3">Trouver un garage par marque à {city.name}</h2>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {(['honda','yamaha','kawasaki','suzuki','bmw','triumph','ducati','harley-davidson','royal-enfield','ktm','cf-moto','zontes','voge','piaggio','vespa'] as const).map(slug => (
+                <Link key={slug} href={`/marque/${slug}`} className="text-[10px] px-3 py-1.5 rounded-full border border-border/50 text-muted-foreground hover:border-brand hover:text-brand font-black uppercase tracking-widest transition-all">
+                  {slug.replace(/-/g,' ')}
+                </Link>
+              ))}
+            </div>
+            <Link href="/marque/multimarque" className="text-[10px] text-brand font-black uppercase tracking-widest hover:underline">
+              → Voir tous les concessionnaires multimarques
+            </Link>
+          </section>
+          <section className="mb-10">
             <h2 className="text-sm font-black text-foreground uppercase tracking-[0.2em] mb-3">Garages moto dans d&apos;autres villes</h2>
             <div className="flex flex-wrap gap-2">
               {otherCities.map(c => (
