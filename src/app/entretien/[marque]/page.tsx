@@ -1,0 +1,297 @@
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { getAdminFirestore } from '@/lib/firebase-admin';
+
+interface PageProps {
+  params: Promise<{ marque: string }>;
+}
+
+const BRAND_META: Record<string, {
+  name: string;
+  firestoreValue: string;
+  metaTitle: string;
+  metaDescription: string;
+  h1: string;
+  intro: string[];
+  cout: string;
+  intervalle: string;
+  faq: { q: string; a: string }[];
+}> = {
+  honda: {
+    name: 'Honda',
+    firestoreValue: 'Honda',
+    metaTitle: "Fiches entretien Honda : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien Honda par modèle : CB125R, CB500, CB650R, XL750 Transalp, CB1000 Hornet. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien Honda — Intervalles et prix de révision',
+    intro: [
+      "Honda est réputé pour la fiabilité de ses moteurs et des intervalles d'entretien parmi les plus longs du marché. La plupart des modèles Honda sont révisables tous les 12 000 km, ce qui réduit significativement le coût d'entretien annuel par rapport à la concurrence.",
+      "LabelMoto recense les fiches techniques d'entretien Honda avec les intervalles officiels, les points de contrôle par kilométrage et les estimations de budget pour les modèles les plus vendus en France.",
+    ],
+    cout: "150 à 350 €",
+    intervalle: "12 000 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une Honda ?", a: "La plupart des Honda motos récentes ont un intervalle de révision de 12 000 km. Exceptions notables : la CB125R (6 000 km) et le Grom MSX125 (8 000 km). Consultez la fiche de votre modèle sur LabelMoto pour les intervalles exacts." },
+      { q: "Quel est le prix d'une révision Honda en concession ?", a: "Une révision Honda en concession officielle coûte entre 150 € (révision simple) et 350 € (révision complète avec remplacement de consommables). Les Honda ont un des coûts d'entretien les plus compétitifs du marché." },
+      { q: "Où faire réviser ma Honda moto ?", a: "LabelMoto référence plus de 235 concessionnaires Honda agréés en France. Vous pouvez également faire réviser votre Honda chez un atelier indépendant sous réserve de respecter les intervalles du carnet d'entretien." },
+    ],
+  },
+  yamaha: {
+    name: 'Yamaha',
+    firestoreValue: 'Yamaha',
+    metaTitle: "Fiches entretien Yamaha : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien Yamaha par modèle : MT-03, MT-07, XSR700, Tracer 7, R7, MT-125. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien Yamaha — Intervalles et prix de révision',
+    intro: [
+      "Yamaha propose des intervalles d'entretien de 10 000 km sur la plupart de ses modèles, un bon équilibre entre fiabilité et coût de maintenance. Les moteurs Yamaha CP2 (MT-07, Tracer 7, XSR700, R7) sont particulièrement réputés pour leur longévité et leur faible coût d'entretien.",
+      "LabelMoto recense les fiches techniques d'entretien Yamaha avec les intervalles officiels, les points de contrôle et les estimations de budget pour chaque modèle.",
+    ],
+    cout: "180 à 400 €",
+    intervalle: "10 000 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une Yamaha ?", a: "La plupart des Yamaha sont révisables tous les 10 000 km. Les 125cc (MT-125, YZF-R125) ont un intervalle de 5 000 km. Le CP2 (MT-07, Tracer 7, XSR700, R7) est révisable tous les 10 000 km." },
+      { q: "Quel est le prix d'une révision Yamaha ?", a: "Une révision Yamaha en concession coûte entre 180 et 400 € selon le modèle et le type d'entretien. Les 125cc sont moins chères à entretenir (150-250 €) que les grosses cylindrées (300-450 €)." },
+      { q: "Où faire réviser ma Yamaha ?", a: "LabelMoto référence plus de 248 concessionnaires Yamaha en France. Pour les modèles en garantie, privilégiez une concession agréée Yamaha pour conserver votre garantie constructeur." },
+    ],
+  },
+  kawasaki: {
+    name: 'Kawasaki',
+    firestoreValue: 'Kawasaki',
+    metaTitle: "Fiches entretien Kawasaki : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien Kawasaki par modèle : Z125, Z650, Z900, Ninja 500, Versys 650, ER-6n. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien Kawasaki — Intervalles et prix de révision',
+    intro: [
+      "Kawasaki propose des intervalles d'entretien de 12 000 km sur ses modèles récents, comparables à Honda et supérieurs à KTM. Les moteurs Kawasaki sont reconnus pour leur robustesse, notamment les blocs Z650 et Z900 qui peuvent franchir 100 000 km avec un entretien régulier.",
+      "LabelMoto recense les fiches techniques d'entretien Kawasaki avec les intervalles officiels, les points de contrôle et les estimations de budget pour chaque modèle.",
+    ],
+    cout: "180 à 380 €",
+    intervalle: "12 000 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une Kawasaki ?", a: "La plupart des Kawasaki récentes sont révisables tous les 12 000 km. La Z125 a un intervalle de 6 000 km. Le KLE 500 (ancien modèle) a des intervalles plus courts. Consultez la fiche de votre modèle." },
+      { q: "Quel est le prix d'une révision Kawasaki ?", a: "Une révision Kawasaki en concession coûte entre 180 et 380 € selon le modèle. Les Ninja et Z650/Z900 sont dans la moyenne du marché pour les grosses cylindrées japonaises." },
+      { q: "Où faire réviser ma Kawasaki ?", a: "LabelMoto référence plus de 127 concessionnaires Kawasaki en France. Utilisez la carte interactive pour trouver le concessionnaire agréé le plus proche." },
+    ],
+  },
+  suzuki: {
+    name: 'Suzuki',
+    firestoreValue: 'Suzuki',
+    metaTitle: "Fiches entretien Suzuki : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien Suzuki par modèle : SV650, GSX-8S, GSX-8R, V-Strom 650. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien Suzuki — Intervalles et prix de révision',
+    intro: [
+      "Suzuki est réputé pour la durabilité de ses moteurs, notamment le twin SV650 qui peut dépasser les 150 000 km avec un entretien soigné. Les intervalles Suzuki varient de 6 000 km sur les anciens modèles à 12 000 km sur les plus récents comme le GSX-8S et le GSX-8R.",
+      "LabelMoto recense les fiches techniques d'entretien Suzuki avec les intervalles officiels, les points de contrôle et les estimations de budget pour chaque modèle.",
+    ],
+    cout: "150 à 350 €",
+    intervalle: "6 000 à 12 000 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une Suzuki ?", a: "L'intervalle varie selon le modèle : 6 000 km pour le SV650 et le V-Strom 650 (anciens modèles), 12 000 km pour le GSX-8S et le GSX-8R (modèles récents). Vérifiez votre carnet d'entretien." },
+      { q: "Quel est le prix d'une révision Suzuki ?", a: "Une révision Suzuki en concession coûte entre 150 et 350 € selon le modèle. Le SV650 est particulièrement économique à entretenir, c'est l'un de ses principaux atouts." },
+      { q: "Où faire réviser ma Suzuki ?", a: "LabelMoto référence plus de 276 concessionnaires Suzuki en France — le plus grand réseau de notre base. Utilisez la carte interactive pour trouver le plus proche." },
+    ],
+  },
+  bmw: {
+    name: 'BMW Motorrad',
+    firestoreValue: 'BMW',
+    metaTitle: "Fiches entretien BMW Motorrad : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien BMW Motorrad par modèle : R1250 GS, F750 GS, F900R, G310R. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien BMW Motorrad — Intervalles et prix de révision',
+    intro: [
+      "BMW Motorrad propose des intervalles d'entretien de 10 000 km sur ses modèles récents, avec un coût par révision plus élevé que les marques japonaises. La qualité des composants et la longévité des moteurs BMW compensent ce surcoût sur la durée de vie de la moto.",
+      "LabelMoto recense les fiches techniques d'entretien BMW Motorrad avec les intervalles officiels, les points de contrôle et les estimations de budget pour les modèles GS, F-Series et G310.",
+    ],
+    cout: "350 à 600 €",
+    intervalle: "10 000 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une BMW Motorrad ?", a: "La plupart des BMW Motorrad récentes sont révisables tous les 10 000 km. Les modèles boxer (R1250 GS) et les F-Series (F750, F900) suivent ce rythme. La G310R a également un intervalle de 10 000 km." },
+      { q: "Quel est le prix d'une révision BMW Motorrad ?", a: "Une révision BMW Motorrad en concession coûte entre 350 et 600 € selon le modèle. Un grand entretien à 40 000 km peut atteindre 1 200 à 1 800 €. C'est l'entretien le plus coûteux des grandes cylindrées hors exotics." },
+      { q: "Où faire réviser ma BMW Motorrad ?", a: "LabelMoto référence plus de 109 concessionnaires BMW Motorrad en France. Pour les modèles sous garantie, l'entretien doit impérativement être réalisé en concession agréée BMW Motorrad." },
+    ],
+  },
+};
+
+export async function generateStaticParams() {
+  return Object.keys(BRAND_META).map(marque => ({ marque }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { marque } = await params;
+  const meta = BRAND_META[marque];
+  if (!meta) return { title: 'Page introuvable | LabelMoto' };
+  return {
+    title: meta.metaTitle,
+    description: meta.metaDescription,
+    alternates: { canonical: `https://labelmoto.fr/entretien/${marque}` },
+    openGraph: {
+      title: meta.metaTitle,
+      description: meta.metaDescription,
+      url: `https://labelmoto.fr/entretien/${marque}`,
+      siteName: 'LabelMoto',
+      locale: 'fr_FR',
+      type: 'website',
+    },
+  };
+}
+
+async function getFiches(brandFirestoreValue: string) {
+  try {
+    const db = getAdminFirestore();
+    const snap = await db.collection('motorcycle_sheets')
+      .where('brand', '==', brandFirestoreValue)
+      .get();
+    return snap.docs.map(doc => ({
+      id: doc.id,
+      label: doc.data().display_title || doc.data().model || doc.id,
+      category: doc.data().category || '',
+    })).sort((a, b) => a.label.localeCompare(b.label, 'fr'));
+  } catch (err) {
+    console.error('[entretien/marque]', err);
+    return [];
+  }
+}
+
+const jsonLd = (meta: typeof BRAND_META[string], fiches: { id: string; label: string }[]) => ({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      name: meta.h1,
+      description: meta.metaDescription,
+      url: `https://labelmoto.fr/entretien/${meta.name.toLowerCase()}`,
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: meta.faq.map(item => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    },
+  ],
+});
+
+export default async function EntretienMarquePage({ params }: PageProps) {
+  const { marque } = await params;
+  const meta = BRAND_META[marque];
+  if (!meta) notFound();
+
+  const fiches = await getFiches(meta.firestoreValue);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(meta, fiches)) }} />
+
+      {/* Hero */}
+      <div className="bg-gradient-to-br from-brand/5 to-brand/10 border-b">
+        <div className="max-w-5xl mx-auto px-4 py-10 md:py-14">
+          <nav className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-6 flex items-center gap-2 flex-wrap">
+            <Link href="/" className="hover:text-brand">Accueil</Link>
+            <span>›</span>
+            <Link href="/entretien" className="hover:text-brand">Entretien</Link>
+            <span>›</span>
+            <span className="text-foreground">{meta.name}</span>
+          </nav>
+          <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-foreground mb-3">
+            {meta.h1}
+          </h1>
+          <div className="flex gap-4 flex-wrap mt-4">
+            <div className="bg-white rounded-full px-4 py-2 shadow-sm border text-[11px] font-black uppercase tracking-widest text-muted-foreground">
+              📅 Révision tous les <span className="text-brand">{meta.intervalle}</span>
+            </div>
+            <div className="bg-white rounded-full px-4 py-2 shadow-sm border text-[11px] font-black uppercase tracking-widest text-muted-foreground">
+              💶 Budget <span className="text-brand">{meta.cout}</span>
+            </div>
+            <div className="bg-white rounded-full px-4 py-2 shadow-sm border text-[11px] font-black uppercase tracking-widest text-muted-foreground">
+              📋 <span className="text-brand">{fiches.length} modèles</span> disponibles
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 py-10 space-y-10">
+
+        {/* Intro */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border space-y-3">
+          {meta.intro.map((p, i) => (
+            <p key={i} className="text-sm md:text-base text-muted-foreground leading-relaxed">{p}</p>
+          ))}
+        </div>
+
+        {/* Fiches */}
+        <div>
+          <h2 className="text-xl font-black uppercase tracking-tight mb-6">
+            Fiches entretien {meta.name} disponibles
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {fiches.map(fiche => (
+              <Link
+                key={fiche.id}
+                href={`/fiches/${fiche.id}?from=entretien`}
+                className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group"
+              >
+                <div>
+                  <span className="font-black text-sm group-hover:text-brand transition-colors block">
+                    {fiche.label}
+                  </span>
+                  {fiche.category && (
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                      {fiche.category}
+                    </span>
+                  )}
+                </div>
+                <svg className="h-4 w-4 text-muted-foreground group-hover:text-brand flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA vers concessionnaires */}
+        <div className="bg-brand/5 rounded-3xl p-6 md:p-8 border border-brand/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <p className="font-black text-sm uppercase tracking-tight mb-1">Besoin de faire réviser votre {meta.name} ?</p>
+            <p className="text-sm text-muted-foreground">Trouvez un concessionnaire agréé {meta.name} près de chez vous.</p>
+          </div>
+          <Link
+            href={`/marque/${marque}`}
+            className="shrink-0 bg-brand text-white font-black uppercase text-xs tracking-widest px-6 py-3 rounded-full hover:bg-brand/90 transition-colors"
+          >
+            Concessionnaires {meta.name} →
+          </Link>
+        </div>
+
+        {/* FAQ */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border">
+          <h2 className="text-xl font-black uppercase tracking-tight mb-6">
+            Questions fréquentes — entretien {meta.name}
+          </h2>
+          <div className="space-y-6">
+            {meta.faq.map((item, i) => (
+              <div key={i}>
+                <h3 className="font-black text-sm uppercase tracking-tight mb-2 text-brand">{item.q}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Autres marques */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border">
+          <h2 className="text-xl font-black uppercase tracking-tight mb-4">Entretien par marque</h2>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(BRAND_META).filter(([k]) => k !== marque).map(([k, b]) => (
+              <Link key={k} href={`/entretien/${k}`} className="px-3 py-1.5 bg-muted/30 rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-brand/10 hover:text-brand transition-colors">
+                {b.name}
+              </Link>
+            ))}
+            <Link href="/entretien" className="px-3 py-1.5 bg-muted/30 rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-brand/10 hover:text-brand transition-colors">
+              Toutes les marques
+            </Link>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
