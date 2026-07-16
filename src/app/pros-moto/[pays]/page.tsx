@@ -52,13 +52,15 @@ function parseRating(raw: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
-async function getProsForCountry(code: string): Promise<Pro[]> {
+async function getProsForCountry(country: { code: string; filterType?: string }): Promise<Pro[]> {
+  const code = country.code;
   try {
     const db = getAdminFirestore();
     const cols = ['concessions', 'associations', 'relais'] as const;
     const all: Pro[] = [];
     for (const col of cols) {
-      const snap = await db.collection(col).where('country', '==', code).limit(300).get();
+      const filterField = country.filterType === 'departement' ? 'departement' : 'country';
+      const snap = await db.collection(col).where(filterField, '==', code).limit(300).get();
       snap.docs.forEach(doc => {
         const d = doc.data();
         all.push({
@@ -132,7 +134,7 @@ export default async function PaysPage({ params }: PageProps) {
   const country = getCountryBySlug(pays);
   if (!country) notFound();
 
-  const pros = await getProsForCountry(country.code);
+  const pros = await getProsForCountry(country);
 
   const jsonLd = {
     '@context': 'https://schema.org',
