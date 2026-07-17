@@ -742,10 +742,12 @@ function MapPageComponent() {
 
 
       <button
-        className={cn("absolute right-6 z-[1300] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center")}
+        type="button"
+        aria-label="Me localiser sur la carte"
+        className={cn("fixed right-6 z-[1300] h-14 w-14 rounded-full bg-white text-brand shadow-2xl border-4 border-white flex items-center justify-center")}
         style={{
           bottom: width === undefined
-            ? '210px'  // valeur sûre pendant l'hydration
+            ? '210px'
             : isMobile
             ? drawerHeight === 'full'
               ? 'calc(85vh + 20px)'
