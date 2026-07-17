@@ -26,6 +26,7 @@ interface ListingItem {
   latitude: number | null;
   longitude: number | null;
   lundi: string; mardi: string; mercredi: string; jeudi: string; vendredi: string; samedi: string; dimanche: string;
+  brands: string[];
 }
 
 function normalize(s: string): string {
@@ -70,6 +71,7 @@ export default function ListingsManager() {
             longitude: typeof data.longitude === 'number' ? data.longitude : null,
             lundi: data.lundi || '', mardi: data.mardi || '', mercredi: data.mercredi || '',
             jeudi: data.jeudi || '', vendredi: data.vendredi || '', samedi: data.samedi || '', dimanche: data.dimanche || '',
+            brands: Array.isArray(data.brands) ? data.brands : [],
           });
         });
       } catch (e) { console.warn('Erreur chargement', colName, e); }
@@ -104,6 +106,8 @@ export default function ListingsManager() {
         facebookUrl: editing.facebookUrl,
         lundi: editing.lundi, mardi: editing.mardi, mercredi: editing.mercredi,
         jeudi: editing.jeudi, vendredi: editing.vendredi, samedi: editing.samedi, dimanche: editing.dimanche,
+        brands: editing.brands,
+        isMultibrand: editing.brands.length >= 2,
         ...(editing.latitude !== null ? { latitude: editing.latitude } : {}),
         ...(editing.longitude !== null ? { longitude: editing.longitude } : {}),
       });
@@ -240,6 +244,32 @@ export default function ListingsManager() {
               </Button>
             </div>
           </div>
+
+              {/* Sélecteur de marques */}
+              <div className="col-span-2 mt-2">
+                <label className="text-[10px] font-black uppercase tracking-widest mb-2 block text-foreground">Marques représentées</label>
+                <div className="flex flex-wrap gap-1.5 p-3 bg-muted/20 rounded-2xl border max-h-48 overflow-y-auto">
+                  {(["Honda","Yamaha","Kawasaki","Suzuki","BMW","Harley-Davidson","Triumph","Ducati","Royal Enfield","KTM","Aprilia","Vespa","Piaggio","Kymco","Indian","CF Moto","Zontes","VOGE","QJ Motor","Kove","Benelli","Mash","Husqvarna","Beta","Sherco","Fantic","Rieju","Moto Guzzi","SYM","Can-Am","Peugeot Motocycles","Moto Axxe","Dafy Moto","Speedway","Doc'Biker","TeamAxe","Cardy"] as string[]).map((brand) => {
+                    const isSel = (editing.brands || []).includes(brand);
+                    return (
+                      <button key={brand} type="button"
+                        onClick={() => {
+                          const cur = editing.brands || [];
+                          setEditing({ ...editing, brands: isSel ? cur.filter(b => b !== brand) : [...cur, brand] });
+                        }}
+                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full border transition-all ${isSel ? 'bg-brand text-white border-brand' : 'bg-white text-muted-foreground border-border hover:border-brand/30'}`}
+                      >
+                        {isSel && '✓ '}{brand}
+                      </button>
+                    );
+                  })}
+                </div>
+                {(editing.brands || []).length > 0 && (
+                  <p className="text-[9px] text-brand font-black mt-1.5 uppercase tracking-widest">
+                    {editing.brands.length} marque{editing.brands.length > 1 ? 's' : ''} — {editing.brands.join(', ')}
+                  </p>
+                )}
+              </div>
         </div>
       )}
 
