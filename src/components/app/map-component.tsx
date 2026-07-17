@@ -27,6 +27,7 @@ interface MapComponentProps {
   leftPadding?: number;
   isLocating?: boolean;
   onLocateEnd?: () => void;
+  onLocateError?: () => void;
   onLocationFound?: (coords: [number, number]) => void;
   selectionSource: 'marker' | 'card' | 'external' | null;
   deptCounts?: DeptCounts | null;
@@ -60,7 +61,7 @@ const MapComponent = ({
   points = [], labelPoints = [], center, zoom, selectedId,
   onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0,
-  isLocating = false, onLocateEnd = () => {}, onLocationFound = () => {},
+  isLocating = false, onLocateEnd = () => {}, onLocateError = () => {}, onLocationFound = () => {},
   selectionSource, deptCounts = null, deptToFit = null, bboxToFit = null, isMobile = false
 }: MapComponentProps) => {
 
@@ -403,6 +404,7 @@ const MapComponent = ({
     const handleLocationError = () => {
       console.warn('Géolocalisation refusée ou indisponible');
       onLocateEnd();
+      onLocateError();
     };
 
     map.once('locationfound', handleLocationFound);

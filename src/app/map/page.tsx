@@ -252,6 +252,7 @@ function MapPageComponent() {
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(searchParams.get('selectedId') ? 'external' : null);
   const [showDomTomMenu, setShowDomTomMenu] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [isLocatingError, setIsLocatingError] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
   const [bboxToFit, setBboxToFit] = useState<[number, number, number, number] | null>(null);
@@ -649,6 +650,7 @@ function MapPageComponent() {
           leftPadding={leftPadding}
           isLocating={isLocating}
           onLocateEnd={() => setIsLocating(false)}
+          onLocateError={() => { setIsLocating(false); setIsLocatingError(true); setTimeout(() => setIsLocatingError(false), 3000); }}
           onLocationFound={(c) => { setMapCenter(c); setSelectionSource('external'); }}
           deptCounts={deptCounts}
           deptToFit={deptToFit}
@@ -757,10 +759,22 @@ function MapPageComponent() {
             : '40px',
           transition: 'bottom 0.5s ease-out',
         }}
-        onClick={() => setIsLocating(true)}
+        onClick={() => { setIsLocatingError(false); setIsLocating(true); }}
+        title={isLocatingError ? "Géolocalisation bloquée — autorisez-la dans votre navigateur" : "Me localiser"}
       >
-        <Compass className={cn("h-8 w-8", isLocating && "animate-spin")} />
+        {isLocatingError ? (
+          <span className="text-red-500 font-black text-lg">✕</span>
+        ) : (
+          <Compass className={cn("h-8 w-8", isLocating && "animate-spin")} />
+        )}
       </button>
+      {isLocatingError && (
+        <div className="fixed right-4 z-[1400] bg-white border-2 border-red-200 rounded-2xl px-4 py-3 shadow-xl text-[11px] font-bold text-red-600 max-w-[220px] text-center"
+          style={{ bottom: width === undefined ? '280px' : isMobile ? 'calc(50vh + 100px)' : '110px' }}>
+          📍 Géolocalisation bloquée.<br/>
+          <span className="text-muted-foreground font-medium">Autorisez-la dans les réglages de votre navigateur.</span>
+        </div>
+      )}
     </div>
   );
 }
