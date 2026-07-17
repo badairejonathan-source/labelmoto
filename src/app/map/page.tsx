@@ -534,6 +534,16 @@ function MapPageComponent() {
       setTimeout(() => setBboxToFit(bbox), 10);
       setDeptToFit(null);
     } else if (dealerId) {
+      // Activer automatiquement le filtre correspondant au pro sélectionné
+      const point = points.find(p => p.id === dealerId);
+      if (point) {
+        const section = point.appSection === 'both' ? 'shopping' : point.appSection;
+        if (section) {
+          setActiveFilters(prev =>
+            prev.includes(section) ? prev : [...prev, section]
+          );
+        }
+      }
       handleMarkerClick(dealerId);
     } else {
       setMapCenter([lat, lng]);
