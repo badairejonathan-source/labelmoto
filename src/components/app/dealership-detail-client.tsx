@@ -169,22 +169,35 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                       <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
                       
                 {/* Description / Informations complémentaires */}
-                {(pro.description || (pro as any).info) && (
-                  <div className="mt-6 p-5 bg-muted/30 rounded-2xl border">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">À propos</h3>
-                    <p className={`text-sm text-foreground leading-relaxed font-medium ${!descExpanded ? 'line-clamp-4' : ''}`}>
-                      {pro.description || (pro as any).info}
-                    </p>
-                    {((pro.description || (pro as any).info || '').length > 200) && (
-                      <button
-                        onClick={() => setDescExpanded(!descExpanded)}
-                        className="mt-2 text-[10px] font-black uppercase tracking-widest text-brand hover:underline"
-                      >
-                        {descExpanded ? '▲ Réduire' : '▼ Voir tout'}
-                      </button>
-                    )}
-                  </div>
-                )}
+                {(pro.description || (pro as any).info) && (() => {
+                  const descText = (pro.description || (pro as any).info || '') as string;
+                  return (
+                    <div className="mt-6 rounded-2xl border border-border/60 overflow-hidden shadow-sm">
+                      <div className="flex items-center gap-2 px-5 py-3 bg-muted/40 border-b border-border/40">
+                        <span className="text-brand text-base">📝</span>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">À propos</h3>
+                      </div>
+                      <div className="px-5 py-4 bg-background">
+                        <div
+                          className="overflow-hidden transition-all duration-300"
+                          style={{ maxHeight: descExpanded ? '2000px' : '96px' }}
+                        >
+                          <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
+                            {descText}
+                          </p>
+                        </div>
+                        {descText.length > 200 && (
+                          <button
+                            onClick={() => setDescExpanded(!descExpanded)}
+                            className="mt-3 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-brand hover:opacity-70 transition-opacity"
+                          >
+                            {descExpanded ? '▲ Réduire' : '▼ Voir tout'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
                 <div className="text-left min-w-0">
                         <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Site Web</p>
                         <p className="font-black text-[10px] sm:text-sm truncate">Visiter le site</p>
