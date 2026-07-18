@@ -32,4 +32,7 @@ env:
   - variable: RESEND_API_KEY
     secret: RESEND_API_KEY
     availability: ["RUNTIME"]
+  - variable: GOOGLE_PLACES_API_KEY
+    secret: GOOGLE_PLACES_API_KEY
+    availability: ["RUNTIME"]
     availability: ["RUNTIME"]
