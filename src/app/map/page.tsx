@@ -528,22 +528,23 @@ function MapPageComponent() {
     if (isMobile) setDrawerHeight('half');
   }, [points, isMobile]);
 
-  const handleSuggestionSelect = (lat, lng, bbox, dealerId) => {
+  const handleSuggestionSelect = (lat, lng, bbox, dealerId, suggestionAppSection?: string) => {
     if (bbox) {
       setBboxToFit(null);
       setTimeout(() => setBboxToFit(bbox), 10);
       setDeptToFit(null);
     } else if (dealerId) {
-      // Activer automatiquement le filtre correspondant au pro sélectionné
-      const point = points.find(p => p.id === dealerId);
-      if (point) {
-        const section = point.appSection === 'both' ? 'shopping' : point.appSection;
-        if (section) {
-          setActiveFilters(prev =>
-            prev.includes(section) ? prev : [...prev, section]
-          );
-        }
+      // 1. Utiliser appSection transmis par le header (fiable, pas de dépendance sur points)
+      let section = suggestionAppSection && suggestionAppSection !== 'both' ? suggestionAppSection : null;
+      // 2. Fallback : chercher dans points si déjà chargés
+      if (!section) {
+        const point = points.find(p => p.id === dealerId);
+        if (point) section = point.appSection === 'both' ? 'shopping' : point.appSection;
       }
+      // 3. Défaut : shopping (concessions)
+      if (!section) section = 'shopping';
+      // Activer le filtre
+      setActiveFilters(prev => prev.includes(section!) ? prev : [...prev, section!]);
       handleMarkerClick(dealerId);
     } else {
       setMapCenter([lat, lng]);

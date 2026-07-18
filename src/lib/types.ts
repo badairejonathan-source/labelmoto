@@ -21,6 +21,7 @@ export interface Dealership {
   address: string;
   addresss?: string; // Compatibilité triple 's'
   website: string;
+  description?: string;
   phoneNumber: string;
   pnoneNumber?: string;
   email: string;

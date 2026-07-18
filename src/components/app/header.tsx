@@ -49,6 +49,7 @@ interface Suggestion {
   zoom?: number;
   bbox?: [number, number, number, number]; // [west, south, east, north]
   id?: string;
+  appSection?: string;
   score?: number;
 }
 
@@ -141,10 +142,11 @@ const Header: React.FC<any> = ({
               const coords = extractValidCoordinates(data);
               if (!coords) return;
               seenIds.add(d.id);
+              const appSect = colName === 'associations' ? 'association' : colName === 'relais' ? 'relais' : colName === 'creators' ? 'creator' : (data.appSection || 'shopping');
               dealers.push({
                 type: 'dealer', label: data.title || d.id,
                 subLabel: data.address, lat: coords.lat, lng: coords.lng,
-                id: d.id, zoom: 15,
+                id: d.id, zoom: 15, appSection: appSect,
               });
             });
           } catch (e) {}
@@ -324,7 +326,7 @@ const Header: React.FC<any> = ({
     } else {
       // Sur la page /map — déclencher fitBounds via onSuggestionSelect
       if (onSuggestionSelect && s.lat && s.lng) {
-        setTimeout(() => onSuggestionSelect(s.lat!, s.lng!, s.bbox, s.id), 10);
+        setTimeout(() => onSuggestionSelect(s.lat!, s.lng!, s.bbox, s.id, s.appSection), 10);
       } else {
         setTimeout(() => onSearch(), 10);
       }

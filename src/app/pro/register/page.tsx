@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import ImageUploadRequest from '@/components/app/image-upload-request';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +20,7 @@ function RegisterProContent() {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const { user } = useUser();
   const [horaires, setHoraires] = useState<Record<string, {om:string,fm:string,oa:string,fa:string,ferme:boolean}>>({
     lundi:    {om:'',fm:'',oa:'',fa:'',ferme:false},
@@ -51,6 +53,7 @@ function RegisterProContent() {
     const horairesFinal: Record<string,string> = {};
     Object.entries(horaires).forEach(([j,h]) => { horairesFinal[j] = formatHoraire(h); });
     formData.set('horaires', JSON.stringify(horairesFinal));
+    if (uploadedImageUrl) formData.set('imageUrl', uploadedImageUrl);
     const result = await submitProAction(formData);
 
     if (result?.error) {
@@ -143,8 +146,12 @@ function RegisterProContent() {
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Photo de l'établissement (optionnel)</label>
-                  <Input name="imageUrl" type="url" placeholder="https://exemple.com/photo.jpg" className="font-bold h-12 rounded-xl" />
-                  <p className="text-[10px] text-muted-foreground px-1">Lien direct vers une photo de votre établissement (façade, devanture...)</p>
+                  <p className="text-[10px] text-muted-foreground px-1 mb-2">Ajoutez une photo de votre façade ou devanture. Elle sera validée par notre équipe avant publication.</p>
+                  <ImageUploadRequest
+                    concessionTitle="Nouvelle fiche"
+                    onSuccess={(url) => setUploadedImageUrl(url)}
+                  />
+                  {uploadedImageUrl && <input type="hidden" name="imageUrl" value={uploadedImageUrl} />}
                 </div>
 
                 <div className="space-y-2">

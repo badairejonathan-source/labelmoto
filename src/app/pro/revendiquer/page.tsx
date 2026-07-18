@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/app/header';
 import { Loader2, Search, MapPin, ArrowLeft, Send, CheckCircle, Store } from 'lucide-react';
+import ImageUploadRequest from '@/components/app/image-upload-request';
 
 const COLLECTIONS = ['concessions', 'associations', 'relais', 'creators'] as const;
 const JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];

@@ -37,6 +37,7 @@ type ReviewFormValues = z.infer<typeof reviewSchema>;
 export default function DealershipDetailClient({ pro }: DealershipDetailClientProps) {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const [descExpanded, setDescExpanded] = useState(false);
   const getProCollection = () => pro.appSection === 'association' ? 'associations' : (pro.appSection === 'relais' ? 'relais' : (pro.appSection === 'creator' ? 'creators' : 'concessions'));
   const trackStat = (field: string) => { if (firestore && pro.id) updateDoc(doc(firestore, getProCollection(), pro.id), { [field]: increment(1) }).catch(() => {}); };
   const { toast } = useToast();
@@ -166,7 +167,25 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                   <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
                     <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => { trackEvent('clic_site_web', { pro: pro.title, source: 'fiche' }); trackStat('stats_web'); }}>
                       <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
-                      <div className="text-left min-w-0">
+                      
+                {/* Description / Informations complémentaires */}
+                {pro.description && (
+                  <div className="mt-6 p-5 bg-muted/30 rounded-2xl border">
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">À propos</h3>
+                    <p className={`text-sm text-foreground leading-relaxed font-medium ${!descExpanded ? 'line-clamp-4' : ''}`}>
+                      {pro.description}
+                    </p>
+                    {pro.description.length > 200 && (
+                      <button
+                        onClick={() => setDescExpanded(!descExpanded)}
+                        className="mt-2 text-[10px] font-black uppercase tracking-widest text-brand hover:underline"
+                      >
+                        {descExpanded ? '▲ Réduire' : '▼ Voir tout'}
+                      </button>
+                    )}
+                  </div>
+                )}
+                <div className="text-left min-w-0">
                         <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Site Web</p>
                         <p className="font-black text-[10px] sm:text-sm truncate">Visiter le site</p>
                       </div>
