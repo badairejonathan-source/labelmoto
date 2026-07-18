@@ -20,8 +20,10 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
-  "storage": {
-    "rules": "storage.rules",
-    "bucket": "studio-4801889514-40ebd.firebasestorage.app"
-  }
+  "storage": [
+    {
+      "bucket": "studio-4801889514-40ebd.firebasestorage.app",
+      "rules": "storage.rules"
+    }
+  ]
 }
