@@ -44,6 +44,10 @@ export default function ListingsManager() {
   const [isSaving, setIsSaving] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<ListingItem | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
+  const [importLoading, setImportLoading] = useState(false);
+  const [importError, setImportError] = useState('');
 
   const loadListings = useCallback(async () => {
     if (!firestore) return;
@@ -90,6 +94,43 @@ export default function ListingsManager() {
     return allListings.filter(l => normalize(l.title).includes(q) || normalize(l.address).includes(q)).slice(0, 50);
   }, [searchTerm, allListings]);
 
+  const handleImportFromGoogleMaps = async () => {
+    if (!importUrl.trim() || !editing) return;
+    setImportLoading(true);
+    setImportError('');
+    try {
+      const res = await fetch('/api/places-lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: importUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setImportError(data.error || 'Erreur'); return; }
+      // Mettre à jour le formulaire avec les données importées
+      setEditing(prev => prev ? {
+        ...prev,
+        title: data.title || prev.title,
+        address: data.address || prev.address,
+        phoneNumber: data.phoneNumber || prev.phoneNumber,
+        website: data.website || prev.website,
+        latitude: data.latitude ?? prev.latitude,
+        longitude: data.longitude ?? prev.longitude,
+        lundi: data.lundi || prev.lundi,
+        mardi: data.mardi || prev.mardi,
+        mercredi: data.mercredi || prev.mercredi,
+        jeudi: data.jeudi || prev.jeudi,
+        vendredi: data.vendredi || prev.vendredi,
+        samedi: data.samedi || prev.samedi,
+        dimanche: data.dimanche || prev.dimanche,
+      } : prev);
+      setIsImporting(false);
+      setImportUrl('');
+      toast({ title: '✅ Données importées depuis Google Maps', description: data.title });
+    } catch (e: any) {
+      setImportError('Erreur de connexion');
+    }
+    setImportLoading(false);
+  };
   const handleSave = async () => {
     if (!firestore || !editing) return;
     setIsSaving(true);
@@ -202,6 +243,34 @@ export default function ListingsManager() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-black uppercase text-sm tracking-widest">Modifier la fiche</h3>
               <button onClick={() => setEditing(null)} className="p-1.5 rounded-full hover:bg-muted"><X className="h-5 w-5" /></button>
+            </div>
+            {/* Bouton import Google Maps */}
+            <div className="mb-4">
+              {!isImporting ? (
+                <button onClick={() => setIsImporting(true)} className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors text-[10px] font-black uppercase tracking-widest">
+                  📍 Importer depuis Google Maps
+                </button>
+              ) : (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl space-y-2">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-blue-700">Colle l'URL Google Maps de la fiche</p>
+                  <input
+                    type="url"
+                    value={importUrl}
+                    onChange={e => setImportUrl(e.target.value)}
+                    placeholder="https://maps.google.com/..."
+                    className="w-full text-xs border rounded-lg px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  />
+                  {importError && <p className="text-[10px] text-red-600 font-bold">{importError}</p>}
+                  <div className="flex gap-2">
+                    <button onClick={handleImportFromGoogleMaps} disabled={importLoading} className="flex-1 bg-blue-600 text-white rounded-lg py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 disabled:opacity-50">
+                      {importLoading ? '⏳ Import...' : '✓ Importer'}
+                    </button>
+                    <button onClick={() => { setIsImporting(false); setImportUrl(''); setImportError(''); }} className="px-3 rounded-lg border text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-muted">
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="space-y-3">
               <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Nom</Label><Input value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} className="font-bold rounded-xl border-2" /></div>
