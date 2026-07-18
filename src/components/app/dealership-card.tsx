@@ -10,7 +10,7 @@ import { trackEvent } from '@/lib/analytics';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useMemoFirebase, useDoc } from '@/firebase/client';
-import { doc } from 'firebase/firestore';
+import { doc, updateDoc, increment } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
@@ -127,12 +127,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
               <div className={cn("flex items-center gap-2 transition-all duration-500", isSelected ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none")}>
                 {fullDetails?.phoneNumber && (
                   <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-brand/10 hover:border-brand" onClick={(e) => e.stopPropagation()}>
-                    <a href={`tel:${fullDetails.phoneNumber}`} onClick={() => trackEvent('clic_telephone', { pro: fullDetails.title, source: 'carte' })}><Phone className="h-4 w-4 text-brand" /></a>
+                    <a href={`tel:${fullDetails.phoneNumber}`} onClick={() => { trackEvent('clic_telephone', { pro: fullDetails.title, source: 'carte' }); if (firestore) updateDoc(doc(firestore, col, point.id), { stats_tel: increment(1) }).catch(() => {}); }}><Phone className="h-4 w-4 text-brand" /></a>
                   </Button>
                 )}
                 {fullDetails?.website && (
                   <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-brand/10 hover:border-brand" onClick={(e) => e.stopPropagation()}>
-                    <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('clic_site_web', { pro: fullDetails.title, source: 'carte' })}><Globe className="h-4 w-4 text-brand" /></a>
+                    <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={() => { trackEvent('clic_site_web', { pro: fullDetails.title, source: 'carte' }); if (firestore) updateDoc(doc(firestore, col, point.id), { stats_web: increment(1) }).catch(() => {}); }}><Globe className="h-4 w-4 text-brand" /></a>
                   </Button>
                 )}
                 <Button 

@@ -24,6 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/client';
 import AdminProspection from '@/components/app/admin-prospection';
+import AdminStats from '@/components/app/admin-stats';
+import AdminImageRequests from '@/components/app/admin-image-requests';
 import { updateDoc } from 'firebase/firestore';
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
@@ -422,6 +424,8 @@ export default function AdminPage() {
             <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
             <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
             <TabsTrigger value="prospection" className="rounded-full font-black uppercase text-[10px] tracking-widest">📊 Prospection</TabsTrigger>
+            <TabsTrigger value="stats" className="rounded-full font-black uppercase text-[10px] tracking-widest">📈 Stats</TabsTrigger>
+            <TabsTrigger value="images" className="rounded-full font-black uppercase text-[10px] tracking-widest">🖼️ Images</TabsTrigger>
           </TabsList>
 
           <TabsContent value="submissions">
@@ -609,6 +613,12 @@ export default function AdminPage() {
           </TabsContent>
           <TabsContent value="prospection">
             <AdminProspection />
+          </TabsContent>
+          <TabsContent value="stats">
+            <AdminStats />
+          </TabsContent>
+          <TabsContent value="images">
+            <AdminImageRequests />
           </TabsContent>
         </Tabs>
       </main>

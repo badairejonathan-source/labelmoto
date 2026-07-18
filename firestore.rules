@@ -23,7 +23,9 @@ service cloud.firestore {
     // Lecture libre pour tous, écriture réservée aux admins
     match /concessions/{id} { 
       allow read: if true; 
-      allow write: if isAdmin(); 
+      allow write: if isAdmin();
+      // Stats publiques (clics téléphone, site web)
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stats_tel','stats_web','stats_vues']); 
       match /comments/{commentId} {
         allow read: if true;
         allow create: if isSignedIn();
@@ -37,6 +39,14 @@ service cloud.firestore {
     match /articles/{id} { allow read: if true; allow write: if isAdmin(); }
     // Cache public (choropleth départements)
     match /cache/{id} { allow read: if true; allow write: if isAdmin(); }
+    // Prospection B2B — lecture/écriture admin uniquement
+    match /prospection/{id} { allow read, write: if isAdmin(); }
+    // Demandes d'images — pros authentifiés peuvent créer, admin peut tout
+    match /image_requests/{id} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == resource.data.userId);
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
 
     // --- NOYAU IDENTITÉ & PROFILS ---
     match /users/{userId} {
