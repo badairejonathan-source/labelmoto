@@ -30,13 +30,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { ville } = await params;
   const city = getCityBySlug(ville);
   if (!city) return { title: 'Page introuvable | LabelMoto' };
+
+  // Compte réel depuis Firestore (dynamique à chaque build)
+  const count = await getProCountForCity(city.departement);
+  const countStr = count > 0 ? `${count}` : '';
+  
+  // Titre dynamique avec le vrai nombre de pros
+  const dynamicTitle = countStr
+    ? `${countStr} garages moto à ${city.name} — Concessions & ateliers | LabelMoto`
+    : city.metaTitle;
+
+  // Description dynamique
+  const dynamicDesc = countStr
+    ? `Trouvez votre garage moto à ${city.name} parmi ${countStr} professionnels vérifiés : concessions, ateliers, réparateurs. Avis, horaires et contacts directs sur LabelMoto.`
+    : city.metaDescription;
+
   return {
-    title: city.metaTitle,
-    description: city.metaDescription,
+    title: dynamicTitle,
+    description: dynamicDesc,
     alternates: { canonical: `https://labelmoto.fr/garages-moto/${city.slug}` },
     openGraph: {
-      title: city.metaTitle,
-      description: city.metaDescription,
+      title: dynamicTitle,
+      description: dynamicDesc,
       url: `https://labelmoto.fr/garages-moto/${city.slug}`,
       siteName: 'LabelMoto',
       locale: 'fr_FR',
@@ -44,6 +59,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [{ url: 'https://labelmoto.fr/images/og-image.webp', width: 1200, height: 630 }],
     },
   };
+}
+
+async function getProCountForCity(dept: string): Promise<number> {
+  try {
+    const db = getAdminFirestore();
+    const cols = ['concessions', 'associations', 'relais', 'creators'] as const;
+    let total = 0;
+    for (const col of cols) {
+      const s = await db.collection(col).where('departement', '==', dept).count().get();
+      total += s.data().count;
+    }
+    return total;
+  } catch {
+    return 0;
+  }
 }
 
 function parseRating(raw: unknown): number | null {
