@@ -168,36 +168,6 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                     <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => { trackEvent('clic_site_web', { pro: pro.title, source: 'fiche' }); trackStat('stats_web'); }}>
                       <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
                       
-                {/* Description / Informations complémentaires */}
-                {(pro.description || (pro as any).info) && (() => {
-                  const descText = (pro.description || (pro as any).info || '') as string;
-                  return (
-                    <div className="mt-6 rounded-2xl border border-border/60 overflow-hidden shadow-sm">
-                      <div className="flex items-center gap-2 px-5 py-3 bg-muted/40 border-b border-border/40">
-                        <span className="text-brand text-base">📝</span>
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">À propos</h3>
-                      </div>
-                      <div className="px-5 py-4 bg-background">
-                        <div
-                          className="overflow-hidden transition-all duration-300"
-                          style={{ maxHeight: descExpanded ? '2000px' : '96px' }}
-                        >
-                          <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
-                            {descText}
-                          </p>
-                        </div>
-                        {descText.length > 200 && (
-                          <button
-                            onClick={() => setDescExpanded(!descExpanded)}
-                            className="mt-3 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-brand hover:opacity-70 transition-opacity"
-                          >
-                            {descExpanded ? '▲ Réduire' : '▼ Voir tout'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
                 <div className="text-left min-w-0">
                         <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Site Web</p>
                         <p className="font-black text-[10px] sm:text-sm truncate">Visiter le site</p>
@@ -208,7 +178,37 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
               </div>
             </div>
 
-            <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
+            {/* Description / Informations complémentaires */}
+            {(pro.description || (pro as any).info) && (() => {
+              const descText = (pro.description || (pro as any).info || '') as string;
+              return (
+                <div className="rounded-2xl border border-border/60 overflow-hidden shadow-sm">
+                  <div className="flex items-center gap-2 px-5 py-3 bg-muted/40 border-b border-border/40">
+                    <span className="text-brand text-base">📝</span>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">À propos</h3>
+                  </div>
+                  <div className="px-5 py-4 bg-background">
+                    <div
+                      className="overflow-hidden transition-all duration-300"
+                      style={{ maxHeight: descExpanded ? '2000px' : '96px' }}
+                    >
+                      <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
+                        {descText}
+                      </p>
+                    </div>
+                    {descText.length > 200 && (
+                      <button
+                        onClick={() => setDescExpanded(!descExpanded)}
+                        className="mt-3 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-brand hover:opacity-70 transition-opacity"
+                      >
+                        {descExpanded ? '▲ Réduire' : '▼ Voir tout'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+                        <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
               <CardHeader className="bg-muted/50 p-6 border-b">
                 <CardTitle className="text-sm font-black uppercase flex items-center gap-3">
                   <Clock className="h-5 w-5 text-brand" /> Horaires d'ouverture
