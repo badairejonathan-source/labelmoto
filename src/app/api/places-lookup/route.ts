@@ -63,9 +63,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Clé API manquante' }, { status: 500 });
   }
 
-  const { url } = await req.json();
+  let { url } = await req.json();
   if (!url) {
     return NextResponse.json({ error: 'URL manquante' }, { status: 400 });
+  }
+
+  // Suivre les redirections pour les URLs courtes (maps.app.goo.gl, goo.gl)
+  if (url.includes('goo.gl') || url.includes('maps.app')) {
+    try {
+      const redirectRes = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
+      url = redirectRes.url;
+    } catch {
+      // Garder l'URL originale si la redirection échoue
+    }
   }
 
   const { placeId, query } = extractFromGoogleMapsUrl(url);
