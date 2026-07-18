@@ -169,13 +169,13 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                       <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
                       
                 {/* Description / Informations complémentaires */}
-                {pro.description && (
+                {(pro.description || (pro as any).info) && (
                   <div className="mt-6 p-5 bg-muted/30 rounded-2xl border">
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">À propos</h3>
                     <p className={`text-sm text-foreground leading-relaxed font-medium ${!descExpanded ? 'line-clamp-4' : ''}`}>
-                      {pro.description}
+                      {pro.description || (pro as any).info}
                     </p>
-                    {pro.description.length > 200 && (
+                    {((pro.description || (pro as any).info || '').length > 200) && (
                       <button
                         onClick={() => setDescExpanded(!descExpanded)}
                         className="mt-2 text-[10px] font-black uppercase tracking-widest text-brand hover:underline"
