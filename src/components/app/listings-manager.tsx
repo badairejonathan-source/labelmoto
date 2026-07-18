@@ -230,7 +230,7 @@ export default function ListingsManager() {
               </div>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => setEditing(l)} className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"><Edit className="h-4 w-4" /></button>
+              <button onClick={() => { setEditing(l); setIsImporting(false); setImportUrl(''); setImportError(''); }} className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"><Edit className="h-4 w-4" /></button>
               <button onClick={() => setConfirmDelete(l)} className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"><Trash2 className="h-4 w-4" /></button>
             </div>
           </div>
@@ -245,7 +245,7 @@ export default function ListingsManager() {
               <button onClick={() => setEditing(null)} className="p-1.5 rounded-full hover:bg-muted"><X className="h-5 w-5" /></button>
             </div>
             {/* Bouton import Google Maps */}
-            <div className="mb-4">
+            <div className="mb-4" onClick={e => e.stopPropagation()}>
               {!isImporting ? (
                 <button onClick={() => setIsImporting(true)} className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors text-[10px] font-black uppercase tracking-widest">
                   📍 Importer depuis Google Maps
@@ -317,12 +317,13 @@ export default function ListingsManager() {
               {/* Sélecteur de marques */}
               <div className="col-span-2 mt-2">
                 <label className="text-[10px] font-black uppercase tracking-widest mb-2 block text-foreground">Marques représentées</label>
-                <div className="flex flex-wrap gap-1.5 p-3 bg-muted/20 rounded-2xl border max-h-48 overflow-y-auto">
+                <div className="flex flex-wrap gap-1.5 p-3 bg-muted/20 rounded-2xl border max-h-48 overflow-y-auto" onClick={e => e.stopPropagation()}>
                   {(["Honda","Yamaha","Kawasaki","Suzuki","BMW","Harley-Davidson","Triumph","Ducati","Royal Enfield","KTM","Aprilia","Vespa","Piaggio","Kymco","Indian","CF Moto","Zontes","VOGE","QJ Motor","Kove","Benelli","Mash","Husqvarna","Beta","Sherco","Fantic","Rieju","Moto Guzzi","SYM","Can-Am","Peugeot Motocycles","Moto Axxe","Dafy Moto","Speedway","Doc'Biker","TeamAxe","Cardy"] as string[]).map((brand) => {
                     const isSel = (editing.brands || []).includes(brand);
                     return (
                       <button key={brand} type="button"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           const cur = editing.brands || [];
                           setEditing({ ...editing, brands: isSel ? cur.filter(b => b !== brand) : [...cur, brand] });
                         }}

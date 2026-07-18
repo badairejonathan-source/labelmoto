@@ -321,6 +321,7 @@ const Header: React.FC<any> = ({
       if (s.lat && s.lng) { queryParams.set('lat', s.lat.toString()); queryParams.set('lng', s.lng.toString()); }
       if (s.zoom) queryParams.set('zoom', s.zoom.toString());
       if (s.id) queryParams.set('selectedId', s.id);
+      if (s.appSection && s.appSection !== 'both') queryParams.set('filter', s.appSection);
       queryParams.set('search', s.label);
       router.push(`/map?${queryParams.toString()}`);
     } else {
