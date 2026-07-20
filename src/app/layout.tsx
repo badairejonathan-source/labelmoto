@@ -118,6 +118,8 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://studio-4801889514-40ebd.firebaseapp.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://firestore.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://studio-4801889514-40ebd.firebasestorage.app" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossOrigin="anonymous" />
         <Script
           id="json-ld"
           type="application/ld+json"

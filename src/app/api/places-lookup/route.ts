@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+// Forcer Node.js runtime pour accès aux modules https/http natifs
+export const runtime = 'nodejs';
 import * as https from 'https';
 import * as http from 'http';
 

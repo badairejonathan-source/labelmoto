@@ -215,6 +215,18 @@ export default function RevendiquerPage() {
               </div>
             </div>
 
+            {/* Upload photo */}
+            <div className="border-t pt-4 space-y-2">
+              <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1 block">
+                📸 Photo de l'établissement (optionnel)
+              </Label>
+              <p className="text-[10px] text-muted-foreground ml-1">La photo sera validée par notre équipe avant publication.</p>
+              <ImageUploadRequest
+                concessionSlug={selected.id}
+                concessionTitle={selected.title}
+                onSuccess={(url) => console.log('Photo soumise:', url)}
+              />
+            </div>
             <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full rounded-xl font-black uppercase text-xs tracking-widest h-12 mt-4">
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-4 w-4 mr-2" /> Envoyer ma demande de modification</>}
             </Button>

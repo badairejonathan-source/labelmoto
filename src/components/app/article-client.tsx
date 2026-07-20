@@ -128,7 +128,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
 
-    if (articleId.includes('scooter') || title.includes('scooter')) return "/images/article-scooter-125.png";
+    if (articleId.includes('scooter') || title.includes('scooter')) return "/images/article-scooter-125.webp";
     if (articleId.includes('meilleurs-casques') && articleId.includes('entree')) return "/images/casques-entree-de-gamme-2026.webp";
     if (articleId.includes('meilleurs-casques') && articleId.includes('milieu')) return "/images/casques-milieu-de-gamme-2026.webp";
     if (articleId.includes('meilleurs-casques') && articleId.includes('haut')) return "/images/casques-haut-de-gamme-2026.webp";

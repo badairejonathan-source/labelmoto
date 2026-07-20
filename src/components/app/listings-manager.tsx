@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, Edit, Trash2, MapPin, MapPinOff, X, Save, RefreshCw } from 'lucide-react';
+import ImageUploadRequest from '@/components/app/image-upload-request';
 
 const COLLECTIONS = ['concessions', 'associations', 'relais', 'creators'] as const;
 
@@ -306,6 +307,16 @@ export default function ListingsManager() {
                 <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Instagram</Label><Input value={editing.instagramUrl} onChange={e => setEditing({ ...editing, instagramUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
                 <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Facebook</Label><Input value={editing.facebookUrl} onChange={e => setEditing({ ...editing, facebookUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
               </div>
+            </div>
+            {/* Upload photo admin */}
+            <div className="border-t pt-3 mt-4 space-y-1.5">
+              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground block">📸 Photo de l'établissement</label>
+              <p className="text-[10px] text-muted-foreground">La photo sera validée avant publication.</p>
+              <ImageUploadRequest
+                concessionSlug={editing.id}
+                concessionTitle={editing.title}
+                onSuccess={() => toast({ title: '✅ Photo soumise pour validation' })}
+              />
             </div>
             <div className="flex gap-2 mt-6">
               <Button onClick={handleSave} disabled={isSaving} className="flex-1 rounded-xl font-black uppercase text-xs tracking-widest h-11">
