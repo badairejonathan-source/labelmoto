@@ -103,26 +103,23 @@ export default function HomepageDeferred() {
             Voir les 43 fiches →
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { brand: 'Honda', model: 'XL750 Transalp', slug: 'honda-xl750-transalp-2023-plus', emoji: '🏍️' },
-            { brand: 'Yamaha', model: 'MT-07', slug: 'yamaha-mt-07-2021-plus', emoji: '🏍️' },
-            { brand: 'Kawasaki', model: 'Z900', slug: 'kawasaki-z900-2020-plus', emoji: '🏍️' },
-            { brand: 'CFMOTO', model: '450MT', slug: 'cfmoto-450mt-2024-plus', emoji: '🏍️' },
-            { brand: 'Suzuki', model: 'GSX-8S', slug: 'suzuki-gsx-8s-2023-plus', emoji: '🏍️' },
-            { brand: 'BMW', model: 'R1250 GS', slug: 'bmw-r1250-gs-r1300-gs-2019-plus', emoji: '🏍️' },
-            { brand: 'KTM', model: '125 Duke', slug: 'ktm-125-duke-2024-plus', emoji: '🏍️' },
-            { brand: 'Triumph', model: 'Trident 660', slug: 'triumph-trident-660-2021-plus', emoji: '🏍️' },
-            { brand: 'Honda', model: 'CB750 Hornet', slug: 'honda-cb750-hornet-2023-plus', emoji: '🏍️' },
+            { brand: 'Honda', model: 'XL750 Transalp', slug: 'honda-xl750-transalp-2023-plus', desc: 'Vidange, chaîne, freins — tout le programme' },
+            { brand: 'Yamaha', model: 'MT-07', slug: 'yamaha-mt-07-2021-plus', desc: "Révisions à 10 000 km, coûts réels, points clés" },
+            { brand: 'CFMOTO', model: '450MT', slug: 'cfmoto-450mt-2024-plus', desc: 'Entretien du bestseller chinois en France' },
           ].map(fiche => (
             <Link
               key={fiche.slug}
-              href={'/fiches/' + fiche.slug}
-              className="group flex flex-col p-4 bg-white rounded-2xl border-2 border-border/50 hover:border-brand shadow-sm hover:shadow-md transition-all"
+              href={"/" + "fiches/" + fiche.slug}
+              className="group flex flex-col gap-2 p-5 bg-white rounded-2xl border-2 border-border/50 hover:border-brand shadow-sm hover:shadow-lg transition-all duration-300"
             >
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">{fiche.brand}</span>
-              <span className="font-black text-sm uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
-              <span className="text-[10px] text-muted-foreground font-medium mt-2">Entretien & révisions →</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand">{fiche.brand}</span>
+              <span className="font-black text-base uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
+              <span className="text-xs text-muted-foreground font-medium leading-snug">{fiche.desc}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
+                Voir la fiche <span aria-hidden="true">→</span>
+              </span>
             </Link>
           ))}
         </div>
