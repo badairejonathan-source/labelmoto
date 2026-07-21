@@ -43,6 +43,9 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'user' | 'pro' | 'admin'>('all');
   const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState(new Set());
+  const toggleSelect = (id) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const copyEmails = (list) => { const emails = list.filter(u => selected.has(u.id) && u.email).map(u => u.email).join('; '); if (!emails) { alert('Aucun email.'); return; } navigator.clipboard.writeText(emails).then(() => alert(selected.size + ' email(s) copies !')); };
 
   const load = async () => {
     if (!firestore) return;
@@ -126,6 +129,7 @@ export default function AdminUsers() {
         </button>
       </div>
 
+      {selected.size > 0 && (<div className="flex items-center gap-3 p-3 bg-brand/5 border border-brand/20 rounded-2xl mb-2"><span className="text-[10px] font-black uppercase tracking-widest text-brand">{selected.size} selectionne(s)</span><button type="button" onClick={() => copyEmails(filtered)} className="px-4 py-2 bg-brand text-white rounded-full text-[10px] font-black uppercase tracking-widest">Copier emails Outlook</button><button type="button" onClick={() => setSelected(new Set())} className="text-[10px] text-muted-foreground">Decocher</button></div>)}
       {/* Liste */}
       <div className="space-y-2">
         {filtered.map(user => {
@@ -134,6 +138,7 @@ export default function AdminUsers() {
           return (
             <div key={user.id} className="bg-white rounded-2xl border shadow-sm p-4 flex items-center gap-4">
               {/* Avatar */}
+              <input type="checkbox" checked={selected.has(user.id)} onChange={() => toggleSelect(user.id)} className="h-4 w-4 accent-brand cursor-pointer shrink-0" />
               <div className="shrink-0 h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center font-black text-brand text-sm">
                 {(user.displayName || user.email || '?')[0].toUpperCase()}
               </div>

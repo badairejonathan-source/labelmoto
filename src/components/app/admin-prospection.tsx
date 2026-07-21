@@ -35,6 +35,9 @@ export default function AdminProspection() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const toggleSelect = (id) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const copyEmails = (list) => { const emails = list.filter(l => selected.has(l.id) && l.email).map(l => l.email).join("; "); if (!emails) { alert("Aucun email."); return; } navigator.clipboard.writeText(emails).then(() => alert(selected.size + " email(s) copies - colle dans BCC Outlook !")); };
   const [notesValue, setNotesValue] = useState('');
   const [saving, setSaving] = useState<string | null>(null);
 
@@ -116,8 +119,8 @@ export default function AdminProspection() {
 
       {/* Liste des leads */}
       <div className="space-y-4">
-        {filtered.map(lead => (
-          <div key={lead.id} className="bg-white rounded-2xl border shadow-sm p-5 space-y-3">
+        {selected.size > 0 && (<div className="flex items-center gap-3 p-3 mb-2 bg-brand/5 border border-brand/20 rounded-2xl"><span className="text-[10px] font-black uppercase tracking-widest text-brand">{selected.size} selectionne(s)</span><button type="button" onClick={() => copyEmails(filtered)} className="px-4 py-2 bg-brand text-white rounded-full text-[10px] font-black uppercase tracking-widest">Copier emails Outlook</button><button type="button" onClick={() => setSelected(new Set())} className="text-[10px] text-muted-foreground">Decocher</button></div>)}{filtered.map(lead => (
+          <div key={lead.id} className="bg-white rounded-2xl border shadow-sm p-5 space-y-3"><input type="checkbox" checked={selected.has(lead.id)} onChange={() => toggleSelect(lead.id)} className="float-right ml-2 h-4 w-4 accent-brand cursor-pointer" />
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
