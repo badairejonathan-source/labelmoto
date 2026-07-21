@@ -67,11 +67,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     ? addrParts[cpSegIdx].replace(/\d{5}\s*/, '').trim()
     : addrParts[addrParts.length - 1] || '';
 
-  const brandsStr = pro.brands?.length ? ' — ' + pro.brands.join(', ') : '';
-  const title = `${pro.title}${ville ? ' à ' + ville : ''}${brandsStr} — Avis, horaires & contact | LabelMoto`;
-  const description = `${pro.title}${ville ? ' à ' + ville : ''} : avis, horaires d'ouverture, téléphone et adresse. Contactez ce professionnel moto directement sur LabelMoto, l'annuaire moto de référence.`;
+  // Meta title propre : extraire le nom court avant le premier tiret/pipe
+  const shortName = pro.title.split(/\s*[\-\/\|]\s*/)[0].trim();
+  const villeInName = shortName.toLowerCase().includes((ville || '').toLowerCase());
+  const typeLabel = pro.appSection === 'service' ? 'Atelier moto' : pro.appSection === 'association' ? 'Club moto' : 'Concessionnaire moto';
+  const title = `${shortName}${ville && !villeInName ? ' à ' + ville : ''} — ${typeLabel} | LabelMoto`.slice(0, 65);
+  const description = pro.info
+    ? pro.info.slice(0, 155) + (pro.info.length > 155 ? '...' : '')
+    : `${shortName}${ville ? ' à ' + ville : ''} : horaires, téléphone et adresse. Concessionnaire moto référencé sur LabelMoto.`;
 
-  return {
+    return {
     title: title,
     description: description,
     alternates: {
