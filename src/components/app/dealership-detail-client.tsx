@@ -38,6 +38,26 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const [descExpanded, setDescExpanded] = useState(false);
+  const [nearby, setNearby] = useState<Array<{id:string;title:string;slug?:string;category?:string;address?:string}>>([]);
+
+  useEffect(() => {
+    if (!firestore || !(pro as any).departement) return;
+    const dept = (pro as any).departement;
+    const proId = pro.id || pro.slug;
+    getDocs(
+      query(
+        collection(firestore, 'concessions'),
+        where('departement', '==', dept),
+        limit(8)
+      )
+    ).then(snap => {
+      const results = snap.docs
+        .filter(d => d.id !== proId && d.data().slug !== proId)
+        .slice(0, 5)
+        .map(d => ({ id: d.id, title: d.data().title || d.id, slug: d.data().slug, category: d.data().category, address: d.data().address }));
+      setNearby(results);
+    }).catch(() => {});
+  }, [firestore, pro]);
   const getProCollection = () => pro.appSection === 'association' ? 'associations' : (pro.appSection === 'relais' ? 'relais' : (pro.appSection === 'creator' ? 'creators' : 'concessions'));
   const trackStat = (field: string) => { if (firestore && pro.id) updateDoc(doc(firestore, getProCollection(), pro.id), { [field]: increment(1) }).catch(() => {}); };
   const { toast } = useToast();
@@ -224,6 +244,29 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
               </CardContent>
             </Card>
 
+            {/* Section concessions proches */}
+            {nearby.length > 0 && (
+              <section className="pt-6">
+                <h2 className="text-lg font-black uppercase tracking-tight mb-4 flex items-center gap-2">
+                  <span className="text-brand">📍</span> Professionnels moto proches
+                </h2>
+                <div className="grid gap-3">
+                  {nearby.map(n => (
+                    <a key={n.id} href={'/concessions/' + (n.slug || n.id)}
+                      className="flex items-center gap-3 p-4 bg-white rounded-2xl border hover:border-brand/40 transition-colors group">
+                      <div className="h-9 w-9 rounded-xl bg-brand/10 flex items-center justify-center shrink-0 text-brand font-black text-sm group-hover:bg-brand group-hover:text-white transition-colors">
+                        🏍️
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-black text-sm uppercase tracking-tight truncate group-hover:text-brand transition-colors">{n.title}</p>
+                        {n.address && <p className="text-xs text-muted-foreground truncate">{n.address}</p>}
+                      </div>
+                      <span className="ml-auto text-brand opacity-0 group-hover:opacity-100 transition-opacity font-black text-xs">→</span>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
             <section id="reviews" className="scroll-mt-28 space-y-8 pt-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-4 border-brand pb-4 gap-4">
                 <div className="flex items-center gap-3">

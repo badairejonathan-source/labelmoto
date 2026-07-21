@@ -102,14 +102,26 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     redirect(`/concessions/${pro.slug}`);
   }
 
+  // Breadcrumb enrichi : Accueil → Ville → Fiche
+  const citySlug = (pro.city || addr.addressLocality || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  const breadcrumbItems: any[] = [
+    { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://labelmoto.fr" },
+  ];
+  if (citySlug) {
+    breadcrumbItems.push({ "@type": "ListItem", "position": 2, "name": addr.addressLocality || pro.city, "item": `https://labelmoto.fr/garages-moto/${citySlug}` });
+    breadcrumbItems.push({ "@type": "ListItem", "position": 3, "name": pro.title, "item": `https://labelmoto.fr/concessions/${pro.slug || pro.id}` });
+  } else {
+    breadcrumbItems.push({ "@type": "ListItem", "position": 2, "name": pro.title, "item": `https://labelmoto.fr/concessions/${pro.slug || pro.id}` });
+  }
+
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://labelmoto.fr" },
-      { "@type": "ListItem", "position": 2, "name": "Carte", "item": "https://labelmoto.fr/map" },
-      { "@type": "ListItem", "position": 3, "name": pro.title, "item": `https://labelmoto.fr/concessions/${pro.slug || pro.id}` }
-    ]
+    "itemListElement": breadcrumbItems
   };
 
   // Conversion horaires Label Moto → format schema.org openingHours
@@ -154,8 +166,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   }
   const addr = parseAddress(pro.address || '');
   const openingHours = buildOpeningHours(pro);
-  const proType = pro.category?.toLowerCase().includes('concession') || pro.appSection === 'shopping'
-    ? 'AutoDealer' : 'AutoRepair';
+  // MotorcycleDealer (sous-type d'AutoDealer, plus précis pour les rich results moto)
+  const proType = pro.appSection === 'service'
+    ? 'MotorcycleRepair'
+    : pro.appSection === 'association'
+    ? 'SportsOrganization'
+    : 'MotorcycleDealer';
 
   const localBusinessLd: Record<string, any> = {
     "@context": "https://schema.org",
@@ -169,7 +185,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       "streetAddress": addr.streetAddress,
       "postalCode": addr.postalCode,
       "addressLocality": addr.addressLocality,
-      "addressCountry": "FR"
+      "addressCountry": pro.country === 'Belgique' ? 'BE' : pro.country === 'Suisse' ? 'CH' : pro.country === 'Luxembourg' ? 'LU' : 'FR'
     },
     "image": pro.imageUrl || pro.imgUrl || pro.img_url || "https://labelmoto.fr/images/logo-moto.webp",
     "geo": { "@type": "GeoCoordinates", "latitude": pro.latitude, "longitude": pro.longitude },
@@ -177,7 +193,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     "isPartOf": { "@type": "WebSite", "name": "Label Moto", "url": "https://labelmoto.fr" },
   };
   if (openingHours.length > 0) localBusinessLd["openingHours"] = openingHours;
-  if (pro.brands?.length) localBusinessLd["brand"] = pro.brands.map(b => ({ "@type": "Brand", "name": b }));
+  if (pro.brands?.length) {
+    localBusinessLd["brand"] = pro.brands.map((b: string) => ({ "@type": "Brand", "name": b }));
+    localBusinessLd["makesOffer"] = pro.brands.map((b: string) => ({
+      "@type": "Offer",
+      "itemOffered": { "@type": "Product", "name": `Motos ${b}` }
+    }));
+  }
   if (pro.rating) localBusinessLd["aggregateRating"] = {
     "@type": "AggregateRating",
     "ratingValue": pro.rating,
