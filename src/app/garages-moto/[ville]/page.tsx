@@ -2,6 +2,12 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCityBySlug, getAllCitySlugs, CITIES } from '@/app/lib/cities';
+
+function toSlug(str: string): string {
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
 import { getAdminFirestore } from '@/lib/firebase-admin';
 
 interface Pro {
@@ -190,6 +196,7 @@ export default async function GaragesMotoParsVille({ params }: PageProps) {
   if (!city) notFound();
   const pros = await getProsForCity(city.departement);
   const otherCities = CITIES.filter(c => c.slug !== ville).slice(0, 9);
+  const cityBrands = Array.from(new Set(pros.flatMap(p => (p as any).brands || []))).sort() as string[];
 
   return (
     <>
@@ -298,6 +305,24 @@ export default async function GaragesMotoParsVille({ params }: PageProps) {
               → Voir tous les concessionnaires multimarques
             </Link>
           </section>
+          {cityBrands.length > 0 && (
+            <section className="mb-10">
+              <h2 className="text-sm font-black text-foreground uppercase tracking-[0.2em] mb-3">
+                Concessionnaires par marque à {city.name}
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {cityBrands.map(brand => (
+                  <Link
+                    key={brand}
+                    href={'/garages-moto/' + city.slug + '/' + toSlug(brand)}
+                    className="text-[10px] px-4 py-2 rounded-full border-2 border-brand/20 hover:border-brand text-brand hover:text-white hover:bg-brand font-black uppercase tracking-widest transition-all"
+                  >
+                    {brand}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
           <section className="mb-10">
             <h2 className="text-sm font-black text-foreground uppercase tracking-[0.2em] mb-3">Garages moto dans d&apos;autres villes</h2>
             <div className="flex flex-wrap gap-2">
