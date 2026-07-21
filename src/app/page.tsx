@@ -66,9 +66,17 @@ export default function LandingPage() {
 
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8 text-white p-6 md:p-12 pt-16 md:pt-20">
                         <div className="md:w-1/2 text-center md:text-left relative z-20">
-                            <h1 className="text-2xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 uppercase leading-[1.1]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
+                            <h1 className="text-2xl md:text-5xl font-extrabold tracking-tight mb-3 md:mb-4 uppercase leading-[1.1]" style={{ textShadow: '0 3px 6px rgba(0,0,0,0.5)' }}>
                                 L&apos;annuaire national des professionnels moto
                             </h1>
+                            {/* Sous-titre avec chiffres clés */}
+                            <p className="text-white/80 text-sm md:text-lg font-bold mb-4 md:mb-6" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                                5 400+ professionnels vérifiés &bull; 96 départements &bull; Gratuit
+                            </p>
+                            {/* CTA principal unique */}
+                            <Link href="/map" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-sm px-8 py-4 rounded-full shadow-2xl tracking-widest transition-all hover:scale-105 active:scale-95 border-2 border-white/20 w-full sm:w-auto">
+                                🔍 Trouver un garage près de moi
+                            </Link>
                             <p className="text-[11px] md:text-lg max-w-lg mx-auto md:mx-0 mb-4 text-gray-200 font-medium leading-relaxed" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                 Label Moto centralise les meilleures concessions, ateliers et relais motards de France. Trouvez un expert de confiance et gérez votre budget entretien gratuitement.
                             </p>
