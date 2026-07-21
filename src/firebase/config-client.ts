@@ -60,3 +60,14 @@ export function getFirestoreInstance(): Firestore | null {
 
   return firestore;
 }
+/**
+ * Récupère l'instance Firebase Storage (Singleton).
+ */
+export function getStorageInstance(): FirebaseStorage | null {
+  if (isServer()) return null;
+  if (!storage) {
+    const { firebaseApp: app } = initializeFirebaseClient();
+    storage = getStorage(app);
+  }
+  return storage;
+}

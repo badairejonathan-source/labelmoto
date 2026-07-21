@@ -1,7 +1,8 @@
 'use client';
 import { useState, useRef } from 'react';
 import { useFirebase } from '@/firebase/client';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getStorageInstance } from '@/firebase/config-client';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Upload, X, ImageIcon, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -64,7 +65,8 @@ export default function ImageUploadRequest({ concessionSlug, concessionTitle, on
     try {
       // Compression automatique
       const compressed = await compressImage(file);
-      const storage = getStorage();
+      const storage = getStorageInstance();
+      if (!storage) throw new Error('Firebase Storage non disponible');
       const fileName = `cover_${Date.now()}.webp`;
       const storageRef = ref(storage, `pending_images/${user.uid}/${fileName}`);
 
