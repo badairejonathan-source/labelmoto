@@ -114,22 +114,6 @@ export default function HomepageDeferred() {
               </svg>
             </button>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            {[
-              { label: "Tous", filter: "" },
-              { label: "Garage & Atelier", filter: "service" },
-              { label: "Concession", filter: "shopping" },
-              { label: "Relais motards", filter: "relais" },
-            ].map(f => (
-              <Link
-                key={f.label}
-                href={f.filter ? "/map?filter=" + f.filter : "/map"}
-                className="px-4 py-1.5 rounded-full border border-border text-xs font-black uppercase tracking-widest text-muted-foreground hover:border-brand hover:text-brand transition-all bg-white shadow-sm"
-              >
-                {f.label}
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
             <section aria-labelledby="why-choose-title">

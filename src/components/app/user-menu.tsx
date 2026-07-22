@@ -38,6 +38,9 @@ export default function UserMenu() {
               <Image src="/images/icon-moncompte.webp" alt="" width={80} height={80} className="h-full w-full object-contain" loading="lazy" />
             </div>
           )}
+          <div className="absolute -bottom-1 -right-1 bg-brand rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow">
+            <ChevronDown className="h-2.5 w-2.5 text-white" />
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end" forceMount>

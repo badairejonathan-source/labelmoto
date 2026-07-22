@@ -41,7 +41,8 @@ function similarityScore(query: string, target: string): number {
 }
 
 interface Suggestion {
-  type: 'dept' | 'city' | 'cp' | 'brand' | 'dealer' | 'arrondissement';
+  type: 'dept' | 'city' | 'cp' | 'brand' | 'dealer' | 'arrondissement' | 'filter';
+  filterValue?: string;
   label: string;
   subLabel?: string;
   lat?: number;
@@ -404,6 +405,33 @@ const Header: React.FC<any> = ({
             <div className="px-6 py-3 flex items-center gap-3 text-muted-foreground">
               <div className="w-4 h-4 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
               <span className="text-[10px] font-bold uppercase">Recherche en cours...</span>
+            </div>
+          )}
+          {searchTerm.trim().length >= 2 && (
+            <div className="px-4 pt-2 pb-1 border-t border-border/50 mt-1">
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 px-2">Filtrer par type</p>
+              <div className="flex flex-wrap gap-2 px-2 pb-1">
+                {[
+                  { label: "Tous", filter: "", icon: "📍" },
+                  { label: "Garage & Atelier", filter: "service", icon: "🔧" },
+                  { label: "Concession", filter: "shopping", icon: "🏍️" },
+                  { label: "Relais motards", filter: "relais", icon: "⛽" },
+                ].map(f => (
+                  <button
+                    key={f.filter}
+                    onClick={() => {
+                      setShowSuggestions(false);
+                      const params = new URLSearchParams();
+                      if (searchTerm.trim()) params.set('search', searchTerm.trim());
+                      if (f.filter) params.set('filter', f.filter);
+                      router.push("/map?" + params.toString());
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-border hover:border-brand hover:text-brand hover:bg-brand/5 text-xs font-black uppercase tracking-widest text-foreground transition-all bg-white min-h-[44px]"
+                  >
+                    <span>{f.icon}</span>{f.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
