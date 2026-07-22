@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LogOut, ShieldAlert, Settings, Building2 } from 'lucide-react';
+import { LogOut, ShieldAlert, Settings, Building2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useAuth } from '@/firebase/client';
 import { signOut } from 'firebase/auth';
@@ -77,7 +77,7 @@ export default function UserMenu() {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => auth && signOut(auth)} className="text-destructive cursor-pointer">
-              <LogOut className="mr-2 h-4 w-4" /><span>Se déconnecter</span>
+              <LogOut className="mr-2 h-4 w-4" /><span>Se deconnecter</span>
             </DropdownMenuItem>
           </>
         ) : (
@@ -88,7 +88,7 @@ export default function UserMenu() {
               Se connecter
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push('/login?callbackUrl=/pro/register')} className="cursor-pointer">
-              Inscrire mon établissement
+              Inscrire mon etablissement
             </DropdownMenuItem>
           </>
         )}
