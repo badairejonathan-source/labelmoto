@@ -488,6 +488,30 @@ function MapPageComponent() {
           </div>
         </div>
       )}
+      {/* Bouton boussole */}
+      <button
+        type="button"
+        onClick={handleLocate}
+        aria-label="Me localiser"
+        className="fixed right-4 z-[1200] h-12 w-12 rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+        style={{ bottom: isMobile ? (drawerHeight === 'collapsed' ? '156px' : drawerHeight === 'half' ? 'calc(50vh + 12px)' : 'calc(85vh + 12px)') : '24px' }}
+      >
+        {isLocating ? <Loader2 className="h-5 w-5 text-brand animate-spin" /> : locateError ? <span className="text-red-500 font-black text-sm">X</span> : <Compass className="h-5 w-5 text-brand" />}
+      </button>
+      {!isMobile && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1200] flex gap-2">
+          {[
+            { label: "La Reunion", center: [-21.1, 55.5] as [number, number], zoom: 10 },
+            { label: "Martinique", center: [14.6, -61.0] as [number, number], zoom: 10 },
+            { label: "Guadeloupe", center: [16.2, -61.5] as [number, number], zoom: 10 },
+          ].map(t => (
+            <button key={t.label} type="button"
+              onClick={() => { setMapCenter(t.center); setMapZoom(t.zoom); }}
+              className="px-3 py-2 rounded-full bg-white/95 shadow-md border border-border text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand hover:border-brand transition-all min-h-[36px]"
+            >{t.label}</button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
