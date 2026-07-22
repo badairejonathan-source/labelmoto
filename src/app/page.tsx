@@ -77,7 +77,7 @@ export default function LandingPage() {
                             <Link href="/map" className="block hover:scale-105 transition-transform duration-300">
                                 <div className="relative w-[280px] h-[200px]">
                                     <Image
-                                        src="/images/map-preview-hero.png"
+                                        src="/images/map-preview-hero.webp"
                                         alt="Carte de France interactive des professionnels moto"
                                         fill
                                         className="rounded-2xl border-4 border-white shadow-2xl object-cover"
