@@ -141,6 +141,15 @@ function MapPageComponent() {
   const { firestore } = useFirebase();
 
   const listScrollRef = useRef<HTMLDivElement>(null);
+  const handleLocate = () => {
+    if (!navigator.geolocation) { setLocateError(true); setTimeout(() => setLocateError(false), 3000); return; }
+    setIsLocating(true); setLocateError(false);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { setMapCenter([pos.coords.latitude, pos.coords.longitude]); setMapZoom(14); setIsLocating(false); },
+      () => { setIsLocating(false); setLocateError(true); setTimeout(() => setLocateError(false), 3000); },
+      { timeout: 8000, maximumAge: 30000 }
+    );
+  };
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const [points, setPoints] = useState<MapPoint[]>([]);
@@ -158,6 +167,8 @@ function MapPageComponent() {
   const [mapBounds, setMapBounds] = useState<any>(null);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
   const [bboxToFit, setBboxToFit] = useState<[number, number, number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locateError, setLocateError] = useState(false);
 
   const isMobile = width !== undefined && width < 1024;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 250 : 140)) : 0;
