@@ -79,7 +79,7 @@ export function getGeohashCells(south: number, west: number, north: number, east
 export function extractValidCoordinates(data: any): { lat: number; lng: number } | null {
   if (!data) return null;
 
-  // 1. Recherche multi-champs exhaustive
+  // 1. Recherche multi-champs exhaustive (capture tous les schémas possibles)
   let rawLat: any = 
     data.latitude ?? 
     data.lat ?? 
@@ -89,7 +89,8 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
     data.pos?.lat ?? 
     data.coords?.latitude ??
     data.coordinates?.latitude ??
-    (Array.isArray(data.position) ? data.position[0] : null);
+    (Array.isArray(data.position) ? data.position[0] : null) ??
+    (Array.isArray(data.coords) ? data.coords[0] : null);
 
   let rawLng: any = 
     data.longitude ?? 
@@ -102,14 +103,17 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
     data.pos?.lng ?? 
     data.coords?.longitude ??
     data.coordinates?.longitude ??
-    (Array.isArray(data.position) ? data.position[1] : null);
+    (Array.isArray(data.position) ? data.position[1] : null) ??
+    (Array.isArray(data.coords) ? data.coords[1] : null);
 
-  // 2. Fonction de parsing robuste (gère les virgules et espaces)
+  // 2. Fonction de parsing robuste (gère les virgules, espaces et types mixtes)
   const parse = (v: any): number => {
     if (v === undefined || v === null || v === "") return NaN;
     if (typeof v === 'number') return v;
     if (typeof v === 'string') {
-        return parseFloat(v.replace(',', '.').replace(/\s/g, ''));
+        // Nettoyage : remplace virgule par point, enlève tout sauf chiffres, point, moins
+        const cleaned = v.replace(',', '.').replace(/\s/g, '').trim();
+        return parseFloat(cleaned);
     }
     return NaN;
   };
@@ -119,9 +123,10 @@ export function extractValidCoordinates(data: any): { lat: number; lng: number }
 
   // 3. Validation géographique stricte
   if (!isNaN(lat) && !isNaN(lng)) {
-    // On exclut (0,0) qui est souvent une valeur par défaut erronée
+    // On exclut (0,0) qui est souvent une valeur par défaut erronée dans les exports
     if (lat === 0 && lng === 0) return null;
     
+    // Bornes mondiales
     if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       return { lat, lng };
     }
