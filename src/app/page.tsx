@@ -2,9 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { Button } from '@/components/ui/button';
 import HeroSearch from '@/components/app/hero-search';
-import placeholderData from '@/app/lib/placeholder-images.json';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const HomepageSkeleton = () => (
@@ -28,8 +26,6 @@ const HomepageDeferred = dynamic(() => import('@/components/app/homepage-deferre
 });
 
 export default function LandingPage() {
-    const { hero } = placeholderData.landingPage;
-
     return (
         <div className="min-h-screen bg-background">
             <HeroSearch />
