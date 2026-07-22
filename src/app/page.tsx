@@ -69,17 +69,18 @@ export default function LandingPage() {
                                 🔍 Trouver un garage près de moi
                             </Link>
                         </div>
-                        <div className="shrink-0 hidden md:block">
+                        <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0">
                             <Link href="/map" className="block hover:scale-105 transition-transform duration-300">
-                                <div className="relative w-[280px] h-[200px]">
+                                <div className="relative w-full h-[130px] md:w-[280px] md:h-[200px]">
                                     <Image
                                         src="/images/map-preview-hero.webp"
                                         alt="Carte de France interactive des professionnels moto"
                                         fill
-                                        className="rounded-2xl border-4 border-white shadow-2xl object-cover"
-                                        sizes="280px"
+                                        className="rounded-2xl border-4 border-white shadow-2xl object-cover object-top"
+                                        sizes="(max-width: 768px) 100vw, 280px"
                                         decoding="async"
                                     />
+                                    <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl md:hidden" />
                                 </div>
                             </Link>
                         </div>
