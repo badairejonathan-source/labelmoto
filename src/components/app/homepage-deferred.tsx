@@ -256,15 +256,7 @@ export default function HomepageDeferred() {
               </div>
             </section>
 
-            <style jsx global>{`
-                @keyframes bounce-subtle {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-3px); }
-                }
-                .animate-bounce-subtle {
-                    animation: bounce-subtle 2s infinite ease-in-out;
-                }
-            `}</style>
+            
             <section aria-labelledby="manifesto-title">
                 <div className="relative rounded-[2.5rem] overflow-hidden bg-black shadow-2xl min-h-[300px] flex items-center">
                     <Image src="/images/motardcotesudlandingpage1.webp" alt="" fill className="object-cover z-0 opacity-30" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
