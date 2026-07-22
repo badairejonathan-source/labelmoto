@@ -194,7 +194,7 @@ function MapPageComponent() {
 
       for (const col of collections) {
         try {
-          const snap = await getDocs(query(collection(firestore, col.id), limit(20000)));
+          const snap = await getDocs(query(collection(firestore, col.id), limit(9999)));
           console.log(`[${col.debug}] ${col.id}: ${snap.size} documents récupérés.`);
           
           snap.docs.forEach(docSnap => {
