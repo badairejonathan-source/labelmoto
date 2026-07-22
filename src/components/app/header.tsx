@@ -426,12 +426,10 @@ const Header: React.FC<any> = ({
         <div className="shrink-0 flex items-center"><UserMenuLazy /></div>
       </div>
       <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
-        <div className="flex-1">{searchInput}</div>
+        {pathname !== "/" && <div className="flex-1">{searchInput}</div>}
         <NavigationIcons />
       </div>
-      {pathname !== '/map' && (
-        <div className="w-full max-w-3xl mx-auto relative px-4 md:px-0"><QuickFilters /></div>
-      )}
+
     </div>
   );
 };

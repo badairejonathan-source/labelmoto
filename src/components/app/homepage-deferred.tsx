@@ -92,36 +92,44 @@ export default function HomepageDeferred() {
 
     return (
             <div className="space-y-16 md:space-y-32">
-            {/* Section Fiches Techniques Moto */}
-      <section className="py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-black uppercase tracking-tight">Fiches techniques moto</h2>
-            <p className="text-muted-foreground text-sm font-medium mt-1">Entretien, révisions et vidanges — guides par modèle</p>
-          </div>
-          <Link href="/entretien" className="text-[10px] font-black uppercase tracking-widest text-brand hover:underline shrink-0">
-            Voir les 43 fiches →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { brand: 'Honda', model: 'XL750 Transalp', slug: 'honda-xl750-transalp-2023-plus', desc: 'Vidange, chaîne, freins — tout le programme' },
-            { brand: 'Yamaha', model: 'MT-07', slug: 'yamaha-mt-07-2021-plus', desc: "Révisions à 10 000 km, coûts réels, points clés" },
-            { brand: 'CFMOTO', model: '450MT', slug: 'cfmoto-450mt-2024-plus', desc: 'Entretien du bestseller chinois en France' },
-          ].map(fiche => (
-            <Link
-              key={fiche.slug}
-              href={"/" + "fiches/" + fiche.slug}
-              className="group flex flex-col gap-2 p-5 bg-white rounded-2xl border-2 border-border/50 hover:border-brand shadow-sm hover:shadow-lg transition-all duration-300"
+            {/* Barre recherche + filtres */}
+      <section className="py-2">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-4 py-2 md:px-6 md:py-3">
+            <input
+              type="text"
+              id="homepage-search"
+              placeholder="Recherche par ville, marque ou nom de pro..."
+              className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground font-medium"
+              onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); window.location.href = v ? "/map?search=" + encodeURIComponent(v) : "/map"; } }}
+            />
+            <button
+              type="button"
+              onClick={() => { const v = (document.getElementById('homepage-search') as HTMLInputElement)?.value?.trim(); window.location.href = v ? "/map?search=" + encodeURIComponent(v) : "/map"; }}
+              className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-brand hover:bg-brand/90 flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0"
+              aria-label="Rechercher"
             >
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand">{fiche.brand}</span>
-              <span className="font-black text-base uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
-              <span className="text-xs text-muted-foreground font-medium leading-snug">{fiche.desc}</span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
-                Voir la fiche <span aria-hidden="true">→</span>
-              </span>
-            </Link>
-          ))}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {[
+              { label: "Tous", filter: "" },
+              { label: "Garage & Atelier", filter: "service" },
+              { label: "Concession", filter: "shopping" },
+              { label: "Relais motards", filter: "relais" },
+            ].map(f => (
+              <Link
+                key={f.label}
+                href={f.filter ? "/map?filter=" + f.filter : "/map"}
+                className="px-4 py-1.5 rounded-full border border-border text-xs font-black uppercase tracking-widest text-muted-foreground hover:border-brand hover:text-brand transition-all bg-white shadow-sm"
+              >
+                {f.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
             <section aria-labelledby="why-choose-title">
@@ -160,147 +168,76 @@ export default function HomepageDeferred() {
                 </div>
             </section>
 
-            {newsArticles.length > 0 && (
-                <section aria-labelledby="actu-title" className="bg-muted/10 border-2 border-indigo-600/30 p-6 md:p-12 rounded-[2.5rem] shadow-inner">
-                    <div className="flex items-center gap-3 mb-8 px-4">
-                        <div className="bg-brand/10 p-2 rounded-lg">
-                            <Zap className="h-6 w-6 text-brand" aria-hidden="true" />
-                        </div>
-                        <h2 id="actu-title" className="text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter leading-none">ACTU</h2>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                        {newsArticles.map((article) => {
-                            const isAsso = article.id.toLowerCase().includes('association');
-                            const isRelais = article.id.toLowerCase().includes('relais');
-                            const badgeLabel = isAsso ? 'COMMUNAUTÉ' : (isRelais ? 'RELAIS MOTARDS' : 'À LA UNE');
-                            return (
-                                <Link
-                                    key={article.id}
-                                    href={`/info/${article.id}`}
-                                    aria-label={`Lire l'article : ${article.display_title || article.title}`}
-                                    className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1"
-                                >
-                                    <div className="relative aspect-video overflow-hidden bg-muted">
-                                        <Image src={getArticleImage(article)}
-                                            alt=""
-                                            fill
-                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                            sizes="(max-width: 768px) 100vw, 33vw" loading="lazy"/>
-                                        <div className="absolute top-4 right-4 z-20">
-                                            <span className="bg-white/95 backdrop-blur-sm text-brand px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl border border-brand/20">Nouveau</span>
-                                        </div>
-                                    </div>
-                                    <div className="p-6 flex flex-col flex-grow">
-                                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3 font-black uppercase tracking-widest">
-                                            <FileText className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-                                            <span>Par {article.author || "L'équipe Label Moto"}</span>
-                                        </div>
-                                        <h3 className="text-xl font-black text-foreground leading-tight group-hover:text-brand transition-colors line-clamp-2 mb-3 uppercase tracking-tight">{article.display_title || article.title}</h3>
-                                        <p className="text-sm md:text-base text-muted-foreground line-clamp-3 mb-4 flex-grow leading-relaxed font-bold">{article.description || article.intro_conclusion || ""}</p>
-                                        <div className="flex items-center gap-2 text-brand text-xs font-black uppercase tracking-widest mt-auto group-hover:gap-4 transition-all">
-                                            <span>Lire l'article</span>
-                                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                                        </div>
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </div>
-                </section>
-            )}
-            
-            <section aria-labelledby="a2-title">
-                <div className="bg-muted/50 rounded-[2.5rem] p-8 md:p-12 border-2 border-brand shadow-xl relative overflow-hidden min-h-[600px]">
-                    <div className="text-center mb-10">
-                        <h2 id="a2-title" className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter leading-none">Objectif A2 : Roulez bien accompagnés.</h2>
-                        <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto font-bold leading-relaxed">De l’achat de votre première bécane au choix du bon garage, nos dossiers spéciaux vous aident à éviter les pièges.</p>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                        {isArticlesLoading ? (
-                            Array.from({ length: 3 }).map((_, i) => (
-                                <div key={i} className="bg-card rounded-2xl overflow-hidden shadow-md border border-border/50 h-[380px] flex flex-col">
-                                    <Skeleton className="aspect-video w-full" />
-                                    <div className="p-6 space-y-4">
-                                        <Skeleton className="h-3 w-24 rounded-full" />
-                                        <Skeleton className="h-8 w-full rounded-md" />
-                                        <Skeleton className="h-20 w-full rounded-md" />
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            a2Articles?.map((article) => (
-                                <Link 
-                                    key={article.id} 
-                                    href={`/info/${article.id}`} 
-                                    aria-label={`Lire le guide : ${article.display_title || article.title}`}
-                                    className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col border border-border/50 h-full transform hover:-translate-y-1"
-                                >
-                                    <div className="relative aspect-video overflow-hidden bg-muted">
-                                        <Image src={getArticleImage(article)} 
-                                            alt="" 
-                                            fill 
-                                            className="object-cover transition-transform duration-700 group-hover:scale-110" 
-                                            sizes="(max-width: 768px) 100vw, 33vw" loading="lazy"/>
-                                    </div>
-                                    <div className="p-6 flex flex-col flex-grow">
-                                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3 font-black uppercase tracking-widest">
-                                            <FileText className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-                                            <span>Par {article.author || "L'équipe Label Moto"}</span>
-                                        </div>
-                                        <h3 className="text-xl font-black text-foreground leading-tight group-hover:text-brand transition-colors line-clamp-2 mb-3 uppercase tracking-tight">{article.display_title || article.title}</h3>
-                                        <p className="text-sm md:text-base text-muted-foreground line-clamp-3 mb-4 flex-grow leading-relaxed font-bold">{article.description || article.intro_conclusion || ""}</p>
-                                        <div className="flex items-center gap-2 text-brand text-xs font-black uppercase tracking-widest mt-auto group-hover:gap-4 transition-all">
-                                            <span>Lire le guide</span>
-                                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))
-                        )}
-                    </div>
-
-                    <div className="mt-12 flex flex-col items-center gap-6 pt-10 border-t border-brand/10">
-                        <div className="text-center">
-                            <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">Envie d'aller plus loin ?</p>
-                            <p className="text-xl md:text-3xl font-black uppercase tracking-tighter text-foreground mb-6">Explorez tous nos guides et conseils pratiques</p>
-                        </div>
-                        <div className="flex flex-col items-center gap-3">
-                            <Button asChild variant="ghost" size="icon" aria-label="Voir tous les articles et guides" className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-brand transition-all border-4 md:border-8 border-white hover:border-white group">
-                                <Link href="/info" className="flex items-center justify-center">
-                                    <Image src="/images/icon-conseils.webp" alt="" width={56} height={56} className="h-10 w-10 md:h-14 md:w-14 object-contain transition-transform group-hover:rotate-12 group-hover:brightness-0 group-hover:invert" loading="lazy"/>
-                                    <span className="sr-only">Voir tous les articles</span>
-                                </Link>
-                            </Button>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand animate-pulse" aria-hidden="true">Cliquer pour voir la liste</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section aria-labelledby="maintenance-title">
-                <div className="bg-muted/50 rounded-[2.5rem] p-10 md:p-16 text-center border border-border/50 backdrop-blur-sm shadow-sm min-h-[250px]">
-                    <h2 id="maintenance-title" className="text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter">Maîtrisez votre budget entretien.</h2>
-                    <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 font-bold leading-relaxed">
-                        <span className="font-black text-foreground">Anticipez vos dépenses en quelques clics.</span> Accédez au budget moyen et aux points de contrôle de votre modèle.
-                    </p>
-                    <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase tracking-widest text-xs px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
-                        <Link href="/entretien">Calculer mon budget entretien</Link>
-                    </Button>
-                </div>
-            </section>
-
-            <section aria-labelledby="manifesto-title">
-                <div className="relative rounded-[2.5rem] overflow-hidden bg-black shadow-2xl min-h-[300px] flex items-center">
-                    <Image src="/images/motardcotesudlandingpage1.webp" alt="" fill className="object-cover z-0 opacity-30" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
-                    <div className="relative z-10 p-10 md:p-16 w-full">
-                        <div className="max-w-4xl mx-auto text-center text-white">
-                            <h2 id="manifesto-title" className="text-3xl md:text-5xl font-black mb-8 uppercase tracking-tighter leading-none" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>🚦 Ne perdez plus votre temps dans les recherches.</h2>
-                            <div className="space-y-6 text-base md:text-lg text-gray-200 font-bold leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
-                                <p>Parce que chaque minute passée à chercher un garage est une minute de moins à pencher dans les virages, nous avons créé LABEL MOTO. Notre mission : rendre votre vie de motard plus fluide, plus connectée et surtout, plus fiable.</p>
-                                <p>Trouvez en un clic votre future bécane, réservez un essai en concession, ou dénichez le préparateur qui saura sublimer votre machine. Que ce soit pour un entretien de routine ou l’équipement de votre vie, accédez uniquement à des professionnels sélectionnés.</p>
-                                <p className="font-black text-white pt-4 text-xl uppercase tracking-widest italic">L'équipe Label Moto <Image src="/images/Stamp-LM.webp" alt="Signature" width={48} height={48} className="inline-block -mt-2.5 opacity-90 scale-125 ml-2" loading="lazy"/></p>
+            <section aria-labelledby="guides-title">
+                <div className="bg-muted/10 border border-border/50 p-6 md:p-10 rounded-[2.5rem] shadow-sm">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-brand/10 p-2 rounded-lg">
+                                <Zap className="h-6 w-6 text-brand" aria-hidden="true" />
+                            </div>
+                            <div>
+                                <h2 id="guides-title" className="text-2xl font-black text-foreground uppercase tracking-tighter leading-none">Guides & Actu moto</h2>
+                                <p className="text-sm text-muted-foreground font-medium mt-1">Conseils, comparatifs et dossiers par notre equipe</p>
                             </div>
                         </div>
+                        <Link href="/info" className="text-[10px] font-black uppercase tracking-widest text-brand hover:underline shrink-0">
+                            Tous les guides →
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {[
+                            { icon: "🏍️", theme: "Debuter en moto", desc: "Permis, moto A2, premiere bécane — tout pour bien démarrer", href: "/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter", tag: "Permis & A2" },
+                            { icon: "💰", theme: "Budget & Achat", desc: "Couts reels, achat occasion, financement — evitez les pieges", href: "/info/achat-moto-occasion-guide-complet-pour-eviter-les-pieges", tag: "Budget" },
+                            { icon: "🪖", theme: "Equipement", desc: "Casques, blousons, comparatifs — les meilleurs choix 2026", href: "/info/meilleurs-casques-moto-2026", tag: "Equipement" },
+                        ].map(g => (
+                            <Link key={g.theme} href={g.href} className="group flex flex-col gap-3 p-5 bg-white rounded-2xl border border-border/50 hover:border-brand shadow-sm hover:shadow-md transition-all duration-300">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl" aria-hidden="true">{g.icon}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand">{g.tag}</span>
+                                </div>
+                                <span className="font-black text-base uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{g.theme}</span>
+                                <span className="text-xs text-muted-foreground font-medium leading-snug flex-grow">{g.desc}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
+                                    Voir les guides <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+            
+            <section aria-labelledby="entretien-title">
+                <div className="bg-muted/50 rounded-[2.5rem] p-6 md:p-10 border border-border/50 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 id="entretien-title" className="text-2xl font-black uppercase tracking-tight">Entretien & Budget moto</h2>
+                            <p className="text-muted-foreground text-sm font-medium mt-1">Anticipez vos révisions, maitrisez vos couts</p>
+                        </div>
+                        <Link href="/entretien" className="text-[10px] font-black uppercase tracking-widest text-brand hover:underline shrink-0">
+                            Voir les 43 fiches →
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        {[
+                            { brand: "Honda", model: "XL750 Transalp", slug: "honda-xl750-transalp-2023-plus", desc: "Vidange, chaine, freins — tout le programme" },
+                            { brand: "Yamaha", model: "MT-07", slug: "yamaha-mt-07-2021-plus", desc: "Révisions à 10 000 km, couts réels, points clés" },
+                            { brand: "CFMOTO", model: "450MT", slug: "cfmoto-450mt-2024-plus", desc: "Entretien du bestseller chinois en France" },
+                        ].map(fiche => (
+                            <Link key={fiche.slug} href={"/fiches/" + fiche.slug} className="group flex flex-col gap-2 p-5 bg-white rounded-2xl border-2 border-border/50 hover:border-brand shadow-sm hover:shadow-lg transition-all duration-300">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-brand">{fiche.brand}</span>
+                                <span className="font-black text-base uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
+                                <span className="text-xs text-muted-foreground font-medium leading-snug">{fiche.desc}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
+                                    Voir la fiche <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                    <div className="border-t border-border/50 pt-6 text-center">
+                        <p className="text-sm text-muted-foreground font-medium mb-4">Anticipez vos dépenses en quelques clics — budget moyen et points de controle par modele</p>
+                        <Link href="/entretien" className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-xl tracking-widest transition-all hover:scale-105 active:scale-95">
+                            Calculer mon budget entretien
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -344,6 +281,22 @@ export default function HomepageDeferred() {
                     animation: bounce-subtle 2s infinite ease-in-out;
                 }
             `}</style>
+            <section aria-labelledby="manifesto-title">
+                <div className="relative rounded-[2.5rem] overflow-hidden bg-black shadow-2xl min-h-[300px] flex items-center">
+                    <Image src="/images/motardcotesudlandingpage1.webp" alt="" fill className="object-cover z-0 opacity-30" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
+                    <div className="relative z-10 p-10 md:p-16 w-full">
+                        <div className="max-w-4xl mx-auto text-center text-white">
+                            <h2 id="manifesto-title" className="text-3xl md:text-5xl font-black mb-8 uppercase tracking-tighter leading-none" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>🚦 Ne perdez plus votre temps dans les recherches.</h2>
+                            <div className="space-y-6 text-base md:text-lg text-gray-200 font-bold leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
+                                <p>Parce que chaque minute passée à chercher un garage est une minute de moins à pencher dans les virages, nous avons créé LABEL MOTO. Notre mission : rendre votre vie de motard plus fluide, plus connectée et surtout, plus fiable.</p>
+                                <p>Trouvez en un clic votre future bécane, réservez un essai en concession, ou dénichez le préparateur qui saura sublimer votre machine. Que ce soit pour un entretien de routine ou l’équipement de votre vie, accédez uniquement à des professionnels sélectionnés.</p>
+                                <p className="font-black text-white pt-4 text-xl uppercase tracking-widest italic">L'équipe Label Moto <Image src="/images/Stamp-LM.webp" alt="Signature" width={48} height={48} className="inline-block -mt-2.5 opacity-90 scale-125 ml-2" loading="lazy"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </div>
     );
 }
