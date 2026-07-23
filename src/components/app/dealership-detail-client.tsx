@@ -59,7 +59,16 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
     }).catch(() => {});
   }, [firestore, pro]);
   const getProCollection = () => pro.appSection === 'association' ? 'associations' : (pro.appSection === 'relais' ? 'relais' : (pro.appSection === 'creator' ? 'creators' : 'concessions'));
-  const trackStat = (field: string) => { if (firestore && pro.id) updateDoc(doc(firestore, getProCollection(), pro.id), { [field]: increment(1) }).catch(() => {}); };
+  const trackStat = (field: string) => {
+    if (!pro.id) return;
+    const colName = getProCollection();
+    fetch('/api/track-stat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ collection: colName, id: pro.id, field }),
+      keepalive: true,
+    }).catch(() => {});
+  };
   const { toast } = useToast();
   const router = useRouter();
   
