@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useFirebase } from '@/firebase/client';
 import { collection, getDocs, doc, updateDoc, orderBy, query } from 'firebase/firestore';
-import { Phone, Mail, ExternalLink, TrendingUp, CheckCircle, Star, MapPin, ChevronDown, Save } from 'lucide-react';
+import { Phone, Mail, ExternalLink, TrendingUp, CheckCircle, Star, MapPin, ChevronDown, Save, Calendar, Bell, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,9 @@ interface Lead {
   pays: string;
   status: 'a_contacter' | 'contacte' | 'interesse' | 'signe' | 'pas_interesse';
   notes: string;
+  date_contact?: string;
+  date_relance?: string;
+  derniere_interaction?: string;
 }
 
 const STATUS_CONFIG = {
@@ -67,6 +70,20 @@ export default function AdminProspection() {
     setSaving(null);
   };
 
+  const updateDateField = async (id: string, field: 'date_contact' | 'date_relance', value: string) => {
+    if (!firestore) return;
+    const updates: any = { [field]: value, derniere_interaction: new Date().toISOString().split('T')[0] };
+    await updateDoc(doc(firestore, 'prospection', id), updates);
+    setLeads(prev => prev.map(l => l.id === id ? { ...l, ...updates } : l));
+  };
+
+  const isRelanceEnRetard = (lead: Lead) => {
+    if (!lead.date_relance) return false;
+    return new Date(lead.date_relance) < new Date();
+  };
+
+  const relancesEnRetard = leads.filter(isRelanceEnRetard).length;
+
   const filtered = filter === 'all' ? leads : leads.filter(l => l.status === filter);
 
   const stats = {
@@ -81,6 +98,16 @@ export default function AdminProspection() {
 
   return (
     <div className="space-y-6">
+      {/* Alerte relances */}
+      {relancesEnRetard > 0 && (
+        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl">
+          <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
+          <div>
+            <p className="text-sm font-black text-red-700">{relancesEnRetard} relance{relancesEnRetard > 1 ? 's' : ''} en retard</p>
+            <p className="text-[10px] text-red-500 font-medium">Date de relance dépassée — à traiter en priorité</p>
+          </div>
+        </div>
+      )}
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-4 border shadow-sm text-center">
@@ -165,6 +192,32 @@ export default function AdminProspection() {
               )}
             </div>
 
+            {/* Champs temporels */}
+            <div className="flex flex-wrap gap-3 pt-1 border-t border-border/30">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Contact :</span>
+                <input
+                  type="date"
+                  value={lead.date_contact || ''}
+                  onChange={e => updateDateField(lead.id, 'date_contact', e.target.value)}
+                  className="text-[10px] font-black border border-border rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brand/30"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Bell className={cn("h-3.5 w-3.5 shrink-0", isRelanceEnRetard(lead) ? "text-red-500" : "text-muted-foreground")} />
+                <span className={cn("text-[10px] font-black uppercase tracking-widest", isRelanceEnRetard(lead) ? "text-red-500" : "text-muted-foreground")}>Relance :</span>
+                <input
+                  type="date"
+                  value={lead.date_relance || ''}
+                  onChange={e => updateDateField(lead.id, 'date_relance', e.target.value)}
+                  className={cn("text-[10px] font-black border rounded-lg px-2 py-1 focus:outline-none focus:ring-1", isRelanceEnRetard(lead) ? "border-red-300 text-red-600 focus:ring-red-300" : "border-border focus:ring-brand/30")}
+                />
+              </div>
+              {lead.derniere_interaction && (
+                <span className="text-[9px] text-muted-foreground italic self-center">Dernière interaction : {lead.derniere_interaction}</span>
+              )}
+            </div>
             {/* Contacts */}
             <div className="flex flex-wrap gap-2">
               {lead.tel && (
