@@ -1,5 +1,6 @@
 import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['googleapis', 'firebase-admin'],
   allowedDevOrigins: ["*.cloudworkstations.dev", "*.cluster-nle52mxuvfhlkrzyrq6g2cwb52.cloudworkstations.dev"],
   typescript: {
     ignoreBuildErrors: true,
