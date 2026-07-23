@@ -1,1 +1,29 @@
-{"indexes":[],"fieldOverrides":[]}
+{
+  "indexes": [],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "concessions",
+      "fieldPath": "departement",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" }
+      ]
+    },
+    {
+      "collectionGroup": "associations",
+      "fieldPath": "departement",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" }
+      ]
+    },
+    {
+      "collectionGroup": "relais",
+      "fieldPath": "departement",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" }
+      ]
+    }
+  ]
+}
