@@ -153,8 +153,12 @@ function MapPageComponent() {
   const [activeFilters, setActiveFilters] = useState<string[]>(filterParam ? [filterParam] : ['shopping', 'service', 'association', 'relais', 'creator']);
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
   const [isDetailView, setIsDetailView] = useState(false);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
-  const [mapZoom, setMapZoom] = useState(6);
+  const initLat = parseFloat(searchParams.get('lat') || '');
+  const initLng = parseFloat(searchParams.get('lng') || '');
+  const initZoom = parseInt(searchParams.get('zoom') || '');
+  const hasInitCoords = !isNaN(initLat) && !isNaN(initLng);
+  const [mapCenter, setMapCenter] = useState<[number, number]>(hasInitCoords ? [initLat, initLng] : [46.5, 2.2]);
+  const [mapZoom, setMapZoom] = useState(hasInitCoords ? (isNaN(initZoom) ? 12 : initZoom) : 6);
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(searchParams.get('selectedId') ? 'external' : null);
   const [mapBounds, setMapBounds] = useState<any>(null);
