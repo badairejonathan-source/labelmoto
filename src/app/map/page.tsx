@@ -107,12 +107,21 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
           <h3 className="text-3xl font-black uppercase tracking-tighter leading-none mb-2">{pro.title}</h3>
           <p className="text-sm font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
         </div>
-        <div className="bg-muted/30 p-5 rounded-3xl border-2 border-dashed">
+        
+        <a
+          href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block bg-muted/30 p-5 rounded-3xl border-2 border-dashed hover:border-brand hover:bg-brand/5 transition-all group"
+        >
           <div className="flex items-start gap-3">
-            <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-            <p className="text-sm font-bold leading-snug">{pro.address}</p>
+            <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+            <div className="min-w-0">
+              <p className="text-sm font-bold leading-snug">{pro.address}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-1">📍 Obtenir l'itinéraire →</p>
+            </div>
           </div>
-        </div>
+        </a>
         <div className="grid grid-cols-3 gap-2">
           {pro.phoneNumber && (
             <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
