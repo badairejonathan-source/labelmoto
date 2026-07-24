@@ -230,7 +230,7 @@ function MapPageComponent() {
           const data = docSnap.data();
           const coords = extractValidCoordinates(data);
           if (!coords) return;
-          newPts.push({ id: docSnap.id, latitude: coords.lat, longitude: coords.lng, category: data.category || col.cat, appSection: data.appSection || col.section, title: data.title || docSnap.id, slug: data.slug, rating: data.rating, imgUrl: data.imageUrl || data.imgUrl, address: data.address || "", brands: data.brands || [] });
+          newPts.push({ id: docSnap.id, latitude: coords.lat, longitude: coords.lng, category: data.category || col.cat, appSection: (data.appSection && data.appSection !== "other") ? data.appSection : col.section, title: data.title || docSnap.id, slug: data.slug, rating: data.rating, imgUrl: data.imageUrl || data.imgUrl, address: data.address || "", brands: data.brands || [] });
         });
       } catch (e) { loadedDepts.current.delete(deptCode); }
     }
@@ -309,7 +309,7 @@ function MapPageComponent() {
 
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
-      const section = p.appSection === 'both' ? 'shopping' : p.appSection;
+      undefined
       if (!activeFilters.includes(section)) return false;
       if (!searchIntent) return true;
 
