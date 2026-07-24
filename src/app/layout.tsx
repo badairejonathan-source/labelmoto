@@ -9,6 +9,8 @@ import CookieConsent from "@/components/app/cookie-consent";
 import Script from "next/script";
 import MobileBottomNav from "@/components/app/mobile-bottom-nav";
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
 const inter = Inter({ 
   subsets: ["latin"], 
   variable: "--font-sans",
@@ -18,9 +20,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://labelmoto.fr'),
-  alternates: {
-    canonical: '/',
-  },
+  alternates: { canonical: '/' },
   title: {
     default: "Label Moto : l'annuaire intelligent des motards en France",
     template: "%s | Label Moto"
@@ -35,9 +35,7 @@ export const metadata: Metadata = {
       { url: '/images/favicon.ico' },
       { url: '/images/favicon.webp', type: 'image/webp' },
     ],
-    apple: [
-      { url: '/images/favicon.webp' }, 
-    ],
+    apple: [{ url: '/images/favicon.webp' }],
   },
   openGraph: {
     type: "website",
@@ -46,14 +44,12 @@ export const metadata: Metadata = {
     siteName: "Label Moto",
     title: "Label Moto : l'annuaire national des motards",
     description: "Trouvez un pro de confiance et gérez l'entretien de votre moto facilement partout en France.",
-    images: [
-      {
-        url: "/images/og-image.webp",
-        width: 1200,
-        height: 630,
-        alt: "Label Moto - L'annuaire national des professionnels moto en France",
-      },
-    ],
+    images: [{
+      url: "/images/og-image.webp",
+      width: 1200,
+      height: 630,
+      alt: "Label Moto - L'annuaire national des professionnels moto en France",
+    }],
   },
   twitter: {
     card: "summary_large_image",
@@ -61,20 +57,11 @@ export const metadata: Metadata = {
     description: "L'annuaire national complet : entretien, conseils et professionnels de confiance.",
     images: ["/images/og-image.webp"],
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  verification: {
-    google: "XV9Fx-6qPKbJu7rNyK4ej94XOKoALC3v-oAhYtQT-C4",
-  },
+  robots: { index: true, follow: true },
+  verification: { google: "XV9Fx-6qPKbJu7rNyK4ej94XOKoALC3v-oAhYtQT-C4" },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -94,9 +81,7 @@ export default function RootLayout({
         },
         "image": { "@id": "https://labelmoto.fr/#logo" },
         "description": "Annuaire national indépendant référençant les concessions, ateliers et relais motards en France. Plateforme de ressources et guides d'entretien pour motards.",
-        "sameAs": [
-          "https://www.instagram.com/labelmoto.fr/"
-        ]
+        "sameAs": ["https://www.instagram.com/labelmoto.fr/"]
       },
       {
         "@type": "WebSite",
@@ -125,6 +110,24 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* GA4 — afterInteractive = non bloquant, charge après hydratation */}
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="gtag-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}', { page_path: window.location.pathname });
+              `}
+            </Script>
+          </>
+        )}
       </head>
       <body className={cn("bg-background font-sans antialiased pb-16 md:pb-0", inter.className)}>
         <FirebaseClientProvider>

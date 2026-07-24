@@ -13,7 +13,7 @@ import { collection, query, orderBy, serverTimestamp, doc, updateDoc, increment 
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { trackEvent } from '@/lib/analytics';
+import { trackEvent, trackBeacon } from '@/lib/analytics';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
