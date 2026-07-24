@@ -416,19 +416,22 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <TabsList className="flex w-full overflow-x-auto max-w-3xl mx-auto h-12 p-1 bg-muted rounded-full mb-8 shadow-inner gap-1 scrollbar-hide">
-            <TabsTrigger value="submissions" className="rounded-full font-black uppercase text-[10px] tracking-widest">Demandes</TabsTrigger>
-            <TabsTrigger value="history" className="rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
-            <TabsTrigger value="listings" className="rounded-full font-black uppercase text-[10px] tracking-widest">Fiches</TabsTrigger>
-            <TabsTrigger value="add" className="rounded-full font-black uppercase text-[10px] tracking-widest">Ajouter</TabsTrigger>
-            <TabsTrigger value="modifs" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-1.5">Modifs{pendingModifsCount > 0 && <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[9px] font-black">{pendingModifsCount}</span>}</TabsTrigger>
-            <TabsTrigger value="comments" className="rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
-            <TabsTrigger value="migration" className="rounded-full font-black uppercase text-[10px] tracking-widest gap-2"><Database className="h-3 w-3" /> Migration</TabsTrigger>
-            <TabsTrigger value="prospection" className="rounded-full font-black uppercase text-[10px] tracking-widest">📊 Prospection</TabsTrigger>
-            <TabsTrigger value="stats" className="rounded-full font-black uppercase text-[10px] tracking-widest">📈 Stats</TabsTrigger>
-            <TabsTrigger value="images" className="rounded-full font-black uppercase text-[10px] tracking-widest">🖼️ Images</TabsTrigger>
-            <TabsTrigger value="users" className="rounded-full font-black uppercase text-[10px] tracking-widest">👥 Comptes</TabsTrigger>
-          </TabsList>
+          <div className="max-w-4xl mx-auto mb-8 space-y-2">
+            <TabsList className="flex w-full h-12 p-1 bg-muted rounded-full shadow-inner gap-1">
+              <TabsTrigger value="submissions" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Demandes</TabsTrigger>
+              <TabsTrigger value="history" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
+              <TabsTrigger value="listings" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Fiches</TabsTrigger>
+              <TabsTrigger value="add" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Ajouter</TabsTrigger>
+              <TabsTrigger value="modifs" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest gap-1.5">Modifs{pendingModifsCount > 0 && <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[9px] font-black">{pendingModifsCount}</span>}</TabsTrigger>
+            </TabsList>
+            <TabsList className="flex w-full h-12 p-1 bg-muted rounded-full shadow-inner gap-1">
+              <TabsTrigger value="comments" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
+              <TabsTrigger value="prospection" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">📊 Prospection</TabsTrigger>
+              <TabsTrigger value="stats" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">📈 Stats</TabsTrigger>
+              <TabsTrigger value="images" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">��️ Images</TabsTrigger>
+              <TabsTrigger value="users" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">👥 Comptes</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="submissions">
             {isLoadingSubmissions ? (
