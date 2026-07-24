@@ -9,6 +9,7 @@ let adminApp: admin.app.App;
 export function getAdminApp() {
   if (admin.apps.length === 0) {
     adminApp = admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "studio-4801889514-40ebd",
     });
     console.log("[BACKEND] 🔥 Firebase Admin Initialisé avec succès.");
