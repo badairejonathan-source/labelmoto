@@ -207,7 +207,7 @@ function MapPageComponent() {
   };
 
   const isMobile = width !== undefined && width < 1024;
-  const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 250 : 140)) : 0;
+  const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 140)) : 0;
   const leftPadding = !isMobile ? 544 : 0;
 
   // CHARGEMENT PROGRESSIF PAR DÉPARTEMENT
@@ -372,7 +372,7 @@ function MapPageComponent() {
       setMapZoom(prev => Math.max(prev, 12));
     }
     setSelectedId(id);
-    setIsDetailView(true);
+    setIsDetailView(false);
     if (isMobile) setDrawerHeight('half');
   }, [points, isMobile]);
 
@@ -485,7 +485,7 @@ function MapPageComponent() {
       )}
 
       {isMobile && (
-        <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-2xl transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[50vh]' : 'bottom-0 h-[85vh]'))}>
+        <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-2xl transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[65vh]' : 'bottom-0 h-[85vh]'))}>
           <div className="h-full flex flex-col">
             <div className="shrink-0"><FilterButtons mobile /></div>
             <div ref={listScrollRef} className="flex-1 overflow-y-auto p-6 custom-scrollbar">
