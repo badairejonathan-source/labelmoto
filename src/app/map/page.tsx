@@ -130,6 +130,27 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
             </Link>
           </Button>
         </div>
+        {/* Horaires */}
+        {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].some(d => (pro as any)[d]) && (
+          <div className="border-t pt-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Clock className="h-4 w-4 text-brand" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Horaires</span>
+            </div>
+            <div className="space-y-1.5">
+              {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
+                <div key={day} className="flex justify-between items-center text-xs border-b border-dashed border-muted pb-1 last:border-0">
+                  <span className="capitalize text-muted-foreground font-bold">{day}</span>
+                  <span className="font-black text-foreground">{(pro as any)[day] || 'Fermé'}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Lien fiche complète */}
+        <Link href={`/concessions/${pro.slug || pro.id}`} className="block text-center p-3 bg-brand/5 rounded-2xl hover:bg-brand/10 transition-colors border border-brand/20">
+          <span className="text-[10px] font-black uppercase tracking-widest text-brand">Voir la fiche complète →</span>
+        </Link>
       </div>
     </div>
   );
@@ -342,6 +363,7 @@ function MapPageComponent() {
       setMapZoom(prev => Math.max(prev, 12));
     }
     setSelectedId(id);
+    setIsDetailView(true);
     if (isMobile) setDrawerHeight('half');
   }, [points, isMobile]);
 
