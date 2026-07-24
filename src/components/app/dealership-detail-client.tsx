@@ -241,7 +241,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                       className="overflow-hidden transition-all duration-300"
                       style={{ maxHeight: descExpanded ? '2000px' : '96px' }}
                     >
-                      <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
+                      <p className="text-base font-medium text-foreground leading-relaxed whitespace-pre-line">
                         {descText}
                       </p>
                     </div>
