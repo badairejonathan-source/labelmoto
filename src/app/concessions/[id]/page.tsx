@@ -183,7 +183,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     "@context": "https://schema.org",
     "@type": proType,
     "name": pro.title,
-    "description": `${pro.title} — professionnel moto${pro.brands?.length ? ' spécialisé ' + pro.brands.join(', ') : ''} situé à ${addr.addressLocality || pro.address}. Coordonnées, horaires et services sur Label Moto.`,
+    "description": (pro.info && pro.info.length > 20 && pro.info.indexOf('LabelMoto') === -1 && pro.info.indexOf('professionnel moto') === -1) ? pro.info.slice(0, 200) : `${pro.title}${addr.addressLocality ? ' à ' + addr.addressLocality : ''} — ${pro.category || 'professionnel moto'} référencé sur LabelMoto.`,
     "url": `https://labelmoto.fr/concessions/${pro.slug || pro.id}`,
     "telephone": pro.phoneNumber || pro.pnoneNumber,
     "address": {
