@@ -168,22 +168,25 @@ export default function HomepageDeferred() {
                             Tous les guides →
                         </Link>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-2 px-2">
                         {[
-                            { icon: "🏍️", theme: "Debuter en moto", desc: "Permis, moto A2, premiere bécane — tout pour bien démarrer", href: "/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter", tag: "Permis & A2" },
-                            { icon: "💰", theme: "Budget & Achat", desc: "Couts reels, achat occasion, financement — evitez les pieges", href: "/info/achat-moto-occasion-guide-complet-pour-eviter-les-pieges", tag: "Budget" },
-                            { icon: "🪖", theme: "Equipement", desc: "Casques, blousons, comparatifs — les meilleurs choix 2026", href: "/info/meilleurs-casques-moto-2026", tag: "Equipement" },
+                            { img: "/images/achat-occasion.webp", theme: "Debuter en moto", desc: "Permis, moto A2, premiere bécane — tout pour bien démarrer", href: "/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter", tag: "Permis & A2" },
+                            { img: "/images/motard-budget-reel.webp", theme: "Budget & Achat", desc: "Couts reels, achat occasion, financement — evitez les pieges", href: "/info/achat-moto-occasion-guide-complet-pour-eviter-les-pieges", tag: "Budget" },
+                            { img: "/images/casque-meilleur-casque-2026.webp", theme: "Equipement", desc: "Casques, blousons, comparatifs — les meilleurs choix 2026", href: "/info/meilleurs-casques-moto-2026", tag: "Equipement" },
                         ].map(g => (
-                            <Link key={g.theme} href={g.href} className="group flex flex-col gap-3 p-5 bg-white rounded-2xl border border-border/50 hover:border-brand shadow-sm hover:shadow-md transition-all duration-300">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-2xl" aria-hidden="true">{g.icon}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand">{g.tag}</span>
+                            <Link key={g.theme} href={g.href} className="group flex-shrink-0 w-[240px] sm:flex-1 sm:w-auto flex flex-col bg-white rounded-2xl border border-border/50 hover:border-brand shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden snap-start">
+                                <div className="relative h-[130px] overflow-hidden">
+                                    <Image src={g.img} alt={g.theme} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="240px" loading="lazy" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                    <span className="absolute bottom-3 left-3 text-[10px] font-black uppercase tracking-widest text-white bg-brand/80 px-2 py-1 rounded-full">{g.tag}</span>
                                 </div>
-                                <span className="font-black text-base uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{g.theme}</span>
-                                <span className="text-xs text-muted-foreground font-medium leading-snug flex-grow">{g.desc}</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
-                                    Voir les guides <ArrowRight className="h-3 w-3" aria-hidden="true" />
-                                </span>
+                                <div className="p-4 flex flex-col gap-2 flex-grow">
+                                    <span className="font-black text-sm uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{g.theme}</span>
+                                    <span className="text-xs text-muted-foreground font-medium leading-snug flex-grow">{g.desc}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
+                                        Voir les guides <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                                    </span>
+                                </div>
                             </Link>
                         ))}
                     </div>
@@ -201,19 +204,25 @@ export default function HomepageDeferred() {
                             Voir les 43 fiches →
                         </Link>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-2 px-2 mb-6">
                         {[
                             { brand: "Honda", model: "XL750 Transalp", slug: "honda-xl750-transalp-2023-plus", desc: "Vidange, chaine, freins — tout le programme" },
                             { brand: "Yamaha", model: "MT-07", slug: "yamaha-mt-07-2021-plus", desc: "Révisions à 10 000 km, couts réels, points clés" },
                             { brand: "CFMOTO", model: "450MT", slug: "cfmoto-450mt-2024-plus", desc: "Entretien du bestseller chinois en France" },
                         ].map(fiche => (
-                            <Link key={fiche.slug} href={"/fiches/" + fiche.slug} className="group flex flex-col gap-2 p-5 bg-white rounded-2xl border-2 border-border/50 hover:border-brand shadow-sm hover:shadow-lg transition-all duration-300">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-brand">{fiche.brand}</span>
-                                <span className="font-black text-base uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
-                                <span className="text-xs text-muted-foreground font-medium leading-snug">{fiche.desc}</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
-                                    Voir la fiche <ArrowRight className="h-3 w-3" aria-hidden="true" />
-                                </span>
+                            <Link key={fiche.slug} href={"/fiches/" + fiche.slug} className="group flex-shrink-0 w-[200px] sm:flex-1 sm:w-auto flex flex-col bg-white rounded-2xl border-2 border-border/50 hover:border-brand shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden snap-start">
+                                <div className="relative h-[100px] overflow-hidden">
+                                    <Image src="/images/motard-entretien-page.webp" alt="Entretien moto" fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="200px" loading="lazy" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                                    <span className="absolute bottom-2 left-3 text-[10px] font-black uppercase tracking-widest text-brand">{fiche.brand}</span>
+                                </div>
+                                <div className="p-3 flex flex-col gap-1.5 flex-grow">
+                                    <span className="font-black text-sm uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
+                                    <span className="text-xs text-muted-foreground font-medium leading-snug flex-grow">{fiche.desc}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
+                                        Voir la fiche <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                                    </span>
+                                </div>
                             </Link>
                         ))}
                     </div>
