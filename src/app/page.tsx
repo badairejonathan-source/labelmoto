@@ -69,20 +69,38 @@ export default function LandingPage() {
                                 🔍 Trouver un garage près de moi
                             </Link>
                         </div>
-                        <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0">
+                        {/* Aperçu carte desktop */}
+                        <div className="shrink-0 hidden md:block">
                             <Link href="/map" className="block hover:scale-105 transition-transform duration-300">
-                                <div className="relative w-full h-[130px] md:w-[280px] md:h-[200px]">
+                                <div className="relative w-[280px] h-[200px]">
                                     <Image
                                         src="/images/map-preview-hero.webp"
                                         alt="Carte de France interactive des professionnels moto"
                                         fill
                                         className="rounded-2xl border-4 border-white shadow-2xl object-cover object-top"
-                                        sizes="(max-width: 768px) 100vw, 280px"
+                                        sizes="280px"
                                         decoding="async"
                                     />
-                                    <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl md:hidden" />
                                 </div>
                             </Link>
+                        </div>
+                        {/* Aperçu carte mobile — carré, bords orange, CTA chevauche */}
+                        <div className="relative w-full md:hidden mt-2">
+                            <div className="relative w-full aspect-square max-w-[260px] mx-auto">
+                                <Image
+                                    src="/images/map-preview-hero.webp"
+                                    alt="Carte de France interactive des professionnels moto"
+                                    fill
+                                    className="rounded-[1.5rem] border-4 border-brand shadow-2xl object-cover object-top"
+                                    sizes="260px"
+                                    decoding="async"
+                                />
+                            </div>
+                            <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-10">
+                                <Link href="/map" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-6 py-3 rounded-full shadow-2xl tracking-widest border-2 border-white whitespace-nowrap">
+                                    Explorer la carte
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
