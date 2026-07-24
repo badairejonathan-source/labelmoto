@@ -107,6 +107,29 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     redirect(`/concessions/${pro.slug}`);
   }
 
+  // Extraction ville/CP depuis l'adresse
+  function parseAddress(address: string) {
+    const parts = address ? address.split(',').map(s => s.trim()) : [];
+    // Chercher le segment contenant un code postal français (5 chiffres)
+    const cpIdx = parts.findIndex(p => /\d{5}/.test(p));
+    if (cpIdx !== -1) {
+      const cpPart = parts[cpIdx];
+      const cpMatch = cpPart.match(/(\d{5})\s*(.*)/);
+      return {
+        streetAddress: parts.slice(0, cpIdx).join(', ') || address,
+        postalCode: cpMatch?.[1] || '',
+        addressLocality: cpMatch?.[2]?.trim() || '',
+      };
+    }
+    // Fallback : pas de code postal trouvé
+    const last = parts[parts.length - 1] || '';
+    return {
+      streetAddress: parts.slice(0, -1).join(', ') || address,
+      postalCode: '',
+      addressLocality: last,
+    };
+  }
+  const addr = parseAddress(pro.address || '');
   // Breadcrumb enrichi : Accueil → Ville → Fiche
   const citySlug = (pro.city || addr.addressLocality || '')
     .toLowerCase()
@@ -147,29 +170,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     }
     return result;
   }
-  // Extraction ville/CP depuis l'adresse
-  function parseAddress(address: string) {
-    const parts = address ? address.split(',').map(s => s.trim()) : [];
-    // Chercher le segment contenant un code postal français (5 chiffres)
-    const cpIdx = parts.findIndex(p => /\d{5}/.test(p));
-    if (cpIdx !== -1) {
-      const cpPart = parts[cpIdx];
-      const cpMatch = cpPart.match(/(\d{5})\s*(.*)/);
-      return {
-        streetAddress: parts.slice(0, cpIdx).join(', ') || address,
-        postalCode: cpMatch?.[1] || '',
-        addressLocality: cpMatch?.[2]?.trim() || '',
-      };
-    }
-    // Fallback : pas de code postal trouvé
-    const last = parts[parts.length - 1] || '';
-    return {
-      streetAddress: parts.slice(0, -1).join(', ') || address,
-      postalCode: '',
-      addressLocality: last,
-    };
-  }
-  const addr = parseAddress(pro.address || '');
+
   const openingHours = buildOpeningHours(pro);
   // MotorcycleDealer (sous-type d'AutoDealer, plus précis pour les rich results moto)
   const proType = pro.appSection === 'service'
