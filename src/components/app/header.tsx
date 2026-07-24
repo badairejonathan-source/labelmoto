@@ -55,22 +55,6 @@ interface Suggestion {
 }
 
 
-const NavigationIcons = () => (
-  <div className="hidden lg:flex items-center gap-8 ml-32">
-    <Link href="/entretien" className="flex flex-col items-center gap-1 group">
-      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 p-2.5">
-        <Image src="/images/icon-entretienrevision.webp" alt="Entretien" width={48} height={48} className="w-full h-full object-contain" />
-      </div>
-      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Entretien</span>
-    </Link>
-    <Link href="/info" className="flex flex-col items-center gap-1 group">
-      <div className="h-[73px] w-[73px] rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all group-hover:scale-110 p-2.5">
-        <Image src="/images/icon-conseils.webp" alt="Conseils" width={48} height={48} className="w-full h-full object-contain" />
-      </div>
-      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Conseils</span>
-    </Link>
-  </div>
-);
 
 const QuickFilters = () => {
   const router = useRouter();
@@ -455,7 +439,7 @@ const Header: React.FC<any> = ({
       </div>
       <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
         {pathname !== "/" && <div className="flex-1">{searchInput}</div>}
-        <NavigationIcons />
+
       </div>
 
     </div>
