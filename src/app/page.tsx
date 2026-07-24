@@ -65,9 +65,12 @@ export default function LandingPage() {
                             <p className="text-white/80 text-sm md:text-base font-bold mb-5" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                 5 400+ professionnels vérifiés &bull; 96 départements &bull; Gratuit
                             </p>
-                            <Link href="/map" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-sm px-8 py-4 rounded-full shadow-2xl tracking-widest transition-all hover:scale-105 active:scale-95 border-2 border-white/20">
-                                🔍 Trouver un garage près de moi
-                            </Link>
+                            {/* CTA visible uniquement sur desktop */}
+                            <div className="hidden md:block">
+                                <Link href="/map" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-sm px-8 py-4 rounded-full shadow-2xl tracking-widest transition-all hover:scale-105 active:scale-95 border-2 border-white/20">
+                                    🔍 Trouver un garage près de moi
+                                </Link>
+                            </div>
                         </div>
                         {/* Aperçu carte desktop */}
                         <div className="shrink-0 hidden md:block">
@@ -84,8 +87,8 @@ export default function LandingPage() {
                                 </div>
                             </Link>
                         </div>
-                        {/* Aperçu carte mobile — carré, bords orange, CTA chevauche */}
-                        <div className="relative w-full md:hidden mt-2">
+                        {/* Aperçu carte mobile — carré bords orange, CTA Trouver qui chevauche en bas */}
+                        <div className="relative w-full md:hidden mt-2 pb-6">
                             <div className="relative w-full aspect-square max-w-[260px] mx-auto">
                                 <Image
                                     src="/images/map-preview-hero.webp"
@@ -96,9 +99,9 @@ export default function LandingPage() {
                                     decoding="async"
                                 />
                             </div>
-                            <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-10">
-                                <Link href="/map" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-6 py-3 rounded-full shadow-2xl tracking-widest border-2 border-white whitespace-nowrap">
-                                    Explorer la carte
+                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-10 w-full px-4">
+                                <Link href="/map" className="flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-sm px-6 py-4 rounded-full shadow-2xl tracking-widest border-2 border-white w-full transition-all hover:scale-105 active:scale-95">
+                                    🔍 Trouver un garage près de moi
                                 </Link>
                             </div>
                         </div>

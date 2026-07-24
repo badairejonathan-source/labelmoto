@@ -416,23 +416,20 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <div className="max-w-4xl mx-auto mb-8 space-y-2">
-            <TabsList className="flex w-full h-12 p-1 bg-muted rounded-full shadow-inner gap-1">
-              <TabsTrigger value="submissions" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Demandes</TabsTrigger>
-              <TabsTrigger value="history" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Archives</TabsTrigger>
-              <TabsTrigger value="listings" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Fiches</TabsTrigger>
-              <TabsTrigger value="add" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Ajouter</TabsTrigger>
-              <TabsTrigger value="modifs" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest gap-1.5">Modifs{pendingModifsCount > 0 && <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[9px] font-black">{pendingModifsCount}</span>}</TabsTrigger>
-            </TabsList>
-            <TabsList className="flex w-full h-12 p-1 bg-muted rounded-full shadow-inner gap-1">
-              <TabsTrigger value="comments" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">Avis</TabsTrigger>
-              <TabsTrigger value="prospection" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">📊 Prospection</TabsTrigger>
-              <TabsTrigger value="stats" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">📈 Stats</TabsTrigger>
-              <TabsTrigger value="images" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">��️ Images</TabsTrigger>
-              <TabsTrigger value="users" className="flex-1 rounded-full font-black uppercase text-[10px] tracking-widest">👥 Comptes</TabsTrigger>
+          <div className="mb-8">
+            <TabsList className="flex h-auto p-2 bg-muted/60 rounded-2xl shadow-inner gap-2 w-full overflow-x-auto scrollbar-hide flex-nowrap">
+              <TabsTrigger value="submissions" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📋</span>Demandes</TabsTrigger>
+              <TabsTrigger value="history" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">🗂️</span>Archives</TabsTrigger>
+              <TabsTrigger value="listings" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📁</span>Fiches</TabsTrigger>
+              <TabsTrigger value="add" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">➕</span>Ajouter</TabsTrigger>
+              <TabsTrigger value="modifs" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px] relative"><span className="text-xl">✏️</span>Modifs{pendingModifsCount > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[8px] font-black flex items-center justify-center">{pendingModifsCount}</span>}</TabsTrigger>
+              <TabsTrigger value="comments" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">💬</span>Avis</TabsTrigger>
+              <TabsTrigger value="prospection" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📊</span>Prospect</TabsTrigger>
+              <TabsTrigger value="stats" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📈</span>Stats</TabsTrigger>
+              <TabsTrigger value="images" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">🖼️</span>Images</TabsTrigger>
+              <TabsTrigger value="users" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">👥</span>Comptes</TabsTrigger>
             </TabsList>
           </div>
-
           <TabsContent value="submissions">
             {isLoadingSubmissions ? (
                 <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>
