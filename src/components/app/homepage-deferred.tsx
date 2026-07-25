@@ -1,4 +1,5 @@
 'use client';
+import Header from '@/components/app/header';
 
 import React from 'react';
 import Link from 'next/link';
@@ -92,29 +93,15 @@ export default function HomepageDeferred() {
 
     return (
             <div className="space-y-16 md:space-y-32">
-            {/* Barre recherche + filtres */}
+            {/* Barre recherche avec suggestions complètes */}
       <section className="py-2">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-4 py-2 md:px-6 md:py-3">
-            <input
-              type="text"
-              id="homepage-search"
-              placeholder="Recherche par ville, marque ou nom de pro..."
-              className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground font-medium"
-              onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); window.location.href = v ? "/map?search=" + encodeURIComponent(v) : "/map"; } }}
-            />
-            <button
-              type="button"
-              onClick={() => { const v = (document.getElementById('homepage-search') as HTMLInputElement)?.value?.trim(); window.location.href = v ? "/map?search=" + encodeURIComponent(v) : "/map"; }}
-              className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-brand hover:bg-brand/90 flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0"
-              aria-label="Rechercher"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Header
+          searchOnly={true}
+          placeholderText="Recherche par ville, marque ou nom de pro..."
+          onSearch={() => {}}
+          onSearchTermChange={() => {}}
+          searchTerm=""
+        />
       </section>
             <section aria-labelledby="why-choose-title">
                 <div className="bg-muted/50 rounded-[2.5rem] p-6 md:p-10 border border-border/50 backdrop-blur-sm shadow-sm min-h-[300px]">
