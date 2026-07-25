@@ -53,9 +53,53 @@ export default function AddListing() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const handleFetchFromMaps = async () => {
+    if (!form.googleMapsUrl) {
+      toast({ title: 'Renseigne un lien Google Maps d\'abord', variant: 'destructive' });
+      return;
+    }
+    setIsFetching(true);
+    try {
+      const res = await fetch('/api/places-lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: form.googleMapsUrl }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        toast({ title: 'Erreur', description: data.error, variant: 'destructive' });
+        return;
+      }
+      setForm(prev => ({
+        ...prev,
+        title: data.title || prev.title,
+        address: data.address || prev.address,
+        phoneNumber: data.phoneNumber || prev.phoneNumber,
+        website: data.website || prev.website,
+        category: data.category || prev.category,
+        lundi: data.lundi || prev.lundi,
+        mardi: data.mardi || prev.mardi,
+        mercredi: data.mercredi || prev.mercredi,
+        jeudi: data.jeudi || prev.jeudi,
+        vendredi: data.vendredi || prev.vendredi,
+        samedi: data.samedi || prev.samedi,
+        dimanche: data.dimanche || prev.dimanche,
+      }));
+      if (data.latitude && data.longitude) {
+        setCoords({ lat: data.latitude, lng: data.longitude });
+      }
+      toast({ title: '✅ Fiche récupérée depuis Google Maps', description: data.title });
+    } catch (e: any) {
+      toast({ title: 'Erreur', description: e.message, variant: 'destructive' });
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   const handleGeocode = async () => {
     if (!form.address && !form.googleMapsUrl) {
@@ -156,6 +200,9 @@ export default function AddListing() {
         <div>
           <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Lien Google Maps (recommandé)</Label>
           <Input value={form.googleMapsUrl} onChange={e => set('googleMapsUrl', e.target.value)} placeholder="https://maps.app.goo.gl/..." className="font-bold rounded-xl border-2" />
+          <Button type="button" onClick={handleFetchFromMaps} disabled={isFetching || !form.googleMapsUrl} className="mt-2 w-full bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs rounded-xl h-10 tracking-widest">
+            {isFetching ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Récupération...</> : <><RefreshCw className="mr-2 h-4 w-4" /> Récupérer depuis Google Maps</>}
+          </Button>
         </div>
         <div>
           <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Nom *</Label>
