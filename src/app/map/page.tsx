@@ -201,55 +201,13 @@ function MapPageComponent() {
     if (!navigator.geolocation) { setLocateError(true); setTimeout(() => setLocateError(false), 3000); return; }
     setIsLocating(true); setLocateError(false);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setMapCenter([lat, lng]);
-        setMapZoom(14);
-        setIsLocating(false);
-        // Charger les départements proches de la position utilisateur
-        const entries = Object.entries(locationsData as Record<string, { center: [number, number] }>);
-        const sorted = entries
-          .map(([key, data]) => {
-            const [dlat, dlng] = data.center || [0, 0];
-            const dist = Math.pow(dlat - lat, 2) + Math.pow(dlng - lng, 2);
-            return { key, dist };
-          })
-          .sort((a, b) => a.dist - b.dist)
-          .slice(0, 5);
-        sorted.forEach(({ key }) => loadDepartement(key.split(' - ')[0].trim()));
-      },
+      (pos) => { setMapCenter([pos.coords.latitude, pos.coords.longitude]); setMapZoom(14); setIsLocating(false); },
       () => { setIsLocating(false); setLocateError(true); setTimeout(() => setLocateError(false), 3000); },
       { timeout: 8000, maximumAge: 30000 }
     );
   };
 
-  // Charger le département cible quand la recherche change
-  useEffect(() => {
-    if (!searchIntent) return;
-    const { dept, postalCode, targetGeo } = searchIntent;
-    if (dept) {
-      loadDepartement(dept);
-    } else if (postalCode) {
-      const code = postalCode.substring(0, 2);
-      loadDepartement(code);
-    } else if (targetGeo) {
-      // Trouver le département le plus proche des coords cibles
-      const [lat, lng] = targetGeo.coords;
-      const entries = Object.entries(locationsData as Record<string, { center: [number, number] }>);
-      const sorted = entries
-        .map(([key, data]) => {
-          const [dlat, dlng] = data.center || [0, 0];
-          const dist = Math.pow(dlat - lat, 2) + Math.pow(dlng - lng, 2);
-          return { key, dist };
-        })
-        .sort((a, b) => a.dist - b.dist)
-        .slice(0, 3);
-      sorted.forEach(({ key }) => loadDepartement(key.split(' - ')[0].trim()));
-    }
-  }, [searchIntent, loadDepartement]);
-
-    // Synchroniser le ref avec l'état
+  // Synchroniser le ref avec l'état
   useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);
 
   const isMobile = width !== undefined && width < 1024;
