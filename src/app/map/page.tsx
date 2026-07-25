@@ -174,6 +174,7 @@ function MapPageComponent() {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const loadedDepts = useRef<Set<string>>(new Set());
   const boundsTimerRef = useRef(null as any);
+  const mapZoomRef = useRef(6);
 
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);
@@ -205,6 +206,9 @@ function MapPageComponent() {
       { timeout: 8000, maximumAge: 30000 }
     );
   };
+
+  // Synchroniser le ref avec l'état
+  useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);
 
   const isMobile = width !== undefined && width < 1024;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 140)) : 0;
@@ -240,7 +244,7 @@ function MapPageComponent() {
   }, [firestore]);
 
   const loadVisibleDepts = useCallback(async (bounds) => {
-    if (!bounds || mapZoom < 8) return;
+    if (!bounds || mapZoomRef.current < 8) return;
     const entries = Object.entries(locationsData);
     const s = bounds.getSouth?.() ?? 0;
     const n = bounds.getNorth?.() ?? 90;
@@ -248,7 +252,7 @@ function MapPageComponent() {
     const e = bounds.getEast?.() ?? 180;
     const visible = entries.filter(([, data]) => { const [lat, lng] = data.center || []; return lat >= s && lat <= n && lng >= w && lng <= e; });
     for (const [key] of visible.slice(0, 10)) { await loadDepartement(key.split(' - ')[0].trim()); }
-  }, [mapZoom, loadDepartement]);
+  }, [loadDepartement]);
 
   useEffect(() => {
     if (!mapBounds) return;
@@ -309,8 +313,7 @@ function MapPageComponent() {
 
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
-      undefined
-      if (!activeFilters.includes(section)) return false;
+      if (!activeFilters.includes(p.appSection)) return false;
       if (!searchIntent) return true;
 
       const { brand, dept, postalCode, targetGeo } = searchIntent;
