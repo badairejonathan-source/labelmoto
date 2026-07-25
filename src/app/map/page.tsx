@@ -427,7 +427,7 @@ function MapPageComponent() {
         <Header
           searchOnly={!isMobile}
           searchTerm={searchTerm}
-          onSearchTermChange={(val: string) => { setSearchTerm(val); setSelectionSource('external'); }}
+          onSearchTermChange={(val: string) => { setSearchTerm(val); }}
           onSearch={() => setSelectionSource('external')}
           onSuggestionSelect={(lat, lng, bbox, dealerId) => {
             if (bbox) { setBboxToFit(bbox); setDeptToFit(null); }
