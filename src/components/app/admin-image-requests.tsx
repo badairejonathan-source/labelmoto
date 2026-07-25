@@ -50,12 +50,14 @@ export default function AdminImageRequests() {
         approvedAt: serverTimestamp(),
       });
 
-      // Mettre à jour la fiche concession avec l'URL de l'image
-      const concSnap = await getDocs(
-        query(collection(firestore, 'concessions'), where('slug', '==', req.concessionSlug))
-      );
-      if (!concSnap.empty) {
-        await updateDoc(concSnap.docs[0].ref, { imageUrl: req.imageUrl });
+      // Mettre à jour la fiche dans toutes les collections
+      const cols = ['concessions', 'associations', 'relais', 'creators'];
+      for (const col of cols) {
+        const snap = await getDocs(query(collection(firestore, col), where('slug', '==', req.concessionSlug)));
+        if (!snap.empty) {
+          await updateDoc(snap.docs[0].ref, { imageUrl: req.imageUrl });
+          break;
+        }
       }
 
       setRequests(prev => prev.filter(r => r.id !== req.id));
