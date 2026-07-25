@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { collection, getDocs, query, limit, doc, updateDoc, deleteDoc, getFirestore } from 'firebase/firestore';
+import { collection, getDocs, query, limit, doc, updateDoc, deleteDoc, getDoc, getFirestore } from 'firebase/firestore';
 import { useFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,18 @@ interface ListingItem {
   brands: string[];
 }
 
+async function fetchCacheInfo(firestore: any, setCacheUpdatedAt: any, setCacheCount: any) {
+  try {
+    const db = getFirestore();
+    const snap = await getDoc(doc(db, 'cache', 'map_points'));
+    if (snap.exists()) {
+      const data = snap.data();
+      setCacheCount(data.count || 0);
+      if (data.updatedAt?.toDate) setCacheUpdatedAt(data.updatedAt.toDate());
+    }
+  } catch {}
+}
+
 function normalize(s: string): string {
   return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -48,6 +60,31 @@ export default function ListingsManager() {
   const [isImporting, setIsImporting] = useState(false);
   const [importUrl, setImportUrl] = useState('');
   const [importLoading, setImportLoading] = useState(false);
+  const [cacheUpdatedAt, setCacheUpdatedAt] = useState<Date | null>(null);
+  const [cacheCount, setCacheCount] = useState<number>(0);
+  const [isRebuilding, setIsRebuilding] = useState(false);
+
+  useEffect(() => {
+    if (firestore) fetchCacheInfo(firestore, setCacheUpdatedAt, setCacheCount);
+  }, [firestore]);
+
+  const handleRebuildCache = async () => {
+    setIsRebuilding(true);
+    try {
+      const res = await fetch('/api/rebuild-map-cache', { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        toast({ title: 'Carte mise à jour', description: data.count + ' points régénérés' });
+        if (firestore) fetchCacheInfo(firestore, setCacheUpdatedAt, setCacheCount);
+      } else {
+        toast({ title: 'Erreur', description: data.error, variant: 'destructive' });
+      }
+    } catch (e: any) {
+      toast({ title: 'Erreur', description: e.message, variant: 'destructive' });
+    } finally {
+      setIsRebuilding(false);
+    }
+  };
   const [importError, setImportError] = useState('');
 
   const loadListings = useCallback(async () => {
@@ -212,6 +249,24 @@ export default function ListingsManager() {
           className="pl-11 h-12 rounded-2xl border-2 font-bold"
         />
         {loaded && <p className="text-[10px] text-muted-foreground mt-2 ml-2 font-bold uppercase tracking-widest">{allListings.length} fiches au total</p>}
+        {/* Cache carte */}
+        <div className="mt-4 p-4 bg-muted/30 rounded-2xl border border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Dernière mise à jour de la carte</p>
+            <p className="font-black text-sm mt-0.5">
+              {cacheUpdatedAt ? cacheUpdatedAt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Jamais'}
+              {cacheCount > 0 && <span className="ml-2 text-muted-foreground font-medium text-xs">({cacheCount} points)</span>}
+            </p>
+            {cacheUpdatedAt && allListings.length > cacheCount && (
+              <p className="text-[10px] text-orange-600 font-black mt-1">
+                ⚠️ {allListings.length - cacheCount} fiche(s) non synchronisée(s)
+              </p>
+            )}
+          </div>
+          <Button onClick={handleRebuildCache} disabled={isRebuilding} className="bg-brand hover:bg-brand/90 text-white font-black uppercase text-[10px] tracking-widest rounded-xl h-10 px-4 shrink-0">
+            {isRebuilding ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Mise à jour...</> : <><RefreshCw className="mr-2 h-4 w-4" /> Mettre à jour la carte</>}
+          </Button>
+        </div>
       </div>
 
       {searchTerm.trim().length >= 2 && results.length === 0 && (
