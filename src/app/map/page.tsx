@@ -256,52 +256,34 @@ function MapPageComponent() {
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 140)) : 0;
   const leftPadding = !isMobile ? 544 : 0;
 
-  // CHARGEMENT PROGRESSIF PAR DÉPARTEMENT
-  const loadDepartement = useCallback(async (deptCode) => {
-    if (!firestore || loadedDepts.current.has(deptCode)) return;
-    loadedDepts.current.add(deptCode);
-    setIsLoadingPoints(true);
-    const { where } = await import('firebase/firestore');
-    const cols = [
-      { id: 'concessions', section: 'shopping', cat: 'concession' },
-      { id: 'associations', section: 'association', cat: 'association' },
-      { id: 'relais', section: 'relais', cat: 'relais' },
-      { id: 'creators', section: 'creator', cat: 'concession' },
-    ];
-    const newPts = [];
-    for (const col of cols) {
-      try {
-        const snap = await getDocs(query(collection(firestore, col.id), where('departement', '==', deptCode), limit(500)));
-        snap.docs.forEach(docSnap => {
-          const data = docSnap.data();
-          const coords = extractValidCoordinates(data);
-          if (!coords) return;
-          newPts.push({ id: docSnap.id, latitude: coords.lat, longitude: coords.lng, category: data.category || col.cat, appSection: (data.appSection && data.appSection !== "other") ? data.appSection : col.section, title: data.title || docSnap.id, slug: data.slug, rating: data.rating, imgUrl: data.imageUrl || data.imgUrl, address: data.address || "", brands: data.brands || [] });
-        });
-      } catch (e) { loadedDepts.current.delete(deptCode); }
-    }
-    setPoints(prev => { const ids = new Set(prev.map(p => p.id)); return [...prev, ...newPts.filter(p => !ids.has(p.id))]; });
-    setIsLoadingPoints(false);
-    console.log('[MAP] Dept', deptCode, ':', newPts.length, 'pts');
-  }, [firestore]);
-
-  const loadVisibleDepts = useCallback(async (bounds) => {
-    if (!bounds || mapZoomRef.current < 8) return;
-    const entries = Object.entries(locationsData);
-    const s = bounds.getSouth?.() ?? 0;
-    const n = bounds.getNorth?.() ?? 90;
-    const w = bounds.getWest?.() ?? -180;
-    const e = bounds.getEast?.() ?? 180;
-    const visible = entries.filter(([, data]) => { const [lat, lng] = data.center || []; return lat >= s && lat <= n && lng >= w && lng <= e; });
-    for (const [key] of visible.slice(0, 10)) { await loadDepartement(key.split(' - ')[0].trim()); }
-  }, [loadDepartement]);
-
+  // CHARGEMENT STATIQUE DEPUIS points.json
   useEffect(() => {
-    if (!mapBounds) return;
-    if (boundsTimerRef.current) clearTimeout(boundsTimerRef.current);
-    boundsTimerRef.current = setTimeout(() => { loadVisibleDepts(mapBounds); }, 400);
-    return () => { if (boundsTimerRef.current) clearTimeout(boundsTimerRef.current); };
-  }, [mapBounds, loadVisibleDepts]);
+    setIsLoadingPoints(true);
+    fetch('/points.json')
+      .then(r => r.json())
+      .then((data: any[]) => {
+        const mapped: MapPoint[] = data.map(p => ({
+          id: p.id,
+          latitude: p.lat,
+          longitude: p.lng,
+          title: p.t,
+          slug: p.s,
+          appSection: p.a,
+          category: p.c || 'concession',
+          rating: p.r || null,
+          imgUrl: p.i || null,
+          address: p.addr || '',
+          brands: p.b || [],
+        } as MapPoint));
+        setPoints(mapped);
+        setIsLoadingPoints(false);
+        console.log('[MAP] Points chargés:', mapped.length);
+      })
+      .catch(e => {
+        console.error('[MAP] Erreur chargement points.json:', e);
+        setIsLoadingPoints(false);
+      });
+  }, []);
 
     // Chargement du cache départements
   useEffect(() => {
