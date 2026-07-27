@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Dealership } from '@/lib/types';
 import { useFirestore, useCollection, useMemoFirebase, useUser, useDoc, addDocumentNonBlocking } from '@/firebase/client';
+import { DEPARTMENTS } from '@/app/lib/departments';
 import { collection, query, orderBy, serverTimestamp, doc, updateDoc, increment, getDocs, where, limit } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -169,12 +170,16 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                   <Link href={'/garages-moto/' + citySlug} className="hover:text-brand">{cityRaw}</Link>
                 </>
               )}
-              {cityRaw && citySlug && (!((['paris','marseille','lyon','toulouse','nice','nantes','montpellier','strasbourg','bordeaux','lille','rennes','reims','toulon','grenoble','dijon','angers','nimes','aix-en-provence','clermont-ferrand','rouen','amiens','metz','brest','tours','limoges','perpignan','caen','nancy','saint-etienne','pau'].includes(citySlug))) && (pro as any).departement) && (
-                <>
-                  <ChevronRight className="h-2 w-2" />
-                  <Link href={'/garages-moto/departement/' + (pro as any).departement} className="hover:text-brand">Dép. {(pro as any).departement}</Link>
-                </>
-              )}
+              {cityRaw && citySlug && (!((['paris','marseille','lyon','toulouse','nice','nantes','montpellier','strasbourg','bordeaux','lille','rennes','reims','toulon','grenoble','dijon','angers','nimes','aix-en-provence','clermont-ferrand','rouen','amiens','metz','brest','tours','limoges','perpignan','caen','nancy','saint-etienne','pau'].includes(citySlug))) && (pro as any).departement) && (() => {
+                const deptData = DEPARTMENTS.find(d => d.code === (pro as any).departement);
+                if (!deptData) return null;
+                return (
+                  <>
+                    <ChevronRight className="h-2 w-2" />
+                    <Link href={'/garages-moto/departement/' + deptData.slug} className="hover:text-brand">{deptData.name}</Link>
+                  </>
+                );
+              })()}
               <ChevronRight className="h-2 w-2" />
               <span className="text-foreground truncate max-w-[200px]">{pro.title}</span>
             </nav>
