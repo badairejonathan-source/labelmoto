@@ -217,7 +217,8 @@ function MapPageComponent() {
   // CHARGEMENT STATIQUE DEPUIS points.json
   useEffect(() => {
     setIsLoadingPoints(true);
-    fetch('/points.json')
+    fetch('https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json?t=' + Date.now())
+      .catch(() => fetch('/points.json'))
       .then(r => r.json())
       .then((data: any[]) => {
         const mapped: MapPoint[] = data.map(p => ({

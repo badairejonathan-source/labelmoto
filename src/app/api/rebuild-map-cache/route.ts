@@ -5,12 +5,12 @@ function initAdmin() {
   if (admin.apps.length === 0) {
     admin.initializeApp({ credential: admin.credential.applicationDefault() });
   }
-  return admin.firestore();
 }
 
 export async function POST() {
   try {
-    const db = initAdmin();
+    initAdmin();
+    const db = admin.firestore();
     const cols = [
       { id: 'concessions', section: 'shopping', cat: 'concession' },
       { id: 'associations', section: 'association', cat: 'association' },
@@ -19,7 +19,6 @@ export async function POST() {
     ];
     const points: any[] = [];
     const seenIds = new Set<string>();
-
     for (const col of cols) {
       const snap = await db.collection(col.id).get();
       snap.docs.forEach(d => {
@@ -46,15 +45,22 @@ export async function POST() {
         points.push(obj);
       });
     }
-
-    // Écrire dans Firestore cache
+    // Écrire dans Firebase Storage
+    const bucket = admin.storage().bucket('studio-4801889514-40ebd.firebasestorage.app');
+    const file = bucket.file('public/points.json');
+    await file.save(JSON.stringify(points), {
+      contentType: 'application/json',
+      metadata: { cacheControl: 'public, max-age=60' },
+    });
+    await file.makePublic();
+    const publicUrl = `https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json`;
+    // Mettre à jour les métadonnées dans Firestore
     await db.collection('cache').doc('map_points').set({
-      points: JSON.stringify(points),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       count: points.length,
+      url: publicUrl,
     });
-
-    return NextResponse.json({ ok: true, count: points.length });
+    return NextResponse.json({ ok: true, count: points.length, url: publicUrl });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
