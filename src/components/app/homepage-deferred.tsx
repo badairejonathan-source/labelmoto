@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 
 export default function HomepageDeferred() {
     const { user } = useUser();
+    const [homeSearch, setHomeSearch] = React.useState('');
     const firestore = useFirestore();
     
     const articlesQuery = useMemoFirebase(() => {
@@ -98,9 +99,9 @@ export default function HomepageDeferred() {
         <Header
           searchOnly={true}
           placeholderText="Recherche par ville, marque ou nom de pro..."
-          onSearch={() => {}}
-          onSearchTermChange={() => {}}
-          searchTerm=""
+          onSearch={() => { if (homeSearch.trim()) window.location.href = '/map?search=' + encodeURIComponent(homeSearch.trim()); else window.location.href = '/map'; }}
+          onSearchTermChange={(val: string) => setHomeSearch(val)}
+          searchTerm={homeSearch}
         />
       </section>
             <section aria-labelledby="why-choose-title">
