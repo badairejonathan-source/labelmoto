@@ -97,31 +97,26 @@ export async function POST(req: NextRequest) {
     if (redirected !== url) url = redirected;
   }
 
-  const { query, lat, lng } = extractFromGoogleMapsUrl(url);
+  const { query, lat, lng, placeId: extractedPlaceId } = extractFromGoogleMapsUrl(url);
 
-  if (!query) {
+  if (!query && !extractedPlaceId) {
     return NextResponse.json({
       error: 'Impossible d\'extraire les informations de cette URL. Essayez de copier l\'URL depuis la barre d\'adresse de votre navigateur sur Google Maps.'
     }, { status: 400 });
   }
 
-  // Recherche du lieu par texte + coordonnées GPS si disponibles
-  const locationBias = (lat && lng)
-    ? `&locationbias=circle:500@${lat},${lng}`
-    : '';
-
-  const searchUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(query)}&inputtype=textquery&fields=place_id,name,formatted_address&language=fr${locationBias}&key=${apiKey}`;
-
-  const searchRes = await fetch(searchUrl);
-  const searchData = await searchRes.json();
-
-  if (searchData.status !== 'OK' || !searchData.candidates?.length) {
-    return NextResponse.json({
-      error: `Lieu introuvable. (${searchData.status}) Vérifiez l'URL ou essayez avec l'URL complète depuis Google Maps.`
-    }, { status: 404 });
+  // Utiliser placeId extrait de l'URL ou recherche textuelle
+  let placeId = extractedPlaceId;
+  if (!placeId) {
+    const locationBias = (lat && lng) ? `&locationbias=circle:500@${lat},${lng}` : '';
+    const searchUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(query!)}&inputtype=textquery&fields=place_id,name,formatted_address&language=fr${locationBias}&key=${apiKey}`;
+    const searchRes = await fetch(searchUrl);
+    const searchData = await searchRes.json();
+    if (searchData.status !== 'OK' || !searchData.candidates?.length) {
+      return NextResponse.json({ error: `Lieu introuvable. (${searchData.status})` }, { status: 404 });
+    }
+    placeId = searchData.candidates[0].place_id;
   }
-
-  const placeId = searchData.candidates[0].place_id;
 
   // Récupérer les détails complets
   const fields = 'name,formatted_address,formatted_phone_number,website,opening_hours,geometry,rating,user_ratings_total,types';
