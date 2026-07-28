@@ -360,6 +360,14 @@ function MapPageComponent() {
       setMapCenter([p.latitude, p.longitude]);
       setSelectionSource('marker');
       setMapZoom(prev => Math.max(prev, 12));
+      // Mise à jour immédiate des bounds pour éviter le filtrage des marqueurs
+      const delta = 0.05;
+      setMapBounds({
+        getSouth: () => p.latitude - delta,
+        getNorth: () => p.latitude + delta,
+        getWest: () => p.longitude - delta,
+        getEast: () => p.longitude + delta,
+      });
     }
     setSelectedId(id);
     setIsDetailView(false);
