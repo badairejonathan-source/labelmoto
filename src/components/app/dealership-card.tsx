@@ -132,7 +132,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
                 )}
                 {fullDetails?.website && (
                   <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-brand/10 hover:border-brand" onClick={(e) => e.stopPropagation()}>
-                    <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={() => { trackEvent('clic_site_web', { pro: fullDetails.title, source: 'carte' }); fetch('/api/track-stat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ collection: col, id: point.id, field: 'stats_web' }), keepalive: true }).catch(() => {}); }}><Globe className="h-4 w-4 text-brand" /></a>
+                    <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_site_web', { pro: fullDetails.title, source: 'carte', slug: point.slug || point.id }); trackEvent('clic_site_web', { pro: fullDetails.title, source: 'carte' }); fetch('/api/track-stat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ collection: col, id: point.id, field: 'stats_web' }), keepalive: true }).catch(() => {}); }}><Globe className="h-4 w-4 text-brand" /></a>
                   </Button>
                 )}
                 <Button 

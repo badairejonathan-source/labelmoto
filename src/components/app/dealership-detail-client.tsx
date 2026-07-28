@@ -206,7 +206,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                   <MapPin className="h-6 w-6 text-brand shrink-0" />
                   <div>
                     <p className="font-black text-lg uppercase tracking-tight">{pro.address}</p>
-                    <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('clic_itineraire', { pro: pro.title, source: 'fiche' })}>Calculer l'itinéraire</a></Button>
+                    <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_itineraire', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_itineraire', { pro: pro.title, source: 'fiche' }); }}>Calculer l'itinéraire</a></Button>
                   </div>
                 </div>
               </div>
@@ -225,7 +225,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                 )}
                 {pro.website && (
                   <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                    <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => { trackEvent('clic_site_web', { pro: pro.title, source: 'fiche' }); trackStat('stats_web'); }}>
+                    <a href={pro.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => { trackBeacon('clic_site_web', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_site_web', { pro: pro.title, source: 'fiche' }); trackStat('stats_web'); }}>
                       <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
                       
                 <div className="text-left min-w-0">
