@@ -1,0 +1,330 @@
+{
+  "id": "cfmoto-450nk-2023-plus",
+  "slug": "cfmoto-450nk-2023-plus",
+  "model": "450 NK",
+  "brand": "CFMOTO",
+  "brand_order": 6,
+  "category": "roadster",
+  "subcategory": "roadster-125-400",
+  "status": "published",
+  "relations": {
+    "same_engine": ["cfmoto-450mt-2024-plus", "cfmoto-450sr-2023-plus"],
+    "same_category": ["honda-cb500f-2022-plus", "kawasaki-ninja-500-se-2024-plus", "yamaha-mt03-2020-plus"]
+  },
+  "technical_sheet": {
+    "years": "2023-présent",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, calage 270°, injection Bosch",
+    "displacement_cc": 449,
+    "bore_stroke_mm": "72,0 × 55,2",
+    "compression_ratio": "11,5:1",
+    "max_power_kw": 35,
+    "max_power_hp": 47,
+    "max_power_rpm": 10000,
+    "max_torque_nm": 40,
+    "max_torque_rpm": 7600,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses",
+    "clutch": "Embrayage multidisques à bain d'huile, anti-dribble (slipper clutch)",
+    "throttle": "Accélérateur mécanique (câble)",
+    "electronics": "ABS 2 canaux de série, TCS (contrôle de traction déconnectable), sans modes de conduite",
+    "display": "Écran TFT couleur 5 pouces avec Bluetooth",
+    "connectivity": "Port USB-A + USB-C de série",
+    "frame": "Cadre tubulaire acier",
+    "front_suspension": "Fourche télescopique inversée Ø 41 mm, non réglable",
+    "rear_suspension": "Monoamortisseur, bras oscillant acier, précontrainte réglable",
+    "front_brake": "Disque simple 320 mm, étrier radial 4 pistons",
+    "rear_brake": "Disque 220 mm, étrier 1 piston",
+    "abs": "ABS 2 canaux de série",
+    "front_tire": "110/70 R17",
+    "rear_tire": "150/60 R17",
+    "fuel_tank_liters": 14,
+    "seat_height_mm": 795,
+    "kerb_weight_kg": 173,
+    "wheelbase_mm": 1370,
+    "ground_clearance_mm": 192,
+    "permitted_a2": true,
+    "fuel_type": "Sans plomb 95 RON minimum",
+    "price_neuf_france": "5 790 €",
+    "garantie": "2 ans (réseau GD France)"
+  },
+  "seo": {
+    "meta_title": "CFMOTO 450 NK : avis, entretien, prix et guide d'achat complet (2023+)",
+    "meta_description": "Tout sur la CFMOTO 450 NK 2023+ : fiche technique, entretien tous les 5 000 km, coût réel sur 3 ans, comparatif Honda CB500 Hornet / Kawasaki Z500 et avis propriétaires. Le guide complet avant achat.",
+    "keywords": [
+      "CFMOTO 450 NK avis",
+      "CFMOTO 450 NK entretien",
+      "CFMOTO 450 NK prix",
+      "CFMOTO 450 NK fiabilité",
+      "CFMOTO 450 NK vs Honda CB500 Hornet",
+      "CFMOTO 450 NK vs Kawasaki Z500",
+      "CFMOTO 450 NK révision 5000 km",
+      "CFMOTO 450 NK permis A2",
+      "roadster A2 moins de 6000 euros",
+      "CFMOTO 450 NK coût entretien",
+      "CFMOTO 450 NK problèmes",
+      "meilleur roadster A2 2024",
+      "CFMOTO 450 NK occasion",
+      "CFMOTO 450 NK forum"
+    ]
+  },
+  "service_guide": {
+    "intro": "La CFMOTO 450 NK est le roadster A2 qui bouscule le marché français depuis son lancement en 2023. Proposée à 5 790 €, soit 1 100 € de moins qu'une Honda CB500 Hornet et environ 800 € de moins qu'une Kawasaki Z500 SE, elle mise sur un rapport équipement/prix inédit dans sa catégorie. Sous son carénage agressif inspiré de la 800 NK, on trouve le même bicylindre parallèle 449 cm³ à calage 270° que la 450 MT et la 450 SR — ici retravaillé pour privilégier les hauts régimes avec 47 ch disponibles à 10 000 tr/min. L'écran TFT 5 pouces avec Bluetooth, le double port USB et l'ABS déconnectable sont de série. La fourche inversée 41 mm et l'étrier radial 4 pistons complètent un équipement que les japonaises facturent souvent en option. Son public cible : le jeune permis A2 ou le motard retour à la moto qui veut un roadster nerveux, bien équipé et abordable pour la ville et les routes de campagne — sans se ruiner à l'achat ni à l'entretien.",
+
+    "known_issues": [
+      {
+        "issue": "Fourche sensible à la torsion en freinage appuyé",
+        "description": "Plusieurs essais et retours propriétaires pointent une fourche inversée 41 mm non réglable qui manque de rigidité lors de freinages violents, générant une légère sensation de torsion. Pas dangereux dans l'usage normal, mais perceptible pour un pilote exigeant.",
+        "severity": "faible",
+        "remedy": "Adapter son style de conduite en phase d'apprentissage. Pour les pilotes plus avancés, un réglage des amortisseurs arrière (précontrainte) peut améliorer l'équilibre global. Des kits de ressorts aftermarket existent mais restent anecdotiques sur ce modèle récent."
+      },
+      {
+        "issue": "Embrayage fragile — usure prématurée signalée",
+        "description": "Quelques essais techniques (notamment 1000PS) mentionnent un embrayage jugé sensible à l'usure sur les premières unités. Usage intensif en ville (embrayage glissé fréquent) à surveiller.",
+        "severity": "faible à modéré",
+        "remedy": "Éviter l'abus de l'embrayage glissé en manœuvre lente. Vérifier l'état des disques d'embrayage à chaque grande révision (10 000 km). Prise en charge sous garantie 2 ans en cas d'usure anormale."
+      },
+      {
+        "issue": "TCS trop interventionniste (identique à la 450 MT)",
+        "description": "Le contrôle de traction intervient parfois de manière inopinée sur sol légèrement humide ou en accélération vive en sortie de virage. Caractéristique commune à la gamme 450 CFMOTO.",
+        "severity": "faible",
+        "remedy": "Désactiver le TCS pour un usage sur route sèche si l'intervention est gênante. Mise à jour logicielle en concession si disponible."
+      },
+      {
+        "issue": "Interface TFT non disponible en français (premiers millésimes)",
+        "description": "L'écran TFT 5 pouces des premières livraisons 2023 fonctionnait uniquement en anglais. Les millésimes 2024-2025 intègrent le français selon plusieurs retours propriétaires.",
+        "severity": "mineur",
+        "remedy": "Mise à jour logicielle en concession GD France pour les modèles 2023 concernés."
+      }
+    ],
+
+    "consumables": [
+      {
+        "item": "Huile moteur",
+        "spec": "10W-40 synthétique JASO MA2 — CFMOTO recommande les produits IPONE (ex. IPONE Full Power Katana 10W-40)",
+        "quantity": "2,3 L (vidange avec filtre)",
+        "interval_km": 5000,
+        "interval_note": "Ou 6 mois, selon la première échéance"
+      },
+      {
+        "item": "Filtre à huile",
+        "spec": "Filtre CFMOTO d'origine (partagé avec 450 MT et 450 SR)",
+        "interval_km": 5000
+      },
+      {
+        "item": "Filtre à air",
+        "spec": "Filtre papier CFMOTO d'origine",
+        "interval_km": 10000,
+        "interval_note": "Nettoyage à 5 000 km, remplacement à 10 000 km"
+      },
+      {
+        "item": "Bougies d'allumage",
+        "spec": "NGK CPR9EA-9 ou équivalent — 2 bougies",
+        "interval_km": 20000
+      },
+      {
+        "item": "Jeu aux soupapes",
+        "spec": "Contrôle et réglage DOHC 4 soupapes/cylindre",
+        "interval_km": 40000,
+        "interval_note": "Intervalle très généreux vs la concurrence"
+      },
+      {
+        "item": "Liquide de frein",
+        "spec": "DOT 4",
+        "interval_note": "Tous les 2 ans"
+      },
+      {
+        "item": "Liquide de refroidissement",
+        "spec": "Antigel longue durée OAT G12+ ou équivalent",
+        "interval_note": "Vérification annuelle ; remplacement tous les 2-3 ans"
+      },
+      {
+        "item": "Chaîne et kit chaîne",
+        "spec": "Chaîne 520 O-ring",
+        "interval_km": 15000,
+        "interval_note": "Lubrifier tous les 500-700 km — usage urbain intensif accélère l'usure"
+      },
+      {
+        "item": "Pneu avant",
+        "spec": "110/70 R17 (monte d'origine Pirelli Diablo Rosso ou équivalent)",
+        "interval_km": 12000
+      },
+      {
+        "item": "Pneu arrière",
+        "spec": "150/60 R17",
+        "interval_km": 8000,
+        "interval_note": "Usage urbain intensif réduit sensiblement la durée de vie"
+      },
+      {
+        "item": "Plaquettes de frein avant",
+        "spec": "Plaquettes CFMOTO d'origine ou compatibles étrier radial 4 pistons",
+        "interval_note": "Contrôle tous les 5 000 km — usage urbain avec freinages fréquents"
+      }
+    ],
+
+    "longevity_tips": [
+      "Respecter les 5 000 km ou 6 mois entre vidanges : moteur récent sur le marché français, la rigueur d'entretien est primordiale pour la durabilité.",
+      "Éviter l'abus de l'embrayage glissé en manœuvres lentes et en bouchons : l'embrayage de la 450 NK est signalé comme sensible à l'usure sur utilisation urbaine intensive.",
+      "Lubrifier la chaîne tous les 500-700 km, ou après chaque pluie : en usage ville/banlieue, les variations de vitesse et les arrêts-redémarrages sollicitent davantage la transmission.",
+      "Mettre à jour le logiciel TFT et cartographie en concession dès qu'une mise à jour est disponible.",
+      "Vérifier la pression des pneus tous les 15 jours : des pneus sous-gonflés accentuent le comportement de la fourche en freinage."
+    ],
+
+    "comparatif": {
+      "intro": "La CFMOTO 450 NK s'attaque directement aux roadsters A2 japonais. Voici le comparatif honnête face à ses 3 rivales directes.",
+      "competitors": [
+        {
+          "model": "Honda CB500 Hornet (2023+)",
+          "prix_france": "~6 899 €",
+          "avantages_vs_450nk": "Fiabilité Honda prouvée sur le long terme, réseau SAV le plus dense de France, bicylindre 471 cm³ plus souple à bas régime, E-Clutch disponible en option, valeur de revente supérieure",
+          "inconvenients_vs_450nk": "1 100 € plus chère, équipement comparable voire inférieur (pas de TFT Bluetooth de série sur les premières versions), poids légèrement supérieur (189 kg)",
+          "verdict": "La référence fiabilité et revente — mais la CFMOTO offre plus pour moins cher sur le papier"
+        },
+        {
+          "model": "Kawasaki Z500 SE (2024+)",
+          "prix_france": "~6 599 €",
+          "avantages_vs_450nk": "Fiabilité Kawasaki établie, TFT couleur et LED de série, 4 ans de garantie, meilleure rigidité du cadre selon les comparatifs",
+          "inconvenients_vs_450nk": "800 € plus chère, 451 cm³ (gain marginal), poids comparable (171 kg)",
+          "verdict": "Très proche sur l'équipement — la Kawasaki gagne sur la garantie 4 ans et la fiabilité longue durée"
+        },
+        {
+          "model": "Yamaha MT-03 (2020+)",
+          "prix_france": "~5 499 €",
+          "avantages_vs_450nk": "Moins chère, légèreté (168 kg), agilité urbaine inégalée, fiabilité Yamaha, communauté énorme",
+          "inconvenients_vs_450nk": "Bicylindre 321 cm³ moins puissant (42 ch), moins d'équipement (pas de TFT, pas de TCS de série)",
+          "verdict": "Le choix 'fun et léger' à moindre coût — la 450 NK est plus adulte et mieux équipée"
+        }
+      ]
+    },
+
+    "service_schedule": [
+      {
+        "km": 1000,
+        "label": "Rodage — 1re révision obligatoire",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Contrôle tension et lubrification chaîne",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle serrage général",
+          "Mise à jour logicielle TFT si disponible",
+          "Vérification état embrayage"
+        ]
+      },
+      {
+        "km": 5000,
+        "label": "Révision standard (6 mois)",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Nettoyage filtre à air",
+          "Contrôle et réglage chaîne + lubrification",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle état pneus, plaquettes de frein",
+          "Contrôle ABS, TCS",
+          "Vérification état embrayage",
+          "Vérification générale sécurité"
+        ]
+      },
+      {
+        "km": 10000,
+        "label": "Révision intermédiaire (1 an)",
+        "operations": [
+          "Toutes les opérations de 5 000 km",
+          "Remplacement filtre à air",
+          "Contrôle bougies (remplacement si nécessaire)",
+          "Contrôle disques d'embrayage",
+          "Contrôle roulements de direction",
+          "Contrôle joints de fourche"
+        ]
+      },
+      {
+        "km": 20000,
+        "label": "Grande révision (2 ans)",
+        "operations": [
+          "Toutes les opérations de 10 000 km",
+          "Remplacement bougies d'allumage",
+          "Remplacement liquide de frein DOT 4",
+          "Remplacement kit chaîne si usure constatée",
+          "Contrôle roulements de roues"
+        ]
+      },
+      {
+        "km": 40000,
+        "label": "Révision majeure — soupapes",
+        "operations": [
+          "Toutes les opérations de 20 000 km",
+          "Contrôle et réglage jeu aux soupapes",
+          "Remplacement liquide de refroidissement",
+          "Contrôle complet moteur"
+        ]
+      }
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 5 000 km ou 6 mois (première des deux échéances). Soupapes à 40 000 km.",
+      "total_60000km": "850 – 1 400 €",
+      "cost_per_km": "0,014 – 0,023 €/km",
+      "note": "Estimations basées sur les retours propriétaires français et tarifs réseau GD France. Comptez 130-200 € pour une révision standard (5 000 km). L'usage urbain intensif (bouchons, embrayage glissé, freinages fréquents) peut augmenter les coûts consommables (pneus, plaquettes, embrayage) de 20-30 % par rapport à un usage routier."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — CFMOTO 450 NK",
+      "hypothese": "8 000 km/an, usage mixte ville/route, concessionnaire région",
+      "poste_achat": "5 790 €",
+      "poste_assurance_annuelle": "350 – 700 € (jeune conducteur A2 : prévoir 700-1 000 €)",
+      "poste_entretien_3ans": "700 – 1 100 € (6 révisions sur 3 ans à 8 000 km/an)",
+      "poste_pneus_3ans": "350 – 550 € (usage urbain = pneus arrière plus sollicités)",
+      "poste_equipement_pilote": "500 – 1 500 €",
+      "total_3ans_estime": "8 190 – 10 640 €",
+      "valeur_revente_estimee": "3 000 – 4 000 € à 3 ans / 24 000 km",
+      "cout_reel_3ans": "4 190 – 6 640 € soit 1 400 – 2 213 €/an",
+      "note": "La 450 NK est l'un des roadsters A2 au coût total de possession le plus bas du segment. Son principal risque financier est la valeur de revente à terme, encore difficile à estimer précisément sur un marché d'occasion CFMOTO jeune en France."
+    },
+
+    "faq": [
+      {
+        "question": "La CFMOTO 450 NK est-elle un bon choix pour débuter en moto ?",
+        "answer": "Oui, à plusieurs conditions. Sa selle à 795 mm, son poids contenu (173 kg en ordre de marche) et son couple disponible dès 4 000 tr/min en font une machine accessible. En revanche, le moteur monte assez haut (47 ch à 10 000 tr/min) — plus nerveux que la Honda CB500 Hornet ou la Kawasaki Z500 à bas régime. Pour un tout débutant, la Yamaha MT-03 (42 ch, 168 kg) peut être plus appropriée. Pour quelqu'un ayant un peu de pratique, la 450 NK est parfaite."
+      },
+      {
+        "question": "CFMOTO 450 NK ou Honda CB500 Hornet : laquelle choisir ?",
+        "answer": "La 450 NK est 1 100 € moins chère avec un équipement comparable voire supérieur (TFT Bluetooth, étrier radial 4 pistons). La Honda gagne sur la fiabilité longue durée prouvée, le réseau SAV (le plus dense de France) et la valeur de revente. Résumé : choisissez la CFMOTO si le budget prime et que vous êtes proche d'un concessionnaire GD France ; choisissez la Honda si vous prévoyez de garder la moto longtemps et valorisez la sérénité."
+      },
+      {
+        "question": "CFMOTO 450 NK ou Kawasaki Z500 SE : laquelle est la meilleure ?",
+        "answer": "La Z500 SE coûte environ 800 € de plus pour un équipement similaire. Son principal avantage est la garantie 4 ans Kawasaki (vs 2 ans CFMOTO) et une fiabilité longue durée mieux documentée. La 450 NK répond avec un prix d'entrée plus bas et un son bicylindre 270° plus caractériel. Les deux sont d'excellents choix A2 — le budget et la proximité d'un concessionnaire feront la différence."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la CFMOTO 450 NK ?",
+        "answer": "Tous les 5 000 km ou 6 mois (première échéance). Le jeu aux soupapes est à contrôler à 40 000 km — un avantage notable vs la concurrence (20 000-24 000 km habituellement). Pour un rouleur de 8 000 km/an, comptez environ 2 passages en concession par an."
+      },
+      {
+        "question": "La CFMOTO 450 NK est-elle fiable ?",
+        "answer": "Les retours propriétaires sur 1-2 ans sont globalement positifs. Le moteur bicylindre 449 cm³ partagé avec la 450 SR et la 450 MT ne pose pas de problème structurel documenté. Les points de vigilance sont l'embrayage (à ménager en usage urbain intensif) et la fourche (manque de rigidité en freinage appuyé). La vraie inconnue reste la durabilité à 50 000+ km : le recul manque encore."
+      },
+      {
+        "question": "Quelle huile pour la CFMOTO 450 NK ?",
+        "answer": "CFMOTO recommande les huiles IPONE partenaires. Toute huile moto 10W-40 synthétique homologuée JASO MA2 convient (Motul 7100, Castrol Power1, Shell Advance). Volume : environ 2,3 L avec filtre. Intervalle : 5 000 km ou 6 mois."
+      },
+      {
+        "question": "Peut-on faire entretenir la 450 NK hors réseau CFMOTO ?",
+        "answer": "Oui, hors garantie. Le moteur 449 cm³ est accessible et bien documenté (partagé avec plusieurs modèles CFMOTO). Pendant la garantie de 2 ans, l'entretien en concession GD France est conseillé pour la maintenir. Les mises à jour logicielles (TFT, cartographie) nécessitent un outil diagnostic compatible réseau CFMOTO."
+      },
+      {
+        "question": "Combien coûte une révision CFMOTO 450 NK en concession ?",
+        "answer": "Entre 130 et 200 € pour une révision standard à 5 000 km (hors consommables). Les tarifs varient selon la région — Paris est généralement 20-30 % plus cher. Sur 3 ans à 8 000 km/an, budgétez 700-1 100 € d'entretien hors pneus et plaquettes."
+      }
+    ],
+
+    "conclusion": "**Verdict acheteur — CFMOTO 450 NK 2023**\n\nLa CFMOTO 450 NK est une proposition sérieuse dans le segment des roadsters A2. À 5 790 €, elle est la moins chère de sa catégorie tout en proposant un équipement qui rivalise avec des motos 1 000 à 1 500 € plus chères. TFT Bluetooth, étrier radial 4 pistons, slipper clutch, TCS déconnectable, full LED — la liste donne le vertige pour ce prix.\n\nSes bémols sont réels mais circonscrits : une fourche qui montre ses limites en freinage appuyé, un embrayage à ménager en usage urbain intensif, et les inévitables questions sur la durabilité longue durée d'une marque encore jeune en France.\n\nProfil idéal : jeune permis A2 ou retour à la moto, budget serré, usage mixte ville/route, proche d'un concessionnaire GD France (140+ en France). Si la fiabilité longue durée et la valeur de revente priment sur le prix d'achat, la Honda CB500 Hornet ou la Kawasaki Z500 SE restent des choix plus conventionnels. Mais pour le motard qui veut maximiser l'équipement pour son budget — la 450 NK mérite clairement d'être essayée.",
+
+    "cta_primary": {
+      "label": "Trouver un concessionnaire CFMOTO près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "CFMOTO", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les roadsters A2 disponibles",
+      "action": "navigate",
+      "params": { "category": "roadster", "permitted_a2": true }
+    }
+  }
+}

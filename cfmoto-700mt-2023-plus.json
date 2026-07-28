@@ -1,0 +1,303 @@
+{
+  "id": "cfmoto-700mt-2023-plus",
+  "slug": "cfmoto-700mt-2023-plus",
+  "model": "700 MT",
+  "brand": "CFMOTO",
+  "brand_order": 6,
+  "category": "trail",
+  "subcategory": "trail-moyen",
+  "status": "published",
+  "relations": {
+    "same_engine": ["cfmoto-700clx-2021-plus"],
+    "same_category": ["kawasaki-versys-650-2022-plus", "suzuki-vstrom-650-2017-plus", "cfmoto-650mt-650nk-2020-plus"]
+  },
+  "technical_sheet": {
+    "years": "2023-présent",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, injection Bosch EFI",
+    "displacement_cc": 693,
+    "bore_stroke_mm": "83,0 × 64,0",
+    "compression_ratio": "11,6:1",
+    "max_power_kw": 49,
+    "max_power_hp": 67,
+    "max_power_rpm": 9000,
+    "max_torque_nm": 60,
+    "max_torque_rpm": 7250,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses",
+    "clutch": "Embrayage multidisques à bain d'huile, anti-dribble (slipper clutch)",
+    "throttle": "Accélérateur mécanique (câble) — pas de ride-by-wire sur ce modèle",
+    "electronics": "ABS 2 canaux de série, TCS (contrôle de traction déconnectable) — pas de modes de conduite",
+    "display": "Écran TFT couleur 5 pouces avec USB-A et USB-C",
+    "frame": "Cadre treillis tubulaire acier, bras oscillant aluminium",
+    "front_suspension": "Fourche inversée Ø 41 mm, débattement 140 mm",
+    "rear_suspension": "Monoamortisseur, précontrainte réglable, débattement 140 mm",
+    "front_brake": "Double disque 300 mm, étriers 2 pistons",
+    "rear_brake": "Disque 240 mm",
+    "abs": "ABS 2 canaux de série",
+    "front_tire": "120/70 R17",
+    "rear_tire": "160/60 R17",
+    "ground_clearance_mm": 170,
+    "fuel_tank_liters": 20,
+    "seat_height_mm": 820,
+    "seat_height_options_mm": "800 (surbaissement possible) / 840 (selle haute)",
+    "kerb_weight_kg": 218,
+    "wheelbase_mm": 1430,
+    "permitted_a2": true,
+    "fuel_type": "Sans plomb 95 RON minimum",
+    "price_neuf_france": "~7 490 € (2024)",
+    "garantie": "5 ans (2 ans pièces + MO / 3 ans groupe motopropulseur, limite 60 000 km)"
+  },
+  "seo": {
+    "meta_title": "CFMOTO 700 MT : avis, entretien, prix et guide d'achat complet (2023+)",
+    "meta_description": "Guide complet CFMOTO 700 MT 2023+ : fiche technique, entretien tous les 5 000 km, coût réel sur 3 ans, comparatif Kawasaki Versys 650 / Suzuki V-Strom 650 et avis propriétaires.",
+    "keywords": [
+      "CFMOTO 700 MT avis",
+      "CFMOTO 700 MT entretien",
+      "CFMOTO 700 MT prix",
+      "CFMOTO 700 MT fiabilité",
+      "CFMOTO 700 MT vs Kawasaki Versys 650",
+      "CFMOTO 700 MT vs Suzuki V-Strom 650",
+      "CFMOTO 700 MT révision 5000 km",
+      "CFMOTO 700 MT permis A2",
+      "trail 700 moins de 8000 euros",
+      "CFMOTO 700 MT coût entretien",
+      "CFMOTO 700 MT occasion",
+      "meilleur trail 700 2024"
+    ]
+  },
+  "service_guide": {
+    "intro": "La CFMOTO 700 MT est le trail moyen qui comble le vide entre la 650 MT (jugée un peu juste en puissance sur autoroute) et la 800 MT (plus lourde et plus chère). Lancée en 2023 avec le bicylindre 693 cm³ de la gamme CL-X revu pour l'usage trail, elle développe 67 ch à 9 000 tr/min et embarque un réservoir de 20 L — un argument fort pour le voyageur. Son positionnement tarifaire (~7 490 €) avec la garantie 5 ans CFMOTO la place directement face aux trails japonaises vendues 1 000 à 2 000 € plus chères. Un point notable : contrairement à la 700 CL-X qui bénéficie d'un accélérateur ride-by-wire, la 700 MT opte pour un câble mécanique — choix délibéré pour contenir les coûts et la complexité. Elle dispose toutefois du TFT 5 pouces, de l'ABS, du TCS et de la garantie 5 ans qui lui confèrent une base électronique solide.",
+
+    "known_issues": [
+      {
+        "issue": "Poids élevé pour une 700 cm³ (218 kg en ordre de marche)",
+        "description": "La 700 MT pèse 218 kg en ordre de marche — lourd pour une 700 cm³, comparable à des trails 800-900 cm³ japonaises. Plusieurs propriétaires le signalent comme principal bémol, notamment pour les manœuvres lentes et les stationnements en pente.",
+        "severity": "informatif",
+        "remedy": "À évaluer avant achat lors d'un essai. Le centre de gravité bas compense partiellement le poids ressenti. Pour un gabarit léger ou un début en moto, la 450 MT (196 kg) sera plus agile."
+      },
+      {
+        "issue": "Pas de modes de conduite (accélérateur câble)",
+        "description": "L'accélérateur mécanique (câble) de la 700 MT ne permet pas les modes de conduite switchables (Rain/Road/Dynamic) comme sur les 450 MT ou 700 CL-X. TCS et ABS sont déconnectables mais sans preset de mode.",
+        "severity": "informatif",
+        "remedy": "Pour ceux qui tiennent absolument aux modes de conduite, la 800 MT Touring ou la 700 CL-X (ride-by-wire) sont des alternatives. Sur route sèche, l'absence de modes est peu gênante."
+      },
+      {
+        "issue": "Réservoir 20 L — autonomie généreuse mais poids en charge",
+        "description": "Le réservoir de 20 L est un atout voyageur (environ 400 km d'autonomie) mais ajoute ~14 kg plein vs vide. Le centre de gravité remonte légèrement lorsque le plein est fait.",
+        "severity": "informatif",
+        "remedy": "Avantage net pour le touring — inconvénient marginal uniquement en usage sportif."
+      }
+    ],
+
+    "consumables": [
+      {
+        "item": "Huile moteur",
+        "spec": "10W-40 synthétique JASO MA2 — CFMOTO recommande les produits IPONE",
+        "quantity": "2,8 L (vidange avec filtre) — identique 700 CL-X",
+        "interval_km": 5000,
+        "interval_note": "Ou 6 mois, selon la première échéance. Idem gamme 450 CFMOTO."
+      },
+      {
+        "item": "Filtre à huile",
+        "spec": "Filtre CFMOTO d'origine (commun 700 MT / 700 CL-X / 693 cm³)",
+        "interval_km": 5000
+      },
+      {
+        "item": "Filtre à air",
+        "spec": "Filtre papier CFMOTO d'origine",
+        "interval_km": 10000,
+        "interval_note": "Nettoyage à 5 000 km, remplacement à 10 000 km"
+      },
+      {
+        "item": "Bougies d'allumage",
+        "spec": "NGK CR8EIA-9 ou équivalent — 2 bougies (identiques 700 CL-X)",
+        "interval_km": 20000
+      },
+      {
+        "item": "Jeu aux soupapes",
+        "spec": "Contrôle et réglage DOHC 4 soupapes/cylindre",
+        "interval_km": 40000,
+        "interval_note": "Très généreux vs la concurrence"
+      },
+      {
+        "item": "Liquide de frein",
+        "spec": "DOT 4",
+        "interval_note": "Tous les 2 ans"
+      },
+      {
+        "item": "Liquide de refroidissement",
+        "spec": "Antigel longue durée OAT G12+ ou équivalent",
+        "interval_note": "Vérification annuelle ; remplacement tous les 2-3 ans"
+      },
+      {
+        "item": "Chaîne et kit chaîne",
+        "spec": "Chaîne 520 O-ring",
+        "interval_km": 15000,
+        "interval_note": "Lubrifier tous les 500-700 km. Avec 67 ch et 218 kg, la chaîne travaille fort en charge."
+      },
+      {
+        "item": "Pneu avant",
+        "spec": "120/70 R17",
+        "interval_km": 12000
+      },
+      {
+        "item": "Pneu arrière",
+        "spec": "160/60 R17",
+        "interval_km": 9000
+      },
+      {
+        "item": "Plaquettes de frein avant",
+        "spec": "Plaquettes CFMOTO d'origine ou compatibles double disque 300 mm",
+        "interval_note": "Contrôle tous les 5 000 km"
+      }
+    ],
+
+    "longevity_tips": [
+      "Profiter du réservoir 20 L pour planifier les voyages sereinement — inutile d'attendre la réserve, viser les 350 km entre arrêts pour une conduite économique.",
+      "Lubrifier la chaîne systématiquement tous les 500-700 km : avec 218 kg en charge, la transmission travaille davantage qu'une moto légère.",
+      "Respecter les 5 000 km ou 6 mois entre vidanges — moteur 693 cm³ encore jeune en commercialisation, la rigueur d'entretien est la meilleure assurance.",
+      "Maintenir les entretiens dans le réseau GD France pour conserver la garantie 5 ans (3 ans groupe motopropulseur) — bouclier financier précieux."
+    ],
+
+    "comparatif": {
+      "intro": "La 700 MT se positionne entre la 650 MT CFMOTO et les trails japonaises. Comparatif honnête.",
+      "competitors": [
+        {
+          "model": "Kawasaki Versys 650 (2022+)",
+          "prix_france": "~8 599 €",
+          "avantages_vs_700mt": "Twin ER-6 de référence indestructible, réseau Kawasaki dense, valeur de revente supérieure, 4 ans de garantie",
+          "inconvenients_vs_700mt": "1 100 € plus chère, réservoir 17 L (moins que la 700 MT), poids comparable (206 kg), pas de TFT de série sur les premières versions",
+          "verdict": "La fiabilité légendaire face au rapport qualité/prix CFMOTO — la Versys gagne sur la durabilité prouvée, la 700 MT sur le réservoir et le prix"
+        },
+        {
+          "model": "Suzuki V-Strom 650 (2017+)",
+          "prix_france": "~8 799 €",
+          "avantages_vs_700mt": "V-twin 645 cm³ au caractère unique, excellent pour le voyage chargé, fiabilité prouvée, grandes valises en option native",
+          "inconvenients_vs_700mt": "1 300 € plus chère, plus lourde (216 kg), technologie plus ancienne",
+          "verdict": "Le trail routier par excellence pour le gros voyageur — la 700 MT est plus moderne et moins chère mais moins éprouvée sur le long terme"
+        },
+        {
+          "model": "CFMOTO 650 MT (2020+)",
+          "prix_france": "~6 999 €",
+          "avantages_vs_700mt": "500 € moins chère, même garantie 5 ans, moteur 649 cm³ plus éprouvé (10 ans de commercialisation)",
+          "inconvenients_vs_700mt": "Moteur 649 cm³ moins puissant (57 ch vs 67 ch), réservoir 18 L (vs 20 L), moteur à vilebrequin 180° plus vibrant",
+          "verdict": "Pour un budget serré ou la priorité à la fiabilité prouvée, la 650 MT reste pertinente. La 700 MT justifie ses 500 € de plus par la puissance et l'autonomie"
+        }
+      ]
+    },
+
+    "service_schedule": [
+      {
+        "km": 1000,
+        "label": "Rodage — 1re révision",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Contrôle tension et lubrification chaîne",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle serrage général"
+        ]
+      },
+      {
+        "km": 5000,
+        "label": "Révision standard (6 mois)",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Nettoyage filtre à air",
+          "Contrôle et réglage chaîne + lubrification",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle état pneus, plaquettes",
+          "Contrôle ABS, TCS",
+          "Vérification générale sécurité"
+        ]
+      },
+      {
+        "km": 10000,
+        "label": "Révision intermédiaire (1 an)",
+        "operations": [
+          "Toutes les opérations de 5 000 km",
+          "Remplacement filtre à air",
+          "Contrôle bougies",
+          "Contrôle roulements de direction",
+          "Contrôle joints de fourche"
+        ]
+      },
+      {
+        "km": 20000,
+        "label": "Grande révision (2 ans)",
+        "operations": [
+          "Toutes les opérations de 10 000 km",
+          "Remplacement bougies d'allumage",
+          "Remplacement liquide de frein DOT 4",
+          "Remplacement kit chaîne si usure constatée",
+          "Contrôle roulements de roues"
+        ]
+      },
+      {
+        "km": 40000,
+        "label": "Révision majeure — soupapes",
+        "operations": [
+          "Toutes les opérations de 20 000 km",
+          "Contrôle et réglage jeu aux soupapes",
+          "Remplacement liquide de refroidissement"
+        ]
+      }
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 5 000 km ou 6 mois. Soupapes à 40 000 km.",
+      "total_60000km": "900 – 1 500 €",
+      "cost_per_km": "0,015 – 0,025 €/km",
+      "note": "Estimations basées sur les tarifs réseau GD France et retours propriétaires. Comptez 150-250 € pour une révision standard (5 000 km). La garantie 5 ans couvre les interventions majeures pendant 5 ans / 60 000 km — entretiens en réseau GD France obligatoires pour la maintenir."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — CFMOTO 700 MT",
+      "hypothese": "10 000 km/an, usage mixte route/voyage, concessionnaire région",
+      "poste_achat": "~7 490 €",
+      "poste_assurance_annuelle": "400 – 750 €",
+      "poste_entretien_3ans": "900 – 1 400 € (6 révisions sur 3 ans)",
+      "poste_pneus_3ans": "350 – 500 €",
+      "poste_equipement_pilote": "500 – 1 500 €",
+      "total_3ans_estime": "10 140 – 12 640 €",
+      "valeur_revente_estimee": "4 200 – 5 500 € à 3 ans / 30 000 km",
+      "cout_reel_3ans": "4 640 – 7 140 € soit 1 547 – 2 380 €/an",
+      "note": "La 700 MT se positionne bien en coût total de possession face à ses concurrentes japonaises 1 000-1 300 € plus chères à l'achat. La garantie 5 ans est un vrai différentiateur sur ce segment."
+    },
+
+    "faq": [
+      {
+        "question": "Pourquoi choisir la 700 MT plutôt que la 650 MT CFMOTO ?",
+        "answer": "Trois raisons principales : 10 ch de plus (67 vs 57), réservoir 20 L (vs 18 L) pour une meilleure autonomie voyage, et un moteur 693 cm³ à calage 270° plus smooth et moins vibrant que le 649 cm³ à 180° de la 650 MT. En contrepartie : 500 € de plus et un moteur avec moins de recul fiabilité (commercialisé 2023 vs 2012 pour le 650)."
+      },
+      {
+        "question": "La CFMOTO 700 MT est-elle compatible permis A2 ?",
+        "answer": "Oui, une version bridée à 35 kW est disponible. La puissance native est de 49 kW (67 ch) — au-dessus du seuil A2. La conversion vers la puissance pleine après obtention du permis A se fait en concession GD France."
+      },
+      {
+        "question": "Quelle est l'autonomie réelle de la CFMOTO 700 MT ?",
+        "answer": "Avec un réservoir de 20 L et une consommation de 4,9-5,5 L/100 km selon l'usage, l'autonomie réelle est de 360-410 km. C'est l'un des meilleurs ratios du segment trail 700 cm³ — un argument fort pour le voyageur qui veut espacer les arrêts carburant."
+      },
+      {
+        "question": "La CFMOTO 700 MT est-elle lourde ?",
+        "answer": "Oui, avec 218 kg en ordre de marche, elle est dans le haut de la fourchette pour une 700 cm³ (la Kawasaki Versys 650 fait 206 kg, la Yamaha MT-07 189 kg). Ce poids est à évaluer lors d'un essai, surtout pour les manœuvres lentes. En roulant, le centre de gravité bas le compense bien."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la CFMOTO 700 MT ?",
+        "answer": "Tous les 5 000 km ou 6 mois. Le jeu aux soupapes est à contrôler à 40 000 km — un bon point vs les japonaises (souvent 24 000 km). La garantie 5 ans exige les révisions dans le réseau GD France."
+      }
+    ],
+
+    "conclusion": "**Verdict acheteur — CFMOTO 700 MT 2023+**\n\nLa CFMOTO 700 MT comble intelligemment le vide entre la 650 MT (moteur ancien, moins de couple) et la 800 MT (plus lourde, plus chère). Son réservoir 20 L, son bicylindre 693 cm³ smooth et sa garantie 5 ans en font un trail voyage séduisant à moins de 7 500 €. Son principal bémol est le poids (218 kg) et l'absence de modes de conduite — deux points à évaluer lors d'un essai avant achat.\n\nProfil idéal : rouleur de 8 000-15 000 km/an, passionné de voyages à moto, sensible à l'autonomie et à la garantie constructeur. Moins adapté pour la ville ou les gabarits légers.",
+
+    "cta_primary": {
+      "label": "Trouver un concessionnaire CFMOTO près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "CFMOTO", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les trails 700 disponibles",
+      "action": "navigate",
+      "params": { "category": "trail", "subcategory": "trail-moyen" }
+    }
+  }
+}

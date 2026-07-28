@@ -1,0 +1,378 @@
+{
+  "id": "cfmoto-700clx-2021-plus",
+  "slug": "cfmoto-700clx-2021-plus",
+  "model": "700 CL-X",
+  "brand": "CFMOTO",
+  "brand_order": 6,
+  "category": "roadster",
+  "subcategory": "neo-retro",
+  "status": "published",
+  "relations": {
+    "same_engine": ["cfmoto-700mt-2023-plus", "cfmoto-800nk-2024-plus"],
+    "same_category": ["ducati-scrambler-800", "triumph-trident-660-2021-plus", "yamaha-xsr700-2022-plus"]
+  },
+  "technical_sheet": {
+    "years": "2021-présent (Heritage : 2021 / Sport : 2022 / Adventure : 2023)",
+    "note_variants": "Trois versions partageant le même bicylindre 693 cm³ et le même cadre. Différences : position de conduite, roues, freinage, pneus et style. Entretien identique sur les trois versions.",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, injection Bosch EFI",
+    "displacement_cc": 693,
+    "bore_stroke_mm": "83,0 × 64,0",
+    "compression_ratio": "11,6:1",
+    "max_power_kw": 51,
+    "max_power_hp": 70,
+    "max_power_rpm": 8500,
+    "max_torque_nm": 68,
+    "max_torque_rpm": 6500,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses",
+    "clutch": "Embrayage multidisques à bain d'huile, anti-dribble (slipper clutch)",
+    "throttle": "Accélérateur électronique ride-by-wire",
+    "riding_modes": "Sport / Eco (de série)",
+    "cruise_control": "Régulateur de vitesse de série (Heritage TC et Adventure)",
+    "electronics": "ABS Bosch 2 canaux de série, TCS (contrôle de traction)",
+    "display": "Écran TFT couleur 5 pouces avec Bluetooth",
+    "frame": "Cadre treillis tubulaire acier chrome-molybdène",
+    "fuel_tank_liters": 13,
+    "permitted_a2": true,
+    "a2_note": "Bridable A2 via option — puissance native 70 ch (permis A), bridage à 35 kW disponible",
+    "fuel_type": "Sans plomb 95 RON minimum",
+    "garantie": "5 ans (2 ans pièces + MO / 3 ans moteur-boîte-cadre, limite 60 000 km)"
+  },
+  "variants": {
+    "heritage_tc": {
+      "label": "700 CL-X Heritage TC (2021+)",
+      "style": "Scrambler néo-rétro",
+      "prix_france": "6 999 €",
+      "front_suspension": "Fourche télescopique droite réglable",
+      "rear_suspension": "Monoamortisseur réglable",
+      "front_brake": "Disque simple 320 mm, étrier J.Juan 4 pistons",
+      "rear_brake": "Disque 240 mm",
+      "front_tire": "110/80 R18",
+      "rear_tire": "180/55 R17",
+      "seat_height_mm": 800,
+      "kerb_weight_kg": 198,
+      "wheelbase_mm": 1430,
+      "note": "La plus accessible et la plus polyvalente. Guidon haut, position détendue, régulateur de vitesse de série. Design scrambler signé Kiska (agence design de KTM)."
+    },
+    "sport": {
+      "label": "700 CL-X Sport (2022+)",
+      "style": "Café racer",
+      "prix_france": "7 499 €",
+      "front_suspension": "Fourche inversée KYB Ø 43 mm entièrement réglable",
+      "rear_suspension": "Monoamortisseur KYB entièrement réglable",
+      "front_brake": "Double disque 320 mm, étriers radiaux Brembo 4 pistons",
+      "rear_brake": "Disque 240 mm, étrier Brembo",
+      "front_tire": "120/70 R17",
+      "rear_tire": "180/55 R17",
+      "seat_height_mm": 795,
+      "kerb_weight_kg": 196,
+      "wheelbase_mm": 1430,
+      "note": "La plus sportive. Demi-guidons, position d'attaque, fourche KYB et freinage Brembo full. Jantes 17 pouces pour pneus routiers haute performance."
+    },
+    "adventure": {
+      "label": "700 CL-X Adventure (2023+)",
+      "style": "Scrambler tout-terrain",
+      "prix_france": "8 000 €",
+      "front_suspension": "Fourche télescopique à grand débattement",
+      "rear_suspension": "Monoamortisseur à grand débattement",
+      "front_brake": "Disque simple 320 mm, étrier J.Juan",
+      "rear_brake": "Disque 240 mm",
+      "front_tire": "110/80 R19 (jante à rayons)",
+      "rear_tire": "150/70 R17 (jante à rayons)",
+      "seat_height_mm": 820,
+      "kerb_weight_kg": 201,
+      "wheelbase_mm": 1445,
+      "note": "La plus polyvalente route/chemin. Roues à rayons tubeless 19/17, garde-boue haut, guidon large. Régulateur de vitesse de série."
+    }
+  },
+  "seo": {
+    "meta_title": "CFMOTO 700 CL-X : avis, entretien, prix Heritage / Sport / Adventure (2021+)",
+    "meta_description": "Guide complet CFMOTO 700 CL-X 2021+ : fiche technique des 3 versions (Heritage TC, Sport, Adventure), entretien tous les 5 000 km, coût réel sur 3 ans, comparatif Ducati Scrambler / Yamaha XSR700. Tout avant d'acheter.",
+    "keywords": [
+      "CFMOTO 700 CL-X avis",
+      "CFMOTO 700 CL-X entretien",
+      "CFMOTO 700 CL-X prix",
+      "CFMOTO 700 CL-X Heritage",
+      "CFMOTO 700 CL-X Sport",
+      "CFMOTO 700 CL-X Adventure",
+      "CFMOTO 700 CL-X fiabilité",
+      "CFMOTO 700 CL-X vs Ducati Scrambler",
+      "CFMOTO 700 CL-X vs Yamaha XSR700",
+      "CFMOTO 700 CL-X révision 5000 km",
+      "scrambler A2 moins de 8000 euros",
+      "CFMOTO 700 CL-X coût entretien",
+      "CFMOTO 700 CL-X problèmes",
+      "meilleur scrambler néo-rétro 2024",
+      "CFMOTO 700 CL-X occasion"
+    ]
+  },
+  "service_guide": {
+    "intro": "La CFMOTO 700 CL-X est la proposition la plus audacieuse et la plus réussie stylistiquement de la gamme CFMOTO. Lancée en 2021 dans sa version Heritage, elle décline un même bicylindre parallèle 693 cm³ en trois personnalités distinctes : la Heritage TC (scrambler néo-rétro accessible, 6 999 €), la Sport (café racer à fourche KYB et freinage Brembo, 7 499 €) et l'Adventure (scrambler à roues à rayons, ~8 000 €). Son design a été confié à Kiska, l'agence autrichienne qui dessine les KTM — un gage de sérieux rarement vu sur une moto chinoise. Le moteur 693 cm³, dérivé du 649 cm³ des 650 MT et 650 NK avec une course allongée de 60 à 64 mm, développe 70 ch à 8 500 tr/min et 68 Nm à 6 500 tr/min. Il bénéficie de l'injection Bosch, d'un accélérateur électronique ride-by-wire, de deux modes de conduite et même d'un régulateur de vitesse de série sur l'Heritage TC et l'Adventure — une rareté absolue sous les 8 000 €. Sa garantie 5 ans (2 ans pièces + 3 ans groupe motopropulseur) dépasse largement les standards japonais et rassure sur la durabilité.",
+
+    "known_issues": [
+      {
+        "issue": "Régulateur de tension (alternateur) — défaillance isolée",
+        "description": "Quelques propriétaires rapportent une défaillance du régulateur de tension sur les premiers millésimes 2021-2022, entraînant une surcharge ou sous-charge de la batterie. Le problème est isolé et non systématique.",
+        "severity": "modéré",
+        "remedy": "Prise en charge sous garantie 5 ans. Si la batterie se décharge anormalement ou si le voyant batterie s'allume, consulter immédiatement le concessionnaire GD France."
+      },
+      {
+        "issue": "Autonomie limitée (réservoir 13 L)",
+        "description": "Non pas une panne, mais une contrainte réelle : le réservoir de 13 L offre environ 250-270 km d'autonomie à 4,8 L/100 km. En usage routier soutenu, les arrêts carburant sont fréquents.",
+        "severity": "informatif",
+        "remedy": "Utiliser le mode Eco sur autoroute pour allonger l'autonomie. Un réservoir auxiliaire aftermarket existe chez certains accessoiristes, mais reste anecdotique."
+      },
+      {
+        "issue": "Délais de pièces de carénage spécifiques",
+        "description": "Les pièces de carénage propres à chaque version (garde-boue, flancs) peuvent avoir des délais de livraison de 1-2 semaines chez les concessionnaires GD France, selon les retours propriétaires.",
+        "severity": "mineur",
+        "remedy": "Préférer commander les pièces en amont pour éviter une immobilisation. Le réseau GD France (140+ concessions) s'améliore progressivement sur ce point."
+      },
+      {
+        "issue": "Selle ferme en standard (Heritage)",
+        "description": "La selle de série de la Heritage est signalée comme relativement ferme sur les longues distances (>2h). La Sport, par sa position plus engagée, est également à l'origine de commentaires sur l'inconfort en touring.",
+        "severity": "faible",
+        "remedy": "CFMOTO propose une selle confort en option. Des coiffes Airhawk ou selles aftermarket existent également."
+      }
+    ],
+
+    "consumables": [
+      {
+        "item": "Huile moteur",
+        "spec": "10W-40 synthétique JASO MA2 — CFMOTO recommande les produits IPONE",
+        "quantity": "2,8 L (vidange avec filtre)",
+        "interval_km": 5000,
+        "interval_note": "Ou 6 mois, selon la première échéance"
+      },
+      {
+        "item": "Filtre à huile",
+        "spec": "Filtre CFMOTO d'origine (commun à la gamme 650/700)",
+        "interval_km": 5000
+      },
+      {
+        "item": "Filtre à air",
+        "spec": "Filtre papier CFMOTO d'origine",
+        "interval_km": 10000,
+        "interval_note": "Nettoyage à 5 000 km, remplacement à 10 000 km"
+      },
+      {
+        "item": "Bougies d'allumage",
+        "spec": "NGK CR8EIA-9 ou équivalent — 2 bougies",
+        "interval_km": 20000
+      },
+      {
+        "item": "Jeu aux soupapes",
+        "spec": "Contrôle et réglage DOHC 4 soupapes/cylindre",
+        "interval_km": 40000,
+        "interval_note": "Très généreux — avantage notable vs la concurrence (Yamaha MT-07 : 42 000 km, Honda CB650R : 24 000 km)"
+      },
+      {
+        "item": "Liquide de frein",
+        "spec": "DOT 4",
+        "interval_note": "Tous les 2 ans"
+      },
+      {
+        "item": "Liquide de refroidissement",
+        "spec": "Antigel longue durée OAT G12+ ou équivalent",
+        "interval_note": "Vérification annuelle ; remplacement tous les 2-3 ans"
+      },
+      {
+        "item": "Chaîne et kit chaîne",
+        "spec": "Chaîne 520 O-ring (Heritage/Adventure) — 525 O-ring (Sport, vérifier référence)",
+        "interval_km": 15000,
+        "interval_note": "Lubrifier tous les 500-700 km"
+      },
+      {
+        "item": "Pneu avant Heritage TC",
+        "spec": "110/80 R18",
+        "interval_km": 12000
+      },
+      {
+        "item": "Pneu avant Sport",
+        "spec": "120/70 R17 (pneus routiers performance)",
+        "interval_km": 10000
+      },
+      {
+        "item": "Pneu avant Adventure",
+        "spec": "110/80 R19 (jante à rayons tubeless)",
+        "interval_km": 12000
+      },
+      {
+        "item": "Pneu arrière (toutes versions)",
+        "spec": "Heritage/Adventure : 150-180/55 R17 — Sport : 180/55 R17",
+        "interval_km": 9000
+      },
+      {
+        "item": "Plaquettes de frein avant",
+        "spec": "Heritage/Adventure : J.Juan compatibles — Sport : Brembo d'origine ou EBC sintered",
+        "interval_note": "Contrôle tous les 5 000 km"
+      }
+    ],
+
+    "longevity_tips": [
+      "Respecter les 5 000 km ou 6 mois entre vidanges : les propriétaires de 700 NK (même moteur) rapportent 30 000 à 50 000 km sans grosse panne en respectant ce rythme.",
+      "Surveiller le niveau de la batterie régulièrement — un régulateur de tension défaillant peut passer inaperçu jusqu'à la panne totale. Vérification simple au voltmètre lors des révisions.",
+      "Avec un réservoir de 13 L, ne pas attendre la réserve systématiquement : planifier les arrêts carburant toutes les 200-220 km en rythme soutenu.",
+      "Lubrifier la chaîne tous les 500-700 km et après la pluie — le moteur 70 ch sollicite bien plus la transmission qu'un 450 cm³.",
+      "La garantie 5 ans est un atout majeur : faire valider chaque révision dans le réseau GD France pour maintenir la garantie moteur 3 ans."
+    ],
+
+    "comparatif": {
+      "intro": "La CFMOTO 700 CL-X affronte des concurrentes bien établies sur le segment néo-rétro / scrambler. Voici le comparatif honnête.",
+      "competitors": [
+        {
+          "model": "Ducati Scrambler 800 Icon (2023+)",
+          "prix_france": "~9 695 €",
+          "avantages_vs_700clx": "Marque mythique, son L-twin Desmodue incomparable, valeur de revente excellente, réseau Ducati dense",
+          "inconvenients_vs_700clx": "2 700 € plus chère, entretien coûteux (Desmo tous les 24 000 km ~800 €), pas de régulateur de vitesse, garantie 2 ans seulement",
+          "verdict": "Le prestige Ducati a un prix — la CFMOTO offre objectivement plus d'équipement pour 2 700 € de moins"
+        },
+        {
+          "model": "Yamaha XSR700 (2022+)",
+          "prix_france": "~8 299 €",
+          "avantages_vs_700clx": "Fiabilité Yamaha légendaire, twin CP2 689 cm³ de référence, excellente valeur de revente, intervalles entretien généreux (42 000 km soupapes)",
+          "inconvenients_vs_700clx": "1 300 € plus chère, pas de régulateur de vitesse, garantie 2 ans, pas de TCS de série",
+          "verdict": "La référence fiabilité et revente du segment — mais la CFMOTO compense avec la garantie 5 ans et le régulateur de série"
+        },
+        {
+          "model": "Triumph Trident 660 (2021+)",
+          "prix_france": "~8 345 €",
+          "avantages_vs_700clx": "3 cylindres 660 cm³ au son unique, finition britannique premium, fiabilité prouvée",
+          "inconvenients_vs_700clx": "1 350 € plus chère, entretien réseau Triumph plus cher, style moins distinctif",
+          "verdict": "Le choix pour le son et le style britannique — la CFMOTO gagne nettement sur le prix et la garantie"
+        }
+      ]
+    },
+
+    "service_schedule": [
+      {
+        "km": 1000,
+        "label": "Rodage — 1re révision obligatoire",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Contrôle tension et lubrification chaîne",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle serrage général",
+          "Test régulateur de tension (voltmètre — doit afficher 13,5-14,5V à 3 000 tr/min)",
+          "Mise à jour logicielle TFT si disponible"
+        ]
+      },
+      {
+        "km": 5000,
+        "label": "Révision standard (6 mois)",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Nettoyage filtre à air",
+          "Contrôle et réglage chaîne + lubrification",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle état pneus, plaquettes",
+          "Contrôle ABS, TCS, modes de conduite, régulateur de vitesse",
+          "Test régulateur de tension",
+          "Vérification générale sécurité"
+        ]
+      },
+      {
+        "km": 10000,
+        "label": "Révision intermédiaire (1 an)",
+        "operations": [
+          "Toutes les opérations de 5 000 km",
+          "Remplacement filtre à air",
+          "Contrôle bougies (remplacement si nécessaire)",
+          "Contrôle roulements de direction",
+          "Contrôle joints de fourche",
+          "Contrôle batterie (capacité)"
+        ]
+      },
+      {
+        "km": 20000,
+        "label": "Grande révision (2 ans)",
+        "operations": [
+          "Toutes les opérations de 10 000 km",
+          "Remplacement bougies d'allumage",
+          "Remplacement liquide de frein DOT 4",
+          "Remplacement kit chaîne si usure constatée",
+          "Contrôle roulements de roues"
+        ]
+      },
+      {
+        "km": 40000,
+        "label": "Révision majeure — soupapes",
+        "operations": [
+          "Toutes les opérations de 20 000 km",
+          "Contrôle et réglage jeu aux soupapes (DOHC)",
+          "Remplacement liquide de refroidissement",
+          "Contrôle complet moteur et transmission"
+        ]
+      }
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 5 000 km ou 6 mois (première des deux échéances). Soupapes à 40 000 km.",
+      "total_60000km": "900 – 1 500 €",
+      "cost_per_km": "0,015 – 0,025 €/km",
+      "note": "Estimations basées sur retours propriétaires et tarifs réseau GD France. Comptez 150-250 € pour une révision standard (5 000 km). Le coût d'entretien est identique sur les 3 versions (même moteur). La garantie 5 ans couvre les grosses interventions sur groupe motopropulseur pendant les 5 premières années / 60 000 km."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — CFMOTO 700 CL-X Heritage TC",
+      "hypothese": "8 000 km/an, usage mixte route/balade, concessionnaire région",
+      "poste_achat": "6 999 €",
+      "poste_assurance_annuelle": "400 – 750 €",
+      "poste_entretien_3ans": "800 – 1 200 € (6 révisions sur 3 ans)",
+      "poste_pneus_3ans": "350 – 500 €",
+      "poste_equipement_pilote": "500 – 1 500 €",
+      "total_3ans_estime": "9 549 – 11 949 €",
+      "valeur_revente_estimee": "4 000 – 5 200 € à 3 ans / 24 000 km",
+      "cout_reel_3ans": "4 349 – 7 949 € soit 1 450 – 2 650 €/an",
+      "note": "La garantie 5 ans est un vrai bouclier financier : toute défaillance mécanique majeure pendant 5 ans / 60 000 km est couverte. C'est l'argument clé face aux japonaises en 2 ans."
+    },
+
+    "faq": [
+      {
+        "question": "Quelle version de la 700 CL-X choisir : Heritage TC, Sport ou Adventure ?",
+        "answer": "Heritage TC si vous voulez la polyvalence : position confortable, régulateur de vitesse, prix d'entrée le plus bas (6 999 €). Sport si vous êtes sensible aux performances et à l'esthétique café racer : fourche KYB réglable et freinage Brembo justifient les 500 € de plus. Adventure si vous comptez rouler sur des chemins et des routes dégradées : roues à rayons 19/17 et garde-boue haut font toute la différence en dehors du bitume."
+      },
+      {
+        "question": "La CFMOTO 700 CL-X est-elle compatible permis A2 ?",
+        "answer": "Oui, une option de bridage A2 à 35 kW est disponible. La puissance native est de 70 ch (51 kW) — au-dessus du seuil A2. Le bridage se fait en concession. Attention : la conversion vers la puissance pleine après obtention du permis A doit être réalisée en concession."
+      },
+      {
+        "question": "La garantie 5 ans CFMOTO, c'est vraiment fiable ?",
+        "answer": "Oui, c'est une vraie garantie constructeur de 5 ans : 2 ans pièces et main d'œuvre tous défauts, puis 3 ans supplémentaires sur le groupe motopropulseur (moteur, boîte, cadre), dans la limite de 60 000 km. Elle est gérée par GD France et honrée dans tout le réseau. Condition : entretiens effectués dans le réseau GD France avec tampon carnet."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la 700 CL-X ?",
+        "answer": "Tous les 5 000 km ou 6 mois. Le jeu aux soupapes à 40 000 km est un vrai point fort — la Yamaha XSR700 (même cylindrée) demande ce contrôle à 42 000 km, mais la Honda CB650R déjà à 24 000 km."
+      },
+      {
+        "question": "CFMOTO 700 CL-X ou Ducati Scrambler 800 : laquelle choisir ?",
+        "answer": "La Ducati coûte environ 2 700 € de plus et son entretien (révision Desmo) est sensiblement plus cher. La CFMOTO répond avec une garantie 5 ans (vs 2 ans Ducati), un régulateur de vitesse de série et un équipement comparable. La Ducati gagne sur le prestige, le son unique du L-twin et une valeur de revente supérieure. Pour le motard rationnel, la CFMOTO est difficile à battre."
+      },
+      {
+        "question": "Quelle est la consommation de la CFMOTO 700 CL-X ?",
+        "answer": "Environ 4,8 L/100 km selon le cycle WMTC. En usage mixte réel (ville + route), comptez 5-5,5 L/100 km. Avec le réservoir de 13 L, l'autonomie réelle est de 230-260 km — pensez à planifier vos arrêts carburant."
+      },
+      {
+        "question": "La CFMOTO 700 CL-X est-elle fiable sur le long terme ?",
+        "answer": "Le moteur 693 cm³ est une évolution du 649 cm³ utilisé sur la 650 NK depuis plusieurs années avec de bons retours. En 2026, des propriétaires dépassent 30 000-40 000 km sans intervention majeure. Le seul point de vigilance documenté est le régulateur de tension sur les premiers millésimes — couvert par la garantie 5 ans. La fiabilité longue durée (80 000+ km) manque encore de recul."
+      },
+      {
+        "question": "Quelle huile pour la CFMOTO 700 CL-X ?",
+        "answer": "CFMOTO recommande les huiles IPONE partenaires. Toute huile moto 10W-40 synthétique JASO MA2 convient. Volume : 2,8 L avec filtre. Intervalle : 5 000 km ou 6 mois. Ne jamais utiliser d'huile auto."
+      }
+    ],
+
+    "conclusion": "**Verdict acheteur — CFMOTO 700 CL-X 2021+**\n\nLa CFMOTO 700 CL-X est probablement la moto chinoise qui a le plus marqué les esprits depuis son lancement. Son design dessiné par Kiska, son moteur 70 ch bien né, et sa garantie 5 ans exceptionnelle en font un dossier solide face à des japonaises et italiennes bien établies. Pour 6 999 € (Heritage TC), vous obtenez un régulateur de vitesse, un TFT Bluetooth, deux modes de conduite et une garantie moteur 3 ans — tout ce que la Ducati Scrambler facture 2 700 € de plus.\n\nSes limites sont connues : le réservoir de 13 L impose des arrêts fréquents, les intervalles de révision de 5 000 km sont courts, et la valeur de revente reste inférieure aux marques établies.\n\nProfil idéal : passionné de néo-rétro qui veut sortir du lot sans se ruiner, sensible au design et à l'équipement, et qui apprécie la tranquillité d'esprit d'une garantie 5 ans. La version Sport s'adresse au café racer exigeant qui ne veut pas payer le prix Ducati ; l'Adventure au baroudeur du week-end.",
+
+    "cta_primary": {
+      "label": "Trouver un concessionnaire CFMOTO près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "CFMOTO", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les néo-rétro et scramblers",
+      "action": "navigate",
+      "params": { "category": "roadster", "subcategory": "neo-retro" }
+    }
+  }
+}

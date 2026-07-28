@@ -1,0 +1,306 @@
+{
+  "id": "cfmoto-300nk-2020-plus",
+  "slug": "cfmoto-300nk-2020-plus",
+  "model": "300 NK",
+  "brand": "CFMOTO",
+  "brand_order": 6,
+  "category": "roadster",
+  "subcategory": "roadster-125-400",
+  "status": "published",
+  "relations": {
+    "same_category": ["yamaha-mt03-2020-plus", "kawasaki-z400-2019-plus", "honda-cb300r-2019-plus"]
+  },
+  "technical_sheet": {
+    "years": "2020-présent (Euro 5 depuis 2022)",
+    "engine_type": "Monocylindre 4 temps, refroidissement liquide, DOHC 4 soupapes, injection Bosch",
+    "displacement_cc": 292,
+    "bore_stroke_mm": "72,0 × 71,6",
+    "compression_ratio": "11,5:1",
+    "max_power_kw": 21,
+    "max_power_hp": 28,
+    "max_power_rpm": 8500,
+    "max_torque_nm": 25,
+    "max_torque_rpm": 6500,
+    "euro_standard": "Euro 5 (depuis 2022)",
+    "transmission": "Boîte 6 vitesses",
+    "clutch": "Embrayage anti-dribble (slipper clutch) — CF-SC",
+    "throttle": "Accélérateur mécanique (câble)",
+    "electronics": "ABS 2 canaux de série",
+    "display": "Écran TFT couleur rétroéclairé (mode jour/nuit automatique)",
+    "frame": "Cadre acier allié haute résistance",
+    "front_suspension": "Fourche inversée Ø 37 mm",
+    "rear_suspension": "Monoamortisseur, bras oscillant acier",
+    "front_brake": "Disque simple 280 mm, étrier 2 pistons",
+    "rear_brake": "Disque 220 mm",
+    "abs": "ABS 2 canaux de série",
+    "front_tire": "110/70 R17",
+    "rear_tire": "140/60 R17",
+    "fuel_tank_liters": 12,
+    "seat_height_mm": 780,
+    "kerb_weight_kg": 151,
+    "wheelbase_mm": 1355,
+    "permitted_a2": true,
+    "fuel_type": "Sans plomb 95 RON minimum",
+    "price_neuf_france": "~4 490 € (2024)",
+    "garantie": "2 ans (réseau GD France)"
+  },
+  "seo": {
+    "meta_title": "CFMOTO 300 NK : avis, entretien, prix et guide d'achat complet (2020+)",
+    "meta_description": "Guide complet CFMOTO 300 NK 2020+ : fiche technique, entretien tous les 5 000 km, coût réel sur 3 ans, comparatif Yamaha MT-03 et avis propriétaires. Tout avant d'acheter.",
+    "keywords": [
+      "CFMOTO 300 NK avis",
+      "CFMOTO 300 NK entretien",
+      "CFMOTO 300 NK prix",
+      "CFMOTO 300 NK fiabilité",
+      "CFMOTO 300 NK vs Yamaha MT-03",
+      "CFMOTO 300 NK révision 5000 km",
+      "CFMOTO 300 NK permis A2",
+      "roadster 300 moins de 5000 euros",
+      "CFMOTO 300 NK coût entretien",
+      "CFMOTO 300 NK problèmes",
+      "meilleur roadster 300 2024",
+      "CFMOTO 300 NK occasion"
+    ]
+  },
+  "service_guide": {
+    "intro": "La CFMOTO 300 NK est la petite sœur de la gamme NK — le roadster d'entrée de gamme à moins de 4 500 €. Propulsée par un monocylindre 292 cm³ refroidi par eau développant 28 ch, elle cible avant tout les jeunes permis A2 et les usagers urbains qui cherchent un deux-roues stylé, léger (151 kg) et économique. Avec sa selle à 780 mm et son ABS de série, elle est l'une des entrées les plus accessibles dans le monde du roadster CFMOTO. Son équipement est honnête pour le prix : fourche inversée, TFT rétroéclairé, slipper clutch, full LED. La CFMOTO France précise que les motos de 300 à 650 cm³ ont leurs premières révisions à 1 000 km puis tous les 6 000 km — mais le manuel officiel de la 300 NK indique 5 000 km pour la vidange huile, ce qui prévaut. À ce prix, elle représente l'une des propositions les plus compétitives du segment 300 cm³ en France.",
+
+    "known_issues": [
+      {
+        "issue": "Puissance limitée à hauts régimes / en charge",
+        "description": "Avec 28 ch, la 300 NK est à l'aise en ville et sur route mais montre ses limites sur autoroute (vibrations, régimes élevés pour maintenir 130 km/h) et en charge (passager + bagages). Normal pour un monocylindre 292 cm³ — inhérent à la cylindrée.",
+        "severity": "informatif",
+        "remedy": "La 300 NK est taillée pour la ville et les routes de campagne. Pour l'autoroute régulière ou le voyage chargé, considérer la 450 NK ou la 650 NK."
+      },
+      {
+        "issue": "Réservoir 12 L — autonomie courte",
+        "description": "Le réservoir de 12 L offre une autonomie d'environ 200-240 km en usage mixte. En usage urbain intense, les arrêts carburant peuvent être fréquents.",
+        "severity": "faible",
+        "remedy": "Planifier les arrêts carburant tous les 180-200 km en usage mixte. La consommation (~4,5 L/100 km) est économique pour la cylindrée."
+      },
+      {
+        "issue": "Finition plastics — niveau entrée de gamme",
+        "description": "À moins de 4 500 €, les plastiques et assemblages sont au niveau attendu pour ce prix — correct mais sans la qualité des gammes supérieures CFMOTO. Des clips de carénage peuvent se fragiliser avec le temps.",
+        "severity": "mineur",
+        "remedy": "Entretien régulier du carénage (nettoyage, protection plastique). Aucune action mécanique requise."
+      }
+    ],
+
+    "consumables": [
+      {
+        "item": "Huile moteur",
+        "spec": "10W-40 synthétique JASO MA2 (CFMOTO recommande les produits IPONE)",
+        "quantity": "1,4 L (vidange avec filtre) — source manuel officiel CFMOTO 300 NK",
+        "interval_km": 5000,
+        "interval_note": "Ou 6 mois, selon la première échéance. Source : manuel officiel CFMOTO 300 NK, ManualsLib p.91"
+      },
+      {
+        "item": "Filtre à huile",
+        "spec": "Filtre CFMOTO 300 NK d'origine",
+        "interval_km": 5000
+      },
+      {
+        "item": "Filtre à air",
+        "spec": "Filtre papier CFMOTO d'origine",
+        "interval_km": 10000,
+        "interval_note": "Nettoyage à 5 000 km — source manuel p.91 : 'Clean' à 5 000 km, 'Replace' à 10 000 km"
+      },
+      {
+        "item": "Bougie d'allumage",
+        "spec": "NGK CPR8EA-9 ou équivalent — 1 bougie (monocylindre)",
+        "interval_km": 20000,
+        "interval_note": "Source manuel p.91 : remplacement à 20 000 km"
+      },
+      {
+        "item": "Jeu aux soupapes",
+        "spec": "Contrôle DOHC 4 soupapes",
+        "interval_km": 40000,
+        "interval_note": "Source manuel officiel CFMOTO 300 NK p.91 : 'Inspect' à 40 000 km"
+      },
+      {
+        "item": "Liquide de frein",
+        "spec": "DOT 4",
+        "interval_note": "Tous les 2 ans (24 mois — source manuel p.91)"
+      },
+      {
+        "item": "Liquide de refroidissement",
+        "spec": "Antigel longue durée OAT G12+ ou équivalent",
+        "interval_note": "Remplacement à 35 000 km ou 24 mois (source manuel p.91) — vérification annuelle du niveau conseillée"
+      },
+      {
+        "item": "Chaîne et kit chaîne",
+        "spec": "Chaîne 428 ou 520 O-ring (vérifier référence selon millésime)",
+        "interval_km": 12000,
+        "interval_note": "Lubrifier tous les 500-700 km. Monocylindre 292 cm³ : sollicitation plus légère que les multicylindres."
+      },
+      {
+        "item": "Pneu avant",
+        "spec": "110/70 R17",
+        "interval_km": 12000
+      },
+      {
+        "item": "Pneu arrière",
+        "spec": "140/60 R17",
+        "interval_km": 8000,
+        "interval_note": "Usage urbain intensif réduit la durée de vie"
+      },
+      {
+        "item": "Plaquettes de frein avant",
+        "spec": "Plaquettes CFMOTO d'origine ou compatibles disque 280 mm",
+        "interval_note": "Contrôle tous les 5 000 km"
+      }
+    ],
+
+    "longevity_tips": [
+      "Respecter les 5 000 km ou 6 mois entre vidanges : sur un monocylindre 292 cm³, l'huile se dégrade plus vite qu'un twin en usage urbain intense.",
+      "Lubrifier la chaîne tous les 500-700 km — surtout si vous roulez beaucoup en ville (arrêts-redémarrages fréquents).",
+      "Ne pas dépasser régulièrement le régime maxi en usage urbain pour 'aller vite' : ce monocylindre apprécie un régime souple entre 4 000 et 7 000 tr/min.",
+      "Vérifier le niveau d'huile tous les 1 000 km — les monocylindres à fort régime peuvent consommer légèrement plus."
+    ],
+
+    "comparatif": {
+      "intro": "La 300 NK se positionne sur le segment des roadsters 300-400 cm³ A2. Comparatif face à ses principales rivales.",
+      "competitors": [
+        {
+          "model": "Yamaha MT-03 (2020+)",
+          "prix_france": "~5 499 €",
+          "avantages_vs_300nk": "Twin 321 cm³ plus smooth et plus puissant (42 ch), fiabilité Yamaha légendaire, communauté et réseau immenses, valeur de revente supérieure",
+          "inconvenients_vs_300nk": "1 000 € plus chère, légèrement plus lourde (168 kg), pas de TFT de série sur certaines versions",
+          "verdict": "La référence absolue du segment — la 300 NK économise 1 000 € à l'achat mais la MT-03 offre nettement plus sur le long terme"
+        },
+        {
+          "model": "Honda CB300R (2018+)",
+          "prix_france": "~5 199 €",
+          "avantages_vs_300nk": "Fiabilité Honda, monocylindre 286 cm³ très doux, légèreté (143 kg), style premium",
+          "inconvenients_vs_300nk": "700 € plus chère, même puissance (~31 ch), design plus sobre",
+          "verdict": "Même segment, même puissance — la Honda gagne sur la fiabilité et la légèreté, la CFMOTO sur le prix"
+        },
+        {
+          "model": "KTM 390 Duke (2017+)",
+          "prix_france": "~6 299 €",
+          "avantages_vs_300nk": "Monocylindre 373 cm³ bien plus puissant (44 ch), chassis KTM de référence, caractère sportif marqué",
+          "inconvenients_vs_300nk": "1 800 € plus chère, entretien KTM plus coûteux, moins accessible aux débutants",
+          "verdict": "Un autre niveau de performance et de prix — la 300 NK est la solution économique, la KTM la solution performante"
+        }
+      ]
+    },
+
+    "service_schedule": [
+      {
+        "km": 1000,
+        "label": "Rodage — 1re révision",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Contrôle tension et lubrification chaîne",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle serrage général"
+        ]
+      },
+      {
+        "km": 5000,
+        "label": "Révision standard (6 mois)",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Nettoyage filtre à air",
+          "Contrôle et réglage chaîne + lubrification",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle état pneus, plaquettes",
+          "Contrôle ABS",
+          "Vérification générale sécurité"
+        ]
+      },
+      {
+        "km": 10000,
+        "label": "Révision intermédiaire (1 an)",
+        "operations": [
+          "Toutes les opérations de 5 000 km",
+          "Remplacement filtre à air",
+          "Contrôle bougie",
+          "Contrôle roulements de direction"
+        ]
+      },
+      {
+        "km": 20000,
+        "label": "Grande révision (2 ans)",
+        "operations": [
+          "Toutes les opérations de 10 000 km",
+          "Remplacement bougie d'allumage",
+          "Remplacement liquide de frein DOT 4",
+          "Remplacement kit chaîne si usure constatée"
+        ]
+      },
+      {
+        "km": 35000,
+        "label": "Remplacement liquide de refroidissement",
+        "operations": [
+          "Remplacement liquide de refroidissement (source manuel p.91)"
+        ]
+      },
+      {
+        "km": 40000,
+        "label": "Révision majeure — soupapes",
+        "operations": [
+          "Toutes les opérations de 20 000 km",
+          "Contrôle et réglage jeu aux soupapes (source manuel officiel)"
+        ]
+      }
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 5 000 km ou 6 mois (source manuel officiel CFMOTO 300 NK). Soupapes à 40 000 km.",
+      "total_60000km": "600 – 1 000 €",
+      "cost_per_km": "0,010 – 0,017 €/km",
+      "note": "La 300 NK est la CFMOTO la moins coûteuse à entretenir : monocylindre simple, volumes d'huile réduits (1,4 L), bougie unique, pneus peu coûteux. Comptez 100-180 € pour une révision standard (5 000 km). L'entretien peut facilement être réalisé en atelier indépendant hors garantie."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — CFMOTO 300 NK",
+      "hypothese": "6 000 km/an, usage urbain/banlieue, concessionnaire région",
+      "poste_achat": "~4 490 €",
+      "poste_assurance_annuelle": "300 – 600 € (jeune conducteur A2 : prévoir 600-900 €)",
+      "poste_entretien_3ans": "500 – 850 € (4-5 révisions sur 3 ans)",
+      "poste_pneus_3ans": "200 – 350 € (usage urbain)",
+      "poste_equipement_pilote": "400 – 1 200 €",
+      "total_3ans_estime": "6 390 – 7 990 €",
+      "valeur_revente_estimee": "2 200 – 3 000 € à 3 ans / 18 000 km",
+      "cout_reel_3ans": "3 390 – 4 990 € soit 1 130 – 1 663 €/an",
+      "note": "La 300 NK est l'une des motos les moins chères à posséder sur 3 ans en France. Son principal risque est la valeur de revente, encore peu documentée sur ce modèle récent."
+    },
+
+    "faq": [
+      {
+        "question": "La CFMOTO 300 NK est-elle un bon choix pour débuter en moto ?",
+        "answer": "Oui, c'est l'une de ses forces. Avec 151 kg, une selle à 780 mm et 28 ch bien dosés, elle est très accessible pour un débutant. Son ABS de série, son slipper clutch et sa légèreté facilitent l'apprentissage. Le seul bémol : la Yamaha MT-03 (42 ch, twin) offre plus de marge de progression pour 1 000 € de plus."
+      },
+      {
+        "question": "CFMOTO 300 NK ou Yamaha MT-03 : laquelle choisir ?",
+        "answer": "La MT-03 est supérieure sur presque tous les critères techniques (twin 42 ch, fiabilité légendaire, valeur de revente, communauté) mais coûte 1 000 € de plus. La 300 NK convient parfaitement pour un usage strictement urbain et des budgets serrés. Pour quelqu'un qui envisage de garder sa moto plusieurs années, l'investissement dans la MT-03 se justifie."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la CFMOTO 300 NK ?",
+        "answer": "Selon le manuel officiel CFMOTO (source ManualsLib p.91) : vidange huile tous les 5 000 km ou 6 mois, filtre à air nettoyage à 5 000 km et remplacement à 10 000 km, bougie à 20 000 km, soupapes à 40 000 km, liquide de refroidissement à 35 000 km ou 24 mois."
+      },
+      {
+        "question": "Quelle huile pour la CFMOTO 300 NK ?",
+        "answer": "10W-40 synthétique JASO MA2 (CFMOTO recommande IPONE partenaires). Volume : 1,4 L avec filtre (selon manuel). Intervalles : 5 000 km ou 6 mois. Ne jamais utiliser d'huile automobile."
+      },
+      {
+        "question": "La CFMOTO 300 NK peut-elle faire de l'autoroute ?",
+        "answer": "Techniquement oui, elle est homologuée pour rouler à 130 km/h. En pratique, les 28 ch du monocylindre 292 cm³ donnent peu de marge et le moteur tourne fort à ces vitesses. Sur longues distances autoroute, la 450 NK ou la 650 NK seront plus confortables. La 300 NK brille en ville et sur routes départementales."
+      }
+    ],
+
+    "conclusion": "**Verdict acheteur — CFMOTO 300 NK 2020+**\n\nLa CFMOTO 300 NK répond à une question simple : comment avoir un roadster stylé, bien équipé (fourche inversée, TFT, slipper clutch, ABS) pour moins de 4 500 € ? Elle y répond honnêtement. Légère (151 kg), basse (780 mm), économique à l'achat et à l'entretien, elle est le point d'entrée idéal dans l'univers moto pour les budgets serrés.\n\nSes limites sont claires : 28 ch suffisants pour la ville mais justes sur autoroute, réservoir 12 L pour une autonomie courte, et une valeur de revente encore peu documentée. Pour 1 000 € de plus, la Yamaha MT-03 offre un twin plus smooth et une valeur de revente bien supérieure — c'est l'alternative logique pour ceux qui peuvent se l'offrir.\n\nProfil idéal : primo-accédant en moto, budgetvraiment serré, usage urbain quotidien ou banlieue, gabarit moyen (selle 780 mm).",
+
+    "cta_primary": {
+      "label": "Trouver un concessionnaire CFMOTO près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "CFMOTO", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les roadsters A2 disponibles",
+      "action": "navigate",
+      "params": { "category": "roadster", "permitted_a2": true }
+    }
+  }
+}
