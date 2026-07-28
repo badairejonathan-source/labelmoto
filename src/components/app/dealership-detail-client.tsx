@@ -60,7 +60,10 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
     }).catch(() => {});
   }, [firestore, pro]);
   const getProCollection = () => pro.appSection === 'association' ? 'associations' : (pro.appSection === 'relais' ? 'relais' : (pro.appSection === 'creator' ? 'creators' : 'concessions'));
+  const ADMIN_EMAILS = ['badjoe950@hotmail.com', 'badaire.jonathan@gmail.com'];
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
   const trackStat = (field: string) => {
+    if (isAdmin) return; // Ne pas tracker les clics admin
     if (!pro.id) return;
     const colName = getProCollection();
     fetch('/api/track-stat', {
@@ -241,7 +244,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                   {(pro as any).instagramUrl && (
                     <a href={(pro as any).instagramUrl} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity"
-                      onClick={() => trackEvent('clic_instagram', { pro: pro.title, source: 'fiche' })}
+                      onClick={() => { trackEvent('clic_instagram', { pro: pro.title, source: 'fiche' }); trackStat('stats_instagram'); }}
                     >
                       <Instagram className="h-4 w-4" /> Instagram
                     </a>
@@ -249,7 +252,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
                   {(pro as any).facebookUrl && (
                     <a href={(pro as any).facebookUrl} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity"
-                      onClick={() => trackEvent('clic_facebook', { pro: pro.title, source: 'fiche' })}
+                      onClick={() => { trackEvent('clic_facebook', { pro: pro.title, source: 'fiche' }); trackStat('stats_facebook'); }}
                     >
                       <Globe className="h-4 w-4" /> Facebook
                     </a>
