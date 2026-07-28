@@ -182,79 +182,49 @@ export default function HomepageDeferred() {
             </section>
             
             <section aria-labelledby="entretien-title">
-                <div className="bg-muted/50 rounded-[2.5rem] p-6 md:p-10 border border-border/50 shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 id="entretien-title" className="text-2xl font-black uppercase tracking-tight">Entretien & Budget moto</h2>
-                            <p className="text-muted-foreground text-sm font-medium mt-1">Anticipez vos révisions, maitrisez vos couts</p>
+                <div className="relative rounded-[2.5rem] overflow-hidden shadow-xl min-h-[320px]">
+                    {/* Image de fond */}
+                    <Image src="/images/motard-entretien-page.webp" alt="Entretien moto" fill className="object-cover object-center" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
+                    {/* Overlay sombre */}
+                    <div className="absolute inset-0 bg-black/65" />
+                    {/* Contenu par-dessus */}
+                    <div className="relative z-10 p-6 md:p-10">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 id="entretien-title" className="text-2xl font-black uppercase tracking-tight text-white">Entretien & Budget moto</h2>
+                                <p className="text-white/70 text-sm font-medium mt-1">Anticipez vos révisions, maitrisez vos couts</p>
+                            </div>
+                            <Link href="/fiches" className="text-[10px] font-black uppercase tracking-widest text-brand hover:opacity-80 whitespace-nowrap">Voir les 43 fiches →</Link>
                         </div>
-                        <Link href="/entretien" className="text-[10px] font-black uppercase tracking-widest text-brand hover:underline shrink-0">
-                            Voir les 43 fiches →
-                        </Link>
-                    </div>
-                    <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-2 px-2 mb-6">
-                        {[
-                            { brand: "Honda", model: "XL750 Transalp", slug: "honda-xl750-transalp-2023-plus", desc: "Vidange, chaine, freins — tout le programme" },
-                            { brand: "Yamaha", model: "MT-07", slug: "yamaha-mt-07-2021-plus", desc: "Révisions à 10 000 km, couts réels, points clés" },
-                            { brand: "CFMOTO", model: "450MT", slug: "cfmoto-450mt-2024-plus", desc: "Entretien du bestseller chinois en France" },
-                        ].map(fiche => (
-                            <Link key={fiche.slug} href={"/fiches/" + fiche.slug} className="group flex-shrink-0 w-[200px] sm:flex-1 sm:w-auto flex flex-col bg-white rounded-2xl border-2 border-border/50 hover:border-brand shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden snap-start">
-                                <div className="relative h-[100px] overflow-hidden">
-                                    <Image src="/images/motard-entretien-page.webp" alt="Entretien moto" fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="200px" loading="lazy" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                                    <span className="absolute bottom-2 left-3 text-[10px] font-black uppercase tracking-widest text-brand">{fiche.brand}</span>
-                                </div>
-                                <div className="p-3 flex flex-col gap-1.5 flex-grow">
-                                    <span className="font-black text-sm uppercase tracking-tight group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
-                                    <span className="text-xs text-muted-foreground font-medium leading-snug flex-grow">{fiche.desc}</span>
+                        {/* 3 fiches */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            {[
+                                { brand: "Honda", model: "XL750 Transalp", slug: "honda-xl750-transalp-2023-plus", desc: "Vidange, chaine, freins — tout le programme" },
+                                { brand: "Yamaha", model: "MT-07", slug: "yamaha-mt-07-2021-plus", desc: "Révisions à 10 000 km, couts réels, points clés" },
+                                { brand: "CFMOTO", model: "450MT", slug: "cfmoto-450mt-2024-plus", desc: "Entretien du bestseller chinois en France" },
+                            ].map(fiche => (
+                                <Link key={fiche.slug} href={"/fiches/" + fiche.slug} className="group flex flex-col bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 hover:border-brand hover:bg-white/20 transition-all duration-300 p-4 gap-2">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand">{fiche.brand}</span>
+                                    <span className="font-black text-sm uppercase tracking-tight text-white group-hover:text-brand transition-colors leading-tight">{fiche.model}</span>
+                                    <span className="text-xs text-white/60 font-medium leading-snug flex-grow">{fiche.desc}</span>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-brand mt-1 flex items-center gap-1">
                                         Voir la fiche <ArrowRight className="h-3 w-3" aria-hidden="true" />
                                     </span>
-                                </div>
+                                </Link>
+                            ))}
+                        </div>
+                        {/* CTA */}
+                        <div className="text-center">
+                            <p className="text-white/60 text-sm font-medium mb-4">Anticipez vos dépenses en quelques clics — budget moyen et points de controle par modele</p>
+                            <Link href="/fiches" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-2xl tracking-widest transition-all hover:scale-105 active:scale-95">
+                                Calculer mon budget entretien
                             </Link>
-                        ))}
-                    </div>
-                    <div className="border-t border-border/50 pt-6 text-center">
-                        <p className="text-sm text-muted-foreground font-medium mb-4">Anticipez vos dépenses en quelques clics — budget moyen et points de controle par modele</p>
-                        <Link href="/entretien" className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-xl tracking-widest transition-all hover:scale-105 active:scale-95">
-                            Calculer mon budget entretien
-                        </Link>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section className="pb-12" aria-labelledby="pro-title">
-              <div className="bg-white rounded-[2.5rem] overflow-hidden border border-border/50 shadow-2xl relative group min-h-[350px]">
-                <div className="flex flex-col lg:flex-row h-full">
-                  <div className="hidden lg:flex w-20 bg-muted/30 border-r border-border/50 items-center justify-center py-8 shrink-0"><span className="text-2xl font-black text-brand/10 tracking-[0.4em] uppercase whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>Espace Pro</span></div>
-                  <div className="flex-grow flex flex-col lg:flex-row items-center p-8 md:p-12 gap-8 lg:gap-16">
-                    <div className="flex-1 text-center lg:text-left">
-                        <h2 id="pro-title" className="text-3xl md:text-5xl font-black text-foreground leading-[0.9] mb-6 uppercase tracking-tighter">Pros & Associations, rejoignez le réseau Label Moto.</h2>
-                        <p className="text-muted-foreground text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 font-bold">Créez votre fiche, gagnez en visibilité auprès des motards de votre région.</p>
-                        <div className="flex flex-col gap-4 items-center lg:items-start">
-                            <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-2xl transition-all hover:shadow-brand/25 hover:-translate-y-1 tracking-widest w-full sm:w-auto">
-                                <Link href={proRegisterLink}>🔘 Créer la fiche de mon établissement</Link>
-                            </Button>
-                            <Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto">
-                                <Link href="/pro/revendiquer">🔘 Modifier une fiche existante</Link>
-                            </Button>
-                        </div>
-                    </div>
-                    <div className="flex-1 relative w-full max-w-md lg:max-w-none">
-                        <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white -rotate-2 group-hover:rotate-0 transition-all duration-1000 ease-out transform group-hover:scale-[1.05]">
-                            <Image src="/images/apercufiche.webp" alt="Aperçu de l'interface de gestion professionnelle" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" loading="lazy" />
-                        </div>
-                        <div className="absolute -bottom-4 right-4 bg-brand text-white px-5 py-2 rounded-2xl shadow-2xl font-black text-[11px] md:text-xs rotate-6 flex items-center gap-2 border-2 border-white">
-                            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />100% GRATUIT
-                        </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            
-            <section aria-labelledby="manifesto-title">
+                        <section aria-labelledby="manifesto-title">
                 <div className="relative rounded-[2.5rem] overflow-hidden bg-black shadow-2xl min-h-[300px] flex items-center">
                     <Image src="/images/motardcotesudlandingpage1.webp" alt="" fill className="object-cover z-0 opacity-30" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
                     <div className="relative z-10 p-10 md:p-16 w-full">
