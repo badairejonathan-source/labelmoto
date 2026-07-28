@@ -141,20 +141,13 @@ export default function HomepageDeferred() {
             </section>
 
             <section aria-labelledby="guides-title">
-                <div className="bg-muted/10 border border-border/50 p-6 md:p-10 rounded-[2.5rem] shadow-sm">
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-brand/10 p-2 rounded-lg">
-                                <Zap className="h-6 w-6 text-brand" aria-hidden="true" />
-                            </div>
-                            <div>
-                                <h2 id="guides-title" className="text-2xl font-black text-foreground uppercase tracking-tighter leading-none">Guides & Actu moto</h2>
-                                <p className="text-sm text-muted-foreground font-medium mt-1">Conseils, comparatifs et dossiers par notre equipe</p>
-                            </div>
+                <div className="bg-brand/10 border border-brand/20 rounded-[2.5rem] p-6 md:p-10 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 id="guides-title" className="text-2xl font-black text-foreground uppercase tracking-tighter leading-none">Guides & Actu moto</h2>
+                            <p className="text-muted-foreground text-sm font-medium mt-1">Conseils, comparatifs et dossiers par notre équipe</p>
                         </div>
-                        <Link href="/info" className="text-[10px] font-black uppercase tracking-widest text-brand hover:underline shrink-0">
-                            Tous les guides →
-                        </Link>
+                        <Link href="/info" className="text-[10px] font-black uppercase tracking-widest text-brand hover:opacity-80 whitespace-nowrap">Tous les guides →</Link>
                     </div>
                     <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-2 px-2">
                         {[
@@ -162,7 +155,7 @@ export default function HomepageDeferred() {
                             { img: "/images/motard-budget-reel.webp", theme: "Budget & Achat", desc: "Couts reels, achat occasion, financement — evitez les pieges", href: "/info/achat-moto-occasion-guide-complet-pour-eviter-les-pieges", tag: "Budget" },
                             { img: "/images/casque-meilleur-casque-2026.webp", theme: "Equipement", desc: "Casques, blousons, comparatifs — les meilleurs choix 2026", href: "/info/meilleurs-casques-moto-2026", tag: "Equipement" },
                         ].map(g => (
-                            <Link key={g.theme} href={g.href} className="group flex-shrink-0 w-[240px] sm:flex-1 sm:w-auto flex flex-col bg-white rounded-2xl border border-border/50 hover:border-brand shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden snap-start">
+                            <Link key={g.theme} href={g.href} className="group flex-shrink-0 w-[240px] sm:flex-1 sm:w-auto flex flex-col bg-white rounded-2xl border border-brand/20 hover:border-brand shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden snap-start">
                                 <div className="relative h-[130px] overflow-hidden">
                                     <Image src={g.img} alt={g.theme} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="240px" loading="lazy" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
@@ -180,8 +173,8 @@ export default function HomepageDeferred() {
                     </div>
                 </div>
             </section>
-            
-            <section aria-labelledby="entretien-title">
+
+                        <section aria-labelledby="entretien-title">
                 <div className="relative rounded-[2.5rem] overflow-hidden shadow-xl min-h-[320px]">
                     {/* Image de fond */}
                     <Image src="/images/motard-entretien-page.webp" alt="Entretien moto" fill className="object-cover object-center" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
@@ -194,7 +187,7 @@ export default function HomepageDeferred() {
                                 <h2 id="entretien-title" className="text-2xl font-black uppercase tracking-tight text-white">Entretien & Budget moto</h2>
                                 <p className="text-white/70 text-sm font-medium mt-1">Anticipez vos révisions, maitrisez vos couts</p>
                             </div>
-                            <Link href="/fiches" className="text-[10px] font-black uppercase tracking-widest text-brand hover:opacity-80 whitespace-nowrap">Voir les 43 fiches →</Link>
+                            <Link href="/entretien#fiches-par-modele" className="text-[10px] font-black uppercase tracking-widest text-brand hover:opacity-80 whitespace-nowrap">Voir les 43 fiches →</Link>
                         </div>
                         {/* 3 fiches */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -216,7 +209,7 @@ export default function HomepageDeferred() {
                         {/* CTA */}
                         <div className="text-center">
                             <p className="text-white/60 text-sm font-medium mb-4">Anticipez vos dépenses en quelques clics — budget moyen et points de controle par modele</p>
-                            <Link href="/fiches" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-2xl tracking-widest transition-all hover:scale-105 active:scale-95">
+                            <Link href="/entretien" className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-2xl tracking-widest transition-all hover:scale-105 active:scale-95">
                                 Calculer mon budget entretien
                             </Link>
                         </div>
