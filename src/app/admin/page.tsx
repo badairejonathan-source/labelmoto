@@ -417,7 +417,7 @@ export default function AdminPage() {
 
         <Tabs defaultValue="submissions" className="w-full">
           <div className="mb-8">
-            <TabsList className="flex h-auto p-2 bg-muted/60 rounded-2xl shadow-inner gap-2 overflow-x-auto scrollbar-hide flex-nowrap w-max min-w-full">
+            <TabsList className="flex h-auto p-2 bg-muted/60 rounded-2xl shadow-inner gap-2 overflow-x-auto scrollbar-hide flex-nowrap">
               <TabsTrigger value="submissions" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📋</span>Demandes</TabsTrigger>
               <TabsTrigger value="history" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">🗂️</span>Archives</TabsTrigger>
               <TabsTrigger value="listings" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📁</span>Fiches</TabsTrigger>
