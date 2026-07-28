@@ -416,19 +416,21 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <div className="mb-8">
-            <TabsList className="flex h-auto p-2 bg-muted/60 rounded-2xl shadow-inner gap-2 overflow-x-auto scrollbar-hide flex-nowrap">
-              <TabsTrigger value="submissions" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📋</span>Demandes</TabsTrigger>
-              <TabsTrigger value="history" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">🗂️</span>Archives</TabsTrigger>
-              <TabsTrigger value="listings" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📁</span>Fiches</TabsTrigger>
-              <TabsTrigger value="add" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">➕</span>Ajouter</TabsTrigger>
-              <TabsTrigger value="modifs" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px] relative"><span className="text-xl">✏️</span>Modifs{pendingModifsCount > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[8px] font-black flex items-center justify-center">{pendingModifsCount}</span>}</TabsTrigger>
-              <TabsTrigger value="comments" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">💬</span>Avis</TabsTrigger>
-              <TabsTrigger value="prospection" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📊</span>Prospect</TabsTrigger>
-              <TabsTrigger value="stats" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">📈</span>Stats</TabsTrigger>
-              <TabsTrigger value="images" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">🖼️</span>Images</TabsTrigger>
-              <TabsTrigger value="users" className="shrink-0 rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-3 flex flex-col items-center gap-1.5 min-w-[72px] min-h-[64px]"><span className="text-xl">👥</span>Comptes</TabsTrigger>
-            </TabsList>
+          <div className="mb-8 space-y-2">
+            <div className="grid grid-cols-5 gap-2 p-2 bg-muted/60 rounded-2xl shadow-inner">
+              <TabsTrigger value="submissions" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📋</span>Demandes</TabsTrigger>
+              <TabsTrigger value="history" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">🗂️</span>Archives</TabsTrigger>
+              <TabsTrigger value="listings" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📁</span>Fiches</TabsTrigger>
+              <TabsTrigger value="add" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">➕</span>Ajouter</TabsTrigger>
+              <TabsTrigger value="modifs" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px] relative"><span className="text-lg">✏️</span>Modifs{pendingModifsCount > 0 && <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[8px] font-black flex items-center justify-center">{pendingModifsCount}</span>}</TabsTrigger>
+            </div>
+            <div className="grid grid-cols-5 gap-2 p-2 bg-muted/60 rounded-2xl shadow-inner">
+              <TabsTrigger value="comments" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">💬</span>Avis</TabsTrigger>
+              <TabsTrigger value="prospection" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📊</span>Prospect</TabsTrigger>
+              <TabsTrigger value="stats" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📈</span>Stats</TabsTrigger>
+              <TabsTrigger value="images" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">🖼️</span>Images</TabsTrigger>
+              <TabsTrigger value="users" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">👥</span>Comptes</TabsTrigger>
+            </div>
           </div>
           <TabsContent value="submissions">
             {isLoadingSubmissions ? (
