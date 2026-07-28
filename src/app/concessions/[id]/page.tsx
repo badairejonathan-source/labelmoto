@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getAdminFirestore } from '@/lib/firebase-admin';
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 import Script from 'next/script';
 import DealershipDetailClient from '@/components/app/dealership-detail-client';
 import type { Dealership } from '@/lib/types';
@@ -104,7 +104,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   }
 
   if (type === 'id' && pro.slug && pro.slug !== pro.id) {
-    redirect(`/concessions/${pro.slug}`);
+    permanentRedirect(`/concessions/${pro.slug}`);
   }
 
   // Extraction ville/CP depuis l'adresse

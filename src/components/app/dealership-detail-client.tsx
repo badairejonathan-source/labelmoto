@@ -214,7 +214,7 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
               <div className="grid grid-cols-2 gap-4">
                 {pro.phoneNumber && (
                   <Button asChild className="h-16 rounded-2xl bg-white border-2 border-muted hover:border-brand shadow-lg text-foreground transition-all">
-                    <a href={`tel:${pro.phoneNumber}`} className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => { trackEvent('clic_telephone', { pro: pro.title, source: 'fiche' }); trackStat('stats_tel'); }}>
+                    <a href={`tel:${pro.phoneNumber}`} className="flex items-center gap-2 sm:gap-4 px-2 sm:px-6" onClick={() => { trackBeacon('clic_telephone', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_telephone', { pro: pro.title, source: 'fiche' }); trackStat('stats_tel'); }}>
                       <Phone className="h-5 w-5 sm:h-6 sm:w-6 text-brand shrink-0" />
                       <div className="text-left min-w-0">
                         <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-50">Appeler</p>
