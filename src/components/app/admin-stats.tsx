@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useFirebase } from '@/firebase/client';
 import { collection, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
-import { Phone, Globe, TrendingUp, ExternalLink, RefreshCw } from 'lucide-react';
+import { Phone, Globe, TrendingUp, ExternalLink, RefreshCw, MapPin, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +14,9 @@ interface FicheStat {
   website?: string;
   stats_tel: number;
   stats_web: number;
+  stats_instagram: number;
+  stats_facebook: number;
+  stats_itineraire: number;
   total: number;
 }
 
@@ -21,7 +24,7 @@ export default function AdminStats() {
   const { firestore } = useFirebase();
   const [stats, setStats] = useState<FicheStat[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<'total' | 'tel' | 'web'>('total');
+  const [sortBy, setSortBy] = useState<'total' | 'tel' | 'web' | 'instagram' | 'facebook' | 'itineraire'>('total');
 
   const load = async () => {
     if (!firestore) return;
@@ -33,6 +36,15 @@ export default function AdminStats() {
       );
       const snapWeb = await getDocs(
         query(collection(firestore, 'concessions'), where('stats_web', '>', 0), orderBy('stats_web', 'desc'), limit(100))
+      );
+      const snapInsta = await getDocs(
+        query(collection(firestore, 'concessions'), where('stats_instagram', '>', 0), orderBy('stats_instagram', 'desc'), limit(100))
+      );
+      const snapFb = await getDocs(
+        query(collection(firestore, 'concessions'), where('stats_facebook', '>', 0), orderBy('stats_facebook', 'desc'), limit(100))
+      );
+      const snapIti = await getDocs(
+        query(collection(firestore, 'concessions'), where('stats_itineraire', '>', 0), orderBy('stats_itineraire', 'desc'), limit(100))
       );
 
       // Fusionner les deux résultats
@@ -48,12 +60,18 @@ export default function AdminStats() {
             website: data.website,
             stats_tel: data.stats_tel || 0,
             stats_web: data.stats_web || 0,
-            total: (data.stats_tel || 0) + (data.stats_web || 0),
+            stats_instagram: data.stats_instagram || 0,
+            stats_facebook: data.stats_facebook || 0,
+            stats_itineraire: data.stats_itineraire || 0,
+            total: (data.stats_tel || 0) + (data.stats_web || 0) + (data.stats_instagram || 0) + (data.stats_facebook || 0) + (data.stats_itineraire || 0),
           });
         });
       };
       processSnap(snapTel);
       processSnap(snapWeb);
+      processSnap(snapInsta);
+      processSnap(snapFb);
+      processSnap(snapIti);
 
       const sorted = Array.from(map.values()).sort((a, b) => b.total - a.total);
       setStats(sorted);
@@ -68,11 +86,17 @@ export default function AdminStats() {
   const sorted = [...stats].sort((a, b) =>
     sortBy === 'tel' ? b.stats_tel - a.stats_tel :
     sortBy === 'web' ? b.stats_web - a.stats_web :
+    sortBy === 'instagram' ? b.stats_instagram - a.stats_instagram :
+    sortBy === 'facebook' ? b.stats_facebook - a.stats_facebook :
+    sortBy === 'itineraire' ? b.stats_itineraire - a.stats_itineraire :
     b.total - a.total
   );
 
   const totalTel = stats.reduce((s, f) => s + f.stats_tel, 0);
   const totalWeb = stats.reduce((s, f) => s + f.stats_web, 0);
+  const totalInsta = stats.reduce((s, f) => s + f.stats_instagram, 0);
+  const totalFb = stats.reduce((s, f) => s + f.stats_facebook, 0);
+  const totalIti = stats.reduce((s, f) => s + f.stats_itineraire, 0);
 
   if (loading) return (
     <div className="flex justify-center py-20">
@@ -107,8 +131,8 @@ export default function AdminStats() {
       ) : (
         <>
           {/* Tri */}
-          <div className="flex gap-2">
-            {[['total','Total'], ['tel','📞 Téléphone'], ['web','🌐 Site web']].map(([k, label]) => (
+          <div className="flex flex-wrap gap-2">
+            {[['total','Total'], ['tel','📞 Tél'], ['web','🌐 Web'], ['instagram','📸 Insta'], ['facebook','👤 FB'], ['itineraire','📍 Iti']].map(([k, label]) => (
               <button key={k} onClick={() => setSortBy(k as any)}
                 className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
                   sortBy === k ? 'bg-brand text-white border-brand' : 'bg-white text-muted-foreground border-border hover:border-brand/40'
@@ -148,6 +172,24 @@ export default function AdminStats() {
                     <Globe className="h-3 w-3 text-blue-600" />
                     <span className="text-[11px] font-black text-blue-600">{f.stats_web}</span>
                   </div>
+                  {f.stats_instagram > 0 && (
+                    <div className="flex items-center gap-1 bg-pink-50 px-2 py-1 rounded-full">
+                      <Instagram className="h-3 w-3 text-pink-500" />
+                      <span className="text-[11px] font-black text-pink-500">{f.stats_instagram}</span>
+                    </div>
+                  )}
+                  {f.stats_facebook > 0 && (
+                    <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                      <Facebook className="h-3 w-3 text-blue-800" />
+                      <span className="text-[11px] font-black text-blue-800">{f.stats_facebook}</span>
+                    </div>
+                  )}
+                  {f.stats_itineraire > 0 && (
+                    <div className="flex items-center gap-1 bg-orange-50 px-2 py-1 rounded-full">
+                      <MapPin className="h-3 w-3 text-orange-500" />
+                      <span className="text-[11px] font-black text-orange-500">{f.stats_itineraire}</span>
+                    </div>
+                  )}
                   <Link href={`/concessions/${f.id}`} target="_blank"
                     className="text-muted-foreground hover:text-brand transition-colors">
                     <ExternalLink className="h-3.5 w-3.5" />
