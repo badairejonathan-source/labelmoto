@@ -9,7 +9,6 @@ export {
   useFirebase, 
   useAuth, 
   useFirestore, 
-  useFirebaseApp, 
   useMemoFirebase, 
   useUser 
 } from './provider';
