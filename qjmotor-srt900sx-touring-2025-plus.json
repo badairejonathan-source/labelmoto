@@ -1,0 +1,185 @@
+{
+  "id": "qjmotor-srt900sx-touring-2025-plus",
+  "slug": "qjmotor-srt900sx-touring-2025-plus",
+  "model": "SRT 900 SX Touring",
+  "brand": "QJ Motor",
+  "brand_order": 10,
+  "category": "trail",
+  "subcategory": "trail-moyen",
+  "status": "published",
+  "featured": true,
+  "display_title": "QJ Motor SRT 900 SX Touring",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2025+",
+  "model_order": 2,
+  "search_tags": ["qj motor", "qjmotor", "srt900sx", "srt 900 sx touring", "trail 900", "adventure touring", "entretien", "revision", "A2"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2025-présent",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC, injection EFI",
+    "displacement_cc": 904,
+    "max_power_kw": 70,
+    "max_power_hp": 95,
+    "max_power_rpm": 8500,
+    "max_torque_nm": 90,
+    "max_torque_rpm": 6500,
+    "euro_standard": "Euro 5+",
+    "transmission": "Boîte 6 vitesses, quickshifter bidirectionnel de série",
+    "power": "95 ch (70 kW) à 8 500 tr/min",
+    "torque": "90 Nm à 6 500 tr/min",
+    "fuel_system": "Injection EFI, accélérateur électronique (ride-by-wire)",
+    "license_bridging": "A2 disponible (35 kW)",
+    "weight_tpf_kg": 263,
+    "seat_height_mm": 835,
+    "tank_l": 19,
+    "frame": "Cadre acier",
+    "front_suspension": "Fourche inversée Marzocchi entièrement réglable",
+    "rear_suspension": "Monoamortisseur réglable, amortisseur de direction de série",
+    "front_brake": "Double disque, étriers Brembo radiaux 4 pistons, ABS Bosch",
+    "rear_brake": "Disque 260 mm, ABS Bosch",
+    "front_tire": "110/80 R19 (jante aluminium rayonné tubeless) Metzeler",
+    "rear_tire": "150/70 R17 Metzeler",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "~9 999 € (estimation — prix non officiellement confirmé en France)",
+    "serie_equipment": "Bagagerie complète de série (top case + 2 valises), radar angle mort de série, quickshifter bidirectionnel, poignées chauffantes, selle chauffante, navigation TFT 7 pouces, TPMS",
+    "garantie": "3 ans (importateur SIMA France)",
+    "electronics": "ABS Bosch cornering, TCS, radar angle mort, quickshifter, ride-by-wire, TPMS, navigation TFT 7 pouces",
+    "cycle_parts": {
+      "frame": "Cadre acier",
+      "front_suspension": "Fourche inversée Marzocchi entièrement réglable",
+      "rear_suspension": "Monoamortisseur réglable, amortisseur de direction",
+      "front_brake": "Double disque, étriers Brembo radiaux 4 pistons, ABS Bosch",
+      "rear_brake": "Disque 260 mm, ABS Bosch",
+      "front_tire": "110/80 R19 Metzeler",
+      "rear_tire": "150/70 R17 Metzeler"
+    }
+  },
+  "relations": {
+    "same_brand": ["qjmotor-srt700sx-touring-2024-plus", "qjmotor-srk800-2025-plus"],
+    "same_category": ["bmw-r1250-gs-r1300-gs-2019-plus", "yamaha-tenere700-2019-plus", "cfmoto-800mt-sport-explore-2023-plus"]
+  },
+  "seo": {
+    "meta_title": "QJ Motor SRT 900 SX Touring : avis, entretien, prix et guide d'achat (2025+)",
+    "meta_description": "Guide complet QJ Motor SRT 900 SX Touring 2025+ : 95 ch, 904 cm³, radar angle mort série, bagagerie incluse. Entretien, comparatif BMW R1250 GS / CFMOTO 800 MT et avis propriétaires.",
+    "keywords": [
+      "QJ Motor SRT 900 SX Touring avis",
+      "QJMotor SRT 900 entretien",
+      "QJ Motor SRT 900 prix",
+      "QJMotor SRT 900 fiabilité",
+      "QJ Motor SRT 900 vs BMW R1250 GS",
+      "QJMotor SRT 900 radar angle mort",
+      "QJ Motor SRT 900 révision",
+      "QJMotor SRT 900 permis A2",
+      "maxi trail tourer 900 avec bagagerie",
+      "QJMotor SRT900 forum"
+    ]
+  },
+  "service_guide": {
+    "intro": "La QJ Motor SRT 900 SX Touring est le vaisseau amiral des trails QJMotor en France — et probablement l'une des propositions les plus ambitieuses du marché en 2025. À ~9 999 €, elle embarque un bicylindre 904 cm³ développant 95 ch, un radar angle mort de série (équipement habituellement réservé aux BMW GS ou Ducati Multistrada à 15 000-20 000 €), la bagagerie complète (top case + valises), le quickshifter bidirectionnel, les poignées et selle chauffantes, la navigation TFT 7 pouces et le TPMS — le tout avec une fourche Marzocchi et des étriers Brembo. Face à une BMW R1250 GS à 16 000+ € ou une CFMOTO 800 MT Explore à 10 999 €, le positionnement tarifaire est agressif. Ses points de vigilance : 263 kg en ordre de marche (le plus lourd de ce comparatif), un réseau SIMA encore en développement et aucun recul de fiabilité sur le bicylindre 904 cm³ (nouveau moteur 2025). Le radar angle mort est une première mondiale à ce prix en France — le vrai différenciateur de ce modèle.",
+    "known_issues": [
+      "Poids : 263 kg en ordre de marche — le plus élevé de sa catégorie (BMW R1250 GS : 249 kg, CFMOTO 800 MT Explore : 231 kg). À évaluer impérativement à l'essai.",
+      "Moteur 904 cm³ tout nouveau en 2025 — zéro recul sur la fiabilité à 50 000+ km. C'est le risque inhérent à tout nouveau moteur.",
+      "Réseau SIMA France en développement — vérifier la densité du réseau dans votre région. Moins dense que CFMOTO (GD France) ou Kawasaki.",
+      "Quelques retours sur l'absence de température extérieure au tableau de bord (signalé sur la SRT 700) et certains commodos non rétroéclairés.",
+      "Prix France non confirmé officiellement à l'heure de la rédaction — estimation ~9 999 €, à valider en concession SIMA."
+    ],
+    "consumables": [
+      { "part": "Huile moteur 10W-40 ou 5W-40 synthétique JASO MA2", "average_lifetime": "Estimation 5 000-6 000 km ou 6 mois — volume estimé ~3,0 L avec filtre" },
+      { "part": "Filtre à huile", "average_lifetime": "5 000-6 000 km" },
+      { "part": "Filtre à air", "average_lifetime": "Nettoyage 5 000 km / remplacement 10 000 km" },
+      { "part": "Bougies (2)", "average_lifetime": "20 000-30 000 km (estimation)" },
+      { "part": "Chaîne et kit chaîne 525 X-ring renforcée", "average_lifetime": "15 000-20 000 km" },
+      { "part": "Pneus Metzeler AV 110/80 R19", "average_lifetime": "12 000-15 000 km" },
+      { "part": "Pneus Metzeler AR 150/70 R17", "average_lifetime": "9 000-12 000 km" },
+      { "part": "Liquide de frein DOT 4", "average_lifetime": "2 ans" },
+      { "part": "Capteurs TPMS", "average_lifetime": "5-7 ans (batterie)" }
+    ],
+    "longevity_tips": [
+      "Valider le poids (263 kg) à l'essai avant tout achat — c'est non-négociable sur une moto de cette cylindrée.",
+      "Profiter de la garantie 3 ans SIMA en maintenant les révisions dans le réseau — protection essentielle sur un moteur 904 cm³ sans recul.",
+      "Le radar angle mort est une technologie à entretenir : vérifier le bon fonctionnement des capteurs lors des révisions.",
+      "Mettre à jour le logiciel navigation et cartographie régulièrement via le concessionnaire SIMA."
+    ],
+    "comparatif": {
+      "intro": "La SRT 900 SX Touring face aux maxi-trails de référence.",
+      "competitors": [
+        {
+          "model": "BMW R1250 GS (2019-2023)",
+          "prix_france": "~15 000-18 000 € (neuf) / 11 000-14 000 € (occasion)",
+          "avantages_vs_srt900": "Fiabilité boxer légendaire, réseau BMW dense, ShiftCam éprouvé, valeur de revente excellente, -14 kg (249 kg)",
+          "inconvenients_vs_srt900": "5 000-8 000 € plus chère neuve, radar angle mort en option très chère, bagagerie non incluse",
+          "verdict": "La BMW gagne sur la fiabilité prouvée et la revente. La QJ Motor offre radar + bagagerie + Brembo/Marzocchi pour 5 000 € de moins."
+        },
+        {
+          "model": "CFMOTO 800 MT Explore (2023+)",
+          "prix_france": "~10 999 €",
+          "avantages_vs_srt900": "1 000 € plus chère mais moteur KTM LC8c éprouvé, garantie 5 ans, réseau GD France dense, -32 kg (231 kg)",
+          "inconvenients_vs_srt900": "Pas de radar angle mort, pas de bagagerie série, pas de quickshifter de série sur toutes versions",
+          "verdict": "La CFMOTO gagne sur le poids (-32 kg !), la garantie 5 ans et le moteur KTM. La QJ Motor répond avec le radar et la bagagerie incluse."
+        },
+        {
+          "model": "Honda Africa Twin 1100 (2020+)",
+          "prix_france": "~13 499 €",
+          "avantages_vs_srt900": "Fiabilité Honda, réseau SAV dense, 1 100 cm³ bien né, valeur de revente",
+          "inconvenients_vs_srt900": "3 500 € plus chère, bagagerie non incluse, radar en option",
+          "verdict": "La Honda gagne sur la fiabilité et le réseau. La QJ Motor est 3 500 € moins chère avec le radar et la bagagerie inclus."
+        }
+      ]
+    },
+    "service_schedule": [
+      { "km": 500, "service_label": "Rodage obligatoire : vidange huile + filtre, contrôle général", "price_estimate": "NC" },
+      { "km": 5000, "service_label": "Révision standard : vidange, filtre, chaîne, niveaux, radar, TPMS, quickshifter", "price_estimate": "NC — données indisponibles" },
+      { "km": 10000, "service_label": "Révision intermédiaire : + filtre air, bougies contrôle", "price_estimate": "NC" },
+      { "km": 20000, "service_label": "Grande révision : + bougies, liquide frein, soupapes, kit chaîne", "price_estimate": "NC" }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Intervalles officiels non publiés. Estimation : 5 000-6 000 km ou 6 mois. À confirmer en concession SIMA.",
+      "total_60000km": "Données indisponibles — nouveau moteur 2025",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ Modèle tout nouveau en 2025 — aucune donnée d'entretien officielle ni retour propriétaire significatif. Estimation : 200-350 € par révision standard, comparable aux maxi-trails 900 cm³. La garantie 3 ans SIMA est votre principal bouclier financier."
+    },
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — QJ Motor SRT 900 SX Touring",
+      "hypothese": "10 000 km/an, usage route/voyage, concessionnaire région",
+      "poste_achat": "~9 999 € (bagagerie incluse, estimation)",
+      "poste_assurance_annuelle": "600 – 1 000 €",
+      "poste_entretien_3ans": "1 000 – 1 800 € (estimé)",
+      "poste_pneus_3ans": "500 – 750 €",
+      "poste_equipement_pilote": "700 – 2 500 €",
+      "total_3ans_estime": "14 799 – 20 549 €",
+      "valeur_revente_estimee": "6 000 – 8 000 € à 3 ans (très difficile à estimer — modèle 2025)",
+      "cout_reel_3ans": "6 799 – 12 549 € soit 2 266 – 4 183 €/an",
+      "note": "Si le prix de ~9 999 € est confirmé avec bagagerie incluse, la SRT 900 SX Touring est potentiellement l'un des meilleurs rapports prix/équipement du segment maxi-trail. La valeur de revente reste la grande inconnue."
+    },
+    "faq": [
+      {
+        "question": "Le radar angle mort est-il vraiment inclus de série ?",
+        "answer": "Oui, selon les sources officielles QJMotor France et les présentations presse. C'est une première sur une moto à ce prix en France — le radar angle mort est habituellement réservé aux BMW GS (option ~1 000 €) ou Ducati Multistrada. Son fonctionnement et sa fiabilité sur le long terme restent à confirmer par les premiers propriétaires."
+      },
+      {
+        "question": "QJ Motor SRT 900 SX ou CFMOTO 800 MT Explore : laquelle choisir ?",
+        "answer": "La CFMOTO 800 MT Explore (10 999 €) gagne sur trois points clés : moteur KTM LC8c éprouvé, garantie 5 ans, et 32 kg de moins (231 vs 263 kg). La QJ Motor répond avec le radar angle mort, la bagagerie incluse, les poignées/selle chauffantes et un prix légèrement inférieur. Pour quelqu'un qui privilégie le poids et la fiabilité prouvée : CFMOTO. Pour l'équipement maximal à prix contenu : QJ Motor."
+      },
+      {
+        "question": "263 kg, n'est-ce pas trop lourd ?",
+        "answer": "C'est effectivement beaucoup — c'est le poids d'une BMW R1250 GS (249 kg) avec la bagagerie pleine. Sur route, à vitesse de croisière, ce poids est imperceptible. À l'arrêt, en manœuvre lente ou en stationnement, il se fait sentir. L'essai avant achat est absolument indispensable pour valider ce critère. Si votre gabarit est modeste (<1,70 m, <70 kg), le poids sera un facteur limitant réel."
+      },
+      {
+        "question": "QJ Motor est-elle une marque sérieuse ?",
+        "answer": "Oui. QJMotor (Qianjiang Motorcycle) produit depuis 1985 et fait partie du groupe Geely (Volvo, Polestar, Lotus, Benelli). La marque produit plus de 2 millions de deux-roues par an, a fabriqué des motos pour Harley-Davidson, MV Agusta et Peugeot, et engage en Moto2 et Supersport européen. La SRK 800 RR court en European Supersport avec Rafael De Rosa. Ce n'est pas un constructeur artisanal."
+      }
+    ],
+    "conclusion": "**Verdict acheteur — QJ Motor SRT 900 SX Touring 2025+**\n\nLa SRT 900 SX Touring est une moto qui n'aurait pas pu exister il y a 5 ans. À ~9 999 €, elle propose un radar angle mort de série, la bagagerie complète, 95 ch, Brembo, Marzocchi, quickshifter, poignées et selle chauffantes, navigation TFT 7 pouces — tout ce que les marques premium facturent en options pour 5 000 à 8 000 € de plus.\n\nSes deux risques réels sont le poids (263 kg — à valider absolument à l'essai) et le moteur 904 cm³ tout nouveau (zéro recul fiabilité). La garantie 3 ans SIMA atténue le second risque.\n\nProfil idéal : grand voyageur A passionné par l'équipement, gabarit suffisant pour 263 kg, proche d'un concessionnaire SIMA, prêt à être pionnier sur un nouveau moteur en échange d'un rapport prix/équipement sans équivalent.",
+    "cta_primary": {
+      "label": "Trouver un concessionnaire QJ Motor près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "QJ Motor", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les maxi-trails disponibles",
+      "action": "navigate",
+      "params": { "category": "trail", "subcategory": "maxi-trail" }
+    }
+  }
+}

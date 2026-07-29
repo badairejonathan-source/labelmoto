@@ -1,0 +1,191 @@
+{
+  "id": "qjmotor-srk600rs-2025-plus",
+  "slug": "qjmotor-srk600rs-2025-plus",
+  "model": "SRK 600 RS",
+  "brand": "QJ Motor",
+  "brand_order": 10,
+  "category": "sportive",
+  "subcategory": "sportive-middleweight",
+  "status": "published",
+  "featured": true,
+  "display_title": "QJ Motor SRK 600 RS",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2025+",
+  "model_order": 5,
+  "search_tags": ["qj motor", "qjmotor", "srk600rs", "srk 600 rs", "sportive 600", "carénée A2", "brembo marzocchi", "entretien", "revision", "A2"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2025-présent (Euro 5+, remplace le SRK 550)",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 8 soupapes, injection EFI",
+    "displacement_cc": 554,
+    "bore_stroke_mm": "Non communiqué officiellement",
+    "max_power_kw": 41,
+    "max_power_hp": 56,
+    "max_power_rpm": 8250,
+    "max_torque_nm": 54,
+    "max_torque_rpm": 5500,
+    "note_power": "Euro 5+ : 56 ch (perte de 5 ch vs SRK 550 Euro 5 qui développait 61 ch). Version A2 : 47 ch / 35 kW. Prix 2025 : 6 799 € (source Motoplanete.com / Ormotors.fr).",
+    "euro_standard": "Euro 5+",
+    "transmission": "Boîte 6 vitesses (pas de quickshifter de série)",
+    "power": "56 ch (41 kW) à 8 250 tr/min",
+    "torque": "54 Nm à 5 500 tr/min",
+    "fuel_system": "Injection EFI",
+    "license_bridging": "A2 natif possible (bridage à 35 kW / 47 ch disponible)",
+    "weight_tpf_kg": 186,
+    "seat_height_mm": 770,
+    "tank_l": 16,
+    "frame": "Cadre treillis acier",
+    "front_suspension": "Fourche inversée Marzocchi réglable",
+    "rear_suspension": "Monoamortisseur réglable",
+    "front_brake": "Double disque 320 mm, étriers Brembo radiaux 4 pistons, ABS",
+    "rear_brake": "Disque 260 mm, étrier Brembo, ABS",
+    "front_tire": "120/70 R17 tubeless",
+    "rear_tire": "160/60 R17 tubeless",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "6 799 € (source Motoplanete.com, Ormotors.fr)",
+    "garantie": "3 ans kilométrage illimité (source Ormotors.fr — à confirmer en concession SIMA)",
+    "electronics": "ABS 2 canaux, TCS déconnectable, 2 modes de conduite (Normal/Sport), écran TFT couleur, Bluetooth, USB-A et USB-C, navigation",
+    "cycle_parts": {
+      "frame": "Cadre treillis acier",
+      "front_suspension": "Fourche inversée Marzocchi réglable",
+      "rear_suspension": "Monoamortisseur réglable",
+      "front_brake": "Double disque 320 mm, étriers Brembo radiaux 4 pistons, ABS",
+      "rear_brake": "Disque 260 mm, étrier Brembo, ABS",
+      "front_tire": "120/70 R17",
+      "rear_tire": "160/60 R17"
+    }
+  },
+  "relations": {
+    "same_brand": ["qjmotor-srk800rr-2024-plus", "qjmotor-srk800-2025-plus"],
+    "same_category": ["kawasaki-ninja-500-se-2024-plus", "honda-cbr500r-2022-plus", "yamaha-r7-2022-plus"]
+  },
+  "seo": {
+    "meta_title": "QJ Motor SRK 600 RS : avis, entretien, prix et guide d'achat (2025+)",
+    "meta_description": "Guide complet QJ Motor SRK 600 RS 2025+ : sportive A2, 56 ch, full Brembo/Marzocchi, Bluetooth, 6 799 €. Entretien, comparatif Kawasaki Ninja 500 / Aprilia RS 457 et avis.",
+    "keywords": [
+      "QJ Motor SRK 600 RS avis",
+      "QJMotor SRK 600 RS entretien",
+      "QJ Motor SRK 600 RS prix",
+      "QJMotor SRK 600 RS fiabilité",
+      "QJ Motor SRK 600 RS vs Kawasaki Ninja 500",
+      "QJMotor SRK 600 RS vs Aprilia RS 457",
+      "QJ Motor SRK 600 RS révision",
+      "QJMotor SRK 600 RS permis A2",
+      "sportive A2 Brembo Marzocchi moins de 7000 euros",
+      "QJMotor SRK600RS forum"
+    ]
+  },
+  "service_guide": {
+    "intro": "La QJ Motor SRK 600 RS est la proposition sportive carénée de QJMotor pour le segment A2 — et à 6 799 €, elle dérange sérieusement ses concurrentes. Son bicylindre 554 cm³ (rebadgé '600' selon la pratique marketing chinoise bien documentée) développe 56 ch à 8 250 tr/min et 54 Nm à 5 500 tr/min — soit le couple le plus bas régime du segment, une vraie qualité pour l'usage route. Son équipement de série est ahurissant pour ce prix : étriers Brembo radiaux 4 pistons et maître-cylindre Brembo, fourche Marzocchi réglable, monoamortisseur Marzocchi, TFT couleur avec Bluetooth et navigation, TCS, 2 modes de conduite. Ses concurrentes directes — Kawasaki Ninja 500 SE (6 599 €) et Aprilia RS 457 (7 999 €) — n'offrent pas ce niveau d'équipement à ce prix. Ses limites objectives : perte de 5 ch vs la version Euro 5 (56 vs 61 ch), cadre treillis acier (non aluminium), et l'absence de quickshifter. Garantie 3 ans kilométrage illimité selon Ormotors.fr — à confirmer en concession SIMA.",
+    "known_issues": [
+      "Perte de puissance Euro 5+ : -5 ch vs le SRK 550 Euro 5 (56 vs 61 ch). Peu impactant en usage route mais identifiable sur circuit.",
+      "Cadre treillis acier (non aluminium) — même remarque que sur la SRK 800 RR : moins rigide que les concurrentes premium à ce niveau de puissance.",
+      "Absence de quickshifter de série — les passagers de vitesse devront être à l'ancienne. Les concurrentes (Kawasaki Ninja 500 SE) non plus n'en proposent pas de série.",
+      "Poids : 186 kg en ordre de marche — légèrement supérieur à la Kawasaki Ninja 500 SE (170 kg). Nota : source Ormotors.fr indique 243 kg (probablement une erreur de saisie — à vérifier).",
+      "Prix à confirmer : 6 799 € selon Motoplanete.com (version 2025 Euro 5+) — certaines sources indiquent 6 500 € pour la version 2026."
+    ],
+    "consumables": [
+      { "part": "Huile moteur 10W-40 synthétique JASO MA2", "average_lifetime": "5 000 km ou 6 mois — volume estimé ~2,3 L avec filtre (bicylindre)" },
+      { "part": "Filtre à huile", "average_lifetime": "5 000 km" },
+      { "part": "Filtre à air", "average_lifetime": "Nettoyage 5 000 km / remplacement 10 000 km" },
+      { "part": "Bougies (2)", "average_lifetime": "20 000 km" },
+      { "part": "Jeu aux soupapes (8 soupapes)", "average_lifetime": "Estimation 20 000-25 000 km" },
+      { "part": "Chaîne et kit chaîne 520 O-ring", "average_lifetime": "12 000-16 000 km" },
+      { "part": "Pneus avant 120/70 R17", "average_lifetime": "8 000-12 000 km" },
+      { "part": "Pneus arrière 160/60 R17", "average_lifetime": "6 000-9 000 km" },
+      { "part": "Liquide de frein DOT 4 (circuit Brembo)", "average_lifetime": "1-2 ans" },
+      { "part": "Plaquettes Brembo avant", "average_lifetime": "8 000-12 000 km (route)" }
+    ],
+    "longevity_tips": [
+      "Le couple disponible à bas régime (54 Nm à 5 500 tr/min) est une vraie qualité : ne pas forcer le moteur dans les tours pour profiter de la souplesse.",
+      "Entretenir le circuit Brembo avec rigueur : liquide de frein annuel si usage piste, tous les 2 ans si usage route uniquement.",
+      "La garantie 3 ans kilométrage illimité est un argument fort — maintenir les révisions dans le réseau SIMA pour la conserver.",
+      "Vérifier la disponibilité des pièces Brembo et Marzocchi auprès du concessionnaire SIMA : ces fournisseurs sont fiables mais doivent être disponibles dans le réseau local."
+    ],
+    "comparatif": {
+      "intro": "La SRK 600 RS face à ses rivales directes sur le segment sportives carénées A2.",
+      "competitors": [
+        {
+          "model": "Kawasaki Ninja 500 SE (2024+)",
+          "prix_france": "~6 599 €",
+          "avantages_vs_srk600rs": "200 € moins chère, fiabilité Kawasaki, réseau dense, 170 kg (16 kg plus légère), 4 ans de garantie",
+          "inconvenients_vs_srk600rs": "451 cm³ (vs 554), 45,4 ch (vs 56 ch), pas de Brembo ni Marzocchi de série, pas de navigation Bluetooth",
+          "verdict": "La Ninja gagne sur la légèreté et la fiabilité. La QJ Motor gagne sur le couple, l'équipement premium et la navigation."
+        },
+        {
+          "model": "Aprilia RS 457 (2024+)",
+          "prix_france": "~7 999 €",
+          "avantages_vs_srk600rs": "Marque italienne premium, 457 cm³ moins vibrant, légèreté (166 kg), fiabilité plus documentée en Europe",
+          "inconvenients_vs_srk600rs": "1 200 € plus chère, 47,6 ch (vs 56), moins de couple, pas de navigation Bluetooth de série",
+          "verdict": "L'Aprilia gagne sur le pedigree et la légèreté. La QJ Motor offre plus de puissance, plus d'équipement pour 1 200 € de moins."
+        },
+        {
+          "model": "Honda CBR500R (2022+)",
+          "prix_france": "~7 499 €",
+          "avantages_vs_srk600rs": "Fiabilité Honda légendaire, confort supérieur, réseau SAV dense, valeur de revente",
+          "inconvenients_vs_srk600rs": "700 € plus chère, 47,5 ch (vs 56), pas de Brembo/Marzocchi, pas de navigation",
+          "verdict": "La Honda gagne sur la fiabilité longue durée. La QJ Motor gagne sur l'équipement et la puissance."
+        }
+      ]
+    },
+    "service_schedule": [
+      { "km": 500, "service_label": "Rodage : vidange huile + filtre, contrôle Brembo/Marzocchi, serrages", "price_estimate": "NC" },
+      { "km": 5000, "service_label": "Révision standard : vidange, filtre, chaîne, niveaux, ABS, TCS, freins Brembo", "price_estimate": "NC — données indisponibles" },
+      { "km": 10000, "service_label": "Révision intermédiaire : + filtre air, contrôle bougies (2), plaquettes", "price_estimate": "NC" },
+      { "km": 20000, "service_label": "Grande révision : + 2 bougies, liquide frein, contrôle soupapes (8), kit chaîne", "price_estimate": "NC" }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Estimation 5 000 km ou 6 mois. Garantie 3 ans kilométrage illimité (source Ormotors.fr — confirmer en concession SIMA).",
+      "total_60000km": "Données indisponibles",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ QJ Motor France ne publie pas ses tarifs. Estimation : 150-250 € pour une révision standard (bicylindre). Avantage vs la SRK 800 : 2 bougies et 8 soupapes seulement. Le circuit Brembo requiert un entretien attentif (liquide de frein qualité DOT 4+ conseillée)."
+    },
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — QJ Motor SRK 600 RS",
+      "hypothese": "7 000 km/an, usage mixte route/balade, concessionnaire région",
+      "poste_achat": "6 799 €",
+      "poste_assurance_annuelle": "400 – 800 €",
+      "poste_entretien_3ans": "800 – 1 300 € (estimé, bicylindre)",
+      "poste_pneus_3ans": "350 – 600 €",
+      "poste_equipement_pilote": "600 – 2 000 €",
+      "total_3ans_estime": "10 349 – 14 499 €",
+      "valeur_revente_estimee": "3 800 – 5 000 € à 3 ans (difficile à estimer — marché d'occasion QJ Motor jeune)",
+      "cout_reel_3ans": "5 349 – 9 499 € soit 1 783 – 3 166 €/an",
+      "note": "À 6 799 €, la SRK 600 RS est la sportive carénée A2 avec Brembo et Marzocchi la moins chère du marché français. La valeur de revente reste l'incertitude principale."
+    },
+    "faq": [
+      {
+        "question": "Pourquoi '600 RS' si le moteur fait 554 cm³ ?",
+        "answer": "C'est une pratique marketing chinoise documentée et assumée. QJMotor et Motoplanete.com l'expliquent clairement : '600 ça fait mieux que 550'. Le moteur est un bicylindre 554 cm³ — 'SRK 600 RS' est le nom commercial. Même chose chez d'autres marques (Royal Enfield Meteor '350' qui fait 349 cm³, etc.). Ce n'est pas une tromperie — la cylindrée réelle (554 cm³) est mentionnée dans toutes les fiches techniques."
+      },
+      {
+        "question": "La SRK 600 RS est-elle vraiment compatible A2 ?",
+        "answer": "Oui, une version bridée à 35 kW / 47 ch est disponible. La puissance native est de 56 ch (41,2 kW) — légèrement au-dessus du seuil A2 (35 kW). Le bridage se fait en concession SIMA."
+      },
+      {
+        "question": "La garantie est-elle vraiment kilométrage illimité ?",
+        "answer": "Selon Ormotors.fr (concessionnaire SIMA officiel) : '3 ans pièces et main d'œuvre, kilométrage illimité'. C'est une condition remarquable à confirmer impérativement avec votre concessionnaire SIMA avant achat — les conditions peuvent varier selon le revendeur."
+      },
+      {
+        "question": "QJ Motor SRK 600 RS ou Kawasaki Ninja 500 SE : laquelle choisir ?",
+        "answer": "La Ninja 500 SE (6 599 €) est 200 € moins chère, 16 kg plus légère (170 vs 186 kg) et bénéficie de 4 ans de garantie Kawasaki. La SRK 600 RS répond avec 10 ch de plus (56 vs 45,4), le prestige Brembo et Marzocchi, la navigation Bluetooth et potentiellement une garantie 3 ans kilométrage illimité. Résumé : Kawasaki pour la légèreté et la fiabilité prouvée, QJ Motor pour l'équipement et la puissance."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la SRK 600 RS ?",
+        "answer": "QJ Motor France ne publie pas ses intervalles officiellement. Estimation basée sur les données disponibles : 5 000 km ou 6 mois. À confirmer en concession SIMA avant achat."
+      }
+    ],
+    "conclusion": "**Verdict acheteur — QJ Motor SRK 600 RS 2025+**\n\nLa SRK 600 RS est difficile à contester à 6 799 € : full Brembo, full Marzocchi, TFT Bluetooth, navigation, TCS, 56 ch, 186 kg. Ses concurrentes japonaises facturent 700 à 1 200 € de plus pour un équipement équivalent ou inférieur.\n\nSes deux limites : le cadre treillis acier (non aluminium) et la nouveauté relative du moteur. Si vous pouvez vivre avec ces deux points — et que vous êtes proche d'un concessionnaire SIMA — la SRK 600 RS est l'une des meilleures affaires du segment sportive carénée A2 en 2025.\n\nProfil idéal : jeune rider A2 passionné de sportives, sensible au prestige Brembo/Marzocchi, budget serré, usage principalement route avec occasionnellement quelques sorties sur circuit.",
+    "cta_primary": {
+      "label": "Trouver un concessionnaire QJ Motor près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "QJ Motor", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer toutes les sportives A2 disponibles",
+      "action": "navigate",
+      "params": { "category": "sportive", "permitted_a2": true }
+    }
+  }
+}

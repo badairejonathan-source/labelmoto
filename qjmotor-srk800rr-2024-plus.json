@@ -1,0 +1,181 @@
+{
+  "id": "qjmotor-srk800rr-2024-plus",
+  "slug": "qjmotor-srk800rr-2024-plus",
+  "model": "SRK 800 RR",
+  "brand": "QJ Motor",
+  "brand_order": 10,
+  "category": "sportive",
+  "subcategory": "sportive-middleweight",
+  "status": "published",
+  "featured": true,
+  "display_title": "QJ Motor SRK 800 RR",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2024+",
+  "model_order": 4,
+  "search_tags": ["qj motor", "qjmotor", "srk800rr", "srk 800 rr", "sportive 800", "supersport", "marzocchi brembo", "entretien", "revision", "A2"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2024-présent (en compétition European Supersport 2025 avec Rafael De Rosa)",
+    "engine_type": "4 cylindres en ligne, 4 temps, refroidissement liquide, DOHC 16 soupapes, injection EFI ride-by-wire",
+    "displacement_cc": 778,
+    "bore_stroke_mm": "67,0 × 55,2",
+    "max_power_kw": 70,
+    "max_power_hp": 95,
+    "max_power_rpm": 10000,
+    "max_torque_nm": 78,
+    "max_torque_rpm": 8500,
+    "note_power": "Puissance Europe : 95 ch (homologation A2 possible). Puissance marché international : 102 ch à 10 000 tr/min. Bridage A2 à 47 ch disponible.",
+    "euro_standard": "Euro 5+",
+    "transmission": "Boîte 6 vitesses, quickshifter bidirectionnel de série",
+    "power": "95 ch (70 kW) à 10 000 tr/min (version Europe)",
+    "torque": "78 Nm à 8 500 tr/min",
+    "fuel_system": "Injection EFI, ride-by-wire",
+    "license_bridging": "A2 disponible (47 ch / 35 kW bridage)",
+    "weight_tpf_kg": 207,
+    "seat_height_mm": 810,
+    "tank_l": 15,
+    "frame": "Cadre treillis acier (non aluminium — critique vs concurrentes premium)",
+    "front_suspension": "Fourche inversée Marzocchi réglable",
+    "rear_suspension": "Monoamortisseur Marzocchi bonbonne séparée réglable",
+    "front_brake": "Double disque 320 mm, étriers Brembo radiaux 4 pistons, maître-cylindre Brembo",
+    "rear_brake": "Disque, étrier Brembo",
+    "front_tire": "120/70 ZR17",
+    "rear_tire": "180/55 ZR17",
+    "fuel_type": "Sans plomb 95 RON minimum",
+    "price_neuf_france": "NC — à confirmer en concession SIMA (estimation ~9 499-9 999 €)",
+    "garantie": "3 ans (importateur SIMA France)",
+    "electronics": "ABS, TCS, quickshifter bidirectionnel, 3 modes de conduite (Normal/Sport/Pluie), TFT LCD 4 pouces",
+    "motorsport": "Engage en European Supersport 2025 avec Rafael De Rosa et Niki Tuuli (QJMotor Factory Racing Team)",
+    "cycle_parts": {
+      "frame": "Cadre treillis acier",
+      "front_suspension": "Fourche inversée Marzocchi réglable",
+      "rear_suspension": "Monoamortisseur Marzocchi bonbonne séparée réglable",
+      "front_brake": "Double disque 320 mm, étriers Brembo radiaux 4 pistons, MC Brembo",
+      "rear_brake": "Disque, étrier Brembo",
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "180/55 ZR17"
+    }
+  },
+  "relations": {
+    "same_brand": ["qjmotor-srk800-2025-plus", "qjmotor-srk600rs-2025-plus"],
+    "same_category": ["kawasaki-ninja-1000sx", "honda-cbr600rr", "yamaha-r7-2022-plus"]
+  },
+  "seo": {
+    "meta_title": "QJ Motor SRK 800 RR : avis, entretien, prix et guide d'achat (2024+)",
+    "meta_description": "Guide complet QJ Motor SRK 800 RR 2024+ : 4 cylindres 778 cm³, 95 ch, full Brembo/Marzocchi, compétition European Supersport. Entretien, coût réel et avis propriétaires.",
+    "keywords": [
+      "QJ Motor SRK 800 RR avis",
+      "QJMotor SRK 800 RR entretien",
+      "QJ Motor SRK 800 RR prix",
+      "QJMotor SRK 800 RR fiabilité",
+      "QJ Motor SRK 800 RR vs Kawasaki Ninja 650",
+      "QJMotor SRK 800 RR European Supersport",
+      "QJ Motor SRK 800 RR révision",
+      "QJMotor SRK 800 RR permis A2",
+      "sportive 4 cylindres A2",
+      "QJMotor SRK800RR forum"
+    ]
+  },
+  "service_guide": {
+    "intro": "La QJ Motor SRK 800 RR est la sportive carénée de QJMotor — et elle a l'ambition de le prouver en compétition. Rafael De Rosa et Niki Tuuli pilotent officiellement la SRK 800 RR en Championnat d'Europe Supersport 2025 sous les couleurs QJMotor Factory Racing Team, une validation en circuit que peu de marques chinoises peuvent revendiquer. Sur route, elle propose un 4-cylindres 778 cm³ développant 95 ch en version Europe (102 ch en version internationale), un châssis full Brembo (étriers radiaux + maître-cylindre) et full Marzocchi (fourche inversée + monoamortisseur bonbonne séparée), un quickshifter bidirectionnel et 3 modes de conduite de série. Son cadre treillis acier (non aluminium) est son seul point discutable face à des concurrentes comme la Kawasaki Ninja 650 ou la Honda CBR500R — compensé par un poids contenu de 207 kg. Bridable A2 à 47 ch.",
+    "known_issues": [
+      "Cadre treillis acier (non aluminium périmétrique) — moins rigide que les sportives premium japonaises à ce niveau de puissance. L'impact sur la dynamique est perceptible selon les essayeurs.",
+      "Puissance bridée en Europe : 95 ch (vs 102 ch sur le marché international) pour permettre le bridage A2. Les 7 ch manquants vs la version internationale sont peu perceptibles en usage routier.",
+      "Confort : comme toute sportive, la position full racing sera inconfortable au-delà de 45-60 minutes pour les débutants.",
+      "Réseau SIMA France en développement — vérifier la présence d'un concessionnaire avant achat.",
+      "Écran LCD 4 pouces — moins moderne qu'un TFT couleur comme sur la SRK 800 ou la SRT 700. Point mineur mais visible."
+    ],
+    "consumables": [
+      { "part": "Huile moteur 10W-40 synthétique JASO MA2", "average_lifetime": "5 000 km ou 6 mois — volume estimé ~3,5 L avec filtre (4 cylindres)" },
+      { "part": "Filtre à huile", "average_lifetime": "5 000 km" },
+      { "part": "Filtre à air", "average_lifetime": "Nettoyage 5 000 km / remplacement 10 000 km" },
+      { "part": "Bougies (4)", "average_lifetime": "20 000 km — 4 bougies à changer simultanément" },
+      { "part": "Jeu aux soupapes (16 soupapes)", "average_lifetime": "Estimation 20 000-25 000 km — intervention complexe" },
+      { "part": "Chaîne et kit chaîne 520 X-ring", "average_lifetime": "12 000-16 000 km (usage route)" },
+      { "part": "Pneus avant 120/70 ZR17", "average_lifetime": "8 000-12 000 km (pneus sport)" },
+      { "part": "Pneus arrière 180/55 ZR17", "average_lifetime": "6 000-9 000 km (pneus sport)" },
+      { "part": "Liquide de frein DOT 4 (circuit full Brembo)", "average_lifetime": "1-2 ans selon usage (usage piste : annuel)" },
+      { "part": "Plaquettes Brembo avant", "average_lifetime": "8 000-12 000 km (route) / 3 000-5 000 km (usage piste)" }
+    ],
+    "longevity_tips": [
+      "Full Brembo et Marzocchi : ces composants requièrent un entretien spécifique — vérifier la disponibilité des pièces de rechange Brembo/Marzocchi auprès de votre concessionnaire SIMA.",
+      "Usage piste : changer le liquide de frein annuellement — un circuit full Brembo sous usage intensif doit être maintenu avec rigueur.",
+      "Respecter le rodage soigneusement : 4 cylindres haute compression, ne pas dépasser 6 000 tr/min dans les 1 000 premiers km.",
+      "La SRK 800 RR en compétition European Supersport est une bonne nouvelle pour la disponibilité des pièces haute performance — QJMotor investit dans la filière."
+    ],
+    "comparatif": {
+      "intro": "La SRK 800 RR face aux sportives carénées de sa catégorie.",
+      "competitors": [
+        {
+          "model": "Kawasaki Ninja 650 (2020+)",
+          "prix_france": "~7 999 €",
+          "avantages_vs_srk800rr": "Prix inférieur (si confirmé), fiabilité Kawasaki, bicylindre 649 cm³ éprouvé, réseau dense, confort supérieur",
+          "inconvenients_vs_srk800rr": "Twin vs 4 cylindres, moins de puissance (68 ch vs 95 ch), pas de Brembo/Marzocchi de série",
+          "verdict": "La Ninja gagne sur la fiabilité et le confort. La QJ Motor gagne sur la puissance et l'équipement premium."
+        },
+        {
+          "model": "Yamaha R7 (2022+)",
+          "prix_france": "~8 999 €",
+          "avantages_vs_srk800rr": "Bicylindre CP2 689 cm³ éprouvé, cadre alu, fiabilité Yamaha, légèreté (188 kg)",
+          "inconvenients_vs_srk800rr": "73 ch (vs 95 ch), cadre alu mais twin vs 4 cylindres",
+          "verdict": "La R7 est plus légère et plus fiable — la QJ Motor offre 22 ch de plus et le prestige Brembo/Marzocchi."
+        }
+      ]
+    },
+    "service_schedule": [
+      { "km": 500, "service_label": "Rodage : vidange huile + filtre, contrôle Brembo/Marzocchi", "price_estimate": "NC" },
+      { "km": 5000, "service_label": "Révision standard : vidange, filtre, chaîne, niveaux, freins Brembo, ABS", "price_estimate": "NC" },
+      { "km": 10000, "service_label": "Révision intermédiaire : + filtre air, contrôle bougies (4), état plaquettes", "price_estimate": "NC" },
+      { "km": 20000, "service_label": "Grande révision : + 4 bougies, liquide frein, soupapes (16), kit chaîne", "price_estimate": "NC" }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Estimation 5 000 km ou 6 mois. Usage piste : révision après chaque journée circuit (liquide frein, plaquettes).",
+      "total_60000km": "Données indisponibles",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ Les données d'entretien QJ Motor France ne sont pas publiées. Usage piste : prévoir un budget plaquettes Brembo et liquide de frein significatif (200-400 €/journée circuit). Les révisions 4 cylindres sont plus coûteuses que les bicylindres (4 bougies + 16 soupapes)."
+    },
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — QJ Motor SRK 800 RR",
+      "hypothese": "6 000 km/an route + 2 journées piste/an",
+      "poste_achat": "~9 499-9 999 € (estimation — confirmer en concession)",
+      "poste_assurance_annuelle": "600 – 1 100 €",
+      "poste_entretien_3ans": "1 200 – 2 000 € (4 cylindres + usage piste)",
+      "poste_pneus_3ans": "500 – 900 €",
+      "poste_equipement_pilote": "800 – 3 000 € (cuir moto conseillé)",
+      "total_3ans_estime": "14 499 – 21 999 €",
+      "valeur_revente_estimee": "5 500 – 7 500 € à 3 ans (difficile à estimer)",
+      "cout_reel_3ans": "6 999 – 14 499 € soit 2 333 – 4 833 €/an",
+      "note": "Usage piste : multiplier les postes freinage et pneus. Une journée circuit avec pneus piste, plaquettes et liquide de frein peut représenter 300-600 € supplémentaires."
+    },
+    "faq": [
+      {
+        "question": "La QJ Motor SRK 800 RR court vraiment en European Supersport ?",
+        "answer": "Oui — Rafael De Rosa et Niki Tuuli pilotent officiellement la SRK 800 RR en Championnat d'Europe Supersport 2025 sous les couleurs QJMotor Factory Racing Team. C'est une validation en compétition réelle, pas un argument marketing. De Rosa, ancien pilote Supersport officiel, est un pilote de niveau international."
+      },
+      {
+        "question": "Pourquoi le cadre est-il en treillis acier et non en aluminium ?",
+        "answer": "C'est un choix constructeur controversé. Le treillis acier est moins rigide qu'un cadre aluminium périmétrique (comme sur la Yamaha R7 ou les Ninja japonaises) mais il est plus simple à produire et à réparer. L'impact sur la dynamique est perceptible selon les essayeurs — la SRK 800 RR est une sportive accessible, pas une machine de piste pure. Son caractère reste sportif et prenant."
+      },
+      {
+        "question": "Est-elle vraiment bridable A2 ?",
+        "answer": "Oui, à 47 ch / 35 kW. Avec 95 ch natifs (version Europe), le bridage est réalisé en concession SIMA. Les 95 ch à 10 000 tr/min de la version pleine donnent un moteur très linéaire — les 47 ch bridés restent parfaitement exploitables sur route."
+      },
+      {
+        "question": "L'entretien d'une SRK 800 RR est-il accessible financièrement ?",
+        "answer": "Pour un usage route uniquement : oui, avec des révisions à 5 000 km estimées à 200-350 €. Pour un usage piste régulier : il faut budgéter les plaquettes Brembo (80-150 € la paire avant), le liquide de frein (annuel) et les pneus slick/sport. Le full Brembo/Marzocchi est premium à l'usage — les pièces d'usure sont plus chères que sur des sportives équipées de freinage standard."
+      }
+    ],
+    "conclusion": "**Verdict acheteur — QJ Motor SRK 800 RR 2024+**\n\nLa SRK 800 RR est la proposition la plus ambitieuse de QJMotor en France : 4 cylindres 778 cm³, full Brembo, full Marzocchi, quickshifter, 3 modes, engagement en compétition European Supersport — le tout pour ~9 500-9 999 €. C'est difficile à ignorer si vous cherchez une sportive carénée 4 cylindres à ce prix.\n\nSon cadre treillis acier (non aluminium), son LCD 4 pouces et la nouveauté du moteur sont ses limites objectives. Mais si le son d'un 4-cylindres à 10 000 tr/min vous fait vibrer et que vous êtes proche d'un concessionnaire SIMA : la SRK 800 RR mérite l'essai.\n\nProfil idéal : passionné de sportives carénées, sensible au prestige Brembo/Marzocchi, usage mixte route et occasionnellement piste.",
+    "cta_primary": {
+      "label": "Trouver un concessionnaire QJ Motor près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "QJ Motor", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer toutes les sportives disponibles",
+      "action": "navigate",
+      "params": { "category": "sportive" }
+    }
+  }
+}
