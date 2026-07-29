@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Dealership } from '@/lib/types';
 import { useFirestore, useCollection, useMemoFirebase, useUser, useDoc, addDocumentNonBlocking } from '@/firebase/client';
 import { DEPARTMENTS } from '@/app/lib/departments';
+import { getAllCitySlugs } from '@/app/lib/cities';
 import { collection, query, orderBy, serverTimestamp, doc, updateDoc, increment, getDocs, where, limit } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -167,13 +168,13 @@ export default function DealershipDetailClient({ pro }: DealershipDetailClientPr
           return (
             <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-8 flex-wrap">
               <Link href="/" className="hover:text-brand flex items-center gap-1"><Home className="h-3 w-3" /> ACCUEIL</Link>
-              {cityRaw && citySlug && (['paris','marseille','lyon','toulouse','nice','nantes','montpellier','strasbourg','bordeaux','lille','rennes','reims','toulon','grenoble','dijon','angers','nimes','aix-en-provence','clermont-ferrand','rouen','amiens','metz','brest','tours','limoges','perpignan','caen','nancy','saint-etienne','pau'].includes(citySlug)) && (
+              {cityRaw && citySlug && (getAllCitySlugs().includes(citySlug)) && (
                 <>
                   <ChevronRight className="h-2 w-2" />
                   <Link href={'/garages-moto/' + citySlug} className="hover:text-brand">{cityRaw}</Link>
                 </>
               )}
-              {cityRaw && citySlug && (!((['paris','marseille','lyon','toulouse','nice','nantes','montpellier','strasbourg','bordeaux','lille','rennes','reims','toulon','grenoble','dijon','angers','nimes','aix-en-provence','clermont-ferrand','rouen','amiens','metz','brest','tours','limoges','perpignan','caen','nancy','saint-etienne','pau'].includes(citySlug))) && (pro as any).departement) && (() => {
+              {cityRaw && citySlug && (!((getAllCitySlugs().includes(citySlug))) && (pro as any).departement) && (() => {
                 const deptData = DEPARTMENTS.find(d => d.code === (pro as any).departement);
                 if (!deptData) return null;
                 return (
