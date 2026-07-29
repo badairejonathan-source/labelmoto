@@ -1,0 +1,178 @@
+{
+  "id": "kove-510x-2025-plus",
+  "slug": "kove-510x-2025-plus",
+  "model": "510X",
+  "brand": "KOVE",
+  "brand_order": 8,
+  "category": "trail",
+  "subcategory": "trail-moyen",
+  "status": "published",
+  "featured": true,
+  "display_title": "KOVE 510X",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2025+",
+  "model_order": 3,
+  "search_tags": ["kove", "510x", "kove 510", "trail A2", "adventure 500", "entretien", "revision"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2025-présent",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, injection Bosch",
+    "displacement_cc": 498,
+    "max_power_kw": 35,
+    "max_power_hp": 47,
+    "max_power_rpm": 8500,
+    "max_torque_nm": 45,
+    "max_torque_rpm": 7000,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses",
+    "power": "47 ch (35 kW) à 8 500 tr/min",
+    "torque": "45 Nm à 7 000 tr/min",
+    "fuel_system": "Injection Bosch (accélérateur câble — pas de ride-by-wire)",
+    "license_bridging": "A2 natif (35 kW — pas de bridage nécessaire)",
+    "weight_tpf_kg": 205,
+    "seat_height_mm": 830,
+    "tank_l": 20,
+    "wheelbase_mm": 1479,
+    "ground_clearance_mm": 210,
+    "frame": "Cadre tubulaire acier, bras oscillant aluminium",
+    "front_suspension": "Fourche inversée KYB réglable, débattement 210 mm",
+    "rear_suspension": "Monoamortisseur KYB réglable, débattement 195 mm",
+    "front_brake": "Disque 310 mm, ABS 2 canaux déconnectable",
+    "rear_brake": "Disque, ABS déconnectable",
+    "front_tire": "110/80 R19 (jante rayons tubeless) Metzeler",
+    "rear_tire": "140/70 R17 (jante rayons tubeless) Metzeler",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "6 499 € (2025)",
+    "garantie": "2 ans",
+    "electronics": "ABS 2 canaux déconnectable, TCS déconnectable, 2 modes de conduite (Sport/Eco), TFT couleur, USB + 12V",
+    "cycle_parts": {
+      "frame": "Cadre tubulaire acier, bras oscillant aluminium",
+      "front_suspension": "Fourche inversée KYB réglable, débattement 210 mm",
+      "rear_suspension": "Monoamortisseur KYB réglable, débattement 195 mm",
+      "front_brake": "Disque 310 mm, ABS 2 canaux déconnectable",
+      "rear_brake": "Disque, ABS déconnectable",
+      "front_tire": "110/80 R19 Metzeler tubeless",
+      "rear_tire": "140/70 R17 Metzeler tubeless"
+    }
+  },
+  "relations": {
+    "same_brand": ["kove-800x-pro-2024-plus", "kove-450-rally-2024-plus"],
+    "same_category": ["cfmoto-450mt-2024-plus", "voge-ds525x-2024-plus", "honda-nx500-2023-plus"]
+  },
+  "seo": {
+    "meta_title": "KOVE 510X : avis, entretien, prix et guide d'achat (2025+)",
+    "meta_description": "Guide complet KOVE 510X 2025+ : bicylindre 498 cm³ A2, fourche KYB, Metzeler de série, 6 499 €. Entretien, coût réel, comparatif CFMOTO 450MT / VOGE DS525X et avis.",
+    "keywords": [
+      "KOVE 510X avis",
+      "KOVE 510X entretien",
+      "KOVE 510X prix",
+      "KOVE 510X fiabilité",
+      "KOVE 510X vs CFMOTO 450MT",
+      "KOVE 510X vs VOGE DS525X",
+      "KOVE 510X permis A2",
+      "KOVE 510X révision",
+      "trail adventure 500 A2 6499 euros",
+      "KOVE 510X forum"
+    ]
+  },
+  "service_guide": {
+    "intro": "La KOVE 510X est la trail mid-size A2 de KOVE, lancée en 2025 pour concurrencer directement la CFMOTO 450 MT et la VOGE DS525X. À 6 499 €, elle propose un bicylindre 498 cm³ développant 47 ch (35 kW natifs — aucun bridage nécessaire), une fourche inversée KYB réglable (210 mm), des pneus Metzeler et des jantes à rayons tubeless 19/17 pouces de série. L'ABS 2 canaux et le TCS sont déconnectables depuis le guidon. Son point distinctif par rapport aux concurrentes : l'accélérateur à câble (pas de ride-by-wire) simplifie la maintenance et réduit les pannes électroniques potentielles. Côté réseau, la 510X est distribuée en France par MB Motor France (~30 concessionnaires) — moins dense que DIP (VOGE) ou GD France (CFMOTO).\n\n⚠️ Données de coûts d'entretien en concession France non disponibles (réseau trop récent). Les estimations sont basées sur les retours propriétaires européens.",
+    "known_issues": [
+      "Réseau SAV France limité (~30 concessionnaires MB Motor France) — vérifier la proximité d'un revendeur avant achat",
+      "Réponse accélérateur légèrement sèche à bas régime (signalée dans plusieurs essais) — inhérent à l'accélérateur câble sans ride-by-wire",
+      "Poids en ordre de marche annoncé à 205 kg — dans la haute moyenne du segment A2 500 cm³ (vs 196 kg pour la CFMOTO 450 MT)",
+      "Recul fiabilité limité : modèle lancé en 2025, peu de retours propriétaires >20 000 km disponibles"
+    ],
+    "consumables": [
+      { "part": "Huile moteur 10W-40 JASO MA2", "average_lifetime": "5 000 km ou 6 mois — ~2,5 L avec filtre" },
+      { "part": "Filtre à huile", "average_lifetime": "5 000 km" },
+      { "part": "Filtre à air Metzeler", "average_lifetime": "Nettoyage 5 000 km / remplacement 10 000 km" },
+      { "part": "Bougies (2)", "average_lifetime": "20 000 km" },
+      { "part": "Jeu aux soupapes", "average_lifetime": "Contrôle estimé 20 000-30 000 km (non confirmé officiel)" },
+      { "part": "Chaîne 520 O-ring", "average_lifetime": "15 000 km (route) / 8 000 km (usage piste)" },
+      { "part": "Pneus avant 110/80 R19 Metzeler", "average_lifetime": "10 000-14 000 km" },
+      { "part": "Pneus arrière 140/70 R17 Metzeler", "average_lifetime": "8 000-10 000 km" },
+      { "part": "Liquide de frein DOT 4", "average_lifetime": "2 ans" }
+    ],
+    "longevity_tips": [
+      "L'accélérateur à câble est un avantage pour la maintenance : moins de composants électroniques à entretenir ou faire réparer.",
+      "Vérifier la tension de chaîne tous les 500-700 km — les roues 19/17 avec les pneus Metzeler d'origine travaillent bien sur piste.",
+      "Constituer un stock minimal de consommables (filtre huile, filtre air, bougie) si le revendeur MB Motor France est éloigné.",
+      "Nettoyer le filtre à air après chaque sortie piste poussiéreuse — les entrées d'air d'une trail adventure sont exposées off-road."
+    ],
+    "comparatif": {
+      "intro": "La KOVE 510X affronte deux concurrentes directes sur le segment trail A2 500 cm³.",
+      "competitors": [
+        {
+          "model": "CFMOTO 450 MT (2024+)",
+          "prix_france": "6 490 €",
+          "avantages_vs_510x": "9 € moins chère, réseau GD France plus dense (140+ concessionnaires), garde au sol supérieure (220 mm), ride-by-wire et modes de conduite plus élaborés, retours fiabilité plus nombreux",
+          "inconvenients_vs_510x": "449 cm³ (vs 498 cm³), couple légèrement inférieur (43 vs 45 Nm)",
+          "verdict": "La CFMOTO gagne sur le réseau SAV — la KOVE sur la cylindrée. Prix identique."
+        },
+        {
+          "model": "VOGE DS525X (2024+)",
+          "prix_france": "NC (entre 6 500 et 7 500 €)",
+          "avantages_vs_510x": "Réseau DIP plus dense (450+ magasins), garantie 3 ans, équipement comparable",
+          "inconvenients_vs_510x": "Prix probable supérieur, 494 cm³ quasi identique",
+          "verdict": "La VOGE gagne sur le réseau et la garantie — à budget égal, comparer les deux en essai."
+        }
+      ]
+    },
+    "service_schedule": [
+      { "km": 500, "service_label": "Rodage obligatoire : vidange huile + filtre, serrages", "price_estimate": "NC" },
+      { "km": 5000, "service_label": "Révision standard : vidange, filtre, chaîne, niveaux, ABS/TCS", "price_estimate": "NC — données indisponibles France" },
+      { "km": 10000, "service_label": "Révision intermédiaire : + filtre air, contrôle bougies, freins", "price_estimate": "NC" },
+      { "km": 20000, "service_label": "Grande révision : + bougies, liquide frein, contrôle soupapes", "price_estimate": "NC" }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 5 000 km ou 6 mois. Données officielles réseau France non disponibles.",
+      "total_60000km": "Données indisponibles",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ Tarifs entretien en concession KOVE France non disponibles. Estimation prudente : 150-250 € par révision à 5 000 km, comparable aux autres trails A2 500 cm³ en atelier indépendant."
+    },
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — KOVE 510X",
+      "hypothese": "8 000 km/an, usage mixte route/piste",
+      "poste_achat": "6 499 €",
+      "poste_assurance_annuelle": "350 – 700 €",
+      "poste_entretien_3ans": "800 – 1 400 € (estimé)",
+      "poste_pneus_3ans": "400 – 600 €",
+      "poste_equipement_pilote": "500 – 1 500 €",
+      "total_3ans_estime": "9 549 – 12 699 €",
+      "valeur_revente_estimee": "3 500 – 4 500 € à 3 ans (marché peu documenté)",
+      "cout_reel_3ans": "5 049 – 8 199 € soit 1 683 – 2 733 €/an",
+      "note": "La valeur de revente reste la principale incertitude — marché d'occasion KOVE quasi inexistant en France à ce jour."
+    },
+    "faq": [
+      {
+        "question": "La KOVE 510X est-elle homologuée permis A2 ?",
+        "answer": "Oui, avec 35 kW (47 ch) natifs à 8 500 tr/min, elle respecte les limites A2 sans bridage. C'est un avantage sur les motos qui nécessitent une intervention en concession pour être bridées."
+      },
+      {
+        "question": "KOVE 510X ou CFMOTO 450 MT : laquelle choisir ?",
+        "answer": "À budget quasi identique (~6 490-6 499 €), la CFMOTO gagne sur le réseau SAV (140+ concessionnaires vs ~30 pour KOVE) et la garde au sol (220 vs 210 mm). La KOVE répond avec 50 cm³ de plus et un accélérateur câble plus simple à entretenir. Si vous êtes proche d'un revendeur KOVE, la 510X mérite l'essai. Sinon, la CFMOTO est plus sécurisante."
+      },
+      {
+        "question": "Pourquoi la KOVE 510X n'a pas de ride-by-wire ?",
+        "answer": "C'est un choix délibéré de KOVE pour simplifier la mécanique, réduire les coûts et améliorer la fiabilité. Un accélérateur câble a moins de composants susceptibles de tomber en panne. L'inconvénient : les modes de conduite sont moins élaborés (différence subtile entre Sport et Eco selon les essayeurs). Pour beaucoup de riders, ce compromis est acceptable."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la KOVE 510X ?",
+        "answer": "5 000 km ou 6 mois selon les informations disponibles (source : revendeurs MB Motor France et essais presse). Les données officielles constructeur ne sont pas encore largement diffusées en France."
+      }
+    ],
+    "conclusion": "**Verdict acheteur — KOVE 510X 2025+**\n\nLa KOVE 510X est une trail A2 sérieuse à 6 499 €. Son bicylindre 498 cm³, sa fourche KYB et ses pneus Metzeler de série en font une proposition compétitive face à la CFMOTO 450 MT et à la VOGE DS525X. Son accélérateur câble (sans ride-by-wire) est à la fois sa limite et son avantage — moins sophistiqué, mais plus simple et fiable.\n\nSon seul vrai frein : le réseau SAV limité (~30 concessionnaires MB Motor France). Vérifiez la proximité du revendeur le plus proche avant tout achat.\n\nProfil idéal : rider A2 qui veut plus de cylindrée que les 450 cm³, proche d'un revendeur KOVE, et qui valorise la simplicité mécanique sur la sophistication électronique.",
+    "cta_primary": {
+      "label": "Trouver un revendeur KOVE près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "KOVE", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les trails A2 disponibles",
+      "action": "navigate",
+      "params": { "category": "trail", "permitted_a2": true }
+    }
+  }
+}

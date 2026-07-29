@@ -1,0 +1,311 @@
+{
+  "id": "kove-450-rally-2024-plus",
+  "slug": "kove-450-rally-2024-plus",
+  "model": "450 Rally",
+  "brand": "KOVE",
+  "brand_order": 8,
+  "category": "trail",
+  "subcategory": "enduro-rally",
+  "status": "published",
+  "featured": true,
+  "display_title": "KOVE 450 Rally",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2024+",
+  "model_order": 1,
+  "search_tags": ["kove", "450 rally", "kove 450", "rally raid", "enduro route", "entretien", "revision", "A2"],
+  "variants": [
+    {
+      "label": "Standard (version haute)",
+      "license_bridging": "A2 (42 ch / 31 kW natif)",
+      "engine_type": "Monocylindre 449 cm³ refroidi liquide/huile, DOHC 4 soupapes, EFI",
+      "displacement_cc": 449,
+      "power": "42 ch (31 kW) à 8 500 tr/min",
+      "torque": "35 Nm à 6 500 tr/min",
+      "fuel_system": "Injection électronique EFI",
+      "weight_tpf_kg": 150,
+      "seat_height_mm": 950,
+      "tank_l": 30,
+      "cycle_parts": {
+        "frame": "Dual wing-beam (double longeron aluminium)",
+        "front_suspension": "Fourche inversée Ø 49 mm entièrement réglable, débattement 305 mm",
+        "rear_suspension": "Amortisseur hydraulique entièrement réglable, débattement 300 mm",
+        "front_brake": "Disque simple, étrier double piston, ABS",
+        "rear_brake": "Disque simple, étrier simple piston, ABS",
+        "front_tire": "90/90-21",
+        "rear_tire": "140/80-18"
+      }
+    },
+    {
+      "label": "Standard (version basse)",
+      "license_bridging": "A2 (42 ch / 31 kW natif)",
+      "engine_type": "Monocylindre 449 cm³ refroidi liquide/huile, DOHC 4 soupapes, EFI",
+      "displacement_cc": 449,
+      "power": "42 ch (31 kW) à 8 500 tr/min",
+      "torque": "35 Nm à 6 500 tr/min",
+      "fuel_system": "Injection électronique EFI",
+      "weight_tpf_kg": 150,
+      "seat_height_mm": 910,
+      "tank_l": 30,
+      "cycle_parts": {
+        "frame": "Dual wing-beam (double longeron aluminium)",
+        "front_suspension": "Fourche inversée Ø 49 mm réglable, débattement 260 mm (version basse)",
+        "rear_suspension": "Amortisseur hydraulique réglable, débattement 250 mm (version basse)",
+        "front_brake": "Disque simple, étrier double piston, ABS",
+        "rear_brake": "Disque simple, étrier simple piston, ABS",
+        "front_tire": "90/90-21",
+        "rear_tire": "140/80-18"
+      }
+    },
+    {
+      "label": "Factory",
+      "license_bridging": "A (54 ch / 40 kW)",
+      "engine_type": "Monocylindre 449 cm³ refroidi liquide/huile, DOHC 4 soupapes, EFI",
+      "displacement_cc": 449,
+      "power": "54 ch (40 kW) à 9 500 tr/min",
+      "torque": "42 Nm à 7 000 tr/min",
+      "fuel_system": "Injection électronique EFI",
+      "weight_tpf_kg": 145,
+      "seat_height_mm": 960,
+      "tank_l": 30,
+      "cycle_parts": {
+        "frame": "Dual wing-beam aluminium renforcé",
+        "front_suspension": "Fourche inversée Ø 49 mm entièrement réglable, débattement 305 mm",
+        "rear_suspension": "Amortisseur hydraulique entièrement réglable, débattement 300 mm",
+        "front_brake": "Disque simple, étrier double piston (sans ABS)",
+        "rear_brake": "Disque simple, étrier simple piston (sans ABS)",
+        "front_tire": "90/90-21",
+        "rear_tire": "140/80-18"
+      }
+    }
+  ],
+  "technical_sheet": {
+    "years": "2024-présent",
+    "engine_type": "Monocylindre 4 temps, refroidissement liquide + huile, DOHC 4 soupapes, injection EFI",
+    "displacement_cc": 449,
+    "bore_stroke_mm": "94,5 × 64,0",
+    "max_power_kw": 31,
+    "max_power_hp": 42,
+    "max_power_rpm": 8500,
+    "max_torque_nm": 35,
+    "max_torque_rpm": 6500,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 5 vitesses",
+    "power": "42 ch (31 kW) à 8 500 tr/min",
+    "torque": "35 Nm à 6 500 tr/min",
+    "fuel_system": "Injection électronique EFI",
+    "weight_tpf_kg": 150,
+    "seat_height_mm": 950,
+    "tank_l": 30,
+    "license_bridging": "A2 (42 ch / 31 kW natif — pas de bridage nécessaire)",
+    "wheelbase_mm": 1490,
+    "ground_clearance_mm": 310,
+    "frame": "Dual wing-beam (double longeron aluminium)",
+    "front_suspension": "Fourche inversée Ø 49 mm entièrement réglable, débattement 305 mm",
+    "rear_suspension": "Amortisseur hydraulique entièrement réglable, débattement 300 mm",
+    "front_brake": "Disque simple, étrier double piston, ABS (Standard) / sans ABS (Factory)",
+    "rear_brake": "Disque simple, étrier simple piston",
+    "front_tire": "90/90-21",
+    "rear_tire": "140/80-18",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "~8 999 € (Standard) / ~10 999 € (Factory)",
+    "garantie": "2 ans",
+    "cycle_parts": {
+      "frame": "Dual wing-beam (double longeron aluminium)",
+      "front_suspension": "Fourche inversée Ø 49 mm entièrement réglable, débattement 305 mm",
+      "rear_suspension": "Amortisseur hydraulique entièrement réglable, débattement 300 mm",
+      "front_brake": "Disque simple, étrier double piston, ABS",
+      "rear_brake": "Disque simple, étrier simple piston",
+      "front_tire": "90/90-21",
+      "rear_tire": "140/80-18"
+    }
+  },
+  "relations": {
+    "same_category": ["kove-800x-pro-2024-plus", "cfmoto-450mt-2024-plus"],
+    "same_segment": ["ktm-450-exc-f", "beta-rr-430"]
+  },
+  "seo": {
+    "meta_title": "KOVE 450 Rally : avis, entretien, prix Standard vs Factory (2024+)",
+    "meta_description": "Guide complet KOVE 450 Rally 2024+ : fiche technique Standard et Factory, entretien tous les 5 000 km, coût réel, comparatif KTM 690 Adventure et avis propriétaires. Tout avant d'acheter.",
+    "keywords": [
+      "KOVE 450 Rally avis",
+      "KOVE 450 Rally entretien",
+      "KOVE 450 Rally prix",
+      "KOVE 450 Rally Standard Factory",
+      "KOVE 450 Rally fiabilité",
+      "KOVE 450 Rally vs KTM 690",
+      "KOVE 450 Rally révision 5000 km",
+      "KOVE 450 Rally permis A2",
+      "rally raid homologué route",
+      "KOVE 450 Rally Dakar",
+      "moto rally route moins de 10000 euros"
+    ]
+  },
+  "service_guide": {
+    "intro": "La KOVE 450 Rally est la moto qui a mis KOVE sur la carte en France. Propulsée par un monocylindre Zongshen 449 cm³ refroidi liquide et huile développant 42 ch en version Standard (A2) et 54 ch en version Factory, elle a démontré sa valeur au plus haut niveau : deux participations consécutives au Dakar, une présence en Championnat du Monde SSP avec la 312RR. À moins de 9 000 € pour la Standard, elle propose une architecture directement inspirée des motos de rallye-raid : cadre double longeron aluminium, fourche inversée Ø 49 mm entièrement réglable (débattement 305 mm !), réservoir 30 L, garde au sol de 310 mm et roues 21/18 pouces. C'est une moto atypique sur le marché français — ni trail routier classique, ni pure enduro de compétition, mais un engin polyvalent capable d'avaler les kilomètres sur route et de s'aventurer sérieusement hors goudron. Son réseau encore limité (TRC Racing pour la rally + MB Motor France pour les trail) est son principal point faible commercial.\n\nAttention : les données de coûts d'entretien en concession française sont indisponibles à ce jour (réseau trop récent et trop limité en France). Les estimations ci-dessous sont basées sur les retours propriétaires et les tarifs pratiqués en Espagne et en Belgique par les revendeurs KOVE.",
+
+    "known_issues": [
+      "Réseau SAV limité en France (TRC Racing / MB Motor France ~30 concessionnaires) — un point critique avant achat : localiser le revendeur le plus proche",
+      "Boîte 5 vitesses seulement (vs 6 vitesses sur la majorité des concurrentes) — se ressent à haute vitesse sur autoroute",
+      "Selle haute : 950 mm (version haute) / 910 mm (version basse) — réservé aux grands gabarits ou pilotes ayant l'habitude des trails enduro",
+      "Disponibilité des pièces de rechange : délais variables selon le revendeur — prévoir un stock minimal de consommables (filtres, bougies, chaîne)",
+      "Recul fiabilité limité sur le long terme (50 000+ km) : moteur Zongshen 449 cm³ éprouvé en compétition mais encore jeune en usage routier quotidien"
+    ],
+
+    "consumables": [
+      {
+        "part": "Huile moteur",
+        "average_lifetime": "5 000 km ou 6 mois",
+        "spec": "10W-40 synthétique JASO MA2 — volume environ 1,5 L avec filtre"
+      },
+      {
+        "part": "Filtre à huile",
+        "average_lifetime": "5 000 km"
+      },
+      {
+        "part": "Filtre à air",
+        "average_lifetime": "Nettoyage 2 500 km / remplacement 10 000 km — plus fréquent en off-road",
+        "spec": "Filtre KOVE d'origine ou équivalent mousse"
+      },
+      {
+        "part": "Bougie d'allumage",
+        "average_lifetime": "15 000-20 000 km — 1 bougie (monocylindre)"
+      },
+      {
+        "part": "Chaîne et kit chaîne",
+        "average_lifetime": "10 000-15 000 km (route) / 5 000-8 000 km (usage off-road intensif)"
+      },
+      {
+        "part": "Pneu avant 90/90-21",
+        "average_lifetime": "8 000-12 000 km selon type pneu et usage"
+      },
+      {
+        "part": "Pneu arrière 140/80-18",
+        "average_lifetime": "6 000-9 000 km selon usage"
+      },
+      {
+        "part": "Liquide de frein DOT 4",
+        "average_lifetime": "2 ans"
+      },
+      {
+        "part": "Liquide de refroidissement",
+        "average_lifetime": "2 ans ou 20 000 km"
+      }
+    ],
+
+    "longevity_tips": [
+      "Vérifier systématiquement le niveau d'huile moteur et la tension de chaîne avant chaque sortie off-road — en enduro, ces points sont critiques.",
+      "Nettoyer le filtre à air après chaque sortie sur piste poussiéreuse — un filtre encrassé sur un monocylindre dégrade rapidement les performances.",
+      "Localiser votre revendeur KOVE le plus proche avant l'achat et constituer un petit stock de consommables (filtre à huile, filtre à air, bougie) — la disponibilité des pièces reste le principal point de risque.",
+      "Respecter les 5 000 km entre vidanges impérativement : le monocylindre 449 cm³ utilisé en off-road subit des contraintes élevées.",
+      "Rincer et lubrifier la chaîne après chaque utilisation en conditions boueuses ou humides — en rally-raid, une chaîne négligée est la première cause de panne."
+    ],
+
+    "comparatif": {
+      "intro": "La KOVE 450 Rally occupe un créneau très spécifique — la moto de rallye-raid homologuée route abordable. Comparatif face à ses 3 rivales les plus pertinentes.",
+      "competitors": [
+        {
+          "model": "KTM 690 Adventure (2019+)",
+          "prix_france": "~10 999 €",
+          "avantages_vs_450rally": "Monocylindre LC4 693 cm³ bien plus puissant (74 ch), boîte 6 vitesses, réseau KTM dense, fiabilité longue durée prouvée",
+          "inconvenients_vs_450rally": "2 000 € plus chère, 45 kg de plus (238 kg), moins adaptée à l'off-road intensif",
+          "verdict": "Pour la route et le trail mixte — la KOVE est plus légère et plus capable en off-road, la KTM plus polyvalente et rassurante"
+        },
+        {
+          "model": "Honda CRF450L (2019+)",
+          "prix_france": "~9 499 €",
+          "avantages_vs_450rally": "Légèreté (142 kg), fiabilité Honda, maniabilité off-road supérieure",
+          "inconvenients_vs_450rally": "Monocylindre 471 cm³ moins puissant (34 ch), réservoir 7,8 L seulement (vs 30 L !), inconfort en usage routier prolongé",
+          "verdict": "La KOVE écrase la Honda sur l'autonomie (30 L vs 7,8 L) — la Honda gagne sur la légèreté pure"
+        },
+        {
+          "model": "Royal Enfield Himalayan 450 (2024+)",
+          "prix_france": "~5 999 €",
+          "avantages_vs_450rally": "3 000 € moins chère, usage routier plus confortable, réseau en développement",
+          "inconvenients_vs_450rally": "Bien moins orientée off-road sérieux, débattements suspension bien inférieurs, pas de cadre aluminium",
+          "verdict": "Deux philosophies différentes — la KOVE est une vraie moto de raid, l'Himalayan est un trail accessible"
+        }
+      ]
+    },
+
+    "service_schedule": [
+      {
+        "km": 500,
+        "service_label": "Rodage obligatoire",
+        "price_estimate": "NC — réseau limité"
+      },
+      {
+        "km": 5000,
+        "service_label": "Révision standard : vidange huile + filtre, contrôle chaîne, niveaux, ABS",
+        "price_estimate": "NC — données indisponibles réseau France"
+      },
+      {
+        "km": 10000,
+        "service_label": "Révision intermédiaire : + filtre à air, contrôle bougie, freins",
+        "price_estimate": "NC — données indisponibles réseau France"
+      },
+      {
+        "km": 20000,
+        "service_label": "Grande révision : + bougie, liquide de frein, kit chaîne si usure",
+        "price_estimate": "NC — données indisponibles réseau France"
+      }
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 5 000 km ou 6 mois. Filtre à air : nettoyage tous les 2 500 km en off-road.",
+      "total_60000km": "Données indisponibles — réseau France trop récent",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ Les tarifs d'entretien en concession KOVE France ne sont pas disponibles à ce jour (réseau MB Motor France / TRC Racing trop récent et peu dense). Les propriétaires français rapportent des coûts de main d'œuvre comparables à ceux pratiqués pour les KTM monocylindre (~80-100 €/h). Prévoir un budget d'entretien prudent de 150-250 € par révision à 5 000 km."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — KOVE 450 Rally Standard",
+      "hypothese": "8 000 km/an, usage mixte route/piste, revendeur région",
+      "poste_achat": "~8 999 €",
+      "poste_assurance_annuelle": "400 – 800 €",
+      "poste_entretien_3ans": "900 – 1 500 € (estimé, basé sur retours propriétaires)",
+      "poste_pneus_3ans": "400 – 700 € (usage mixte = usure accélérée)",
+      "poste_equipement_pilote": "600 – 2 000 € (équipement enduro recommandé)",
+      "total_3ans_estime": "12 299 – 16 999 €",
+      "valeur_revente_estimee": "5 500 – 7 000 € à 3 ans / 24 000 km (marché encore peu documenté)",
+      "cout_reel_3ans": "5 299 – 9 999 € soit 1 766 – 3 333 €/an",
+      "note": "L'incertitude principale sur le coût de possession est la valeur de revente — le marché d'occasion KOVE est encore embryonnaire en France. La rareté de la moto peut jouer en faveur d'une bonne revente."
+    },
+
+    "faq": [
+      {
+        "question": "La KOVE 450 Rally est-elle homologuée permis A2 ?",
+        "answer": "Oui, la version Standard développe 42 ch (31 kW) nativement — dans les limites A2 sans bridage. La version Factory (54 ch) est réservée au permis A. La Standard haute et basse diffèrent uniquement par la hauteur de selle (950 vs 910 mm) et les débattements de suspension (305/300 mm vs 260/250 mm)."
+      },
+      {
+        "question": "Quelle est la différence entre la KOVE 450 Rally Standard et Factory ?",
+        "answer": "La Standard (42 ch, ~8 999 €) est homologuée A2, avec ABS. La Factory (54 ch, ~10 999 €) développe 12 ch de plus via une cartographie moteur plus poussée, sans ABS (usage compétition), avec une suspension encore plus affinée. Pour un usage routier, la Standard est préférable. La Factory est taillée pour la compétition ou le rider expérimenté."
+      },
+      {
+        "question": "Pourquoi le réservoir fait-il 30 L ?",
+        "answer": "La KOVE 450 Rally est conçue dans l'esprit des rallyes-raids comme le Dakar, où l'autonomie est primordiale. 30 L offrent une autonomie théorique de 500-600 km — suffisant pour traverser des zones sans carburant. En usage routier normal, cela représente environ 3 semaines de conduite pour un rouleur moyen avant de faire le plein."
+      },
+      {
+        "question": "Peut-on trouver facilement un atelier pour entretenir la KOVE 450 Rally en France ?",
+        "answer": "C'est le point faible principal. Le réseau KOVE France compte environ 30 revendeurs via MB Motor France (trail) et TRC Racing (rally). Hors de ces revendeurs, tout atelier compétent sur les motos monocylindres refroidies liquide peut assurer les révisions courantes (vidange, filtre, chaîne). Pour les interventions électroniques ou garantie, le réseau officiel est nécessaire. Vérifiez la proximité d'un revendeur avant tout achat."
+      },
+      {
+        "question": "La KOVE 450 Rally est-elle fiable ?",
+        "answer": "Le moteur Zongshen 449 cm³ a démontré sa robustesse en compétition (Dakar, rallye-raid). Les retours des premiers propriétaires routiers sont positifs, notamment sur la qualité des composants (fourche, amortisseur, cadre alu). Le recul sur 50 000+ km en usage routier quotidien manque encore — c'est le risque inhérent à une marque jeune. Le respect scrupuleux des intervalles d'entretien (5 000 km) est essentiel."
+      }
+    ],
+
+    "conclusion": "**Verdict acheteur — KOVE 450 Rally Standard 2024+**\n\nLa KOVE 450 Rally est une moto unique sur le marché français. Pour moins de 9 000 €, elle propose une architecture de moto de raid sérieuse (cadre alu, fourche 49 mm réglable, 310 mm de garde au sol, réservoir 30 L) que personne d'autre ne propose à ce prix. Sa participation au Dakar n'est pas un argument marketing vide — c'est une validation technique réelle.\n\nSes limites sont claires : réseau SAV embryonnaire en France, boîte 5 vitesses, selle très haute (950/910 mm), et une incertitude sur la durabilité longue durée en usage routier intensif. Ce n'est pas une moto pour tout le monde.\n\nProfil idéal : rider A2 ou A passionné de raid et d'aventure, grand gabarit (>1,75 m recommandé), capable d'assurer lui-même les entretiens courants si le revendeur est loin, et proche d'un revendeur KOVE.",
+
+    "cta_primary": {
+      "label": "Trouver un revendeur KOVE près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "KOVE", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les trails enduro disponibles",
+      "action": "navigate",
+      "params": { "category": "trail", "subcategory": "enduro-rally" }
+    }
+  }
+}

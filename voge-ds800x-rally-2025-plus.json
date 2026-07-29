@@ -1,0 +1,205 @@
+{
+  "id": "voge-ds800x-rally-2025-plus",
+  "slug": "voge-ds800x-rally-2025-plus",
+  "model": "DS800X Rally",
+  "brand": "VOGE",
+  "brand_order": 9,
+  "category": "trail",
+  "subcategory": "trail-moyen",
+  "status": "published",
+  "featured": true,
+  "display_title": "VOGE DS800X Rally",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2025+",
+  "model_order": 3,
+  "search_tags": ["voge", "ds800x rally", "voge 800", "trail 800", "maxi trail", "anti tenere", "entretien", "revision"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2025-présent (disponible France : août 2025)",
+    "engine_type": "Bicylindre parallèle 4 temps KEL800, refroidissement liquide, DOHC 8 soupapes, calage 270°, Bosch EFI",
+    "displacement_cc": 798,
+    "bore_stroke_mm": "84,0 × 72,0",
+    "max_power_kw": 70,
+    "max_power_hp": 95,
+    "max_power_rpm": 9000,
+    "max_torque_nm": 81,
+    "max_torque_rpm": 6500,
+    "euro_standard": "Euro 5+",
+    "transmission": "Boîte 6 vitesses",
+    "power": "95 ch (70 kW) à 9 000 tr/min",
+    "torque": "81 Nm à 6 500 tr/min",
+    "fuel_system": "Injection Bosch EFI",
+    "license_bridging": "A (bridage A2 possible — 70 kW natif, bridage à 35 kW disponible)",
+    "weight_tpf_kg": 204,
+    "seat_height_mm": 850,
+    "tank_l": 24,
+    "wheelbase_mm": 1495,
+    "ground_clearance_mm": 220,
+    "frame": "Cadre périmétrique acier injecté",
+    "front_suspension": "Fourche inversée KYB Ø 43 mm entièrement réglable, débattement 207 mm",
+    "rear_suspension": "Monoamortisseur avec bonbonne séparée, réglable, sur biellette, débattement 190 mm — amortisseur de direction inclus",
+    "front_brake": "Disque 310 mm, étriers Nissin radiaux 4 pistons, ABS déconnectable",
+    "rear_brake": "Disque 220 mm, ABS déconnectable",
+    "front_tire": "90/90 R21 (jante rayons) Pirelli Scorpion Rally STR",
+    "rear_tire": "150/70 R18 (jante rayons) Pirelli Scorpion Rally STR",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "8 995 €",
+    "garantie": "3 ans (DIP SAS)",
+    "electronics": "ABS Nissin déconnectable, TCS déconnectable, 2 modes de conduite, TFT 7 pouces avec navigation, amortisseur de direction de série",
+    "serie_equipment": "Pirelli Scorpion Rally STR de série, jantes rayons 21/18, amortisseur de direction, sabot moteur, protège-mains, béquille centrale",
+    "cycle_parts": {
+      "frame": "Cadre périmétrique acier injecté",
+      "front_suspension": "Fourche inversée KYB Ø 43 mm entièrement réglable, débattement 207 mm",
+      "rear_suspension": "Monoamortisseur KYB bonbonne séparée, réglable sur biellette, débattement 190 mm",
+      "front_brake": "Disque 310 mm, étriers Nissin 4 pistons, ABS déconnectable",
+      "rear_brake": "Disque 220 mm",
+      "front_tire": "90/90 R21 Pirelli Scorpion Rally STR",
+      "rear_tire": "150/70 R18 Pirelli Scorpion Rally STR"
+    }
+  },
+  "relations": {
+    "same_brand": ["voge-ds525x-2024-plus", "voge-ds625x-2025-plus", "voge-ds900x-2025-plus"],
+    "same_category": ["yamaha-tenere700-2019-plus", "honda-xl750-transalp-2023-plus", "kove-800x-pro-2024-plus", "cfmoto-800mt-sport-explore-2023-plus"]
+  },
+  "seo": {
+    "meta_title": "VOGE DS800X Rally : avis, entretien, prix et guide d'achat (2025+)",
+    "meta_description": "Guide complet VOGE DS800X Rally 2025+ : 95 ch, 204 kg, réservoir 24L, Pirelli Rally STR de série, 8 995 €, garantie 3 ans. Comparatif Yamaha Ténéré 700 / KOVE 800X Pro et avis.",
+    "keywords": [
+      "VOGE DS800X Rally avis",
+      "VOGE DS800X Rally entretien",
+      "VOGE DS800X Rally prix",
+      "VOGE DS800 Rally vs Yamaha Ténéré 700",
+      "VOGE DS800X Rally vs KOVE 800X Pro",
+      "VOGE DS800X Rally fiabilité",
+      "VOGE 800 Rally révision",
+      "trail 800 8995 euros",
+      "anti Ténéré 700",
+      "VOGE DS800X Rally forum",
+      "VOGE DS800 Rally 10000 km révision"
+    ]
+  },
+  "service_guide": {
+    "intro": "La VOGE DS800X Rally est l'une des motos les plus attendues de 2025 sur le marché français. Présentée à l'EICMA de Milan, disponible en concession DIP à partir d'août 2025 à 8 995 €, elle se positionne directement face au Yamaha Ténéré 700 (~10 499 €) et à la KOVE 800X Pro (~8 999 €). Son moteur bicylindre KEL800 798 cm³ calé à 270° développe 95 ch et 81 Nm — même cylindrée que la KOVE 800X Pro mais avec 1 Nm de couple supplémentaire. Son réservoir de 24 L est l'un des plus généreux du segment (vs 20 L pour la Ténéré 700 et la KOVE 800X Pro), offrant une autonomie théorique de ~460 km. La dotation de série est impressionnante : fourche KYB entièrement réglable avec 207 mm de débattement, monoamortisseur bonbonne séparée sur biellette, pneus Pirelli Scorpion Rally STR, amortisseur de direction, jantes rayons 21/18, TFT 7 pouces avec navigation. Et la garantie 3 ans DIP qui la distingue de toutes ses concurrentes sauf la CFMOTO (5 ans). Point de vigilance majeur : modèle tout juste sorti en France — zéro recul sur la fiabilité réelle et les intervalles d'entretien officiels ne sont pas encore largement diffusés.",
+
+    "known_issues": [
+      "Modèle tout nouveau (disponible France août 2025) — aucun retour de fiabilité long terme disponible à ce jour",
+      "Moteur KEL800 798 cm³ propriété VOGE/Loncin — nouveau moteur sans historique comparable au LC8c KTM (CFMOTO) ou au CP2 Yamaha",
+      "Intervalle d'entretien annuel ou 10 000 km selon motomag.com — à confirmer en concession DIP (le plus généreux du segment chinois si confirmé)",
+      "Selle à 850 mm — similaire aux grandes trails. Taille fine de la selle compense partiellement selon VOGE, mais gabarits <1,70 m à tester impérativement",
+      "Prix non bridage A2 à confirmer — 70 kW natifs, bridage possible selon DIP"
+    ],
+
+    "consumables": [
+      { "part": "Huile moteur 10W-40 synthétique JASO MA2", "average_lifetime": "10 000 km ou 1 an (source motomag.com — à confirmer) — ~3,0 L avec filtre estimé" },
+      { "part": "Filtre à huile", "average_lifetime": "10 000 km" },
+      { "part": "Filtre à air", "average_lifetime": "Nettoyage 10 000 km / remplacement 20 000 km — plus fréquent en off-road" },
+      { "part": "Bougies (2)", "average_lifetime": "20 000-30 000 km (estimation)" },
+      { "part": "Jeu aux soupapes", "average_lifetime": "Estimation 20 000-30 000 km — non confirmé officiellement" },
+      { "part": "Chaîne 525 X-ring renforcée", "average_lifetime": "15 000-20 000 km (route) / 8 000-12 000 km (off-road)" },
+      { "part": "Pneus Pirelli Scorpion Rally STR AV 90/90 R21", "average_lifetime": "8 000-12 000 km selon usage" },
+      { "part": "Pneus Pirelli Scorpion Rally STR AR 150/70 R18", "average_lifetime": "7 000-10 000 km selon usage" },
+      { "part": "Liquide de frein DOT 4", "average_lifetime": "2 ans" },
+      { "part": "Liquide de refroidissement", "average_lifetime": "3 ans" }
+    ],
+
+    "longevity_tips": [
+      "Respecter impérativement le rodage (500-1 000 km) et faire la première révision : moteur neuf, aucun compromis sur l'huile de rodage.",
+      "Profiter de la garantie 3 ans DIP en faisant tamponner le carnet à chaque révision — seule protection financière sur un moteur sans recul.",
+      "Le réservoir de 24 L offre ~460 km d'autonomie — éviter de le vider systématiquement (dépôts en fond de réservoir).",
+      "Lubrifier la chaîne tous les 500-700 km et après off-road : 95 ch + 204 kg = transmission très sollicitée.",
+      "Signaler immédiatement tout bruit ou comportement anormal en concession pendant la garantie : sur un moteur nouveau, la vigilance est essentielle."
+    ],
+
+    "comparatif": {
+      "intro": "La VOGE DS800X Rally face aux 3 références du segment trail 800 en France.",
+      "competitors": [
+        {
+          "model": "Yamaha Ténéré 700 (2019+)",
+          "prix_france": "~10 499 €",
+          "avantages_vs_ds800rally": "Fiabilité CP2 légendaire, légèreté (204 kg identique), communauté mondiale immense, valeur de revente excellente, réseau Yamaha dense",
+          "inconvenients_vs_ds800rally": "1 504 € plus chère, réservoir 16 L (vs 24 L !), 72 ch (vs 95 ch), moins équipée de série (pas de Pirelli Rally, pas d'amortisseur direction, pas de navigation)",
+          "verdict": "La Ténéré gagne sur la fiabilité prouvée et la revente. La VOGE sur le prix, le réservoir et l'équipement."
+        },
+        {
+          "model": "KOVE 800X Pro (2024+)",
+          "prix_france": "~8 999 €",
+          "avantages_vs_ds800rally": "Prix quasi identique (4 € de moins), 190 kg (14 kg plus légère !), réseau KOVE légèrement plus spécialisé trail",
+          "inconvenients_vs_ds800rally": "Garantie 2 ans (vs 3 ans), réservoir 20 L (vs 24 L), réseau SAV France comparable (~30 concessionnaires vs 450+ DIP)",
+          "verdict": "La KOVE est 14 kg plus légère — atout majeur. La VOGE gagne sur la garantie 3 ans et le réseau DIP 450+ magasins."
+        },
+        {
+          "model": "CFMOTO 800 MT Explore (2023+)",
+          "prix_france": "~10 999 €",
+          "avantages_vs_ds800rally": "Moteur KTM LC8c éprouvé, garantie 5 ans, radar angle mort (2024+), réseau CFMOTO 140+ concessionnaires moto-spécialisés",
+          "inconvenients_vs_ds800rally": "2 004 € plus chère, 231 kg (27 kg de plus !), réservoir 20 L (vs 24 L)",
+          "verdict": "La CFMOTO gagne sur la garantie 5 ans et le moteur KTM. La VOGE sur le prix, le poids et le réservoir."
+        }
+      ]
+    },
+
+    "service_schedule": [
+      { "km": 500, "service_label": "Rodage obligatoire : vidange huile + filtre, contrôle général", "price_estimate": "NC" },
+      { "km": 10000, "service_label": "Révision standard : vidange, filtre, chaîne, niveaux, ABS, TCS, navigation", "price_estimate": "NC — données indisponibles" },
+      { "km": 20000, "service_label": "Grande révision : + filtre air, bougies, liquide frein, contrôle soupapes", "price_estimate": "NC" },
+      { "km": 30000, "service_label": "Révision majeure : + kit chaîne si usure, roulements, liquide refroidissement", "price_estimate": "NC" }
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Annuel ou 10 000 km selon motomag.com — à confirmer en concession DIP. Si confirmé, ce serait l'intervalle le plus long du segment chinois.",
+      "total_60000km": "Données indisponibles — modèle trop récent",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ La DS800X Rally vient d'arriver en France (août 2025). Les tarifs d'entretien DIP et les intervalles officiels ne sont pas encore largement disponibles. L'intervalle annuel ou 10 000 km (vs 5 000 km sur les VOGE 500-600) serait un avantage majeur si confirmé. La garantie 3 ans couvre les défauts pendant 3 ans / sans limite kilométrique annoncée."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — VOGE DS800X Rally",
+      "hypothese": "10 000 km/an, usage mixte route/piste",
+      "poste_achat": "8 995 €",
+      "poste_assurance_annuelle": "500 – 900 €",
+      "poste_entretien_3ans": "600 – 1 200 € (estimé, 3 révisions si intervalle 10 000 km confirmé)",
+      "poste_pneus_3ans": "500 – 800 € (Pirelli Rally STR — coût supérieur aux routiers)",
+      "poste_equipement_pilote": "600 – 2 000 €",
+      "total_3ans_estime": "12 695 – 17 895 €",
+      "valeur_revente_estimee": "5 500 – 7 000 € à 3 ans (très difficile à estimer — modèle 2025)",
+      "cout_reel_3ans": "5 695 – 10 895 € soit 1 898 – 3 632 €/an",
+      "note": "Si l'intervalle 10 000 km est confirmé, la DS800X Rally aurait le coût d'entretien annuel le plus bas de sa catégorie parmi les motos chinoises — 2 révisions en 3 ans pour un rouleur de 10 000 km/an. La garantie 3 ans DIP est le filet de sécurité financier clé."
+    },
+
+    "faq": [
+      {
+        "question": "Quelle est la différence entre VOGE DS800X Rally et DS900X ?",
+        "answer": "La DS900X (déjà dans la gamme VOGE France) est une trail plus routière avec un moteur 895 cm³ plus ancien. La DS800X Rally est une proposition entièrement nouvelle (2025) : moteur KEL800 798 cm³ calé à 270°, roues 21/18 rayons, pneus Pirelli Rally STR, orientée aventure/off-road. Les deux coexistent dans la gamme à des prix et des positionnements différents."
+      },
+      {
+        "question": "La VOGE DS800X Rally est-elle disponible en A2 ?",
+        "answer": "Oui, un bridage à 35 kW est possible selon DIP France. La moto développe 70 kW (95 ch) natifs — au-dessus du seuil A2. Le bridage se fait en concession DIP."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la VOGE DS800X Rally ?",
+        "answer": "Selon motomag.com, l'intervalle serait annuel ou 10 000 km — à confirmer impérativement en concession DIP avant achat. Si confirmé, c'est l'intervalle le plus généreux de la gamme VOGE et du segment chinois (vs 5 000 km sur les DS525X/625X)."
+      },
+      {
+        "question": "Pourquoi le réservoir de 24 L est-il un argument majeur ?",
+        "answer": "À 5,2 L/100 km de consommation annoncée, les 24 L offrent une autonomie théorique de ~460 km. C'est 100 km de plus que la Yamaha Ténéré 700 (16 L), 60 km de plus que la KOVE 800X Pro (20 L) et autant que la CFMOTO 800 MT (20 L). Pour un voyageur qui traverse des zones isolées, cette autonomie change réellement la donne."
+      },
+      {
+        "question": "La VOGE DS800X Rally peut-elle faire de l'off-road sérieux ?",
+        "answer": "Oui — c'est sa raison d'être. Roues 21/18 rayons, Pirelli Scorpion Rally STR de série, 220 mm de garde au sol, fourche 207 mm de débattement, amortisseur bonbonne séparée sur biellette : c'est une base trail sérieuse. Avec ses 204 kg, elle est plus lourde que la KOVE 800X Pro (190 kg) en off-road intensif, mais reste dans des proportions gérables."
+      }
+    ],
+
+    "conclusion": "**Verdict acheteur — VOGE DS800X Rally 2025+**\n\nLa VOGE DS800X Rally arrive avec les bons arguments : 95 ch, 204 kg, réservoir 24 L, Pirelli Rally STR de série, fourche KYB 207 mm, amortisseur bonbonne, navigation, garantie 3 ans DIP — à 8 995 €. Sur le papier, c'est l'une des trails 800 les mieux équipées du marché à ce prix.\n\nSes risques sont clairs : moteur KEL800 tout neuf en 2025, zéro recul fiabilité, intervalles d'entretien à confirmer. C'est le prix à payer pour être parmi les premiers adopteurs d'une moto ambitieuse.\n\nProfil idéal : rider A passionné de voyage et d'aventure, grand autonomie-seekeur (24 L), proche d'un concessionnaire DIP (450+ magasins), protégé par la garantie 3 ans, et serein à l'idée d'être pionnier sur un nouveau moteur.",
+
+    "cta_primary": {
+      "label": "Trouver un concessionnaire VOGE près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "VOGE", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les trails 800 disponibles",
+      "action": "navigate",
+      "params": { "category": "trail", "subcategory": "trail-moyen" }
+    }
+  }
+}

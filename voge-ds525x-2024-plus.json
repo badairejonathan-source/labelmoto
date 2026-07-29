@@ -1,0 +1,198 @@
+{
+  "id": "voge-ds525x-2024-plus",
+  "slug": "voge-ds525x-2024-plus",
+  "model": "DS525X",
+  "brand": "VOGE",
+  "brand_order": 9,
+  "category": "trail",
+  "subcategory": "trail-moyen",
+  "status": "published",
+  "featured": true,
+  "display_title": "VOGE DS525X",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2024+",
+  "model_order": 1,
+  "search_tags": ["voge", "ds525x", "voge 525", "trail A2", "adventure 500", "loncin", "entretien", "revision"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2024-présent (Euro 5+)",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, balancier d'équilibrage",
+    "displacement_cc": 494,
+    "max_power_kw": 35,
+    "max_power_hp": 47,
+    "max_power_rpm": 8500,
+    "max_torque_nm": 50,
+    "max_torque_rpm": 7000,
+    "euro_standard": "Euro 5+",
+    "transmission": "Boîte 6 vitesses",
+    "power": "47 ch (35 kW) à 8 500 tr/min",
+    "torque": "50,5 Nm à 7 000 tr/min",
+    "fuel_system": "Injection électronique Bosch",
+    "license_bridging": "A2 natif (35 kW — pas de bridage nécessaire)",
+    "weight_tpf_kg": 206,
+    "seat_height_mm": 810,
+    "seat_height_options_mm": "810 mm (basse) / 870 mm (haute) — réglage 60 mm sans outil",
+    "tank_l": 17,
+    "wheelbase_mm": 1455,
+    "ground_clearance_mm": 200,
+    "frame": "Cadre treillis acier léger automobile haute résistance",
+    "front_suspension": "Fourche inversée KYB Ø 43 mm réglable, débattement 200 mm",
+    "rear_suspension": "Monoamortisseur KYB réglable, débattement 185 mm",
+    "front_brake": "Double disque 310 mm, étriers Nissin, ABS déconnectable",
+    "rear_brake": "Disque 265 mm, ABS déconnectable",
+    "front_tire": "110/80 R19 (jante rayons tubeless) Metzeler",
+    "rear_tire": "150/70 R17 (jante rayons tubeless) Metzeler",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "NC — à confirmer en concession DIP",
+    "garantie": "3 ans (DIP SAS — garantie constructeur)",
+    "electronics": "ABS Nissin 2 canaux déconnectable, TCS déconnectable, 2 modes de conduite, TFT 7 pouces, USB-C + prise 12V, capteur pression pneus TPMS, pare-brise réglable",
+    "serie_equipment": "Crash-bars, porte-bagages, protège-mains, béquille centrale, sabot moteur de série",
+    "cycle_parts": {
+      "frame": "Cadre treillis acier haute résistance",
+      "front_suspension": "Fourche inversée KYB Ø 43 mm réglable, débattement 200 mm",
+      "rear_suspension": "Monoamortisseur KYB réglable, débattement 185 mm",
+      "front_brake": "Double disque 310 mm, étriers Nissin, ABS déconnectable",
+      "rear_brake": "Disque 265 mm",
+      "front_tire": "110/80 R19 Metzeler tubeless",
+      "rear_tire": "150/70 R17 Metzeler tubeless"
+    }
+  },
+  "relations": {
+    "same_brand": ["voge-ds625x-2025-plus", "voge-ds900x-2025-plus", "voge-ds800x-rally-2025-plus"],
+    "same_category": ["cfmoto-450mt-2024-plus", "kove-510x-2025-plus", "honda-nx500-2023-plus"]
+  },
+  "seo": {
+    "meta_title": "VOGE DS525X : avis, entretien, prix et guide d'achat (2024+)",
+    "meta_description": "Guide complet VOGE DS525X 2024+ : 47 ch A2, fourche KYB, Metzeler de série, garantie 3 ans, réseau DIP 450+ magasins. Entretien, coût réel, comparatif CFMOTO 450MT et avis propriétaires.",
+    "keywords": [
+      "VOGE DS525X avis",
+      "VOGE DS525X entretien",
+      "VOGE DS525X prix",
+      "VOGE DS525X fiabilité",
+      "VOGE DS525X vs CFMOTO 450MT",
+      "VOGE DS525X révision",
+      "VOGE DS525X permis A2",
+      "VOGE 525 entretien",
+      "trail adventure A2 garantie 3 ans",
+      "VOGE DS525X forum",
+      "VOGE DS525X occasion"
+    ]
+  },
+  "service_guide": {
+    "intro": "La VOGE DS525X est le trail A2 phare de VOGE en France — et probablement le modèle VOGE le plus vendu du marché d'occasion (289 annonces sur Le Parking-Moto). Produite par Loncin (le même groupe industriel qui fabrique les moteurs boxer pour BMW), elle embarque un bicylindre 494 cm³ développant 47 ch pour 50,5 Nm — le couple le plus élevé de sa catégorie A2 — avec la fourche KYB, les freins Nissin, les pneus Metzeler et les jantes rayons tubeless 19/17 pouces de série. Son équipement de série est remarquable : crash-bars, porte-bagages, protège-mains, béquille centrale, sabot moteur, TFT 7 pouces, TPMS, pare-brise réglable — tout ce que les japonaises facturent en options. La garantie 3 ans DIP SAS (importateur réseau de 450+ magasins) est un argument solide. Sa selle est réglable sans outil entre 810 et 870 mm — un vrai point fort pour les gabarits variés.\n\n⚠️ Les données de prix et de coûts d'entretien en concession France ne sont pas publiées officiellement par VOGE France. Estimations basées sur retours propriétaires et tarifs pratiqués en réseau DIP.",
+    "known_issues": [
+      "Poids en ordre de marche annoncé à 206 kg — dans la haute moyenne du segment (vs 196 kg CFMOTO 450 MT, 178 kg KOVE 510X à sec)",
+      "Prix non publié officiellement sur le site VOGE France — à confirmer en concession DIP (estimation : 6 500-7 500 €)",
+      "Quelques retours sur un amortisseur arrière perfectible en charge lourde (passager + bagages) sur les premiers millésimes",
+      "Recul fiabilité moteur 494 cm³ génération actuelle : retours globalement positifs mais moins documentés que les motorisations japonaises équivalentes"
+    ],
+    "consumables": [
+      { "part": "Huile moteur 10W-40 JASO MA2", "average_lifetime": "5 000 km ou 6 mois — ~2,5 L avec filtre (estimation)" },
+      { "part": "Filtre à huile", "average_lifetime": "5 000 km" },
+      { "part": "Filtre à air", "average_lifetime": "Nettoyage 5 000 km / remplacement 10 000 km" },
+      { "part": "Bougies (2)", "average_lifetime": "20 000 km" },
+      { "part": "Jeu aux soupapes", "average_lifetime": "Contrôle estimé 20 000-30 000 km (non confirmé officiel)" },
+      { "part": "Chaîne et kit chaîne 520", "average_lifetime": "15 000 km (route) / 8 000-10 000 km (usage mixte)" },
+      { "part": "Pneus avant 110/80 R19 Metzeler", "average_lifetime": "10 000-14 000 km" },
+      { "part": "Pneus arrière 150/70 R17 Metzeler", "average_lifetime": "8 000-11 000 km" },
+      { "part": "Liquide de frein DOT 4", "average_lifetime": "2 ans" },
+      { "part": "Capteurs TPMS (pression pneus)", "average_lifetime": "Vérification annuelle — remplacement batterie vers 5-7 ans" }
+    ],
+    "longevity_tips": [
+      "Profiter de la selle réglable sans outil (810/870 mm) pour adapter l'ergonomie selon le pilote ou le type de sortie.",
+      "Vérifier les capteurs TPMS lors des révisions — les capteurs de pression pneus intégrés sont utiles mais nécessitent une surveillance.",
+      "Lubrifier la chaîne tous les 500-700 km — avec 50,5 Nm de couple et 206 kg, la transmission est bien sollicitée.",
+      "Mettre à jour le logiciel TFT en concession DIP — VOGE publie des mises à jour régulières pour améliorer la connectivité et les modes de conduite.",
+      "Profiter de la garantie 3 ans pour faire contrôler l'amortisseur arrière si vous roulez régulièrement en charge : amortisseur perfectible en usage chargé selon certains retours."
+    ],
+    "comparatif": {
+      "intro": "La VOGE DS525X face à ses rivales directes sur le marché français A2 trail 500 cm³.",
+      "competitors": [
+        {
+          "model": "CFMOTO 450 MT (2024+)",
+          "prix_france": "6 490 €",
+          "avantages_vs_ds525x": "Probablement moins chère, garde au sol 220 mm (vs 200), ride-by-wire avec modes élaborés, réseau GD France plus moto-spécialisé",
+          "inconvenients_vs_ds525x": "449 cm³ (vs 494), couple inférieur (43 vs 50,5 Nm), garantie 2 ans (vs 3 ans), moins d'équipement série (pas de crash-bars ni sabot)",
+          "verdict": "La VOGE gagne sur le couple, la garantie 3 ans et l'équipement série. La CFMOTO sur le prix et la garde au sol."
+        },
+        {
+          "model": "KOVE 510X (2025+)",
+          "prix_france": "6 499 €",
+          "avantages_vs_ds525x": "Prix probablement inférieur, 178 kg à sec (plus légère), accélérateur câble (moins d'électronique)",
+          "inconvenients_vs_ds525x": "Réseau SAV très limité (~30 vs 450+ DIP), garantie 2 ans (vs 3 ans), équipement série moins complet",
+          "verdict": "La VOGE gagne nettement sur le réseau SAV et la garantie. La KOVE sur la légèreté."
+        },
+        {
+          "model": "Honda NX500 (2023+)",
+          "prix_france": "~7 500 €",
+          "avantages_vs_ds525x": "Fiabilité Honda légendaire, réseau SAV le plus dense de France, valeur de revente supérieure",
+          "inconvenients_vs_ds525x": "1 000 € minimum plus chère, équipement série bien inférieur (pas de crash-bars, pas de sabot, pas de TPMS), roue avant 19 pouces seulement",
+          "verdict": "La VOGE offre plus pour moins cher — la Honda gagne sur la fiabilité longue durée et la revente"
+        }
+      ]
+    },
+    "service_schedule": [
+      { "km": 500, "service_label": "Rodage : vidange huile + filtre, contrôle général", "price_estimate": "NC — réseau DIP" },
+      { "km": 5000, "service_label": "Révision standard : vidange, filtre, chaîne, ABS, TCS, TPMS", "price_estimate": "NC — données indisponibles" },
+      { "km": 10000, "service_label": "Révision intermédiaire : + filtre air, contrôle bougies", "price_estimate": "NC" },
+      { "km": 20000, "service_label": "Grande révision : + bougies, liquide frein, kit chaîne si usure", "price_estimate": "NC" }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 5 000 km ou 6 mois (estimation — données officielles VOGE France non publiées).",
+      "total_60000km": "Données indisponibles",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ VOGE France ne publie pas ses tarifs d'entretien officiels. Estimation basée sur retours propriétaires réseau DIP : 150-250 € par révision standard (5 000 km). La garantie 3 ans couvre toute défaillance non liée à l'usure normale."
+    },
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — VOGE DS525X",
+      "hypothese": "8 000 km/an, usage mixte route/piste",
+      "poste_achat": "~6 500-7 500 € (prix à confirmer concession DIP)",
+      "poste_assurance_annuelle": "350 – 700 €",
+      "poste_entretien_3ans": "800 – 1 400 € (estimé, garantie 3 ans protège sur le reste)",
+      "poste_pneus_3ans": "400 – 600 €",
+      "poste_equipement_pilote": "500 – 1 500 €",
+      "total_3ans_estime": "9 550 – 13 200 €",
+      "valeur_revente_estimee": "3 800 – 5 000 € à 3 ans (marché d'occasion VOGE en développement — 289 annonces DS525X sur Le Parking-Moto)",
+      "cout_reel_3ans": "4 550 – 8 200 € soit 1 517 – 2 733 €/an",
+      "note": "La garantie 3 ans est le différenciateur financier clé vs la concurrence (2 ans chez CFMOTO, KTM, Honda). Elle protège contre les grosses interventions pendant 3 ans."
+    },
+    "faq": [
+      {
+        "question": "Quelle est la hauteur de selle de la VOGE DS525X ?",
+        "answer": "La selle est réglable sans outil entre 810 mm (position basse) et 870 mm (position haute) — une différence de 60 mm. C'est l'un des rares trails A2 à proposer ce réglage de série, idéal pour les pilotes de gabarits différents ou pour adapter l'ergonomie selon le type de sortie (ville vs voyage)."
+      },
+      {
+        "question": "La VOGE DS525X est-elle homologuée permis A2 ?",
+        "answer": "Oui, 35 kW (47 ch) natifs — aucun bridage nécessaire. C'est l'un de ses avantages vs des motos qui développent plus et doivent être bridées en concession."
+      },
+      {
+        "question": "VOGE est-elle une marque fiable ?",
+        "answer": "VOGE est une marque du groupe Loncin — le même industriel qui fabrique les moteurs boxer pour BMW et une partie des moteurs CFMOTO. La base industrielle est sérieuse. Les retours sur la DS525X (289 annonces d'occasion sur Le Parking-Moto) sont globalement positifs. Le recul sur 60 000+ km manque encore, mais les premiers propriétaires dépassant 20 000-30 000 km sans incident majeur sont nombreux."
+      },
+      {
+        "question": "Qu'est-ce que le TPMS sur la VOGE DS525X ?",
+        "answer": "Le TPMS (Tire Pressure Monitoring System) est un capteur de pression des pneus intégré aux jantes, qui affiche la pression en temps réel sur le TFT 7 pouces. C'est un équipement habituellement réservé aux motos premium (BMW GS, Ducati Multistrada) — rarissime sur une trail A2 en dessous de 10 000 €."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la VOGE DS525X ?",
+        "answer": "VOGE France ne publie pas officiellement ses intervalles. Les retours revendeurs DIP et propriétaires indiquent un entretien tous les 5 000 km ou 6 mois. La garantie 3 ans impose les révisions dans le réseau DIP."
+      },
+      {
+        "question": "Peut-on faire entretenir la VOGE DS525X hors réseau DIP ?",
+        "answer": "Oui, hors garantie. Le moteur 494 cm³ bicylindre est accessible. Pendant la garantie 3 ans, les révisions doivent être effectuées dans le réseau DIP (450+ magasins en France) pour la maintenir — c'est un avantage majeur vs KOVE ou d'autres marques au réseau limité."
+      }
+    ],
+    "conclusion": "**Verdict acheteur — VOGE DS525X 2024+**\n\nLa VOGE DS525X est l'un des meilleurs rapports équipement/garantie/réseau du segment trail A2 en France. Son couple de 50,5 Nm (le meilleur de sa catégorie), sa selle réglable sans outil, son équipement de série (crash-bars, sabot, TPMS, TFT 7 pouces) et sa garantie 3 ans via le réseau DIP (450+ magasins) en font une proposition très sérieuse.\n\nSes limites sont le prix non publié (à confirmer), un poids de 206 kg dans la haute moyenne, et un recul longue durée inférieur aux japonaises.\n\nProfil idéal : rider A2 qui veut le maximum d'équipement de série et une garantie longue via un réseau dense — et qui veut un trail polyvalent avec du couple disponible dès les bas régimes.",
+    "cta_primary": {
+      "label": "Trouver un concessionnaire VOGE près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "VOGE", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les trails A2 disponibles",
+      "action": "navigate",
+      "params": { "category": "trail", "permitted_a2": true }
+    }
+  }
+}
