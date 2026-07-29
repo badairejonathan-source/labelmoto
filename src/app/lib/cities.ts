@@ -171,6 +171,246 @@ export const CITIES: CityData[] = [
     ],
     searchTerms: ["mécanicien moto Lille","concessionnaire moto 59","garage moto Nord","réparation moto Lille","atelier moto Villeneuve-d'Ascq","entretien moto métropole lilloise"],
   },
+  {
+    slug: 'annecy', name: 'Annecy', departement: '74', region: 'Auvergne-Rhône-Alpes',
+    metaTitle: "Garage moto Annecy (74) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Annecy parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 74. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Annecy : les pros de votre région',
+    intro: [
+      "Annecy et la Haute-Savoie offrent aux motards des routes d'exception : le col de la Colombière, le col des Aravis, le col du Grand-Colombier et les rives du lac d'Annecy figurent parmi les plus beaux itinéraires des Alpes.",
+      "LabelMoto recense les garages moto et concessionnaires d'Annecy et de Haute-Savoie avec fiches vérifiées, avis et coordonnées directes pour les motards alpins.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Annecy ?', a: "Annecy et la Haute-Savoie disposent de nombreux ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des spécialistes moto trail à Annecy ?', a: "Oui, plusieurs ateliers annéciens sont spécialisés en trail et enduro, adaptés aux cols alpins. Filtrez sur LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Annecy ?", a: "À Annecy, comptez 80 à 140 € pour une révision simple, 280 à 450 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Annecy","concessionnaire moto 74","garage moto Haute-Savoie","réparation moto Annecy","atelier moto col Aravis","entretien moto Alpes"],
+  },
+  {
+    slug: 'cannes', name: 'Cannes', departement: '06', region: "Provence-Alpes-Côte d'Azur",
+    metaTitle: "Garage moto Cannes (06) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Cannes parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 06. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Cannes : les pros de votre région',
+    intro: [
+      "Cannes et les Alpes-Maritimes sont un terrain de jeu idéal pour les motards : l'Esterel, les gorges du Verdon, le col de Turini et les routes de l'arrière-pays niçois sont accessibles depuis la Côte d'Azur.",
+      "LabelMoto recense les garages moto et concessionnaires de Cannes et des Alpes-Maritimes avec fiches vérifiées, avis et coordonnées directes pour les motards azuréens.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Cannes ?', a: "Cannes et les Alpes-Maritimes disposent de nombreux ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des spécialistes moto sport à Cannes ?', a: "Oui, la région Côte d'Azur compte plusieurs spécialistes sport moto et trail. Consultez LabelMoto pour les coordonnées." },
+      { q: "Quel est le prix d'une révision moto à Cannes ?", a: "À Cannes, comptez 90 à 140 € pour une révision simple, 280 à 460 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Cannes","concessionnaire moto 06","garage moto Alpes-Maritimes","réparation moto Cannes","atelier moto Côte d'Azur","entretien moto Esterel"],
+  },
+  {
+    slug: 'ajaccio', name: 'Ajaccio', departement: '2A', region: 'Corse',
+    metaTitle: "Garage moto Ajaccio (2A) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Ajaccio parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 2A. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Ajaccio : les pros de votre région',
+    intro: [
+      "Ajaccio et la Corse-du-Sud sont une destination moto à part entière : les routes corses, entre col de Bavella, Calanques de Piana et D84, figurent parmi les plus spectaculaires d'Europe.",
+      "LabelMoto recense les garages moto et concessionnaires d'Ajaccio et de Corse-du-Sud avec fiches vérifiées, avis et coordonnées directes pour les motards insulaires.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Ajaccio ?', a: "Ajaccio et la Corse-du-Sud disposent de professionnels moto référencés sur LabelMoto. Retrouvez-les avec leurs horaires et avis." },
+      { q: 'Peut-on louer une moto à Ajaccio ?', a: "Oui, plusieurs professionnels proposent la location de motos à Ajaccio pour découvrir les routes corses. Consultez LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Ajaccio ?", a: "À Ajaccio, comptez 90 à 150 € pour une révision simple, 290 à 470 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Ajaccio","concessionnaire moto Corse","garage moto 2A","réparation moto Ajaccio","atelier moto Corse du Sud","entretien moto Corse"],
+  },
+  {
+    slug: 'merignac', name: 'Mérignac', departement: '33', region: 'Nouvelle-Aquitaine',
+    metaTitle: "Garage moto Mérignac (33) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Mérignac parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 33. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Mérignac : les pros de votre région',
+    intro: [
+      "Mérignac, première commune de la métropole bordelaise, concentre de nombreux professionnels moto desservant l'ensemble de l'agglomération. Les Landes et le Médoc offrent de belles routes pour les sorties girondines.",
+      "LabelMoto recense les garages moto et concessionnaires de Mérignac et de la métropole de Bordeaux avec fiches vérifiées, avis et coordonnées directes pour les motards girondins.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Mérignac ?', a: "Mérignac dispose de nombreux ateliers et concessions desservant la métropole bordelaise. Retrouvez-les sur LabelMoto." },
+      { q: 'Mérignac ou Bordeaux pour mon entretien moto ?', a: "Mérignac regroupe de nombreuses concessions multimarques avec parking facile. Bordeaux centre a des ateliers spécialisés. Les deux sont sur LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Mérignac ?", a: "À Mérignac, comptez 75 à 130 € pour une révision simple, 250 à 410 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Mérignac","concessionnaire moto 33","garage moto Bordeaux métropole","réparation moto Mérignac","atelier moto Gironde","entretien moto Mérignac"],
+  },
+  {
+    slug: 'venissieux', name: 'Vénissieux', departement: '69', region: 'Auvergne-Rhône-Alpes',
+    metaTitle: "Garage moto Vénissieux (69) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Vénissieux parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 69. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Vénissieux : les pros de votre région',
+    intro: [
+      "Vénissieux, dans la métropole lyonnaise, regroupe plusieurs professionnels moto accessibles depuis toute l'agglomération. La région Rhône-Alpes offre des routes variées vers les Alpes et le Massif Central.",
+      "LabelMoto recense les garages moto et concessionnaires de Vénissieux et du Grand Lyon avec fiches vérifiées, avis et coordonnées directes pour les motards lyonnais.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Vénissieux ?', a: "Vénissieux dispose de plusieurs professionnels moto desservant la métropole lyonnaise. Retrouvez-les sur LabelMoto avec leurs horaires." },
+      { q: 'Y a-t-il des concessions moto à Vénissieux ?', a: "Oui, Vénissieux compte plusieurs concessions multimarques. Retrouvez-les avec leurs marques et coordonnées sur LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Vénissieux ?", a: "À Vénissieux, comptez 80 à 130 € pour une révision simple, 260 à 420 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Vénissieux","concessionnaire moto 69","garage moto Grand Lyon","réparation moto Vénissieux","atelier moto Rhône","entretien moto métropole lyonnaise"],
+  },
+  {
+    slug: 'ales', name: 'Alès', departement: '30', region: 'Occitanie',
+    metaTitle: "Garage moto Alès (30) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Alès parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 30. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Alès : les pros de votre région',
+    intro: [
+      "Alès, aux portes des Cévennes, est un point de départ idéal pour les motards : le mont Aigoual, les gorges du Gardon, le col de la Lusette et les routes cévenoles figurent parmi les plus beaux itinéraires du sud de la France.",
+      "LabelMoto recense les garages moto et concessionnaires d'Alès et du Gard avec fiches vérifiées, avis et coordonnées directes pour les motards cévenols.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Alès ?', a: "Alès et le Gard disposent de nombreux ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des spécialistes trail et enduro à Alès ?', a: "Oui, la région alésienne compte des spécialistes trail et enduro adaptés aux routes cévenoles. Filtrez sur LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Alès ?", a: "À Alès, comptez 75 à 125 € pour une révision simple, 240 à 400 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Alès","concessionnaire moto 30","garage moto Gard","réparation moto Alès","atelier moto Cévennes","entretien moto Occitanie"],
+  },
+  {
+    slug: 'montauban', name: 'Montauban', departement: '82', region: 'Occitanie',
+    metaTitle: "Garage moto Montauban (82) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Montauban parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 82. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Montauban : les pros de votre région',
+    intro: [
+      "Montauban et le Tarn-et-Garonne offrent aux motards un accès rapide aux Pyrénées, à la vallée de la Dordogne et aux Causses. La ville est un carrefour stratégique entre Toulouse et l'Aquitaine.",
+      "LabelMoto recense les garages moto et concessionnaires de Montauban et du Tarn-et-Garonne avec fiches vérifiées, avis et coordonnées directes pour les motards tarn-et-garonnais.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Montauban ?', a: "Montauban et le Tarn-et-Garonne disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires." },
+      { q: 'Y a-t-il des concessions multimarques à Montauban ?', a: "Oui, Montauban compte des concessions multimarques couvrant les principales marques japonaises et européennes. Consultez LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Montauban ?", a: "À Montauban, comptez 75 à 120 € pour une révision simple, 240 à 390 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Montauban","concessionnaire moto 82","garage moto Tarn-et-Garonne","réparation moto Montauban","atelier moto 82000","entretien moto Occitanie Nord"],
+  },
+  {
+    slug: 'poitiers', name: 'Poitiers', departement: '86', region: 'Nouvelle-Aquitaine',
+    metaTitle: "Garage moto Poitiers (86) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Poitiers parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 86. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Poitiers : les pros de votre région',
+    intro: [
+      "Poitiers et la Vienne offrent aux motards des routes tranquilles entre bocage poitevin, Marais Poitevin et vallée de la Vienne. La ville est également un point de passage sur la route des vacances vers le Sud-Ouest.",
+      "LabelMoto recense les garages moto et concessionnaires de Poitiers et de la Vienne avec fiches vérifiées, avis et coordonnées directes pour les motards poitevins.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Poitiers ?', a: "Poitiers et la Vienne disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des concessions moto à Poitiers ?', a: "Oui, Poitiers compte des concessions représentant les principales marques. Retrouvez-les avec leurs coordonnées sur LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Poitiers ?", a: "À Poitiers, comptez 75 à 120 € pour une révision simple, 240 à 390 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Poitiers","concessionnaire moto 86","garage moto Vienne","réparation moto Poitiers","atelier moto 86000","entretien moto Nouvelle-Aquitaine"],
+  },
+  {
+    slug: 'beziers', name: 'Béziers', departement: '34', region: 'Occitanie',
+    metaTitle: "Garage moto Béziers (34) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Béziers parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 34. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Béziers : les pros de votre région',
+    intro: [
+      "Béziers et l'Hérault offrent aux motards l'accès aux Pyrénées, au Massif Central et aux routes de l'arrière-pays languedocien. Le cirque de Navacelles, le col de Peyrepertuse et les gorges de l'Hérault sont à portée.",
+      "LabelMoto recense les garages moto et concessionnaires de Béziers et de l'Hérault avec fiches vérifiées, avis et coordonnées directes pour les motards languedociens.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Béziers ?', a: "Béziers et l'Hérault disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des spécialistes moto à Béziers ?', a: "Oui, Béziers compte des ateliers et concessions couvrant les principales marques. Consultez LabelMoto pour les coordonnées." },
+      { q: "Quel est le prix d'une révision moto à Béziers ?", a: "À Béziers, comptez 75 à 120 € pour une révision simple, 240 à 390 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Béziers","concessionnaire moto 34","garage moto Hérault","réparation moto Béziers","atelier moto 34500","entretien moto Occitanie"],
+  },
+  {
+    slug: 'frejus', name: 'Fréjus', departement: '83', region: "Provence-Alpes-Côte d'Azur",
+    metaTitle: "Garage moto Fréjus (83) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Fréjus parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 83. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Fréjus : les pros de votre région',
+    intro: [
+      "Fréjus et le Var sont au coeur d'une région moto exceptionnelle : l'Esterel, le massif des Maures, les gorges du Verdon et le col du Canadel offrent des itinéraires parmi les plus beaux de France.",
+      "LabelMoto recense les garages moto et concessionnaires de Fréjus et du Var avec fiches vérifiées, avis et coordonnées directes pour les motards varois.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Fréjus ?', a: "Fréjus et le Var disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des spécialistes trail à Fréjus ?', a: "Oui, la région varoise compte des spécialistes trail et sportive. Filtrez sur LabelMoto pour trouver le bon atelier." },
+      { q: "Quel est le prix d'une révision moto à Fréjus ?", a: "À Fréjus, comptez 85 à 135 € pour une révision simple, 270 à 440 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Fréjus","concessionnaire moto 83","garage moto Var","réparation moto Fréjus","atelier moto Esterel","entretien moto Côte d'Azur"],
+  },
+  {
+    slug: 'valenciennes', name: 'Valenciennes', departement: '59', region: 'Hauts-de-France',
+    metaTitle: "Garage moto Valenciennes (59) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Valenciennes parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 59. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Valenciennes : les pros de votre région',
+    intro: [
+      "Valenciennes et le Nord offrent aux motards un accès rapide aux routes de l'Avesnois, de la Belgique et des Ardennes. La ville est un pôle industriel reconverti avec une offre moto complète.",
+      "LabelMoto recense les garages moto et concessionnaires de Valenciennes et du Nord avec fiches vérifiées, avis et coordonnées directes pour les motards nordistes.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Valenciennes ?', a: "Valenciennes et le Nord disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires." },
+      { q: 'Y a-t-il des concessions multimarques à Valenciennes ?', a: "Oui, Valenciennes compte des concessions couvrant les principales marques. Consultez LabelMoto pour les coordonnées." },
+      { q: "Quel est le prix d'une révision moto à Valenciennes ?", a: "À Valenciennes, comptez 75 à 120 € pour une révision simple, 240 à 390 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Valenciennes","concessionnaire moto 59","garage moto Nord","réparation moto Valenciennes","atelier moto 59300","entretien moto Hauts-de-France"],
+  },
+  {
+    slug: 'narbonne', name: 'Narbonne', departement: '11', region: 'Occitanie',
+    metaTitle: "Garage moto Narbonne (11) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Narbonne parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 11. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Narbonne : les pros de votre région',
+    intro: [
+      "Narbonne et l'Aude offrent aux motards l'accès aux Pyrénées, aux Corbières et au Pays Cathare. Les routes de l'arrière-pays audois, entre abbayes et châteaux cathares, sont parmi les plus belles du Sud.",
+      "LabelMoto recense les garages moto et concessionnaires de Narbonne et de l'Aude avec fiches vérifiées, avis et coordonnées directes pour les motards audois.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Narbonne ?', a: "Narbonne et l'Aude disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des spécialistes moto à Narbonne ?', a: "Oui, Narbonne compte des ateliers couvrant les principales marques. Consultez LabelMoto pour les coordonnées directes." },
+      { q: "Quel est le prix d'une révision moto à Narbonne ?", a: "À Narbonne, comptez 75 à 120 € pour une révision simple, 240 à 390 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Narbonne","concessionnaire moto 11","garage moto Aude","réparation moto Narbonne","atelier moto Corbières","entretien moto Pays Cathare"],
+  },
+  {
+    slug: 'calais', name: 'Calais', departement: '62', region: 'Hauts-de-France',
+    metaTitle: "Garage moto Calais (62) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Calais parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 62. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Calais : les pros de votre région',
+    intro: [
+      "Calais et le Pas-de-Calais sont un point de passage stratégique pour les motards qui traversent la Manche. La ville offre également accès aux routes de la Côte d'Opale et des Flandres.",
+      "LabelMoto recense les garages moto et concessionnaires de Calais et du Pas-de-Calais avec fiches vérifiées, avis et coordonnées directes pour les motards du Nord.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Calais ?', a: "Calais et le Pas-de-Calais disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires." },
+      { q: 'Y a-t-il des garages moto ouverts le week-end à Calais ?', a: "Certains ateliers calaisiens sont ouverts le samedi. Consultez les horaires sur chaque fiche LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Calais ?", a: "À Calais, comptez 75 à 120 € pour une révision simple, 240 à 380 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Calais","concessionnaire moto 62","garage moto Pas-de-Calais","réparation moto Calais","atelier moto Côte d'Opale","entretien moto Nord-Pas-de-Calais"],
+  },
+  {
+    slug: 'bastia', name: 'Bastia', departement: '20', region: 'Corse',
+    metaTitle: "Garage moto Bastia (20) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Bastia parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 20. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Bastia : les pros de votre région',
+    intro: [
+      "Bastia et la Haute-Corse sont une destination moto incontournable : le Cap Corse, les gorges de la Restonica, le Castagniccia et la route des cols offrent des panoramas exceptionnels pour les motards.",
+      "LabelMoto recense les garages moto et concessionnaires de Bastia et de Haute-Corse avec fiches vérifiées, avis et coordonnées directes pour les motards corses.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Bastia ?', a: "Bastia et la Haute-Corse disposent de professionnels moto référencés sur LabelMoto. Retrouvez-les avec leurs horaires." },
+      { q: 'Peut-on louer une moto à Bastia ?', a: "Oui, plusieurs professionnels proposent la location de motos à Bastia pour explorer la Corse. Consultez LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Bastia ?", a: "À Bastia, comptez 90 à 150 € pour une révision simple, 290 à 470 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Bastia","concessionnaire moto Haute-Corse","garage moto 2B","réparation moto Bastia","atelier moto Cap Corse","entretien moto Corse"],
+  },
+  {
+    slug: 'albi', name: 'Albi', departement: '81', region: 'Occitanie',
+    metaTitle: "Garage moto Albi (81) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Albi parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 81. Avis, horaires et contacts directs sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Albi : les pros de votre région',
+    intro: [
+      "Albi et le Tarn offrent aux motards des routes variées entre Montagne Noire, Sidobre et Gorges du Tarn. La ville rose du Tarn est un point de départ idéal pour les cols du Massif Central.",
+      "LabelMoto recense les garages moto et concessionnaires d'Albi et du Tarn avec fiches vérifiées, avis et coordonnées directes pour les motards tarnais.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Albi ?', a: "Albi et le Tarn disposent de plusieurs ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
+      { q: 'Y a-t-il des spécialistes trail à Albi ?', a: "Oui, la région albigeoise compte des spécialistes trail adaptés aux routes du Massif Central. Filtrez sur LabelMoto." },
+      { q: "Quel est le prix d'une révision moto à Albi ?", a: "À Albi, comptez 75 à 120 € pour une révision simple, 240 à 390 € pour une révision complète selon la marque." },
+    ],
+    searchTerms: ["mécanicien moto Albi","concessionnaire moto 81","garage moto Tarn","réparation moto Albi","atelier moto 81000","entretien moto Occitanie"],
+  },
 ];
 export function getCityBySlug(slug: string): CityData | undefined {
   return CITIES.find(c => c.slug === slug);
@@ -696,6 +936,22 @@ CITIES.push(
       { q: "Quel est le prix d'une révision moto à Avignon ?", a: "À Avignon, comptez 80 à 130 € pour une révision simple, 260 à 420 € pour une révision complète selon la marque." },
     ],
     searchTerms: ["mécanicien moto Avignon","concessionnaire moto 84","garage moto Vaucluse","réparation moto Avignon","atelier moto Luberon","entretien moto Ventoux"],
+  },
+  {
+    slug: 'orange', name: 'Orange', departement: '84', region: "Provence-Alpes-Côte d'Azur",
+    metaTitle: "Garage moto Orange (84) : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Orange parmi les professionnels vérifiés : concessions Yamaha, Honda, Harley-Davidson, Kymco et ateliers dans le Vaucluse. Avis, horaires et contacts sur LabelMoto.",
+    h1: 'Garages moto et concessionnaires à Orange : les pros du Vaucluse Nord',
+    intro: [
+      "Orange, au nord du Vaucluse, est une ville moto bien pourvue : Harley-Davidson, Honda, Yamaha, Kymco, CF Moto et Touratech y sont représentés. La ville est un point de départ idéal pour les routes du Mont Ventoux, des Dentelles de Montmirail et des Gorges de l'Ardèche.",
+      "LabelMoto recense les garages moto et concessionnaires d'Orange et du nord Vaucluse avec fiches vérifiées, avis communauté et coordonnées directes pour les motards de la région.",
+    ],
+    faq: [
+      { q: 'Où trouver un garage moto à Orange ?', a: "Orange dispose de 9 professionnels moto référencés sur LabelMoto : concessions multimarques, ateliers et spécialistes. Retrouvez-les avec leurs horaires et avis." },
+      { q: 'Quelles marques moto sont représentées à Orange ?', a: "À Orange, vous trouverez des concessions Harley-Davidson, Honda, Yamaha, Kymco, CF Moto, Zontes et un équipementier Touratech. Consultez LabelMoto pour les coordonnées." },
+      { q: "Quel est le prix d'une révision moto à Orange ?", a: "À Orange, comptez 80 à 130 € pour une révision simple, 260 à 420 € pour une révision complète selon la marque et l'atelier." },
+    ],
+    searchTerms: ["mécanicien moto Orange","concessionnaire moto 84100","garage moto Vaucluse Nord","Harley Davidson Orange","Honda moto Orange","Yamaha Orange moto"],
   },
   {
     slug: 'le-mans', name: 'Le Mans', departement: '72', region: 'Pays de la Loire',
