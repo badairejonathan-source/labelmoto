@@ -245,7 +245,7 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
                   {(pro as any).instagramUrl && (
                     <a href={(pro as any).instagramUrl} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity"
-                      onClick={() => { trackEvent('clic_instagram', { pro: pro.title, source: 'fiche' }); trackStat('stats_instagram'); }}
+                      onClick={() => { trackBeacon('clic_instagram', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_instagram', { pro: pro.title, source: 'fiche' }); trackStat('stats_instagram'); }}
                     >
                       <Instagram className="h-4 w-4" /> Instagram
                     </a>
@@ -253,7 +253,7 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
                   {(pro as any).facebookUrl && (
                     <a href={(pro as any).facebookUrl} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity"
-                      onClick={() => { trackEvent('clic_facebook', { pro: pro.title, source: 'fiche' }); trackStat('stats_facebook'); }}
+                      onClick={() => { trackBeacon('clic_facebook', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_facebook', { pro: pro.title, source: 'fiche' }); trackStat('stats_facebook'); }}
                     >
                       <Globe className="h-4 w-4" /> Facebook
                     </a>
