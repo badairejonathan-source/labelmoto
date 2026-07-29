@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { getAdminFirestore } from '@/lib/firebase-admin';
+import { getCityBySlug } from '@/app/lib/cities';
 import { permanentRedirect } from 'next/navigation';
 import Script from 'next/script';
 import DealershipDetailClient from '@/components/app/dealership-detail-client';
@@ -135,6 +136,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     .toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const hasCityPage = !!getCityBySlug(citySlug);
 
   const breadcrumbItems: any[] = [
     { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://labelmoto.fr" },
@@ -217,7 +219,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     <>
       <Script id="breadcrumb-pro-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <Script id="local-business-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
-      <DealershipDetailClient pro={pro} />
+      <DealershipDetailClient pro={pro} hasCityPage={hasCityPage} />
     </>
   );
 }
