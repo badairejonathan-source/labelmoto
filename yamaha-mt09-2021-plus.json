@@ -1,0 +1,223 @@
+{
+  "id": "yamaha-mt09-2021-plus",
+  "slug": "yamaha-mt09-2021-plus",
+  "model": "MT-09",
+  "brand": "Yamaha",
+  "brand_order": 2,
+  "category": "roadster",
+  "subcategory": "roadster-750-1000",
+  "status": "published",
+  "featured": true,
+  "display_title": "Yamaha MT-09",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2021+",
+  "model_order": 8,
+  "search_tags": ["yamaha","mt-09","mt09","cp3","roadster","entretien","revision","prix revision","forfait yamaha","triple"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2021-présent (refonte majeure 2021 : +4 ch, couple 1 500 tr/min plus bas, cadre alu redessiné)",
+    "engine_type": "3 cylindres en ligne CP3, 4 temps, refroidissement liquide, DOHC 12 soupapes, injection YCC-T ride-by-wire",
+    "displacement_cc": 889,
+    "bore_stroke_mm": "78,0 × 62,1",
+    "compression_ratio": "11,5:1",
+    "max_power_kw": 88,
+    "max_power_hp": 119,
+    "max_power_rpm": 10000,
+    "max_torque_nm": 93,
+    "max_torque_rpm": 7000,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses, quickshifter bidirectionnel de série (2021+)",
+    "clutch": "Embrayage multidisques à bain d'huile, Assist & Slipper Clutch",
+    "throttle": "Accélérateur électronique YCC-T (Yamaha Chip Controlled Throttle)",
+    "riding_modes": "Sport, Street, Rain, Custom (2021+)",
+    "electronics": "TCS (contrôle de traction), Slide Control System, Lift Control System, ABS, quickshifter bidirectionnel",
+    "display": "Écran TFT couleur 3,5 pouces",
+    "power": "119 ch (88 kW) à 10 000 tr/min",
+    "torque": "93 Nm à 7 000 tr/min",
+    "fuel_system": "Injection YCC-T ride-by-wire",
+    "license_bridging": "Permis A requis (119 ch — pas de version A2 officielle)",
+    "weight_tpf_kg": 189,
+    "seat_height_mm": 825,
+    "tank_l": 14,
+    "wheelbase_mm": 1430,
+    "frame": "Cadre périmétrique aluminium (redessiné 2021, plus rigide)",
+    "front_suspension": "Fourche télescopique inversée KYB Ø 41 mm, réglable en compression et détente, débattement 130 mm",
+    "rear_suspension": "Monoamortisseur KYB réglable en précontrainte et détente, bras oscillant aluminium, débattement 130 mm",
+    "front_brake": "Double disque semi-flottant 298 mm, étriers radiaux 4 pistons",
+    "rear_brake": "Disque 245 mm, étrier 1 piston",
+    "front_tire": "120/70 ZR17",
+    "rear_tire": "180/55 ZR17",
+    "fuel_type": "Sans plomb 95 RON minimum",
+    "price_neuf_france": "~9 999 € (2025)",
+    "garantie": "2 ans (réseau Yamaha France)",
+    "cycle_parts": {
+      "frame": "Cadre périmétrique aluminium",
+      "front_suspension": "Fourche inversée KYB Ø 41 mm, réglable compression/détente, débattement 130 mm",
+      "rear_suspension": "Monoamortisseur KYB réglable, bras oscillant aluminium, débattement 130 mm",
+      "front_brake": "Double disque semi-flottant 298 mm, étriers radiaux 4 pistons",
+      "rear_brake": "Disque 245 mm",
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "180/55 ZR17"
+    }
+  },
+  "relations": {
+    "same_engine": ["yamaha-tracer-9-2021-plus", "yamaha-xsr900-2022-plus"],
+    "same_category": ["kawasaki-z900-2020-plus", "suzuki-gsxs750-2017-plus", "bmw-s1000r-2021-plus"]
+  },
+  "seo": {
+    "meta_title": "Entretien Yamaha MT-09 (2021+) : prix officiels révisions, intervalles & guide complet",
+    "meta_description": "Guide complet entretien Yamaha MT-09 2021+ : forfaits officiels Yamaha (217 € à 10 000 km, 645 € à 40 000 km), ~1 500 € sur 60 000 km. CP3, quickshifter, intervalles 10 000 km.",
+    "keywords": [
+      "Yamaha MT-09 entretien",
+      "Yamaha MT-09 révision prix",
+      "forfait révision MT-09",
+      "Yamaha MT-09 2021 entretien",
+      "MT-09 révision 10000 km prix",
+      "MT-09 révision 40000 km soupapes",
+      "Yamaha MT-09 fiabilité CP3",
+      "MT-09 vidange huile",
+      "Yamaha MT-09 coût entretien 60000 km"
+    ]
+  },
+  "service_guide": {
+    "intro": "La Yamaha MT-09 est le roadster de référence de la décennie 2010-2020. Son 3-cylindres CP3 (Cross Plane 3) de 889 cm³, avec son calage à 120°, produit un caractère sonore et des sensations uniques — mi-twin, mi-4-cylindres. La version 2021 est une refonte majeure : +4 ch (119 ch), couple disponible 1 500 tr/min plus bas (7 000 tr/min), cadre aluminium redessiné plus rigide, quickshifter bidirectionnel de série, 4 modes de conduite, TFT couleur. Elle perd 2 kg vs le modèle précédent pour atteindre 189 kg. Bonne nouvelle pour les propriétaires : Yamaha publie des forfaits d'entretien à prix maximum conseillé, ce qui permet de budgéter précisément. Sur 60 000 km, l'entretien CP3 revient à environ 1 500 € en concession Yamaha — légèrement plus que le CP2 (MT-07, Ténéré 700) en raison du 3 cylindres et de son évaluation des soupapes à 40 000 km.",
+
+    "known_issues": [
+      {
+        "issue": "Câble d'embrayage — rupture prématurée (premières générations)",
+        "description": "Des ruptures de câble d'embrayage ont été signalées sur les premières MT-09, y compris en retour d'atelier lors de révisions. Le câble spécifique diffère entre la MT-09 et la Tracer 900. Problème connu, résolu sous garantie.",
+        "severity": "modéré",
+        "remedy": "Vérification systématique du câble d'embrayage lors de chaque révision. Remplacement préventif vers 20 000 km conseillé."
+      },
+      {
+        "issue": "Soupapes — révision à 40 000 km (coûteuse)",
+        "description": "Le CP3 a ses soupapes à contrôler tous les 40 000 km — opération plus complexe sur un 3-cylindres que sur un twin. En concession Yamaha, ce forfait représente le poste le plus important de l'entretien (forfait ~645 €). À anticiper dans le budget dès l'achat.",
+        "severity": "informatif",
+        "remedy": "Budgéter ~645 € pour la révision des 40 000 km. Un atelier indépendant compétent peut facturer 20-30 % moins. Certains propriétaires rapportent avoir passé 60 000 km sans retouche aux soupapes — vérification recommandée plutôt que systématique."
+      },
+      {
+        "issue": "Quickshifter — résistance à froid ou à bas régime",
+        "description": "Le quickshifter de série sur la 2021+ peut parfois mal passer en descente ou à froid. Phénomène signalé mais non systématique.",
+        "severity": "faible",
+        "remedy": "Éviter le quickshifter sous 3 000 tr/min. Mise à jour logicielle en concession si le phénomène est régulier."
+      }
+    ],
+
+    "consumables": [
+      { "part": "Huile moteur 10W-40 JASO MA2 (Yamalube S4 ou équivalent)", "average_lifetime": "10 000 km ou 1 an — 2,9 L avec filtre (source Yamaha)"},
+      { "part": "Filtre à huile", "average_lifetime": "10 000 km (non inclus dans forfait standard Yamaha — demander explicitement)"},
+      { "part": "Filtre à air", "average_lifetime": "Nettoyage 20 000 km / remplacement 40 000 km"},
+      { "part": "Bougies NGK LKR7C-G (3 bougies)", "average_lifetime": "40 000 km"},
+      { "part": "Jeu aux soupapes (12 soupapes — CP3)", "average_lifetime": "40 000 km — opération complexe sur 3-cylindres"},
+      { "part": "Liquide de frein DOT 4", "average_lifetime": "2 ans"},
+      { "part": "Liquide de refroidissement", "average_lifetime": "2 ans (préconisation Yamaha)"},
+      { "part": "Kit chaîne 520", "average_lifetime": "20 000-30 000 km selon style de conduite"},
+      { "part": "Pneus avant 120/70 ZR17", "average_lifetime": "8 000-12 000 km (style de conduite variable)"},
+      { "part": "Pneus arrière 180/55 ZR17", "average_lifetime": "6 000-9 000 km"}
+    ],
+
+    "longevity_tips": [
+      "Utiliser exclusivement une huile JASO MA2 — l'embrayage Assist & Slipper est sensible à la qualité du lubrifiant.",
+      "Respecter la révision annuelle même à faible kilométrage (Yamaha impose une révision par an même à 3 000 km) — l'ignorer peut annuler la garantie.",
+      "Anticiper la révision des soupapes à 40 000 km : c'est le poste le plus cher de l'entretien CP3. Demander un devis à l'avance.",
+      "Graisser la chaîne tous les 500-800 km — avec 119 ch, la sollicitation est élevée.",
+      "Le liquide de refroidissement est à renouveler tous les 2 ans selon Yamaha France — souvent oublié par les propriétaires.",
+      "Vérifier le câble d'embrayage à chaque révision — un câble qui file peut lâcher brutalement en conduite."
+    ],
+
+    "comparatif": {
+      "intro": "La MT-09 face à ses rivales directes sur le segment roadster 900 cm³.",
+      "competitors": [
+        {
+          "model": "Kawasaki Z900 (2020+)",
+          "prix_france": "~9 999 €",
+          "avantages_vs_mt09": "4 cylindres au son plus classique, 4 ans de garantie Kawasaki, 125 ch (2023+), fiabilité légendaire",
+          "inconvenients_vs_mt09": "Poids identique (190 kg), moins de caractère moteur que le CP3, équipement électronique comparable",
+          "verdict": "Même prix, même puissance — la MT-09 gagne sur le caractère CP3 unique, la Z900 sur la garantie 4 ans."
+        },
+        {
+          "model": "Triumph Street Triple 765 RS (2020+)",
+          "prix_france": "~12 199 €",
+          "avantages_vs_mt09": "Triple 765 cm³ au son extraordinaire, châssis de référence, finition premium",
+          "inconvenients_vs_mt09": "2 200 € plus chère, entretien Triumph plus coûteux",
+          "verdict": "La Triumph est l'alternative premium au CP3 — même architecture triple, finition supérieure, prix supérieur."
+        },
+        {
+          "model": "BMW S1000R (2021+)",
+          "prix_france": "~16 990 €",
+          "avantages_vs_mt09": "165 ch, électronique complète, finition premium, 4 cylindres au son rageur",
+          "inconvenients_vs_mt09": "7 000 € plus chère, entretien BMW plus coûteux, permis A uniquement",
+          "verdict": "Deux classes différentes — la MT-09 est le choix rationnel, la S1000R le choix passion."
+        }
+      ]
+    },
+
+    "service_schedule": [
+      { "km": 1000, "service_label": "Révision de rodage (MO offerte en concession Yamaha)", "price_estimate": "Huile + filtre à votre charge (~30-50 €)"},
+      { "km": 10000, "service_label": "Révision standard : vidange, contrôles, synchro injection", "price_estimate": "≈ 217 € (forfait Yamaha France officiel)"},
+      { "km": 20000, "service_label": "Révision : vidange + filtre air + contrôles", "price_estimate": "≈ 280-320 €"},
+      { "km": 30000, "service_label": "Révision standard (identique 10 000 km)", "price_estimate": "≈ 217 €"},
+      { "km": 40000, "service_label": "Grande révision : soupapes + 3 bougies + filtre air + vidange", "price_estimate": "≈ 645 € (forfait Yamaha France officiel)"},
+      { "km": 50000, "service_label": "Révision standard", "price_estimate": "≈ 217 €"},
+      { "km": 60000, "service_label": "Révision + contrôle soupapes si nécessaire", "price_estimate": "≈ 280-450 €"}
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 10 000 km ou 1 an (première des deux échéances). Révision annuelle obligatoire même en dessous du kilométrage.",
+      "total_60000km": "≈ 1 500 €",
+      "cost_per_km": "≈ 0,025 €/km",
+      "note": "Forfaits officiels Yamaha France (prix maximum conseillés TTC). Source : Yamaha Motor Europe, blog.3as-racing.com, forum mt09.net. Les modèles CP3 (MT-09, Tracer 9) coûtent ~300 € de plus sur 60 000 km que les CP2 (MT-07, Ténéré 700) principalement en raison du forfait soupapes 40 000 km plus complexe sur 3-cylindres. Un atelier indépendant facture généralement 20-30 % de moins. Note : le forfait standard Yamaha à 10 000 km (217 €) n'inclut PAS le filtre à huile — demander explicitement son remplacement (+10-15 €)."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — Yamaha MT-09 2021",
+      "hypothese": "10 000 km/an, usage mixte ville/route/balade",
+      "poste_achat": "~9 999 €",
+      "poste_assurance_annuelle": "600 – 1 200 €",
+      "poste_entretien_3ans": "650 – 900 € (3 révisions à 10 000 km sur 3 ans)",
+      "poste_pneus_3ans": "500 – 800 € (pneus sport consommés selon style)",
+      "poste_equipement_pilote": "700 – 2 000 €",
+      "total_3ans_estime": "13 449 – 18 899 €",
+      "valeur_revente_estimee": "6 500 – 8 000 € à 3 ans / 30 000 km",
+      "cout_reel_3ans": "5 449 – 10 899 € soit 1 816 – 3 633 €/an",
+      "note": "La MT-09 a une excellente valeur de revente — l'une des meilleures du segment roadster 900 cm³. Sur 3 ans, le coût de possession est maîtrisé grâce aux intervalles Yamaha bien documentés et à la robustesse du CP3."
+    },
+
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision Yamaha MT-09 en concession ?",
+        "answer": "Yamaha publie des forfaits à prix maximum conseillé : environ 217 € pour la révision des 10 000 km (sans filtre à huile — demander explicitement), et 645 € pour la grande révision des 40 000 km (soupapes + 3 bougies + filtre air). Sur 60 000 km, comptez environ 1 500 € en concession Yamaha. Un atelier indépendant facture généralement 20-30 % moins."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la Yamaha MT-09 ?",
+        "answer": "Tous les 10 000 km ou 1 an (premier terme échu). Yamaha impose une révision annuelle minimum même si le kilométrage n'est pas atteint — l'ignorer peut annuler la garantie. La grande révision avec jeu aux soupapes est à 40 000 km."
+      },
+      {
+        "question": "Le moteur CP3 de la MT-09 est-il fiable ?",
+        "answer": "Oui, c'est l'un des moteurs les plus fiables du segment. Des propriétaires dépassent régulièrement 80 000 à 100 000 km sans casse moteur avec un entretien suivi. Le seul point d'attention est la révision des soupapes à 40 000 km (coûteuse) et le câble d'embrayage (à surveiller)."
+      },
+      {
+        "question": "Quelle huile pour la Yamaha MT-09 ?",
+        "answer": "Yamaha préconise la Yamalube S4 10W-40 JASO MA2, ou toute huile équivalente certifiée JASO MA2. Volume : 2,9 L avec filtre. Une huile automobile sans certification JASO MA2 ferait patiner l'embrayage Assist & Slipper."
+      },
+      {
+        "question": "La MT-09 2021 est-elle mieux que les versions précédentes ?",
+        "answer": "Significativement. La refonte 2021 apporte : +4 ch (119 ch), couple disponible 1 500 tr/min plus bas, quickshifter bidirectionnel de série, 4 modes de conduite, TFT couleur, cadre aluminium redessiné plus rigide et -2 kg. Les versions 2017-2020 restent excellentes mais la 2021 est clairement l'évolution la plus aboutie."
+      }
+    ],
+
+    "conclusion": "La Yamaha MT-09 2021 est probablement la meilleure version d'un roadster déjà mythique. Son 3-cylindres CP3 à 119 ch offre une expérience unique que ni les twins ni les 4-cylindres ne peuvent reproduire — un caractère à la fois coupleux à bas régime et rageur à hauts tours. Légère (189 kg), maniable, très bien équipée électroniquement, et avec des intervalles d'entretien bien documentés (forfaits Yamaha publics) — elle reste la référence du segment en 2025. Son seul vrai coût caché : la révision des soupapes à 40 000 km (~645 €), à budgéter dès l'achat.",
+
+    "cta_primary": {
+      "label": "Trouver un atelier Yamaha près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "Yamaha", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les roadsters 900 disponibles",
+      "action": "navigate",
+      "params": { "category": "roadster", "subcategory": "roadster-750-1000" }
+    }
+  }
+}

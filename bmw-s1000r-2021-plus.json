@@ -1,0 +1,222 @@
+{
+  "id": "bmw-s1000r-2021-plus",
+  "slug": "bmw-s1000r-2021-plus",
+  "model": "S 1000 R",
+  "brand": "BMW",
+  "brand_order": 5,
+  "category": "roadster",
+  "subcategory": "roadster-750-1000",
+  "status": "published",
+  "featured": true,
+  "display_title": "BMW S 1000 R",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2021+",
+  "model_order": 5,
+  "search_tags": ["bmw","s1000r","hypernaked","roadster","entretien","revision","prix revision","4 cylindres","shiftcam","s1000rr","allemande"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2021-présent (refonte majeure 2021 : nouveau moteur -5 kg, 165 ch, sans ShiftCam)",
+    "note_shiftcam": "Important : la S 1000 R 2021+ N'utilise PAS le ShiftCam (admission variable). Le 4-cylindres est dérivé de la S 1000 RR 2020 mais sans ShiftCam ni linguets pour simplifier et alléger le bloc.",
+    "engine_type": "4 cylindres en ligne, 4 temps, refroidissement liquide, DOHC 16 soupapes (sans ShiftCam — cf. note)",
+    "displacement_cc": 999,
+    "bore_stroke_mm": "80,0 × 49,7",
+    "compression_ratio": "12,5:1",
+    "max_power_kw": 121,
+    "max_power_hp": 165,
+    "max_power_rpm": 11000,
+    "max_torque_nm": 114,
+    "max_torque_rpm": 9250,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses (4e, 5e, 6e rallongés vs S1000RR), Shift Assistant Pro en option",
+    "clutch": "Embrayage auto-renforcé Assist & Slipper, commande hydraulique",
+    "throttle": "Accélérateur électronique ride-by-wire",
+    "riding_modes": "Rain, Road, Dynamic (de série) ; Dynamic Pro (en option)",
+    "electronics": "ABS Pro cornering, TCS (DTC), wheelie control (MSR), ABS, TFT 6,5 pouces, IMU 6 axes (optionnel sur certaines versions)",
+    "display": "TFT 6,5 pouces couleur, compatible smartphone",
+    "power": "165 ch (121 kW) à 11 000 tr/min",
+    "torque": "114 Nm à 9 250 tr/min",
+    "fuel_system": "Injection BMW ride-by-wire",
+    "license_bridging": "Permis A (165 ch — pas de version A2)",
+    "weight_tpf_kg": 199,
+    "seat_height_mm": 814,
+    "seat_height_options_mm": "794 mm (selle basse option) / 834 mm (selle haute option)",
+    "tank_l": 17,
+    "wheelbase_mm": 1438,
+    "frame": "Pont moteur porteur composite aluminium-acier",
+    "front_suspension": "Fourche inversée BMW Ø 45 mm, réglable en compression/détente/précontrainte (DSA semi-active en option)",
+    "rear_suspension": "Système de suspension à boîte de vitesses portante avec biellette, réglable (DSA en option)",
+    "front_brake": "Double disque 320 mm, étriers radiaux Brembo/Hayes 4 pistons, ABS Pro cornering",
+    "rear_brake": "Disque 220 mm",
+    "front_tire": "120/70 ZR17",
+    "rear_tire": "190/55 ZR17",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "~16 990 € (2025, version de base) — prix grimpant rapidement avec les options",
+    "garantie": "2 ans (réseau BMW Motorrad France)",
+    "cycle_parts": {
+      "frame": "Pont moteur porteur composite alu/acier",
+      "front_suspension": "Fourche inversée BMW Ø 45 mm, réglable",
+      "rear_suspension": "Système boîte portante + biellette, réglable",
+      "front_brake": "Double disque 320 mm, étriers Brembo/Hayes 4 pistons, ABS Pro",
+      "rear_brake": "Disque 220 mm",
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "190/55 ZR17"
+    }
+  },
+  "relations": {
+    "same_engine": ["bmw-s1000rr-2020-plus", "bmw-m1000rr"],
+    "same_category": ["yamaha-mt09-2021-plus", "kawasaki-z900-2020-plus", "ktm-1290-superduke-r"]
+  },
+  "seo": {
+    "meta_title": "Entretien BMW S 1000 R (2021+) : révisions, prix & guide complet",
+    "meta_description": "Guide complet entretien BMW S 1000 R 2021+ : 165 ch, intervalles 10 000 km, coût entretien BMW premium, comparatif Yamaha MT-09 / Z900 et avis propriétaires.",
+    "keywords": [
+      "BMW S1000R entretien",
+      "BMW S 1000 R révision prix",
+      "BMW S1000R 2021 entretien",
+      "BMW S1000R revision 10000 km",
+      "BMW S1000R fiabilité",
+      "BMW S1000R coût entretien",
+      "BMW S1000R vs Yamaha MT-09",
+      "BMW S1000R 165 ch roadster"
+    ]
+  },
+  "service_guide": {
+    "intro": "La BMW S 1000 R est l'hyper-naked de référence — une machine qui cumule les performances d'une superbike (165 ch, dérivé S 1000 RR) dans un usage routier quotidien. La version 2021 représente la refonte la plus importante depuis le lancement en 2014 : nouveau moteur allégé de 5 kg (sans ShiftCam — contrairement à la S 1000 RR, pour simplifier et alléger), nouveau TFT 6,5 pouces, selle à 814 mm, poids ramené à 199 kg. Ce 4-cylindres 999 cm³ sans ShiftCam développe 165 ch à 11 000 tr/min et 114 Nm à 9 250 tr/min — des performances qui lui permettent de se payer le luxe d'être utilisable au quotidien grâce au mode Rain et au contrôle de traction. Son entretien est facturé au tarif BMW Motorrad — le plus élevé du segment — mais les intervalles à 10 000 km le rendent acceptable. À ~16 990 € en version de base, la note grimpe vite avec les options (suspension DSA, Shift Assistant Pro, jantes Forged).",
+
+    "known_issues": [
+      {
+        "issue": "Prix des options — note finale élevée",
+        "description": "La S 1000 R à 16 990 € est séduisante mais dépouillée : les incontournables (Shift Assistant Pro, suspension DSA, ABS Pro avec IMU) sont en option et peuvent ajouter 2 000 à 5 000 € à la facture finale.",
+        "severity": "informatif",
+        "remedy": "Définir précisément les options souhaitées avant commande. Le pack M (suspension + freins M + jantes carbone) peut dépasser 5 000 €. Le rapport qualité/prix de base est acceptable, les options le sont moins."
+      },
+      {
+        "issue": "Entretien coûteux en réseau BMW",
+        "description": "Les révisions BMW Motorrad sont parmi les plus chères du marché pour les grosses cylindrées. L'heure de main d'œuvre est élevée en concession BMW, et la S 1000 R nécessite des techniciens formés spécifiquement pour le diagnostic électronique.",
+        "severity": "modéré",
+        "remedy": "Des ateliers spécialisés BMW indépendants pratiquent des tarifs 20-30 % inférieurs aux concessions. Pour les diagnostics électroniques avancés (logiciel), la concession reste nécessaire."
+      },
+      {
+        "issue": "Puissance non utilisable sur route légale",
+        "description": "165 ch sur une moto de 199 kg représente un rapport poids/puissance de 0,83 ch/kg — les 165 ch ne seront jamais exploités légalement en France. La S 1000 R peut nécessiter une période d'adaptation pour les riders peu habitués aux hyper-naked.",
+        "severity": "informatif",
+        "remedy": "Commencer par le mode Rain ou Road pour apprivoiser la machine. Les aides électroniques (TCS, ABS Pro, DTC) sont efficaces et permettent une conduite sûre."
+      }
+    ],
+
+    "consumables": [
+      { "part": "Huile moteur BMW Motorrad Advantec Ultimate 5W-40 (ou équivalent JASO MA2)", "average_lifetime": "10 000 km ou 1 an — ~4,0 L avec filtre"},
+      { "part": "Filtre à huile BMW", "average_lifetime": "10 000 km"},
+      { "part": "Filtre à air", "average_lifetime": "Nettoyage 20 000 km / remplacement 40 000 km"},
+      { "part": "Bougies NGK (4 bougies)", "average_lifetime": "20 000 km"},
+      { "part": "Jeu aux soupapes (16 soupapes — 4 cylindres)", "average_lifetime": "Contrôle tous les 20 000 km — architecture sans ShiftCam plus simple d'accès que la RR"},
+      { "part": "Liquide de frein DOT 4 LV (BMW spécification)", "average_lifetime": "1 an (BMW Motorrad recommande annuel sur les sportives)"},
+      { "part": "Liquide de refroidissement BMW", "average_lifetime": "3 ans"},
+      { "part": "Kit chaîne 525 renforcée", "average_lifetime": "15 000-20 000 km (165 ch — chaîne de qualité indispensable)"},
+      { "part": "Pneus avant 120/70 ZR17", "average_lifetime": "7 000-11 000 km (style de conduite variable)"},
+      { "part": "Pneus arrière 190/55 ZR17", "average_lifetime": "5 000-8 000 km (consommation variable)"}
+    ],
+
+    "longevity_tips": [
+      "Utiliser exclusivement l'huile BMW Advantec Ultimate 5W-40 ou un équivalent certifié JASO MA2 — le 4-cylindres à 12,5:1 de compression est exigeant en lubrification.",
+      "Faire mettre à jour le logiciel BMW (ISTA) à chaque révision — les mises à jour améliorent régulièrement la cartographie et les assistances électroniques.",
+      "Le liquide de frein est à renouveler annuellement selon BMW Motorrad pour les sportives — les circuits de freinage haute performance sont sensibles à la dégradation du DOT 4.",
+      "Avec 165 ch, la chaîne travaille intensément : graisser tous les 500-700 km sans exception.",
+      "Éviter les ateliers non formés BMW pour les diagnostics électroniques (DTC, ABS Pro, IMU) — le logiciel ISTA est nécessaire pour lire les codes défauts avancés."
+    ],
+
+    "comparatif": {
+      "intro": "La S 1000 R face à ses rivales dans le segment des hyper-naked.",
+      "competitors": [
+        {
+          "model": "Yamaha MT-09 (2021+)",
+          "prix_france": "~9 999 €",
+          "avantages_vs_s1000r": "7 000 € moins chère, CP3 plus caractériel en usage routier quotidien, 189 kg (10 kg plus légère), entretien moins coûteux",
+          "inconvenients_vs_s1000r": "119 ch (vs 165 ch — 46 ch d'écart !), électronique moins riche, finition moins premium",
+          "verdict": "La MT-09 est la référence rationnelle — la S 1000 R est la référence absolue pour les amateurs de performances extrêmes."
+        },
+        {
+          "model": "KTM 1290 Super Duke R (2020+)",
+          "prix_france": "~18 999 €",
+          "avantages_vs_s1000r": "V-twin LC8 au caractère unique, légèreté (189 kg), dynamisme supérieur selon les puristes KTM",
+          "inconvenients_vs_s1000r": "2 000 € plus chère, entretien KTM coûteux, réseau SAV moins dense en France",
+          "verdict": "KTM pour le caractère V-twin et l'extrême — BMW pour la polyvalence et le réseau."
+        },
+        {
+          "model": "Kawasaki Z1000 (2020+)",
+          "prix_france": "~13 999 €",
+          "avantages_vs_s1000r": "3 000 € moins chère, 4 cylindres 1 043 cm³ bien né, réseau Kawasaki dense",
+          "inconvenients_vs_s1000r": "Moins puissante (142 ch vs 165 ch), électronique moins riche, moins de prestige BMW",
+          "verdict": "La Z1000 est une alternative plus abordable — la S 1000 R justifie sa prime par l'origine RR et l'électronique."
+        }
+      ]
+    },
+
+    "service_schedule": [
+      { "km": 500, "service_label": "Révision de rodage BMW : vidange huile + filtre, serrages", "price_estimate": "~100-200 €"},
+      { "km": 10000, "service_label": "Révision standard BMW : vidange, contrôles, TFT, ABS Pro, TCS, mise à jour logicielle", "price_estimate": "~300-500 €"},
+      { "km": 20000, "service_label": "Grande révision : + 4 bougies, filtre air, jeu aux soupapes, liquide frein annuel", "price_estimate": "~600-900 €"},
+      { "km": 30000, "service_label": "Révision standard", "price_estimate": "~300-500 €"},
+      { "km": 40000, "service_label": "Révision + filtre air, contrôle chaîne de distribution", "price_estimate": "~350-550 €"},
+      { "km": 60000, "service_label": "Grande révision + soupapes + huile fourche", "price_estimate": "~700-1 100 €"}
+    ],
+
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 10 000 km ou 1 an. Soupapes à 20 000 km. Liquide de frein annuel (BMW Motorrad recommande annuel sur sportives).",
+      "total_60000km": "2 200 – 3 500 €",
+      "cost_per_km": "0,037 – 0,058 €/km",
+      "note": "Estimations basées sur les barèmes BMW Motorrad France et retours propriétaires. La S 1000 R est l'entretien le plus coûteux des roadsters listés dans LabelMoto — tarifs horaires BMW + 4 cylindres 16 soupapes + électronique avancée. Les ateliers indépendants spécialisés BMW permettent d'économiser 20-30 % hors opérations nécessitant ISTA (logiciel diagnostic BMW)."
+    },
+
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — BMW S 1000 R 2021",
+      "hypothese": "8 000 km/an, usage mixte sport/route",
+      "poste_achat": "~16 990 € (version de base) + options souhaitées",
+      "poste_assurance_annuelle": "900 – 1 800 €",
+      "poste_entretien_3ans": "900 – 1 600 € (3 révisions)",
+      "poste_pneus_3ans": "600 – 1 200 € (consommation élevée en usage sportif)",
+      "poste_equipement_pilote": "800 – 3 000 € (équipement sportif recommandé)",
+      "total_3ans_estime": "21 190 – 30 590 € (avant options)",
+      "valeur_revente_estimee": "11 000 – 13 500 € à 3 ans — bonne revente S1000R",
+      "cout_reel_3ans": "7 690 – 17 090 € soit 2 563 – 5 697 €/an",
+      "note": "La S 1000 R est le roadster le plus coûteux de ce guide en valeur absolue. Son coût de possession annuel (entretien + assurance + pneus) est significatif. Elle justifie ce coût par ses performances et sa valeur de revente solide."
+    },
+
+    "faq": [
+      {
+        "question": "La BMW S 1000 R 2021 a-t-elle le ShiftCam ?",
+        "answer": "Non. La S 1000 R 2021 est dérivée du moteur de la S 1000 RR 2020 mais SANS le système ShiftCam (distribution variable). Ce choix délibéré de BMW vise à simplifier le moteur, l'alléger (-5 kg vs le bloc précédent) et réduire les coûts d'entretien. Le ShiftCam reste exclusif aux boxers BMW (R 1250 GS, R 1250 R, etc.) parmi les roadsters BMW actuels."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la BMW S 1000 R ?",
+        "answer": "10 000 km ou 1 an (premier terme échu). Soupapes à 20 000 km. BMW Motorrad recommande également un renouvellement du liquide de frein annuel pour les machines sportives — à distinguer de l'intervalle bisannuel des modèles touring."
+      },
+      {
+        "question": "Peut-on faire entretenir la S 1000 R hors réseau BMW ?",
+        "answer": "Oui, hors garantie. Des ateliers spécialisés BMW indépendants (profil 'Flat Four specialists') maîtrisent parfaitement ce moteur et pratiquent des tarifs 20-30 % inférieurs aux concessions. Pour les opérations nécessitant le logiciel ISTA (reset CBS, lecture codes défauts avancés, mises à jour cartographie), la concession BMW reste nécessaire."
+      },
+      {
+        "question": "165 ch en roadster, n'est-ce pas trop ?",
+        "answer": "Sur route légale française, vous n'exploiterez jamais les 165 ch — c'est la réalité. Ce qui fait la valeur de la S 1000 R, c'est la façon dont ces 165 ch sont livrés : linéairement, maîtrisés par une électronique très riche, dans un poids de 199 kg. En mode Road avec TCS actif, elle est utilisable quotidiennement. En mode Dynamic, c'est une expérience hors-norme. Les aides électroniques sont indispensables et très bien calibrées."
+      },
+      {
+        "question": "BMW S 1000 R ou Yamaha MT-09 : laquelle choisir ?",
+        "answer": "Question de budget et de philosophie. La MT-09 à ~9 999 € est 7 000 € moins chère, plus légère (189 vs 199 kg), avec le caractère unique du CP3. La S 1000 R répond avec 46 ch de plus (165 vs 119 ch), une électronique bien plus riche, une finition premium et le prestige BMW. Pour 90 % des usages routiers, la MT-09 suffit amplement. La S 1000 R est pour le rider qui veut le maximum."
+      }
+    ],
+
+    "conclusion": "La BMW S 1000 R 2021 est l'hyper-naked ultime pour qui peut se l'offrir. 165 ch, 199 kg, ABS Pro cornering, TFT 6,5 pouces, dérivé direct de la S 1000 RR — c'est une machine d'exception qui n'a aucun équivalent rationnel dans le segment pour les performances brutes. Son entretien est coûteux (~300-500 € par révision en concession BMW), son prix de départ élevé (~16 990 €) et ses options gourmandes sont des réalités à intégrer dans le budget.\n\nProfil idéal : rider A expérimenté, budget conséquent assumé, usage mixte sport/route, sensible au prestige BMW et aux performances extrêmes maîtrisées. Pour un usage plus rationnel à budget plus serré, la Yamaha MT-09 ou la Kawasaki Z900 sont des alternatives difficiles à contester.",
+
+    "cta_primary": {
+      "label": "Trouver un atelier BMW Motorrad près de chez moi",
+      "action": "search_nearby",
+      "params": { "brand": "BMW", "type": "concession" }
+    },
+    "cta_secondary": {
+      "label": "Comparer tous les roadsters 1000 disponibles",
+      "action": "navigate",
+      "params": { "category": "roadster", "subcategory": "roadster-750-1000" }
+    }
+  }
+}
