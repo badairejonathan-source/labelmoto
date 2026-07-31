@@ -1,0 +1,187 @@
+{
+  "id": "benelli-trk702-702x-2023-plus",
+  "slug": "benelli-trk702-702x-2023-plus",
+  "model": "TRK 702 / 702X",
+  "brand": "Benelli",
+  "brand_order": 11,
+  "category": "trail",
+  "subcategory": "trail-moyen",
+  "status": "published",
+  "featured": true,
+  "display_title": "Benelli TRK 702 / 702X",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2023+",
+  "model_order": 1,
+  "search_tags": ["benelli","trk 702","trk702","trk 702x","trail","adventure","entretien","revision","prix revision","A2","6000 km"],
+  "variants": [
+    {
+      "label": "TRK 702 (route)",
+      "weight_tpf_kg": 244,
+      "seat_height_mm": 835,
+      "front_tire": "120/70 R17",
+      "rear_tire": "160/60 R17",
+      "note": "Jantes alliage 17 pouces, pneus Pirelli Angel GT. Version orientée route."
+    },
+    {
+      "label": "TRK 702X (tout-terrain)",
+      "weight_tpf_kg": 244,
+      "seat_height_mm": 850,
+      "front_tire": "110/80 R19",
+      "rear_tire": "150/70 R17",
+      "note": "Jantes rayons 19/17 pouces, garde au sol plus élevée, crash bars de série. Version orientée aventure."
+    }
+  ],
+  "technical_sheet": {
+    "years": "2023-présent (Euro 5+ : 2025)",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, calage 270°",
+    "displacement_cc": 698,
+    "max_power_kw": 51,
+    "max_power_hp": 70,
+    "max_power_rpm": 8000,
+    "max_torque_nm": 68,
+    "max_torque_rpm": 6250,
+    "euro_standard": "Euro 5 (2023-2024) / Euro 5+ (2025)",
+    "transmission": "Boîte 6 vitesses",
+    "clutch": "Embrayage multidisques, Assist & Slipper",
+    "electronics": "ABS 2 canaux, TCS déconnectable (selon version)",
+    "display": "TFT couleur",
+    "power": "70 ch (51 kW) à 8 000 tr/min",
+    "torque": "68 Nm à 6 250 tr/min",
+    "fuel_system": "Injection électronique",
+    "license_bridging": "A2 disponible (35 kW bridage Moteogroup)",
+    "weight_tpf_kg": 244,
+    "seat_height_mm": 835,
+    "tank_l": 20,
+    "frame": "Cadre treillis acier haute résistance",
+    "front_suspension": "Fourche inversée réglable (débattement 150 mm — 702 / 170 mm — 702X)",
+    "rear_suspension": "Monoamortisseur réglable",
+    "front_brake": "Double disque 320 mm, étriers Brembo 4 pistons radiaux, ABS",
+    "rear_brake": "Disque 260 mm, ABS",
+    "front_tire": "120/70 R17 (702) / 110/80 R19 (702X)",
+    "rear_tire": "160/60 R17 (702) / 150/70 R17 (702X)",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "~7 499 € (TRK 702) / ~7 999 € (TRK 702X) — garantie 3 ans Moteogroup",
+    "garantie": "3 ans (Moteogroup / Benelli France)",
+    "serie_equipment": "TRK 702X : crash bars de série, poignées chauffantes (2025), pare-brise rehaussé (2025), porte-bagage alu",
+    "cycle_parts": {
+      "frame": "Cadre treillis acier",
+      "front_suspension": "Fourche inversée réglable",
+      "rear_suspension": "Monoamortisseur réglable",
+      "front_brake": "Double disque 320 mm, étriers Brembo 4 pistons, ABS",
+      "rear_brake": "Disque 260 mm, ABS",
+      "front_tire": "120/70 R17 (702) ou 110/80 R19 (702X)",
+      "rear_tire": "160/60 R17 (702) ou 150/70 R17 (702X)"
+    }
+  },
+  "seo": {
+    "meta_title": "Entretien Benelli TRK 702 / 702X (2023+) : révisions, prix & guide complet",
+    "meta_description": "Guide complet entretien Benelli TRK 702 et 702X 2023+ : intervalles 6 000 km, étriers Brembo, garantie 3 ans, comparatif Suzuki V-Strom 650. Coût réel et avis propriétaires.",
+    "keywords": [
+      "Benelli TRK 702 entretien","Benelli TRK 702X révision","Benelli TRK 702 prix révision","TRK 702 revision 6000 km","Benelli TRK 702 fiabilité","TRK 702X vs Suzuki V-Strom 650","Benelli TRK 702 avis","TRK 702 entretien coût"
+    ]
+  },
+  "service_guide": {
+    "intro": "La Benelli TRK 702 (et sa variante off-road 702X) est le best-seller actuel de Benelli en France. Lancée en 2023, elle propulse la marque italienne (propriété du groupe Qianjiang/Geely) dans le segment très disputé des trails 700 cm³. Son moteur bicylindre 698 cm³ calé à 270° développe 70 ch et 68 Nm — des chiffres raisonnables pour un trail orienté polyvalence. Son argument massue est son tarif : ~7 499 € pour la TRK 702 et ~7 999 € pour la 702X, avec des étriers Brembo 4 pistons et une fourche inversée réglable de série. La garantie 3 ans Moteogroup est un atout commercial rare sur ce segment. Son point faible le plus cité : le poids de 244 kg (le plus lourd de sa catégorie) et les révisions à 6 000 km — héritage de ses origines chinoises — qui augmentent le coût annuel d'entretien vs les japonaises (10 000-12 000 km).",
+    "known_issues": [
+      "Poids 244 kg en ordre de marche — le plus lourd du segment trail 700 (Yamaha Ténéré 700 : 204 kg, CFMOTO 700 MT : 218 kg). À évaluer impérativement à l'essai avant achat.",
+      "Intervalles de révision à 6 000 km ou 1 an — courts vs la concurrence japonaise (10-12 000 km). Pour un rouleur de 12 000 km/an : 2 révisions/an à budgéter.",
+      "Bulle basse sur la version standard — turbulences signalées par les pilotes de grande taille (>1,80 m). La version 2025 corrige ce point avec un pare-brise rehaussé.",
+      "Top case de série bruyant à haute vitesse sur certaines unités (signalé par Emile31200, Motoplanete).",
+      "Réseau Moteogroup/Benelli France en développement — vérifier la présence d'un distributeur dans votre région avant achat."
+    ],
+    "consumables": [
+      {"part": "Huile moteur 10W-40 JASO MA2", "average_lifetime": "6 000 km ou 1 an — volume estimé ~2,5 L avec filtre"},
+      {"part": "Filtre à huile", "average_lifetime": "6 000 km"},
+      {"part": "Filtre à air", "average_lifetime": "Nettoyage 6 000 km / remplacement 12 000 km"},
+      {"part": "Bougies (2)", "average_lifetime": "24 000 km (estimation)"},
+      {"part": "Jeu aux soupapes (8 soupapes)", "average_lifetime": "24 000 km (estimation)"},
+      {"part": "Liquide de frein DOT 4 (circuit Brembo)", "average_lifetime": "2 ans"},
+      {"part": "Liquide de refroidissement", "average_lifetime": "2-3 ans"},
+      {"part": "Kit chaîne 520/525", "average_lifetime": "15 000-20 000 km (702) / 10 000-15 000 km (702X usage trail)"},
+      {"part": "Pneus avant Pirelli Angel GT 120/70 R17 (702)", "average_lifetime": "12 000-16 000 km"},
+      {"part": "Pneus arrière 160/60 R17 (702)", "average_lifetime": "9 000-12 000 km"},
+      {"part": "Pneus avant 110/80 R19 (702X)", "average_lifetime": "8 000-12 000 km selon usage"},
+      {"part": "Pneus arrière 150/70 R17 (702X)", "average_lifetime": "7 000-10 000 km"}
+    ],
+    "longevity_tips": [
+      "Respecter les 6 000 km ou 1 an entre révisions — sur un moteur bicylindre 270° sans recul longue durée, l'huile est votre premier bouclier.",
+      "Profiter de la garantie 3 ans Moteogroup en faisant tamponner le carnet à chaque révision en réseau agréé.",
+      "702X usage trail : nettoyer le filtre à air après chaque sortie poussiéreuse — ne pas attendre les 6 000 km.",
+      "Entretenir le circuit Brembo avec rigueur : liquide de frein DOT 4 à renouveler tous les 2 ans maximum.",
+      "Le poids (244 kg) sollicite les pneus et la transmission — lubrifier la chaîne tous les 500-700 km."
+    ],
+    "comparatif": {
+      "intro": "La TRK 702 face à ses rivales directes sur le segment trail 700 en France.",
+      "competitors": [
+        {
+          "model": "Yamaha Ténéré 700 (2019+)",
+          "prix_france": "~10 499 €",
+          "avantages_vs_trk702": "3 000 € plus chère mais 40 kg plus légère (204 kg !), fiabilité CP2 légendaire, excellente valeur de revente, réseau Yamaha dense",
+          "inconvenients_vs_trk702": "3 000 € plus chère, sans Brembo de série, pas de garantie 3 ans",
+          "verdict": "La Ténéré gagne massivement sur le poids et la fiabilité prouvée. La TRK 702 gagne sur le prix et la garantie 3 ans."
+        },
+        {
+          "model": "CFMOTO 700 MT (2023+)",
+          "prix_france": "~7 490 €",
+          "avantages_vs_trk702": "Prix quasi identique (9 € de moins), 26 kg plus légère (218 kg), garantie 5 ans CFMOTO",
+          "inconvenients_vs_trk702": "Garantie 5 ans vs 3 ans Benelli (avantage CFMOTO), réseau GD France",
+          "verdict": "La CFMOTO est plus légère et a une garantie plus longue — la TRK 702 répond avec les étriers Brembo et le style trail plus imposant."
+        },
+        {
+          "model": "Suzuki V-Strom 650 XT (2017+)",
+          "prix_france": "~9 599 €",
+          "avantages_vs_trk702": "2 100 € plus chère mais fiabilité V-twin 645 cm³ légendaire, 28 kg plus légère (216 kg), réseau SAV Suzuki très dense, garantie 5 ans",
+          "inconvenients_vs_trk702": "2 100 € plus chère, sans étriers Brembo de série",
+          "verdict": "La Suzuki gagne sur la fiabilité longue durée et la légèreté — la Benelli gagne sur le prix d'entrée et les Brembo."
+        }
+      ]
+    },
+    "service_schedule": [
+      {"km": 500, "service_label": "Rodage : vidange huile + filtre, serrages, contrôle général", "price_estimate": "NC"},
+      {"km": 6000, "service_label": "Révision standard : vidange, filtre, chaîne, niveaux, ABS, contrôles", "price_estimate": "NC — données indisponibles officielles Moteogroup"},
+      {"km": 12000, "service_label": "Révision : + filtre air, contrôles approfondis", "price_estimate": "NC"},
+      {"km": 24000, "service_label": "Grande révision : + bougies, jeu aux soupapes, liquide frein, kit chaîne si usure", "price_estimate": "NC"}
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 6 000 km ou 1 an. Données officielles Moteogroup non publiées.",
+      "total_60000km": "Données indisponibles",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ Moteogroup/Benelli France ne publie pas ses tarifs d'entretien. L'intervalle de 6 000 km est confirmé par les propriétaires (Motoplanete, forum Repaire). Pour un rouleur de 12 000 km/an : 2 révisions/an estimées à 150-250 € chacune. Sur 3 ans, comptez ~900-1 500 € d'entretien — soit 30-50 % de plus que la Yamaha Ténéré 700 (10 000 km entre révisions)."
+    },
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — Benelli TRK 702X",
+      "hypothese": "10 000 km/an, usage mixte route/trail",
+      "poste_achat": "~7 999 €",
+      "poste_assurance_annuelle": "450 – 850 €",
+      "poste_entretien_3ans": "900 – 1 500 € (5-6 révisions à 6 000 km sur 3 ans / 30 000 km)",
+      "poste_pneus_3ans": "500 – 900 € (702X : pneus trail usure variable)",
+      "poste_equipement_pilote": "600 – 2 000 €",
+      "total_3ans_estime": "11 449 – 16 249 €",
+      "valeur_revente_estimee": "4 500 – 6 000 € à 3 ans (marché Benelli encore peu documenté)",
+      "cout_reel_3ans": "4 449 – 9 249 € soit 1 483 – 3 083 €/an",
+      "note": "La TRK 702 est l'une des trails les moins chères à l'achat du segment — mais ses révisions à 6 000 km augmentent le coût annuel d'entretien vs les japonaises. Sur 3 ans, la différence de prix à l'achat vs une Ténéré 700 (~3 000 €) peut être partiellement compensée par le surcoût d'entretien."
+    },
+    "faq": [
+      {
+        "question": "Quelle différence entre TRK 702 et TRK 702X ?",
+        "answer": "Même moteur, même cadre. La TRK 702 est orientée route : jantes alliage 17 pouces, pneus Pirelli Angel GT, selle à 835 mm, garde au sol standard. La 702X est orientée aventure : jantes rayons 19/17 pouces, garde au sol plus élevée, crash bars de série, selle à 850 mm, pneus mixtes. La 702X est 500 € plus chère (~7 999 €)."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la Benelli TRK 702 ?",
+        "answer": "6 000 km ou 1 an selon les retours propriétaires et le manuel. C'est l'intervalle le plus court du segment trail 700 (vs 10 000 km Yamaha Ténéré 700, 12 000 km Kawasaki). Pour un rouleur de 10 000 km/an, cela représente environ 2 révisions par an. À intégrer dans le budget."
+      },
+      {
+        "question": "La Benelli TRK 702 est-elle fiable ?",
+        "answer": "Les premiers retours propriétaires (2023-2025) sont globalement positifs. Le moteur bicylindre 270° est simple et bien conçu. La vraie inconnue reste la fiabilité à long terme (50 000+ km) — le moteur n'a pas encore le recul d'un CP2 Yamaha ou d'un V-twin Suzuki. La garantie 3 ans Moteogroup est votre bouclier principal."
+      },
+      {
+        "question": "TRK 702 ou Yamaha Ténéré 700 : laquelle choisir ?",
+        "answer": "La TRK 702 est 3 000 € moins chère avec les étriers Brembo de série. La Ténéré 700 répond avec 40 kg de moins (204 vs 244 kg), une fiabilité CP2 prouvée depuis 2019 et une valeur de revente supérieure. Pour un trail routier avec budget serré : TRK 702. Pour le trail dynamique et la fiabilité longue durée : Ténéré 700."
+      }
+    ],
+    "conclusion": "La Benelli TRK 702 / 702X est l'argument prix du segment trail 700 cm³. À ~7 499-7 999 €, avec des étriers Brembo, une fourche réglable, une garantie 3 ans et un design trail imposant, elle propose un dossier commercial difficile à ignorer. Son poids (244 kg) et ses révisions courtes (6 000 km) sont ses deux limites objectives — à évaluer à l'essai et à budgéter soigneusement. Pour un acheteur rationnel proche d'un distributeur Moteogroup, qui accepte un entretien plus fréquent en échange d'une économie à l'achat : la TRK 702 est un bon choix.",
+    "cta_primary": {"label": "Trouver un concessionnaire Benelli près de chez moi", "action": "search_nearby", "params": {"brand": "Benelli", "type": "concession"}},
+    "cta_secondary": {"label": "Comparer tous les trails 700 disponibles", "action": "navigate", "params": {"category": "trail", "subcategory": "trail-moyen"}}
+  }
+}

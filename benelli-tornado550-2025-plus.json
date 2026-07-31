@@ -1,0 +1,166 @@
+{
+  "id": "benelli-tornado550-2025-plus",
+  "slug": "benelli-tornado550-2025-plus",
+  "model": "Tornado 550",
+  "brand": "Benelli",
+  "brand_order": 11,
+  "category": "sportive",
+  "subcategory": "sportive-middleweight",
+  "status": "published",
+  "featured": true,
+  "display_title": "Benelli Tornado 550",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "year_range": "2025+",
+  "model_order": 8,
+  "search_tags": ["benelli","tornado 550","tornado550","sportive","carénée","entretien","revision","A2","marzocchi brembo","pirelli"],
+  "variants": [],
+  "technical_sheet": {
+    "years": "2025-présent (arrivée France : juin 2025 — source Caradisiac)",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, calage vilebrequin 270°",
+    "displacement_cc": 554,
+    "max_power_kw": 41,
+    "max_power_hp": 56,
+    "max_power_rpm": 8250,
+    "max_torque_nm": 54,
+    "max_torque_rpm": 5500,
+    "note_engine": "Même moteur 554 cm³ que la SRK 600RS de QJ Motor (groupe Geely commun). Calage vilebrequin 270° pour un son caractéristique.",
+    "euro_standard": "Euro 5+",
+    "transmission": "Boîte 6 vitesses",
+    "electronics": "ABS, TCS déconnectable, 2 modes de conduite (Normal/Sport)",
+    "display": "TFT couleur",
+    "power": "56 ch (41 kW) à 8 250 tr/min",
+    "torque": "54 Nm à 5 500 tr/min",
+    "fuel_system": "Injection EFI",
+    "license_bridging": "A2 disponible (35 kW bridage Moteogroup)",
+    "weight_tpf_kg": 194,
+    "seat_height_mm": 770,
+    "tank_l": 15,
+    "frame": "Cadre treillis acier",
+    "front_suspension": "Fourche inversée Marzocchi Ø 41 mm entièrement réglable",
+    "rear_suspension": "Monoamortisseur réglable en précharge et détente (débattement 125 mm)",
+    "front_brake": "Double disque semi-flottant 320 mm, étriers Brembo, ABS",
+    "rear_brake": "Disque 260 mm, ABS",
+    "front_tire": "120/70 R17 Pirelli Angel GT",
+    "rear_tire": "160/60 R17 Pirelli Angel GT",
+    "fuel_type": "Sans plomb 95 RON",
+    "price_neuf_france": "6 999 € (source Caradisiac, juin 2025) — garantie 3 ans Moteogroup",
+    "garantie": "3 ans (Moteogroup / Benelli France)",
+    "serie_equipment": "Marzocchi entièrement réglable, étriers Brembo, pneus Pirelli Angel GT de série",
+    "cycle_parts": {
+      "frame": "Cadre treillis acier",
+      "front_suspension": "Fourche inversée Marzocchi Ø 41 mm entièrement réglable",
+      "rear_suspension": "Monoamortisseur réglable",
+      "front_brake": "Double disque 320 mm, étriers Brembo, ABS",
+      "rear_brake": "Disque 260 mm, ABS",
+      "front_tire": "120/70 R17 Pirelli Angel GT",
+      "rear_tire": "160/60 R17 Pirelli Angel GT"
+    }
+  },
+  "seo": {
+    "meta_title": "Entretien Benelli Tornado 550 (2025+) : révisions, prix & guide complet",
+    "meta_description": "Guide complet entretien Benelli Tornado 550 2025+ : 56 ch, Marzocchi réglable, Brembo, Pirelli série, 6 999 €. Comparatif Kawasaki Ninja 500 / Aprilia RS 457 et avis.",
+    "keywords": [
+      "Benelli Tornado 550 entretien","Benelli Tornado 550 révision prix","Tornado 550 A2","Benelli Tornado 550 fiabilité","Tornado 550 vs Kawasaki Ninja 500","Benelli Tornado 550 Marzocchi Brembo","Tornado 550 avis"
+    ]
+  },
+  "service_guide": {
+    "intro": "La Benelli Tornado 550 marque le retour de Benelli dans le segment des sportives carénées — un retour aux sources pour une marque qui a marqué les années 70 avec sa Tornado 650. La nouvelle Tornado 550 est arrivée dans le réseau français en juin 2025 à 6 999 €. Son bicylindre 554 cm³ calé à 270° développe 56 ch et 54 Nm — et partage son architecture avec le moteur de la QJ Motor SRK 600 RS (même groupe Geely/Qianjiang). Son équipement de série est ambitieux : fourche Marzocchi entièrement réglable, étriers Brembo, pneus Pirelli Angel GT et TCS. Avec 194 kg et une selle à 770 mm, elle est parmi les sportives A2 les plus légères et accessibles du marché. À 6 999 €, elle se positionne entre la Kawasaki Ninja 500 SE (6 599 €) et l'Aprilia RS 457 (7 999 €) — avec des composants qui font honte aux concurrentes à ce prix.",
+    "known_issues": [
+      "Modèle tout nouveau (juin 2025 en France) — zéro recul fiabilité. C'est le risque inhérent à tout nouveau modèle.",
+      "Moteur 554 cm³ partagé avec QJ Motor SRK 600 RS — nouveau moteur sans historique longue durée en Europe.",
+      "Réseau Moteogroup France en développement — vérifier la présence d'un distributeur dans votre région. Point critique pour une sportive neuve.",
+      "Intervalles de révision non encore confirmés officiellement — estimation à 6 000 km basée sur le reste de la gamme Benelli.",
+      "Réservoir de 15 L — autonomie estimée ~270 km. Identique à la SRK 600 RS de QJ Motor (même base)."
+    ],
+    "consumables": [
+      {"part": "Huile moteur 10W-40 JASO MA2", "average_lifetime": "Estimation 6 000 km ou 6 mois (à confirmer en concession Moteogroup) — ~2,3 L avec filtre"},
+      {"part": "Filtre à huile", "average_lifetime": "6 000 km (estimation)"},
+      {"part": "Filtre à air", "average_lifetime": "Nettoyage 6 000 km / remplacement 12 000 km"},
+      {"part": "Bougies (2)", "average_lifetime": "20 000 km (estimation)"},
+      {"part": "Jeu aux soupapes (8 soupapes)", "average_lifetime": "20 000-25 000 km (estimation)"},
+      {"part": "Liquide de frein DOT 4 (circuit Brembo)", "average_lifetime": "1-2 ans — Brembo recommande annuel en usage sportif"},
+      {"part": "Plaquettes Brembo avant", "average_lifetime": "8 000-12 000 km (route)"},
+      {"part": "Kit chaîne 520", "average_lifetime": "12 000-16 000 km"},
+      {"part": "Pneus Pirelli Angel GT avant 120/70 R17", "average_lifetime": "8 000-12 000 km"},
+      {"part": "Pneus Pirelli Angel GT arrière 160/60 R17", "average_lifetime": "6 000-9 000 km"}
+    ],
+    "longevity_tips": [
+      "Rodage soigneux les 1 000 premiers km — bicylindre 270° haute compression, pas de forcing.",
+      "Profiter de la garantie 3 ans Moteogroup en maintenant toutes les révisions en réseau agréé — essentiel sur un moteur sans recul.",
+      "Circuit Brembo : entretenir avec du DOT 4 de qualité, renouveler annuellement si usage sportif régulier.",
+      "La Marzocchi entièrement réglable est un équipement premium — vérifier l'état des joints de fourche tous les 20 000 km."
+    ],
+    "comparatif": {
+      "intro": "La Tornado 550 face aux sportives carénées A2 de référence.",
+      "competitors": [
+        {
+          "model": "Kawasaki Ninja 500 SE (2024+)",
+          "prix_france": "~6 599 €",
+          "avantages_vs_tornado550": "400 € moins chère, fiabilité Kawasaki, 170 kg (24 kg plus légère !), garantie 4 ans",
+          "inconvenients_vs_tornado550": "451 cm³ / 45,4 ch (vs 554 cm³ / 56 ch), sans Marzocchi ni Brembo, sans Pirelli de série",
+          "verdict": "La Ninja est plus légère et plus fiable. La Tornado répond avec 10 ch de plus, Brembo, Marzocchi réglable et Pirelli de série."
+        },
+        {
+          "model": "QJ Motor SRK 600 RS (2025+)",
+          "prix_france": "6 799 €",
+          "avantages_vs_tornado550": "200 € moins chère, même moteur 554 cm³ identique, garantie 3 ans KM illimité (source Ormotors.fr), Bluetooth/navigation de série",
+          "inconvenients_vs_tornado550": "Pas de Marzocchi entièrement réglable, moins de pedigree style",
+          "verdict": "Même moteur, 200 € de moins, navigation Bluetooth en plus. La SRK 600 RS est objectivement plus complète. La Tornado gagne sur le pedigree Benelli et le style sportive pur."
+        },
+        {
+          "model": "Aprilia RS 457 (2024+)",
+          "prix_france": "~7 999 €",
+          "avantages_vs_tornado550": "Pedigree Aprilia, 166 kg (28 kg plus légère !), 47 ch mais plus radicale sur circuit, finition européenne",
+          "inconvenients_vs_tornado550": "1 000 € plus chère, moins puissante (47 vs 56 ch), pas de Marzocchi ni Brembo de série",
+          "verdict": "L'Aprilia gagne sur la légèreté et le pedigree. La Tornado répond avec plus de puissance, Brembo, Marzocchi et 1 000 € de moins."
+        }
+      ]
+    },
+    "service_schedule": [
+      {"km": 500, "service_label": "Rodage : vidange + filtre, contrôle Brembo/Marzocchi", "price_estimate": "NC"},
+      {"km": 6000, "service_label": "Révision standard : vidange, filtre, chaîne, freins Brembo, ABS, TCS", "price_estimate": "NC — données indisponibles (modèle 2025)"},
+      {"km": 12000, "service_label": "Révision + filtre air, contrôle bougies", "price_estimate": "NC"},
+      {"km": 24000, "service_label": "Grande révision : + 2 bougies, soupapes, liquide frein", "price_estimate": "NC"}
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Intervalles non confirmés officiellement. Estimation : 6 000 km ou 6 mois basé sur la gamme Benelli. À confirmer en concession Moteogroup.",
+      "total_60000km": "Données indisponibles — modèle trop récent",
+      "cost_per_km": "Non communiqué",
+      "note": "⚠️ La Tornado 550 vient d'arriver en France (juin 2025). Ni les intervalles officiels ni les tarifs d'entretien Moteogroup ne sont encore publiés. La garantie 3 ans est votre bouclier financier principal. Confirmer les intervalles et les tarifs lors de la visite en concession avant achat."
+    },
+    "budget_acheteur": {
+      "titre": "Budget réel sur 3 ans — Benelli Tornado 550",
+      "hypothese": "7 000 km/an, usage route + 2-3 sorties piste/an",
+      "poste_achat": "6 999 €",
+      "poste_assurance_annuelle": "400 – 800 €",
+      "poste_entretien_3ans": "700 – 1 200 € (estimé)",
+      "poste_pneus_3ans": "400 – 700 €",
+      "poste_equipement_pilote": "600 – 2 000 € (équipement sportif conseillé)",
+      "total_3ans_estime": "10 099 – 15 699 €",
+      "valeur_revente_estimee": "4 000 – 5 500 € à 3 ans (très difficile à estimer — modèle 2025)",
+      "cout_reel_3ans": "4 599 – 10 199 € soit 1 533 – 3 400 €/an"
+    },
+    "faq": [
+      {
+        "question": "La Tornado 550 a-t-elle vraiment le même moteur que la QJ Motor SRK 600 RS ?",
+        "answer": "Oui — Benelli et QJ Motor appartiennent tous deux au groupe Geely/Qianjiang. Le moteur 554 cm³ bicylindre parallèle calé à 270° est partagé entre les deux marques, conformément aux synergies habituelles du groupe. Les deux motos en tirent des cartographies différentes, mais l'architecture moteur est identique."
+      },
+      {
+        "question": "La Tornado 550 est-elle compatible A2 ?",
+        "answer": "Oui, avec un bridage à 35 kW disponible via le réseau Moteogroup. La version pleine est à 41 kW (56 ch) — légèrement au-dessus des limites A2."
+      },
+      {
+        "question": "Pourquoi choisir la Tornado 550 plutôt que la QJ Motor SRK 600 RS ?",
+        "answer": "Même moteur, 200 € de plus. La Tornado apporte : le pedigree Benelli (marque centenaire), un style sportive plus pur et fermé, la fourche Marzocchi entièrement réglable (vs réglable partiel sur la SRK 600 RS). La SRK 600 RS répond avec la navigation Bluetooth, la garantie KM illimité (selon Ormotors.fr) et un prix légèrement inférieur. À budget équivalent, si vous avez un distributeur Moteogroup proche : Tornado. Sinon : SRK 600 RS avec le réseau SIMA."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la Benelli Tornado 550 ?",
+        "answer": "Non confirmé officiellement à la date de rédaction. Estimation basée sur la gamme Benelli : 6 000 km ou 6 mois. À confirmer impérativement en concession Moteogroup avant achat — c'est un point clé pour le calcul du coût total de possession."
+      }
+    ],
+    "conclusion": "La Benelli Tornado 550 est le retour d'un nom légendaire sur la scène des sportives carénées — et l'arrivée est réussie. À 6 999 €, elle embarque une fourche Marzocchi entièrement réglable, des étriers Brembo, des pneus Pirelli Angel GT, le TCS et un bicylindre 270° de 56 ch qui lui donne un son caractéristique. Son principal risque : être un modèle tout nouveau (juin 2025) avec zéro recul. La garantie 3 ans Moteogroup atténue ce risque. Pour un passionné de sportives carénées A2 proche d'un distributeur Moteogroup et serein à l'idée d'être pionnier : la Tornado 550 mérite clairement l'essai.",
+    "cta_primary": {"label": "Trouver un concessionnaire Benelli près de chez moi", "action": "search_nearby", "params": {"brand": "Benelli", "type": "concession"}},
+    "cta_secondary": {"label": "Comparer toutes les sportives A2 disponibles", "action": "navigate", "params": {"category": "sportive", "permitted_a2": true}}
+  }
+}
