@@ -18,7 +18,7 @@ import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase, useMemoFirebase, useDoc } from '@/firebase/client';
 import { initializeFirebaseClient } from '@/firebase/config-client';
 import { collection, getDocs, query, limit, doc, getDoc, getFirestore } from "firebase/firestore";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import locationsData from '@/data/locations.json';
@@ -167,6 +167,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
 
 function MapPageComponent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { width } = useWindowSize();
   const { firestore } = useFirebase();
 
@@ -209,6 +210,21 @@ function MapPageComponent() {
 
   // Synchroniser le ref avec l'état
   useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);
+  // Sync état -> URL (permet au bouton retour de restaurer l'état)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('search', searchTerm);
+    if (activeFilters.length < 5) params.set('filter', activeFilters.join(','));
+    if (selectedId) params.set('selectedId', selectedId);
+    if (mapCenter[0] !== 46.5 || mapCenter[1] !== 2.2) {
+      params.set('lat', mapCenter[0].toFixed(4));
+      params.set('lng', mapCenter[1].toFixed(4));
+    }
+    if (mapZoom !== 6) params.set('zoom', mapZoom.toString());
+    const newUrl = params.toString() ? '/map?' + params.toString() : '/map';
+    router.replace(newUrl, { scroll: false });
+  }, [searchTerm, activeFilters, selectedId, mapCenter, mapZoom]);
+
 
   const isMobile = width !== undefined && width < 1024;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 140)) : 0;
