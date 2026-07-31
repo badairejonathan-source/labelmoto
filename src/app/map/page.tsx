@@ -217,7 +217,8 @@ function MapPageComponent() {
   // CHARGEMENT STATIQUE DEPUIS points.json
   useEffect(() => {
     setIsLoadingPoints(true);
-    fetch('https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json?t=' + Date.now())
+    setTimeout(() => {
+    fetch('https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json')
       .catch(() => fetch('/points.json'))
       .then(r => r.json())
       .then((data: any[]) => {
@@ -242,6 +243,7 @@ function MapPageComponent() {
         console.error('[MAP] Erreur chargement points.json:', e);
         setIsLoadingPoints(false);
       });
+    }, 200);
   }, []);
 
     // Chargement du cache départements
