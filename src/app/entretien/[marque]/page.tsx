@@ -163,6 +163,24 @@ const BRAND_META: Record<string, {
       { q: "Où faire réviser ma VOGE ?", a: "Le réseau DIP SAS compte plus de 450 magasins en France — le réseau le plus dense parmi les marques chinoises. La garantie 3 ans impose les révisions dans ce réseau." },
     ],
   },
+  'qj-motor': {
+    name: 'QJ Motor',
+    firestoreValue: 'QJ Motor',
+    metaTitle: "Fiches entretien QJ Motor : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien QJ Motor par modèle : SRK 600 RS, SRK 800, SRK 800 RR, SRT 700 SX, SRT 900 SX. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien QJ Motor — Intervalles et prix de révision',
+    intro: [
+      "QJ Motor (Qianjiang) est la marque premium du groupe Geely, qui possède également Volvo Cars et Lotus. Ses moteurs sont développés en partenariat avec Benelli et KTM, garantissant un niveau technique élevé. En France, QJ Motor est distribué par un réseau de concessionnaires en pleine expansion.",
+      "LabelMoto recense les fiches techniques d'entretien QJ Motor avec les intervalles officiels, les points de contrôle et les estimations de budget pour les modèles disponibles en France.",
+    ],
+    cout: "150 à 350 €",
+    intervalle: "6 000 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une QJ Motor ?", a: "Les QJ Motor récentes ont un intervalle de révision de 6 000 km pour les petites cylindrées et 12 000 km pour les 800 cm³ et plus. Consultez la fiche de votre modèle sur LabelMoto pour les intervalles exacts." },
+      { q: "Quel est le prix d'une révision QJ Motor en France ?", a: "Une révision QJ Motor coûte entre 150 € (révision simple) et 350 € (révision complète). Les pièces d'origine sont disponibles via le réseau de distribution français." },
+      { q: "Où faire réviser ma QJ Motor en France ?", a: "LabelMoto référence les concessionnaires QJ Motor agréés en France. Le réseau se développe rapidement — vérifiez la disponibilité dans votre département sur la carte LabelMoto." },
+    ],
+  },
 };
 
 export async function generateStaticParams() {
