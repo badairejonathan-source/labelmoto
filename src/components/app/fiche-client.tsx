@@ -134,7 +134,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       consumables: sg.consumables || fiche.consumables || [],
       maintenanceCost: sg.maintenance_cost_summary || fiche.maintenance_cost_summary || null,
       faq: sg.faq || fiche.faq || [],
-      knownIssues: sg.known_issues || fiche.known_issues || [],
+      knownIssues: (sg.known_issues || fiche.known_issues || []).map((x: any) => typeof x === "string" ? x : (x.issue + (x.description ? " — " + x.description : "") + (x.remedy ? " → " + x.remedy : ""))),
+
       longevityTips: sg.longevity_tips || fiche.longevity_tips || [],
       conclusion: sg.conclusion || fiche.conclusion || "",
     };
