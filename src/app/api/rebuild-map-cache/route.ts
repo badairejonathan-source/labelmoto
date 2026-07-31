@@ -30,16 +30,16 @@ export async function POST() {
         seenIds.add(d.id);
         const obj: any = {
           id: d.id,
-          lat: parseFloat(parseFloat(lat).toFixed(6)),
-          lng: parseFloat(parseFloat(lng).toFixed(6)),
+          lat: parseFloat(parseFloat(lat).toFixed(5)),
+          lng: parseFloat(parseFloat(lng).toFixed(5)),
           t: data.title || d.id,
           s: data.slug || d.id,
           a: data.appSection || col.section,
-          c: data.category || col.cat,
+          c: (data.category || col.cat || "").slice(0,40),
         };
         if (data.rating) obj.r = data.rating;
         if (data.imageUrl || data.imgUrl) obj.i = data.imageUrl || data.imgUrl;
-        if (data.address) obj.addr = data.address;
+        if (data.address) obj.addr = data.address.replace(/\r\n/g," ").replace(/\n/g," ").slice(0,60);
         if (data.brands?.length) obj.b = data.brands;
         if (data.departement) obj.d = data.departement;
         points.push(obj);
