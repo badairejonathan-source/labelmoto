@@ -304,18 +304,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         <p className="text-center py-10 text-muted-foreground font-black uppercase text-xs italic">Données en cours d'actualisation...</p>
                       )}
                     </div>
-                  </div><Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
-                    <CardHeader className="bg-brand text-white py-4 md:py-5 px-4 md:px-8"><CardTitle className="text-sm md:text-lg font-black uppercase tracking-widest flex items-center gap-3"><ClipboardList className="h-5 w-5 md:h-6 md:w-6" /> CALENDRIER DES RÉVISIONS</CardTitle></CardHeader>
-                    <CardContent className="p-0">
-                        <Table><TableHeader className="bg-muted/40"><TableRow className="border-muted/50"><TableHead className="font-black uppercase text-[9px] md:text-[10px] tracking-widest py-3.5 pl-4 md:pl-8">KM</TableHead><TableHead className="font-black uppercase text-[9px] md:text-[10px] tracking-widest py-3.5">TYPE DE SERVICE</TableHead><TableHead className="font-black uppercase text-[9px] md:text-[10px] tracking-widest py-3.5 text-right pr-4 md:pr-8">BUDGET</TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {displayData.serviceSchedule.length > 0 ? displayData.serviceSchedule.map((s: any, i: number) => (
-                                    <TableRow key={i} className="hover:bg-brand/[0.02] border-muted/50 transition-colors"><TableCell className="font-black text-foreground text-xs md:text-sm py-3 pl-4 md:pl-8 whitespace-nowrap">{getRobustValue(s, ['km', 'intervalle', 'label'])} <span className="text-[9px] text-muted-foreground">km</span></TableCell><TableCell className="font-bold text-xs md:text-sm py-3 leading-snug">{getRobustValue(s, ['service_label', 'operations', 'content', 'description'])}</TableCell><TableCell className="text-right pr-4 md:pr-8 py-3"><span className="text-brand font-black text-xs md:text-sm whitespace-nowrap">{getRobustValue(s, ['price_estimate', 'price', 'prix', 'budget'])}</span></TableCell></TableRow>
-                                )) : <TableRow><TableCell colSpan={3} className="text-center py-10 text-muted-foreground font-black uppercase text-xs italic">Données en cours d'actualisation...</TableCell></TableRow>}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
+                  </div>
 
                 {displayData.maintenanceCost && (
                   <Card className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-brand to-orange-600">
