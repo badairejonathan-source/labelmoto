@@ -213,12 +213,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </div>
                         <div className="w-32 md:w-48 drop-shadow-2xl brightness-0 invert opacity-40 hidden md:block"><LabelMotoLogo noBubble /></div>
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 grid grid-cols-2 md:grid-cols-4 gap-3 bg-black/60 backdrop-blur-md p-4 md:p-5 border-t border-white/10">
-                        <div className="space-y-1"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Gauge className="h-3 w-3" /> PUISSANCE</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.engine.power}</p></div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Scale className="h-3 w-3" /> POIDS (TPF)</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.wetWeight}</p></div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Bike className="h-3 w-3" /> HAUTEUR SELLE</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.seatHeight}</p></div>
-                        <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><ShieldCheck className="h-3 w-3" /> PERMIS</div><p className="text-white text-[10px] md:text-xs font-black leading-tight uppercase">✔ {displayData.engine.bridage}</p></div>
-                    </div>
+                    
                 </div>
             </div>
 
@@ -265,7 +260,13 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </AccordionItem>
             </Accordion>
 
-            <section id="service" className="scroll-mt-28 space-y-12 pt-16 border-t-2 border-dashed border-muted">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-muted/30 border border-muted/40 rounded-[1.5rem] overflow-hidden mt-3">
+                        <div className="space-y-1 bg-card p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Gauge className="h-3 w-3" /> PUISSANCE</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.engine.power}</p></div>
+                        <div className="space-y-1 border-l border-muted/30 pl-3 md:pl-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Scale className="h-3 w-3" /> POIDS (TPF)</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.wetWeight}</p></div>
+                        <div className="space-y-1 border-l border-muted/30 pl-3 md:pl-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Bike className="h-3 w-3" /> HAUTEUR SELLE</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.seatHeight}</p></div>
+                        <div className="space-y-1 border-l border-muted/30 pl-3 md:pl-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><ShieldCheck className="h-3 w-3" /> PERMIS</div><p className="text-foreground text-[10px] md:text-xs font-black leading-tight uppercase">✔ {displayData.engine.bridage}</p></div>
+                    </div>
+                <section id="service" className="scroll-mt-28 space-y-12 pt-16 border-t-2 border-dashed border-muted">
                 <div className="text-center space-y-6"><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground leading-none">GUIDE ENTRETIEN & PRIX</h2><div className="w-20 h-1.5 bg-brand mx-auto rounded-full" /><p className="text-base text-muted-foreground font-medium leading-relaxed max-w-3xl mx-auto italic">{displayData.introduction}</p></div>
                 <div className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
                     <div className="bg-brand text-white py-4 md:py-5 px-4 md:px-8 flex items-center gap-3">
