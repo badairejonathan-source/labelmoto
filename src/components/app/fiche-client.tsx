@@ -202,18 +202,18 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-10">
-            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[420px] flex flex-col justify-end">
-                <div className="absolute inset-0 z-0"><Image src={displayData.imageUrl} alt={displayData.modelName} fill className="object-cover opacity-60" priority /></div>
-                <div className="relative z-10 p-8 md:p-12 w-full">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[400px] md:min-h-[520px] flex flex-col justify-between">
+                <div className="absolute inset-0 z-0"><Image src={displayData.imageUrl} alt={displayData.modelName} fill className="object-cover opacity-75" priority /></div>
+                <div className="relative z-10 w-full">
+                    <div className="flex flex-col gap-2 p-5 md:p-8">
                         <div className="text-white">
                             <span className="inline-block bg-brand text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] mb-4 shadow-lg">FICHE TECHNIQUE OFFICIELLE</span>
                             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85] mb-2">{displayData.modelName}</h1>
                             <p className="text-xl md:text-2xl font-black text-brand italic">Millésime {displayData.year}</p>
                         </div>
-                        <div className="w-48 sm:w-56 drop-shadow-2xl brightness-0 invert opacity-60 hidden sm:block"><LabelMotoLogo noBubble /></div>
+                        <div className="w-32 md:w-48 drop-shadow-2xl brightness-0 invert opacity-40 hidden md:block"><LabelMotoLogo noBubble /></div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-black/40 backdrop-blur-md p-6 rounded-[1.5rem] border border-white/10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-black/50 backdrop-blur-md p-4 md:p-6 rounded-[1.5rem] border border-white/10 mt-auto mx-4 mb-4 md:mx-6 md:mb-6">
                         <div className="space-y-1"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Gauge className="h-3 w-3" /> PUISSANCE</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.engine.power}</p></div>
                         <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Scale className="h-3 w-3" /> POIDS (TPF)</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.wetWeight}</p></div>
                         <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Bike className="h-3 w-3" /> HAUTEUR SELLE</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.seatHeight}</p></div>
@@ -267,7 +267,43 @@ export default function FicheClient({ modelId }: { modelId: string }) {
 
             <section id="service" className="scroll-mt-28 space-y-12 pt-16 border-t-2 border-dashed border-muted">
                 <div className="text-center space-y-6"><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground leading-none">GUIDE ENTRETIEN & PRIX</h2><div className="w-20 h-1.5 bg-brand mx-auto rounded-full" /><p className="text-base text-muted-foreground font-medium leading-relaxed max-w-3xl mx-auto italic">{displayData.introduction}</p></div>
-                <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
+                <div className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
+                    <div className="bg-brand text-white py-4 md:py-5 px-4 md:px-8 flex items-center gap-3">
+                      <ClipboardList className="h-5 w-5 md:h-6 md:w-6" />
+                      <span className="text-sm md:text-lg font-black uppercase tracking-widest">Calendrier des révisions</span>
+                    </div>
+                    <div className="p-4 md:p-8">
+                      {displayData.serviceSchedule.length > 0 ? (
+                        <div className="relative">
+                          {displayData.serviceSchedule.map((s: any, i: number) => {
+                            const km = getRobustValue(s, ['km', 'intervalle', 'label']);
+                            const ops = getRobustValue(s, ['service_label', 'operations', 'content', 'description']);
+                            const price = getRobustValue(s, ['price_estimate', 'price', 'prix', 'budget']);
+                            const isLast = i === displayData.serviceSchedule.length - 1;
+                            return (
+                              <div key={i} className="flex gap-4 mb-1">
+                                <div className="flex flex-col items-center" style={{width:'28px', flexShrink:0}}>
+                                  <div className="flex items-center justify-center rounded-full bg-orange-50 border-2 border-brand text-brand font-black text-xs" style={{width:'24px', height:'24px', flexShrink:0}}>
+                                    {i + 1}
+                                  </div>
+                                  {!isLast && <div className="w-px flex-1 bg-muted/40 my-1" style={{minHeight:'24px'}} />}
+                                </div>
+                                <div className="flex-1 pb-6">
+                                  <div className="flex justify-between items-baseline mb-1 gap-2">
+                                    <span className="text-sm font-black text-foreground whitespace-nowrap">{km} <span className="text-xs text-muted-foreground font-medium">km</span></span>
+                                    {price && <span className="text-sm font-black text-brand whitespace-nowrap">{price}</span>}
+                                  </div>
+                                  <p className="text-sm text-muted-foreground leading-relaxed">{ops}</p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-center py-10 text-muted-foreground font-black uppercase text-xs italic">Données en cours d'actualisation...</p>
+                      )}
+                    </div>
+                  </div><Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
                     <CardHeader className="bg-brand text-white py-4 md:py-5 px-4 md:px-8"><CardTitle className="text-sm md:text-lg font-black uppercase tracking-widest flex items-center gap-3"><ClipboardList className="h-5 w-5 md:h-6 md:w-6" /> CALENDRIER DES RÉVISIONS</CardTitle></CardHeader>
                     <CardContent className="p-0">
                         <Table><TableHeader className="bg-muted/40"><TableRow className="border-muted/50"><TableHead className="font-black uppercase text-[9px] md:text-[10px] tracking-widest py-3.5 pl-4 md:pl-8">KM</TableHead><TableHead className="font-black uppercase text-[9px] md:text-[10px] tracking-widest py-3.5">TYPE DE SERVICE</TableHead><TableHead className="font-black uppercase text-[9px] md:text-[10px] tracking-widest py-3.5 text-right pr-4 md:pr-8">BUDGET</TableHead></TableRow></TableHeader>
