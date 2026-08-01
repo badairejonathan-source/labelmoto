@@ -213,7 +213,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         </div>
                         <div className="w-32 md:w-48 drop-shadow-2xl brightness-0 invert opacity-40 hidden md:block"><LabelMotoLogo noBubble /></div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-black/50 backdrop-blur-md p-4 md:p-6 rounded-[1.5rem] border border-white/10 mt-auto mx-4 mb-4 md:mx-6 md:mb-6">
+                    <div className="absolute bottom-0 left-0 right-0 grid grid-cols-2 md:grid-cols-4 gap-3 bg-black/60 backdrop-blur-md p-4 md:p-5 border-t border-white/10">
                         <div className="space-y-1"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Gauge className="h-3 w-3" /> PUISSANCE</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.engine.power}</p></div>
                         <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Scale className="h-3 w-3" /> POIDS (TPF)</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.wetWeight}</p></div>
                         <div className="space-y-1 border-l border-white/10 pl-4 md:pl-6"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Bike className="h-3 w-3" /> HAUTEUR SELLE</div><p className="text-white text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.seatHeight}</p></div>
