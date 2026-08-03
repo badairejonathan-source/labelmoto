@@ -53,7 +53,7 @@ const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string 
     }
   }
   const commonSynonyms: Record<string, string[]> = {
-    'operations': ['service_label', 'content', 'description', 'details', 'label', 'op'],
+    'operations': ['service_label', 'operations', 'content', 'description', 'details', 'label', 'op'],
     'price': ['price_estimate', 'prix', 'budget', 'coût', 'cout', 'valeur'],
     'km': ['intervalle', 'interval', 'distance', 'periodicité', 'periodicite'],
     'spec': ['value', 'details', 'reference', 'ref', 'type'],
@@ -293,7 +293,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                                 <div className="flex-1 pb-6">
                                   <div className="flex justify-between items-baseline mb-1 gap-2">
                                     <span className="text-sm font-black text-foreground whitespace-nowrap">{km} <span className="text-xs text-muted-foreground font-medium">km</span></span>
-                                    {price && <span className="text-sm font-black text-brand whitespace-nowrap">{price}</span>}
+                                    {<span className="text-sm font-black text-brand whitespace-nowrap">{price || "NC"}</span>}
                                   </div>
                                   <div className="flex flex-col gap-1 mt-1">
                                     {ops ? ops.toString().split(/[,،،]+/).map((op: string, j: number) => op.trim() ? (
