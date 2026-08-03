@@ -7,7 +7,6 @@ function initializeFirebaseAdmin() {
       admin.initializeApp({
         credential: admin.credential.applicationDefault(),
       });
-      console.log("✅ Firebase Admin initialisé.");
     } catch (error) {
       console.error("❌ Erreur initialisation Firebase Admin:", error);
       return null;
@@ -68,7 +67,6 @@ export async function GET(request: NextRequest) {
   } = {};
 
   try {
-    console.log("🚀 Démarrage du calcul des départements...");
 
     for (const collectionName of collectionsToProcess) {
       const snapshot = await db.collection(collectionName).get();
@@ -104,8 +102,6 @@ export async function GET(request: NextRequest) {
       counts: departementsAggregation,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
-
-    console.log(`✅ Cache mis à jour. ${Object.keys(departementsAggregation).length} départements traités.`);
     return NextResponse.json(
       { message: 'Departements count updated successfully.' },
       { status: 200 }

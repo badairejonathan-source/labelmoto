@@ -253,7 +253,6 @@ function MapPageComponent() {
         } as MapPoint));
         setPoints(mapped);
         setIsLoadingPoints(false);
-        console.log('[MAP] Points chargés:', mapped.length);
       })
       .catch(e => {
         console.error('[MAP] Erreur chargement points.json:', e);
