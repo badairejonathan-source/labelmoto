@@ -251,6 +251,13 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </Card>
             </div>
 
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-muted/30 border border-muted/40 rounded-[1.5rem] overflow-hidden mt-3">
+                        <div className="space-y-1 bg-card p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Gauge className="h-3 w-3" /> PUISSANCE</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.engine.power}</p></div>
+                        <div className="space-y-1 bg-card border-l border-muted/30 p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Scale className="h-3 w-3" /> POIDS (TPF)</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.wetWeight}</p></div>
+                        <div className="space-y-1 bg-card border-l border-muted/30 p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Bike className="h-3 w-3" /> HAUTEUR SELLE</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.seatHeight}</p></div>
+                        <div className="space-y-1 bg-card border-l border-muted/30 p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><ShieldCheck className="h-3 w-3" /> PERMIS</div><p className="text-foreground text-[10px] md:text-xs font-black leading-tight uppercase">✔ {displayData.engine.bridage}</p></div>
+                    </div>
+
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="cycle" className="border-none shadow-md rounded-2xl bg-card overflow-hidden mb-4">
                     <AccordionTrigger className="px-8 py-5 hover:no-underline group"><div className="flex items-center gap-3 text-brand font-black uppercase text-xs"><Wrench className="h-5 w-5" /> PARTIE CYCLE & FREINAGE</div></AccordionTrigger>
@@ -260,12 +267,6 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 </AccordionItem>
             </Accordion>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-muted/30 border border-muted/40 rounded-[1.5rem] overflow-hidden mt-3">
-                        <div className="space-y-1 bg-card p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Gauge className="h-3 w-3" /> PUISSANCE</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.engine.power}</p></div>
-                        <div className="space-y-1 bg-card border-l border-muted/30 p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Scale className="h-3 w-3" /> POIDS (TPF)</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.wetWeight}</p></div>
-                        <div className="space-y-1 bg-card border-l border-muted/30 p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><Bike className="h-3 w-3" /> HAUTEUR SELLE</div><p className="text-foreground text-lg md:text-xl font-black tracking-tighter leading-tight">{displayData.dimensions.seatHeight}</p></div>
-                        <div className="space-y-1 bg-card border-l border-muted/30 p-4 md:p-5"><div className="flex items-center gap-2 text-brand font-black uppercase tracking-widest text-[8px]"><ShieldCheck className="h-3 w-3" /> PERMIS</div><p className="text-foreground text-[10px] md:text-xs font-black leading-tight uppercase">✔ {displayData.engine.bridage}</p></div>
-                    </div>
                 <section id="service" className="scroll-mt-28 space-y-12 pt-16 border-t-2 border-dashed border-muted">
                 <div className="text-center space-y-6"><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground leading-none">GUIDE ENTRETIEN & PRIX</h2><div className="w-20 h-1.5 bg-brand mx-auto rounded-full" /><p className="text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto" style={{display:'-webkit-box',WebkitLineClamp:4,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{displayData.introduction}</p></div>
                 <div className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-card">
@@ -349,9 +350,9 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                     <CardContent className="p-4">
                       <div className="grid grid-cols-1 gap-2">
                         {displayData.consumables.map((c: any, i: number) => (
-                          <div key={i} className="flex justify-between items-center py-2 border-b border-muted/30 last:border-0 gap-3">
-                            <span className="text-xs font-black text-muted-foreground uppercase tracking-wide flex-1">{getRobustValue(c, ['part', 'nom'])}</span>
-                            <span className="text-xs font-black text-foreground text-right shrink-0">{getRobustValue(c, ['average_lifetime', 'duree', 'lifetime'])}</span>
+                          <div key={i} className="flex flex-col py-3 border-b border-muted/30 last:border-0 gap-1">
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{getRobustValue(c, ['part', 'nom'])}</span>
+                            <span className="text-sm font-black text-foreground">{getRobustValue(c, ['average_lifetime', 'duree', 'lifetime'])}</span>
                           </div>
                         ))}
                       </div>

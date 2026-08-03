@@ -177,7 +177,7 @@ export default function HomepageDeferred() {
                         <section aria-labelledby="entretien-title">
                 <div className="relative rounded-[2.5rem] overflow-hidden shadow-xl min-h-[320px]">
                     {/* Image de fond */}
-                    <Image src="/images/motard-entretien-page.webp" alt="Entretien moto" fill className="object-cover object-center" sizes="(max-width: 1280px) 100vw, 1280px" loading="lazy" />
+                    <Image src="/images/motard-entretien-page.webp" alt="Entretien moto" fill className="object-cover object-center" sizes="(max-width: 768px) 100vw, 1280px" priority />
                     {/* Overlay sombre */}
                     <div className="absolute inset-0 bg-black/65" />
                     {/* Contenu par-dessus */}
