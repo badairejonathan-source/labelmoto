@@ -426,7 +426,7 @@ const Header: React.FC<any> = ({
   if (searchOnly) return searchInput;
 
   return (
-    <div className="w-full flex flex-col gap-6 md:gap-8 pt-4 pb-6 bg-brand">
+    <div className={cn("w-full flex flex-col gap-6 md:gap-8 pt-4 pb-6", pathname !== "/map" && "bg-brand")}>
       <div className="flex items-center justify-between gap-4 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
         <div className="shrink-0"><LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" /></div>
         <div className="flex-1 flex justify-center px-4">
