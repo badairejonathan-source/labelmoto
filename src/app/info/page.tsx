@@ -137,11 +137,11 @@ function InfoPageComponent() {
 
     const filteredArticles = useMemo(() => {
         if (!allArticles) return [];
-        const EXCLUDED_ARTICLE_ID = 'entretien-moto-intervalles-prix-conseils-par-modele';
+        const EXCLUDED_ARTICLE_IDS = ['entretien-moto-intervalles-prix-conseils-par-modele', 'meilleurs-casques-moto-entree-de-gamme-2026', 'meilleurs-casques-moto-milieu-de-gamme-2026', 'meilleurs-casques-moto-haut-de-gamme-2026'];
         
         return [...allArticles]
             .filter(a => {
-                if (a.id === EXCLUDED_ARTICLE_ID) return false;
+                if (EXCLUDED_ARTICLE_IDS.includes(a.id)) return false;
                 if (activeCategory === 'ALL') return true;
                 return getArticleCategories(a).includes(activeCategory);
             })
@@ -174,14 +174,14 @@ function InfoPageComponent() {
 
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
                 <div className="max-w-6xl mx-auto">
-                    <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-20 md:pt-28"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
+                    <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-6 md:pt-8"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
                     
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-8">
                         <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">Conseils pratiques</h1>
                         <div className="mt-4 w-20 h-1.5 bg-brand mx-auto rounded-full" />
                     </div>
 
-                    <div className="flex flex-wrap justify-center gap-3 mb-12">
+                    <div className="flex flex-wrap justify-center gap-3 mb-8">
                         {CATEGORIES.map((cat) => (
                             <Button
                                 key={cat.id}

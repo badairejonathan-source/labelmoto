@@ -202,7 +202,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-10">
-            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black min-h-[400px] md:min-h-[520px] flex flex-col justify-between">
+            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video flex flex-col justify-between">
                 <div className="absolute inset-0 z-0"><Image src={displayData.imageUrl} alt={displayData.modelName} fill className="object-cover opacity-75" priority /></div>
                 <div className="relative z-10 w-full">
                     <div className="flex flex-col gap-2 p-5 md:p-8">
