@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, Building2 } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, Building2, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
@@ -359,7 +359,7 @@ const Header: React.FC<any> = ({
           </button>
         )}
         <Button
-          className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[70px] w-[70px] shadow-lg hover:scale-105 active:scale-95 transition-all"
+          className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[70px] w-[70px] shadow-lg hover:scale-105 active:scale-95 transition-all ring-4 ring-white"
           onClick={() => { onSearch(); setShowSuggestions(false); }}
         >
           <Search className="h-8 w-8" />
@@ -426,7 +426,7 @@ const Header: React.FC<any> = ({
   if (searchOnly) return searchInput;
 
   return (
-    <div className="w-full flex flex-col gap-6 md:gap-8 pt-4">
+    <div className="w-full flex flex-col gap-6 md:gap-8 pt-4 pb-6 bg-brand">
       <div className="flex items-center justify-between gap-4 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
         <div className="shrink-0"><LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" /></div>
         <div className="flex-1 flex justify-center px-4">
@@ -435,7 +435,18 @@ const Header: React.FC<any> = ({
             <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
           </div>
         </div>
-        <div className="shrink-0 flex items-center"><UserMenuLazy /></div>
+        <div className="shrink-0 flex items-center gap-3">
+          <a
+            href="https://www.instagram.com/labelmoto.fr/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram LabelMoto"
+            className="hidden sm:flex items-center justify-center h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 shadow-xl border-2 border-white text-brand hover:scale-105 active:scale-95 transition-all"
+          >
+            <Instagram className="h-5 w-5 md:h-6 md:w-6" />
+          </a>
+          <UserMenuLazy />
+        </div>
       </div>
       <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
         {pathname !== "/" && <div className="flex-1">{searchInput}</div>}

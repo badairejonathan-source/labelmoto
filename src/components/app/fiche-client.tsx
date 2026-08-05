@@ -24,7 +24,11 @@ import {
   FileText,
   ClipboardList,
   CircleDot,
-  Wallet
+  Wallet,
+  Star,
+  MessageSquare,
+  User,
+  Send
 } from 'lucide-react';
 
 import Header from '@/components/app/header';
@@ -40,10 +44,26 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase/client';
-import { doc } from 'firebase/firestore';
+import { useFirestore, useDoc, useMemoFirebase, useUser, useCollection, addDocumentNonBlocking } from '@/firebase/client';
+import { doc, collection, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useToast } from '@/hooks/use-toast';
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+const reviewSchema = z.object({
+  rating: z.number().min(1, "Veuillez donner une note.").max(5),
+  content: z.string().min(10, "Votre avis doit faire au moins 10 caractères."),
+});
+
+type ReviewFormValues = z.infer<typeof reviewSchema>;
 
 const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "—") => {
   if (!obj || typeof obj !== 'object') return defaultValue;
@@ -174,6 +194,68 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     let minCC = currentCC - 150, maxCC = currentCC + 150;
     return pool.filter(m => m.id !== modelId && m.cc >= minCC && m.cc <= maxCC).sort(() => 0.5 - Math.random()).slice(0, 4);
   }, [modelId, displayData]);
+
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  const proProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
+  const { data: proProfile } = useDoc(proProfileRef);
+  const stdProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
+  const { data: stdProfile } = useDoc(stdProfileRef);
+  const activeProfile = proProfile || stdProfile;
+
+  const reviewsRef = useMemoFirebase(() => {
+    if (!firestore || !modelId) return null;
+    return query(collection(firestore, 'motorcycle_sheets', modelId, 'comments'), orderBy('date', 'desc'));
+  }, [firestore, modelId]);
+  const { data: reviews, isLoading: reviewsLoading } = useCollection(reviewsRef);
+
+  const reviewForm = useForm<ReviewFormValues>({
+    resolver: zodResolver(reviewSchema),
+    defaultValues: { rating: 5, content: '' },
+  });
+
+  const handleLeaveReviewClick = () => {
+    const currentPath = `/fiches/${modelId}`;
+    if (!user) {
+      router.push(`/login?callbackUrl=${encodeURIComponent(currentPath)}#leave-review`);
+      return;
+    }
+    if (!activeProfile) {
+      router.push(`/account?callbackUrl=${encodeURIComponent(currentPath)}#leave-review`);
+      return;
+    }
+    setIsReviewDialogOpen(true);
+  };
+
+  const onSubmitReview = async (values: ReviewFormValues) => {
+    if (!user || !activeProfile || !firestore) return;
+    setIsSubmittingReview(true);
+    try {
+      addDocumentNonBlocking(collection(firestore, 'pending_comments'), {
+        targetType: 'motorcycle_sheet',
+        dealershipId: modelId,
+        dealershipName: displayData?.modelName || modelId,
+        userId: user.uid,
+        userName: activeProfile.pseudo || activeProfile.displayName || "Motard",
+        rating: values.rating,
+        content: values.content,
+        date: serverTimestamp(),
+      });
+      toast({
+        title: "Avis envoyé !",
+        description: "Merci ! Votre avis a été transmis à l'équipe pour validation avant publication."
+      });
+      setIsReviewDialogOpen(false);
+      reviewForm.reset();
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible d'envoyer l'avis." });
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   if (isLoading || !displayData) return (
     <div className="min-h-screen bg-background">
@@ -372,10 +454,153 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                         <Link key={m.id} href={`/fiches/${m.id}?from=${modelId}`} className="group flex items-center justify-between p-6 bg-card rounded-2xl border-2 border-muted hover:border-brand hover:shadow-xl transition-all"><div className="flex flex-col"><span className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{m.name}</span><span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{m.cc} cm³</span></div><div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-all shadow-sm"><ChevronRight className="h-5 w-5" /></div></Link>
                 ))}</div></section>
                 <div className="mt-20 pt-10 border-t-4 border-dashed border-muted relative flex flex-col md:flex-row items-center gap-8 bg-muted/10 p-10 rounded-[3rem]"><div className="shrink-0"><ShieldCheck className="h-16 w-16 text-brand" /></div><div className="flex-1"><h3 className="text-2xl font-black uppercase mb-4 text-foreground tracking-tighter">L'AVIS DE L'EXPERT</h3><p className="text-lg text-foreground/80 font-black leading-relaxed italic">"{displayData.conclusion}"</p><div className="flex justify-end items-center mt-8"><p className="text-lg font-black text-foreground italic relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={100} height={100} className="opacity-40 -rotate-12 pointer-events-none -ml-8" loading="lazy"/></div></div></div>
+
+                <section id="reviews" className="scroll-mt-28 space-y-8 pt-8">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-4 border-brand pb-4 gap-4">
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
+                        <MessageSquare className="h-8 w-8 text-brand" /> Avis des motards
+                      </h2>
+                      <div className="bg-brand text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                        {reviews?.length || 0} avis
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleLeaveReviewClick}
+                      className="bg-foreground text-white hover:bg-brand rounded-full font-black uppercase text-[10px] tracking-widest px-8 h-12 shadow-xl transition-all hover:scale-105 active:scale-95"
+                    >
+                      Laisser un avis
+                    </Button>
+                  </div>
+
+                  {reviewsLoading ? (
+                    <div className="flex justify-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-brand" />
+                    </div>
+                  ) : reviews && reviews.length > 0 ? (
+                    <div className="grid gap-6">
+                      {reviews.map((review: any) => (
+                        <Card key={review.id} className="border-2 rounded-[2rem] overflow-hidden bg-white shadow-md hover:shadow-xl transition-shadow">
+                          <CardContent className="p-8">
+                            <div className="flex justify-between items-start mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="h-12 w-12 rounded-full bg-brand/10 flex items-center justify-center text-brand">
+                                  <User className="h-6 w-6" />
+                                </div>
+                                <div>
+                                  <p className="font-black uppercase text-sm leading-none">{review.userName || 'Motard'}</p>
+                                  <p className="text-[10px] text-muted-foreground font-bold mt-1">
+                                    {review.date ? formatDistanceToNow(new Date(review.date.seconds ? review.date.seconds * 1000 : review.date), { addSuffix: true, locale: fr }) : 'Récemment'}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex gap-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} className={cn("h-4 w-4", i < (review.rating || 0) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/20")} />
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-base font-bold text-foreground/80 italic leading-relaxed">
+                              "{review.content}"
+                            </p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-muted/30 p-12 rounded-[2rem] border-2 border-dashed text-center">
+                      <p className="font-black uppercase text-muted-foreground">Aucun avis pour le moment.</p>
+                      <p className="text-xs font-bold text-muted-foreground mt-2">Soyez le premier à partager votre expérience sur ce modèle !</p>
+                    </div>
+                  )}
+                </section>
             </section>
           </div>
         </div>
       </main>
+
+      <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogHeader className="bg-brand text-white p-8 md:p-10">
+            <DialogTitle className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Votre avis nous intéresse</DialogTitle>
+            <DialogDescription className="text-white/80 font-bold text-sm md:text-base leading-snug">
+              Partagez votre expérience avec la <strong>{displayData.modelName}</strong> : points forts, points d'attention, conseils d'entretien...
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="p-8 md:p-10">
+            <Form {...reviewForm}>
+              <form onSubmit={reviewForm.handleSubmit(onSubmitReview)} className="space-y-8">
+                <FormField
+                  control={reviewForm.control}
+                  name="rating"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block text-center">Note globale</FormLabel>
+                      <FormControl>
+                        <div className="flex justify-center gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => field.onChange(star)}
+                              className="focus:outline-none transition-transform active:scale-90"
+                            >
+                              <Star
+                                className={cn(
+                                  "h-10 w-10 md:h-12 md:w-12 transition-colors",
+                                  star <= field.value ? "fill-yellow-400 text-yellow-400" : "text-muted/30"
+                                )}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-center" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={reviewForm.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Votre commentaire</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Fiabilité, points de vigilance, conseils d'entretien, expérience réelle..."
+                          className="min-h-[150px] font-bold text-base p-4 rounded-2xl border-2 bg-muted/20"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <DialogFooter className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setIsReviewDialogOpen(false)}
+                    className="font-bold uppercase text-[10px] tracking-widest h-14 rounded-full flex-1"
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmittingReview}
+                    className="bg-brand hover:bg-brand/90 text-white font-black uppercase text-[10px] tracking-widest h-14 rounded-full px-12 shadow-xl shadow-brand/20 flex-1"
+                  >
+                    {isSubmittingReview ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Send className="mr-2 h-4 w-4" /> Envoyer mon avis</>}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

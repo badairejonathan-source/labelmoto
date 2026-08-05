@@ -543,7 +543,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               </div>
             )}
             <div className="flex-1 text-center md:text-left">
-              {title && <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title}</h4>}
+              {(title || label) && <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title || label}</h4>}
               {text && <p className="text-sm font-bold text-muted-foreground leading-snug">{text}</p>}
             </div>
             <Button asChild className="w-full md:w-auto shrink-0 bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
