@@ -512,7 +512,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const isRegistrationCta = label.toLowerCase().includes('ajouter mon association') || label.toLowerCase().includes('inscrire') || label.toLowerCase().includes('ajouter une adresse');
 
     let href = targetSlug ? (targetSlug.startsWith('http') ? targetSlug : `/info/${targetSlug}`) : "/map";
-    
+
     if (targetSlug === 'carte-associations-moto') {
         href = "/map?filter=association";
     } else if (targetSlug === 'carte-relais-motards') {
@@ -523,34 +523,34 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
       href = registerLink;
     }
 
+    const isMapLink = href.includes('/map') || isAssociationCta || isRelaisCta;
+    const isFicheLink = href.includes('/fiches/');
+    const isMarqueLink = href.includes('/marque/');
+    const CtaIcon = isMapLink ? Map : isFicheLink ? FileText : isMarqueLink ? MapPin : ArrowRight;
+    const shortLabel = isMapLink ? "Voir la carte" : isFicheLink ? "Voir la fiche" : isMarqueLink ? "Voir les concessions" : "Découvrir";
+
     return (
-      <div key={key} className="my-10">
-        <Card className="border-2 border-brand/20 bg-brand/[0.02] shadow-xl rounded-[2.5rem] overflow-hidden group/cta">
-          <CardHeader className="p-8 pb-4">
-            {title && (
-                <CardTitle className="text-2xl font-black uppercase tracking-tighter text-foreground group-hover/cta:text-brand transition-colors">
-                {title}
-                </CardTitle>
+      <div key={key} className="my-8">
+        <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden hover:border-brand/40 transition-all group/cta">
+          <CardContent className="p-8 flex flex-col md:flex-row md:items-center gap-6">
+            {(isAssociationCta || isRelaisCta) && !isRegistrationCta ? (
+              <div className="relative w-full md:w-40 aspect-video md:aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0 mx-auto md:mx-0">
+                  <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" loading="lazy"/>
+              </div>
+            ) : (
+              <div className="bg-brand/10 p-4 rounded-full shrink-0 mx-auto md:mx-0 group-hover/cta:bg-brand/20 transition-colors">
+                <CtaIcon className="h-8 w-8 text-brand" />
+              </div>
             )}
-          </CardHeader>
-          <CardContent className="px-8 pb-8">
-            {text && (
-                <p className="text-base font-bold text-muted-foreground leading-relaxed mb-6">
-                {text}
-                </p>
-            )}
-            <div className="flex flex-col md:flex-row items-center gap-6">
-                {(isAssociationCta || isRelaisCta) && !isRegistrationCta && (
-                  <div className="relative w-full md:w-64 aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0">
-                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" loading="lazy"/>
-                  </div>
-                )}
-                <Button asChild className="w-full md:w-auto bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-7 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95">
-                    <Link href={href} className="flex items-center gap-2">
-                        {label} {targetSlug?.includes('map') || isAssociationCta || isRelaisCta ? <Map className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-                    </Link>
-                </Button>
+            <div className="flex-1 text-center md:text-left">
+              {title && <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title}</h4>}
+              {text && <p className="text-sm font-bold text-muted-foreground leading-snug">{text}</p>}
             </div>
+            <Button asChild className="w-full md:w-auto shrink-0 bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
+              <Link href={href} className="flex items-center justify-center gap-2">
+                {shortLabel} <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
