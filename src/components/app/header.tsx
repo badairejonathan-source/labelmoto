@@ -441,7 +441,7 @@ const Header: React.FC<any> = ({
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram LabelMoto"
-            className="hidden sm:flex items-center justify-center h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 shadow-xl border-2 border-white text-brand hover:scale-105 active:scale-95 transition-all"
+            className="flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full bg-white/95 shadow-xl border-2 border-white text-brand hover:scale-105 active:scale-95 transition-all"
           >
             <Instagram className="h-5 w-5 md:h-6 md:w-6" />
           </a>
