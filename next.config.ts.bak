@@ -33,15 +33,6 @@ const nextConfig: NextConfig = {
       'firebase',
     ],
   },
-  // Contournement : l'adaptateur Firebase App Hosting ne sert pas fiablement
-  // certains fichiers de public/ (.webp, .geojson) une fois déployés. On les
-  // sert depuis Firebase Storage à la place, de façon transparente.
-  async rewrites() {
-    return [
-      { source: '/images/:path*', destination: 'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/images/:path*' },
-      { source: '/departements.geojson', destination: 'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/departements.geojson' },
-    ];
-  },
   async headers() {
     return [
       // Cache long sur assets statiques Next.js
