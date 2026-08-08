@@ -63,28 +63,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   // Extraction ville depuis adresse pour le titre
   const addrParts = (pro.address || '').split(',').map((s: string) => s.trim());
-  // Regex étendue à 4-5 chiffres : couvre les codes postaux français (5) ET
-  // belges/luxembourgeois (4), qui étaient auparavant ignorés et tombaient
-  // sur un fallback affichant le pays au lieu de la ville (ex: "à Belgique").
-  const cpSegIdx = addrParts.findIndex((p: string) => /\d{4,5}/.test(p));
+  const cpSegIdx = addrParts.findIndex((p: string) => /\d{5}/.test(p));
   const ville = cpSegIdx !== -1
-    ? addrParts[cpSegIdx].replace(/\d{4,5}\s*/, '').trim()
+    ? addrParts[cpSegIdx].replace(/\d{5}\s*/, '').trim()
     : addrParts[addrParts.length - 1] || '';
 
   // Meta title propre : extraire le nom court avant le premier tiret/pipe
   const shortName = pro.title.split(/\s*[\-\/\|]\s*/)[0].trim();
   const villeInName = shortName.toLowerCase().includes((ville || '').toLowerCase());
   const typeLabel = pro.appSection === 'service' ? 'Atelier moto' : pro.appSection === 'association' ? 'Club moto' : 'Concessionnaire moto';
-  // Troncature intelligente : le suffixe "— {typeLabel} | LabelMoto" est TOUJOURS
-  // préservé intact. C'est le nom+ville qui est raccourci si le total dépasse
-  // 65 caractères, jamais le nom de marque (évite un title visiblement coupé).
-  const titleSuffix = ` — ${typeLabel} | LabelMoto`;
-  const titleNamePart = `${shortName}${ville && !villeInName ? ' à ' + ville : ''}`;
-  const maxNameLen = 65 - titleSuffix.length;
-  const truncatedNamePart = titleNamePart.length > maxNameLen
-    ? titleNamePart.slice(0, Math.max(0, maxNameLen - 1)).trim() + '…'
-    : titleNamePart;
-  const title = `${truncatedNamePart}${titleSuffix}`;
+  const title = `${shortName}${ville && !villeInName ? ' à ' + ville : ''} — ${typeLabel} | LabelMoto`.slice(0, 65);
   const description = pro.info
     ? pro.info.slice(0, 155) + (pro.info.length > 155 ? '...' : '')
     : `${shortName}${ville ? ' à ' + ville : ''} : horaires, téléphone et adresse. Concessionnaire moto référencé sur LabelMoto.`;

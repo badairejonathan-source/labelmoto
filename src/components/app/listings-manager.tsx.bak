@@ -5,7 +5,6 @@ import { useFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, Edit, Trash2, MapPin, MapPinOff, X, Save, RefreshCw } from 'lucide-react';
 import ImageUploadRequest from '@/components/app/image-upload-request';
@@ -29,7 +28,6 @@ interface ListingItem {
   longitude: number | null;
   lundi: string; mardi: string; mercredi: string; jeudi: string; vendredi: string; samedi: string; dimanche: string;
   brands: string[];
-  info: string;
 }
 
 async function fetchCacheInfo(firestore: any, setCacheUpdatedAt: any, setCacheCount: any) {
@@ -116,7 +114,6 @@ export default function ListingsManager() {
             lundi: data.lundi || '', mardi: data.mardi || '', mercredi: data.mercredi || '',
             jeudi: data.jeudi || '', vendredi: data.vendredi || '', samedi: data.samedi || '', dimanche: data.dimanche || '',
             brands: Array.isArray(data.brands) ? data.brands : [],
-            info: data.info || '',
           });
         });
       } catch (e) { console.warn('Erreur chargement', colName, e); }
@@ -189,7 +186,6 @@ export default function ListingsManager() {
         lundi: editing.lundi, mardi: editing.mardi, mercredi: editing.mercredi,
         jeudi: editing.jeudi, vendredi: editing.vendredi, samedi: editing.samedi, dimanche: editing.dimanche,
         brands: editing.brands,
-        info: editing.info,
         isMultibrand: editing.brands.length >= 2,
         ...(editing.latitude !== null ? { latitude: editing.latitude } : {}),
         ...(editing.longitude !== null ? { longitude: editing.longitude } : {}),
@@ -349,7 +345,6 @@ export default function ListingsManager() {
               </div>
               <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Email</Label><Input value={editing.email} onChange={e => setEditing({ ...editing, email: e.target.value })} className="font-bold rounded-xl border-2" /></div>
               <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Site web</Label><Input value={editing.website} onChange={e => setEditing({ ...editing, website: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">À propos</Label><Textarea value={editing.info} onChange={e => setEditing({ ...editing, info: e.target.value })} rows={4} placeholder="Description de l'établissement, visible sur la fiche publique et utilisée pour le référencement." className="font-bold rounded-xl border-2 text-sm" /></div>
               <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">URL Google Maps</Label><Input value={editing.googleMapsUrl} onChange={e => setEditing({ ...editing, googleMapsUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
               <div className="border-t pt-3">
                 <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1 mb-2 block">Horaires</Label>
