@@ -9,6 +9,8 @@ function toSlug(str: string): string {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 import { getAdminFirestore } from '@/lib/firebase-admin';
+import fsNode from 'fs';
+import pathNode from 'path';
 
 interface Pro {
   id: string;
@@ -32,13 +34,122 @@ export async function generateStaticParams() {
   return getAllCitySlugs().map(slug => ({ ville: slug }));
 }
 
+// ── Filtrage géographique par rayon (nouveau, remplace le filtrage par département) ──
+interface GeoPoint {
+  id: string; lat: number; lng: number; t: string; s: string;
+  a: string; c: string; r?: string; d?: string;
+}
+let _cachedPoints: GeoPoint[] | null = null;
+let _cachedCoords: Record<string, { lat: number; lng: number }> | null = null;
+
+function loadPointsData(): GeoPoint[] {
+  if (!_cachedPoints) {
+    const filePath = pathNode.join(process.cwd(), 'public', 'points.json');
+    _cachedPoints = JSON.parse(fsNode.readFileSync(filePath, 'utf8'));
+  }
+  return _cachedPoints!;
+}
+function loadCityCoordsData(): Record<string, { lat: number; lng: number }> {
+  if (!_cachedCoords) {
+    const filePath = pathNode.join(process.cwd(), 'src/app/lib/cities-coords.json');
+    _cachedCoords = JSON.parse(fsNode.readFileSync(filePath, 'utf8'));
+  }
+  return _cachedCoords!;
+}
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const RADIUS_KM_DEFAULT = 25;
+const RADIUS_KM_FALLBACK = 50;
+const MIN_RESULTS_BEFORE_FALLBACK = 5;
+
+function getPointsNearCity(city: { slug: string; departement: string }): GeoPoint[] {
+  const coordsMap = loadCityCoordsData();
+  const cityCoord = coordsMap[city.slug];
+  const points = loadPointsData();
+  if (!cityCoord) {
+    // Filet de sécurité : comportement historique par département si coordonnée manquante
+    return points.filter(p => p.d === city.departement);
+  }
+  let radius = RADIUS_KM_DEFAULT;
+  let nearby = points.filter(p => haversineKm(cityCoord.lat, cityCoord.lng, p.lat, p.lng) <= radius);
+  if (nearby.length < MIN_RESULTS_BEFORE_FALLBACK) {
+    radius = RADIUS_KM_FALLBACK;
+    nearby = points.filter(p => haversineKm(cityCoord.lat, cityCoord.lng, p.lat, p.lng) <= radius);
+  }
+  return nearby.sort((a, b) =>
+    haversineKm(cityCoord.lat, cityCoord.lng, a.lat, a.lng) -
+    haversineKm(cityCoord.lat, cityCoord.lng, b.lat, b.lng)
+  );
+}
+
+function collectionForPoint(p: GeoPoint): 'concessions' | 'associations' | 'relais' | 'creators' {
+  if (p.a === 'association') return 'associations';
+  if (p.a === 'relais') return 'relais';
+  if (p.a === 'creator') return 'creators';
+  return 'concessions';
+}
+
+async function getProsForCityNearby(city: NonNullable<ReturnType<typeof getCityBySlug>>): Promise<Pro[]> {
+  try {
+    const nearby = getPointsNearCity(city);
+    if (nearby.length === 0) return [];
+
+    const db = getAdminFirestore();
+    const byCollection: Record<string, string[]> = {};
+    for (const p of nearby) {
+      const col = collectionForPoint(p);
+      if (!byCollection[col]) byCollection[col] = [];
+      byCollection[col].push(p.id);
+    }
+
+    const docRefs = Object.entries(byCollection).flatMap(([col, ids]) =>
+      ids.map(id => db.collection(col).doc(id))
+    );
+    if (docRefs.length === 0) return [];
+    const snaps = await db.getAll(...docRefs);
+
+    const all: Pro[] = [];
+    snaps.forEach(doc => {
+      if (!doc.exists) return;
+      const d = doc.data()!;
+      all.push({
+        id: doc.id,
+        title: d.title || '',
+        address: d.address || '',
+        category: d.category || '',
+        phoneNumber: d.phoneNumber || undefined,
+        website: d.website || undefined,
+        rating: parseRating(d.rating),
+        reviewCount: parseReviewCount(d.reviewCount),
+        slug: d.slug || doc.id,
+        docId: doc.id,
+        collection: doc.ref.parent.id,
+      });
+    });
+
+    const orderIndex = new Map(nearby.map((p, i) => [p.id, i]));
+    return all.sort((a, b) => (orderIndex.get(a.docId) ?? 999) - (orderIndex.get(b.docId) ?? 999));
+  } catch (err) {
+    console.error(`[garages-moto] ville=${city.slug}:`, err);
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { ville } = await params;
   const city = getCityBySlug(ville);
   if (!city) return { title: 'Page introuvable | LabelMoto' };
 
   // Compte réel depuis Firestore (dynamique à chaque build)
-  const count = await getProCountForCity(city.departement);
+  const count = getPointsNearCity(city).length;
   const countStr = count > 0 ? `${count}` : '';
   
   // Titre dynamique avec le vrai nombre de pros
@@ -194,7 +305,7 @@ export default async function GaragesMotoParsVille({ params }: PageProps) {
   const { ville } = await params;
   const city = getCityBySlug(ville);
   if (!city) notFound();
-  const pros = await getProsForCity(city.departement);
+  const pros = await getProsForCityNearby(city);
   const otherCities = CITIES.filter(c => c.slug !== ville).slice(0, 9);
   const cityBrands = Array.from(new Set(pros.flatMap(p => (p as any).brands || []))).sort() as string[];
 
