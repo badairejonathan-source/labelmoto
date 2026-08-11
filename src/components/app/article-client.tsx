@@ -579,6 +579,11 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     return (
       <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
         {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+        {section.image && (
+          <div className="relative w-full overflow-hidden rounded-[2rem] mb-6 bg-[#f8f7f5] shadow-md" style={{ aspectRatio: '4/3' }}>
+            <img src={section.image} alt={section.title || ''} className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        )}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
         
         {schedule && renderSchedule(schedule, `schedule-${sectionId}`)}
