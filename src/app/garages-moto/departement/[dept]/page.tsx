@@ -49,9 +49,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `Garages moto ${department.name} (${department.code}) : ${countLabel} vérifiées | LabelMoto`;
   const description = `Trouvez votre garage moto dans le ${department.name} (${department.code}) parmi ${count > 0 ? count + ' professionnels référencés' : 'nos professionnels'} : concessions, ateliers et relais motards. Avis, horaires et contacts sur LabelMoto.`;
   const cityForDept = CITIES.find(c => c.departement === department.code);
-  const canonical = cityForDept
-    ? `https://labelmoto.fr/garages-moto/${cityForDept.slug}`
-    : `https://labelmoto.fr/garages-moto/departement/${department.slug}`;
+  // La page département est sa propre canonique : son contenu (tout le
+  // département) diffère de celui d'une page ville, et elle sert de page de
+  // repli pour les communes sans page dédiée.
+  const canonical = `https://labelmoto.fr/garages-moto/departement/${department.slug}`;
 
   return {
     title,
