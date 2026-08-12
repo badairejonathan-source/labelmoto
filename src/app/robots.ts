@@ -10,9 +10,11 @@ export default function robots(): MetadataRoute.Robots {
         '/admin',     // Cache tes pages de gestion
         '/login',     // Cache la page de connexion
         '/private/',  // Cache tes dossiers de test ou privés
+        '/map?',      // URLs de recherche dynamiques : infinies, sans valeur SEO
+        '/*?search=', // Idem, toute page avec un paramètre de recherche
       ],
     },
     // Indique l'adresse de ton plan de site pour un indexage plus rapide
-    sitemap: 'https://labelmoto.fr/sitemap.xml', 
+    sitemap: 'https://labelmoto.fr/sitemap.xml',
   }
 }
