@@ -66,7 +66,7 @@ function ProCard({ pro }: { pro: MultiPro }) {
     <div className="bg-white rounded-2xl border border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 p-4 md:p-5 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <Link href={`/concessions/${pro.id}`} className="font-black text-foreground hover:text-brand transition-colors line-clamp-1 text-sm uppercase tracking-tight">
+          <Link href={`/concessions/${pro.slug || pro.id}`} className="font-black text-foreground hover:text-brand transition-colors line-clamp-1 text-sm uppercase tracking-tight">
             {pro.title}
           </Link>
           <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{pro.address}</p>
@@ -105,7 +105,7 @@ function ProCard({ pro }: { pro: MultiPro }) {
             📞 Appeler
           </a>
         )}
-        <Link href={`/concessions/${pro.id}`} className="text-[9px] font-black uppercase tracking-widest text-muted-foreground bg-muted/30 px-2 py-1 rounded-full hover:text-brand transition-colors">
+        <Link href={`/concessions/${pro.slug || pro.id}`} className="text-[9px] font-black uppercase tracking-widest text-muted-foreground bg-muted/30 px-2 py-1 rounded-full hover:text-brand transition-colors">
           Voir la fiche →
         </Link>
       </div>

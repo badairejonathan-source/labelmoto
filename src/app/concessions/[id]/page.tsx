@@ -153,7 +153,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const breadcrumbItems: any[] = [
     { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://labelmoto.fr" },
   ];
-  if (citySlug) {
+  if (citySlug && hasCityPage) {
     breadcrumbItems.push({ "@type": "ListItem", "position": 2, "name": addr.addressLocality || pro.city, "item": `https://labelmoto.fr/garages-moto/${citySlug}` });
     breadcrumbItems.push({ "@type": "ListItem", "position": 3, "name": pro.title, "item": `https://labelmoto.fr/concessions/${pro.slug || pro.id}` });
   } else {
