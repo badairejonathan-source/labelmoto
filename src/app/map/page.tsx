@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import DealershipCardItem from '@/components/app/dealership-card';
 import type { MapPoint, Dealership } from '@/lib/types';
 import Header from '@/components/app/header';
@@ -182,7 +183,7 @@ function MapPageComponent() {
   const [deptCounts, setDeptCounts] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const filterParam = searchParams.get('filter');
-  const [activeFilters, setActiveFilters] = useState<string[]>(filterParam ? [filterParam] : ['shopping', 'service', 'association', 'relais', 'creator']);
+  const [activeFilters, setActiveFilters] = useState<string[]>(filterParam ? filterParam.split(',').filter(Boolean) : []);
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
   const [isDetailView, setIsDetailView] = useState(false);
   const initLat = parseFloat(searchParams.get('lat') || '');
@@ -191,7 +192,7 @@ function MapPageComponent() {
   const hasInitCoords = !isNaN(initLat) && !isNaN(initLng);
   const [mapCenter, setMapCenter] = useState<[number, number]>(hasInitCoords ? [initLat, initLng] : [46.5, 2.2]);
   const [mapZoom, setMapZoom] = useState(hasInitCoords ? (isNaN(initZoom) ? 12 : initZoom) : 6);
-  const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('half');
+  const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('collapsed');
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(searchParams.get('selectedId') ? 'external' : null);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
@@ -214,7 +215,7 @@ function MapPageComponent() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchTerm) params.set('search', searchTerm);
-    if (activeFilters.length < 5) params.set('filter', activeFilters.join(','));
+    if (activeFilters.length > 0 && activeFilters.length < 5) params.set('filter', activeFilters.join(','));
     if (selectedId) params.set('selectedId', selectedId);
     if (mapCenter[0] !== 46.5 || mapCenter[1] !== 2.2) {
       params.set('lat', mapCenter[0].toFixed(4));
@@ -310,6 +311,16 @@ function MapPageComponent() {
 
     return { brand, dept, postalCode, city, targetGeo };
   }, [searchTerm]);
+
+  // Si on arrive via une fiche (selectedId) sans filtre choisi, activer le filtre de sa collection
+  useEffect(() => {
+    if (activeFilters.length > 0) return;
+    if (!selectedId || points.length === 0) return;
+    const target = points.find(p => p.id === selectedId);
+    if (!target) return;
+    const section = target.appSection === 'both' ? 'shopping' : target.appSection;
+    if (section) setActiveFilters([section]);
+  }, [selectedId, points, activeFilters.length]);
 
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
@@ -414,7 +425,10 @@ function MapPageComponent() {
 
     if (mobile) {
       return (
-        <div className="relative w-full bg-white rounded-t-[28px] min-h-[140px] pt-14 pb-4 px-2 overflow-visible">
+        <div className="relative w-full bg-white rounded-t-[28px] min-h-[116px] pt-8 pb-1 px-2 overflow-visible">
+            <p className="text-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+              {activeFilters.length === 0 ? 'Choisir un filtre' : 'Categories actives'}
+            </p>
           <button onClick={() => setDrawerHeight(prev => prev === 'collapsed' ? 'half' : (prev === 'full' ? 'half' : 'collapsed'))} className="absolute top-4 right-6 z-[1600] p-2 bg-muted/20 hover:bg-muted/40 rounded-full text-brand transition-all">
             {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
           </button>
@@ -461,6 +475,33 @@ function MapPageComponent() {
             else { setMapCenter([lat, lng]); setSelectionSource('external'); }
           }}
         />
+        {isMobile && (
+          <div className="flex justify-end mt-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Iles DOM-TOM"
+                  className="h-12 w-12 rounded-full bg-white/95 shadow-md border border-border flex flex-col items-center justify-center leading-none text-[9px] font-black uppercase tracking-tight text-muted-foreground active:scale-95 transition-all"
+                >
+                  <span>DOM</span>
+                  <span>TOM</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="z-[1600]">
+                {[
+                  { label: 'La Reunion', center: [-21.1, 55.5] as [number, number], zoom: 10 },
+                  { label: 'Martinique', center: [14.6, -61.0] as [number, number], zoom: 10 },
+                  { label: 'Guadeloupe', center: [16.2, -61.5] as [number, number], zoom: 10 },
+                ].map(t => (
+                  <DropdownMenuItem key={t.label} onClick={() => { setMapCenter(t.center); setMapZoom(t.zoom); setSelectionSource('external'); }}>
+                    {t.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
 
       {!isMobile && (
@@ -500,7 +541,7 @@ function MapPageComponent() {
       )}
 
       {isMobile && (
-        <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-2xl transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[140px]' : (drawerHeight === 'half' ? 'bottom-0 h-[65vh]' : 'bottom-0 h-[85vh]'))}>
+        <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-2xl transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed' ? 'bottom-0 h-[116px]' : (drawerHeight === 'half' ? 'bottom-0 h-[65vh]' : 'bottom-0 h-[85vh]'))}>
           <div className="h-full flex flex-col">
             <div className="shrink-0"><FilterButtons mobile /></div>
             <div ref={listScrollRef} className="flex-1 overflow-y-auto p-6 custom-scrollbar">
@@ -530,7 +571,7 @@ function MapPageComponent() {
         onClick={handleLocate}
         aria-label="Me localiser"
         className="fixed right-4 z-[1200] h-12 w-12 rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-        style={{ bottom: isMobile ? (drawerHeight === 'collapsed' ? '156px' : drawerHeight === 'half' ? 'calc(50vh + 12px)' : 'calc(85vh + 12px)') : '24px' }}
+        style={{ bottom: isMobile ? (drawerHeight === 'collapsed' ? '156px' : drawerHeight === 'half' ? 'calc(65vh + 12px)' : 'calc(85vh + 12px)') : '24px' }}
       >
         {isLocating ? <Loader2 className="h-5 w-5 text-brand animate-spin" /> : locateError ? <span className="text-red-500 font-black text-sm">X</span> : <Compass className="h-5 w-5 text-brand" />}
       </button>

@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import '@/app/map.css';
-import React, { useEffect, useRef, memo } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { MapPoint } from '@/lib/types';
@@ -38,6 +38,7 @@ interface MapComponentProps {
 
 const GEOJSON_URL = '/departements.geojson';
 const ZOOM_THRESHOLD = 9;
+const EXIT_THRESHOLD = ZOOM_THRESHOLD - 2.5; // marge d'hysteresis avant reapparition de la choropleth au dezoom
 
 const getColor = (count: number): string => {
   return count > 200 ? '#1e3a5f' :
@@ -74,7 +75,8 @@ const MapComponent = ({
   const labelMarkersRef = useRef<L.Marker[]>([]);
   const geojsonDataRef = useRef<any>(null);
   const currentZoomRef = useRef<number>(zoom);
-  const deptFitZoomRef = useRef<number | null>(null);
+  // Marqueurs affiches independamment du seuil de zoom apres selection d'un departement
+  const [markersUnlocked, setMarkersUnlocked] = useState(false);
 
   // Initialisation carte
   useEffect(() => {
@@ -218,10 +220,14 @@ const MapComponent = ({
           minZoom: 9,
         });
       }
-      map.once("zoomend", () => {
-        deptFitZoomRef.current = map.getZoom();
-      });
-      setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
+      setMarkersUnlocked(true);
+      setTimeout(() => {
+        isUpdatingFromProps.current = false;
+        // Forcer refresh des marqueurs apres zoom departement (meme pattern que bboxToFit)
+        if (clusterGroupRef.current) {
+          map.fire('zoomend');
+        }
+      }, 1000);
     };
 
     fitDept();
@@ -231,7 +237,7 @@ const MapComponent = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !deptCounts) return;
-    if (map.getZoom() < ZOOM_THRESHOLD && clusterGroupRef.current) { clusterGroupRef.current.clearLayers(); }
+    if (map.getZoom() < ZOOM_THRESHOLD && !markersUnlocked && clusterGroupRef.current) { clusterGroupRef.current.clearLayers(); }
 
     const normalStyle = (feature: any) => {
       const code = feature?.properties?.code;
@@ -252,7 +258,7 @@ const MapComponent = ({
       labelMarkersRef.current = [];
 
       const currentZoom = map.getZoom();
-      if (currentZoom >= ZOOM_THRESHOLD) return;
+      if (currentZoom >= ZOOM_THRESHOLD || markersUnlocked) return;
 
       geojsonLayerRef.current = L.geoJSON(geojsonDataRef.current, {
         style: normalStyle,
@@ -293,10 +299,11 @@ const MapComponent = ({
           });
 
           layer.on('click', () => {
+            setMarkersUnlocked(true);
             map.fitBounds((layer as L.Polygon).getBounds(), {
               paddingTopLeft: isMobile ? [20, 60] : [leftPadding + 40, 40],
               paddingBottomRight: isMobile ? [20, 200] : [60, 40],
-              maxZoom: isMobile ? 10 : undefined,
+              maxZoom: isMobile ? 12 : undefined,
             });
           });
         },
@@ -321,19 +328,19 @@ const MapComponent = ({
 
     const handleZoom = () => {
       const z = map.getZoom();
-      const threshold = deptFitZoomRef.current !== null
-        ? Math.max(ZOOM_THRESHOLD, deptFitZoomRef.current - 2)
-        : ZOOM_THRESHOLD;
-      if (z >= ZOOM_THRESHOLD) {
+      if (z < EXIT_THRESHOLD) {
+        // Retour a la vue nationale : on reverrouille et on remet la choropleth
+        if (markersUnlocked) setMarkersUnlocked(false);
+        if (!geojsonLayerRef.current) buildChoropleth();
+        return;
+      }
+      if (z >= ZOOM_THRESHOLD || markersUnlocked) {
         if (geojsonLayerRef.current) {
           map.removeLayer(geojsonLayerRef.current);
           geojsonLayerRef.current = null;
         }
         labelMarkersRef.current.forEach(m => map.removeLayer(m));
         labelMarkersRef.current = [];
-      } else if (z < threshold) {
-        deptFitZoomRef.current = null;
-        if (!geojsonLayerRef.current) buildChoropleth();
       }
     };
 
@@ -347,7 +354,7 @@ const MapComponent = ({
       labelMarkersRef.current.forEach(m => map.removeLayer(m));
       labelMarkersRef.current = [];
     };
-  }, [deptCounts, isMobile, leftPadding]);
+  }, [deptCounts, isMobile, leftPadding, markersUnlocked]);
 
   // Marqueurs
   useEffect(() => {
@@ -357,7 +364,7 @@ const MapComponent = ({
     clusterGroup.clearLayers();
     markerMapRef.current = {};
     const currentZoom = mapRef.current.getZoom();
-    if (currentZoom < ZOOM_THRESHOLD && deptCounts) return;
+    if (currentZoom < ZOOM_THRESHOLD && deptCounts && !markersUnlocked) return;
 
     
 
@@ -377,7 +384,7 @@ const MapComponent = ({
       markerMapRef.current[point.id] = marker;
       clusterGroup.addLayer(marker);
     });
-  }, [points, labelPoints, selectedId, deptCounts]);
+  }, [points, labelPoints, selectedId, deptCounts, markersUnlocked]);
 
   // Centrage + zoom au clic marqueur
   useEffect(() => {
