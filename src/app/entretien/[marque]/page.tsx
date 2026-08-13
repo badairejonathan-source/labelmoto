@@ -181,6 +181,60 @@ const BRAND_META: Record<string, {
       { q: "Où faire réviser ma QJ Motor en France ?", a: "LabelMoto référence les concessionnaires QJ Motor agréés en France. Le réseau se développe rapidement — vérifiez la disponibilité dans votre département sur la carte LabelMoto." },
     ],
   },
+  husqvarna: {
+    name: 'Husqvarna',
+    firestoreValue: 'Husqvarna',
+    metaTitle: "Fiches entretien Husqvarna : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien Husqvarna par modèle : Svartpilen 125, Vitpilen 125. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien Husqvarna — Intervalles et prix de révision',
+    intro: [
+      "Husqvarna Motorcycles, filiale du groupe Pierer Mobility (KTM, GasGas), propose en France une gamme 125 premium avec les Svartpilen et Vitpilen. Ces modèles partagent leur monocylindre 125 cm³ avec la KTM 125 Duke et bénéficient de suspensions WP APEX et de freins ByBre de série.",
+      "Husqvarna France indique une première vidange à 1 000 km puis un remplacement de l'huile, du filtre à huile et du filtre à air tous les 7 500 km. La Garantie Constructeur Premium peut aller jusqu'à 4 ans sur les modèles Street à partir du millésime 2025, sous réserve d'entretiens dans le réseau agréé.",
+    ],
+    cout: "180 à 450 €",
+    intervalle: "7 500 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une Husqvarna 125 ?", a: "Husqvarna France annonce une première vidange à 1 000 km puis huile, filtre à huile et filtre à air tous les 7 500 km. C'est un intervalle confortable pour une 125 premium." },
+      { q: "Quel est le prix d'une révision Husqvarna 125 ?", a: "Estimation : 180 à 300 € pour un entretien périodique à 7 500 km, et 250 à 450 € pour un entretien approfondi. Les tarifs varient selon le concessionnaire et le taux horaire pratiqué." },
+      { q: "Où faire réviser ma Husqvarna ?", a: "Le réseau Husqvarna France est adossé au réseau KTM. La Garantie Constructeur Premium jusqu'à 4 ans impose des entretiens dans le réseau agréé." },
+    ],
+  },
+  zontes: {
+    name: 'ZONTES',
+    firestoreValue: 'ZONTES',
+    metaTitle: "Fiches entretien ZONTES : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien ZONTES par modèle : 125 Urban, 125 Roadster R, 125 Hyper Trail, 125 Scrambler X, 125 C2. Intervalles de révision et budgets.",
+    h1: 'Fiches entretien ZONTES — Intervalles et prix de révision',
+    intro: [
+      "ZONTES est un constructeur chinois qui s'est imposé sur le segment 125 en France avec une gamme complète : roadster urbain, trail, scrambler et cruiser. Tous les modèles 125 partagent le même monocylindre 4 temps refroidi liquide de 14,6 ch, avec ABS Bosch, TPMS et éclairage full LED de série.",
+      "ZONTES France applique une garantie de 3 ans pièces et 2 ans main-d'œuvre dans son réseau. Le calendrier kilométrique détaillé n'est pas publié sur la page entretien publique : après la révision de rodage, il faut suivre le tableau de maintenance du manuel utilisateur du millésime.",
+    ],
+    cout: "80 à 300 € (estimé)",
+    intervalle: "Selon manuel utilisateur",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une ZONTES 125 ?", a: "ZONTES France demande une révision après rodage (environ 1 000 km) puis le respect du tableau de maintenance du manuel utilisateur. Le site public ne détaille pas la périodicité kilométrique par modèle — consultez le manuel livré avec la moto." },
+      { q: "Quel est le prix d'une révision ZONTES ?", a: "Estimation : 80 à 140 € pour la révision de rodage, et 150 à 300 € pour un entretien périodique. ZONTES France ne publie pas de tarifs officiels — demandez un devis en concession." },
+      { q: "Où faire réviser ma ZONTES ?", a: "Dans le réseau ZONTES France. La garantie 3 ans pièces et 2 ans main-d'œuvre impose les révisions dans ce réseau." },
+    ],
+  },
+  orcal: {
+    name: 'Orcal',
+    firestoreValue: 'Orcal',
+    metaTitle: "Fiches entretien Orcal : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien Orcal par modèle : Astor 3, Tabor 125. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien Orcal — Intervalles et prix de révision',
+    intro: [
+      "Orcal est une marque distribuée en France par DIP, également importateur de VOGE. Sa gamme 125 comprend l'Astor 3 (néo-rétro accessible à 2 695 €) et la Tabor 125 (trail routier avec ABS double canal Bosch et écran LCD 7 pouces).",
+      "Les intervalles d'entretien Orcal doivent être confirmés dans le manuel du millésime livré. Des essais spécialisés rapportent une première révision autour de 500 km sur la Tabor 125, puis un intervalle d'environ 4 000 km — à valider impérativement avec le carnet constructeur pour préserver la garantie.",
+    ],
+    cout: "80 à 240 € (estimé)",
+    intervalle: "≈ 4 000 km (à confirmer)",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une Orcal 125 ?", a: "Des essais spécialisés indiquent une première révision autour de 500 km sur la Tabor 125 puis un rythme d'environ 4 000 km. Le carnet du millésime doit primer pour la garantie — ne transposez pas les intervalles d'une génération précédente." },
+      { q: "Quel est le prix d'une révision Orcal ?", a: "Estimation : 80 à 140 € pour la révision de rodage, 100 à 240 € pour les révisions périodiques selon le modèle et les opérations." },
+      { q: "Où faire réviser mon Orcal ?", a: "Dans le réseau Orcal/DIP France. Les conditions de garantie exactes sont à vérifier sur le bon de commande du modèle." },
+    ],
+  },
 };
 
 export async function generateStaticParams() {
