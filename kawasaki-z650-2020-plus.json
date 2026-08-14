@@ -1,0 +1,174 @@
+{
+  "model_order": 1,
+  "featured": true,
+  "year_range": "2020+",
+  "display_title": "Kawasaki Z650",
+  "language": "fr",
+  "search_tags": [
+    "kawasaki",
+    "z650",
+    "z 650",
+    "a2",
+    "649cc",
+    "twin",
+    "roadster",
+    "entretien",
+    "revision",
+    "forfait kawasaki"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur Horizontal Back-link, débattement 130 mm, réglable précharge",
+      "front_tire": "120/70 ZR17",
+      "rear_brake": "Simple disque, Ø 220 mm, étrier 1 piston, ABS",
+      "rear_tire": "160/60 ZR17",
+      "front_suspension": "Fourche télescopique Ø 41 mm, débattement 125 mm",
+      "frame": "Cadre treillis acier haute résistance",
+      "front_brake": "Double disque, Ø 300 mm, étriers 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 187,
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "wheelbase_mm": 1410,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 790,
+    "torque": "64,0 N.m à 6 700 tr/min",
+    "displacement_cc": 649,
+    "power": "50,2 kW (68 ch) à 8 000 tr/min",
+    "tank_l": 15,
+    "max_power_kw": 50.2,
+    "max_power_hp": 68,
+    "max_torque_nm": 64,
+    "max_torque_rpm": 6700
+  },
+  "service_guide": {
+    "known_issues": [
+      "Suspension d'origine un peu ferme sur mauvais revêtements",
+      "Selle passager peu accueillante sur longue distance",
+      "Confusion fréquente entre intervalle carnet (12 000 km) et conseil concession (6 000 km)"
+    ],
+    "concession_cta_title": "La Kawasaki Z650 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé en ville)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Kawasaki Z650 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Kawasaki Z650.",
+    "longevity_tips": [
+      "Vidange officielle tous les 12 000 km, mais beaucoup font 6 000 km par précaution en usage urbain",
+      "Jeu aux soupapes tous les 24 000 km",
+      "Huile 10W40 (Motul Lime Green Kawasaki ou équivalent JASO MA2)",
+      "Graissage de la chaîne tous les 800 km et après la pluie",
+      "Moteur 649 fiable et éprouvé, dérivé de l'ER-6"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La Z650 est un roadster A2 équilibré au moteur 649 fiable hérité de l'ER-6. Kawasaki préconise des vidanges tous les 12 000 km, ce qui contient le budget. Beaucoup de propriétaires raccourcissent à 6 000 km par précaution, un choix prudent en ville.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 130 à 190 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 220 à 300 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 450 à 600 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 220 à 300 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 500 à 650 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)",
+      "total_60000km": "≈ 1 500 à 1 900 €",
+      "cost_per_km": "≈ 0,028 €/km (révisions seules, hors pneus et chaîne)",
+      "note": "Tarifs indicatifs réseau Kawasaki (2026). Intervalle officiel de 12 000 km, mais une vidange intermédiaire à 6 000 km (≈ 100 €) est souvent conseillée en usage urbain. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Tous les combien réviser une Kawasaki Z650 ?",
+        "answer": "Le carnet Kawasaki préconise une vidange tous les 12 000 km. Beaucoup de propriétaires et concessions conseillent toutefois une vidange intermédiaire à 6 000 km, surtout en usage urbain."
+      },
+      {
+        "question": "Quel est le prix d'une révision sur une Z650 ?",
+        "answer": "Environ 220 à 300 € pour la révision des 12 000 km et 450 à 600 € pour la grosse révision des 24 000 km (jeu aux soupapes)."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une Z650 sur 60 000 km ?",
+        "answer": "Environ 1 500 à 1 900 € de révisions, soit ~0,028 €/km. Un budget contenu pour un twin de cette catégorie."
+      },
+      {
+        "question": "Le moteur de la Z650 est-il fiable ?",
+        "answer": "Oui, ce bicylindre 649 cc dérivé de l'ER-6 est l'un des plus éprouvés et endurants du marché, capable de gros kilométrages sans souci."
+      }
+    ],
+    "intro": "La Kawasaki Z650 est un roadster A2 équilibré et accessible, animé par le fiable twin 649 cc hérité de l'ER-6. Côté entretien, Kawasaki préconise un intervalle long de 12 000 km, avec souvent une vidange intermédiaire conseillée à 6 000 km."
+  },
+  "model": "Z650",
+  "brand_order": 3,
+  "id": "kawasaki-z650-2020-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "kawasaki-z900-2020-plus",
+      "kawasaki-versys-650-2022-plus",
+      "kawasaki-er6n-2012-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Kawasaki Z650 : 220-300 € (12 000 km), 450-600 € (24 000 km), ~1 500-1 900 € sur 60 000 km. Roadster A2, moteur 649cc fiable, intervalles.",
+    "keywords": [
+      "entretien kawasaki z650",
+      "prix revision z650",
+      "forfait entretien z 650",
+      "cout entretien z650",
+      "fiabilite z650"
+    ],
+    "meta_title": "Entretien Kawasaki Z650 : prix des révisions 2026"
+  },
+  "brand": "Kawasaki",
+  "slug": "kawasaki-z650-2020-plus",
+  "status": "published",
+  "variants": []
+}

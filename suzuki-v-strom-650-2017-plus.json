@@ -1,0 +1,175 @@
+{
+  "model_order": 2,
+  "featured": true,
+  "year_range": "2017+",
+  "display_title": "Suzuki V-Strom 650",
+  "language": "fr",
+  "search_tags": [
+    "suzuki",
+    "v-strom 650",
+    "vstrom 650",
+    "dl650",
+    "a2",
+    "645cc",
+    "v-twin",
+    "trail",
+    "routiere",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 150 mm, réglable précharge et détente",
+      "front_tire": "110/80 R19",
+      "rear_brake": "Simple disque, Ø 260 mm, étrier 1 piston, ABS",
+      "rear_tire": "150/70 R17",
+      "front_suspension": "Fourche télescopique Ø 43 mm, débattement 150 mm",
+      "frame": "Cadre treillis aluminium",
+      "front_brake": "Double disque, Ø 310 mm, étriers 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 216,
+    "engine_type": "Bicylindre en V à 90°, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "wheelbase_mm": 1560,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 835,
+    "torque": "62,0 N.m à 6 500 tr/min",
+    "displacement_cc": 645,
+    "power": "52,0 kW (71 ch) à 8 800 tr/min",
+    "tank_l": 20,
+    "max_power_kw": 52,
+    "max_power_hp": 71,
+    "max_torque_nm": 62,
+    "max_torque_rpm": 6500
+  },
+  "service_guide": {
+    "known_issues": [
+      "Selle à 835 mm haute pour les petits gabarits",
+      "Roue avant 19 pouces : trail routier, à l'aise sur chemins faciles mais pas en off-road engagé",
+      "Poids de 216 kg ressenti en manœuvre à l'arrêt"
+    ],
+    "concession_cta_title": "La Suzuki V-Strom 650 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km (mixte)"
+      },
+      {
+        "part": "Kit chaîne (origine Suzuki ≈ 185 €)",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Suzuki V-Strom 650 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Suzuki V-Strom 650.",
+    "longevity_tips": [
+      "Vidange tous les 12 000 km (6 000 km conseillé en usage intensif ou chargé)",
+      "Jeu aux soupapes tous les 24 000 km, exceptionnellement stable (souvent dans les tolérances jusqu'à 70 000 km)",
+      "Grand réservoir de 20 L : autonomie idéale pour voyager",
+      "Même V-twin 645 increvable que la SV650",
+      "Huile 10W40 JASO MA2 (environ 2,9 L avec filtre)"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La V-Strom 650 est la trail routière increvable par excellence : V-twin 645 fiable, grand réservoir, confort de voyage et coût d'entretien minime. Son jeu aux soupapes exceptionnellement stable en fait l'une des motos les moins chères à faire durer sur très gros kilométrage.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 400 à 600 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 450 à 650 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)",
+      "total_60000km": "≈ 1 350 à 1 800 €",
+      "cost_per_km": "≈ 0,026 €/km (révisions seules, hors pneus et chaîne)",
+      "note": "Tarifs indicatifs réseau Suzuki (2026). Jeu aux soupapes du V-twin réputé très stable (souvent OK jusqu'à 70 000 km), ce qui réduit le coût réel. Idéale pour les gros rouleurs. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Suzuki V-Strom 650 ?",
+        "answer": "Environ 200 à 280 € pour la révision des 12 000 km et 400 à 600 € pour la grosse révision des 24 000 km. Le V-twin a un jeu aux soupapes très stable, d'où un coût réel souvent contenu."
+      },
+      {
+        "question": "La V-Strom 650 est-elle adaptée aux longs voyages ?",
+        "answer": "Oui, c'est une référence du voyage à coût maîtrisé : réservoir de 20 L, confort, fiabilité légendaire et entretien économique font partie de son ADN."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une V-Strom 650 sur 60 000 km ?",
+        "answer": "Environ 1 350 à 1 800 € de révisions, soit ~0,026 €/km. L'une des trails les moins chères à faire rouler loin et longtemps."
+      },
+      {
+        "question": "Le moteur de la V-Strom 650 est-il fiable ?",
+        "answer": "Oui, ce V-twin 645 (partagé avec la SV650) est une référence absolue de fiabilité. Des exemplaires dépassent les 200 000 km, le jeu aux soupapes restant souvent stable jusqu'à 70 000 km."
+      }
+    ],
+    "intro": "La Suzuki V-Strom 650 est la trail routière increvable de référence pour voyager : V-twin 645 fiable, grand réservoir de 20 L et coût d'entretien minime. Son jeu aux soupapes exceptionnellement stable en fait une championne de la longévité."
+  },
+  "model": "V-Strom 650",
+  "brand_order": 4,
+  "id": "suzuki-v-strom-650-2017-plus",
+  "category": "trail",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "suzuki-sv650-2016-plus",
+      "kawasaki-versys-650-2022-plus",
+      "honda-nx500-2024-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Suzuki V-Strom 650 : 200-280 € (12 000 km), 400-600 € (24 000 km), ~1 350-1 800 € sur 60 000 km. Trail routier increvable, V-twin 645cc fiable.",
+    "keywords": [
+      "entretien suzuki v-strom 650",
+      "prix revision vstrom 650",
+      "cout entretien v-strom",
+      "fiabilite v-strom 650",
+      "forfait entretien dl650"
+    ],
+    "meta_title": "Entretien Suzuki V-Strom 650 : prix des révisions 2026"
+  },
+  "brand": "Suzuki",
+  "slug": "suzuki-v-strom-650-2017-plus",
+  "status": "published",
+  "variants": []
+}

@@ -1,0 +1,174 @@
+{
+  "model_order": 6,
+  "featured": true,
+  "year_range": "2026+",
+  "display_title": "Kawasaki KLE 500",
+  "language": "fr",
+  "search_tags": [
+    "kawasaki",
+    "kle 500",
+    "kle500",
+    "a2",
+    "451cc",
+    "twin",
+    "trail",
+    "aventure",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement environ 150 mm, réglable précharge",
+      "front_tire": "100/90-19",
+      "rear_brake": "Simple disque, étrier 1 piston, ABS",
+      "rear_tire": "130/80-17",
+      "front_suspension": "Fourche télescopique Ø 41 mm, grand débattement",
+      "frame": "Cadre treillis acier",
+      "front_brake": "Simple disque, étrier 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 180,
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "wheelbase_mm": 1440,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 835,
+    "torque": "42,6 N.m à 6 000 tr/min",
+    "displacement_cc": 451,
+    "power": "33,4 kW (45 ch) à 9 000 tr/min",
+    "tank_l": 15,
+    "max_power_kw": 33.4,
+    "max_power_hp": 45,
+    "max_torque_nm": 42.6,
+    "max_torque_rpm": 6000
+  },
+  "service_guide": {
+    "known_issues": [
+      "Modèle très récent (2026) : données d'entretien et fiabilité à confirmer dans le temps",
+      "Roue avant 19 pouces : compromis route/chemin, pas un trail off-road pur",
+      "Selle à 835 mm haute pour les petits gabarits"
+    ],
+    "concession_cta_title": "La Kawasaki KLE 500 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 18 000 km (mixte)"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Kawasaki KLE 500 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Kawasaki KLE 500.",
+    "longevity_tips": [
+      "Mécanique partagée avec la Ninja 500 / Z500 (twin 451) : entretien similaire 12 000 km",
+      "Jeu aux soupapes tous les 24 000 km",
+      "Huile 10W40 JASO MA2 (Motul Lime Green Kawasaki)",
+      "Nettoyer et graisser la chaîne plus souvent en usage chemin",
+      "Modèle neuf : conserver précieusement le carnet d'entretien pour la garantie"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La KLE 500 ressuscite un nom culte sur la base du twin 451 moderne. Trail routier polyvalent et accessible, son entretien suit le cycle Kawasaki de 12 000 km. Modèle très récent : ses coûts réels et sa fiabilité se confirmeront avec le kilométrage, mais la base mécanique est saine.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 420 à 580 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 480 à 620 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)",
+      "total_60000km": "≈ 1 400 à 1 800 €",
+      "cost_per_km": "≈ 0,026 €/km (révisions seules, hors pneus et chaîne)",
+      "note": "Estimations basées sur la grille Kawasaki et le moteur 451 partagé avec la Ninja 500. Modèle très récent (2026) : tarifs et fiabilité à confirmer. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Kawasaki KLE 500 ?",
+        "answer": "Estimé à environ 200 à 280 € pour la révision des 12 000 km et 420 à 580 € pour celle des 24 000 km. Modèle 2026, tarifs à confirmer en concession."
+      },
+      {
+        "question": "La KLE 500 est-elle un vrai trail tout-terrain ?",
+        "answer": "C'est un trail routier polyvalent (roue avant 19 pouces) : à l'aise sur route et chemins faciles, mais pas conçu pour le tout-terrain engagé."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une KLE 500 sur 60 000 km ?",
+        "answer": "Estimé à environ 1 400 à 1 800 € (~0,026 €/km), sur la base du twin 451 partagé avec la Ninja 500."
+      },
+      {
+        "question": "Le moteur de la KLE 500 est-il fiable ?",
+        "answer": "Il s'agit du twin 451 moderne de Kawasaki, partagé avec la Ninja 500 et la Z500. Base saine, mais recul limité vu la récence du modèle."
+      }
+    ],
+    "intro": "La Kawasaki KLE 500 fait revivre un nom culte du trail sur la base du twin 451 moderne. Polyvalente et accessible en A2, elle suit le cycle d'entretien Kawasaki de 12 000 km. Modèle 2026 dont les coûts réels se préciseront avec le temps."
+  },
+  "model": "KLE 500",
+  "brand_order": 3,
+  "id": "kawasaki-kle-500-2026-plus",
+  "category": "trail",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "kawasaki-ninja-500-se-2024-plus",
+      "kawasaki-versys-650-2022-plus",
+      "honda-nx500-2024-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Kawasaki KLE 500 : ~200-280 € (12 000 km), 420-580 € (24 000 km), ~1 400-1 800 € sur 60 000 km. Trail A2 451cc, nom culte ressuscité.",
+    "keywords": [
+      "entretien kawasaki kle 500",
+      "prix revision kle 500",
+      "cout entretien kle500",
+      "fiabilite kle 500",
+      "kle 500 a2 trail"
+    ],
+    "meta_title": "Entretien Kawasaki KLE 500 : prix des révisions 2026"
+  },
+  "brand": "Kawasaki",
+  "slug": "kawasaki-kle-500-2026-plus",
+  "status": "published",
+  "variants": []
+}

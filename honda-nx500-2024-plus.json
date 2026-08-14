@@ -1,0 +1,174 @@
+{
+  "model_order": 3,
+  "featured": true,
+  "year_range": "2024+",
+  "display_title": "Honda NX500 / CB500X",
+  "language": "fr",
+  "search_tags": [
+    "honda",
+    "nx500",
+    "cb500x",
+    "a2",
+    "471cc",
+    "trail",
+    "routier",
+    "twin",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur Pro-Link, débattement 135 mm, réglable précharge",
+      "front_tire": "110/80 R19",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "rear_tire": "160/60 R17",
+      "front_suspension": "Fourche inversée Ø 41 mm (Showa SFF-BP), débattement 150 mm",
+      "frame": "Cadre treillis tubulaire acier",
+      "front_brake": "Double disque, Ø 296 mm, étriers radiaux, ABS"
+    },
+    "weight_tpf_kg": 196,
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "wheelbase_mm": 1445,
+    "fuel_system": "Injection PGM-FI",
+    "seat_height_mm": 830,
+    "torque": "43,0 N.m à 6 500 tr/min",
+    "displacement_cc": 471,
+    "power": "35,0 kW (47,6 ch) à 8 600 tr/min",
+    "tank_l": 17.5,
+    "max_power_kw": 35,
+    "max_power_hp": 47.6,
+    "max_torque_nm": 43,
+    "max_torque_rpm": 6500
+  },
+  "service_guide": {
+    "known_issues": [
+      "Roue avant de 19 pouces : plus de polyvalence mais moins incisive sur route pure",
+      "Selle à 830 mm haute pour les petits gabarits",
+      "Protection au vent perfectible d'origine"
+    ],
+    "concession_cta_title": "La Honda NX500 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Honda NX500 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda NX500.",
+    "longevity_tips": [
+      "Intervalle long : vidange tous les 12 000 km ou 1 an",
+      "Jeu aux soupapes tous les 24 000 km seulement",
+      "Huile 10W30 JASO MA2 Honda : prévoir environ 3 L avec filtre",
+      "Idéale pour voyager : surveiller pneus et chaîne sur les longues distances",
+      "Même moteur 471 cc increvable que la CB500F"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La NX500 (ex-CB500X) est le trail routier A2 polyvalent de Honda. Elle partage le moteur 471 cc fiable et les intervalles longs de 12 000 km. Un excellent compromis voyage/budget pour rouler loin sans exploser les frais d'entretien.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 130 à 190 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 200 à 270 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + vidange (grosse révision)",
+        "price_estimate": "≈ 430 à 510 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 200 à 270 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 510 à 590 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)",
+      "total_60000km": "≈ 1 400 à 1 650 €",
+      "cost_per_km": "≈ 0,026 €/km (révisions seules, hors pneus et chaîne)",
+      "note": "Tarifs indicatifs réseau Honda (2026). Intervalle long de 12 000 km, atout majeur pour un trail destiné à avaler les kilomètres. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Honda NX500 ?",
+        "answer": "Environ 200 à 270 € pour la révision des 12 000 km, et 430 à 510 € pour la grosse révision des 24 000 km (jeu aux soupapes)."
+      },
+      {
+        "question": "La NX500 est-elle économique pour voyager ?",
+        "answer": "Oui, avec ses intervalles de 12 000 km et son moteur sobre (~0,026 €/km de révisions), c'est l'un des trails A2 les moins coûteux à faire rouler loin."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une NX500 sur 60 000 km ?",
+        "answer": "Environ 1 400 à 1 650 € de révisions constructeur, soit ~0,026 €/km."
+      },
+      {
+        "question": "NX500 et CB500X, est-ce la même moto ?",
+        "answer": "Oui, la NX500 est le nouveau nom de la CB500X depuis 2024, avec quelques évolutions. Mécanique, entretien et fiabilité sont identiques."
+      }
+    ],
+    "intro": "La Honda NX500 (anciennement CB500X) est le trail routier A2 polyvalent de la marque. Bâtie sur le moteur 471 cc fiable, elle bénéficie des intervalles d'entretien longs de 12 000 km, idéals pour un usage voyage économique."
+  },
+  "model": "NX500",
+  "brand_order": 1,
+  "id": "honda-nx500-2024-plus",
+  "category": "trail",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "honda-cb500f-2022-plus",
+      "honda-xl750-transalp-2023-plus",
+      "kawasaki-versys-650-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda NX500 / CB500X : 200-270 € (12 000 km), 430-510 € (24 000 km), ~1 400-1 650 € sur 60 000 km. Trail A2 économique, moteur 471cc fiable.",
+    "keywords": [
+      "entretien honda nx500",
+      "prix revision cb500x",
+      "forfait entretien nx500",
+      "cout entretien nx500",
+      "fiabilite nx500 cb500x"
+    ],
+    "meta_title": "Entretien Honda NX500 / CB500X : prix des révisions 2026"
+  },
+  "brand": "Honda",
+  "slug": "honda-nx500-2024-plus",
+  "status": "published",
+  "variants": []
+}

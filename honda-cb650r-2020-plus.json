@@ -1,0 +1,173 @@
+{
+  "model_order": 5,
+  "featured": true,
+  "year_range": "2020+",
+  "display_title": "Honda CB650R",
+  "language": "fr",
+  "search_tags": [
+    "honda",
+    "cb650r",
+    "cb 650",
+    "649cc",
+    "4 cylindres",
+    "roadster",
+    "neo sport cafe",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 128 mm, réglable précharge",
+      "front_tire": "120/70 ZR17",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "rear_tire": "180/55 ZR17",
+      "front_suspension": "Fourche inversée Showa SFF-BP Ø 41 mm, débattement 120 mm",
+      "frame": "Cadre acier en diamant",
+      "front_brake": "Double disque, Ø 310 mm, étriers radiaux 4 pistons, ABS"
+    },
+    "weight_tpf_kg": 202,
+    "engine_type": "4 cylindres en ligne, 4 temps, refroidissement liquide, 16 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW) / version A pleine puissance",
+    "wheelbase_mm": 1450,
+    "fuel_system": "Injection PGM-FI",
+    "seat_height_mm": 810,
+    "torque": "63,0 N.m à 9 500 tr/min",
+    "displacement_cc": 649,
+    "power": "70,0 kW (95 ch) à 12 000 tr/min",
+    "tank_l": 15.4,
+    "max_power_kw": 70,
+    "max_power_hp": 95,
+    "max_torque_nm": 63,
+    "max_torque_rpm": 9500
+  },
+  "service_guide": {
+    "known_issues": [
+      "Jeu aux soupapes sur 4 cylindres : main d'œuvre plus longue que sur un twin",
+      "Consommation supérieure à un bicylindre équivalent",
+      "Couple maxi à haut régime : moteur à exploiter dans les tours"
+    ],
+    "concession_cta_title": "La Honda CB650R vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "18 000 à 28 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 22 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Honda CB650R en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda CB650R.",
+    "longevity_tips": [
+      "Vidange tous les 12 000 km ou 1 an (huile 10W30 JASO MA2, environ 3,5 L)",
+      "Jeu aux soupapes tous les 24 000 km : prévoir un budget plus élevé qu'un twin (4 cylindres)",
+      "Le 4-cylindres aime les tours : l'exploiter régulièrement après chauffe",
+      "Graissage de la chaîne tous les 800 km et après la pluie",
+      "Distribution par chaîne : pas de courroie à remplacer, économie sur la durée"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La CB650R offre la sonorité et le caractère d'un 4-cylindres dans un roadster élégant. Son entretien suit le cycle 12 000 km de Honda, mais le jeu aux soupapes sur 4 cylindres (24 000 km) coûte un peu plus cher en main d'œuvre qu'un twin. Reste raisonnable pour un 4-pattes.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 150 à 200 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 220 à 290 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes (4 cyl) + filtre air + vidange (grosse révision)",
+        "price_estimate": "≈ 550 à 700 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 220 à 290 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 650 à 800 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)",
+      "total_60000km": "≈ 1 800 à 2 200 €",
+      "cost_per_km": "≈ 0,033 €/km (révisions seules, hors pneus et chaîne)",
+      "note": "Tarifs indicatifs réseau Honda (2026). Le jeu aux soupapes sur 4 cylindres demande plus de main d'œuvre qu'un twin, d'où un coût supérieur aux 24 000 km. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Honda CB650R ?",
+        "answer": "Environ 220 à 290 € pour la révision des 12 000 km, et 550 à 700 € pour la grosse révision des 24 000 km. Le jeu aux soupapes sur 4 cylindres explique ce coût supérieur à un twin."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une CB650R sur 60 000 km ?",
+        "answer": "Environ 1 800 à 2 200 € de révisions, soit ~0,033 €/km. Un peu plus qu'un bicylindre, mais raisonnable pour un 4-cylindres."
+      },
+      {
+        "question": "Le 4-cylindres de la CB650R est-il fiable ?",
+        "answer": "Oui, ce 4-pattes Honda est réputé robuste et durable. La distribution par chaîne évite le coût d'une courroie à remplacer."
+      },
+      {
+        "question": "Pourquoi la révision est-elle plus chère qu'une CB500F ?",
+        "answer": "Le contrôle du jeu aux soupapes sur 4 cylindres demande plus de temps de main d'œuvre que sur un bicylindre, d'où un surcoût à la grosse révision."
+      }
+    ],
+    "intro": "La Honda CB650R apporte le charme du 4-cylindres dans un roadster néo sport café élégant. Son entretien suit le cycle généreux de 12 000 km de Honda ; seul le jeu aux soupapes sur 4 cylindres ajoute un peu de budget aux grosses révisions."
+  },
+  "model": "CB650R",
+  "brand_order": 1,
+  "id": "honda-cb650r-2020-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "honda-cb750-hornet-2023-plus",
+      "honda-cb500f-2022-plus",
+      "kawasaki-z650-2020-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda CB650R : 220-290 € (12 000 km), 550-700 € (24 000 km), ~1 800-2 200 € sur 60 000 km. Roadster 4-cylindres, intervalles et fiabilité.",
+    "keywords": [
+      "entretien honda cb650r",
+      "prix revision cb650r",
+      "cout entretien cb 650",
+      "fiabilite cb650r",
+      "jeu soupapes cb650r"
+    ],
+    "meta_title": "Entretien Honda CB650R : prix des révisions 2026"
+  },
+  "brand": "Honda",
+  "slug": "honda-cb650r-2020-plus",
+  "status": "published",
+  "variants": []
+}

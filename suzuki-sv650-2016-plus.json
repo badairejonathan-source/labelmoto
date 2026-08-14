@@ -1,0 +1,174 @@
+{
+  "model_order": 1,
+  "featured": true,
+  "year_range": "2016+",
+  "display_title": "Suzuki SV650",
+  "language": "fr",
+  "search_tags": [
+    "suzuki",
+    "sv650",
+    "sv 650",
+    "a2",
+    "645cc",
+    "v-twin",
+    "roadster",
+    "entretien",
+    "revision",
+    "forfait suzuki"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 130 mm, réglable précharge",
+      "front_tire": "120/70 ZR17",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "rear_tire": "160/60 ZR17",
+      "front_suspension": "Fourche télescopique Ø 41 mm, débattement 125 mm",
+      "frame": "Cadre treillis acier",
+      "front_brake": "Double disque, Ø 290 mm, étriers 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 198,
+    "engine_type": "Bicylindre en V à 90°, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "wheelbase_mm": 1445,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 785,
+    "torque": "64,0 N.m à 8 100 tr/min",
+    "displacement_cc": 645,
+    "power": "56,0 kW (76 ch) à 8 500 tr/min",
+    "tank_l": 14.5,
+    "max_power_kw": 56,
+    "max_power_hp": 76,
+    "max_torque_nm": 64,
+    "max_torque_rpm": 8100
+  },
+  "service_guide": {
+    "known_issues": [
+      "Suspensions d'origine basiques, un peu justes en conduite sportive",
+      "Protection au vent inexistante (roadster nu)",
+      "Sonorité d'origine discrète malgré le V-twin"
+    ],
+    "concession_cta_title": "La Suzuki SV650 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne (origine Suzuki ≈ 185 €)",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Suzuki SV650 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Suzuki SV650.",
+    "longevity_tips": [
+      "Depuis 2015, Suzuki préconise la vidange tous les 12 000 km (6 000 km conseillé en ville)",
+      "Jeu aux soupapes tous les 24 000 km, réputé très stable sur le V-twin (souvent dans les tolérances bien au-delà)",
+      "Huile 10W40 JASO MA2 (environ 2,9 L avec filtre)",
+      "V-twin increvable : l'un des moteurs les plus fiables et durables du marché",
+      "Graissage de la chaîne tous les 800 km et après la pluie"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La SV650 est une légende de l'accessibilité : V-twin charismatique, fiabilité exemplaire et coût d'entretien parmi les plus bas du marché. Intervalle de 12 000 km et jeu aux soupapes très stable en font une moto particulièrement économique à faire durer.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 400 à 600 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 450 à 650 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)",
+      "total_60000km": "≈ 1 350 à 1 800 €",
+      "cost_per_km": "≈ 0,026 €/km (révisions seules, hors pneus et chaîne)",
+      "note": "Tarifs indicatifs réseau Suzuki (2026). Le jeu aux soupapes du V-twin est réputé très stable (souvent dans les tolérances au-delà de 50 000 km), ce qui réduit le coût réel. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Suzuki SV650 ?",
+        "answer": "Environ 200 à 280 € pour la révision des 12 000 km et 400 à 600 € pour la grosse révision des 24 000 km. Le jeu aux soupapes du V-twin étant très stable, le coût réel reste souvent modéré."
+      },
+      {
+        "question": "Tous les combien réviser une SV650 ?",
+        "answer": "Depuis 2015, Suzuki préconise une vidange tous les 12 000 km. Beaucoup de propriétaires raccourcissent à 6 000 km par précaution, surtout en ville."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une SV650 sur 60 000 km ?",
+        "answer": "Environ 1 350 à 1 800 € de révisions, soit ~0,026 €/km. C'est l'une des motos les plus économiques à entretenir de sa catégorie."
+      },
+      {
+        "question": "Le V-twin de la SV650 est-il fiable ?",
+        "answer": "Oui, c'est une référence de fiabilité. Ce bicylindre en V 645 cc dépasse couramment 100 000 km, avec un jeu aux soupapes remarquablement stable."
+      }
+    ],
+    "intro": "La Suzuki SV650 est une icône de l'accessibilité, portée par un V-twin 645 cc charismatique et increvable. Côté budget, c'est l'une des motos les moins chères à entretenir : intervalle de 12 000 km et jeu aux soupapes très stable."
+  },
+  "model": "SV650",
+  "brand_order": 4,
+  "id": "suzuki-sv650-2016-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "suzuki-v-strom-650-2017-plus",
+      "suzuki-gsx-8s-2023-plus",
+      "yamaha-mt-07-2021-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Suzuki SV650 : 200-280 € (12 000 km), 400-600 € (24 000 km), ~1 350-1 800 € sur 60 000 km. V-twin 645cc increvable, l'une des A2 les moins chères.",
+    "keywords": [
+      "entretien suzuki sv650",
+      "prix revision sv650",
+      "cout entretien sv 650",
+      "fiabilite sv650",
+      "forfait entretien sv650"
+    ],
+    "meta_title": "Entretien Suzuki SV650 : prix des révisions 2026"
+  },
+  "brand": "Suzuki",
+  "slug": "suzuki-sv650-2016-plus",
+  "status": "published",
+  "variants": []
+}

@@ -1,0 +1,292 @@
+{
+  "id": "bmw-f900r-2020-plus",
+  "slug": "bmw-f900r-2020-plus",
+  "model": "F 900 R",
+  "brand": "BMW",
+  "brand_order": 5,
+  "category": "roadster",
+  "subcategory": "roadster-750-1000",
+  "status": "published",
+  "relations": {
+    "same_engine": [
+      "bmw-f900xr-2020-plus",
+      "bmw-f850gs-2018-plus"
+    ],
+    "same_category": [
+      "yamaha-mt09-2021-plus",
+      "kawasaki-z900-2020-plus",
+      "triumph-trident-660-2021-plus"
+    ]
+  },
+  "technical_sheet": {
+    "years": "2020-présent",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, calage 270°, carter sec",
+    "displacement_cc": 895,
+    "bore_stroke_mm": "86,0 × 77,0",
+    "compression_ratio": "13,1:1",
+    "max_power_kw": 77,
+    "max_power_hp": 105,
+    "max_power_rpm": 8500,
+    "max_torque_nm": 92,
+    "max_torque_rpm": 6500,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses",
+    "clutch": "Embrayage anti-dribble (slipper clutch), commande hydraulique",
+    "quickshifter": "Quickshifter+ montée/descente (de série)",
+    "riding_modes": "Rain, Road (de série) ; Dynamic, Dynamic Pro (en option)",
+    "electronics": "ASC (contrôle anti-patinage) de série ; ABS Pro, DTC, MSR, DBC, IMU en option",
+    "display": "Écran TFT couleur 6,5 pouces",
+    "frame": "Pont moteur porteur, treillis acier avant",
+    "front_suspension": "Fourche télescopique inversée Ø 43 mm, non réglable (réglable en option)",
+    "rear_suspension": "Double bras oscillant aluminium, monoamortisseur central, précontrainte hydraulique réglable, détente réglable ; ESA électronique en option",
+    "front_brake": "Double disque 320 mm, étriers Brembo radiaux 4 pistons",
+    "rear_brake": "Disque 265 mm, étrier 1 piston",
+    "abs": "ABS de série (ABS Pro cornering en option)",
+    "front_tire": "120/70 ZR17",
+    "rear_tire": "180/55 ZR17",
+    "fuel_tank_liters": 13,
+    "seat_height_mm": 815,
+    "seat_height_options_mm": "775 (surbaissement), 790 (double selle basse), 835 (selle haute), 840 (selle confort)",
+    "kerb_weight_kg": 209,
+    "wheelbase_mm": 1516,
+    "permitted_a2": true,
+    "a2_version": "Version bridée 35 kW / 95 ch (option d'usine, non réversible vers 105 ch)",
+    "fuel_type": "Sans plomb 95 RON minimum"
+  },
+  "seo": {
+    "meta_title": "Entretien BMW F 900 R (2020+) : révisions, coûts & guide complet",
+    "meta_description": "Guide complet d'entretien de la BMW F 900 R 2020+ : intervalles tous les 10 000 km, coûts en concession, pannes connues (quickshifter, pompe à eau) et conseils longévité.",
+    "keywords": [
+      "BMW F900R entretien",
+      "BMW F900R révision",
+      "BMW F900R prix entretien",
+      "BMW F 900 R 2020",
+      "fiche technique BMW F900R",
+      "entretien roadster BMW 900",
+      "BMW F900R service 10000 km",
+      "BMW F900R vidange",
+      "BMW F900R fiabilité",
+      "BMW F900R quickshifter"
+    ]
+  },
+  "service_guide": {
+    "intro": "La BMW F 900 R est le roadster middleweight de BMW Motorrad, lancé en 2020 en remplacement de la F 800 R. Elle repose sur un bicylindre parallèle 895 cm³ à calage 270° (signature sonore proche d'un twin en V) développant 105 ch, partagé avec la F 900 XR et la F 850 GS. Assemblée à Berlin, elle propose d'emblée une dotation électronique généreuse (TFT, quickshifter+, ASC) et une finition haut de gamme (étriers Brembo). Disponible en version bridée A2 (35 kW), elle séduit autant les néo-titulaires que les riders expérimentés en quête d'un roadster polyvalent à prix contenu dans la gamme BMW.",
+    "known_issues": [
+      {
+        "issue": "Quickshifter intermittent (Gen 1, 2020-2024)",
+        "description": "Le quickshifter monté/descente de série sur les modèles 2020-2024 peut présenter des ratés ou cesser de fonctionner temporairement. Problème signalé par de nombreux propriétaires de la première génération ; généralement résolu par mise à jour logicielle en concession. Le millésime 2025 semble ne plus être affecté.",
+        "severity": "modéré",
+        "remedy": "Mise à jour du logiciel en concession BMW Motorrad. Le problème diminue après les updates successives (fin 2021 notamment)."
+      },
+      {
+        "issue": "Fuite de la pompe à eau (joint d'étanchéité)",
+        "description": "Les joints de la pompe à eau peuvent défaillir, laissant s'écouler du liquide de refroidissement par le trou de drainage sous le carter moteur. Phénomène non systématique mais signalé avec suffisamment de régularité pour mériter une surveillance.",
+        "severity": "modéré",
+        "remedy": "Vérifier régulièrement le niveau de liquide de refroidissement. En cas de baisse inexpliquée, inspecter le dessous du carter. Remplacement des joints de pompe nécessaire (intervention concessionnaire)."
+      },
+      {
+        "issue": "Béquille latérale trop courte",
+        "description": "La béquille de série est jugée très courte par de nombreux propriétaires, rendant la moto instable sur sols mous ou en légère inclinaison.",
+        "severity": "faible",
+        "remedy": "Rallonge de béquille aftermarket disponible chez plusieurs équipementiers (SW-Motech notamment)."
+      },
+      {
+        "issue": "Selle inconfortable en standard",
+        "description": "La selle de série est régulièrement critiquée pour sa fermeté, inconfortable au-delà d'une heure de route.",
+        "severity": "faible",
+        "remedy": "BMW propose plusieurs options de selle (confort, basse, haute). Des coiffes Airhawk ou selles aftermarket existent également."
+      },
+      {
+        "issue": "Mélange pauvre à bas régime (premiers millésimes)",
+        "description": "Quelques propriétaires de modèles 2020 signalent un mélange air/carburant trop pauvre à bas régime, pouvant provoquer des à-coups ou des calages.",
+        "severity": "faible",
+        "remedy": "Mise à jour du logiciel d'injection en concession. Nettement amélioré sur les millésimes 2021+."
+      }
+    ],
+    "consumables": [
+      {
+        "item": "Huile moteur",
+        "spec": "5W-40 ou 10W-40 synthétique JASO MA2 (ex. Motul 7100 4T, Shell Advance Ultra 4T)",
+        "quantity": "3,5 L (vidange), 3,75 L (avec filtre)",
+        "interval_km": 10000,
+        "interval_note": "Ou 1 an, selon la première échéance"
+      },
+      {
+        "item": "Filtre à huile",
+        "spec": "Filtre BMW d'origine ou équivalent (ex. Mahle OX 420, HifloFiltro HF164)",
+        "interval_km": 10000
+      },
+      {
+        "item": "Filtre à air",
+        "spec": "Filtre papier BMW d'origine",
+        "interval_km": 20000,
+        "interval_note": "Ou plus tôt si conduite poussiéreuse"
+      },
+      {
+        "item": "Bougies d'allumage",
+        "spec": "NGK DCPR8EIX (Iridium) — 2 bougies",
+        "interval_km": 20000
+      },
+      {
+        "item": "Liquide de frein",
+        "spec": "DOT 4",
+        "interval_note": "Tous les 2 ans"
+      },
+      {
+        "item": "Liquide de refroidissement",
+        "spec": "Antigel longue durée BMW Motorrad (ou équivalent OAT G12+)",
+        "interval_note": "Vérification annuelle du niveau ; remplacement tous les 3-4 ans"
+      },
+      {
+        "item": "Huile de fourche",
+        "spec": "Huile fourche BMW SAE 7.5W",
+        "interval_km": 30000,
+        "interval_note": "Ou tous les 3 ans"
+      },
+      {
+        "item": "Chaîne et kit chaîne",
+        "spec": "Chaîne 525 (O-ring ou X-ring)",
+        "interval_km": 20000,
+        "interval_note": "Lubrifier tous les 500–800 km ; vérifier la tension régulièrement"
+      },
+      {
+        "item": "Pneu avant",
+        "spec": "120/70 ZR17 (monte d'origine Bridgestone S21 ou Michelin Road 5 ; éligible Pirelli Angel GT II, Dunlop Roadsmart IV)",
+        "interval_km": 12000,
+        "interval_note": "Variable selon style de conduite"
+      },
+      {
+        "item": "Pneu arrière",
+        "spec": "180/55 ZR17",
+        "interval_km": 8000,
+        "interval_note": "Variable selon style de conduite"
+      },
+      {
+        "item": "Plaquettes de frein avant",
+        "spec": "Plaquettes Brembo d'origine ou EBC EPFA (sintered)",
+        "interval_note": "Contrôle tous les 10 000 km"
+      }
+    ],
+    "longevity_tips": [
+      "Mettre à jour le logiciel moteur dès que disponible en concession : les premières versions présentaient des cartographies perfectibles (quickshifter, injection à froid).",
+      "Surveiller régulièrement le niveau de liquide de refroidissement et inspecter le dessous du carter : toute trace colorée sous le moteur peut signaler un joint de pompe à eau défaillant.",
+      "Lubrifier la chaîne tous les 500 à 800 km (ou après la pluie) : avec 105 ch, la chaîne travaille fort.",
+      "Ne pas négliger le jeu aux soupapes tous les 20 000 km : sur un bicylindre haute compression (13,1:1), des soupapes mal réglées dégradent les performances et la durabilité.",
+      "Utiliser une huile pleinement synthétique et respecter scrupuleusement les 10 000 km/1 an entre vidanges : le carter sec à recirculation d'huile est sensible à la qualité du lubrifiant.",
+      "Éviter de rouler régulièrement à très bas régime en ville sans monter dans les tours : le twin 270° apprécie de tourner dans sa plage de puissance (4 000–8 000 tr/min)."
+    ],
+    "service_schedule": [
+      {
+        "km": "500–1 200",
+        "label": "Rodage",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Contrôle fuite et serrage général",
+          "Contrôle tension chaîne",
+          "Contrôle niveaux (refroidissement, freins)",
+          "Vérification électronique (logiciel à jour)"
+        ]
+      },
+      {
+        "km": 10000,
+        "label": "Révision standard (service annuel)",
+        "operations": [
+          "Vidange huile moteur + filtre à huile",
+          "Contrôle filtre à air (remplacement si nécessaire)",
+          "Contrôle et réglage chaîne, lubrification",
+          "Contrôle niveaux freins, refroidissement",
+          "Contrôle état pneus, plaquettes, disques",
+          "Contrôle quickshifter et mise à jour logicielle",
+          "Contrôle ASC, ABS, éclairage",
+          "Vérification pompe à eau (traces sous carter)",
+          "Vérification générale de sécurité"
+        ]
+      },
+      {
+        "km": 20000,
+        "label": "Grande révision (inspection)",
+        "operations": [
+          "Toutes les opérations des 10 000 km",
+          "Remplacement filtre à air",
+          "Remplacement bougies d'allumage (NGK Iridium)",
+          "Contrôle et réglage jeu soupapes (obligatoire)",
+          "Remplacement liquide de frein (si ≥ 2 ans)",
+          "Contrôle état roulements de roue et de direction",
+          "Remplacement kit chaîne si usure constatée"
+        ]
+      },
+      {
+        "km": 30000,
+        "label": "Révision fourche",
+        "operations": [
+          "Toutes les opérations des 20 000 km (si coincide)",
+          "Remplacement huile de fourche",
+          "Contrôle joints de fourche",
+          "Contrôle roulements direction"
+        ]
+      },
+      {
+        "km": 40000,
+        "label": "Révision majeure",
+        "operations": [
+          "Toutes les opérations des 20 000 km",
+          "Remplacement liquide de refroidissement (si non fait avant)",
+          "Contrôle complet roulements roues et direction",
+          "Contrôle état pompe à eau (joints préventifs si jamais remplacés)"
+        ]
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 10 000 km ou 1 an (première des deux échéances) ; jeu aux soupapes tous les 20 000 km",
+      "total_60000km": "2 200 – 3 500 €",
+      "cost_per_km": "0,037 – 0,058 €/km",
+      "note": "Estimations basées sur les barèmes BMW Motorrad France en concession (source : moto-securite.fr, entretien.bmw-motorrad.fr). Comptez 250–350 € pour un service standard (10 000 km), 400–600 € pour une inspection complète avec vérification soupapes (20 000 km), hors consommables (pneus, plaquettes, chaîne). La F 900 R est sensiblement plus chère à entretenir que la G 310 R en raison de sa cylindrée et de sa complexité électronique. BMW Motorrad propose des contrats de service (3 ans/30 000 km ou 5 ans/50 000 km) à souscrire à l'achat, pouvant lisser ce budget."
+    },
+    "faq": [
+      {
+        "question": "La BMW F 900 R est-elle homologuée permis A2 ?",
+        "answer": "Oui, mais uniquement dans sa version bridée 35 kW (47 ch), proposée en option d'usine. Attention : cette version développe nativement 95 ch (non 105 ch) et n'est pas convertible vers la puissance maximale de 105 ch. Les acheteurs souhaitant évoluer vers le permis A devront se tourner vers la version standard débridable."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la F 900 R ?",
+        "answer": "BMW préconise une révision tous les 10 000 km ou 1 an. Un service de rodage entre 500 et 1 200 km est obligatoire. Le jeu aux soupapes se contrôle tous les 20 000 km, l'huile de fourche se remplace tous les 30 000 km."
+      },
+      {
+        "question": "Le quickshifter de la F 900 R est-il fiable ?",
+        "answer": "Sur les modèles 2020-2024, il peut présenter des ratés ou cesser de fonctionner temporairement — problème bien documenté, généralement résolu par mise à jour logicielle en concession. Les millésimes 2025 sembleraient ne plus être affectés. En cas de problème, un passage chez un concessionnaire BMW pour diagnostic et mise à jour du logiciel résout souvent la situation."
+      },
+      {
+        "question": "Quelle est la fiabilité globale de la F 900 R ?",
+        "answer": "La plateforme F 900 R est globalement fiable, avec des propriétaires atteignant 60 000 miles (environ 100 000 km) sans intervention majeure. Les points de vigilance sont le quickshifter (logiciel), la pompe à eau (joints) et la selle (confort). Le moteur lui-même, dérivé du F 850 GS éprouvé, est réputé solide."
+      },
+      {
+        "question": "Quelle huile pour la BMW F 900 R ?",
+        "answer": "BMW préconise une huile 5W-40 ou 10W-40 pleinement synthétique homologuée JASO MA2. La F 900 R utilise un système carter sec à recirculation — il est important de ne pas se tromper sur le volume (3,75 L avec filtre) et de n'utiliser que des huiles moto (pas d'huile auto)."
+      },
+      {
+        "question": "Peut-on entretenir la F 900 R hors réseau BMW ?",
+        "answer": "Oui, hors garantie. Le moteur est fabriqué par Loncin (Chine) pour BMW et assemblé à Berlin ; les pièces sont disponibles dans le réseau BMW et chez des fournisseurs indépendants. Pour les mises à jour logicielles (quickshifter notamment), un diagnostic BMW reste recommandé."
+      }
+    ],
+    "conclusion": "La BMW F 900 R 2020+ est un roadster middleweight abouti qui a su trouver son public en France (plus de 1 400 immatriculations en 2023). Sa finition haut de gamme, son équipement électronique généreux et ses étriers Brembo de série en font une proposition sérieuse face à la Yamaha MT-09 et à la Kawasaki Z900. L'entretien, plus coûteux que sur les marques japonaises, reste dans les normes BMW avec un intervalle de 10 000 km/an. Les propriétaires attentifs — surveillance de la pompe à eau, mise à jour logicielle régulière — s'offrent une moto durable qui franchit régulièrement les 80 000 à 100 000 km sans caprice majeur.",
+    "cta_primary": {
+      "label": "Trouver un atelier BMW près de chez moi",
+      "action": "search_nearby",
+      "params": {
+        "brand": "BMW",
+        "type": "concession"
+      }
+    },
+    "cta_secondary": {
+      "label": "Comparer avec d'autres roadsters 900 cm³",
+      "action": "navigate",
+      "params": {
+        "category": "roadster",
+        "subcategory": "roadster-750-1000"
+      }
+    }
+  },
+  "featured": true,
+  "variants": [],
+  "type": "motorcycle_service_sheet"
+}

@@ -1,0 +1,174 @@
+{
+  "model_order": 2,
+  "featured": true,
+  "year_range": "2022+",
+  "display_title": "Kawasaki Versys 650",
+  "language": "fr",
+  "search_tags": [
+    "kawasaki",
+    "versys 650",
+    "versys650",
+    "a2",
+    "649cc",
+    "twin",
+    "trail routier",
+    "routiere",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 145 mm, réglable précharge et détente",
+      "front_tire": "120/70 ZR17",
+      "rear_brake": "Simple disque, Ø 250 mm, étrier 1 piston, ABS",
+      "rear_tire": "160/60 ZR17",
+      "front_suspension": "Fourche inversée Ø 41 mm, débattement 150 mm",
+      "frame": "Cadre treillis acier",
+      "front_brake": "Double disque, Ø 300 mm, étriers 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 218,
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "wheelbase_mm": 1415,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 845,
+    "torque": "61,0 N.m à 7 000 tr/min",
+    "displacement_cc": 649,
+    "power": "49,0 kW (66 ch) à 8 500 tr/min",
+    "tank_l": 21,
+    "max_power_kw": 49,
+    "max_power_hp": 66,
+    "max_torque_nm": 61,
+    "max_torque_rpm": 7000
+  },
+  "service_guide": {
+    "known_issues": [
+      "Selle à 845 mm haute pour les petits gabarits",
+      "Roue avant 17 pouces : trail routier, pas taillé pour le tout-terrain",
+      "Poids de 218 kg ressenti à l'arrêt et en manœuvre"
+    ],
+    "concession_cta_title": "La Kawasaki Versys 650 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Kawasaki Versys 650 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Kawasaki Versys 650.",
+    "longevity_tips": [
+      "Vidange officielle tous les 12 000 km, 6 000 km conseillé en usage intensif",
+      "Jeu aux soupapes tous les 24 000 km",
+      "Grand réservoir de 21 L : autonomie idéale pour voyager",
+      "Huile 10W40 JASO MA2 (Motul Lime Green Kawasaki)",
+      "Même moteur 649 fiable que la Z650 : longévité éprouvée"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La Versys 650 est une routière trail polyvalente bâtie sur le twin 649 de la Z650. Son grand réservoir (21 L) et sa position confortable en font une excellente machine à voyager, avec un coût d'entretien identique à la Z650 et des intervalles longs de 12 000 km.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 130 à 190 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 220 à 300 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 450 à 600 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 220 à 300 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 500 à 650 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)",
+      "total_60000km": "≈ 1 500 à 1 900 €",
+      "cost_per_km": "≈ 0,028 €/km (révisions seules, hors pneus et chaîne)",
+      "note": "Tarifs indicatifs réseau Kawasaki (2026). Même base moteur que la Z650. Intervalle officiel de 12 000 km, vidange intermédiaire à 6 000 km conseillée en usage intensif. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Kawasaki Versys 650 ?",
+        "answer": "Environ 220 à 300 € pour la révision des 12 000 km et 450 à 600 € pour la grosse révision des 24 000 km. Identique à la Z650, même moteur 649."
+      },
+      {
+        "question": "La Versys 650 est-elle adaptée aux longs voyages ?",
+        "answer": "Oui, avec son réservoir de 21 L, sa position confortable et son moteur sobre, c'est une excellente routière pour avaler les kilomètres à coût maîtrisé."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une Versys 650 sur 60 000 km ?",
+        "answer": "Environ 1 500 à 1 900 € de révisions, soit ~0,028 €/km. Un budget contenu pour une trail routière capable de voyager loin."
+      },
+      {
+        "question": "Tous les combien réviser une Versys 650 ?",
+        "answer": "Tous les 12 000 km selon Kawasaki, avec souvent une vidange intermédiaire conseillée à 6 000 km en usage intensif ou voyage chargé."
+      }
+    ],
+    "intro": "La Kawasaki Versys 650 est une routière trail polyvalente, idéale pour voyager grâce à son grand réservoir de 21 L. Elle reprend le twin 649 fiable de la Z650, avec le même coût d'entretien maîtrisé et des intervalles de 12 000 km."
+  },
+  "model": "Versys 650",
+  "brand_order": 3,
+  "id": "kawasaki-versys-650-2022-plus",
+  "category": "trail",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "kawasaki-z650-2020-plus",
+      "suzuki-v-strom-650-2017-plus",
+      "honda-nx500-2024-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Kawasaki Versys 650 : 220-300 € (12 000 km), 450-600 € (24 000 km), ~1 500-1 900 € sur 60 000 km. Trail routier à voyager, moteur 649cc fiable.",
+    "keywords": [
+      "entretien kawasaki versys 650",
+      "prix revision versys 650",
+      "cout entretien versys",
+      "fiabilite versys 650",
+      "forfait entretien versys"
+    ],
+    "meta_title": "Entretien Kawasaki Versys 650 : prix des révisions 2026"
+  },
+  "brand": "Kawasaki",
+  "slug": "kawasaki-versys-650-2022-plus",
+  "status": "published",
+  "variants": []
+}

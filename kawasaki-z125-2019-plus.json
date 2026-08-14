@@ -1,0 +1,174 @@
+{
+  "model_order": 7,
+  "featured": true,
+  "year_range": "2019+",
+  "display_title": "Kawasaki Z125",
+  "language": "fr",
+  "search_tags": [
+    "kawasaki",
+    "z125",
+    "z 125",
+    "125cc",
+    "a1",
+    "roadster",
+    "naked",
+    "urbain",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement environ 110 mm",
+      "front_tire": "100/80-17",
+      "rear_brake": "Simple disque, Ø 184 mm, étrier 1 piston, ABS",
+      "rear_tire": "130/70-17",
+      "front_suspension": "Fourche télescopique Ø 30 mm",
+      "frame": "Cadre treillis acier",
+      "front_brake": "Simple disque, Ø 290 mm, étrier 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 146,
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, 4 soupapes, DACT, Euro5",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage)",
+    "wheelbase_mm": 1330,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 815,
+    "torque": "11,7 N.m à 7 700 tr/min",
+    "displacement_cc": 125,
+    "power": "11,0 kW (15 ch) à 10 000 tr/min",
+    "tank_l": 11,
+    "max_power_kw": 11,
+    "max_power_hp": 15,
+    "max_torque_nm": 11.7,
+    "max_torque_rpm": 7700
+  },
+  "service_guide": {
+    "known_issues": [
+      "Poids de 146 kg un peu élevé pour une 125",
+      "Performances en retrait des meilleures 125 du segment",
+      "Réseau Kawasaki moins dense que les concurrents sur le créneau 125"
+    ],
+    "concession_cta_title": "La Kawasaki Z125 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "18 000 à 28 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "6 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Kawasaki Z125 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Kawasaki Z125.",
+    "longevity_tips": [
+      "Vidange tous les 6 000 km ou 1 an, filtre air et bougie aux grosses révisions",
+      "Huile 10W40 JASO MA2 (environ 1,2 L avec filtre)",
+      "Graissage de la chaîne tous les 500 km et après la pluie",
+      "Moteur souple, accessible aux débutants après chauffe",
+      "Faire les vidanges soi-même réduit nettement le coût d'usage"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La Z125 est le roadster 125 de Kawasaki, au style agressif de la famille Z. Entretien classique de 125 (vidange tous les 6 000 km) pour un budget contenu. Un choix au look réussi, même si certaines concurrentes sont plus légères ou mieux finies.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 90 à 150 €"
+      },
+      {
+        "km": 6000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 100 à 160 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 180 à 250 €"
+      },
+      {
+        "km": 18000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 100 à 160 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 180 à 250 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 6 000 km ou 1 an (filtre air + bougie aux grosses révisions)",
+      "total_60000km": "≈ 1 100 à 1 500 €",
+      "cost_per_km": "≈ 0,022 €/km en concession (révisions seules)",
+      "note": "Tarifs indicatifs réseau Kawasaki (2026). Comme toute 125, l'entretien maison (vidange simple) réduit fortement ce coût. Un indépendant facture généralement moins."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Tous les combien réviser une Kawasaki Z125 ?",
+        "answer": "Tous les 6 000 km ou une fois par an, avec filtre à air et bougie aux grosses révisions. Comme toute 125, l'entretien est simple et accessible."
+      },
+      {
+        "question": "Quel est le prix d'une révision sur une Z125 ?",
+        "answer": "Environ 100 à 160 € pour une vidange simple et jusqu'à 250 € pour la révision complète avec filtre et bougie."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une Z125 sur 60 000 km ?",
+        "answer": "Environ 1 100 à 1 500 € en concession (~0,022 €/km), bien moins en faisant les vidanges soi-même."
+      },
+      {
+        "question": "La Z125 est-elle une bonne 125 pour débuter ?",
+        "answer": "Oui, son moteur souple et son look Z séduisent les débutants. Elle est un peu plus lourde que certaines rivales, mais reste accessible et fiable."
+      }
+    ],
+    "intro": "La Kawasaki Z125 est le roadster 125 au style agressif de la famille Z. Son entretien suit le rythme classique des 125 (vidange tous les 6 000 km), pour un coût d'usage contenu et accessible aux débutants."
+  },
+  "model": "Z125",
+  "brand_order": 3,
+  "id": "kawasaki-z125-2019-plus",
+  "category": "roadster",
+  "subcategory": "a1",
+  "relations": {
+    "related_models": [
+      "yamaha-mt125-2020-plus",
+      "honda-cb125r-2021-plus",
+      "ktm-125-duke-2024-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "meilleur-scooter-125-2026-comparatif-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Kawasaki Z125 : 100-160 € (6 000 km), jusqu'à 250 € (12 000 km), ~1 100-1 500 € sur 60 000 km. Roadster 125 style Z, intervalles et budget.",
+    "keywords": [
+      "entretien kawasaki z125",
+      "prix revision z125",
+      "cout entretien z 125",
+      "fiabilite z125",
+      "z125 a1 125"
+    ],
+    "meta_title": "Entretien Kawasaki Z125 : prix des révisions 2026"
+  },
+  "brand": "Kawasaki",
+  "slug": "kawasaki-z125-2019-plus",
+  "status": "published",
+  "variants": []
+}

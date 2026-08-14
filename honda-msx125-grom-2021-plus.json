@@ -1,0 +1,174 @@
+{
+  "model_order": 10,
+  "featured": true,
+  "year_range": "2021+",
+  "display_title": "Honda MSX 125 Grom",
+  "language": "fr",
+  "search_tags": [
+    "honda",
+    "msx125",
+    "grom",
+    "125cc",
+    "a1",
+    "mini moto",
+    "fun bike",
+    "urbain",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 100 mm",
+      "front_tire": "120/70-12",
+      "rear_brake": "Simple disque, Ø 220 mm, étrier 1 piston, ABS",
+      "rear_tire": "130/70-12",
+      "front_suspension": "Fourche inversée Ø 31 mm, débattement 100 mm",
+      "frame": "Cadre acier en berceau",
+      "front_brake": "Simple disque, Ø 220 mm, étrier 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 102,
+    "engine_type": "Monocylindre, 4 temps, refroidissement air, 2 soupapes, SACT, Euro5+",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage)",
+    "wheelbase_mm": 1200,
+    "fuel_system": "Injection PGM-FI",
+    "seat_height_mm": 760,
+    "torque": "10,5 N.m à 5 500 tr/min",
+    "displacement_cc": 124,
+    "power": "7,2 kW (9,8 ch) à 7 250 tr/min",
+    "tank_l": 6,
+    "max_power_kw": 7.2,
+    "max_power_hp": 9.8,
+    "max_torque_nm": 10.5,
+    "max_torque_rpm": 5500
+  },
+  "service_guide": {
+    "known_issues": [
+      "Petites roues de 12 pouces : ludique mais sensible aux trous et rails",
+      "Réservoir de 6 L seulement : autonomie limitée",
+      "Performances modestes (9,8 ch) : fun urbain plus que routier"
+    ],
+    "concession_cta_title": "La Honda MSX 125 Grom vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus (12 pouces)",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "18 000 à 28 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "4 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Honda MSX 125 Grom en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda MSX 125 Grom.",
+    "longevity_tips": [
+      "Révision tous les 4 000 km (intervalle Honda 125)",
+      "Moteur refroidi par air simplissime : entretien maison idéal pour débuter",
+      "Huile 10W30 : moins de 1 L, vidange très rapide",
+      "Le Grom adore les modifications : rester dans les specs pour la fiabilité",
+      "Graissage de la chaîne tous les 500 km"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "Le MSX125 Grom est un mini-bike fun et culte, parfait pour la ville et l'apprentissage. Ultra-léger (102 kg), mécanique simplissime refroidie par air, révisions tous les 4 000 km mais d'une facilité enfantine à réaliser soi-même. Le plaisir avant tout, pour un budget contenu.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 80 à 130 €"
+      },
+      {
+        "km": 4000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 150 €"
+      },
+      {
+        "km": 8000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 150 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 180 à 260 €"
+      },
+      {
+        "km": 16000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 150 €"
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Tous les 4 000 km ou 1 an (préconisation Honda pour ses 125)",
+      "total_60000km": "≈ 1 500 à 2 100 €",
+      "cost_per_km": "≈ 0,03 €/km en concession (révisions seules)",
+      "note": "Intervalle court de 4 000 km Honda, mais le moteur air simplissime rend l'entretien maison enfantin (coût ~0,01 €/km). Tarifs indicatifs 2026."
+    },
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Tous les combien réviser un Honda Grom ?",
+        "answer": "Tous les 4 000 km selon Honda. Le moteur refroidi par air est tellement simple que la plupart des propriétaires font les vidanges eux-mêmes."
+      },
+      {
+        "question": "Le MSX125 Grom est-il fiable ?",
+        "answer": "Oui, sa mécanique basique et éprouvée est très fiable. C'est aussi un support de personnalisation très populaire, mais rester dans les specs d'origine préserve la fiabilité."
+      },
+      {
+        "question": "Combien coûte l'entretien d'un Grom sur 60 000 km ?",
+        "answer": "Environ 1 500 à 2 100 € en concession (intervalle 4 000 km), mais beaucoup moins en faisant les vidanges soi-même vu la simplicité du moteur."
+      },
+      {
+        "question": "Le Grom est-il adapté à un débutant ?",
+        "answer": "Oui, très léger (102 kg), selle basse (760 mm) et maniable, c'est une excellente moto pour apprendre, surtout en ville."
+      }
+    ],
+    "intro": "Le Honda MSX125 Grom est un mini-bike culte, fun et ultra-maniable, idéal pour la ville et l'apprentissage. Sa mécanique refroidie par air est d'une simplicité totale : révisions tous les 4 000 km, mais un jeu d'enfant à entretenir."
+  },
+  "model": "MSX125 Grom",
+  "brand_order": 1,
+  "id": "honda-msx125-grom-2021-plus",
+  "category": "roadster",
+  "subcategory": "a1",
+  "relations": {
+    "related_models": [
+      "honda-cb125f-2021-plus",
+      "honda-cb125r-2021-plus",
+      "kawasaki-z125-2019-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "meilleur-scooter-125-2026-comparatif-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda MSX125 Grom : 90-150 € (4 000 km), jusqu'à 260 € (12 000 km). Mini-bike fun et fiable, entretien maison facile. Intervalles et budget.",
+    "keywords": [
+      "entretien honda grom",
+      "prix revision msx125",
+      "cout entretien grom",
+      "fiabilite msx125 grom",
+      "revision honda grom 125"
+    ],
+    "meta_title": "Entretien Honda MSX125 Grom : prix des révisions 2026"
+  },
+  "brand": "Honda",
+  "slug": "honda-msx125-grom-2021-plus",
+  "status": "published",
+  "variants": []
+}

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Script from 'next/script';
+import { pickRelatedModels } from '@/lib/related-models-pool';
 import { 
   ArrowLeft, 
   Gauge, 
@@ -177,23 +178,11 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   const relatedModels = useMemo(() => {
     if (!displayData) return [];
     const displacementStr = displayData.engine.displacement || "";
-    const currentCC = parseInt(displacementStr.replace(/[^0-9]/g, ''));
-    const pool = [
-      { id: 'kawasaki-z650-2020-plus', name: 'Kawasaki Z650', cc: 649 },
-      { id: 'suzuki-gsx-8s-2023-plus', name: 'Suzuki GSX-8S', cc: 776 },
-      { id: 'honda-cb500f-2022-plus', name: 'Honda Hornet 500', cc: 471 },
-      { id: 'honda-cb750-hornet-2023-plus', name: 'Honda Hornet 750', cc: 755 },
-      { id: 'yamaha-mt-07-2021-plus', name: 'Yamaha MT-07', cc: 689 },
-      { id: 'suzuki-sv650-2016-plus', name: 'Suzuki SV650', cc: 645 },
-      { id: 'triumph-trident-660-2021-plus', name: 'Triumph Trident 660', cc: 660 },
-      { id: 'kawasaki-z900-2020-plus', name: 'Kawasaki Z900', cc: 948 },
-      { id: 'yamaha-mt-09-2021-plus', name: 'Yamaha MT-09', cc: 890 },
-      { id: 'bmw-f900r-2020-plus', name: 'BMW F 900 R', cc: 895 }
-    ];
-    if (isNaN(currentCC)) return pool.sort(() => 0.5 - Math.random()).slice(0, 4);
-    let minCC = currentCC - 150, maxCC = currentCC + 150;
-    return pool.filter(m => m.id !== modelId && m.cc >= minCC && m.cc <= maxCC).sort(() => 0.5 - Math.random()).slice(0, 4);
-  }, [modelId, displayData]);
+    const parsed = parseInt(displacementStr.replace(/[^0-9]/g, ''), 10);
+    const currentCC = isNaN(parsed) ? null : parsed;
+    const declared = fiche?.relations?.related_models as string[] | undefined;
+    return pickRelatedModels(modelId, currentCC, displayData.category, declared);
+  }, [modelId, displayData, fiche]);
 
   const { user } = useUser();
   const { toast } = useToast();

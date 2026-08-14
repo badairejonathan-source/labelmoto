@@ -1,0 +1,252 @@
+{
+  "id": "bmw-g310r-2021-plus",
+  "slug": "bmw-g310r-2021-plus",
+  "model": "G 310 R",
+  "brand": "BMW",
+  "brand_order": 5,
+  "category": "roadster",
+  "subcategory": "roadster-125-400",
+  "status": "published",
+  "relations": {
+    "same_engine": [
+      "bmw-g310gs-2021-plus"
+    ],
+    "same_category": [
+      "ktm-125-duke-2024-plus",
+      "triumph-trident-660-2021-plus"
+    ]
+  },
+  "technical_sheet": {
+    "years": "2021-présent",
+    "engine_type": "Monocylindre 4 temps, refroidissement liquide, DOHC 4 soupapes",
+    "displacement_cc": 313,
+    "bore_stroke_mm": "80,0 × 62,1",
+    "compression_ratio": "11,0:1",
+    "max_power_kw": 25,
+    "max_power_hp": 34,
+    "max_power_rpm": 9500,
+    "max_torque_nm": 28,
+    "max_torque_rpm": 7500,
+    "euro_standard": "Euro 5",
+    "transmission": "Boîte 6 vitesses",
+    "clutch": "Embrayage anti-dribble (slipper clutch)",
+    "throttle": "Accélérateur électronique (ride-by-wire)",
+    "frame": "Cadre tubulaire acier",
+    "front_suspension": "Fourche télescopique inversée Ø 41 mm, débattement 142 mm",
+    "rear_suspension": "Bras oscillant aluminium, combiné ressort-amortisseur central, précontrainte réglable, débattement 136 mm",
+    "front_brake": "Disque simple 300 mm, étrier 2 pistons",
+    "rear_brake": "Disque simple 240 mm, étrier 1 piston",
+    "abs": "ABS de série (désactivable)",
+    "front_tire": "110/70 R17",
+    "rear_tire": "150/60 R17",
+    "fuel_tank_liters": 11,
+    "seat_height_mm": 785,
+    "kerb_weight_kg": 164,
+    "wheelbase_mm": 1374,
+    "permitted_a2": true,
+    "fuel_type": "Sans plomb 91 RON (max. 15 % éthanol E15)"
+  },
+  "seo": {
+    "meta_title": "Entretien BMW G 310 R (2021+) : révisions, coûts & guide complet",
+    "meta_description": "Guide complet d'entretien de la BMW G 310 R 2021+ : intervalles de révision tous les 10 000 km, coûts, consommables, pannes connues et conseils longévité.",
+    "keywords": [
+      "BMW G310R entretien",
+      "BMW G310R révision",
+      "BMW G310R prix entretien",
+      "BMW G 310 R 2021",
+      "fiche technique BMW G310R",
+      "entretien moto A2 BMW",
+      "BMW G310R permis A2",
+      "BMW G310R service 10000 km",
+      "BMW G310R vidange"
+    ]
+  },
+  "service_guide": {
+    "intro": "La BMW G 310 R est l'entrée de gamme roadster de BMW Motorrad, positionnée sur le segment des 300 cm³ et homologuée permis A2. Dotée d'un monocylindre 313 cm³ refroidi par eau développant 34 ch, elle partage sa motorisation avec la G 310 GS. Sa version 2021 apporte l'accélérateur électronique, l'embrayage anti-dribble, un phare full LED et la conformité Euro 5. Fiable et économique à l'entretien pour une BMW, elle s'adresse aussi bien aux néo-motards qu'aux riders expérimentés cherchant un second véhicule léger.",
+    "known_issues": [
+      {
+        "issue": "Surchauffe au ralenti en circulation urbaine dense",
+        "description": "Le radiateur de la G 310 R est de petite taille et le ventilateur peut peiner lors de longs arrêts en été. Le phénomène est bénin mais signalé par de nombreux propriétaires.",
+        "severity": "faible",
+        "remedy": "Couper le moteur lors d'arrêts prolongés. La marque n'a pas émis de rappel sur ce point."
+      },
+      {
+        "issue": "Vibrations au guidon à haut régime",
+        "description": "Inhérentes à l'architecture monocylindre, elles sont perceptibles au-delà de 7 000 tr/min. Légèrement atténuées sur le millésime 2021 grâce à l'accélérateur électronique.",
+        "severity": "faible",
+        "remedy": "Vérifier l'équilibrage des roues et le serrage du guidon ; des poignées anti-vibrations aftermarket existent."
+      },
+      {
+        "issue": "Corrosion des vis de carénage",
+        "description": "Sur les premiers millésimes (2016–2020), certains utilisateurs signalent une oxydation des vis d'habillage en conditions humides. Le 2021 améliore légèrement les traitements de surface.",
+        "severity": "mineur",
+        "remedy": "Appliquer une légère couche de graisse cuivre sur les filetages lors des démontages d'entretien."
+      }
+    ],
+    "consumables": [
+      {
+        "item": "Huile moteur",
+        "spec": "10W-40 ou 15W-50 API SL/SM (huile moteur moto JASO MA2)",
+        "quantity": "1,6 L (vidange), 1,7 L (avec filtre)",
+        "interval_km": 10000,
+        "interval_note": "Ou 1 an, selon la première échéance"
+      },
+      {
+        "item": "Filtre à huile",
+        "spec": "Filtre BMW d'origine ou équivalent (ex. Mahle OX 766)",
+        "interval_km": 10000
+      },
+      {
+        "item": "Filtre à air",
+        "spec": "Filtre papier d'origine BMW",
+        "interval_km": 20000,
+        "interval_note": "Ou plus tôt si conduite poussiéreuse"
+      },
+      {
+        "item": "Bougie d'allumage",
+        "spec": "NGK LMAR8G-4 (NGK Laser Iridium)",
+        "interval_km": 20000
+      },
+      {
+        "item": "Liquide de frein",
+        "spec": "DOT 4",
+        "interval_note": "Tous les 2 ans (ou 1 an selon conditions d'utilisation)"
+      },
+      {
+        "item": "Liquide de refroidissement",
+        "spec": "Antigel longue durée BMW Motorrad ou équivalent",
+        "interval_note": "BMW ne précise pas d'intervalle dans le manuel — vérification conseillée tous les 2 ans"
+      },
+      {
+        "item": "Chaîne et kit chaîne",
+        "spec": "Chaîne 520 (renforcée recommandée)",
+        "interval_km": 20000,
+        "interval_note": "Selon usure — lubrifier tous les 500–800 km, régler la tension régulièrement"
+      },
+      {
+        "item": "Pneu avant",
+        "spec": "110/70 R17 (Michelin Pilot Street 2 ou Dunlop ScootSmart de montage, remplaçables par Michelin Road 6 / Pirelli Angel GT)",
+        "interval_km": 15000,
+        "interval_note": "Variable selon style de conduite"
+      },
+      {
+        "item": "Pneu arrière",
+        "spec": "150/60 R17",
+        "interval_km": 10000,
+        "interval_note": "Variable selon style de conduite"
+      },
+      {
+        "item": "Plaquettes de frein avant",
+        "spec": "Plaquettes d'origine BMW ou EBC FA409",
+        "interval_note": "Contrôle tous les 10 000 km"
+      }
+    ],
+    "longevity_tips": [
+      "Respecter le rodage entre 500 et 1 200 km : monter en régime progressivement, éviter de dépasser 6 500 tr/min.",
+      "Ne pas laisser le voyant de réserve allumer systématiquement — le bas du réservoir peut contenir des dépôts nuisibles à l'injection.",
+      "Lubrifier la chaîne tous les 500 à 800 km (ou après la pluie) pour préserver le kit chaîne/pignon/couronne.",
+      "Vérifier le jeu aux soupapes tous les 20 000 km : une G 310 R bien réglée est plus silencieuse et consomme moins.",
+      "Laisser tourner le moteur 30 secondes à froid avant de rouler, notamment par temps frais — le monocylindre apprécie la montée en température progressive.",
+      "Ranger la moto propre en hiver et utiliser un stabilisateur de carburant si l'immobilisation dépasse 3 mois."
+    ],
+    "service_schedule": [
+      {
+        "km": "500–1 200",
+        "label": "Rodage",
+        "operations": [
+          "Vidange huile moteur + remplacement filtre à huile",
+          "Contrôle fuite et serrage général",
+          "Contrôle tension chaîne",
+          "Contrôle niveaux"
+        ]
+      },
+      {
+        "km": 10000,
+        "label": "Révision standard (service annuel)",
+        "operations": [
+          "Vidange huile moteur + filtre à huile",
+          "Contrôle filtre à air (remplacement si nécessaire)",
+          "Contrôle et nettoyage circuit d'alimentation",
+          "Contrôle tension et graissage chaîne",
+          "Contrôle niveaux freins, refroidissement, embrayage",
+          "Contrôle jeu soupapes (si nécessaire selon résultat)",
+          "Contrôle état pneus, plaquettes, disques",
+          "Contrôle ABS et éclairage",
+          "Vérification générale de sécurité"
+        ]
+      },
+      {
+        "km": 20000,
+        "label": "Grande révision (inspection)",
+        "operations": [
+          "Toutes les opérations des 10 000 km",
+          "Remplacement filtre à air",
+          "Remplacement bougie d'allumage (NGK Laser Iridium)",
+          "Contrôle et réglage jeu soupapes (obligatoire)",
+          "Contrôle et remplacement liquide de frein (si >2 ans)",
+          "Contrôle huile fourche (remplacement si >40 000 km)",
+          "Remplacement kit chaîne si usure constatée"
+        ]
+      },
+      {
+        "km": 40000,
+        "label": "Révision majeure",
+        "operations": [
+          "Toutes les opérations des 20 000 km",
+          "Remplacement huile de fourche",
+          "Contrôle roulement de direction",
+          "Contrôle roulements de roues",
+          "Remplacement liquide de refroidissement (si non fait avant)"
+        ]
+      }
+    ],
+    "maintenance_cost_summary": {
+      "interval_rule": "Révision tous les 10 000 km ou 1 an (première des deux échéances)",
+      "total_60000km": "1 400 – 2 200 €",
+      "cost_per_km": "0,023 – 0,037 €/km",
+      "note": "Estimations basées sur les tarifs BMW Motorrad France en concession (source : moto-securite.fr). Comptez 200–250 € pour un entretien standard (10 000 km), 300–450 € pour une inspection complète (20 000 km), hors consommables (pneus, plaquettes, chaîne). Les prix varient selon la région et le concessionnaire. Un entretien en centre auto indépendant agréé sera sensiblement moins cher. BMW Motorrad propose des contrats de service (3 ans/30 000 km ou 5 ans/50 000 km) à souscrire à l'achat."
+    },
+    "faq": [
+      {
+        "question": "La BMW G 310 R est-elle homologuée permis A2 ?",
+        "answer": "Oui, avec ses 34 ch (25 kW) pour 164 kg, elle est dans les limites du permis A2 (max 35 kW, rapport poids/puissance ≤ 0,2 kW/kg). Pas de bridage nécessaire."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la G 310 R ?",
+        "answer": "BMW préconise une révision tous les 10 000 km ou 1 an, selon la première échéance. Un service de rodage entre 500 et 1 200 km est également obligatoire."
+      },
+      {
+        "question": "Peut-on faire entretenir la G 310 R hors réseau BMW ?",
+        "answer": "Oui, hors garantie, tout atelier compétent peut l'entretenir. La G 310 R partage son moteur avec le scooter TVS Apache RR 310, ce qui facilite l'accès aux pièces. Pendant la garantie, l'entretien en concession BMW est recommandé pour la maintenir."
+      },
+      {
+        "question": "La G 310 R est-elle fiable sur long terme ?",
+        "answer": "La fiabilité est globalement très bonne. Des propriétaires atteignent régulièrement 50 000 km sans intervention majeure en respectant les intervalles d'entretien. Les points de vigilance sont le jeu aux soupapes (contrôle tous les 20 000 km) et la chaîne (lubrification fréquente)."
+      },
+      {
+        "question": "Quelle huile pour la BMW G 310 R ?",
+        "answer": "BMW préconise une huile moteur moto 10W-40 ou 15W-50 homologuée JASO MA2, norme API SL/SM minimum. Les huiles BMW Motorrad d'origine (Shell Advance Ultra 4T) sont recommandées, mais les grandes marques de lubrifiant moto équivalentes conviennent parfaitement."
+      }
+    ],
+    "conclusion": "La BMW G 310 R 2021 est une réussite dans le segment des roadsters A2. Légère, agile et finalement raisonnable à l'entretien pour une BMW (10 000 km entre révisions), elle combine la qualité perçue de la marque bavaroise avec une accessibilité financière relative. Ses principaux atouts sont sa fiabilité démontrée, son accélérateur électronique et son embrayage anti-dribble rarissimes dans cette catégorie. Pour les propriétaires soucieux de maîtriser leur budget, un entretien régulier chez un atelier de confiance (hors réseau officiel) reste tout à fait compatible avec une longévité exemplaire.",
+    "cta_primary": {
+      "label": "Trouver un atelier BMW près de chez moi",
+      "action": "search_nearby",
+      "params": {
+        "brand": "BMW",
+        "type": "concession"
+      }
+    },
+    "cta_secondary": {
+      "label": "Comparer avec d'autres roadsters A2",
+      "action": "navigate",
+      "params": {
+        "category": "roadster",
+        "subcategory": "roadster-125-400"
+      }
+    }
+  },
+  "featured": true,
+  "variants": [],
+  "type": "motorcycle_service_sheet"
+}
