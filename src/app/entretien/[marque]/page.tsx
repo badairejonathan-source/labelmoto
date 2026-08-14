@@ -235,6 +235,25 @@ const BRAND_META: Record<string, {
       { q: "Où faire réviser mon Orcal ?", a: "Dans le réseau Orcal/DIP France. Les conditions de garantie exactes sont à vérifier sur le bon de commande du modèle." },
     ],
   },
+  mash: {
+    name: 'Mash',
+    firestoreValue: 'Mash',
+    metaTitle: "Fiches entretien Mash : révisions, intervalles et prix | LabelMoto",
+    metaDescription: "Accédez aux fiches entretien Mash par modèle : Seventy 125, Black Seven 125, British Seven 125, X-Ride 125. Intervalles de révision, points de contrôle et budgets.",
+    h1: 'Fiches entretien Mash — Intervalles et prix de révision',
+    intro: [
+      "Mash est une marque française distribuée par SIMA, également importateur de QJ Motor. Sa gamme 125 mise sur le style néo-rétro accessible : la Seventy 125 (monocylindre à air, 11,1 ch, à partir de 2 299 €), les Black Seven et British Seven 125 (moteur Hyosung refroidi liquide, 15 ch, ABS) et la X-Ride 125 (scrambler/trail urbain avec fourche inversée Ø41 mm et batterie lithium).",
+      "Mash France applique une garantie de 3 ans pièces et main-d'œuvre en kilométrage illimité. Les manuels prévoient une première révision après le rodage puis des contrôles rapprochés — le manuel du millésime livré reste la référence contractuelle pour préserver la garantie.",
+    ],
+    cout: "80 à 220 € (estimé)",
+    intervalle: "≈ 3 000 à 4 000 km",
+    faq: [
+      { q: "Quel est l'intervalle de révision d'une Mash 125 ?", a: "Le manuel X-Ride 125 Euro 5 indique un entretien après les 1 000 premiers kilomètres puis des contrôles tous les 3 000 km pour plusieurs éléments. Les Black Seven et British Seven partagent un manuel Euro 5 commun. Vérifiez toujours le manuel du millésime livré avec votre moto." },
+      { q: "Quel est le prix d'une révision Mash 125 ?", a: "Estimation : 80 à 150 € pour la révision de rodage, 90 à 220 € pour les révisions périodiques selon le modèle et les opérations. Mash France ne publie pas de tarifs officiels — demandez un devis en concession." },
+      { q: "Où faire réviser ma Mash ?", a: "Dans le réseau Mash France (groupe SIMA). La garantie 3 ans pièces et main-d'œuvre en kilométrage illimité impose les révisions dans ce réseau." },
+      { q: "Quelle différence entre la Seventy 125 et les Black/British Seven ?", a: "La Seventy 125 utilise un monocylindre refroidi par air de 11,1 ch avec boîte 5 rapports et freinage CBS. Les Black Seven et British Seven 125 embarquent un moteur Hyosung refroidi liquide de 15 ch avec boîte 6 rapports et ABS. Les architectures et les plans d'entretien diffèrent — ne transposez pas l'un sur l'autre." },
+    ],
+  },
 };
 
 export async function generateStaticParams() {
