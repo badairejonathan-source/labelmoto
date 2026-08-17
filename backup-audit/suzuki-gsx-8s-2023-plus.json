@@ -1,0 +1,182 @@
+{
+  "model_order": 3,
+  "featured": true,
+  "year_range": "2023+",
+  "display_title": "Suzuki GSX-8S",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "GSX-8S",
+  "id": "suzuki-gsx-8s-2023-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "brand": "Suzuki",
+  "slug": "suzuki-gsx-8s-2023-plus",
+  "status": "published",
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "search_tags": [
+    "suzuki",
+    "gsx-8s",
+    "gsx8s",
+    "776cc",
+    "twin",
+    "roadster",
+    "a2",
+    "entretien",
+    "revision",
+    "forfait suzuki"
+  ],
+  "brand_order": 4,
+  "relations": {
+    "related_models": [
+      "suzuki-gsx-8r-2024-plus",
+      "suzuki-sv650-2016-plus",
+      "yamaha-mt-07-2021-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Suzuki GSX-8S : 220-300 € (12 000 km), 450-620 € (24 000 km), ~1 500-1 950 € sur 60 000 km. Roadster moderne, nouveau twin 776cc, intervalles.",
+    "keywords": [
+      "entretien suzuki gsx-8s",
+      "prix revision gsx8s",
+      "cout entretien gsx-8s",
+      "fiabilite gsx-8s",
+      "forfait entretien gsx 8s"
+    ],
+    "meta_title": "Entretien Suzuki GSX-8S : prix des révisions 2026"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Suzuki GSX-8S vous correspond ?",
+    "concession_cta_button": "Voir les Suzuki GSX-8S en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Suzuki GSX-8S.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La GSX-8S est le roadster moderne de Suzuki, doté d'un nouveau twin 776 plein de caractère et d'une électronique complète. Entretien classique Suzuki (12 000 km), pour un budget contenu. Un excellent rapport équipement/prix dans la catégorie des roadsters A2.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 130 à 190 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 220 à 300 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 450 à 620 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 220 à 300 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 500 à 680 €"
+      }
+    ],
+    "known_issues": [
+      "Modèle récent (2023) : recul de fiabilité encore limité, mais bons retours jusqu'ici",
+      "Suspension arrière un peu ferme sur revêtements dégradés",
+      "Réservoir de 14 L limitant l'autonomie sur autoroute"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne (origine Suzuki ≈ 185 €)",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Suzuki GSX-8S ?",
+        "answer": "Environ 220 à 300 € pour la révision des 12 000 km et 450 à 620 € pour la grosse révision des 24 000 km. Modèle récent, tarifs à confirmer en concession."
+      },
+      {
+        "question": "Tous les combien réviser une GSX-8S ?",
+        "answer": "Tous les 12 000 km selon Suzuki, avec souvent une vidange intermédiaire conseillée à 6 000 km en usage urbain. Jeu aux soupapes tous les 24 000 km."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une GSX-8S sur 60 000 km ?",
+        "answer": "Environ 1 500 à 1 950 € de révisions, soit ~0,029 €/km. Un budget contenu pour un roadster moderne bien équipé."
+      },
+      {
+        "question": "Le moteur de la GSX-8S est-il fiable ?",
+        "answer": "Ce nouveau twin 776 à arbre d'équilibrage reçoit de bons retours depuis 2023. Le recul reste limité vu sa récence, mais Suzuki a une solide réputation de fiabilité."
+      }
+    ],
+    "intro": "La Suzuki GSX-8S est le roadster moderne de la marque, animé par un nouveau twin 776 plein de caractère et richement équipé en électronique. Son entretien suit le rythme Suzuki de 12 000 km, pour un coût d'usage maîtrisé.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 500 à 1 950 €",
+      "note": "Tarifs indicatifs réseau Suzuki (2026). Nouveau moteur 776, recul de fiabilité encore limité mais bons retours. Modèle récent : tarifs à confirmer en concession. Un indépendant facture généralement moins.",
+      "cost_per_km": "≈ 0,029 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)"
+    },
+    "longevity_tips": [
+      "Vidange tous les 12 000 km (6 000 km conseillé en ville), jeu aux soupapes tous les 24 000 km",
+      "Nouveau twin 776 à arbre d'équilibrage : douceur et caractère, à exploiter après chauffe",
+      "Huile 10W40 JASO MA2 (environ 3 L avec filtre)",
+      "Graissage de la chaîne tous les 800 km et après la pluie",
+      "Modèle récent : conserver le carnet d'entretien à jour pour la garantie et la revente"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782229093,
+    "_nanoseconds": 623000000
+  },
+  "variants": [],
+  "technical_sheet": {
+    "weight_tpf_kg": 202,
+    "wheelbase_mm": 1465,
+    "seat_height_mm": 810,
+    "torque": "78,0 N.m à 6 800 tr/min",
+    "displacement_cc": 776,
+    "tank_l": 14,
+    "cycle_parts": {
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "180/55 ZR17",
+      "frame": "Cadre acier",
+      "rear_suspension": "Monoamortisseur, débattement 130 mm, réglable précharge",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche inversée KYB Ø 41 mm, débattement 130 mm",
+      "front_brake": "Double disque, Ø 310 mm, étriers radiaux 4 pistons (Nissin), ABS"
+    },
+    "engine_type": "Bicylindre en ligne 270°, 4 temps, refroidissement liquide, 8 soupapes, DACT, arbre d'équilibrage",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "fuel_system": "Injection électronique, accélérateur électronique (ride-by-wire)",
+    "power": "61,0 kW (83 ch) à 8 500 tr/min",
+    "max_torque_rpm": 6800,
+    "max_power_hp": 83,
+    "max_torque_nm": 78,
+    "max_power_kw": 61
+  }
+}

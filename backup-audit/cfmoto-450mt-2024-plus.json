@@ -1,0 +1,161 @@
+{
+  "model_order": 2,
+  "featured": true,
+  "year_range": "2024+",
+  "timestamps": {
+    "updated_at": "2026-04-24",
+    "created_at": "2026-04-24"
+  },
+  "display_title": "CFMOTO 450MT",
+  "language": "fr",
+  "search_tags": [
+    "cfmoto",
+    "450mt",
+    "cf moto 450mt",
+    "a2",
+    "trail",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "model": "450MT",
+  "brand_order": 7,
+  "id": "cfmoto-450mt-2024-plus",
+  "category": "trail",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "cfmoto-450sr-2023-plus",
+      "honda-nx500-2024-plus",
+      "royal-enfield-himalayan-450"
+    ],
+    "related_articles": [
+      "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Découvrez les intervalles d’entretien, le prix des révisions, les consommables et les points de fiabilité de la CFMOTO 450MT.",
+    "keywords": [
+      "entretien cfmoto 450mt",
+      "prix revision 450mt",
+      "fiabilite cfmoto 450mt",
+      "cfmoto 450mt a2",
+      "revision 450mt"
+    ],
+    "meta_title": "Entretien CFMOTO 450MT : intervalles, prix et conseils"
+  },
+  "brand": "CFMOTO",
+  "slug": "cfmoto-450mt-2024-plus",
+  "status": "published",
+  "updatedAt": {
+    "_seconds": 1777453664,
+    "_nanoseconds": 523000000
+  },
+  "imageUrl": "/images/entretien-cfmoto-450mt.webp",
+  "variants": [],
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Mono-amortisseur arrière réglable",
+      "front_tire": "90/90 R21",
+      "rear_brake": "Disque arrière avec ABS",
+      "rear_tire": "140/70 R18",
+      "front_suspension": "Fourche inversée réglable",
+      "frame": "Cadre tubulaire en acier",
+      "front_brake": "Disque avant avec ABS"
+    },
+    "weight_tpf_kg": 185,
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, double ACT, calage à 270°",
+    "license_bridging": "✔ Permis A2 (moto A2 native – pas de bridage nécessaire)",
+    "wheelbase_mm": 1505,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 820,
+    "torque": "44,0 N.m à 6 250 tr/min",
+    "displacement_cc": 449,
+    "power": "31,0 kW (42 ch) à 8 500 tr/min",
+    "tank_l": 17.5,
+    "max_torque_rpm": 6250,
+    "max_power_hp": 42,
+    "max_torque_nm": 44,
+    "max_power_kw": 31
+  },
+  "service_guide": {
+    "known_issues": [
+      "Réseau après-vente plus limité que les grandes marques selon les régions",
+      "Protection correcte mais perfectible sur longs trajets rapides",
+      "Chaîne d’origine à surveiller régulièrement",
+      "Hauteur de selle pouvant impressionner les plus petits gabarits"
+    ],
+    "concession_cta_title": "La CFMOTO 450MT vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "8 000 à 18 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les CFMOTO 450MT en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre CFMOTO 450MT.",
+    "longevity_tips": [
+      "Respecter les intervalles d’entretien constructeur",
+      "Graisser la chaîne tous les 600 km ou après la pluie",
+      "Contrôler régulièrement la tension de chaîne",
+      "Vidange annuelle recommandée même si le kilométrage n’est pas atteint"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "Polyvalente, accessible et orientée aventure, la CFMOTO 450MT est une vraie proposition intéressante pour les motards A2 qui veulent sortir du bitume sans passer sur une grosse cylindrée. Bien entretenue, elle reste cohérente en coût d’usage et agréable au quotidien.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quand faire la vidange ?",
+        "answer": "Tous les 5 000 km ou tous les 6 mois, avec une première révision à 1 000 km."
+      },
+      {
+        "question": "La CFMOTO 450MT est-elle compatible A2 ?",
+        "answer": "Oui, la 450MT est une moto A2 native et ne nécessite pas de bridage."
+      },
+      {
+        "question": "Quelle est la puissance de la CFMOTO 450MT ?",
+        "answer": "La CFMOTO 450MT développe 31,0 kW, soit environ 42 ch."
+      }
+    ],
+    "intro": "La CFMOTO 450MT est un trail A2 moderne pensé pour le voyage léger et les pistes faciles. Son bicylindre de 449 cm³, son poids contenu et sa roue avant de 21 pouces en font une moto polyvalente, rassurante et accessible. Avec un entretien régulier, elle reste cohérente à l’usage et intéressante pour un motard qui cherche une vraie petite aventure.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 5000,
+        "service_label": "Vidange + filtre à huile + contrôles",
+        "price_estimate": "≈ 160 à 240 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + contrôles complets",
+        "price_estimate": "≈ 180 à 280 €"
+      },
+      {
+        "km": 40000,
+        "service_label": "Contrôle soupapes + gros entretien",
+        "price_estimate": "≈ 500 à 750 €"
+      }
+    ]
+  }
+}

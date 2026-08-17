@@ -1,0 +1,249 @@
+{
+  "featured": true,
+  "timestamps": {
+    "updated_at": "2026-06-10",
+    "created_at": "2026-06-10"
+  },
+  "display_title": "Aprilia RS 125",
+  "language": "fr",
+  "search_tags": [
+    "aprilia",
+    "rs125",
+    "rs 125",
+    "125cc",
+    "a1",
+    "sportive",
+    "carénée",
+    "euro5+",
+    "traction control",
+    "entretien",
+    "revision",
+    "piste"
+  ],
+  "type": "motorcycle_service_sheet",
+  "longevity_tips": [
+    "Respecter les vidanges tous les 5 000 km ou une fois par an",
+    "Vérifier régulièrement l'état du carénage et des fixations après usage intensif",
+    "Graisser la chaîne régulièrement, surtout après la pluie ou usage piste",
+    "Faire contrôler le traction control et l'ABS Bosch en réseau Aprilia si anomalie",
+    "Ne pas négliger l'état des pneus ZR17 : usure plus rapide en conduite sportive"
+  ],
+  "faq": [
+    {
+      "question": "Quand faire la vidange sur une Aprilia RS 125 ?",
+      "answer": "Tous les 5 000 km ou une fois par an, au premier des deux termes échus."
+    },
+    {
+      "question": "L'Aprilia RS 125 est-elle compatible permis A1 ?",
+      "answer": "Oui, c'est une 125cc native à 15 ch. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+    },
+    {
+      "question": "À quoi sert le traction control sur une 125cc ?",
+      "answer": "Sur l'Aprilia RS 125 Euro5+, le traction control déconnectable évite les patinages à l'accélération sur sol mouillé ou en sortie de virage. C'est une première dans la catégorie 125cc, utile notamment sur piste."
+    },
+    {
+      "question": "L'Aprilia RS 125 est-elle adaptée aux débutants ?",
+      "answer": "Elle est accessible en permis A1, mais sa position de conduite sportive et sa réactivité la rendent plus adaptée aux motards ayant déjà quelques mois d'expérience. Un débutant complet lui préférera une Honda CB125R ou une Yamaha MT-125."
+    }
+  ],
+  "model": "RS 125",
+  "id": "aprilia-rs125-2023-plus",
+  "seo": {
+    "meta_description": "Découvrez les intervalles d'entretien, le prix des révisions, les consommables et les points de fiabilité de l'Aprilia RS 125 Euro5+.",
+    "keywords": [
+      "entretien aprilia rs 125",
+      "prix revision aprilia rs125",
+      "fiabilite aprilia rs 125",
+      "aprilia rs125 a1",
+      "revision rs 125 euro5"
+    ],
+    "meta_title": "Entretien Aprilia RS 125 : intervalles, prix et conseils"
+  },
+  "brand": "Aprilia",
+  "slug": "aprilia-rs125-2023-plus",
+  "model_order": 1,
+  "known_issues": [
+    "Position de conduite couchée inconfortable au quotidien sur longs trajets",
+    "Réseau de concessionnaires Aprilia moins dense en France que les grandes marques japonaises",
+    "Pièces détachées légèrement plus onéreuses que sur Honda ou Yamaha",
+    "Consommation un peu plus élevée (~2,6 L/100 km selon cycle WMTC) en usage sportif",
+    "Carénage : réparation coûteuse en cas de chute"
+  ],
+  "year_range": "2023+",
+  "consumables": [
+    {
+      "part": "Pneus",
+      "average_lifetime": "8 000 à 14 000 km"
+    },
+    {
+      "part": "Kit chaîne",
+      "average_lifetime": "12 000 à 18 000 km"
+    },
+    {
+      "part": "Plaquettes",
+      "average_lifetime": "8 000 à 15 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "10 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "3 à 5 ans"
+    }
+  ],
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage",
+      "price_estimate": "≈ 120 à 180 €"
+    },
+    {
+      "km": 5000,
+      "service_label": "Vidange + contrôles",
+      "price_estimate": "≈ 160 à 250 €"
+    },
+    {
+      "km": 10000,
+      "service_label": "Vidange + filtre à air + contrôles",
+      "price_estimate": "≈ 220 à 350 €"
+    },
+    {
+      "km": 20000,
+      "service_label": "Bougie + gros entretien + contrôle complet",
+      "price_estimate": "≈ 350 à 500 €"
+    }
+  ],
+  "category": "sportive",
+  "subcategory": "a1",
+  "relations": {
+    "related_models": [
+      "ktm-125-duke-2024-plus",
+      "honda-cb125r-2021-plus",
+      "yamaha-mt125-2020-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "status": "published",
+  "service_guide": {
+    "conclusion": "L'Aprilia RS 125 est le choix idéal pour les jeunes motards qui veulent une vraie sportive carénée avec une vraie partie-cycle. Son entretien est un peu plus technique que sur une naked, mais reste accessible. Attention à la position de conduite couchée qui peut fatiguer sur les longs trajets quotidiens.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "L'Aprilia RS 125 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier, la région et les opérations supplémentaires. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "intro": "L'Aprilia RS 125 est la seule vraie sportive carénée 125cc du marché en 2026. Héritière directe de l'univers MotoGP, elle embarque un châssis périmétrique aluminium, une fourche inversée, un ABS Bosch 2 canaux et — nouveauté Euro5+ — un traction control déconnectable. À 144 kg tous pleins faits et avec une selle à 820 mm, elle demande un peu d'expérience mais offre des sensations inégalées dans la catégorie.",
+    "concession_cta_button": "Voir les Aprilia RS 125 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Aprilia RS 125.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 5000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 160 à 250 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + filtre à air + contrôles",
+        "price_estimate": "≈ 220 à 350 €"
+      },
+      {
+        "km": 20000,
+        "service_label": "Bougie + gros entretien + contrôle complet",
+        "price_estimate": "≈ 350 à 500 €"
+      }
+    ],
+    "known_issues": [
+      "Position de conduite couchée inconfortable au quotidien sur longs trajets",
+      "Réseau de concessionnaires Aprilia moins dense en France que les grandes marques japonaises",
+      "Pièces détachées légèrement plus onéreuses que sur Honda ou Yamaha",
+      "Consommation un peu plus élevée (~2,6 L/100 km selon cycle WMTC) en usage sportif",
+      "Carénage : réparation coûteuse en cas de chute"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 14 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "12 000 à 18 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Bougie",
+        "average_lifetime": "10 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quand faire la vidange sur une Aprilia RS 125 ?",
+        "answer": "Tous les 5 000 km ou une fois par an, au premier des deux termes échus."
+      },
+      {
+        "question": "L'Aprilia RS 125 est-elle compatible permis A1 ?",
+        "answer": "Oui, c'est une 125cc native à 15 ch. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+      },
+      {
+        "question": "À quoi sert le traction control sur une 125cc ?",
+        "answer": "Sur l'Aprilia RS 125 Euro5+, le traction control déconnectable évite les patinages à l'accélération sur sol mouillé ou en sortie de virage. C'est une première dans la catégorie 125cc, utile notamment sur piste."
+      },
+      {
+        "question": "L'Aprilia RS 125 est-elle adaptée aux débutants ?",
+        "answer": "Elle est accessible en permis A1, mais sa position de conduite sportive et sa réactivité la rendent plus adaptée aux motards ayant déjà quelques mois d'expérience. Un débutant complet lui préférera une Honda CB125R ou une Yamaha MT-125."
+      }
+    ],
+    "longevity_tips": [
+      "Respecter les vidanges tous les 5 000 km ou une fois par an",
+      "Vérifier régulièrement l'état du carénage et des fixations après usage intensif",
+      "Graisser la chaîne régulièrement, surtout après la pluie ou usage piste",
+      "Faire contrôler le traction control et l'ABS Bosch en réseau Aprilia si anomalie",
+      "Ne pas négliger l'état des pneus ZR17 : usure plus rapide en conduite sportive"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1781161762,
+    "_nanoseconds": 681000000
+  },
+  "variants": [],
+  "brand_order": 17,
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Bras oscillant asymétrique, mono-amortisseur débattement 120 mm",
+      "front_tire": "100/80 R17",
+      "rear_brake": "Disque inox Ø220 mm, étrier 1 piston, ABS anti-chute",
+      "rear_tire": "140/70 ZR17",
+      "front_suspension": "Fourche inversée, débattement 120 mm",
+      "frame": "Cadre périmétrique aluminium",
+      "front_brake": "Disque inox Ø300 mm, étrier radial 4 pistons, ABS Bosch 2 canaux"
+    },
+    "weight_tpf_kg": 144,
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, injection, Euro5+, traction control déconnectable",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage nécessaire)",
+    "wheelbase_mm": 1350,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 820,
+    "torque": "11,5 N.m",
+    "displacement_cc": 125,
+    "power": "11,0 kW (15 ch)",
+    "tank_l": 14.5,
+    "max_power_hp": 15,
+    "max_torque_nm": 11.5,
+    "max_power_kw": 11
+  }
+}

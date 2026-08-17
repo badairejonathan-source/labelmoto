@@ -1,0 +1,188 @@
+{
+  "model_order": 1,
+  "featured": true,
+  "year_range": "2019+",
+  "timestamps": {
+    "updated_at": "2026-02-23",
+    "created_at": "2026-02-23"
+  },
+  "display_title": "BMW R1250 GS / R1300 GS",
+  "language": "fr",
+  "search_tags": [
+    "bmw",
+    "r1250 gs",
+    "r1300 gs",
+    "bmw gs",
+    "maxi trail",
+    "entretien",
+    "revision"
+  ],
+  "variants": [
+    {
+      "id": "r1250-gs",
+      "label": "R1250 GS",
+      "license_bridging": "❌ Permis A uniquement",
+      "engine_type": "Bicylindre à plat Boxer, 4 temps, refroidissement air/liquide, distribution ShiftCam",
+      "displacement_cc": 1254,
+      "power": "100,0 kW (136 ch) à 7 750 tr/min",
+      "torque": "143,0 N.m à 6 250 tr/min",
+      "fuel_system": "Injection électronique",
+      "seat_height_mm": "850 / 870",
+      "weight_tpf_kg": 249,
+      "tank_l": 20,
+      "wheelbase_mm": 1525,
+      "cycle_parts": {
+        "frame": "Cadre tubulaire acier avec moteur porteur",
+        "front_suspension": "Telelever",
+        "rear_suspension": "Paralever",
+        "front_brake": "Double disque Ø305 mm",
+        "rear_brake": "Disque Ø276 mm",
+        "front_tire": "120/70 R19",
+        "rear_tire": "170/60 R17"
+      }
+    },
+    {
+      "id": "r1300-gs",
+      "label": "R1300 GS",
+      "license_bridging": "❌ Permis A uniquement",
+      "engine_type": "Bicylindre à plat Boxer, 4 temps, refroidissement liquide, distribution ShiftCam",
+      "displacement_cc": 1300,
+      "power": "107,0 kW (145 ch) à 7 750 tr/min",
+      "torque": "149,0 N.m à 6 500 tr/min",
+      "fuel_system": "Injection électronique",
+      "seat_height_mm": "850 / 870",
+      "weight_tpf_kg": 237,
+      "tank_l": 19,
+      "wheelbase_mm": 1518,
+      "cycle_parts": {
+        "frame": "Cadre principal en tôle acier, boucle arrière aluminium",
+        "front_suspension": "Evo Telelever",
+        "rear_suspension": "Evo Paralever",
+        "front_brake": "Double disque Ø310 mm",
+        "rear_brake": "Disque Ø285 mm",
+        "front_tire": "120/70 R19",
+        "rear_tire": "170/60 R17"
+      }
+    }
+  ],
+  "type": "motorcycle_service_sheet",
+  "service_guide": {
+    "known_issues": [
+      "Coût d’entretien élevé par rapport à une moyenne cylindrée",
+      "Electronique et aides au pilotage à surveiller sur le long terme",
+      "Transmission par cardan à contrôler sur les gros kilométrages",
+      "Poids important à basse vitesse, surtout chargé"
+    ],
+    "concession_cta_title": "La BMW GS vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "10 000 à 20 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      },
+      {
+        "part": "Transmission par cardan",
+        "average_lifetime": "contrôle régulier"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l’atelier, la région et les opérations supplémentaires. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les BMW GS en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre BMW GS.",
+    "longevity_tips": [
+      "Respecter les révisions annuelles même si le kilométrage n’est pas atteint",
+      "Contrôler régulièrement les niveaux et la transmission par cardan",
+      "Faire les mises à jour électroniques dans le réseau BMW quand c’est nécessaire",
+      "Surveiller l’état des pneus et des freins avant les longs voyages"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "Les BMW R1250 GS et R1300 GS restent des références absolues du maxi-trail. Leur entretien est plus coûteux qu’une moyenne cylindrée, mais il permet de préserver une moto faite pour durer, voyager loin et conserver une forte valeur de revente.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 220 à 320 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 300 à 450 €"
+      },
+      {
+        "km": 20000,
+        "service_label": "Vidange + filtres + contrôles",
+        "price_estimate": "≈ 400 à 600 €"
+      },
+      {
+        "km": 40000,
+        "service_label": "Bougies + gros entretien",
+        "price_estimate": "≈ 650 à 950 €"
+      },
+      {
+        "km": 50000,
+        "service_label": "Vidange + contrôles complets",
+        "price_estimate": "≈ 350 à 500 €"
+      }
+    ],
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quelle est la différence entre la BMW R1250 GS et la R1300 GS ?",
+        "answer": "La R1300 GS est plus légère, plus puissante et plus moderne technologiquement, tandis que la R1250 GS reste une référence pour son moteur Boxer éprouvé et sa polyvalence."
+      },
+      {
+        "question": "Quand faire la vidange ?",
+        "answer": "Tous les 10 000 km ou tous les ans au premier des deux termes échus."
+      },
+      {
+        "question": "Les BMW R1250 GS et R1300 GS sont-elles compatibles A2 ?",
+        "answer": "Non, ces deux modèles sont réservés au permis A."
+      }
+    ],
+    "intro": "Les BMW R1250 GS et R1300 GS sont les références du segment maxi-trail. Leur moteur Boxer offre du couple, du confort et une très grande capacité de voyage. Leur entretien reste plus coûteux que sur une moyenne cylindrée, mais il permet de préserver la fiabilité, la valeur de revente et l’agrément de conduite sur le long terme."
+  },
+  "model": "R1250 GS / R1300 GS",
+  "brand_order": 1,
+  "id": "bmw-r1250-gs-r1300-gs-2019-plus",
+  "category": "trail aventure",
+  "subcategory": "full",
+  "relations": {
+    "related_models": [
+      "bmw-f750-gs-2018-plus",
+      "bmw-f850-gs-2018-plus",
+      "bmw-f900-gs-2024-plus"
+    ],
+    "related_articles": [
+      "budget-moto-par-mois",
+      "achat-moto-occasion-guide",
+      "entretien-moto-intervalles-prix-conseils-par-modele"
+    ]
+  },
+  "seo": {
+    "meta_description": "Découvrez les différences entre la BMW R1250 GS et la R1300 GS, les intervalles d’entretien, le prix des révisions et les points de fiabilité.",
+    "keywords": [
+      "entretien bmw r1250 gs",
+      "entretien bmw r1300 gs",
+      "prix revision r1250 gs",
+      "prix revision r1300 gs",
+      "fiabilite r1250 gs",
+      "fiabilite r1300 gs"
+    ],
+    "meta_title": "Entretien BMW R1250 GS et R1300 GS : intervalles, prix et conseils"
+  },
+  "brand": "BMW",
+  "slug": "bmw-r1250-gs-r1300-gs-2019-plus",
+  "status": "published",
+  "updatedAt": {
+    "_seconds": 1773391964,
+    "_nanoseconds": 486000000
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "model_order": 3,
+  "year_range": "2021+",
+  "display_title": "Yamaha Tracer 7",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "Tracer 7",
+  "brand_order": 2,
+  "id": "yamaha-tracer-7-2021-plus",
+  "subcategory": "a2",
+  "brand": "Yamaha",
+  "slug": "yamaha-tracer-7-2021-plus",
+  "status": "published",
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "search_tags": [
+    "yamaha",
+    "tracer 7",
+    "tracer7",
+    "a2",
+    "cp2",
+    "routiere",
+    "trail routier",
+    "entretien",
+    "revision",
+    "forfait yamaha"
+  ],
+  "relations": {
+    "related_models": [
+      "yamaha-mt-07-2021-plus",
+      "yamaha-xsr700-2021-plus",
+      "yamaha-r7-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix officiels des révisions Yamaha Tracer 7 : 220 € (10 000 km), 645 € (40 000 km), ~1 200 € sur 60 000 km. Moteur CP2, l'une des routières les moins chères à entretenir.",
+    "keywords": [
+      "entretien yamaha tracer 7",
+      "prix revision tracer 7",
+      "forfait entretien tracer 700",
+      "cout entretien tracer 7",
+      "fiabilite tracer 7"
+    ],
+    "meta_title": "Entretien Yamaha Tracer 7 : prix officiels des révisions 2026"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Yamaha Tracer 7 vous correspond ?",
+    "concession_cta_button": "Voir les Yamaha Tracer 7 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Yamaha Tracer 7.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La Tracer 7 est une routière polyvalente bâtie sur le CP2. Son entretien est identique à celui de la MT-07 (~0,05 €/km), ce qui en fait l'une des routières les plus économiques du marché. Idéale pour rouler loin sans exploser le budget.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + serrages)",
+        "price_estimate": "90 à 190 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 220 €"
+      },
+      {
+        "km": 20000,
+        "service_label": "Vidange + bougies + filtre à air",
+        "price_estimate": "≈ 350 €"
+      },
+      {
+        "km": 30000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 220 €"
+      },
+      {
+        "km": 40000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 645 €"
+      }
+    ],
+    "known_issues": [
+      "Protection au vent perfectible d'origine (bulle courte selon les avis)",
+      "Selle à 835 mm haute pour les petits gabarits",
+      "Tension de chaîne à surveiller régulièrement"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 22 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "10 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Yamaha Tracer 7 ?",
+        "answer": "Identique à la MT-07 (moteur CP2) : ~220 € à 10 000 km, ~350 € à 20 000 km, ~645 € à 40 000 km. Prix max Yamaha, un indépendant fait souvent moins."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une Tracer 7 sur 60 000 km ?",
+        "answer": "Environ 1 200 € de révisions constructeur (~0,05 €/km), l'une des routières les plus économiques du marché."
+      },
+      {
+        "question": "La Tracer 7 est-elle adaptée aux longs trajets ?",
+        "answer": "Oui, son réservoir de 17 L et sa position droite la rendent à l'aise sur autoroute et grandes distances, pour un coût d'usage très contenu."
+      },
+      {
+        "question": "Quelle huile pour une Tracer 7 ?",
+        "answer": "Une 10W40 JASO MA2, 2,6 litres avec filtre. Indispensable pour préserver l'embrayage à bain d'huile."
+      }
+    ],
+    "intro": "La Yamaha Tracer 7 est une routière polyvalente animée par le célèbre moteur CP2. Son gros avantage : un entretien aussi économique que la MT-07, avec des forfaits Yamaha publics qui permettent de budgéter chaque révision.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 200 €",
+      "note": "Prix TTC maximum conseillés par Yamaha France (2026). Un garage indépendant facture généralement 20 à 30 % de moins, à pièces équivalentes.",
+      "cost_per_km": "≈ 0,05 €/km (révisions constructeur seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 10 000 km ou 1 an (révision annuelle minimum obligatoire)"
+    },
+    "longevity_tips": [
+      "Huile JASO MA2 obligatoire (10W40) : prévoir 2,6 L avec filtre",
+      "Graissage de la chaîne tous les 500 à 800 km, surtout après la pluie",
+      "Réservoir 17 L : idéal pour les longues distances, surveiller la conso en duo chargé",
+      "Vidange annuelle obligatoire même à faible kilométrage",
+      "Contrôler la pression des pneus avant chaque long trajet"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782133739,
+    "_nanoseconds": 84000000
+  },
+  "imageUrl": "/images/yamaha-tracer-7-2021-plus.webp",
+  "featured": true,
+  "variants": [],
+  "category": "routiere-sportive",
+  "technical_sheet": {
+    "weight_tpf_kg": 196,
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 835,
+    "displacement_cc": 689,
+    "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
+    "tank_l": 17,
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 142 mm, réglable précharge et détente",
+      "front_tire": "120/70 R 17 M/C (58W)",
+      "rear_brake": "Simple disque, Ø 245 mm, étrier simple piston",
+      "rear_tire": "180/55 R 17 M/C (73W)",
+      "front_suspension": "Fourche télescopique Ø 41 mm, débattement 137 mm",
+      "frame": "Cadre type Diamant en acier",
+      "front_brake": "Double disque, Ø 282 mm, étriers 4 pistons"
+    },
+    "engine_type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "wheelbase_mm": 1425,
+    "torque": "67,0 N.m à 6 500 tr/min",
+    "max_torque_rpm": 6500,
+    "max_power_hp": 73.4,
+    "max_torque_nm": 67,
+    "max_power_kw": 54
+  }
+}

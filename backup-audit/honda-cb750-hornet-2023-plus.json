@@ -1,0 +1,178 @@
+{
+  "featured": true,
+  "year_range": "2023+",
+  "display_title": "Honda CB750 Hornet",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "CB750 Hornet",
+  "id": "honda-cb750-hornet-2023-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "brand": "Honda",
+  "slug": "honda-cb750-hornet-2023-plus",
+  "status": "published",
+  "model_order": 6,
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "search_tags": [
+    "honda",
+    "cb750 hornet",
+    "hornet 750",
+    "755cc",
+    "twin",
+    "roadster",
+    "a2",
+    "entretien",
+    "revision",
+    "forfait honda"
+  ],
+  "brand_order": 1,
+  "relations": {
+    "related_models": [
+      "honda-cb650r-2020-plus",
+      "honda-xl750-transalp-2023-plus",
+      "yamaha-mt-07-2021-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda CB750 Hornet : 220-280 € (12 000 km), 450-550 € (24 000 km), ~1 550-1 800 € sur 60 000 km. Roadster twin 755, intervalles longs.",
+    "keywords": [
+      "entretien honda cb750 hornet",
+      "prix revision hornet 750",
+      "cout entretien cb750",
+      "fiabilite cb750 hornet",
+      "forfait entretien hornet 750"
+    ],
+    "meta_title": "Entretien Honda CB750 Hornet : prix des révisions 2026"
+  },
+  "technical_sheet": {
+    "wheelbase_mm": 1420,
+    "seat_height_mm": 795,
+    "displacement_cc": 755,
+    "tank_l": 15.2,
+    "cycle_parts": {
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "160/60 ZR17",
+      "rear_suspension": "Monoamortisseur Pro-Link, débattement 150 mm, réglable précharge",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche inversée Showa SFF-BP Ø 41 mm, débattement 130 mm",
+      "frame": "Cadre acier en diamant",
+      "front_brake": "Double disque, Ø 296 mm, étriers radiaux 4 pistons, ABS"
+    },
+    "weight_tpf_kg": 190,
+    "engine_type": "Bicylindre en ligne Unicam, 4 temps, refroidissement liquide, 8 soupapes",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW) / version A pleine puissance",
+    "fuel_system": "Injection PGM-FI, accélérateur électronique",
+    "torque": "75,0 N.m à 7 250 tr/min",
+    "power": "67,5 kW (91,8 ch) à 9 500 tr/min"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Honda CB750 Hornet vous correspond ?",
+    "concession_cta_button": "Voir les Honda CB750 Hornet en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda CB750 Hornet.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La CB750 Hornet est un roadster A2 (bridable) au twin 755 puissant et fun. Elle partage la base moteur de la Transalp, avec le même cycle d'entretien 12 000 km. Un excellent rapport sensations/budget grâce aux intervalles longs.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 150 à 200 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 220 à 280 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + vidange (grosse révision)",
+        "price_estimate": "≈ 450 à 550 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 220 à 280 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 550 à 650 €"
+      }
+    ],
+    "known_issues": [
+      "Suspension arrière ferme sur revêtements dégradés",
+      "Sonorité d'origine discrète (bridage Euro5)",
+      "Finitions correctes mais sans luxe particulier"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 22 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Honda CB750 Hornet ?",
+        "answer": "Environ 220 à 280 € pour la révision des 12 000 km, et 450 à 550 € pour la grosse révision des 24 000 km (jeu aux soupapes). Cycle d'entretien long de 12 000 km."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une CB750 Hornet sur 60 000 km ?",
+        "answer": "Environ 1 550 à 1 800 € de révisions, soit ~0,028 €/km. Très compétitif pour un roadster de cette puissance."
+      },
+      {
+        "question": "Tous les combien réviser une CB750 Hornet ?",
+        "answer": "Tous les 12 000 km ou une fois par an. Jeu aux soupapes tous les 24 000 km seulement."
+      },
+      {
+        "question": "Le moteur de la CB750 Hornet est-il fiable ?",
+        "answer": "Oui, ce twin 755 Unicam moderne (partagé avec la Transalp) est réputé solide et bien conçu. Distribution par chaîne, sans courroie à remplacer."
+      }
+    ],
+    "intro": "La Honda CB750 Hornet est un roadster bicylindre vif et accessible (bridable A2). Son moteur 755, partagé avec la Transalp, bénéficie du cycle d'entretien Honda de 12 000 km, gage d'un coût d'usage maîtrisé.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 550 à 1 800 €",
+      "note": "Tarifs indicatifs réseau Honda (2026), cycle d'entretien officiel 12 000 km confirmé. Base moteur partagée avec la Transalp. Un indépendant facture généralement moins.",
+      "cost_per_km": "≈ 0,028 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)"
+    },
+    "longevity_tips": [
+      "Vidange tous les 12 000 km ou 1 an (huile 10W30 Honda, 3,6 L requis)",
+      "Jeu aux soupapes tous les 24 000 km (système Unicam fiable)",
+      "Graissage de la chaîne tous les 800 km et après la pluie",
+      "Distribution par chaîne : pas de courroie à remplacer",
+      "Moteur 755 moderne et bien né : longévité élevée avec entretien suivi"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782147580,
+    "_nanoseconds": 260000000
+  },
+  "imageUrl": "/images/honda-cb750-hornet-2023-plus.webp"
+}

@@ -1,0 +1,256 @@
+{
+  "featured": false,
+  "display_title": "Honda CB125F",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "longevity_tips": [
+    "Respecter les vidanges tous les 8 000 km — moteur eSP ultra fiable si entretenu",
+    "Vérifier les garnitures du tambour arrière tous les 15 000 km",
+    "Graisser la chaîne régulièrement : durée de vie exceptionnelle si bien entretenue",
+    "Contrôler la pression des pneus 18 pouces régulièrement pour préserver l'usure"
+  ],
+  "faq": [
+    {
+      "question": "La Honda CB125F est-elle vraiment fiable ?",
+      "answer": "Oui, c'est l'une des motos 125cc les plus fiables du marché. Son moteur eSP refroidi par air est d'une robustesse éprouvée, et les retours utilisateurs sur des kilométrages de 40 000 à 60 000 km sans problème majeur sont très nombreux."
+    },
+    {
+      "question": "Quand faire la vidange sur une Honda CB125F ?",
+      "answer": "Tous les 8 000 km ou une fois par an. L'intervalle est plus long que sur la plupart des 125cc — un avantage concret pour réduire les coûts d'entretien."
+    },
+    {
+      "question": "La Honda CB125F convient-elle pour les longs trajets ?",
+      "answer": "Elle peut le faire, mais c'est surtout une moto de ville et de trajet quotidien. La protection au vent est limitée et la puissance (11 ch) devient juste sur autoroute, surtout en duo."
+    },
+    {
+      "question": "Quel est le prix d'une Honda CB125F neuve en 2026 ?",
+      "answer": "Autour de 2 799 à 2 999 € — l'une des 125cc les moins chères du marché neuf avec la Benelli Leoncino, et nettement plus fiable sur la durée."
+    }
+  ],
+  "model": "CB125F",
+  "id": "honda-cb125f-2021-plus",
+  "brand": "Honda",
+  "slug": "honda-cb125f-2021-plus",
+  "known_issues": [
+    "Freinage arrière par tambour — moins performant qu'un disque, mais fiable et peu coûteux",
+    "Puissance modeste (11 ch) — limitée en duo prolongé ou sur voies rapides",
+    "Fourche télescopique simple — moins précise qu'une fourche inversée",
+    "Roues 18 pouces spécifiques — moins de choix de pneus que le 17 pouces standard",
+    "Look sobre et utilitaire — peu d'attrait visuel comparé à la concurrence premium"
+  ],
+  "year_range": "2021+",
+  "consumables": [
+    {
+      "part": "Pneus (roues 18 pouces)",
+      "average_lifetime": "12 000 à 20 000 km"
+    },
+    {
+      "part": "Kit chaîne",
+      "average_lifetime": "18 000 à 28 000 km"
+    },
+    {
+      "part": "Plaquettes avant",
+      "average_lifetime": "15 000 à 25 000 km"
+    },
+    {
+      "part": "Tambour arrière (garnitures)",
+      "average_lifetime": "20 000 à 35 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "16 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "4 à 6 ans"
+    }
+  ],
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage",
+      "price_estimate": "≈ 80 à 100 €"
+    },
+    {
+      "km": 8000,
+      "service_label": "Vidange + contrôles",
+      "price_estimate": "≈ 90 à 140 €"
+    },
+    {
+      "km": 16000,
+      "service_label": "Vidange + bougie + filtre à air",
+      "price_estimate": "≈ 140 à 200 €"
+    },
+    {
+      "km": 32000,
+      "service_label": "Gros entretien + contrôle complet",
+      "price_estimate": "≈ 220 à 320 €"
+    }
+  ],
+  "category": "roadster",
+  "subcategory": "a1",
+  "status": "published",
+  "model_order": 9,
+  "timestamps": {
+    "updated_at": "2026-06-22",
+    "created_at": "2026-02-23"
+  },
+  "search_tags": [
+    "honda",
+    "cb125f",
+    "cb 125 f",
+    "125cc",
+    "a1",
+    "roadster",
+    "budget",
+    "economique",
+    "entretien",
+    "revision"
+  ],
+  "brand_order": 1,
+  "relations": {
+    "related_models": [
+      "honda-cb125r-2021-plus",
+      "honda-msx125-grom-2021-plus",
+      "yamaha-mt125-2020-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "meilleur-scooter-125-2026-comparatif-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda CB125F : 90-150 € (4 000 km), jusqu'à 280 € (12 000 km). La 125 la plus économique à rouler (~2 L/100 km). Intervalles et fiabilité.",
+    "keywords": [
+      "entretien honda cb125f",
+      "prix revision cb125f",
+      "cout entretien cb 125 f",
+      "consommation cb125f",
+      "fiabilite cb125f"
+    ],
+    "meta_title": "Entretien Honda CB125F : prix des révisions 2026"
+  },
+  "technical_sheet": {
+    "weight_tpf_kg": 117,
+    "seat_height_mm": 790,
+    "displacement_cc": 124,
+    "cycle_parts": {
+      "rear_suspension": "Double amortisseur, débattement 120 mm",
+      "front_tire": "80/100-18",
+      "rear_brake": "Tambour (ou disque selon version), frein combiné CBS",
+      "rear_tire": "100/90-18",
+      "front_suspension": "Fourche télescopique Ø 31 mm",
+      "frame": "Cadre acier en diamant",
+      "front_brake": "Simple disque, Ø 240 mm, ABS ou CBS"
+    },
+    "engine_type": "Monocylindre, 4 temps, refroidissement air, 2 soupapes, SACT, Euro5+",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage)",
+    "wheelbase_mm": 1285,
+    "fuel_system": "Injection PGM-FI",
+    "torque": "10,8 N.m à 6 250 tr/min",
+    "power": "8,0 kW (10,7 ch) à 7 500 tr/min",
+    "tank_l": 11
+  },
+  "service_guide": {
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "La Honda CB125F vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "concession_cta_button": "Voir les Honda CB125F en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda CB125F.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La CB125F est la 125 utilitaire par excellence : légère (117 kg), ultra-sobre (~2 L/100 km) et d'une simplicité mécanique totale. Révisions tous les 4 000 km, mais l'entretien maison est à la portée de tous. La 125 la moins chère à faire rouler.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 80 à 130 €"
+      },
+      {
+        "km": 4000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 150 €"
+      },
+      {
+        "km": 8000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 150 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 180 à 280 €"
+      },
+      {
+        "km": 16000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 150 €"
+      }
+    ],
+    "known_issues": [
+      "Révisions tous les 4 000 km : à anticiper pour les gros rouleurs",
+      "Performances modestes (10,7 ch) : moto utilitaire avant tout",
+      "Refroidissement par air : moins sophistiqué mais très simple à entretenir"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes / mâchoires",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "4 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Tous les combien réviser une Honda CB125F ?",
+        "answer": "Honda préconise une révision tous les 4 000 km. Bonne nouvelle : le moteur refroidi par air est si simple que l'entretien maison est à la portée d'un débutant."
+      },
+      {
+        "question": "Combien consomme une CB125F ?",
+        "answer": "Environ 2 L/100 km, ce qui en fait l'une des motos les plus économiques à rouler du marché. Idéale pour les petits budgets et les trajets quotidiens."
+      },
+      {
+        "question": "Quel est le prix d'une révision sur une CB125F ?",
+        "answer": "Environ 90 à 150 € pour une vidange simple, jusqu'à 280 € pour la révision complète. L'intervalle de 4 000 km en fait un poste régulier en concession."
+      },
+      {
+        "question": "La CB125F est-elle fiable ?",
+        "answer": "Oui, c'est une mécanique simple et éprouvée, réputée increvable. Son refroidissement par air et sa conception basique limitent les pannes."
+      }
+    ],
+    "intro": "La Honda CB125F est la 125 utilitaire et économique de référence : légère, ultra-sobre et d'une simplicité mécanique totale. Honda impose des révisions tous les 4 000 km, mais le moteur refroidi par air rend l'entretien maison particulièrement facile.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 600 à 2 200 €",
+      "note": "Intervalle court de 4 000 km imposé par Honda. Mais la simplicité du moteur refroidi par air rend l'entretien maison très accessible : le coût peut chuter à ~0,01 €/km. Tarifs indicatifs 2026.",
+      "cost_per_km": "≈ 0,03 €/km en concession (révisions seules)",
+      "interval_rule": "Tous les 4 000 km ou 1 an (préconisation Honda pour ses 125)"
+    },
+    "longevity_tips": [
+      "Révision tous les 4 000 km (intervalle court Honda 125)",
+      "Moteur refroidi par air ultra-simple : idéal pour apprendre l'entretien maison",
+      "Huile 10W30 : environ 1 L, vidange très accessible au débutant",
+      "Consommation record (~2 L/100 km) : la 125 la plus économique à rouler",
+      "Graissage de la chaîne tous les 500 km et après la pluie"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782147580,
+    "_nanoseconds": 260000000
+  }
+}

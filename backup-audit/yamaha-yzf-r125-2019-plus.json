@@ -1,0 +1,257 @@
+{
+  "display_title": "Yamaha YZF-R125",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "longevity_tips": [
+    "Respecter les vidanges tous les 5 000 km ou une fois par an",
+    "Vérifier l'état du carénage et des fixations régulièrement",
+    "Graisser la chaîne après chaque pluie",
+    "Remplacer la bougie à 10 000 km sans attendre"
+  ],
+  "faq": [
+    {
+      "question": "La Yamaha YZF-R125 a-t-elle une bonne cote de revente ?",
+      "answer": "Oui, c'est l'une des meilleures cotes du segment sportive 125cc. Le réseau Yamaha dense, la disponibilité des pièces et la fiabilité du moteur VVA maintiennent une forte demande sur le marché de l'occasion."
+    },
+    {
+      "question": "Quelle différence entre la Yamaha YZF-R125 et la MT-125 ?",
+      "answer": "Même moteur VVA et même cadre Deltabox, mais la R125 est carénée avec une position sportive couchée. La MT-125 est une naked avec une position plus droite, plus confortable au quotidien."
+    },
+    {
+      "question": "Quand faire la vidange sur une Yamaha YZF-R125 ?",
+      "answer": "Tous les 5 000 km ou une fois par an, au premier des deux termes échus — même intervalle que la MT-125."
+    }
+  ],
+  "model": "YZF-R125",
+  "id": "yamaha-yzf-r125-2019-plus",
+  "brand": "Yamaha",
+  "slug": "yamaha-yzf-r125-2019-plus",
+  "known_issues": [
+    "Position de conduite sportive inconfortable au quotidien sur longs trajets",
+    "Selle haute à 825 mm — attention aux petits gabarits",
+    "Carénage : réparation coûteuse en cas de chute",
+    "Poids identique à la MT-125 (142 kg) malgré la position plus sportive"
+  ],
+  "year_range": "2019+",
+  "consumables": [
+    {
+      "part": "Pneus",
+      "average_lifetime": "10 000 à 16 000 km"
+    },
+    {
+      "part": "Kit chaîne",
+      "average_lifetime": "15 000 à 20 000 km"
+    },
+    {
+      "part": "Plaquettes",
+      "average_lifetime": "10 000 à 18 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "10 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "3 à 5 ans"
+    }
+  ],
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage",
+      "price_estimate": "≈ 100 à 150 €"
+    },
+    {
+      "km": 5000,
+      "service_label": "Vidange + contrôles",
+      "price_estimate": "≈ 140 à 200 €"
+    },
+    {
+      "km": 10000,
+      "service_label": "Vidange + filtre à air + contrôles",
+      "price_estimate": "≈ 200 à 280 €"
+    },
+    {
+      "km": 20000,
+      "service_label": "Bougie + gros entretien + contrôle complet",
+      "price_estimate": "≈ 300 à 450 €"
+    }
+  ],
+  "category": "sportive",
+  "subcategory": "a1",
+  "status": "published",
+  "model_order": 6,
+  "timestamps": {
+    "updated_at": "2026-06-22",
+    "created_at": "2026-02-23"
+  },
+  "search_tags": [
+    "yamaha",
+    "yzf-r125",
+    "r125",
+    "125cc",
+    "a1",
+    "sportive",
+    "carénée",
+    "vva",
+    "entretien",
+    "revision"
+  ],
+  "brand_order": 2,
+  "relations": {
+    "related_models": [
+      "yamaha-mt125-2020-plus",
+      "aprilia-rs125-2023-plus",
+      "ktm-rc125-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "meilleur-scooter-125-2026-comparatif-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Yamaha YZF-R125 : 90-140 € (6 000 km), 150-220 € (12 000 km), ~700-1 000 € sur 60 000 km. Intervalles, consommables et fiabilité du moteur VVA.",
+    "keywords": [
+      "entretien yamaha r125",
+      "prix revision yzf-r125",
+      "cout entretien r125",
+      "fiabilite r125 vva",
+      "revision r125 125"
+    ],
+    "meta_title": "Entretien Yamaha YZF-R125 : prix des révisions 2026"
+  },
+  "service_guide": {
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "La Yamaha YZF-R125 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "concession_cta_button": "Voir les Yamaha YZF-R125 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Yamaha YZF-R125.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La YZF-R125 est la sportive carénée 125 de référence. Son entretien suit le rythme 6 000 km des 125 Yamaha. Budget raisonnable, mais attention au coût des carénages en cas de chute. Le kit entretien d'origine Yamaha (filtre air + huile + bougie) simplifie la grosse révision des 12 000 km.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (main d'œuvre offerte Yamaha)",
+        "price_estimate": "30 à 50 €"
+      },
+      {
+        "km": 6000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 140 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 150 à 220 €"
+      },
+      {
+        "km": 18000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 140 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 150 à 220 €"
+      }
+    ],
+    "known_issues": [
+      "Selle à 825 mm haute pour les petits gabarits",
+      "Position sportive engagée, fatigante au quotidien sur longs trajets",
+      "Carénage coûteux à remplacer en cas de chute"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 16 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Filtre air + bougie",
+        "average_lifetime": "12 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "6 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Yamaha YZF-R125 ?",
+        "answer": "Environ 90 à 140 € pour une vidange simple (tous les 6 000 km) et 150 à 220 € pour la grosse révision des 12 000 km (avec filtre à air et bougie). La main d'œuvre des 1 000 km est offerte par Yamaha."
+      },
+      {
+        "question": "Tous les combien faire la révision d'une R125 ?",
+        "answer": "Tous les 6 000 km ou une fois par an au minimum. Le filtre à air et la bougie se changent tous les 12 000 km."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une R125 sur 60 000 km ?",
+        "answer": "Environ 700 à 1 000 € en concession, soit ~0,015 €/km. C'est très économique, l'essentiel du budget 125 étant souvent l'assurance."
+      },
+      {
+        "question": "La position de la R125 est-elle confortable ?",
+        "answer": "C'est une vraie sportive : position engagée, idéale pour le style et les sorties, mais fatigante en usage urbain quotidien prolongé."
+      }
+    ],
+    "intro": "La Yamaha YZF-R125 est la sportive carénée 125 la plus vendue de France. Son monocylindre VVA est moderne et fiable. Côté entretien, elle suit le rythme simple des 125 Yamaha (tous les 6 000 km) pour un budget très contenu.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 700 à 1 000 €",
+      "note": "Tarifs indicatifs concession Yamaha (2026). La main d'œuvre de la révision des 1 000 km est offerte par Yamaha. Un garage indépendant ou l'entretien maison réduit fortement ces coûts.",
+      "cost_per_km": "≈ 0,015 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 6 000 km ou 1 an (filtre air + bougie tous les 12 000 km)"
+    },
+    "longevity_tips": [
+      "Vidange tous les 6 000 km ou 1 an (filtre à air et bougie tous les 12 000 km)",
+      "Huile JASO MA2 (10W40) : prévoir environ 1 L avec filtre",
+      "Graissage de la chaîne tous les 500 km et après chaque pluie",
+      "Le VVA aime les tours : exploiter le haut régime après chauffe",
+      "Carénage à manipuler avec soin lors des entretiens (clips fragiles)"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782133739,
+    "_nanoseconds": 84000000
+  },
+  "imageUrl": "/images/yamaha-yzf-r125-2019-plus.webp",
+  "featured": true,
+  "variants": [],
+  "technical_sheet": {
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 825,
+    "torque": "11,5 N.m à 8 000 tr/min",
+    "displacement_cc": 125,
+    "power": "11,0 kW (15 ch) à 9 000 tr/min",
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 114 mm",
+      "front_tire": "100/80-17 M/C (52P)",
+      "rear_brake": "Simple disque, Ø 230 mm, étrier 1 piston, ABS",
+      "rear_tire": "140/70-17 M/C (66S)",
+      "front_suspension": "Fourche inversée Ø 41 mm, débattement 130 mm",
+      "frame": "Cadre Deltabox en acier",
+      "front_brake": "Simple disque, Ø 292 mm, étrier radial 4 pistons, ABS"
+    },
+    "weight_tpf_kg": 144,
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, 4 soupapes, VVA, Euro5+",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage)",
+    "wheelbase_mm": 1325,
+    "tank_l": 11,
+    "max_torque_rpm": 8000,
+    "max_power_hp": 15,
+    "max_torque_nm": 11.5,
+    "max_power_kw": 11
+  }
+}

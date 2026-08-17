@@ -1,0 +1,161 @@
+{
+  "model_order": 5,
+  "featured": true,
+  "year_range": "2025+",
+  "timestamps": {
+    "updated_at": "2026-04-29",
+    "created_at": "2026-04-29"
+  },
+  "display_title": "CFMOTO 675 SR-R",
+  "language": "fr",
+  "search_tags": [
+    "cfmoto",
+    "675 sr-r",
+    "675srr",
+    "a2",
+    "sportive",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "model": "675 SR-R",
+  "brand_order": 7,
+  "id": "cfmoto-675sr-r-2025-plus",
+  "category": "sportive",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "cfmoto-450sr-2023-plus",
+      "suzuki-gsx-8r-2024-plus",
+      "yamaha-r7-2022-plus"
+    ],
+    "related_articles": [
+      "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Découvrez les intervalles d’entretien, le prix des révisions, les consommables et les points de fiabilité de la CFMOTO 675 SR-R.",
+    "keywords": [
+      "entretien cfmoto 675 sr-r",
+      "prix revision 675 sr-r",
+      "fiabilite cfmoto 675 sr-r",
+      "cfmoto 675 sr-r a2",
+      "revision 675 sr-r"
+    ],
+    "meta_title": "Entretien CFMOTO 675 SR-R : intervalles, prix et conseils"
+  },
+  "brand": "CFMOTO",
+  "slug": "cfmoto-675sr-r-2025-plus",
+  "status": "published",
+  "updatedAt": {
+    "_seconds": 1777453664,
+    "_nanoseconds": 523000000
+  },
+  "imageUrl": "/images/entretien-cfmoto-675srr.webp",
+  "variants": [],
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Mono-amortisseur KYB réglable",
+      "front_tire": "120/70 R17",
+      "rear_brake": "Simple disque J.Juan Ø240 mm, étrier 1 piston",
+      "rear_tire": "180/55 R17",
+      "front_suspension": "Fourche inversée KYB Ø41 mm, réglable",
+      "frame": "Cadre tubulaire en acier",
+      "front_brake": "Double disque J.Juan Ø300 mm, étriers 4 pistons"
+    },
+    "weight_tpf_kg": 195,
+    "engine_type": "3 cylindres en ligne, 4 temps, refroidissement liquide",
+    "license_bridging": "✔ Permis A2 (version bridée 35 kW / 47,5 ch) – version full power 66 kW / 89 ch disponible",
+    "wheelbase_mm": 1400,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 810,
+    "torque": "Couple non bridé : 70 N.m à 8 250 tr/min",
+    "displacement_cc": 674,
+    "power": "Puissance bridée (A2) : 35 kW (47,5 ch) / Puissance non bridée : 66 kW (89 ch) à 11 000 tr/min",
+    "tank_l": 15,
+    "max_torque_rpm": 8250,
+    "max_power_hp": 89,
+    "max_torque_nm": 70,
+    "max_power_kw": 66
+  },
+  "service_guide": {
+    "known_issues": [
+      "Position sportive moins confortable sur longs trajets",
+      "Chaîne d’origine à surveiller régulièrement",
+      "Consommation de pneus plus rapide en conduite dynamique",
+      "Réseau après-vente plus limité que certaines grandes marques selon les régions"
+    ],
+    "concession_cta_title": "La CFMOTO 675 SR-R vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "6 000 à 12 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "8 000 à 18 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les CFMOTO 675 SR-R en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre CFMOTO 675 SR-R.",
+    "longevity_tips": [
+      "Respecter les intervalles d’entretien constructeur",
+      "Laisser chauffer le moteur avant de rouler fort",
+      "Graisser régulièrement la chaîne, surtout après la pluie",
+      "Contrôler souvent la pression des pneus et l’usure des freins"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "Avec son trois cylindres, son équipement moderne et sa vraie allure de sportive, la CFMOTO 675 SR-R propose une alternative originale dans l’univers A2. Bien entretenue, elle peut séduire les motards qui veulent une machine valorisante, performante et différente des références plus classiques.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quand faire la vidange ?",
+        "answer": "CFMOTO indique une première révision à 1 000 km, puis un entretien tous les 5 000 km ou une fois par an."
+      },
+      {
+        "question": "La CFMOTO 675 SR-R est-elle compatible A2 ?",
+        "answer": "Oui, elle est disponible en homologation A2 pour les jeunes permis."
+      },
+      {
+        "question": "Quelle est la puissance de la CFMOTO 675 SR-R ?",
+        "answer": "La version full développe 66 kW, soit 89 ch."
+      }
+    ],
+    "intro": "La CFMOTO 675 SR-R est une sportive moderne à moteur trois cylindres, pensée pour offrir plus d’allonge et de caractère qu’un bicylindre A2 classique. Son équipement est sérieux, sa ligne est valorisante et sa version A2 lui permet de viser les jeunes permis qui veulent une vraie moto plaisir. Un entretien régulier est essentiel pour préserver son agrément, sa fiabilité et ses performances.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 140 à 200 €"
+      },
+      {
+        "km": 5000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 180 à 260 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + contrôles complets",
+        "price_estimate": "≈ 220 à 320 €"
+      },
+      {
+        "km": 20000,
+        "service_label": "Bougies + filtre à air + entretien complet",
+        "price_estimate": "≈ 420 à 620 €"
+      }
+    ]
+  }
+}

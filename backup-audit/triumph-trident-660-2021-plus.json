@@ -1,0 +1,156 @@
+{
+  "model_order": 1,
+  "featured": true,
+  "year_range": "2021+",
+  "timestamps": {
+    "updated_at": "2026-02-23",
+    "created_at": "2026-02-23"
+  },
+  "display_title": "Triumph Trident 660",
+  "language": "fr",
+  "search_tags": [
+    "triumph",
+    "trident 660",
+    "trident660",
+    "a2",
+    "roadster",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "service_guide": {
+    "known_issues": [
+      "Protection au vent inexistante sur voie rapide",
+      "Chaîne d’origine à surveiller régulièrement",
+      "Confort de selle perfectible sur longs trajets",
+      "Consommation de pneus plus rapide en conduite dynamique"
+    ],
+    "concession_cta_title": "La Triumph Trident 660 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "10 000 à 20 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l’atelier, la région et les opérations complémentaires. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Triumph Trident 660 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Triumph Trident 660.",
+    "longevity_tips": [
+      "Respecter les intervalles d’entretien constructeur",
+      "Laisser chauffer le moteur avant de rouler fort",
+      "Graisser la chaîne régulièrement, surtout après la pluie",
+      "Révision annuelle recommandée même si le kilométrage n’est pas atteint"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "Accessible, bien finie et agréable au quotidien, la Triumph Trident 660 est un excellent roadster A2. Avec un entretien suivi, son trois cylindres reste performant, vivant et durable.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 150 à 220 €"
+      },
+      {
+        "km": 16000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 250 à 350 €"
+      },
+      {
+        "km": 32000,
+        "service_label": "Bougies + filtre à air + contrôles",
+        "price_estimate": "≈ 400 à 550 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Gros entretien + réglages",
+        "price_estimate": "≈ 700 à 900 €"
+      }
+    ],
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quand faire la vidange ?",
+        "answer": "Tous les 16 000 km ou tous les 12 mois au premier des deux termes échus."
+      },
+      {
+        "question": "La Triumph Trident 660 est-elle compatible A2 ?",
+        "answer": "Oui, la Trident 660 est éligible au permis A2 avec bridage à 35 kW."
+      }
+    ],
+    "intro": "La Triumph Trident 660 est un roadster trois cylindres accessible et très apprécié des permis A2. Son moteur de 660 cm³ offre un excellent compromis entre souplesse, caractère et facilité au quotidien. Avec un entretien régulier, elle reste raisonnable à l’usage tout en conservant l’agrément propre au trois cylindres Triumph."
+  },
+  "model": "Trident 660",
+  "brand_order": 6,
+  "id": "triumph-trident-660-2021-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "yamaha-mt-07-2021-plus",
+      "honda-cb750-hornet-2023-plus",
+      "suzuki-gsx-8s-2023-plus"
+    ],
+    "related_articles": [
+      "achat-moto-a2-guide-debuter",
+      "budget-moto-par-mois",
+      "achat-moto-occasion-guide"
+    ]
+  },
+  "seo": {
+    "meta_description": "Découvrez les intervalles d’entretien, le prix des révisions, les consommables et les points de fiabilité de la Triumph Trident 660.",
+    "keywords": [
+      "entretien triumph trident 660",
+      "prix revision trident 660",
+      "fiabilite trident 660",
+      "triumph trident 660 a2",
+      "revision trident 660"
+    ],
+    "meta_title": "Entretien Triumph Trident 660 : intervalles, prix et conseils"
+  },
+  "brand": "Triumph",
+  "slug": "triumph-trident-660-2021-plus",
+  "status": "published",
+  "updatedAt": {
+    "_seconds": 1773724120,
+    "_nanoseconds": 708000000
+  },
+  "variants": [],
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Mono-amortisseur Showa réglable en précharge",
+      "front_tire": "120/70 ZR17",
+      "rear_brake": "Disque Ø255 mm, étrier simple piston",
+      "rear_tire": "180/55 ZR17",
+      "front_suspension": "Fourche inversée Showa SFF Ø41 mm",
+      "frame": "Cadre périmétrique tubulaire en acier",
+      "front_brake": "Double disque Ø310 mm, étriers Nissin 2 pistons"
+    },
+    "weight_tpf_kg": 190,
+    "engine_type": "3 cylindres en ligne, 4 temps, refroidissement liquide, double ACT, 12 soupapes",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW) – version full 59,6 kW / 81 ch",
+    "wheelbase_mm": 1401,
+    "fuel_system": "Injection électronique multipoint séquentielle avec commande d'accélérateur électronique",
+    "seat_height_mm": 805,
+    "torque": "64,0 N.m à 6 250 tr/min",
+    "displacement_cc": 660,
+    "power": "59,6 kW (81 ch) à 10 250 tr/min",
+    "tank_l": 14,
+    "max_torque_rpm": 6250,
+    "max_power_hp": 81,
+    "max_torque_nm": 64,
+    "max_power_kw": 59.6
+  }
+}

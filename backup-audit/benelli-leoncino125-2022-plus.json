@@ -1,0 +1,252 @@
+{
+  "timestamps": {
+    "updated_at": "2026-06-10",
+    "created_at": "2026-06-10"
+  },
+  "display_title": "Benelli Leoncino 125",
+  "language": "fr",
+  "search_tags": [
+    "benelli",
+    "leoncino 125",
+    "leoncino125",
+    "125cc",
+    "a1",
+    "scrambler",
+    "neo-rétro",
+    "budget",
+    "entretien",
+    "revision",
+    "débutant"
+  ],
+  "type": "motorcycle_service_sheet",
+  "longevity_tips": [
+    "Respecter les vidanges tous les 3 000 km — intervalle plus court que sur les japonaises",
+    "Remplacer les pneus CST d'origine dès que possible pour un meilleur grip",
+    "Vérifier l'ABS avant achat — non présent sur toutes les versions",
+    "Graisser la chaîne régulièrement après la pluie",
+    "Profiter de la garantie 5 ans Benelli pour les interventions sous garantie"
+  ],
+  "faq": [
+    {
+      "question": "Quand faire la vidange sur une Benelli Leoncino 125 ?",
+      "answer": "Tous les 3 000 km ou une fois par an — attention, c'est plus fréquent que sur une Honda ou Yamaha (6 000 km). À ne pas négliger pour la longévité du moteur."
+    },
+    {
+      "question": "La Benelli Leoncino 125 est-elle compatible permis A1 ?",
+      "answer": "Oui, c'est une 125cc native. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+    },
+    {
+      "question": "La Benelli Leoncino 125 est-elle fiable sur le long terme ?",
+      "answer": "Les retours utilisateurs sont globalement positifs avec un entretien rigoureux. La garantie 5 ans Benelli est un vrai atout. Attention à respecter les vidanges tous les 3 000 km contrairement aux préconisations parfois mal indiquées."
+    },
+    {
+      "question": "Quel est le prix neuf d'une Benelli Leoncino 125 en 2026 ?",
+      "answer": "Autour de 2 999 € neuf — c'est le prix le plus bas de la catégorie premium. Un excellent point d'entrée pour un premier achat."
+    }
+  ],
+  "model": "Leoncino 125",
+  "id": "benelli-leoncino125-2022-plus",
+  "seo": {
+    "meta_description": "Découvrez les intervalles d'entretien, le prix des révisions, les consommables et les points de fiabilité de la Benelli Leoncino 125.",
+    "keywords": [
+      "entretien benelli leoncino 125",
+      "prix revision leoncino 125",
+      "fiabilite benelli leoncino 125",
+      "benelli leoncino 125 a1",
+      "revision leoncino 125"
+    ],
+    "meta_title": "Entretien Benelli Leoncino 125 : intervalles, prix et conseils"
+  },
+  "brand": "Benelli",
+  "slug": "benelli-leoncino125-2022-plus",
+  "model_order": 1,
+  "known_issues": [
+    "Révisions recommandées tous les 3 000 km — plus fréquentes que la concurrence japonaise",
+    "Pas d'ABS de série sur tous les modèles — vérifier avant achat",
+    "Pneus CST d'origine de qualité moyenne — remplacement conseillé rapidement",
+    "Vibrations perceptibles au-delà de 7 500 tr/min selon les retours utilisateurs",
+    "Réseau Benelli moins dense en France — pièces parfois à commander",
+    "Puissance limitée (12,8 ch) en duo ou sur voies rapides"
+  ],
+  "year_range": "2022+",
+  "consumables": [
+    {
+      "part": "Pneus CST d'origine",
+      "average_lifetime": "8 000 à 12 000 km"
+    },
+    {
+      "part": "Kit chaîne",
+      "average_lifetime": "12 000 à 18 000 km"
+    },
+    {
+      "part": "Plaquettes",
+      "average_lifetime": "8 000 à 15 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "6 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "3 à 4 ans"
+    }
+  ],
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage",
+      "price_estimate": "≈ 80 à 120 €"
+    },
+    {
+      "km": 3000,
+      "service_label": "Vidange + contrôles",
+      "price_estimate": "≈ 100 à 160 €"
+    },
+    {
+      "km": 6000,
+      "service_label": "Vidange + filtre à air + contrôles",
+      "price_estimate": "≈ 150 à 220 €"
+    },
+    {
+      "km": 12000,
+      "service_label": "Bougie + gros entretien + contrôle complet",
+      "price_estimate": "≈ 250 à 380 €"
+    }
+  ],
+  "category": "scrambler",
+  "subcategory": "a1",
+  "relations": {
+    "related_models": [
+      "honda-cb125r-2021-plus",
+      "yamaha-mt125-2020-plus",
+      "ktm-125-duke-2024-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "status": "published",
+  "updatedAt": {
+    "_seconds": 1781161762,
+    "_nanoseconds": 681000000
+  },
+  "imageUrl": "/images/benelli-leoncino125-2021-plus.webp",
+  "featured": true,
+  "variants": [],
+  "brand_order": 11,
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Bras oscillant, mono-amortisseur réglable en précharge",
+      "front_tire": "100/80 R17",
+      "rear_brake": "Disque Ø220 mm, frein couplé",
+      "rear_tire": "130/70 R17",
+      "front_suspension": "Fourche inversée Ø35 mm, non réglable",
+      "frame": "Cadre treillis tubes acier",
+      "front_brake": "Disque Ø280 mm, frein couplé"
+    },
+    "weight_tpf_kg": 145,
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, injection, Euro5",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage nécessaire)",
+    "wheelbase_mm": 1370,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 795,
+    "torque": "10,0 N.m à 8 500 tr/min",
+    "displacement_cc": 125,
+    "power": "9,4 kW (12,8 ch) à 9 500 tr/min",
+    "tank_l": 12.5,
+    "max_torque_rpm": 8500,
+    "max_power_hp": 12.8,
+    "max_torque_nm": 10,
+    "max_power_kw": 9.4
+  },
+  "service_guide": {
+    "conclusion": "La Benelli Leoncino 125 est le meilleur rapport qualité/prix de la catégorie en 2026. Facile à vivre, jolie, légère et économique à l'entretien, elle est parfaite pour un premier achat. Ses limites en puissance et finition ne seront pas un problème pour un usage urbain quotidien.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "La Benelli Leoncino 125 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier, la région et les opérations supplémentaires. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "intro": "La Benelli Leoncino 125 est la 125cc la plus accessible du marché en 2026, sous la barre des 3 000 €. Son style néo-rétro soigné, son cadre treillis acier, sa fourche inversée de 35 mm et sa selle basse à 795 mm en font une moto idéale pour les débutants ou les motards urbains avec un budget serré. Son moteur monocylindre 12,8 ch est plus modeste que la concurrence premium, mais son entretien est simple et très économique.",
+    "concession_cta_button": "Voir les Benelli Leoncino 125 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Benelli Leoncino 125.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "known_issues": [
+      "Révisions recommandées tous les 3 000 km — plus fréquentes que la concurrence japonaise",
+      "Pas d'ABS de série sur tous les modèles — vérifier avant achat",
+      "Pneus CST d'origine de qualité moyenne — remplacement conseillé rapidement",
+      "Vibrations perceptibles au-delà de 7 500 tr/min selon les retours utilisateurs",
+      "Réseau Benelli moins dense en France — pièces parfois à commander",
+      "Puissance limitée (12,8 ch) en duo ou sur voies rapides"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus CST d'origine",
+        "average_lifetime": "8 000 à 12 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "12 000 à 18 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Bougie",
+        "average_lifetime": "6 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 4 ans"
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quand faire la vidange sur une Benelli Leoncino 125 ?",
+        "answer": "Tous les 3 000 km ou une fois par an — attention, c'est plus fréquent que sur une Honda ou Yamaha (6 000 km). À ne pas négliger pour la longévité du moteur."
+      },
+      {
+        "question": "La Benelli Leoncino 125 est-elle compatible permis A1 ?",
+        "answer": "Oui, c'est une 125cc native. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+      },
+      {
+        "question": "La Benelli Leoncino 125 est-elle fiable sur le long terme ?",
+        "answer": "Les retours utilisateurs sont globalement positifs avec un entretien rigoureux. La garantie 5 ans Benelli est un vrai atout. Attention à respecter les vidanges tous les 3 000 km contrairement aux préconisations parfois mal indiquées."
+      },
+      {
+        "question": "Quel est le prix neuf d'une Benelli Leoncino 125 en 2026 ?",
+        "answer": "Autour de 2 999 € neuf — c'est le prix le plus bas de la catégorie premium. Un excellent point d'entrée pour un premier achat."
+      }
+    ],
+    "longevity_tips": [
+      "Respecter les vidanges tous les 3 000 km — intervalle plus court que sur les japonaises",
+      "Remplacer les pneus CST d'origine dès que possible pour un meilleur grip",
+      "Vérifier l'ABS avant achat — non présent sur toutes les versions",
+      "Graisser la chaîne régulièrement après la pluie",
+      "Profiter de la garantie 5 ans Benelli pour les interventions sous garantie"
+    ],
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 80 à 120 €"
+      },
+      {
+        "km": 3000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 100 à 160 €"
+      },
+      {
+        "km": 6000,
+        "service_label": "Vidange + filtre à air + contrôles",
+        "price_estimate": "≈ 150 à 220 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Bougie + gros entretien + contrôle complet",
+        "price_estimate": "≈ 250 à 380 €"
+      }
+    ]
+  }
+}

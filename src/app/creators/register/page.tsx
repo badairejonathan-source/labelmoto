@@ -113,7 +113,7 @@ function RegisterCreatorContent() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Département</label>
-                    <select name="departement" required className="w-full h-12 rounded-xl border border-input bg-background px-3 text-sm font-bold">
+                    <select name="departement" required className="w-full h-12 rounded-xl border border-input bg-background px-3 text-base font-bold">
                       <option value="">Choisir un département</option>
                       {DEPARTEMENTS.map(d => <option key={d} value={d.split(' - ')[0]}>{d}</option>)}
                     </select>

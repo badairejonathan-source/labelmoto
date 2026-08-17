@@ -442,7 +442,7 @@ function MapPageComponent() {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-background">
+    <div className="relative w-full h-screen [height:100dvh] overflow-hidden bg-background">
       <div className="absolute inset-0 z-0">
         <MapComponent
           points={filteredPoints}
@@ -595,7 +595,7 @@ function MapPageComponent() {
 
 export default function MapPage() {
   return (
-    <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-background"><Loader2 className="h-10 w-10 animate-spin text-brand" /></div>}>
+    <Suspense fallback={<div className="h-screen [height:100dvh] w-full flex items-center justify-center bg-background"><Loader2 className="h-10 w-10 animate-spin text-brand" /></div>}>
       <MapPageComponent />
     </Suspense>
   );

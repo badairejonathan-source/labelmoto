@@ -1,0 +1,182 @@
+{
+  "model_order": 4,
+  "year_range": "2024+",
+  "display_title": "Suzuki GSX-8R",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "GSX-8R",
+  "id": "suzuki-gsx-8r-2024-plus",
+  "category": "sportive",
+  "subcategory": "a2",
+  "brand": "Suzuki",
+  "slug": "suzuki-gsx-8r-2024-plus",
+  "status": "published",
+  "timestamps": {
+    "updated_at": "2026-06-22",
+    "created_at": "2026-02-23"
+  },
+  "search_tags": [
+    "suzuki",
+    "gsx-8r",
+    "gsx8r",
+    "776cc",
+    "twin",
+    "sportive",
+    "carénée",
+    "a2",
+    "entretien",
+    "revision"
+  ],
+  "brand_order": 4,
+  "relations": {
+    "related_models": [
+      "suzuki-gsx-8s-2023-plus",
+      "yamaha-r7-2022-plus",
+      "honda-cbr500r-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Suzuki GSX-8R : 230-310 € (12 000 km), 470-640 € (24 000 km), ~1 550-2 000 € sur 60 000 km. Sportive carénée, twin 776cc, intervalles 12 000 km.",
+    "keywords": [
+      "entretien suzuki gsx-8r",
+      "prix revision gsx8r",
+      "cout entretien gsx-8r",
+      "fiabilite gsx-8r",
+      "forfait entretien gsx 8r"
+    ],
+    "meta_title": "Entretien Suzuki GSX-8R : prix des révisions 2026"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Suzuki GSX-8R vous correspond ?",
+    "concession_cta_button": "Voir les Suzuki GSX-8R en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Suzuki GSX-8R.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La GSX-8R reprend la mécanique de la GSX-8S sous un carénage sport-GT. Twin 776 plein de couple, entretien classique Suzuki 12 000 km, avec un léger surcoût de main d'œuvre lié au carénage sur certaines opérations. Une sportive accessible polyvalente.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 130 à 190 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 230 à 310 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 470 à 640 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 230 à 310 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 520 à 700 €"
+      }
+    ],
+    "known_issues": [
+      "Modèle récent (2024) : recul de fiabilité encore limité",
+      "Carénage sportif mais position relevée (sport-GT plus que pur sportive)",
+      "Carénage coûteux à remplacer en cas de chute"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne (origine Suzuki ≈ 185 €)",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Suzuki GSX-8R ?",
+        "answer": "Environ 230 à 310 € pour la révision des 12 000 km et 470 à 640 € pour la grosse révision des 24 000 km. Proche de la GSX-8S, avec un léger surcoût lié au carénage."
+      },
+      {
+        "question": "La GSX-8R coûte-t-elle plus cher à entretenir que la GSX-8S ?",
+        "answer": "À peine : même moteur et mêmes intervalles, seul le démontage du carénage ajoute un peu de main d'œuvre sur certaines opérations."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une GSX-8R sur 60 000 km ?",
+        "answer": "Environ 1 550 à 2 000 € de révisions, soit ~0,030 €/km. Raisonnable pour une sportive carénée moderne."
+      },
+      {
+        "question": "La GSX-8R est-elle une vraie sportive ?",
+        "answer": "C'est une sportive accessible de type sport-GT : carénage et look racé, mais position pas extrême et twin 776 souple. Polyvalente plutôt que radicale."
+      }
+    ],
+    "intro": "La Suzuki GSX-8R reprend le twin 776 moderne de la GSX-8S sous un carénage sport-GT. Sportive accessible et polyvalente, elle suit le rythme d'entretien Suzuki de 12 000 km, avec un coût d'usage maîtrisé.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 550 à 2 000 €",
+      "note": "Tarifs indicatifs réseau Suzuki (2026). Mécanique identique à la GSX-8S, léger surcoût possible dû au démontage du carénage. Modèle récent : tarifs à confirmer en concession. Un indépendant facture généralement moins.",
+      "cost_per_km": "≈ 0,030 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)"
+    },
+    "longevity_tips": [
+      "Mécanique identique à la GSX-8S : vidange tous les 12 000 km, soupapes tous les 24 000 km",
+      "Démonter le carénage avec soin lors des entretiens (clips fragiles)",
+      "Huile 10W40 JASO MA2 (environ 3 L avec filtre)",
+      "Graissage de la chaîne tous les 800 km et après la pluie",
+      "Modèle récent : carnet d'entretien à jour important pour garantie et revente"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782229093,
+    "_nanoseconds": 623000000
+  },
+  "featured": true,
+  "variants": [],
+  "technical_sheet": {
+    "weight_tpf_kg": 205,
+    "wheelbase_mm": 1465,
+    "seat_height_mm": 810,
+    "displacement_cc": 776,
+    "tank_l": 14,
+    "cycle_parts": {
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "180/55 ZR17",
+      "frame": "Cadre acier",
+      "rear_suspension": "Monoamortisseur, débattement 130 mm, réglable précharge",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche inversée Showa SFF-BP Ø 41 mm, débattement 130 mm",
+      "front_brake": "Double disque, Ø 310 mm, étriers radiaux 4 pistons (Nissin), ABS"
+    },
+    "engine_type": "Bicylindre en ligne 270°, 4 temps, refroidissement liquide, 8 soupapes, DACT, arbre d'équilibrage",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "fuel_system": "Injection électronique, accélérateur électronique (ride-by-wire)",
+    "torque": "78,0 N.m à 6 800 tr/min",
+    "power": "61,0 kW (83 ch) à 8 500 tr/min",
+    "max_torque_rpm": 6800,
+    "max_power_hp": 83,
+    "max_torque_nm": 78,
+    "max_power_kw": 61
+  }
+}

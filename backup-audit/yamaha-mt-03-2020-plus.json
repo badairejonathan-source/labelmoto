@@ -1,0 +1,183 @@
+{
+  "year_range": "2020+",
+  "display_title": "Yamaha MT-03",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "MT-03",
+  "brand_order": 2,
+  "id": "yamaha-mt-03-2020-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "brand": "Yamaha",
+  "slug": "yamaha-mt-03-2020-plus",
+  "status": "published",
+  "model_order": 5,
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "search_tags": [
+    "yamaha",
+    "mt-03",
+    "mt03",
+    "a2",
+    "roadster",
+    "321cc",
+    "twin",
+    "entretien",
+    "revision",
+    "forfait yamaha"
+  ],
+  "relations": {
+    "related_models": [
+      "yamaha-mt-07-2021-plus",
+      "yamaha-yzf-r125-2019-plus",
+      "honda-cb500f-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix officiels des révisions Yamaha MT-03 : 200 € (10 000 km), 570 € (40 000 km), ~1 050 € sur 60 000 km. L'une des A2 les moins chères à entretenir.",
+    "keywords": [
+      "entretien yamaha mt-03",
+      "prix revision mt-03",
+      "forfait entretien mt03",
+      "cout entretien mt-03",
+      "fiabilite mt-03 a2"
+    ],
+    "meta_title": "Entretien Yamaha MT-03 : prix officiels des révisions 2026"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Yamaha MT-03 vous correspond ?",
+    "concession_cta_button": "Voir les Yamaha MT-03 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Yamaha MT-03.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La MT-03 est un excellent roadster A2 d'entrée de gamme. Son entretien est légèrement moins cher que les CP2 (grosse révision à 570 € contre 645 €), ce qui en fait l'une des A2 les plus économiques à entretenir. Parfaite pour un premier achat raisonné.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + serrages)",
+        "price_estimate": "90 à 180 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 200 €"
+      },
+      {
+        "km": 20000,
+        "service_label": "Vidange + bougies + filtre à air",
+        "price_estimate": "≈ 320 €"
+      },
+      {
+        "km": 30000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 200 €"
+      },
+      {
+        "km": 40000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 570 €"
+      }
+    ],
+    "known_issues": [
+      "Moteur qui demande à monter dans les tours pour exprimer son potentiel",
+      "Protection au vent inexistante (roadster nu)",
+      "Freinage avant simple disque, suffisant mais sans plus en usage sportif"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 22 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "10 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Yamaha MT-03 ?",
+        "answer": "Environ 200 € pour la révision des 10 000 km et 570 € pour la grosse révision des 40 000 km (jeu aux soupapes). Un peu moins cher qu'une MT-07. Prix max Yamaha, souvent moins chez un indépendant."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une MT-03 sur 60 000 km ?",
+        "answer": "Environ 1 050 € de révisions constructeur, soit ~0,045 €/km. C'est l'une des A2 les moins chères à entretenir."
+      },
+      {
+        "question": "La MT-03 est-elle un bon premier achat ?",
+        "answer": "Oui, selle basse (780 mm), poids contenu (168 kg), moteur fiable et entretien économique en font une excellente première moto A2."
+      },
+      {
+        "question": "Quelle huile pour une MT-03 ?",
+        "answer": "Une 10W40 JASO MA2, environ 2,1 litres avec filtre. Norme JASO indispensable pour l'embrayage à bain d'huile."
+      }
+    ],
+    "intro": "La Yamaha MT-03 est un roadster A2 accessible et joueur, propulsé par un bicylindre 321 cc qui aime les tours. Bonne nouvelle côté budget : son entretien est légèrement plus économique que les CP2, et Yamaha publie ses forfaits.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 050 €",
+      "note": "Prix TTC maximum conseillés par Yamaha France (2026). Un garage indépendant facture généralement 20 à 30 % de moins, à pièces équivalentes.",
+      "cost_per_km": "≈ 0,045 €/km (révisions constructeur seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 10 000 km ou 1 an (révision annuelle minimum obligatoire)"
+    },
+    "longevity_tips": [
+      "Huile JASO MA2 obligatoire (10W40) : prévoir 2,1 L avec filtre",
+      "Graissage de la chaîne tous les 500 à 800 km, surtout après la pluie",
+      "Le moteur aime les tours : ne pas hésiter à l'exploiter, mais après chauffe",
+      "Vidange annuelle obligatoire même à faible kilométrage",
+      "Selle basse à 780 mm : idéale pour débuter et les petits gabarits"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782133739,
+    "_nanoseconds": 84000000
+  },
+  "imageUrl": "/images/yamaha-mt03-2020-plus.webp",
+  "featured": true,
+  "variants": [],
+  "technical_sheet": {
+    "weight_tpf_kg": 168,
+    "wheelbase_mm": 1380,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 780,
+    "displacement_cc": 321,
+    "power": "30,9 kW (42 ch) à 10 750 tr/min",
+    "tank_l": 14,
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 125 mm, réglable en précharge",
+      "front_tire": "110/70 R 17 M/C (54H)",
+      "rear_brake": "Simple disque, Ø 220 mm, étrier simple piston",
+      "rear_tire": "140/70 R 17 M/C (66H)",
+      "front_suspension": "Fourche inversée KYB Ø 37 mm, débattement 130 mm",
+      "frame": "Cadre type Diamant en acier",
+      "front_brake": "Simple disque, Ø 298 mm, étrier 2 pistons"
+    },
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "torque": "29,5 N.m à 9 000 tr/min",
+    "max_torque_rpm": 9000,
+    "max_power_hp": 42,
+    "max_torque_nm": 29.5,
+    "max_power_kw": 30.9
+  }
+}

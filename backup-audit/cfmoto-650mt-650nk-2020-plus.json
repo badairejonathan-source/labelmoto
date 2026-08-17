@@ -1,0 +1,350 @@
+{
+  "model": "650 MT / 650 NK",
+  "id": "cfmoto-650mt-650nk-2020-plus",
+  "category": "trail",
+  "subcategory": "trail-moyen",
+  "relations": {
+    "same_engine": [
+      "cfmoto-700clx-2021-plus",
+      "cfmoto-700mt-2023-plus"
+    ],
+    "same_category": [
+      "kawasaki-versys-650-2022-plus",
+      "honda-nx500-2024-plus",
+      "suzuki-vstrom-650-2017-plus"
+    ]
+  },
+  "seo": {
+    "meta_description": "Guide complet CFMOTO 650 MT et 650 NK 2020+ : fiche technique, entretien tous les 6 000 km, coût réel sur 3 ans, comparatif Kawasaki Versys 650 / Suzuki V-Strom 650 et avis propriétaires.",
+    "keywords": [
+      "CFMOTO 650 MT avis",
+      "CFMOTO 650 NK avis",
+      "CFMOTO 650 MT entretien",
+      "CFMOTO 650 NK entretien",
+      "CFMOTO 650 MT prix",
+      "CFMOTO 650 NK prix",
+      "CFMOTO 650 MT fiabilité",
+      "CFMOTO 650 NK vs Kawasaki Versys 650",
+      "CFMOTO 650 MT vs Suzuki V-Strom 650",
+      "CFMOTO 650 révision 6000 km",
+      "trail A2 650 moins de 7000 euros",
+      "CFMOTO 650 MT occasion",
+      "CFMOTO 650 NK occasion",
+      "CFMOTO 650 problèmes connus"
+    ],
+    "meta_title": "CFMOTO 650 MT & 650 NK : avis, entretien, prix et guide d'achat (2020+)"
+  },
+  "brand": "CFMOTO",
+  "slug": "cfmoto-650mt-650nk-2020-plus",
+  "status": "published",
+  "model_order": 0,
+  "display_title": "CFMOTO 650 MT / 650 NK",
+  "language": "fr",
+  "brand_order": 7,
+  "search_tags": [
+    "CFMOTO",
+    "650 MT / 650 NK",
+    "trail",
+    "trail-moyen"
+  ],
+  "updatedAt": {
+    "_seconds": 1785239219,
+    "_nanoseconds": 648000000
+  },
+  "type": "motorcycle_service_sheet",
+  "featured": true,
+  "year_range": "2020-+",
+  "variants": [
+    {
+      "label": "650 MT (2020+)",
+      "license_bridging": "A2 (bridable)",
+      "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, vilebrequin 180°, injection Bosch EFI",
+      "displacement_cc": 649,
+      "power": "57 ch",
+      "torque": "54 Nm",
+      "fuel_system": "Injection électronique",
+      "weight_tpf_kg": 206,
+      "seat_height_mm": 840,
+      "tank_l": 18,
+      "cycle_parts": {
+        "frame": "",
+        "front_suspension": "Fourche inversée réglable Ø 41 mm, débattement 150 mm",
+        "rear_suspension": "Monoamortisseur KYB, précontrainte réglable, débattement 145 mm",
+        "front_brake": "Double disque 300 mm, étriers J.Juan 2 pistons",
+        "rear_brake": "Disque 240 mm",
+        "front_tire": "120/70 R17",
+        "rear_tire": "160/60 R17"
+      }
+    },
+    {
+      "label": "650 NK (2018+)",
+      "license_bridging": "A2 (bridable)",
+      "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, vilebrequin 180°, injection Bosch EFI",
+      "displacement_cc": 649,
+      "power": "57 ch",
+      "torque": "54 Nm",
+      "fuel_system": "Injection électronique",
+      "weight_tpf_kg": 206,
+      "seat_height_mm": 780,
+      "tank_l": 17,
+      "cycle_parts": {
+        "frame": "",
+        "front_suspension": "Fourche inversée KYB réglable Ø 41 mm",
+        "rear_suspension": "Monoamortisseur KYB, précontrainte réglable",
+        "front_brake": "Double disque 300 mm, étriers J.Juan 2 pistons",
+        "rear_brake": "Disque 240 mm",
+        "front_tire": "120/70 R17",
+        "rear_tire": "160/60 R17"
+      }
+    }
+  ],
+  "technical_sheet": {
+    "max_torque_rpm": 7000,
+    "electronics": "ABS Continental 2 canaux de série",
+    "garantie": "2 ans (réseau GD France) — pièces et main d'œuvre",
+    "note_variants": "650 MT (trail routier) et 650 NK (roadster) partagent le même bicylindre 649 cm³, le même cadre et les mêmes intervalles d'entretien. Différences : position de conduite, carénage, roues et réservoir. Voir variants pour specs distinctives.",
+    "max_power_kw": 42,
+    "max_power_rpm": 8250,
+    "displacement_cc": 649,
+    "note_power": "Puissance Euro 5 (depuis 2022) : 57 ch / 54 Nm. Versions pre-Euro 5 (2020-2021) : 62 ch / 62 Nm. Version A2 : 45 ch (33 kW).",
+    "compression_ratio": "11,3:1",
+    "years": "2020-présent (ce moteur équipe CFMOTO depuis 2012 — génération actuelle Euro 5 depuis 2022)",
+    "engine_type": "Bicylindre parallèle 4 temps, refroidissement liquide, DOHC 4 soupapes/cylindre, vilebrequin 180°, injection Bosch EFI",
+    "transmission": "Boîte 6 vitesses",
+    "max_power_hp": 57,
+    "max_torque_nm": 54,
+    "clutch": "Embrayage multidisques à bain d'huile, anti-dribble (slipper clutch)",
+    "euro_standard": "Euro 5 (depuis 2022) — Euro 4 (2020-2021)",
+    "fuel_type": "Sans plomb 95 RON minimum",
+    "bore_stroke_mm": "83,0 × 60,0",
+    "cycle_parts": {
+      "rear_suspension": "",
+      "front_tire": "",
+      "rear_brake": "",
+      "rear_tire": "",
+      "front_suspension": "",
+      "frame": "",
+      "front_brake": ""
+    },
+    "weight_tpf_kg": "",
+    "license_bridging": "A",
+    "fuel_system": "Injection électronique",
+    "torque": "54 Nm @ 7000 tr/min",
+    "power": "57 ch / 42 kW",
+    "tank_l": ""
+  },
+  "imageUrl": "/images/entretien-cfmoto-650nk.webp",
+  "service_guide": {
+    "conclusion": "**Verdict acheteur — CFMOTO 650 MT & 650 NK 2020+**\n\nLa 650 MT et la 650 NK sont les motos CFMOTO que l'on recommande le plus sereinement en 2024-2025. Leur moteur 649 cm³, certes ancien dans son architecture, a fait ses preuves sur plus d'une décennie et des dizaines de milliers de kilomètres. L'entretien à 6 000 km (plus généreux que les 450 cm³) et le jeu aux soupapes à 42 000 km en font les CFMOTO les plus économiques à posséder sur la durée.\n\nLeur faiblesse principale est leur positionnement : face à des Kawasaki Versys 650 et Suzuki V-Strom 650 qui coûtent 1 500-1 800 € de plus, elles séduisent avant tout sur le prix. Mais face à des Honda CB500 et autres 500 cm³, elles offrent plus de cylindrée et de couple pour le même budget.\n\nProfil 650 MT : voyageur budget, premier trail 650, rouleur de 10 000+ km/an. Profil 650 NK : urban rider qui veut plus de cylindrée que les 450 cm³ sans payer le prix d'une japonaise.",
+    "cta_primary": {
+      "action": "search_nearby",
+      "label": "Trouver un concessionnaire CFMOTO près de chez moi",
+      "params": {
+        "type": "concession",
+        "brand": "CFMOTO"
+      }
+    },
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision 1 (rodage)",
+        "price_estimate": "130 – 200 €"
+      },
+      {
+        "km": 5000,
+        "service_label": "Révision standard",
+        "price_estimate": "160 – 260 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Révision standard",
+        "price_estimate": "160 – 260 €"
+      },
+      {
+        "km": 15000,
+        "service_label": "Révision majeure",
+        "price_estimate": "220 – 360 €"
+      },
+      {
+        "km": 20000,
+        "service_label": "Révision standard",
+        "price_estimate": "160 – 260 €"
+      },
+      {
+        "km": 30000,
+        "service_label": "Révision majeure",
+        "price_estimate": "220 – 360 €"
+      },
+      {
+        "km": 40000,
+        "service_label": "Révision standard",
+        "price_estimate": "160 – 260 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Révision majeure",
+        "price_estimate": "220 – 360 €"
+      }
+    ],
+    "cta_secondary": {
+      "action": "navigate",
+      "label": "Comparer tous les trails 650 disponibles",
+      "params": {
+        "category": "trail",
+        "subcategory": "trail-moyen"
+      }
+    },
+    "budget_acheteur": {
+      "hypothese": "8 000 km/an, usage mixte, concessionnaire région",
+      "note": "La 650 NK est l'une des proposi­tions les plus économiques du segment 650 cm³ en coût total de possession. L'entretien moins fréquent (6 000 km) et le jeu aux soupapes très tardif (42 000 km) sont deux vrais avantages financiers sur la durée.",
+      "poste_entretien_3ans": "600 – 1 000 € (4-5 révisions sur 3 ans à 6 000 km)",
+      "poste_achat_mt": "6 999 € (650 MT)",
+      "poste_pneus_3ans": "300 – 450 €",
+      "titre": "Budget réel sur 3 ans — comparatif 650 MT vs 650 NK",
+      "poste_equipement_pilote": "500 – 1 500 €",
+      "valeur_revente_estimee": "3 500 – 4 500 € à 3 ans / 24 000 km",
+      "poste_achat_nk": "5 999 € (650 NK)",
+      "total_3ans_mt": "9 249 – 10 649 € (650 MT)",
+      "poste_assurance_annuelle": "350 – 700 €",
+      "total_3ans_nk": "8 249 – 9 649 € (650 NK)"
+    },
+    "consumables": [
+      {
+        "item": "Huile moteur",
+        "spec": "10W-40 synthétique JASO MA2 — CFMOTO recommande les produits IPONE",
+        "quantity": "2,5 L (vidange avec filtre)",
+        "interval_km": 6000,
+        "interval_note": "Ou 6 mois selon la première échéance. Intervalle plus généreux que les 450 cm³ CFMOTO (5 000 km)."
+      },
+      {
+        "item": "Filtre à huile",
+        "spec": "Filtre CFMOTO d'origine (commun 650 MT, 650 NK, 650 GT, 700 CL-X)",
+        "interval_km": 6000
+      },
+      {
+        "item": "Filtre à air",
+        "spec": "Filtre papier CFMOTO d'origine",
+        "interval_km": 12000,
+        "interval_note": "Nettoyage à 6 000 km, remplacement à 12 000 km"
+      },
+      {
+        "item": "Bougies d'allumage",
+        "spec": "NGK CR8EIA-9 ou équivalent — 2 bougies",
+        "interval_km": 24000
+      },
+      {
+        "item": "Jeu aux soupapes",
+        "spec": "Contrôle et réglage DOHC 4 soupapes/cylindre",
+        "interval_km": 42000,
+        "interval_note": "Excellent intervalle — parmi les plus généreux du segment (vs Honda CB500F : 24 000 km, Suzuki SV650 : 24 000 km)"
+      },
+      {
+        "item": "Liquide de frein",
+        "spec": "DOT 4",
+        "interval_note": "Tous les 2 ans"
+      },
+      {
+        "item": "Liquide de refroidissement",
+        "spec": "Antigel longue durée OAT G12+ ou équivalent",
+        "interval_note": "Vérification annuelle ; remplacement tous les 2-3 ans"
+      },
+      {
+        "item": "Chaîne et kit chaîne",
+        "spec": "Chaîne 520 O-ring",
+        "interval_km": 15000,
+        "interval_note": "Lubrifier tous les 500-700 km"
+      },
+      {
+        "item": "Pneu avant (les deux modèles)",
+        "spec": "120/70 R17 (NK : Metzeler de série / MT : selon version)",
+        "interval_km": 12000
+      },
+      {
+        "item": "Pneu arrière (les deux modèles)",
+        "spec": "160/60 R17",
+        "interval_km": 9000
+      },
+      {
+        "item": "Plaquettes de frein avant",
+        "spec": "Plaquettes J.Juan d'origine ou compatibles double disque 300 mm",
+        "interval_note": "Contrôle tous les 6 000 km"
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quelle différence entre la CFMOTO 650 MT et la 650 NK ?",
+        "answer": "Même moteur 649 cm³, même cadre, même entretien. La 650 MT est un trail (selle 840 mm, réservoir 18 L, carénage, position droite) taillé pour les voyages. La 650 NK est un roadster (selle 780 mm, réservoir 17 L, guidon bracelets, position plus sportive). Choisissez la MT pour voyager chargé, la NK pour la ville et les routes de campagne."
+      },
+      {
+        "question": "La CFMOTO 650 est-elle fiable ?",
+        "answer": "C'est la plus fiable de la gamme CFMOTO, avec plus de 10 ans de commercialisation mondiale. Des propriétaires dépassent régulièrement 50 000 km sans intervention majeure. Les retours sur le moteur 649 cm³ sont très positifs — bien que dérivé d'une architecture ancienne (Kawasaki ER-6), il est éprouvé et parfaitement maîtrisé. Le point de vigilance reste le vibrations à haut régime, inhérentes au vilebrequin 180°."
+      },
+      {
+        "question": "Quel est l'intervalle de révision de la CFMOTO 650 MT / 650 NK ?",
+        "answer": "Tous les 6 000 km ou 6 mois (première des deux échéances). C'est plus généreux que les 5 000 km des 450 cm³ CFMOTO. Le jeu aux soupapes à 42 000 km est un avantage notable — les japonaises de même cylindrée demandent souvent ce contrôle à 24 000 km."
+      },
+      {
+        "question": "CFMOTO 650 MT ou Kawasaki Versys 650 : laquelle choisir ?",
+        "answer": "La Versys 650 coûte environ 1 600 € de plus mais offre une fiabilité et une valeur de revente supérieures. La CFMOTO 650 MT est moins chère avec un équipement similaire et des pièces de rechange accessibles via GD France. Pour un premier trail 650 ou un budget serré, la CFMOTO est logique. Pour quelqu'un qui garde sa moto 5-7 ans et valorise la revente, la Versys mérite les 1 600 € de plus."
+      },
+      {
+        "question": "La CFMOTO 650 MT convient-elle aux petits gabarits ?",
+        "answer": "Pas idéalement. La selle à 840 mm est haute pour les moins de 1,75 m. Des selles rabaissées artisanales existent (gain 30-40 mm) mais CFMOTO ne propose pas de kit officiel. Les pilotes de petite taille seront mieux servis par la 650 NK (780 mm), la 450 MT (800/820 mm) ou en attendant la 700 MT (800/840 mm ajustable)."
+      },
+      {
+        "question": "Quelle est la consommation de la CFMOTO 650 MT / 650 NK ?",
+        "answer": "Environ 4,8-5,2 L/100 km en usage mixte. Avec le réservoir 18 L de la MT, l'autonomie est d'environ 340-370 km — correct pour le voyage. La NK avec 17 L fait 320-350 km. Les deux sont économiques pour leur cylindrée."
+      },
+      {
+        "question": "Peut-on faire la révision CFMOTO 650 hors réseau GD France ?",
+        "answer": "Oui, hors garantie. Le moteur 649 cm³ est simple d'accès et bien documenté. Les pièces d'entretien (filtres, bougies, chaîne) sont disponibles chez des fournisseurs indépendants. Pendant la garantie 2 ans, le réseau GD France est nécessaire pour la maintenir."
+      }
+    ],
+    "intro": "La CFMOTO 650 MT et la 650 NK sont les doyennes de la gamme moto CFMOTO en France. Fondées sur un bicylindre 649 cm³ à vilebrequin 180° dérivé techniquement de l'ère Kawasaki ER-6 (dont CFMOTO a racheté la technologie moteur), elles cumulent plus d'une décennie de présence marché et bénéficient du meilleur recul fiabilité de la gamme. La 650 MT est un trail routier polyvalent avec réservoir 18 L, selle à 840 mm et fourche réglable — taillé pour les voyages à moindre coût. La 650 NK est son alter ego roadster, plus basse (780 mm), plus légère dans ses lignes, avec les mêmes entrailles mécaniques. Toutes deux ont subi la mise à la norme Euro 5 en 2022, au prix d'une légère perte de puissance (de 62 à 57 ch). En contrepartie, les intervalles d'entretien ont été standardisés à 6 000 km — plus longs que les 5 000 km des nouvelles générations 450 cm³. Leur principal argument en 2024-2025 : un prix d'entrée parmi les plus bas du segment 650 cm³ en France, une fiabilité documentée sur plus de 10 ans et un réseau de pièces désormais bien établi via GD France.",
+    "comparatif": {
+      "competitors": [
+        {
+          "model": "Kawasaki Versys 650 (2022+)",
+          "prix_france": "~8 599 €",
+          "avantages_vs_650mt": "Twin ER-6 de référence ultra-fiable, réseau Kawasaki dense, valeur de revente excellente, polyvalence routière supérieure",
+          "inconvenients_vs_650mt": "1 600 € plus chère que la 650 MT, équipement comparable voire inférieur sur certains points",
+          "verdict": "La référence fiabilité du segment trail 650 — mais la CFMOTO est 1 600 € moins chère pour un niveau d'équipement similaire"
+        },
+        {
+          "model": "Suzuki V-Strom 650 (2017+)",
+          "prix_france": "~8 799 €",
+          "avantages_vs_650mt": "V-twin 645 cm³ au caractère unique, excellente polyvalence route/tourisme, fiabilité prouvée, valise-intégration native",
+          "inconvenients_vs_650mt": "1 800 € plus chère, plus lourde (216 kg)",
+          "verdict": "Le trail routier par excellence pour le voyageur — la CFMOTO 650 MT est plus agile mais moins aboutie"
+        },
+        {
+          "model": "Honda CB500F / CB500X (2022+)",
+          "prix_france": "~6 799 €",
+          "avantages_vs_650nk": "Fiabilité Honda légendaire, réseau SAV dense, entretien facile, légèreté (189 kg)",
+          "inconvenients_vs_650nk": "471 cm³ moins généreux, 800 € plus chère que la 650 NK, moins de couple",
+          "verdict": "La Honda gagne sur la fiabilité et le réseau — la 650 NK offre plus de cylindrée et de couple pour moins cher"
+        }
+      ],
+      "intro": "La 650 MT et la 650 NK affrontent des concurrentes japonaises bien établies. Voici le positionnement honnête."
+    },
+    "maintenance_cost_summary": {
+      "total_60000km": "700 – 1 200 €",
+      "note": "Estimations basées sur retours propriétaires et tarifs réseau GD France. Comptez 130-200 € pour une révision standard (6 000 km). L'intervalle de 6 000 km (vs 5 000 km sur les 450 cm³) et le jeu aux soupapes à 42 000 km font des 650 MT/NK les CFMOTO les moins coûteuses à entretenir sur la durée. Coûts identiques sur 650 MT et 650 NK (même moteur).",
+      "cost_per_km": "0,012 – 0,020 €/km",
+      "interval_rule": "Révision tous les 6 000 km ou 6 mois (première des deux échéances). Soupapes à 42 000 km."
+    },
+    "longevity_tips": [
+      "Le moteur 649 cm³ est à son aise entre 4 000 et 7 000 tr/min — éviter de le pousser systématiquement dans les tours réduit les vibrations et l'usure.",
+      "Lubrifier la chaîne tous les 500-700 km sans exception : les 57 ch du 650 sollicitent bien plus la transmission qu'un monocylindre.",
+      "Respecter les 6 000 km ou 6 mois entre vidanges — la génération 650 cm³ a démontré sa durabilité sur 50 000+ km avec un entretien régulier.",
+      "Sur la 650 MT : surveiller les niveaux de l'amortisseur avant (fourche réglable KYB) — l'huile se dégrade avec l'usage intensif. Remplacement recommandé tous les 30 000 km.",
+      "Profiter de la garantie 2 ans pour faire contrôler le régulateur de tension lors des révisions : défaillance isolée mais documentée sur la gamme 650."
+    ],
+    "known_issues": [
+      "Vibrations à haut régime (vilebrequin 180°) — Le bicylindre 649 cm³ à vilebrequin 180° (allumages simultanés) génère plus de vibrations à hauts régimes qu'un twin à calage 270° (comme sur les 450-800 CFMOTO récents). Perceptible surtout aux guidons et aux repose-pieds au-dessus de 7 000 tr/min. C'est une caractéristique inhérente à l'architecture, pas une défaillance. → Utiliser des poignées anti-vibrations aftermarket si gênant. Le moteur est à son aise en conduite souple entre 4 000 et 7 000 tr/min.",
+      "Selle haute 650 MT (840 mm) — accessible limitée — La selle à 840 mm est un frein pour les motards de moins de 1,75 m. CFMOTO ne propose pas de kit surbaissement officiel pour la 650 MT. → Des artisans selliers proposent des selles rabaissées (gain de 30-40 mm). Envisager la 650 NK (780 mm) ou la 450 MT (800/820 mm) pour les gabarits plus courts.",
+      "Perte de puissance Euro 5 (2022+) — Le passage Euro 5 a réduit la puissance de 62 à 57 ch et le couple de 62 à 54 Nm. Les propriétaires de versions pre-Euro 5 (2020-2021) ont une moto légèrement plus généreuse. Ce n'est pas un défaut mais une contrainte réglementaire. → Les modèles 2020-2021 (Euro 4) sont parfois préférés sur le marché de l'occasion pour leurs 62 ch. La cartographie Euro 5 est toutefois plus régulière et plus souple à bas régime.",
+      "Tableau de bord LCD basique (NK versions avant SP) — La 650 NK standard (avant la version SP de 2021) est équipée d'un tableau de bord LCD sans Bluetooth ni TFT couleur — un équipement jugé dépassé face à la concurrence actuelle. → Opter pour la version NK SP (2021+) qui ajoute TFT, modes de conduite et slipper clutch amélioré. Ou se tourner vers la 700 CL-X pour une expérience plus moderne."
+    ]
+  }
+}

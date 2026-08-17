@@ -1,0 +1,178 @@
+{
+  "year_range": "2022+",
+  "display_title": "Honda CBR500R",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "CBR500R",
+  "id": "honda-cbr500r-2022-plus",
+  "category": "sportive",
+  "subcategory": "a2",
+  "brand": "Honda",
+  "slug": "honda-cbr500r-2022-plus",
+  "status": "published",
+  "model_order": 2,
+  "featured": false,
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "search_tags": [
+    "honda",
+    "cbr500r",
+    "cbr 500",
+    "a2",
+    "471cc",
+    "sportive",
+    "carénée",
+    "twin",
+    "entretien",
+    "revision"
+  ],
+  "brand_order": 1,
+  "relations": {
+    "related_models": [
+      "honda-cb500f-2022-plus",
+      "honda-nx500-2024-plus",
+      "yamaha-r7-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda CBR500R : 200-270 € (12 000 km), 430-510 € (24 000 km), ~1 400-1 650 € sur 60 000 km. Sportive A2 économique, moteur 471cc fiable.",
+    "keywords": [
+      "entretien honda cbr500r",
+      "prix revision cbr500r",
+      "forfait entretien cbr 500",
+      "cout entretien cbr500r",
+      "fiabilite cbr500r"
+    ],
+    "meta_title": "Entretien Honda CBR500R : prix des révisions 2026"
+  },
+  "technical_sheet": {
+    "weight_tpf_kg": 192,
+    "wheelbase_mm": 1410,
+    "seat_height_mm": 785,
+    "displacement_cc": 471,
+    "tank_l": 17.1,
+    "cycle_parts": {
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "160/60 ZR17",
+      "rear_suspension": "Monoamortisseur Pro-Link, débattement 119 mm, réglable précharge",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche inversée Ø 41 mm (Showa SFF-BP), débattement 120 mm",
+      "frame": "Cadre treillis tubulaire acier",
+      "front_brake": "Double disque, Ø 296 mm, étriers radiaux, ABS"
+    },
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "fuel_system": "Injection PGM-FI",
+    "torque": "43,0 N.m à 6 250 tr/min",
+    "power": "35,0 kW (47,6 ch) à 8 600 tr/min"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Honda CBR500R vous correspond ?",
+    "concession_cta_button": "Voir les Honda CBR500R en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda CBR500R.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La CBR500R offre le look sportif caréné sur la base mécanique fiable et économique de la CB500F. Entretien identique (12 000 km), seul le démontage du carénage ajoute un peu de main d'œuvre sur certaines opérations.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 130 à 190 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 200 à 270 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + vidange (grosse révision)",
+        "price_estimate": "≈ 430 à 510 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 200 à 270 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 510 à 590 €"
+      }
+    ],
+    "known_issues": [
+      "Carénage sportif mais moteur calme (look plus radical que les sensations)",
+      "Carénage coûteux à remplacer en cas de chute",
+      "Position légèrement plus engagée que la CB500F"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Honda CBR500R ?",
+        "answer": "Environ 200 à 270 € pour la révision des 12 000 km, et 430 à 510 € pour la grosse révision des 24 000 km. Proche de la CB500F, avec un léger surcoût lié au carénage."
+      },
+      {
+        "question": "La CBR500R coûte-t-elle plus cher à entretenir que la CB500F ?",
+        "answer": "À peine. Même moteur et mêmes intervalles ; seul le démontage du carénage ajoute un peu de main d'œuvre sur certaines révisions."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une CBR500R sur 60 000 km ?",
+        "answer": "Environ 1 400 à 1 650 € de révisions, soit ~0,026 €/km. Très raisonnable pour une sportive carénée A2."
+      },
+      {
+        "question": "Le moteur de la CBR500R est-il fiable ?",
+        "answer": "Oui, c'est le même bicylindre 471 cc increvable que la CB500F, capable de dépasser 100 000 km sans souci majeur."
+      }
+    ],
+    "intro": "La Honda CBR500R reprend la mécanique fiable de la CB500F sous un carénage sportif. Résultat : le look d'une vraie sportive avec le coût d'entretien contenu d'une A2 raisonnable, grâce aux intervalles de 12 000 km.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 400 à 1 650 €",
+      "note": "Tarifs indicatifs réseau Honda (2026). Léger surcoût possible vs CB500F dû au démontage du carénage sur certaines opérations. Un indépendant facture généralement moins.",
+      "cost_per_km": "≈ 0,026 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)"
+    },
+    "longevity_tips": [
+      "Intervalle long : vidange tous les 12 000 km ou 1 an",
+      "Jeu aux soupapes tous les 24 000 km seulement",
+      "Huile 10W30 JASO MA2 Honda : prévoir environ 3 L avec filtre",
+      "Démonter le carénage avec soin lors des entretiens (clips fragiles)",
+      "Même moteur increvable que la CB500F : longévité supérieure à 100 000 km"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782147580,
+    "_nanoseconds": 260000000
+  },
+  "imageUrl": "/images/honda-cbr500r-2022-plus.webp"
+}

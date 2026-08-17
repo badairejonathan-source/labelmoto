@@ -1,0 +1,262 @@
+{
+  "featured": true,
+  "timestamps": {
+    "updated_at": "2026-06-10",
+    "created_at": "2026-06-10"
+  },
+  "display_title": "KTM 125 Duke",
+  "language": "fr",
+  "search_tags": [
+    "ktm",
+    "125 duke",
+    "duke 125",
+    "125cc",
+    "a1",
+    "roadster",
+    "naked",
+    "entretien",
+    "revision",
+    "wp apex",
+    "tft"
+  ],
+  "type": "motorcycle_service_sheet",
+  "longevity_tips": [
+    "Respecter les vidanges tous les 5 000 km avec l'huile préconisée (Motorex 4T 15W/50)",
+    "Graisser la chaîne 520 X-Ring régulièrement, surtout après la pluie",
+    "Ne pas négliger le réglage de précharge de l'amortisseur selon le poids du pilote",
+    "Faire contrôler l'électronique (modes STREET/TRACK, TFT) en réseau KTM si anomalie"
+  ],
+  "faq": [
+    {
+      "question": "Quand faire la vidange sur une KTM 125 Duke ?",
+      "answer": "Tous les 5 000 km ou une fois par an, avec l'huile préconisée Motorex Formula 4T 15W/50."
+    },
+    {
+      "question": "La KTM 125 Duke est-elle compatible permis A1 ?",
+      "answer": "Oui, c'est une 125cc native à 15 ch. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+    },
+    {
+      "question": "Quel est le prix d'une révision KTM 125 Duke ?",
+      "answer": "Entre 150 et 250 € pour une révision standard en atelier indépendant. Comptez entre 250 et 400 € en concession KTM officielle."
+    },
+    {
+      "question": "La KTM 125 Duke a-t-elle un grand réservoir ?",
+      "answer": "Oui, avec 13,4 litres c'est l'un des plus grands réservoirs de la catégorie, ce qui offre une autonomie de 400 à 500 km selon l'usage."
+    }
+  ],
+  "model": "125 Duke",
+  "id": "ktm-125-duke-2024-plus",
+  "seo": {
+    "meta_description": "Découvrez les intervalles d'entretien, le prix des révisions, les consommables et les points de fiabilité de la KTM 125 Duke.",
+    "keywords": [
+      "entretien ktm 125 duke",
+      "prix revision ktm 125 duke",
+      "fiabilite ktm 125 duke",
+      "ktm duke 125 a1",
+      "revision duke 125"
+    ],
+    "meta_title": "Entretien KTM 125 Duke : intervalles, prix et conseils"
+  },
+  "brand": "KTM",
+  "slug": "ktm-125-duke-2024-plus",
+  "model_order": 1,
+  "known_issues": [
+    "Coût d'entretien et pièces KTM légèrement plus chers que la concurrence japonaise",
+    "Consommation un peu plus élevée (~2,5 à 3 L/100 km) en conduite sportive",
+    "Selle ferme sur les longs trajets selon les retours utilisateurs",
+    "Réseau de concessionnaires KTM moins dense que Honda ou Yamaha en France"
+  ],
+  "year_range": "2024+",
+  "consumables": [
+    {
+      "part": "Pneus",
+      "average_lifetime": "8 000 à 15 000 km"
+    },
+    {
+      "part": "Kit chaîne (520 X-Ring)",
+      "average_lifetime": "15 000 à 20 000 km"
+    },
+    {
+      "part": "Plaquettes",
+      "average_lifetime": "10 000 à 18 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "15 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "3 à 5 ans"
+    },
+    {
+      "part": "Huile moteur (Motorex 4T 15W/50)",
+      "average_lifetime": "5 000 km"
+    }
+  ],
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage",
+      "price_estimate": "≈ 120 à 180 €"
+    },
+    {
+      "km": 5000,
+      "service_label": "Vidange + contrôles",
+      "price_estimate": "≈ 150 à 250 €"
+    },
+    {
+      "km": 10000,
+      "service_label": "Vidange + filtre à air + contrôles",
+      "price_estimate": "≈ 220 à 320 €"
+    },
+    {
+      "km": 15000,
+      "service_label": "Bougie + filtre à huile + contrôle complet",
+      "price_estimate": "≈ 300 à 450 €"
+    },
+    {
+      "km": 30000,
+      "service_label": "Gros entretien + révision complète",
+      "price_estimate": "≈ 500 à 700 €"
+    }
+  ],
+  "category": "roadster",
+  "subcategory": "a1",
+  "relations": {
+    "related_models": [
+      "honda-cb125r-2021-plus",
+      "yamaha-mt125-2020-plus",
+      "aprilia-rs125-2023-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "status": "published",
+  "service_guide": {
+    "conclusion": "Nerveuse, légère et très bien équipée, la KTM 125 Duke est le meilleur choix pour les jeunes motards qui veulent des sensations sans attendre le permis A2. Son entretien demande un peu plus de rigueur que sur une Honda ou une Yamaha, mais les pièces restent accessibles.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "La KTM 125 Duke vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier, la région et les opérations supplémentaires. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "intro": "La KTM 125 Duke est la 125cc la plus sportive et la mieux équipée de sa catégorie. Son cadre treillis acier, sa fourche inversée WP Apex 43 mm et son écran TFT connecté en font une mini-supermoto premium. À 154 kg tous pleins faits, c'est l'une des plus légères du segment. Son entretien est légèrement plus coûteux que la concurrence japonaise, mais reste accessible si l'on passe par un atelier indépendant.",
+    "concession_cta_button": "Voir les KTM 125 Duke en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre KTM 125 Duke.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 5000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 150 à 250 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + filtre à air + contrôles",
+        "price_estimate": "≈ 220 à 320 €"
+      },
+      {
+        "km": 15000,
+        "service_label": "Bougie + filtre à huile + contrôle complet",
+        "price_estimate": "≈ 300 à 450 €"
+      },
+      {
+        "km": 30000,
+        "service_label": "Gros entretien + révision complète",
+        "price_estimate": "≈ 500 à 700 €"
+      }
+    ],
+    "known_issues": [
+      "Coût d'entretien et pièces KTM légèrement plus chers que la concurrence japonaise",
+      "Consommation un peu plus élevée (~2,5 à 3 L/100 km) en conduite sportive",
+      "Selle ferme sur les longs trajets selon les retours utilisateurs",
+      "Réseau de concessionnaires KTM moins dense que Honda ou Yamaha en France"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Kit chaîne (520 X-Ring)",
+        "average_lifetime": "15 000 à 20 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Bougie",
+        "average_lifetime": "15 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      },
+      {
+        "part": "Huile moteur (Motorex 4T 15W/50)",
+        "average_lifetime": "5 000 km"
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quand faire la vidange sur une KTM 125 Duke ?",
+        "answer": "Tous les 5 000 km ou une fois par an, avec l'huile préconisée Motorex Formula 4T 15W/50."
+      },
+      {
+        "question": "La KTM 125 Duke est-elle compatible permis A1 ?",
+        "answer": "Oui, c'est une 125cc native à 15 ch. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+      },
+      {
+        "question": "Quel est le prix d'une révision KTM 125 Duke ?",
+        "answer": "Entre 150 et 250 € pour une révision standard en atelier indépendant. Comptez entre 250 et 400 € en concession KTM officielle."
+      },
+      {
+        "question": "La KTM 125 Duke a-t-elle un grand réservoir ?",
+        "answer": "Oui, avec 13,4 litres c'est l'un des plus grands réservoirs de la catégorie, ce qui offre une autonomie de 400 à 500 km selon l'usage."
+      }
+    ],
+    "longevity_tips": [
+      "Respecter les vidanges tous les 5 000 km avec l'huile préconisée (Motorex 4T 15W/50)",
+      "Graisser la chaîne 520 X-Ring régulièrement, surtout après la pluie",
+      "Ne pas négliger le réglage de précharge de l'amortisseur selon le poids du pilote",
+      "Faire contrôler l'électronique (modes STREET/TRACK, TFT) en réseau KTM si anomalie"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1781161762,
+    "_nanoseconds": 681000000
+  },
+  "variants": [],
+  "brand_order": 16,
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Mono-amortisseur WP, réglable en précharge, débattement 150 mm",
+      "front_tire": "110/70 R17",
+      "rear_brake": "Disque Ø240 mm, étrier simple piston flottant, ABS",
+      "rear_tire": "150/60 R17",
+      "front_suspension": "Fourche inversée WP Apex Ø43 mm, débattement 150 mm",
+      "frame": "Cadre treillis acier, boucle arrière aluminium",
+      "front_brake": "Disque Ø320 mm, étrier radial 4 pistons, ABS"
+    },
+    "weight_tpf_kg": 154,
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, injection Bosch RBW, Euro5+",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage nécessaire)",
+    "wheelbase_mm": 1357,
+    "fuel_system": "Injection électronique Bosch EMS avec RBW",
+    "seat_height_mm": 800,
+    "torque": "11,5 N.m",
+    "displacement_cc": 125,
+    "power": "11,0 kW (15 ch)",
+    "tank_l": 13.4,
+    "max_power_hp": 15,
+    "max_torque_nm": 11.5,
+    "max_power_kw": 11
+  }
+}

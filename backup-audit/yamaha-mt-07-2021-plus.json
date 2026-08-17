@@ -1,0 +1,188 @@
+{
+  "model_order": 1,
+  "featured": true,
+  "year_range": "2021+",
+  "display_title": "Yamaha MT-07",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "MT-07",
+  "brand_order": 2,
+  "id": "yamaha-mt-07-2021-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "brand": "Yamaha",
+  "slug": "yamaha-mt-07-2021-plus",
+  "status": "published",
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "search_tags": [
+    "yamaha",
+    "mt-07",
+    "mt07",
+    "a2",
+    "cp2",
+    "roadster",
+    "entretien",
+    "revision",
+    "prix revision",
+    "forfait yamaha"
+  ],
+  "relations": {
+    "related_models": [
+      "yamaha-tracer-7-2021-plus",
+      "yamaha-xsr700-2021-plus",
+      "yamaha-r7-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix officiels des révisions Yamaha MT-07 : 220 € (10 000 km), 645 € (40 000 km), ~1 200 € sur 60 000 km. Intervalles, consommables et fiabilité du moteur CP2.",
+    "keywords": [
+      "entretien yamaha mt-07",
+      "prix revision mt-07",
+      "forfait entretien mt-07",
+      "cout entretien mt07",
+      "fiabilite mt-07",
+      "revision 40000 km mt-07"
+    ],
+    "meta_title": "Entretien Yamaha MT-07 : prix officiels des révisions 2026"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Yamaha MT-07 vous correspond ?",
+    "concession_cta_button": "Voir les Yamaha MT-07 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Yamaha MT-07.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "Simple et robuste, la MT-07 est l'une des motos les plus économiques à l'usage du marché (environ 0,05 €/km pour les révisions). Son moteur CP2 encaisse les kilomètres sans broncher si l'on respecte les intervalles. Seule la révision des 40 000 km (jeu aux soupapes) demande un vrai budget.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + serrages)",
+        "price_estimate": "90 à 190 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 220 €"
+      },
+      {
+        "km": 20000,
+        "service_label": "Vidange + bougies + filtre à air",
+        "price_estimate": "≈ 350 €"
+      },
+      {
+        "km": 30000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 220 €"
+      },
+      {
+        "km": 40000,
+        "service_label": "Jeu aux soupapes + bougies + filtre air (grosse révision)",
+        "price_estimate": "≈ 645 €"
+      }
+    ],
+    "known_issues": [
+      "Finition des peintures de cadre (selon millésime)",
+      "Batterie d'origine parfois juste par grand froid",
+      "Tension de chaîne à surveiller régulièrement"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "10 000 à 20 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "10 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Yamaha MT-07 ?",
+        "answer": "Selon le forfait officiel Yamaha : environ 220 € pour la révision des 10 000 km, 350 € pour celle des 20 000 km, et 645 € pour la grosse révision des 40 000 km (jeu aux soupapes). Ce sont des prix maximum conseillés : un garage indépendant fait souvent 20 à 30 % de moins."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une MT-07 sur 60 000 km ?",
+        "answer": "Environ 1 200 € de révisions constructeur sur 60 000 km, soit l'un des coûts les plus bas du marché (~0,05 €/km). En ajoutant pneus et kit chaîne, le budget total avoisine 2 000 €."
+      },
+      {
+        "question": "Quand faire la vidange sur une MT-07 ?",
+        "answer": "Tous les 10 000 km ou tous les ans, au premier des deux termes échus. La vidange annuelle est obligatoire même à faible kilométrage, sous peine d'annuler la garantie."
+      },
+      {
+        "question": "Quelle huile pour une Yamaha MT-07 ?",
+        "answer": "Une 10W40 certifiée JASO MA2 (semi-synthèse ou synthèse). Prévoir 2,6 litres avec remplacement du filtre. Une huile auto sans norme JASO fait patiner l'embrayage à bain d'huile."
+      },
+      {
+        "question": "Le moteur CP2 est-il fiable ?",
+        "answer": "Oui, c'est l'un des moteurs les plus robustes et éprouvés du marché actuel. Il encaisse facilement plus de 100 000 km avec un entretien suivi."
+      }
+    ],
+    "intro": "La Yamaha MT-07 est la référence absolue du segment A2. Son moteur CP2 est réputé pour son couple et sa fiabilité exceptionnelle. Bonne nouvelle pour le portefeuille : Yamaha publie ses forfaits d'entretien, ce qui permet de budgéter chaque révision à l'avance. Voici les vrais prix constructeur et le coût réel sur la durée.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 200 €",
+      "note": "Prix TTC maximum conseillés par Yamaha France (2026). Un garage indépendant facture généralement 20 à 30 % de moins, à pièces équivalentes.",
+      "cost_per_km": "≈ 0,05 €/km (révisions constructeur seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 10 000 km ou 1 an (révision annuelle minimum obligatoire)"
+    },
+    "longevity_tips": [
+      "Huile JASO MA2 obligatoire (10W40) : une huile auto fait patiner l'embrayage à bain d'huile",
+      "Prévoir 2,6 L d'huile pour une vidange avec filtre",
+      "Temps de chauffe moteur impératif avant de monter dans les tours",
+      "Graissage de la chaîne tous les 500 à 800 km ou après chaque pluie",
+      "Vidange annuelle obligatoire même si le kilométrage n'est pas atteint (sous peine d'annuler la garantie)"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782131515,
+    "_nanoseconds": 631000000
+  },
+  "imageUrl": "/images/yamaha-mt07-2021-plus.webp",
+  "variants": [],
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Bras oscillant (suspension à biellettes), débattement 130 mm",
+      "front_tire": "120/70 ZR 17 M/C (58W)",
+      "rear_brake": "Simple disque, Ø 245 mm, étrier simple piston",
+      "rear_tire": "180/55 ZR 17 M/C (73W)",
+      "front_suspension": "Fourche télescopique, Ø 41 mm, débattement 130 mm",
+      "frame": "Cadre type Diamant en acier",
+      "front_brake": "Double disque, Ø 298 mm, étriers 4 pistons"
+    },
+    "weight_tpf_kg": 184,
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "wheelbase_mm": 1400,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 805,
+    "torque": "67,0 N.m (6,8 m.kgf) à 6 500 tr/min",
+    "displacement_cc": 689,
+    "power": "54,0 kW (73,4 ch) à 8 750 tr/min",
+    "tank_l": 14,
+    "engine_type": "Bicylindre en ligne CP2, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "max_torque_rpm": 6500,
+    "max_power_hp": 73.4,
+    "max_torque_nm": 67,
+    "max_power_kw": 54
+  }
+}

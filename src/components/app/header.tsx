@@ -346,7 +346,7 @@ const Header: React.FC<any> = ({
           ref={inputRef}
           type="text"
           placeholder={placeholderText}
-          className="pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-none px-6 md:px-10 h-12 md:h-14 font-bold text-sm md:text-base transition-all"
+          className="pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-none px-6 md:px-10 h-12 md:h-14 font-bold text-base transition-all"
           value={searchTerm}
           onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
           onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}

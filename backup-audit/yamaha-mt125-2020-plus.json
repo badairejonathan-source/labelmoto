@@ -1,0 +1,260 @@
+{
+  "display_title": "Yamaha MT-125",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "longevity_tips": [
+    "Respecter les vidanges tous les 5 000 km ou une fois par an",
+    "Graisser la chaîne régulièrement, surtout après la pluie",
+    "Vérifier l'usure des pneus Michelin Pilot Street d'origine — ils s'usent vite si conduite sportive",
+    "Ne pas négliger le remplacement de la bougie à 10 000 km"
+  ],
+  "faq": [
+    {
+      "question": "Quand faire la vidange sur une Yamaha MT-125 ?",
+      "answer": "Tous les 5 000 km ou une fois par an, au premier des deux termes échus."
+    },
+    {
+      "question": "La Yamaha MT-125 est-elle compatible permis A1 ?",
+      "answer": "Oui, c'est une 125cc native. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+    },
+    {
+      "question": "Quel est le prix d'une révision Yamaha MT-125 ?",
+      "answer": "Entre 140 et 200 € pour une révision standard (vidange + contrôles) en atelier indépendant. Comptez plus en concession Yamaha."
+    },
+    {
+      "question": "La Yamaha MT-125 est-elle vraiment fabriquée en France ?",
+      "answer": "Oui, elle est assemblée à Saint-Quentin dans l'Aisne — un argument de poids pour ceux qui tiennent au made in France."
+    }
+  ],
+  "model": "MT-125",
+  "id": "yamaha-mt125-2020-plus",
+  "brand": "Yamaha",
+  "slug": "yamaha-mt125-2020-plus",
+  "known_issues": [
+    "Selle ferme sur les longs trajets selon les retours utilisateurs",
+    "Réservoir de 11 L correct mais limité pour les grandes escapades",
+    "Prix neuf parmi les plus élevés de la catégorie (~5 099 à 5 799 €)",
+    "Légèrement plus lourde que la CB125R (142 kg vs 130 kg)"
+  ],
+  "year_range": "2020+",
+  "consumables": [
+    {
+      "part": "Pneus",
+      "average_lifetime": "10 000 à 16 000 km"
+    },
+    {
+      "part": "Kit chaîne",
+      "average_lifetime": "15 000 à 20 000 km"
+    },
+    {
+      "part": "Plaquettes",
+      "average_lifetime": "10 000 à 18 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "10 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "3 à 5 ans"
+    }
+  ],
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage",
+      "price_estimate": "≈ 100 à 150 €"
+    },
+    {
+      "km": 5000,
+      "service_label": "Vidange + contrôles",
+      "price_estimate": "≈ 140 à 200 €"
+    },
+    {
+      "km": 10000,
+      "service_label": "Vidange + filtre à air + contrôles",
+      "price_estimate": "≈ 200 à 280 €"
+    },
+    {
+      "km": 20000,
+      "service_label": "Bougie + gros entretien + contrôle complet",
+      "price_estimate": "≈ 320 à 480 €"
+    }
+  ],
+  "category": "roadster",
+  "subcategory": "a1",
+  "status": "published",
+  "model_order": 7,
+  "timestamps": {
+    "updated_at": "2026-06-22",
+    "created_at": "2026-02-23"
+  },
+  "search_tags": [
+    "yamaha",
+    "mt-125",
+    "mt125",
+    "125cc",
+    "a1",
+    "roadster",
+    "naked",
+    "vva",
+    "entretien",
+    "revision"
+  ],
+  "brand_order": 2,
+  "relations": {
+    "related_models": [
+      "yamaha-yzf-r125-2019-plus",
+      "ktm-125-duke-2024-plus",
+      "honda-cb125r-2021-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "meilleur-scooter-125-2026-comparatif-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Yamaha MT-125 : 90-140 € (6 000 km), 150-220 € (12 000 km), ~700-1 000 € sur 60 000 km. Intervalles, consommables et fiabilité du moteur VVA.",
+    "keywords": [
+      "entretien yamaha mt-125",
+      "prix revision mt125",
+      "cout entretien mt-125",
+      "fiabilite mt125 vva",
+      "revision mt-125 125"
+    ],
+    "meta_title": "Entretien Yamaha MT-125 : prix des révisions 2026"
+  },
+  "service_guide": {
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "La Yamaha MT-125 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "concession_cta_button": "Voir les Yamaha MT-125 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Yamaha MT-125.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La MT-125 est le roadster 125 le plus vendu de la gamme Yamaha. Elle partage la mécanique VVA de la R125 dans une position plus naturelle. Entretien identique au rythme 6 000 km, budget contenu. Idéale pour débuter en ville avec du style.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (main d'œuvre offerte Yamaha)",
+        "price_estimate": "30 à 50 €"
+      },
+      {
+        "km": 6000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 140 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 150 à 220 €"
+      },
+      {
+        "km": 18000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 90 à 140 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 150 à 220 €"
+      }
+    ],
+    "known_issues": [
+      "Selle ferme pour les longs trajets",
+      "Réservoir de 10 L limitant l'autonomie",
+      "Tarif d'achat élevé pour une 125 'daily'"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "10 000 à 16 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "10 000 à 18 000 km"
+      },
+      {
+        "part": "Filtre air + bougie",
+        "average_lifetime": "12 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "6 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Yamaha MT-125 ?",
+        "answer": "Environ 90 à 140 € pour une vidange simple (tous les 6 000 km) et 150 à 220 € pour la grosse révision des 12 000 km (filtre à air et bougie). La main d'œuvre des 1 000 km est offerte."
+      },
+      {
+        "question": "Tous les combien réviser une MT-125 ?",
+        "answer": "Tous les 6 000 km ou une fois par an minimum. Filtre à air et bougie tous les 12 000 km."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une MT-125 sur 60 000 km ?",
+        "answer": "Environ 700 à 1 000 € en concession (~0,015 €/km). Le poste le plus lourd d'une 125 reste généralement l'assurance, pas l'entretien."
+      },
+      {
+        "question": "MT-125 ou R125, laquelle entretenir le plus facilement ?",
+        "answer": "Les deux partagent la même mécanique VVA et le même coût d'entretien. La MT-125 est juste plus pratique d'accès (pas de carénage à démonter, position plus naturelle)."
+      }
+    ],
+    "intro": "La Yamaha MT-125 est le roadster 125 le plus populaire de la marque, équipé du moteur VVA moderne. Son entretien suit le rythme simple des 125 Yamaha (6 000 km), avec un budget très raisonnable et un accès mécanique facilité par l'absence de carénage.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 700 à 1 000 €",
+      "note": "Tarifs indicatifs concession Yamaha (2026). La main d'œuvre de la révision des 1 000 km est offerte par Yamaha. Un garage indépendant ou l'entretien maison réduit fortement ces coûts.",
+      "cost_per_km": "≈ 0,015 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 6 000 km ou 1 an (filtre air + bougie tous les 12 000 km)"
+    },
+    "longevity_tips": [
+      "Vidange tous les 6 000 km ou 1 an (filtre à air et bougie tous les 12 000 km)",
+      "Huile JASO MA2 (10W40) : prévoir environ 1 L avec filtre",
+      "Graissage de la chaîne tous les 500 km et après chaque pluie",
+      "Le moteur VVA délivre sa puissance dans les tours : l'exploiter après chauffe",
+      "Position roadster plus accessible que la R125 (selle 810 mm)"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782133739,
+    "_nanoseconds": 84000000
+  },
+  "featured": true,
+  "variants": [],
+  "technical_sheet": {
+    "weight_tpf_kg": 142,
+    "wheelbase_mm": 1325,
+    "fuel_system": "Injection électronique",
+    "seat_height_mm": 810,
+    "torque": "11,5 N.m à 8 000 tr/min",
+    "displacement_cc": 125,
+    "power": "11,0 kW (15 ch) à 9 000 tr/min",
+    "cycle_parts": {
+      "rear_suspension": "Monoamortisseur, débattement 114 mm",
+      "front_tire": "100/80-17 M/C (52P)",
+      "rear_brake": "Simple disque, Ø 230 mm, étrier 1 piston, ABS",
+      "rear_tire": "140/70-17 M/C (66S)",
+      "front_suspension": "Fourche inversée Ø 41 mm, débattement 130 mm",
+      "frame": "Cadre Deltabox en acier",
+      "front_brake": "Simple disque, Ø 292 mm, étrier radial 4 pistons, ABS"
+    },
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, 4 soupapes, VVA, Euro5+",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage)",
+    "tank_l": 10,
+    "max_torque_rpm": 8000,
+    "max_power_hp": 15,
+    "max_torque_nm": 11.5,
+    "max_power_kw": 11
+  }
+}

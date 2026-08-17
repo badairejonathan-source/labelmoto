@@ -1,0 +1,177 @@
+{
+  "model_order": 5,
+  "year_range": "2024+",
+  "display_title": "Kawasaki Ninja 500 SE",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "Ninja 500 SE",
+  "id": "kawasaki-ninja-500-se-2024-plus",
+  "category": "sportive",
+  "subcategory": "a2",
+  "brand": "Kawasaki",
+  "slug": "kawasaki-ninja-500-se-2024-plus",
+  "status": "published",
+  "featured": false,
+  "timestamps": {
+    "updated_at": "2026-06-22",
+    "created_at": "2026-02-23"
+  },
+  "search_tags": [
+    "kawasaki",
+    "ninja 500",
+    "ninja500",
+    "a2",
+    "451cc",
+    "twin",
+    "sportive",
+    "carénée",
+    "entretien",
+    "revision"
+  ],
+  "brand_order": 3,
+  "relations": {
+    "related_models": [
+      "kawasaki-z650-2020-plus",
+      "honda-cbr500r-2022-plus",
+      "yamaha-r7-2022-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Kawasaki Ninja 500 : ~200-280 € (12 000 km), 420-580 € (24 000 km), ~1 400-1 800 € sur 60 000 km. Sportive A2 légère, nouveau twin 451cc.",
+    "keywords": [
+      "entretien kawasaki ninja 500",
+      "prix revision ninja 500",
+      "cout entretien ninja 500",
+      "fiabilite ninja 500",
+      "ninja 500 a2"
+    ],
+    "meta_title": "Entretien Kawasaki Ninja 500 : prix des révisions 2026"
+  },
+  "technical_sheet": {
+    "wheelbase_mm": 1375,
+    "seat_height_mm": 785,
+    "displacement_cc": 451,
+    "tank_l": 14,
+    "cycle_parts": {
+      "rear_tire": "150/60 R17",
+      "rear_suspension": "Monoamortisseur, débattement 130 mm, réglable précharge",
+      "front_tire": "120/70 R17",
+      "rear_brake": "Simple disque, Ø 220 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche télescopique Ø 41 mm, débattement 120 mm",
+      "frame": "Cadre treillis acier",
+      "front_brake": "Simple disque, Ø 310 mm, étrier 2 pistons, ABS"
+    },
+    "weight_tpf_kg": 171,
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "fuel_system": "Injection électronique",
+    "torque": "43,0 N.m à 6 000 tr/min",
+    "power": "33,4 kW (45 ch) à 9 000 tr/min"
+  },
+  "service_guide": {
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "known_issues": [
+      "Freinage avant simple disque, correct mais sans plus en usage sportif",
+      "Modèle récent (2024) : tarifs d'entretien à confirmer en concession",
+      "Équipement de série un peu juste hors version SE"
+    ],
+    "concession_cta_title": "La Kawasaki Ninja 500 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les Kawasaki Ninja 500 en concession",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Kawasaki Ninja 500.",
+    "longevity_tips": [
+      "Nouveau moteur 451 (évolution du 399 de la Ninja 400) : vidange tous les 12 000 km",
+      "Jeu aux soupapes tous les 24 000 km",
+      "Huile 10W40 JASO MA2 (Motul Lime Green Kawasaki)",
+      "Graissage de la chaîne tous les 800 km et après la pluie",
+      "Moteur souple et accessible, idéal pour débuter en sportive"
+    ],
+    "conclusion": "La Ninja 500 SE est une sportive carénée A2 accessible, dotée du nouveau twin 451. Légère (171 kg) et économique, elle suit le cycle d'entretien Kawasaki de 12 000 km. Modèle récent : ses coûts d'entretien réels se confirmeront avec le kilométrage, mais s'annoncent contenus.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 420 à 580 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 480 à 620 €"
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Kawasaki Ninja 500 ?",
+        "answer": "Estimé à environ 200 à 280 € pour la révision des 12 000 km et 420 à 580 € pour la grosse révision des 24 000 km. Modèle récent, tarifs à confirmer en concession."
+      },
+      {
+        "question": "La Ninja 500 est-elle adaptée aux débutants ?",
+        "answer": "Oui, légère (171 kg), selle basse (785 mm) et moteur souple, c'est une excellente sportive carénée A2 pour débuter avec du style."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une Ninja 500 sur 60 000 km ?",
+        "answer": "Estimé à environ 1 400 à 1 800 € de révisions (~0,026 €/km), dans la moyenne basse des twins A2."
+      },
+      {
+        "question": "Le moteur de la Ninja 500 est-il fiable ?",
+        "answer": "Il dérive du twin 399 de la Ninja 400, réputé fiable, porté à 451 cc. Recul encore limité vu sa récence, mais la base est saine."
+      }
+    ],
+    "intro": "La Kawasaki Ninja 500 SE est une sportive carénée A2 accessible et légère, animée par un nouveau twin 451 cc. Elle suit le cycle d'entretien Kawasaki de 12 000 km, pour un budget d'usage qui s'annonce très contenu.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 400 à 1 800 €",
+      "note": "Estimations basées sur la grille Kawasaki et le moteur dérivé de la Ninja 400. Modèle récent (2024) : tarifs à confirmer en concession. Un indépendant facture généralement moins.",
+      "cost_per_km": "≈ 0,026 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)"
+    }
+  },
+  "updatedAt": {
+    "_seconds": 1782147580,
+    "_nanoseconds": 260000000
+  }
+}

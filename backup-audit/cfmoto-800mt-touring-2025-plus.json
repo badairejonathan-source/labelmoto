@@ -1,0 +1,161 @@
+{
+  "model_order": 3,
+  "featured": true,
+  "year_range": "2025+",
+  "timestamps": {
+    "updated_at": "2026-04-29",
+    "created_at": "2026-04-29"
+  },
+  "display_title": "CFMOTO 800MT Touring",
+  "language": "fr",
+  "search_tags": [
+    "cfmoto",
+    "800mt",
+    "800mt touring",
+    "a2",
+    "trail routier",
+    "entretien",
+    "revision"
+  ],
+  "type": "motorcycle_service_sheet",
+  "model": "800MT Touring",
+  "brand_order": 7,
+  "id": "cfmoto-800mt-touring-2025-plus",
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "cfmoto-450mt-2024-plus",
+      "suzuki-v-strom-650-2017-plus",
+      "yamaha-tracer-7-2021-plus"
+    ],
+    "related_articles": [
+      "achat-moto-a2-guide-complet-meilleures-motos-pour-debuter",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Découvrez les intervalles d’entretien, le prix des révisions, les consommables et les points de fiabilité de la CFMOTO 800MT Touring.",
+    "keywords": [
+      "entretien cfmoto 800mt touring",
+      "prix revision 800mt",
+      "fiabilite cfmoto 800mt",
+      "cfmoto 800mt a2",
+      "revision 800mt touring"
+    ],
+    "meta_title": "Entretien CFMOTO 800MT Touring : intervalles, prix et conseils"
+  },
+  "brand": "CFMOTO",
+  "slug": "cfmoto-800mt-touring-2025-plus",
+  "status": "published",
+  "updatedAt": {
+    "_seconds": 1777453664,
+    "_nanoseconds": 523000000
+  },
+  "imageUrl": "/images/entretien-cfmoto-800mt.webp",
+  "variants": [],
+  "category": "trail",
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Mono-amortisseur, débattement 150 mm, réglable en précharge et détente",
+      "front_tire": "110/80 R19",
+      "rear_brake": "Disque J.Juan Ø260 mm, étrier 2 pistons",
+      "rear_tire": "150/70 R17",
+      "front_suspension": "Fourche inversée Ø43 mm, débattement 160 mm, réglable en précharge, compression et détente",
+      "frame": "Cadre treillis tubulaire en acier",
+      "front_brake": "Double disque J.Juan Ø320 mm, étriers radiaux 4 pistons"
+    },
+    "weight_tpf_kg": 231,
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, double ACT, calage à 285°",
+    "license_bridging": "✔ Permis A2 (version bridée 35 kW / 47,5 ch) – version full power 67 kW / 91 ch disponible",
+    "wheelbase_mm": 1531,
+    "fuel_system": "Injection électronique avec accélérateur électronique",
+    "seat_height_mm": 825,
+    "torque": "Couple non bridé : 75 N.m à 8 000 tr/min",
+    "displacement_cc": 799,
+    "power": "Puissance bridée (A2) : 35 kW (47,5 ch) / Puissance non bridée : 67 kW (91 ch) à 9 250 tr/min",
+    "tank_l": 19,
+    "max_torque_rpm": 8000,
+    "max_power_hp": 91,
+    "max_torque_nm": 75,
+    "max_power_kw": 67
+  },
+  "service_guide": {
+    "known_issues": [
+      "Poids assez élevé pour la catégorie",
+      "Chaîne d’origine à surveiller régulièrement",
+      "Consommation de pneus plus rapide en usage chargé ou dynamique",
+      "Réseau après-vente plus limité que certaines marques japonaises selon les régions"
+    ],
+    "concession_cta_title": "La CFMOTO 800MT Touring vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d’en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 15 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "10 000 à 20 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l’atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "concession_cta_button": "Voir les CFMOTO 800MT en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre CFMOTO 800MT Touring.",
+    "longevity_tips": [
+      "Respecter les révisions annuelles même si le kilométrage n’est pas atteint",
+      "Contrôler régulièrement le niveau d’huile, l’usure des plaquettes et la pression des pneus",
+      "Graisser la chaîne après la pluie et sur longs trajets",
+      "Vérifier les réglages de suspensions si la moto roule souvent chargée"
+    ],
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "Confortable, bien équipée et pensée pour le voyage, la CFMOTO 800MT Touring est une alternative sérieuse dans le segment des trails routiers. Bien entretenue, elle reste cohérente à l’usage et intéressante pour un motard qui veut rouler loin avec une moto très complète.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "faq": [
+      {
+        "question": "Quand faire la vidange ?",
+        "answer": "Sur la gamme 800cc CFMOTO, les révisions sont prévues à 1 000, 15 000, 30 000 et 45 000 km, ou une fois par an."
+      },
+      {
+        "question": "La CFMOTO 800MT Touring est-elle compatible A2 ?",
+        "answer": "Oui, elle existe en version bridée 35 kW / 47,5 ch pour le permis A2."
+      },
+      {
+        "question": "Quelle est la puissance de la CFMOTO 800MT Touring ?",
+        "answer": "La version full développe 67 kW, soit 91 ch."
+      }
+    ],
+    "intro": "La CFMOTO 800MT Touring est un trail routier bien équipé, pensé pour le voyage et les longs trajets. Son bicylindre de 799 cm³, dérivé d’une base connue sur le marché, offre de bonnes performances tout en conservant une vraie polyvalence au quotidien. En version A2 comme en full, un entretien régulier permet de préserver son agrément, son confort et sa fiabilité sur la durée.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 150 à 220 €"
+      },
+      {
+        "km": 15000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 250 à 350 €"
+      },
+      {
+        "km": 30000,
+        "service_label": "Bougies + filtre à air + contrôles",
+        "price_estimate": "≈ 450 à 600 €"
+      },
+      {
+        "km": 45000,
+        "service_label": "Gros entretien + réglages",
+        "price_estimate": "≈ 700 à 950 €"
+      }
+    ]
+  }
+}

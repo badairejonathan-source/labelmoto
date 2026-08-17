@@ -1,0 +1,269 @@
+{
+  "timestamps": {
+    "updated_at": "2026-06-10",
+    "created_at": "2026-06-10"
+  },
+  "display_title": "KTM RC 125",
+  "language": "fr",
+  "search_tags": [
+    "ktm",
+    "rc 125",
+    "rc125",
+    "125cc",
+    "a1",
+    "sportive",
+    "carénée",
+    "wp apex",
+    "bybre",
+    "entretien",
+    "revision",
+    "piste"
+  ],
+  "type": "motorcycle_service_sheet",
+  "longevity_tips": [
+    "Respecter les vidanges tous les 5 000 km avec l'huile Motorex préconisée",
+    "Graisser la chaîne tous les 500 km ou après chaque pluie",
+    "Vérifier les plaquettes ByBre régulièrement — usure plus rapide en conduite sportive",
+    "Ne pas désactiver l'ABS arrière (mode Supermoto) sur route ouverte",
+    "Contrôler l'état du carénage et des fixations après usage intensif ou piste"
+  ],
+  "faq": [
+    {
+      "question": "Quelle différence entre la KTM RC 125 et la KTM 125 Duke ?",
+      "answer": "Même moteur et même cadre treillis, mais la RC 125 est carénée avec une position plus couchée et sportive. La Duke 125 est une naked avec une position plus droite et confortable au quotidien. La RC est plus axée piste, la Duke plus polyvalente."
+    },
+    {
+      "question": "La KTM RC 125 a-t-elle une bonne cote de revente ?",
+      "answer": "Oui, c'est l'une des meilleures cotes de la catégorie sportive 125cc. Une occasion bien entretenue avec carnet complet conserve 70 à 75 % de sa valeur après 2 ans."
+    },
+    {
+      "question": "Quand faire la vidange sur une KTM RC 125 ?",
+      "answer": "Tous les 5 000 km ou une fois par an avec l'huile Motorex Formula 4T 15W/50 préconisée par KTM."
+    },
+    {
+      "question": "Le mode Supermoto de la KTM RC 125, c'est quoi ?",
+      "answer": "C'est un mode qui désactive l'ABS sur la roue arrière, permettant de bloquer volontairement l'arrière en entrée de virage — une fonction réservée à un usage piste ou hors route, jamais sur route ouverte."
+    }
+  ],
+  "model": "RC 125",
+  "id": "ktm-rc125-2022-plus",
+  "seo": {
+    "meta_description": "Découvrez les intervalles d'entretien, le prix des révisions, les consommables et les points de fiabilité de la KTM RC 125.",
+    "keywords": [
+      "entretien ktm rc 125",
+      "prix revision ktm rc125",
+      "fiabilite ktm rc 125",
+      "ktm rc125 a1",
+      "revision rc 125"
+    ],
+    "meta_title": "Entretien KTM RC 125 : intervalles, prix et conseils"
+  },
+  "brand": "KTM",
+  "slug": "ktm-rc125-2022-plus",
+  "model_order": 2,
+  "known_issues": [
+    "Position de conduite très couchée — inconfortable au quotidien sur longs trajets",
+    "Selle haute à 824 mm — peu adaptée aux petits gabarits",
+    "Carénage coûteux à réparer en cas de chute",
+    "Pneus sportifs à usure rapide si conduite agressive",
+    "Réseau KTM moins dense que Honda ou Yamaha — pièces parfois à commander",
+    "Coût d'entretien légèrement supérieur à la concurrence japonaise"
+  ],
+  "year_range": "2022+",
+  "consumables": [
+    {
+      "part": "Pneus",
+      "average_lifetime": "8 000 à 10 000 km (conduite sportive)"
+    },
+    {
+      "part": "Kit chaîne",
+      "average_lifetime": "12 000 à 18 000 km"
+    },
+    {
+      "part": "Plaquettes ByBre avant",
+      "average_lifetime": "8 000 à 12 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "15 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "3 à 5 ans"
+    },
+    {
+      "part": "Huile moteur (Motorex 4T 15W/50)",
+      "average_lifetime": "5 000 km"
+    }
+  ],
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage",
+      "price_estimate": "≈ 120 à 180 €"
+    },
+    {
+      "km": 5000,
+      "service_label": "Vidange + contrôles",
+      "price_estimate": "≈ 150 à 250 €"
+    },
+    {
+      "km": 10000,
+      "service_label": "Vidange + filtre à air + contrôles",
+      "price_estimate": "≈ 220 à 320 €"
+    },
+    {
+      "km": 15000,
+      "service_label": "Bougie + filtre à huile + contrôle complet",
+      "price_estimate": "≈ 300 à 450 €"
+    },
+    {
+      "km": 30000,
+      "service_label": "Gros entretien + révision complète",
+      "price_estimate": "≈ 500 à 700 €"
+    }
+  ],
+  "category": "sportive",
+  "subcategory": "a1",
+  "relations": {
+    "related_models": [
+      "ktm-125-duke-2024-plus",
+      "aprilia-rs125-2023-plus",
+      "yamaha-yzf-r125-2019-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "status": "published",
+  "service_guide": {
+    "conclusion": "La KTM RC 125 est le choix idéal pour les fans de sportives carénées qui veulent la meilleure partie-cycle de la catégorie. Son entretien est similaire à la Duke 125 — rigoureux mais accessible. Elle vieillit bien et se revend facilement.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "La KTM RC 125 vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier, la région et les opérations supplémentaires. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "intro": "La KTM RC 125 est la version carénée et sportive de la Duke 125. Elle partage le même moteur monocylindre et le même cadre treillis acier, mais avec une position de conduite plus couchée et un carénage aérodynamique inspiré du MotoGP. Équipée de la fourche inversée WP Apex 43 mm et des freins ByBre (filiale Brembo), c'est la sportive carénée la mieux équipée de la catégorie. Sa cote de revente est excellente — elle conserve 70 à 75 % de sa valeur après 2 ans grâce à l'image forte KTM et à la demande constante des jeunes permis.",
+    "concession_cta_button": "Voir les KTM RC 125 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre KTM RC 125.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage",
+        "price_estimate": "≈ 120 à 180 €"
+      },
+      {
+        "km": 5000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 150 à 250 €"
+      },
+      {
+        "km": 10000,
+        "service_label": "Vidange + filtre à air + contrôles",
+        "price_estimate": "≈ 220 à 320 €"
+      },
+      {
+        "km": 15000,
+        "service_label": "Bougie + filtre à huile + contrôle complet",
+        "price_estimate": "≈ 300 à 450 €"
+      },
+      {
+        "km": 30000,
+        "service_label": "Gros entretien + révision complète",
+        "price_estimate": "≈ 500 à 700 €"
+      }
+    ],
+    "known_issues": [
+      "Position de conduite très couchée — inconfortable au quotidien sur longs trajets",
+      "Selle haute à 824 mm — peu adaptée aux petits gabarits",
+      "Carénage coûteux à réparer en cas de chute",
+      "Pneus sportifs à usure rapide si conduite agressive",
+      "Réseau KTM moins dense que Honda ou Yamaha — pièces parfois à commander",
+      "Coût d'entretien légèrement supérieur à la concurrence japonaise"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 10 000 km (conduite sportive)"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "12 000 à 18 000 km"
+      },
+      {
+        "part": "Plaquettes ByBre avant",
+        "average_lifetime": "8 000 à 12 000 km"
+      },
+      {
+        "part": "Bougie",
+        "average_lifetime": "15 000 km"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "3 à 5 ans"
+      },
+      {
+        "part": "Huile moteur (Motorex 4T 15W/50)",
+        "average_lifetime": "5 000 km"
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quelle différence entre la KTM RC 125 et la KTM 125 Duke ?",
+        "answer": "Même moteur et même cadre treillis, mais la RC 125 est carénée avec une position plus couchée et sportive. La Duke 125 est une naked avec une position plus droite et confortable au quotidien. La RC est plus axée piste, la Duke plus polyvalente."
+      },
+      {
+        "question": "La KTM RC 125 a-t-elle une bonne cote de revente ?",
+        "answer": "Oui, c'est l'une des meilleures cotes de la catégorie sportive 125cc. Une occasion bien entretenue avec carnet complet conserve 70 à 75 % de sa valeur après 2 ans."
+      },
+      {
+        "question": "Quand faire la vidange sur une KTM RC 125 ?",
+        "answer": "Tous les 5 000 km ou une fois par an avec l'huile Motorex Formula 4T 15W/50 préconisée par KTM."
+      },
+      {
+        "question": "Le mode Supermoto de la KTM RC 125, c'est quoi ?",
+        "answer": "C'est un mode qui désactive l'ABS sur la roue arrière, permettant de bloquer volontairement l'arrière en entrée de virage — une fonction réservée à un usage piste ou hors route, jamais sur route ouverte."
+      }
+    ],
+    "longevity_tips": [
+      "Respecter les vidanges tous les 5 000 km avec l'huile Motorex préconisée",
+      "Graisser la chaîne tous les 500 km ou après chaque pluie",
+      "Vérifier les plaquettes ByBre régulièrement — usure plus rapide en conduite sportive",
+      "Ne pas désactiver l'ABS arrière (mode Supermoto) sur route ouverte",
+      "Contrôler l'état du carénage et des fixations après usage intensif ou piste"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1781161762,
+    "_nanoseconds": 681000000
+  },
+  "featured": true,
+  "variants": [],
+  "brand_order": 16,
+  "technical_sheet": {
+    "cycle_parts": {
+      "rear_suspension": "Mono-amortisseur WP double piston, réglable en précharge",
+      "front_tire": "110/70 R17",
+      "rear_brake": "Disque Ø230 mm, ABS désactivable (mode Supermoto)",
+      "rear_tire": "150/60 R17",
+      "front_suspension": "Fourche inversée WP Apex Ø43 mm, sans réglage",
+      "frame": "Cadre treillis acier, boucle arrière aluminium boulonnée",
+      "front_brake": "Disque Ø320 mm, étrier radial ByBre 4 pistons, ABS Bosch 10.2"
+    },
+    "weight_tpf_kg": 155,
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, injection Bosch, Euro5",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage nécessaire)",
+    "wheelbase_mm": 1340,
+    "fuel_system": "Injection électronique Bosch EMS",
+    "seat_height_mm": 824,
+    "torque": "12,0 N.m",
+    "displacement_cc": 125,
+    "power": "11,0 kW (15 ch)",
+    "tank_l": 13.7,
+    "max_power_hp": 15,
+    "max_torque_nm": 12,
+    "max_power_kw": 11
+  }
+}

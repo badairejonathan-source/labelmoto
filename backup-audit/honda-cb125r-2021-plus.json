@@ -1,0 +1,249 @@
+{
+  "display_title": "Honda CB125R",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "faq": [
+    {
+      "question": "Quand faire la vidange sur une Honda CB125R ?",
+      "answer": "Tous les 6 000 km ou une fois par an, au premier des deux termes échus."
+    },
+    {
+      "question": "La Honda CB125R est-elle compatible permis A1 ?",
+      "answer": "Oui, c'est une 125cc native. Aucun bridage nécessaire pour le permis A1 ou la formation 7h avec permis B."
+    },
+    {
+      "question": "Quel est le prix d'une révision Honda CB125R ?",
+      "answer": "Entre 150 et 220 € pour une révision standard (vidange + contrôles) en atelier indépendant. Comptez plus en concession Honda."
+    }
+  ],
+  "model": "CB125R",
+  "id": "honda-cb125r-2021-plus",
+  "brand": "Honda",
+  "slug": "honda-cb125r-2021-plus",
+  "known_issues": [
+    "Fourche Showa à surveiller sur les modèles anciens (suintement d'huile possible)",
+    "Pneus d'origine de qualité moyenne sur certains millésimes",
+    "Pas de modes de conduite ni traction control (contrairement à la concurrence premium)",
+    "Réservoir de 10,1 L limité pour les grandes sorties"
+  ],
+  "year_range": "2021+",
+  "consumables": [
+    {
+      "part": "Pneus",
+      "average_lifetime": "10 000 à 18 000 km"
+    },
+    {
+      "part": "Kit chaîne",
+      "average_lifetime": "15 000 à 25 000 km"
+    },
+    {
+      "part": "Plaquettes",
+      "average_lifetime": "10 000 à 20 000 km"
+    },
+    {
+      "part": "Bougie",
+      "average_lifetime": "12 000 km"
+    },
+    {
+      "part": "Batterie",
+      "average_lifetime": "3 à 5 ans"
+    }
+  ],
+  "category": "roadster",
+  "subcategory": "a1",
+  "status": "published",
+  "model_order": 8,
+  "featured": false,
+  "search_tags": [
+    "honda",
+    "cb125r",
+    "cb 125 r",
+    "125cc",
+    "a1",
+    "roadster",
+    "neo-retro",
+    "entretien",
+    "revision",
+    "budget"
+  ],
+  "brand_order": 1,
+  "relations": {
+    "related_models": [
+      "honda-cb125f-2021-plus",
+      "yamaha-mt125-2020-plus",
+      "ktm-125-duke-2024-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "meilleur-scooter-125-2026-comparatif-complet",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda CB125R : 100-160 € (4 000 km), jusqu'à 280 € (12 000 km). Attention intervalle court Honda. 125 néo-rétro premium, fiabilité et budget.",
+    "keywords": [
+      "entretien honda cb125r",
+      "prix revision cb125r",
+      "cout entretien cb 125 r",
+      "fiabilite cb125r",
+      "revision 4000 km honda 125"
+    ],
+    "meta_title": "Entretien Honda CB125R : prix des révisions 2026"
+  },
+  "technical_sheet": {
+    "weight_tpf_kg": 130,
+    "wheelbase_mm": 1345,
+    "torque": "11,6 N.m à 8 000 tr/min",
+    "displacement_cc": 125,
+    "power": "11,0 kW (15 ch) à 10 000 tr/min",
+    "tank_l": 10.1,
+    "cycle_parts": {
+      "front_tire": "110/70 R17",
+      "rear_tire": "150/60 R17",
+      "rear_suspension": "Monoamortisseur, débattement 105 mm",
+      "rear_brake": "Simple disque, Ø 220 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche inversée Showa Ø 41 mm, débattement 130 mm",
+      "frame": "Cadre acier en diamant",
+      "front_brake": "Simple disque, Ø 296 mm, étrier radial 4 pistons, ABS"
+    },
+    "engine_type": "Monocylindre, 4 temps, refroidissement liquide, 4 soupapes, DACT, Euro5+",
+    "license_bridging": "✔ Permis A1 (125cc native – pas de bridage)",
+    "fuel_system": "Injection PGM-FI",
+    "seat_height_mm": 815
+  },
+  "service_guide": {
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "concession_cta_title": "La Honda CB125R vous correspond ?",
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "concession_cta_button": "Voir les Honda CB125R en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda CB125R.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "conclusion": "La CB125R est la 125 néo-rétro premium de Honda, avec une partie-cycle de grande qualité. Son point faible budget : des révisions tous les 4 000 km en concession (environ 280 €), plus fréquentes que chez Yamaha. Faire l'entretien soi-même change radicalement la donne.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 90 à 150 €"
+      },
+      {
+        "km": 4000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 100 à 160 €"
+      },
+      {
+        "km": 8000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 100 à 160 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + bougie + contrôles",
+        "price_estimate": "≈ 200 à 280 €"
+      },
+      {
+        "km": 16000,
+        "service_label": "Vidange + contrôles",
+        "price_estimate": "≈ 100 à 160 €"
+      }
+    ],
+    "known_issues": [
+      "Révisions tous les 4 000 km : plus fréquentes que les 125 Yamaha (6 000 km)",
+      "Réservoir de 10 L limitant l'autonomie",
+      "Tarif d'achat élevé pour une 125 (finition premium)"
+    ],
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 18 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "18 000 à 28 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "4 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Tous les combien réviser une Honda CB125R ?",
+        "answer": "Honda préconise une révision tous les 4 000 km sur ses 125, plus fréquent que les 6 000 km de Yamaha. C'est à prendre en compte dans le budget si vous passez tout en concession."
+      },
+      {
+        "question": "Quel est le prix d'une révision sur une CB125R ?",
+        "answer": "Environ 100 à 160 € pour une vidange simple et jusqu'à 280 € pour la révision complète (filtre air + bougie). L'intervalle de 4 000 km en fait un poste à anticiper."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une CB125R sur 60 000 km ?",
+        "answer": "Environ 1 800 à 2 400 € en concession à cause de l'intervalle court de 4 000 km. En faisant les vidanges soi-même, on descend bien en dessous de 1 000 €."
+      },
+      {
+        "question": "La CB125R est-elle une bonne 125 ?",
+        "answer": "Oui, c'est l'une des 125 les mieux finies du marché (fourche Showa, freinage radial, cadre soigné). Son seul vrai bémol est l'intervalle d'entretien court de Honda."
+      }
+    ],
+    "intro": "La Honda CB125R est une 125 néo-rétro à la finition premium, avec une partie-cycle digne d'une grosse cylindrée. Point d'attention budget : Honda impose des révisions tous les 4 000 km sur ses 125, un intervalle court à anticiper.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 800 à 2 400 €",
+      "note": "Honda impose un intervalle court de 4 000 km sur ses 125, ce qui alourdit le budget concession. L'entretien maison (vidange simple) fait chuter le coût à environ 0,01 €/km. Tarifs indicatifs 2026.",
+      "cost_per_km": "≈ 0,035 €/km en concession (révisions seules)",
+      "interval_rule": "Tous les 4 000 km ou 1 an (préconisation Honda pour ses 125)"
+    },
+    "longevity_tips": [
+      "Attention : Honda préconise une révision tous les 4 000 km sur ses 125 (plus court que la concurrence)",
+      "Faire l'entretien soi-même réduit drastiquement le coût (vidange simple)",
+      "Huile 10W30 JASO MA2 Honda : environ 1,1 L avec filtre",
+      "Graissage de la chaîne tous les 500 km et après la pluie",
+      "Partie-cycle premium (fourche Showa, étrier radial) : qualité supérieure à exploiter"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782147580,
+    "_nanoseconds": 260000000
+  },
+  "service_schedule": [
+    {
+      "km": 1000,
+      "service_label": "Révision de rodage (vidange + contrôles)",
+      "price_estimate": "≈ 90 à 150 €"
+    },
+    {
+      "km": 6000,
+      "service_label": "Vidange + contrôles (Honda préconisait 4 000 km à l'origine — 6 000 km communément pratiqué)",
+      "price_estimate": "≈ 100 à 160 €"
+    },
+    {
+      "km": 12000,
+      "service_label": "Vidange + filtre à air + bougie + contrôles",
+      "price_estimate": "≈ 200 à 280 €"
+    },
+    {
+      "km": 24000,
+      "service_label": "Gros entretien + contrôle jeu aux soupapes + contrôle complet",
+      "price_estimate": "≈ 350 à 500 €"
+    }
+  ],
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-07-11"
+  },
+  "intro": "La Honda CB125R est une 125 néo-rétro à la finition premium, avec une partie-cycle digne d'une grosse cylindrée. Point d'attention budget : Honda préconisait initialement des vidanges tous les 4 000 km sur ses modèles 125 à moteur liquide, mais il est aujourd'hui communément admis et pratiqué d'effectuer la vidange tous les 6 000 km — intervalle plus répandu chez les propriétaires et ateliers indépendants, et suffisant avec une huile de qualité.",
+  "longevity_tips": [
+    "Honda préconisait 4 000 km à l'origine pour la vidange — la pratique courante est 6 000 km avec une huile 10W40 JASO MA2 de qualité",
+    "Vérifier régulièrement la fourche Showa pour tout suintement",
+    "Graisser la chaîne après chaque pluie et tous les 500 km en usage intensif",
+    "Ne pas négliger le remplacement de la bougie à 12 000 km",
+    "Contrôle du jeu aux soupapes à 24 000 km — opération délicate à confier à un atelier Honda"
+  ]
+}

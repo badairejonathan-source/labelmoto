@@ -1,0 +1,181 @@
+{
+  "featured": true,
+  "year_range": "2020+",
+  "display_title": "Kawasaki Z900",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "model": "Z900",
+  "id": "kawasaki-z900-2020-plus",
+  "category": "roadster",
+  "brand": "Kawasaki",
+  "slug": "kawasaki-z900-2020-plus",
+  "status": "published",
+  "model_order": 4,
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "search_tags": [
+    "kawasaki",
+    "z900",
+    "z 900",
+    "948cc",
+    "4 cylindres",
+    "roadster",
+    "hypernaked",
+    "entretien",
+    "revision"
+  ],
+  "brand_order": 3,
+  "subcategory": "a2",
+  "relations": {
+    "related_models": [
+      "kawasaki-z650-2020-plus",
+      "honda-cb1000-hornet-2025-plus",
+      "suzuki-gsx-8s-2023-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Kawasaki Z900 : 250-330 € (12 000 km), 600-800 € (24 000 km), ~1 950-2 500 € sur 60 000 km. Hypernaked 4-cylindres 948cc, intervalles et budget.",
+    "keywords": [
+      "entretien kawasaki z900",
+      "prix revision z900",
+      "cout entretien z 900",
+      "fiabilite z900",
+      "jeu soupapes z900"
+    ],
+    "meta_title": "Entretien Kawasaki Z900 : prix des révisions 2026"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Kawasaki Z900 vous correspond ?",
+    "concession_cta_button": "Voir les Kawasaki Z900 en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Kawasaki Z900.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La Z900 est un hypernaked 4-cylindres au caractère explosif. Son entretien suit le rythme Kawasaki 12 000 km, mais le jeu aux soupapes sur 4 cylindres (24 000 km) demande plus de main d'œuvre. Budget supérieur aux twins, justifié par les performances.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 150 à 210 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 250 à 330 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes (4 cyl) + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 600 à 800 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + filtre air + contrôles",
+        "price_estimate": "≈ 250 à 330 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 700 à 900 €"
+      }
+    ],
+    "known_issues": [
+      "Jeu aux soupapes sur 4 cylindres : main d'œuvre plus longue qu'un twin",
+      "Consommation et usure pneus plus élevées en usage sportif",
+      "Version A2 bridée moins vivace (spécifique, non débridable simplement)"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "8 000 à 16 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "18 000 à 28 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "12 000 à 22 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an (6 000 km conseillé)"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Kawasaki Z900 ?",
+        "answer": "Environ 250 à 330 € pour la révision des 12 000 km et 600 à 800 € pour la grosse révision des 24 000 km. Le jeu aux soupapes sur 4 cylindres explique le coût supérieur aux twins."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une Z900 sur 60 000 km ?",
+        "answer": "Environ 1 950 à 2 500 € de révisions, soit ~0,037 €/km. Le budget d'un 4-cylindres performant, raisonnable au vu des prestations."
+      },
+      {
+        "question": "La Z900 est-elle accessible en A2 ?",
+        "answer": "Oui, via une version A2 bridée à 35 kW spécifique. Attention, ce n'est pas un simple kit : c'est une version dédiée non débridable facilement."
+      },
+      {
+        "question": "Le 4-cylindres de la Z900 est-il fiable ?",
+        "answer": "Oui, ce bloc 948 cc est réputé robuste et performant. La distribution par chaîne évite le coût d'une courroie à remplacer."
+      }
+    ],
+    "intro": "La Kawasaki Z900 est un hypernaked 4-cylindres au caractère explosif et au son envoutant. Son entretien suit le cycle Kawasaki de 12 000 km ; seul le jeu aux soupapes sur 4 cylindres ajoute du budget aux grosses révisions.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 950 à 2 500 €",
+      "note": "Tarifs indicatifs réseau Kawasaki (2026). Le jeu aux soupapes sur 4 cylindres demande plus de main d'œuvre qu'un twin. Vidange intermédiaire à 6 000 km conseillée en usage dynamique. Un indépendant facture généralement moins.",
+      "cost_per_km": "≈ 0,037 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)"
+    },
+    "longevity_tips": [
+      "Vidange tous les 12 000 km (6 000 km conseillé en usage dynamique), jeu aux soupapes tous les 24 000 km",
+      "Le 4-cylindres aime les hauts régimes : l'exploiter après chauffe complète",
+      "Huile 10W40 JASO MA2 (Motul Lime Green Kawasaki)",
+      "Graissage de la chaîne tous les 800 km et après la pluie",
+      "Surveiller l'usure pneus, rapide en conduite sportive"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782147580,
+    "_nanoseconds": 260000000
+  },
+  "variants": [],
+  "technical_sheet": {
+    "weight_tpf_kg": 212,
+    "seat_height_mm": 820,
+    "displacement_cc": 948,
+    "tank_l": 17,
+    "cycle_parts": {
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "180/55 ZR17",
+      "rear_suspension": "Monoamortisseur Horizontal Back-link, débattement 140 mm, réglable précharge et détente",
+      "rear_brake": "Simple disque, Ø 250 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche inversée Ø 41 mm, débattement 120 mm, réglable",
+      "frame": "Cadre treillis acier haute résistance",
+      "front_brake": "Double disque, Ø 300 mm, étriers radiaux 4 pistons, ABS"
+    },
+    "engine_type": "4 cylindres en ligne, 4 temps, refroidissement liquide, 16 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (version bridable 35 kW dédiée) / version A pleine puissance",
+    "wheelbase_mm": 1450,
+    "fuel_system": "Injection électronique",
+    "torque": "98,6 N.m à 7 700 tr/min",
+    "power": "92,2 kW (125 ch) à 9 500 tr/min",
+    "max_torque_rpm": 7700,
+    "max_power_hp": 125,
+    "max_torque_nm": 98.6,
+    "max_power_kw": 92.2
+  }
+}

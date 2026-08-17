@@ -1,0 +1,178 @@
+{
+  "model_order": 1,
+  "featured": true,
+  "year_range": "2022+",
+  "display_title": "Honda CB500F / CB500 Hornet",
+  "language": "fr",
+  "type": "motorcycle_service_sheet",
+  "id": "honda-cb500f-2022-plus",
+  "category": "roadster",
+  "subcategory": "a2",
+  "brand": "Honda",
+  "slug": "honda-cb500f-2022-plus",
+  "status": "published",
+  "timestamps": {
+    "created_at": "2026-02-23",
+    "updated_at": "2026-06-22"
+  },
+  "model": "CB500F",
+  "search_tags": [
+    "honda",
+    "cb500f",
+    "cb500 hornet",
+    "a2",
+    "471cc",
+    "roadster",
+    "twin",
+    "entretien",
+    "revision",
+    "forfait honda"
+  ],
+  "brand_order": 1,
+  "relations": {
+    "related_models": [
+      "honda-cbr500r-2022-plus",
+      "honda-nx500-2024-plus",
+      "honda-cb650r-2020-plus"
+    ],
+    "related_articles": [
+      "meilleures-motos-125cc-2026-guide-complet",
+      "combien-coute-vraiment-une-moto-par-mois",
+      "achat-moto-occasion-guide-complet-pour-eviter-les-pieges"
+    ]
+  },
+  "seo": {
+    "meta_description": "Prix des révisions Honda CB500F : 200-260 € (12 000 km), 420-500 € (24 000 km), ~1 350-1 600 € sur 60 000 km. Intervalles longs, moteur 471cc fiable.",
+    "keywords": [
+      "entretien honda cb500f",
+      "prix revision cb500f",
+      "forfait entretien cb500 hornet",
+      "cout entretien cb500f",
+      "fiabilite cb500f"
+    ],
+    "meta_title": "Entretien Honda CB500F : prix des révisions 2026"
+  },
+  "technical_sheet": {
+    "weight_tpf_kg": 189,
+    "wheelbase_mm": 1410,
+    "seat_height_mm": 785,
+    "displacement_cc": 471,
+    "tank_l": 17.1,
+    "cycle_parts": {
+      "front_tire": "120/70 ZR17",
+      "rear_tire": "160/60 ZR17",
+      "rear_suspension": "Monoamortisseur Pro-Link, débattement 119 mm, réglable précharge",
+      "rear_brake": "Simple disque, Ø 240 mm, étrier 1 piston, ABS",
+      "front_suspension": "Fourche inversée Ø 41 mm (Showa SFF-BP), débattement 120 mm",
+      "frame": "Cadre treillis tubulaire acier",
+      "front_brake": "Double disque, Ø 296 mm, étriers radiaux, ABS"
+    },
+    "engine_type": "Bicylindre en ligne, 4 temps, refroidissement liquide, 8 soupapes, DACT",
+    "license_bridging": "✔ Permis A2 (bridable à 35 kW)",
+    "fuel_system": "Injection PGM-FI",
+    "torque": "43,0 N.m à 6 250 tr/min",
+    "power": "35,0 kW (47,6 ch) à 8 600 tr/min"
+  },
+  "service_guide": {
+    "concession_cta_title": "La Honda CB500F vous correspond ?",
+    "concession_cta_button": "Voir les Honda CB500F en concession",
+    "garage_cta_button": "Voir les garages autour de moi",
+    "garage_cta_text": "Comparez les garages proches de chez vous pour votre Honda CB500F.",
+    "garage_cta_title": "Préparez votre prochaine révision sans surprise.",
+    "compare_cta_button": "Comparer les ateliers près de moi",
+    "conclusion": "La CB500F est la référence A2 par excellence : mécanique simple, pièces accessibles et surtout des intervalles d'entretien longs (12 000 km) qui réduisent le coût d'usage. L'une des motos les moins chères à entretenir de sa catégorie.",
+    "service_schedule": [
+      {
+        "km": 1000,
+        "service_label": "Révision de rodage (vidange + contrôles)",
+        "price_estimate": "≈ 130 à 190 €"
+      },
+      {
+        "km": 12000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 200 à 260 €"
+      },
+      {
+        "km": 24000,
+        "service_label": "Jeu aux soupapes + filtre air + vidange (grosse révision)",
+        "price_estimate": "≈ 420 à 500 €"
+      },
+      {
+        "km": 36000,
+        "service_label": "Vidange + inspection complète",
+        "price_estimate": "≈ 200 à 260 €"
+      },
+      {
+        "km": 48000,
+        "service_label": "Jeu aux soupapes + filtre air + bougies (grosse révision)",
+        "price_estimate": "≈ 500 à 580 €"
+      }
+    ],
+    "known_issues": [
+      "Moteur doux mais sans caractère sportif marqué",
+      "Suspension arrière ferme sur revêtements dégradés",
+      "Sonorité d'origine discrète (échappement bridé Euro5)"
+    ],
+    "concession_cta_text": "Si vous envisagez d'en acheter une ou de changer de modèle, il peut être utile de comparer les offres disponibles près de chez vous.",
+    "consumables": [
+      {
+        "part": "Pneus",
+        "average_lifetime": "12 000 à 20 000 km"
+      },
+      {
+        "part": "Kit chaîne",
+        "average_lifetime": "20 000 à 30 000 km"
+      },
+      {
+        "part": "Plaquettes",
+        "average_lifetime": "15 000 à 25 000 km"
+      },
+      {
+        "part": "Huile + filtre (vidange)",
+        "average_lifetime": "12 000 km ou 1 an"
+      },
+      {
+        "part": "Batterie",
+        "average_lifetime": "4 à 6 ans"
+      }
+    ],
+    "compare_cta_text": "Les tarifs peuvent varier selon l'atelier et la région. Comparez les professionnels autour de vous avant de prendre rendez-vous.",
+    "faq": [
+      {
+        "question": "Quel est le prix d'une révision sur une Honda CB500F ?",
+        "answer": "Environ 200 à 260 € pour la révision des 12 000 km, et 420 à 500 € pour la grosse révision des 24 000 km (jeu aux soupapes). L'intervalle long de 12 000 km réduit la fréquence des passages."
+      },
+      {
+        "question": "Tous les combien réviser une CB500F ?",
+        "answer": "Tous les 12 000 km ou une fois par an. Le jeu aux soupapes n'est contrôlé que tous les 24 000 km, un intervalle très généreux."
+      },
+      {
+        "question": "Combien coûte l'entretien d'une CB500F sur 60 000 km ?",
+        "answer": "Environ 1 350 à 1 600 € de révisions, soit ~0,025 €/km. C'est l'une des A2 les plus économiques grâce à ses longs intervalles."
+      },
+      {
+        "question": "Le moteur de la CB500F est-il fiable ?",
+        "answer": "Oui, ce bicylindre 471 cc est réputé increvable. Il dépasse couramment 100 000 km sans souci majeur avec un entretien régulier."
+      }
+    ],
+    "intro": "La Honda CB500F (devenue CB500 Hornet) est LA référence du roadster A2. Son atout maître côté budget : des intervalles d'entretien de 12 000 km, parmi les plus longs du marché, qui la rendent particulièrement économique à l'usage.",
+    "maintenance_cost_summary": {
+      "total_60000km": "≈ 1 350 à 1 600 €",
+      "note": "Tarifs indicatifs réseau Honda (2026), basés sur la grille d'entretien officielle. L'intervalle long de 12 000 km est l'un des principaux atouts budget de la gamme Honda. Un indépendant facture généralement moins.",
+      "cost_per_km": "≈ 0,025 €/km (révisions seules, hors pneus et chaîne)",
+      "interval_rule": "Tous les 12 000 km ou 1 an (jeu aux soupapes tous les 24 000 km)"
+    },
+    "longevity_tips": [
+      "Intervalle long : vidange tous les 12 000 km ou 1 an (un atout budget Honda)",
+      "Jeu aux soupapes uniquement tous les 24 000 km : intervalle très généreux",
+      "Huile 10W30 JASO MA2 préconisée Honda : prévoir environ 3 L avec filtre",
+      "Graissage de la chaîne tous les 800 km et après chaque pluie",
+      "Moteur réputé increvable : facilement 100 000 km avec entretien suivi"
+    ]
+  },
+  "updatedAt": {
+    "_seconds": 1782147580,
+    "_nanoseconds": 260000000
+  },
+  "imageUrl": "/images/honda-cb500f-2022-plus.webp"
+}

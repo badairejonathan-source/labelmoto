@@ -279,70 +279,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-/**
- * Extrait la puissance en chevaux depuis une fiche.
- * Retourne null si aucune valeur exploitable n'est trouvée.
- */
-function extractHp(ts: any): number | null {
-  if (!ts) return null;
-
-  // 1. Champ numérique direct
-  if (typeof ts.max_power_hp === 'number' && ts.max_power_hp > 0) {
-    return ts.max_power_hp;
-  }
-
-  // 2. Conversion depuis les kW
-  if (typeof ts.max_power_kw === 'number' && ts.max_power_kw > 0) {
-    return ts.max_power_kw * 1.36;
-  }
-
-  // 3. Extraction depuis le texte, ex. "54,0 kW (73,4 ch) à 8 750 tr/min"
-  //    ou "Puissance bridée : 35 kW (47,5 ch) / non bridée : 70 kW (95 ch)"
-  //    On retient la valeur la plus élevée (version pleine puissance).
-  const txt = typeof ts.power === 'string' ? ts.power : '';
-  if (txt) {
-    const hpMatches = [...txt.matchAll(/(\d+[,.]?\d*)\s*ch/gi)];
-    if (hpMatches.length) {
-      const values = hpMatches.map(m => parseFloat(m[1].replace(',', '.')));
-      const max = Math.max(...values);
-      if (!isNaN(max) && max > 0) return max;
-    }
-    const kwMatches = [...txt.matchAll(/(\d+[,.]?\d*)\s*kW/gi)];
-    if (kwMatches.length) {
-      const values = kwMatches.map(m => parseFloat(m[1].replace(',', '.')));
-      const max = Math.max(...values);
-      if (!isNaN(max) && max > 0) return max * 1.36;
-    }
-  }
-
-  return null;
-}
-
 async function getFiches(brandFirestoreValue: string) {
   try {
     const db = getAdminFirestore();
     const snap = await db.collection('motorcycle_sheets')
       .where('brand', '==', brandFirestoreValue)
       .get();
-
-    return snap.docs.map(doc => {
-      const d = doc.data();
-      return {
-        id: doc.id,
-        label: d.display_title || d.model || doc.id,
-        category: d.category || '',
-        hp: extractHp(d.technical_sheet),
-      };
-    }).sort((a, b) => {
-      // Puissance croissante ; les fiches sans puissance passent en dernier
-      if (a.hp !== null && b.hp !== null) {
-        if (a.hp !== b.hp) return a.hp - b.hp;
-        return a.label.localeCompare(b.label, 'fr');
-      }
-      if (a.hp !== null) return -1;
-      if (b.hp !== null) return 1;
-      return a.label.localeCompare(b.label, 'fr');
-    });
+    return snap.docs.map(doc => ({
+      id: doc.id,
+      label: doc.data().display_title || doc.data().model || doc.id,
+      category: doc.data().category || '',
+    })).sort((a, b) => a.label.localeCompare(b.label, 'fr'));
   } catch (err) {
     console.error('[entretien/marque]', err);
     return [];
