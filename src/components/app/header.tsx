@@ -346,7 +346,7 @@ const Header: React.FC<any> = ({
           ref={inputRef}
           type="text"
           placeholder={placeholderText}
-          className="pr-20 md:pr-24 rounded-full shadow-2xl bg-white/95 focus:bg-white border-none px-6 md:px-10 h-12 md:h-14 font-bold text-base transition-all"
+          className="pl-6 md:pl-10 pr-[112px] md:pr-[132px] rounded-full shadow-2xl bg-white/95 focus:bg-white border-none h-12 md:h-14 font-bold text-base transition-all"
           value={searchTerm}
           onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
           onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}
@@ -354,15 +354,15 @@ const Header: React.FC<any> = ({
           autoComplete="off" autoCorrect="off" spellCheck={false}
         />
         {searchTerm && (
-          <button onClick={clearSearch} className="absolute right-20 md:right-24 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors">
+          <button onClick={clearSearch} className="absolute right-[68px] md:right-[80px] top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-10">
             <X className="h-4 w-4" />
           </button>
         )}
         <Button
-          className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[70px] w-[70px] shadow-lg hover:scale-105 active:scale-95 transition-all ring-4 ring-white"
+          className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[56px] w-[56px] md:h-[64px] md:w-[64px] shadow-lg hover:scale-105 active:scale-95 transition-all ring-2 ring-white"
           onClick={() => { onSearch(); setShowSuggestions(false); }}
         >
-          <Search className="h-8 w-8" />
+          <Search className="h-6 w-6 md:h-7 md:w-7" />
         </Button>
       </div>
 

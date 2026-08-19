@@ -195,12 +195,12 @@ export default async function GaragesMotoDepartement({ params }: PageProps) {
         </nav>
 
         {/* Hero */}
-        <div className="relative rounded-[2.5rem] border-2 border-brand bg-black overflow-hidden shadow-2xl mb-8 p-8 md:p-12">
+        <div className="relative rounded-[2.5rem] bg-gradient-to-br from-brand/5 to-brand/10 border border-brand/20 overflow-hidden shadow-sm mb-8 p-8 md:p-12">
           <div className="relative z-10">
-            <div className="inline-block bg-brand/20 border border-brand/40 rounded-full px-4 py-1.5 mb-4">
+            <div className="inline-block bg-brand/15 border border-brand/30 rounded-full px-4 py-1.5 mb-4">
               <span className="text-brand font-black text-[10px] uppercase tracking-[0.3em]">{department.region}</span>
             </div>
-            <h1 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tighter leading-[1.1] mb-4">
+            <h1 className="text-2xl md:text-4xl font-black text-foreground uppercase tracking-tighter leading-[1.1] mb-4">
               Garages moto & concessionnaires<br />
               {department.name} ({department.code})
             </h1>
@@ -209,12 +209,12 @@ export default async function GaragesMotoDepartement({ params }: PageProps) {
               et associations de motards référencés et vérifiés sur LabelMoto.
             </p>
             <div className="flex flex-wrap items-center gap-4">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
-                <p className="text-white font-black text-lg">{pros.length > 0 ? pros.length : '—'}</p>
-                <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">pros référencés</p>
+              <div className="bg-white rounded-2xl px-5 py-3 border border-brand/20 shadow-sm">
+                <p className="text-brand font-black text-lg">{pros.length > 0 ? pros.length : '—'}</p>
+                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">pros référencés</p>
               </div>
               <Link
-                href={`/map?search=${encodeURIComponent(department.name)}`}
+                href={`/map?search=${encodeURIComponent(department.code)}`}
                 className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-2xl border-4 border-brand/30 whitespace-nowrap transition-all hover:scale-105 active:scale-95 tracking-widest"
               >
                 🗺️ Voir sur la carte interactive
@@ -256,7 +256,7 @@ export default async function GaragesMotoDepartement({ params }: PageProps) {
             <p className="text-muted-foreground text-sm font-medium mb-5">
               La carte interactive affiche tous les pros avec filtres par marque, type et distance.
             </p>
-            <Link href={`/map?search=${encodeURIComponent(department.name)}`} className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-xl tracking-widest transition-all hover:scale-105 active:scale-95">
+            <Link href={`/map?search=${encodeURIComponent(department.code)}`} className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-black uppercase text-xs px-8 py-4 rounded-full shadow-xl tracking-widest transition-all hover:scale-105 active:scale-95">
               🗺️ Ouvrir la carte interactive
             </Link>
           </div>

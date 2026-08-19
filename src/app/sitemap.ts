@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 86400;
+
 import { MetadataRoute } from 'next'
 import { getAdminFirestore } from '@/lib/firebase-admin'
 import { getAllCitySlugs } from '@/app/lib/cities'

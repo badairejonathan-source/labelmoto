@@ -26,9 +26,15 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 
 const MOTORCYCLE_BRANDS = [
-  "Honda", "Yamaha", "Kawasaki", "Suzuki", "BMW", "BMW Motorrad",
-  "Ducati", "Triumph", "Harley-Davidson", "KTM", "Aprilia",
-  "Moto Guzzi", "Royal Enfield", "Indian", "Piaggio", "Vespa", "Can-Am", "CFMoto"
+  "Suzuki", "Yamaha", "Honda", "BMW Motorrad", "BMW", "Kawasaki",
+  "Harley-Davidson", "Triumph", "Kymco", "CF Moto", "Peugeot Motocycles",
+  "Piaggio", "Royal Enfield", "Ducati", "KTM", "Aprilia", "Vespa",
+  "Indian", "Moto Guzzi", "SYM", "Can-Am", "MV Agusta", "Norton",
+  "Zontes", "VOGE", "Mash", "QJ Motor", "Benelli", "Kove", "Orcal",
+  "SWM", "Brixton", "Keeway", "Rieju", "Sherco", "Fantic", "Husqvarna",
+  "GasGas", "Beta", "Segway", "Vmoto", "NIU", "Super Soco", "Silence",
+  "Zero Motorcycles", "Dafy Moto", "Moto Axxe", "Speedway", "Doc'Biker",
+  "Cardy", "TeamAxe",
 ];
 
 const MapComponent = dynamic(
@@ -363,6 +369,29 @@ function MapPageComponent() {
       .slice(0, 60);
   }, [filteredPoints, mapCenter, selectedId]);
 
+  // Quand une fiche est sélectionnée, elle remonte en tête de liste
+  // (cf. tri dans listPoints). On fait suivre le conteneur scrollable
+  // pour que l'utilisateur voie effectivement la fiche sélectionnée.
+  useEffect(() => {
+    if (!selectedId) return;
+    if (isDetailView) return;
+    const el = listScrollRef.current;
+    if (!el) return;
+    // Léger délai : laisse le temps au tri et au rendu de s'appliquer
+    const t = setTimeout(() => {
+      el.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 60);
+    return () => clearTimeout(t);
+  }, [selectedId, isDetailView]);
+
+  // La métropole s'étend environ de -5° à 10° de longitude et 41° à 51° de latitude.
+  // Au-delà, on considère que l'utilisateur regarde un DOM-TOM et on lui propose
+  // un retour rapide plutôt qu'un long déplacement manuel de la carte.
+  const isViewingOverseas = useMemo(() => {
+    const [lat, lng] = mapCenter;
+    return lng < -10 || lng > 20 || lat < 38 || lat > 54;
+  }, [mapCenter]);
+
   const labelPoints = useMemo(() => {
     if (mapZoom < 13) return [];
     const gridStep = mapZoom < 14 ? 0.012 : 0.006;
@@ -476,7 +505,7 @@ function MapPageComponent() {
           }}
         />
         {isMobile && (
-          <div className="flex justify-end mt-3">
+          <div className="flex justify-start mt-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -519,6 +548,17 @@ function MapPageComponent() {
               <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
             ) : (
               <div className="space-y-4">
+                {activeFilters.length === 0 && !isLoadingPoints && (
+                  <div className="rounded-3xl border-2 border-dashed border-brand/40 bg-brand/5 px-6 py-5 mb-4">
+                    <p className="text-sm font-black uppercase tracking-wide text-brand mb-1">
+                      Choisissez un filtre
+                    </p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Sélectionnez au moins une catégorie ci-dessus pour faire apparaître
+                      les professionnels sur la carte.
+                    </p>
+                  </div>
+                )}
                 <div className="flex items-center justify-between px-2 mb-4">
                   <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                     {isLoadingPoints ? "Chargement national..." : `${filteredPoints.length} Résultats trouvés`}
@@ -575,6 +615,15 @@ function MapPageComponent() {
       >
         {isLocating ? <Loader2 className="h-5 w-5 text-brand animate-spin" /> : locateError ? <span className="text-red-500 font-black text-sm">X</span> : <Compass className="h-5 w-5 text-brand" />}
       </button>
+      {!isMobile && isViewingOverseas && (
+        <button
+          type="button"
+          onClick={() => { setMapCenter([46.6, 2.4]); setMapZoom(6); setSelectionSource('external'); }}
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[1200] px-5 py-3 rounded-full bg-brand text-white shadow-xl text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
+        >
+          ← Retour France métropolitaine
+        </button>
+      )}
       {!isMobile && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1200] flex gap-2">
           {[

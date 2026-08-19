@@ -175,10 +175,35 @@ export default async function MarquePage({ params }: PageProps) {
 
       <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">
         {/* Intro */}
-        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border space-y-3">
-          {brand.intro.map((p, i) => (
-            <p key={i} className="text-sm md:text-base text-muted-foreground leading-relaxed">{p}</p>
-          ))}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border">
+          {brand.aboutTitle && (
+            <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight mb-4">
+              {brand.aboutTitle}
+            </h2>
+          )}
+
+          <div className="space-y-3">
+            {brand.intro.map((p, i) => (
+              <p key={i} className="text-sm md:text-base text-muted-foreground leading-relaxed">{p}</p>
+            ))}
+          </div>
+
+          {brand.highlights && brand.highlights.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-7">
+              {brand.highlights.map((item) => (
+                <div
+                  key={item.label}
+                  className="bg-gradient-to-br from-brand/5 to-brand/10 rounded-2xl border border-brand/20 p-4"
+                >
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                    {item.label}
+                  </p>
+                  <p className="text-lg font-black text-brand mb-2">{item.value}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Liste */}
@@ -201,6 +226,35 @@ export default async function MarquePage({ params }: PageProps) {
             Voir sur la carte interactive
           </Link>
         </div>
+
+        {/* Contenu éditorial marque */}
+        {brand.accordions && brand.accordions.length > 0 && (
+          <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border">
+            <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight mb-5">
+              En savoir plus sur {brand.displayName}
+            </h2>
+
+            <div className="divide-y divide-border">
+              {brand.accordions.map((item) => (
+                <details key={item.id} className="group py-4">
+                  <summary className="cursor-pointer list-none flex items-center justify-between gap-4 font-black text-sm md:text-base uppercase tracking-tight text-foreground">
+                    <span>{item.title}</span>
+                    <span
+                      aria-hidden="true"
+                      className="text-brand text-xl leading-none transition-transform group-open:rotate-45"
+                    >
+                      +
+                    </span>
+                  </summary>
+
+                  <p className="mt-4 pr-6 text-sm md:text-base text-muted-foreground leading-relaxed">
+                    {item.content}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* FAQ */}
         <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border">

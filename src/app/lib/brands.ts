@@ -7,6 +7,17 @@ export interface BrandData {
   metaDescription: string;
   h1: string;
   intro: string[];
+  aboutTitle?: string;
+  highlights?: {
+    label: string;
+    value: string;
+    description: string;
+  }[];
+  accordions?: {
+    id: string;
+    title: string;
+    content: string;
+  }[];
   faq: { q: string; a: string }[];
 }
 
@@ -267,19 +278,101 @@ export const BRANDS: BrandData[] = [
   {
     slug: 'cf-moto',
     name: 'CF Moto',
-    displayName: 'CF Moto',
+    displayName: 'CFMOTO',
     firestoreValue: 'CF Moto',
-    metaTitle: "Concessionnaire CF Moto en France : 82 adresses vérifiées | LabelMoto",
-    metaDescription: "Trouvez votre concessionnaire CF Moto en France parmi 82 adresses vérifiées. 450MT, 800MT, 450SR, 700CL-X — concessions officielles avec contacts sur LabelMoto.",
-    h1: 'Concessionnaires CF Moto en France',
+    metaTitle: "Concessionnaires CFMOTO en France : adresses et contacts | LabelMoto",
+    metaDescription: "Trouvez un concessionnaire CFMOTO en France avec LabelMoto. Découvrez les professionnels référencés, l’histoire de CFMOTO, ses moteurs et son partenariat industriel avec KTM.",
+    h1: 'Concessionnaires CFMOTO en France',
+    aboutTitle: 'À propos de CFMOTO',
     intro: [
-      "CF Moto est la marque chinoise qui monte le plus vite en France avec plus de 80 concessionnaires agréés. Ses modèles trail (450MT, 800MT Touring) et sport (450SR, 675SR-R) offrent un rapport qualité-prix imbattable face aux marques japonaises. La marque est déjà présente dans de nombreux concessionnaires multimarques.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés CF Moto en France avec fiches vérifiées, avis et coordonnées directes.",
+      "Fondée en Chine en 1989, CFMOTO est devenue l’un des constructeurs chinois les plus intégrés dans l’univers de la moto et des véhicules de loisirs. L’entreprise a commencé par fabriquer des composants et des moteurs avant de développer ses propres véhicules, ses moteurs refroidis par liquide, ses motos, ses scooters et ses modèles tout-terrain.",
+      "Sa coopération avec KTM a ensuite renforcé ses compétences en ingénierie, en production et en développement de plateformes de moyenne et forte cylindrée. Aujourd’hui, CFMOTO associe une base industrielle chinoise, des centres de recherche et développement internationaux et une gamme tournée vers les marchés mondiaux.",
+    ],
+    highlights: [
+      {
+        label: "Origine",
+        value: "Chine · 1989",
+        description: "CFMOTO est née comme fabricant de composants et de moteurs pour deux-roues.",
+      },
+      {
+        label: "Siège industriel",
+        value: "Hangzhou",
+        description: "Le groupe s’appuie sur une importante base industrielle située dans la province du Zhejiang.",
+      },
+      {
+        label: "Positionnement",
+        value: "Moto & powersports",
+        description: "CFMOTO développe des motos, scooters, moteurs, quads, SSV et équipements associés.",
+      },
+      {
+        label: "Partenaire majeur",
+        value: "KTM",
+        description: "CFMOTO et KTM coopèrent sur le développement, la fabrication et certaines plateformes moteur.",
+      },
+    ],
+    accordions: [
+      {
+        id: "histoire-cfmoto",
+        title: "Histoire de CFMOTO",
+        content: "CFMOTO, également liée à la société Zhejiang CFMOTO Power, a été fondée en 1989 en Chine. L’entreprise ne s’est pas développée à l’origine comme une simple marque de motos complètes : elle a d’abord construit son savoir-faire dans les pièces et les moteurs. En 1997, elle annonce le développement de son premier moteur refroidi par liquide, puis lance un scooter refroidi par liquide en 2000. Cette progression, du composant vers le moteur puis vers le véhicule complet, explique la place importante de la mécanique dans l’identité de CFMOTO.",
+      },
+      {
+        id: "conception-rd",
+        title: "Conception et bureaux d’étude",
+        content: "CFMOTO dispose d’équipes de recherche et développement réparties dans plusieurs pays. Sa communication internationale met en avant plusieurs centres d’innovation et un portefeuille important de brevets et de droits de propriété intellectuelle. La conception des produits combine les compétences du groupe en ingénierie moteur, châssis, électronique et véhicules de loisirs avec une recherche de design adaptée aux marchés européens, asiatiques et nord-américains. Certains projets de style ont également été associés à des studios européens, mais il faut distinguer le design, l’ingénierie et la fabrication.",
+      },
+      {
+        id: "usine-fabrication",
+        title: "Usines et niveau d’intégration",
+        content: "CFMOTO possède une base industrielle à Hangzhou, dans la province du Zhejiang, et développe elle-même des moteurs, des motos, des scooters, des quads et des SSV. L’entreprise annonce une production couvrant notamment les moteurs refroidis par liquide, les véhicules complets et leurs composants. Son modèle industriel est donc plus intégré que celui d’un importateur qui ferait uniquement assembler des motos par un fournisseur tiers. Selon les modèles et les marchés, certaines pièces électroniques, périphériques ou consommables peuvent toutefois provenir de fournisseurs spécialisés.",
+      },
+      {
+        id: "moteurs-cfmoto",
+        title: "Origine et conception des moteurs CFMOTO",
+        content: "CFMOTO a construit son identité autour du développement de moteurs refroidis par liquide. La marque a développé ses propres familles de monocylindres et de bicylindres, dont la plateforme 650 est devenue l’une de ses bases majeures pour les motos de moyenne cylindrée. Les moteurs CFMOTO ne doivent donc pas être décrits comme de simples moteurs génériques : leur conception, leur industrialisation et leur évolution sont liées au savoir-faire interne du groupe, même si certains composants peuvent être fournis par des équipementiers spécialisés.",
+      },
+      {
+        id: "partenariat-ktm",
+        title: "Partenariat et moteurs partagés avec KTM",
+        content: "La coopération entre CFMOTO et KTM a commencé par une collaboration commerciale et industrielle, avant de se formaliser avec la coentreprise CFMOTO-KTMR2R. Cette coopération a concerné la production de motos KTM en Chine, le développement industriel et la fabrication de certaines plateformes de moyenne cylindrée. CFMOTO a également produit sous licence des moteurs liés à la famille KTM LC8c et a développé des modèles utilisant des bases techniques issues de cette coopération. Cette coopération ne signifie toutefois pas que toutes les CFMOTO utilisent des moteurs KTM : selon les modèles, il peut s’agir d’un moteur produit sous licence, d’une base technique issue du partenariat ou d’une plateforme développée à partir de technologies communes.",
+      },
+      {
+        id: "modele-800-1250",
+        title: "Les modèles CFMOTO liés à l’écosystème KTM",
+        content: "Les CFMOTO 800MT, 800NK et certaines versions de la gamme 800 ont été associées à la plateforme bicylindre KTM LC8c de 799 cm3, adaptée et industrialisée dans le cadre de la coopération entre les deux groupes. La famille CFMOTO 1250 utilise quant à elle une architecture V-twin issue de l’univers KTM LC8, fortement retravaillée et fabriquée sous licence pour les modèles CFMOTO. L’origine exacte peut varier selon l’année, la version et le marché : la fiche technique, le numéro de moteur et le manuel d’atelier restent les références à privilégier.",
+      },
+      {
+        id: "autres-partenariats",
+        title: "Autres partenaires et pièces mécaniques",
+        content: "CFMOTO utilise, comme tous les constructeurs, des composants provenant d’équipementiers spécialisés : freinage, roulements, injection, embrayage, transmission, suspension, pneumatiques et électronique peuvent varier selon les modèles. Une coopération industrielle ne signifie pas nécessairement que l’ensemble de ces pièces est identique à celui d’une marque partenaire. Pour chaque modèle, il faut donc distinguer les pièces réellement communes, les pièces fabriquées sous licence, les composants d’équipementiers et les éléments simplement compatibles.",
+      },
+      {
+        id: "entretien-revisions",
+        title: "Révisions et entretien",
+        content: "L’entretien d’une CFMOTO dépend du modèle, de la cylindrée, de l’année et du marché de commercialisation. Les intervalles peuvent différer entre une 450MT, une 650MT, une 800MT, une 800NK ou une 1250TR. Pour connaître les opérations et échéances applicables, il est recommandé de consulter le manuel utilisateur et le carnet d’entretien correspondant exactement au modèle et à sa version. Les intervalles et les coûts d’entretien doivent être vérifiés modèle par modèle.",
+      },
     ],
     faq: [
-      { q: "Où trouver un concessionnaire CF Moto près de chez moi ?", a: "LabelMoto recense 82 points de vente CF Moto en France. CF Moto est souvent vendu chez des concessionnaires multimarques à côté de KTM, Kawasaki ou Husqvarna. Utilisez la carte interactive pour trouver le plus proche." },
-      { q: "CF Moto est-elle une marque fiable ?", a: "Les modèles récents (2022+) de CF Moto ont considérablement progressé en qualité. La 450MT et la 800MT Touring reçoivent des retours très positifs. Le réseau de concessionnaires s'étoffe chaque année pour assurer le SAV." },
-      { q: "Quel est le prix d'entretien d'une CF Moto ?", a: "L'entretien d'une CF Moto est moins cher que les marques japonaises équivalentes : comptez 150 à 280 € pour une révision standard. C'est l'un des principaux arguments de la marque." },
+      {
+        q: "CFMOTO est-elle une marque chinoise ?",
+        a: "Oui. CFMOTO est un constructeur chinois fondé en 1989.",
+      },
+      {
+        q: "CFMOTO fabrique-t-elle ses propres moteurs ?",
+        a: "Oui. Le groupe développe et produit ses propres familles de moteurs, tout en utilisant également des composants provenant d’équipementiers spécialisés.",
+      },
+      {
+        q: "CFMOTO a-t-elle un lien avec KTM ?",
+        a: "Oui. CFMOTO et KTM coopèrent sur la production, le développement industriel et certaines plateformes moteur.",
+      },
+      {
+        q: "Toutes les CFMOTO ont-elles un moteur KTM ?",
+        a: "Non. La coopération concerne certaines familles et certains modèles, notamment autour de plateformes de moyenne et forte cylindrée. Il faut vérifier l’origine technique modèle par modèle.",
+      },
+      {
+        q: "CFMOTO fabrique-t-elle uniquement des motos ?",
+        a: "Non. Le groupe développe également des scooters, des quads, des SSV, des moteurs et différents composants.",
+      },
     ],
   },
   {
@@ -359,17 +452,75 @@ export const BRANDS: BrandData[] = [
     name: 'VOGE',
     displayName: 'VOGE',
     firestoreValue: 'VOGE',
-    metaTitle: "Concessionnaire VOGE en France : 40 adresses vérifiées | LabelMoto",
-    metaDescription: "Trouvez votre concessionnaire VOGE en France parmi 40 adresses vérifiées. DS900X, 525DSX, 300RR — concessions officielles avec contacts sur LabelMoto.",
+    metaTitle: "Concessionnaires VOGE en France : adresses et contacts | LabelMoto",
+    metaDescription: "Trouvez un concessionnaire VOGE en France avec LabelMoto. Découvrez les professionnels référencés, l’histoire de Voge, son lien avec Loncin et ses principales technologies.",
     h1: 'Concessionnaires VOGE en France',
+    aboutTitle: 'À propos de Voge',
     intro: [
-      "VOGE est une marque chinoise liée à Loncin (partenaire de BMW) qui progresse rapidement en France avec plus de 40 distributeurs agréés. Ses modèles adventure (DS900X, 525DSX) et sport (300RR) proposent une technologie moderne à des tarifs très compétitifs, s'imposant comme une alternative sérieuse aux marques établies.",
-      "LabelMoto recense tous les concessionnaires et distributeurs VOGE en France avec fiches vérifiées et coordonnées directes.",
+      "Voge est la marque premium du groupe chinois Loncin, lancée en 2018 pour proposer des motos plus ambitieuses en matière de design, d’équipement et de technologie.",
+      "La marque s’appuie sur l’expérience industrielle d’un grand motoriste chinois, connu notamment pour sa coopération avec BMW depuis 2005 sur plusieurs moteurs et projets de production. Certaines Voge, comme la 900DS, attirent particulièrement l’attention pour leur proximité technique avec des plateformes issues de l’écosystème Loncin-BMW. Sur cette page, retrouvez les concessionnaires Voge en France ainsi que des repères utiles sur la marque, ses modèles et ses motorisations.",
+    ],
+    highlights: [
+      {
+        label: "Groupe",
+        value: "Loncin Motor",
+        description: "Voge est la marque haut de gamme du groupe industriel chinois Loncin.",
+      },
+      {
+        label: "Lancement",
+        value: "2018",
+        description: "La marque Voge a été officiellement lancée en septembre 2018.",
+      },
+      {
+        label: "Positionnement",
+        value: "Premium / export",
+        description: "Voge vise le segment moyen et haut de gamme, avec une orientation claire vers les marchés internationaux.",
+      },
+      {
+        label: "Lien technique",
+        value: "Écosystème Loncin-BMW",
+        description: "Loncin coopère avec BMW depuis 2005 sur plusieurs projets moteur et industriels.",
+      },
+    ],
+    accordions: [
+      {
+        id: "histoire-voge",
+        title: "Histoire de Voge",
+        content: "Voge est née en 2018 comme marque premium de Loncin Motor Co., Ltd. Son lancement répond à une stratégie claire : faire monter en gamme l’expertise industrielle du groupe et proposer des motos capables de mieux rivaliser avec les constructeurs internationaux sur les marchés export. Contrairement à une jeune marque sans base industrielle, Voge s’appuie sur l’héritage d’un groupe déjà fortement implanté dans la fabrication de motos, de moteurs et de composants mécaniques.",
+      },
+      {
+        id: "conception-usine-fabrication",
+        title: "Conception, usine et fabrication",
+        content: "Voge repose sur les capacités industrielles de Loncin, groupe basé à Chongqing. Cette base donne à la marque un profil différent de nombreuses autres marques chinoises récentes : elle bénéficie d’une expérience de production de masse, d’un savoir-faire moteur ancien et de processus industriels développés pour des projets à standard élevé. Cette origine explique en partie la perception plus mature de certaines Voge en matière de finition, d’équipement et de cohérence technique.",
+      },
+      {
+        id: "moteurs-plateformes-partagees",
+        title: "Moteurs et plateformes partagées",
+        content: "Le sujet le plus important concernant Voge est son lien industriel avec BMW via Loncin. Loncin coopère avec BMW depuis 2005, d’abord sur des moteurs 650 cm3, puis sur des projets bicylindres de plus forte cylindrée et des scooters. Cela ne signifie pas que toute la gamme Voge utilise des moteurs BMW, mais certaines motos Voge reposent sur des bases techniques issues de l’écosystème Loncin-BMW. Le cas le plus connu est la Voge 900DS, souvent présentée comme utilisant la base bicylindre parallèle de 895 cm3 fournie par Loncin à BMW pour la famille F 900.",
+      },
+      {
+        id: "entretien-voge",
+        title: "Ce qu’il faut savoir pour l’entretien",
+        content: "L’entretien d’une Voge dépend avant tout de la cylindrée, du type de moteur et du niveau d’équipement de la moto. La gamme couvre des usages variés, du trail au scooter GT, avec des mécaniques qui n’ont pas toutes le même niveau de complexité ni la même origine technique. Les intervalles de révision, les consommables et les principales opérations d’entretien peuvent donc varier sensiblement d’un modèle à l’autre. Il est recommandé de consulter le programme d’entretien spécifique à sa Voge et de respecter les préconisations du constructeur.",
+      },
     ],
     faq: [
-      { q: "Où trouver un concessionnaire VOGE près de chez moi ?", a: "LabelMoto recense 40 points de vente VOGE en France. VOGE est généralement vendu chez des concessionnaires multimarques. Consultez la carte interactive pour trouver le plus proche." },
-      { q: "VOGE est-elle une marque sérieuse ?", a: "Oui, VOGE appartient à Loncin qui est partenaire de BMW sur certains projets. Les modèles adventure comme le DS900X reçoivent de bons retours pour leur rapport qualité-prix et leur équipement de série généreux." },
-      { q: "Quel est le prix d'entretien d'une VOGE ?", a: "L'entretien d'une VOGE est très économique comparé aux marques européennes équivalentes. Comptez 150 à 280 € pour une révision standard. C'est l'un des principaux atouts de la marque." },
+      {
+        q: "Voge est-elle une marque chinoise ?",
+        a: "Oui, Voge est une marque chinoise appartenant au groupe Loncin.",
+      },
+      {
+        q: "Qui fabrique les motos Voge ?",
+        a: "Les motos Voge sont produites dans l’écosystème industriel de Loncin.",
+      },
+      {
+        q: "Voge a-t-elle un lien avec BMW ?",
+        a: "Oui, via la coopération historique entre Loncin et BMW sur plusieurs projets moteur et industriels.",
+      },
+      {
+        q: "Toutes les Voge ont-elles un moteur BMW ?",
+        a: "Non. Il faut distinguer partenariat industriel, base technique partagée et moteur strictement identique.",
+      },
     ],
   },
   {
