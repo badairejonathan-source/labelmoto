@@ -1,5 +1,7 @@
 import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
+  // Délai supplémentaire pour les pages SEO générées depuis Firestore.
+  staticPageGenerationTimeout: 180,
   serverExternalPackages: ['googleapis', 'firebase-admin'],
   allowedDevOrigins: ["*.cloudworkstations.dev", "*.cluster-nle52mxuvfhlkrzyrq6g2cwb52.cloudworkstations.dev"],
   typescript: {

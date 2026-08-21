@@ -346,7 +346,11 @@ const Header: React.FC<any> = ({
           ref={inputRef}
           type="text"
           placeholder={placeholderText}
-          className="pl-6 md:pl-10 pr-[112px] md:pr-[132px] rounded-full shadow-2xl bg-white/95 focus:bg-white border-none h-12 md:h-14 font-bold text-base transition-all"
+          className={cn(
+            "rounded-full shadow-2xl bg-white/95 focus:bg-white border-none font-bold transition-all pl-6 md:pl-10 pr-[112px] md:pr-[132px] h-12 md:h-14 text-base",
+            pathname === "/map" &&
+              "h-14 pl-5 pr-[76px] text-[16px] md:h-14 md:pl-6 md:pr-[84px] md:text-base"
+          )}
           value={searchTerm}
           onChange={(e) => { onSearchTermChange(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
           onFocus={() => { setShowSuggestions(true); setIsFocused(true); }}
@@ -354,12 +358,25 @@ const Header: React.FC<any> = ({
           autoComplete="off" autoCorrect="off" spellCheck={false}
         />
         {searchTerm && (
-          <button onClick={clearSearch} className="absolute right-[68px] md:right-[80px] top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-10">
+          <button
+            onClick={clearSearch}
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-10",
+              pathname === "/map"
+                ? "right-[58px] md:right-[62px]"
+                : "right-[68px] md:right-[80px]"
+            )}
+          >
             <X className="h-4 w-4" />
           </button>
         )}
         <Button
-          className="absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full h-[56px] w-[56px] md:h-[64px] md:w-[64px] shadow-lg hover:scale-105 active:scale-95 transition-all ring-2 ring-white"
+          className={cn(
+            "absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all ring-2 ring-white",
+            pathname === "/map"
+              ? "h-[52px] w-[52px] md:h-[56px] md:w-[56px]"
+              : "h-[56px] w-[56px] md:h-[64px] md:w-[64px]"
+          )}
           onClick={() => { onSearch(); setShowSuggestions(false); }}
         >
           <Search className="h-6 w-6 md:h-7 md:w-7" />
@@ -396,7 +413,6 @@ const Header: React.FC<any> = ({
               <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 px-2">Filtrer par type</p>
               <div className="flex flex-wrap gap-2 px-2 pb-1">
                 {[
-                  { label: "Tous", filter: "", icon: "📍" },
                   { label: "Garage & Atelier", filter: "service", icon: "🔧" },
                   { label: "Concession", filter: "shopping", icon: "🏍️" },
                   { label: "Relais motards", filter: "relais", icon: "⛽" },
@@ -426,9 +442,32 @@ const Header: React.FC<any> = ({
   if (searchOnly) return searchInput;
 
   return (
-    <div className={cn("w-full flex flex-col gap-6 md:gap-8 pt-4 pb-6", pathname !== "/map" && "bg-brand")}>
-      <div className="flex items-center justify-between gap-4 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-        <div className="shrink-0"><LabelMotoLogo className="h-auto w-[164px] sm:w-[200px] md:w-[255px]" /></div>
+    <div
+      className={cn(
+        "w-full flex flex-col",
+        pathname === "/map"
+          ? "gap-3 pt-2 pb-2"
+          : "gap-6 md:gap-8 pt-4 pb-6 bg-brand"
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center justify-between w-full max-w-7xl mx-auto",
+          pathname === "/map"
+            ? "gap-3 px-4"
+            : "gap-4 px-6 md:px-12 lg:px-20"
+        )}
+      >
+        <div className="shrink-0">
+          <LabelMotoLogo
+            className={cn(
+              "h-auto",
+              pathname === "/map"
+                ? "w-[132px] sm:w-[145px]"
+                : "w-[164px] sm:w-[200px] md:w-[255px]"
+            )}
+          />
+        </div>
         <div className="flex-1 flex justify-center px-4">
           <div className="hidden md:block bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
             <p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
@@ -441,14 +480,34 @@ const Header: React.FC<any> = ({
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram LabelMoto"
-            className="flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full bg-white/95 shadow-xl border-2 border-white text-brand hover:scale-105 active:scale-95 transition-all"
+            className={cn(
+              "flex items-center justify-center rounded-full bg-white/95 shadow-xl border-2 border-white text-brand hover:scale-105 active:scale-95 transition-all",
+              pathname === "/map"
+                ? "h-[38px] w-[38px]"
+                : "h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14"
+            )}
           >
             <Instagram className="h-5 w-5 md:h-6 md:w-6" />
           </a>
-          <UserMenuLazy />
+          {pathname === "/map" ? (
+            <div className="w-14 h-14 flex items-center justify-end overflow-visible">
+              <div className="scale-[0.72] origin-right">
+                <UserMenuLazy />
+              </div>
+            </div>
+          ) : (
+            <UserMenuLazy />
+          )}
         </div>
       </div>
-      <div className="w-full max-w-6xl mx-auto relative flex items-center gap-8 px-4 md:px-0">
+      <div
+        className={cn(
+          "w-full max-w-6xl mx-auto relative flex items-center",
+          pathname === "/map"
+            ? "gap-3 px-3"
+            : "gap-8 px-4 md:px-0"
+        )}
+      >
         {pathname !== "/" && <div className="flex-1">{searchInput}</div>}
 
       </div>
