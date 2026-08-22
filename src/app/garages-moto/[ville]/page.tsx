@@ -8,7 +8,7 @@ function toSlug(str: string): string {
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { loadSeoPros } from '@/lib/seo-pros';
 import fsNode from 'fs';
 import pathNode from 'path';
 
@@ -24,6 +24,7 @@ interface Pro {
   slug: string;
   docId: string;
   collection: string;
+  brands?: string[];
 }
 
 interface PageProps {
@@ -97,48 +98,55 @@ function collectionForPoint(p: GeoPoint): 'concessions' | 'associations' | 'rela
   return 'concessions';
 }
 
-async function getProsForCityNearby(city: NonNullable<ReturnType<typeof getCityBySlug>>): Promise<Pro[]> {
+async function getProsForCityNearby(
+  city: NonNullable<ReturnType<typeof getCityBySlug>>
+): Promise<Pro[]> {
   try {
     const nearby = getPointsNearCity(city);
+
     if (nearby.length === 0) return [];
 
-    const db = getAdminFirestore();
-    const byCollection: Record<string, string[]> = {};
-    for (const p of nearby) {
-      const col = collectionForPoint(p);
-      if (!byCollection[col]) byCollection[col] = [];
-      byCollection[col].push(p.id);
-    }
+    const allPros = await loadSeoPros();
 
-    const docRefs = Object.entries(byCollection).flatMap(([col, ids]) =>
-      ids.map(id => db.collection(col).doc(id))
+    const byKey = new Map(
+      allPros.map(pro => [
+        pro.collection + '/' + pro.id,
+        pro,
+      ])
     );
-    if (docRefs.length === 0) return [];
-    const snaps = await db.getAll(...docRefs);
 
-    const all: Pro[] = [];
-    snaps.forEach(doc => {
-      if (!doc.exists) return;
-      const d = doc.data()!;
-      all.push({
-        id: doc.id,
-        title: d.title || '',
-        address: d.address || '',
-        category: d.category || '',
-        phoneNumber: d.phoneNumber || undefined,
-        website: d.website || undefined,
-        rating: parseRating(d.rating),
-        reviewCount: parseReviewCount(d.reviewCount),
-        slug: d.slug || doc.id,
-        docId: doc.id,
-        collection: doc.ref.parent.id,
-      });
-    });
+    return nearby
+      .map(point => {
+        const collection = collectionForPoint(point);
 
-    const orderIndex = new Map(nearby.map((p, i) => [p.id, i]));
-    return all.sort((a, b) => (orderIndex.get(a.docId) ?? 999) - (orderIndex.get(b.docId) ?? 999));
+        const pro = byKey.get(
+          collection + '/' + point.id
+        );
+
+        if (!pro) return null;
+
+        return {
+          id: pro.id,
+          title: pro.title,
+          address: pro.address,
+          category: pro.category,
+          phoneNumber: pro.phoneNumber,
+          website: pro.website,
+          rating: pro.rating,
+          reviewCount: pro.reviewCount,
+          slug: pro.slug,
+          docId: pro.id,
+          collection: pro.collection,
+          brands: pro.brands,
+        } as Pro;
+      })
+      .filter((pro): pro is Pro => pro !== null);
   } catch (err) {
-    console.error(`[garages-moto] ville=${city.slug}:`, err);
+    console.error(
+      `[garages-moto] ville=${city.slug}:`,
+      err
+    );
+
     return [];
   }
 }
@@ -178,21 +186,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-async function getProCountForCity(dept: string): Promise<number> {
-  try {
-    const db = getAdminFirestore();
-    const cols = ['concessions', 'associations', 'relais', 'creators'] as const;
-    let total = 0;
-    for (const col of cols) {
-      const s = await db.collection(col).where('departement', '==', dept).count().get();
-      total += s.data().count;
-    }
-    return total;
-  } catch {
-    return 0;
-  }
-}
-
 function parseRating(raw: unknown): number | null {
   if (!raw || raw === '') return null;
   const n = parseFloat(String(raw));
@@ -203,42 +196,6 @@ function parseReviewCount(raw: unknown): number | null {
   if (raw === null || raw === undefined || raw === '') return null;
   const n = Number(raw);
   return isNaN(n) ? null : n;
-}
-
-async function getProsForCity(departement: string): Promise<Pro[]> {
-  try {
-    const db = getAdminFirestore();
-    const cols = ['concessions', 'associations', 'relais'] as const;
-    const all: Pro[] = [];
-    for (const col of cols) {
-      const snap = await db.collection(col).where('departement', '==', departement).limit(300).get();
-      snap.docs.forEach(doc => {
-        const d = doc.data();
-        all.push({
-          id: doc.id,
-          title: d.title || '',
-          address: d.address || '',
-          category: d.category || '',
-          phoneNumber: d.phoneNumber || undefined,
-          website: d.website || undefined,
-          rating: parseRating(d.rating),
-          reviewCount: parseReviewCount(d.reviewCount),
-          slug: d.slug || doc.id,
-          docId: doc.id,
-          collection: col,
-        });
-      });
-    }
-    return all.sort((a, b) => {
-      if (a.rating !== null && b.rating !== null) return b.rating - a.rating;
-      if (a.rating !== null) return -1;
-      if (b.rating !== null) return 1;
-      return a.title.localeCompare(b.title, 'fr');
-    });
-  } catch (err) {
-    console.error(`[garages-moto] dept=${departement}:`, err);
-    return [];
-  }
 }
 
 function ProCard({ pro }: { pro: Pro }) {

@@ -4,12 +4,13 @@ export interface MapPoint {
   latitude: number;
   longitude: number;
   category: string;
-  appSection: 'shopping' | 'service' | 'both' | 'association' | 'relais';
+  appSection: 'shopping' | 'service' | 'both' | 'association' | 'relais' | 'creator';
   title: string;
   slug?: string;
   geohash?: string;
   imgUrl?: string;
   rating?: string | number;
+  brands?: string[];
 }
 
 export interface Dealership {
@@ -46,7 +47,7 @@ export interface Dealership {
   ratingNumber?: number;
   reviewCount?: number;
   category?: string;
-  appSection?: 'shopping' | 'service' | 'both' | 'association' | 'relais';
+  appSection?: 'shopping' | 'service' | 'both' | 'association' | 'relais' | 'creator';
   brands?: string[];
   isClaimed?: boolean;
   country?: string;

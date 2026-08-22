@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { loadSeoPros } from '@/lib/seo-pros';
 import { getAllBrandSlugs, getBrandBySlug } from '@/app/lib/brands';
 
 export const metadata: Metadata = {
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 interface MultiPro {
   id: string;
+  slug: string;
   title: string;
   address: string;
   brands: string[];
@@ -29,36 +30,37 @@ interface MultiPro {
 }
 
 async function getMultibrandPros(): Promise<MultiPro[]> {
-  try {
-    const db = getAdminFirestore();
-    const snap = await db.collection('concessions')
-      .where('isMultibrand', '==', true)
-      .limit(500)
-      .get();
+  const allPros = await loadSeoPros();
 
-    return snap.docs.map(doc => {
-      const d = doc.data();
-      const rating = d.rating ? parseFloat(String(d.rating)) : null;
-      return {
-        id: doc.id,
-        title: d.title || '',
-        address: d.address || '',
-        brands: d.brands || [],
-        phoneNumber: d.phoneNumber || undefined,
-        website: d.website || undefined,
-        rating: isNaN(rating as number) ? null : rating,
-        departement: d.departement || '',
-      };
-    }).sort((a, b) => {
-      // Trier par nombre de marques décroissant, puis par note
-      if (b.brands.length !== a.brands.length) return b.brands.length - a.brands.length;
-      if (a.rating !== null && b.rating !== null) return b.rating - a.rating;
+  return allPros
+    .filter(
+      pro =>
+        pro.collection === 'concessions' &&
+        (pro.isMultibrand || pro.brands.length >= 2)
+    )
+    .map(pro => ({
+      id: pro.id,
+      slug: pro.slug,
+      title: pro.title,
+      address: pro.address,
+      brands: pro.brands,
+      phoneNumber: pro.phoneNumber,
+      website: pro.website,
+      rating: pro.rating,
+      departement: pro.departement,
+    }))
+    .sort((a, b) => {
+      if (b.brands.length !== a.brands.length) {
+        return b.brands.length - a.brands.length;
+      }
+
+      if (a.rating !== null && b.rating !== null) {
+        return b.rating - a.rating;
+      }
+
       return a.title.localeCompare(b.title, 'fr');
-    });
-  } catch (err) {
-    console.error('[multimarque]', err);
-    return [];
-  }
+    })
+    .slice(0, 500);
 }
 
 function ProCard({ pro }: { pro: MultiPro }) {

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCountryBySlug, getAllCountrySlugs } from '@/app/lib/countries';
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { loadSeoPros } from '@/lib/seo-pros';
 
 interface Pro {
   id: string;
@@ -52,42 +52,51 @@ function parseRating(raw: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
-async function getProsForCountry(country: { code: string; filterType?: string }): Promise<Pro[]> {
-  const code = country.code;
-  try {
-    const db = getAdminFirestore();
-    const cols = ['concessions', 'associations', 'relais'] as const;
-    const all: Pro[] = [];
-    for (const col of cols) {
-      const filterField = country.filterType === 'departement' ? 'departement' : 'country';
-      const snap = await db.collection(col).where(filterField, '==', code).limit(300).get();
-      snap.docs.forEach(doc => {
-        const d = doc.data();
-        all.push({
-          id: doc.id,
-          title: d.title || '',
-          address: d.address || '',
-          category: d.category || '',
-          phoneNumber: d.phoneNumber || undefined,
-          website: d.website || undefined,
-          rating: parseRating(d.rating),
-          reviewCount: d.reviewCount ? Number(d.reviewCount) : null,
-          slug: d.slug || doc.id,
-          docId: doc.id,
-          collection: col,
-        });
-      });
-    }
-    return all.sort((a, b) => {
-      if (a.rating !== null && b.rating !== null) return b.rating - a.rating;
+async function getProsForCountry(
+  country: { code: string; filterType?: string }
+): Promise<Pro[]> {
+  const allPros = await loadSeoPros();
+
+  return allPros
+    .filter(pro => {
+      if (
+        !['concessions', 'associations', 'relais'].includes(
+          pro.collection
+        )
+      ) {
+        return false;
+      }
+
+      if (country.filterType === 'departement') {
+        return pro.departement === country.code;
+      }
+
+      return pro.country === country.code;
+    })
+    .slice(0, 900)
+    .map(pro => ({
+      id: pro.id,
+      title: pro.title,
+      address: pro.address,
+      category: pro.category,
+      phoneNumber: pro.phoneNumber,
+      website: pro.website,
+      rating: pro.rating,
+      reviewCount: pro.reviewCount,
+      slug: pro.slug,
+      docId: pro.id,
+      collection: pro.collection,
+    }))
+    .sort((a, b) => {
+      if (a.rating !== null && b.rating !== null) {
+        return b.rating - a.rating;
+      }
+
       if (a.rating !== null) return -1;
       if (b.rating !== null) return 1;
+
       return a.title.localeCompare(b.title, 'fr');
     });
-  } catch (err) {
-    console.error(`[pros-moto] country=${code}:`, err);
-    return [];
-  }
 }
 
 function ProCard({ pro }: { pro: Pro }) {

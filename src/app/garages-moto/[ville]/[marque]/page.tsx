@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { loadSeoPros } from '@/lib/seo-pros';
 
 interface PageProps {
   params: Promise<{ ville: string; marque: string }>;
@@ -37,33 +37,27 @@ const BRAND_SLUGS: Record<string, string> = {
 };
 
 export async function generateStaticParams() {
-  try {
-    const db = getAdminFirestore();
-    const snap = await db.collection('concessions').get();
-    const combos = new Map<string, number>();
+  const pros = await loadSeoPros();
+  const combos = new Set<string>();
 
-    snap.docs.forEach(d => {
-      const data = d.data();
-      const brands: string[] = data.brands || [];
-      const city = extractCity(data.address || '');
-      if (!city.slug || !brands.length) return;
-      brands.forEach(brand => {
-        const brandSlug = toSlug(brand);
-        const key = `${city.slug}|${brandSlug}`;
-        combos.set(key, (combos.get(key) || 0) + 1);
+  pros
+    .filter(pro => pro.collection === 'concessions')
+    .forEach(pro => {
+      const city = extractCity(pro.address || '');
+
+      if (!city.slug || !pro.brands.length) return;
+
+      pro.brands.forEach(brand => {
+        combos.add(
+          city.slug + '|' + toSlug(brand)
+        );
       });
     });
 
-    // Ne générer que les combos avec au moins 1 concession
-    return Array.from(combos.entries())
-      .filter(([, count]) => count >= 1)
-      .map(([key]) => {
-        const [ville, marque] = key.split('|');
-        return { ville, marque };
-      });
-  } catch {
-    return [];
-  }
+  return Array.from(combos).map(key => {
+    const [ville, marque] = key.split('|');
+    return { ville, marque };
+  });
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -89,21 +83,24 @@ export default async function MarqueVillePage({ params }: PageProps) {
   const brandName = BRAND_SLUGS[marque];
   if (!brandName) notFound();
 
-  const db = getAdminFirestore();
-  const villeDisplay = ville.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const villeDisplay = ville
+    .split('-')
+    .map(
+      (w: string) =>
+        w.charAt(0).toUpperCase() + w.slice(1)
+    )
+    .join(' ');
 
-  // Récupérer toutes les concessions avec cette marque
-  const snap = await db.collection('concessions')
-    .where('brands', 'array-contains', brandName)
-    .get();
+  const allPros = await loadSeoPros();
 
-  // Filtrer par ville
-  const pros = snap.docs
-    .map(d => ({ id: d.id, ...d.data() } as any))
-    .filter(p => {
-      const city = extractCity(p.address || '');
-      return city.slug === ville;
-    });
+  const pros = allPros.filter(pro => {
+    if (pro.collection !== 'concessions') return false;
+    if (!pro.brands.includes(brandName)) return false;
+
+    const city = extractCity(pro.address || '');
+
+    return city.slug === ville;
+  });
 
   if (pros.length === 0) notFound();
 

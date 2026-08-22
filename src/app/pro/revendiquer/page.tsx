@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, getDocs, query, limit, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { useFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,8 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/app/header';
 import { Loader2, Search, MapPin, ArrowLeft, Send, CheckCircle, Store } from 'lucide-react';
 import ImageUploadRequest from '@/components/app/image-upload-request';
+import { loadPublicSeoPros } from '@/lib/public-seo-pros';
 
-const COLLECTIONS = ['concessions', 'associations', 'relais', 'creators'] as const;
 const JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 const EDITABLE_FIELDS = ['title', 'address', 'phoneNumber', 'email', 'website', 'category', 'info', 'googleMapsUrl', 'instagramUrl', 'facebookUrl', ...JOURS];
 
@@ -43,24 +43,29 @@ export default function RevendiquerPage() {
   const isPro = profile?.role === 'pro' || profile?.role === 'admin';
 
   const loadListings = useCallback(async () => {
-    if (!firestore) return;
     setIsLoading(true);
-    const all: any[] = [];
-    for (const colName of COLLECTIONS) {
-      try {
-        const snap = await getDocs(query(collection(firestore, colName), limit(8000)));
-        snap.docs.forEach(d => {
-          const data = d.data();
-          all.push({ id: d.id, collection: colName, title: data.title || d.id, address: data.address || '', ...data });
-        });
-      } catch (e) { console.warn('Erreur', colName, e); }
-    }
-    all.sort((a, b) => a.title.localeCompare(b.title));
-    setAllListings(all);
-    setIsLoading(false);
-  }, [firestore]);
 
-  useEffect(() => { if (user && isPro) loadListings(); }, [user, isPro, loadListings]);
+    try {
+      const all = await loadPublicSeoPros();
+
+      setAllListings(all);
+    } catch (e) {
+      console.warn(
+        'Erreur chargement index public des fiches',
+        e
+      );
+
+      setAllListings([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user && isPro) {
+      loadListings();
+    }
+  }, [user, isPro, loadListings]);
 
   const results = useMemo(() => {
     if (searchTerm.trim().length < 2) return [];
@@ -68,11 +73,56 @@ export default function RevendiquerPage() {
     return allListings.filter(l => normalize(l.title).includes(q) || normalize(l.address).includes(q)).slice(0, 30);
   }, [searchTerm, allListings]);
 
-  const selectListing = (l: any) => {
-    setSelected(l);
-    const initial: any = {};
-    EDITABLE_FIELDS.forEach(f => { initial[f] = l[f] || ''; });
-    setForm(initial);
+  const selectListing = async (l: any) => {
+    if (!firestore) return;
+
+    setIsLoading(true);
+
+    try {
+      // Une seule lecture Firestore :
+      // uniquement la fiche réellement choisie.
+      const snapshot = await getDoc(
+        doc(firestore, l.collection, l.id)
+      );
+
+      if (!snapshot.exists()) {
+        toast({
+          title: 'Fiche introuvable',
+          description:
+            'Cette fiche n’existe plus dans la base.',
+          variant: 'destructive',
+        });
+
+        return;
+      }
+
+      const fullListing = {
+        ...l,
+        ...snapshot.data(),
+        id: snapshot.id,
+        collection: l.collection,
+      };
+
+      setSelected(fullListing);
+
+      const initial: any = {};
+
+      EDITABLE_FIELDS.forEach(field => {
+        initial[field] = fullListing[field] || '';
+      });
+
+      setForm(initial);
+    } catch (e: any) {
+      toast({
+        title: 'Erreur',
+        description:
+          e?.message ||
+          'Impossible de charger cette fiche.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const setField = (k: string, v: string) => setForm((prev: any) => ({ ...prev, [k]: v }));

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { collection, getDocs, query, limit, doc, updateDoc, deleteDoc, getDoc, getFirestore } from 'firebase/firestore';
+import { doc, updateDoc, deleteDoc, getDoc, getFirestore } from 'firebase/firestore';
 import { useFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,8 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, Edit, Trash2, MapPin, MapPinOff, X, Save, RefreshCw } from 'lucide-react';
 import ImageUploadRequest from '@/components/app/image-upload-request';
+import { loadPublicSeoPros } from '@/lib/public-seo-pros';
 
-const COLLECTIONS = ['concessions', 'associations', 'relais', 'creators'] as const;
 
 interface ListingItem {
   id: string;
@@ -49,7 +49,7 @@ function normalize(s: string): string {
 }
 
 export default function ListingsManager() {
-  const { firestore } = useFirebase();
+  const { firestore, user } = useFirebase();
   const { toast } = useToast();
   const [allListings, setAllListings] = useState<ListingItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,8 +73,40 @@ export default function ListingsManager() {
   const handleRebuildCache = async () => {
     setIsRebuilding(true);
     try {
-      const res = await fetch('/api/rebuild-map-cache', { method: 'POST' });
+      if (!user) {
+        toast({
+          title: 'Session introuvable',
+          description:
+            'Reconnecte-toi avant de mettre à jour la carte.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const idToken = await user.getIdToken();
+
+      const res = await fetch(
+        '/api/rebuild-map-cache',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
+
       const data = await res.json();
+
+      if (res.status === 401 || res.status === 403) {
+        toast({
+          title: 'Accès refusé',
+          description:
+            data.error ||
+            'Droits administrateur requis.',
+          variant: 'destructive',
+        });
+        return;
+      }
       if (data.ok) {
         toast({ title: 'Carte mise à jour', description: data.count + ' points régénérés' });
         if (firestore) fetchCacheInfo(firestore, setCacheUpdatedAt, setCacheCount);
@@ -90,50 +122,138 @@ export default function ListingsManager() {
   const [importError, setImportError] = useState('');
 
   const loadListings = useCallback(async () => {
-    if (!firestore) return;
     setIsLoading(true);
-    const all: ListingItem[] = [];
-    for (const colName of COLLECTIONS) {
-      try {
-        const snap = await getDocs(query(collection(firestore, colName), limit(8000)));
-        snap.docs.forEach(d => {
-          const data = d.data();
-          all.push({
-            id: d.id,
-            collection: colName,
-            title: data.title || d.id,
-            address: data.address || '',
-            phoneNumber: data.phoneNumber || '',
-            email: data.email || '',
-            website: data.website || '',
-            category: data.category || '',
-            googleMapsUrl: data.googleMapsUrl || '',
-            placeUrl: data.placeUrl || '',
-            instagramUrl: data.instagramUrl || '',
-            facebookUrl: data.facebookUrl || '',
-            latitude: typeof data.latitude === 'number' ? data.latitude : null,
-            longitude: typeof data.longitude === 'number' ? data.longitude : null,
-            lundi: data.lundi || '', mardi: data.mardi || '', mercredi: data.mercredi || '',
-            jeudi: data.jeudi || '', vendredi: data.vendredi || '', samedi: data.samedi || '', dimanche: data.dimanche || '',
-            brands: Array.isArray(data.brands) ? data.brands : [],
-            info: data.info || '',
-          });
-        });
-      } catch (e) { console.warn('Erreur chargement', colName, e); }
-    }
-    all.sort((a, b) => a.title.localeCompare(b.title));
-    setAllListings(all);
-    setLoaded(true);
-    setIsLoading(false);
-  }, [firestore]);
 
-  useEffect(() => { loadListings(); }, [loadListings]);
+    try {
+      const publicPros = await loadPublicSeoPros();
+
+      const all: ListingItem[] = publicPros.map(pro => ({
+        id: pro.id,
+        collection: pro.collection,
+        title: pro.title,
+        address: pro.address,
+        phoneNumber: pro.phoneNumber || '',
+        email: '',
+        website: pro.website || '',
+        category: pro.category,
+        googleMapsUrl: '',
+        placeUrl: '',
+        instagramUrl: '',
+        facebookUrl: '',
+        latitude: pro.latitude,
+        longitude: pro.longitude,
+        lundi: '',
+        mardi: '',
+        mercredi: '',
+        jeudi: '',
+        vendredi: '',
+        samedi: '',
+        dimanche: '',
+        brands: pro.brands,
+        info: '',
+      }));
+
+      setAllListings(all);
+      setLoaded(true);
+    } catch (e) {
+      console.warn(
+        'Erreur chargement index public des fiches',
+        e
+      );
+
+      setAllListings([]);
+      setLoaded(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadListings();
+  }, [loadListings]);
 
   const results = useMemo(() => {
     if (searchTerm.trim().length < 2) return [];
     const q = normalize(searchTerm);
     return allListings.filter(l => normalize(l.title).includes(q) || normalize(l.address).includes(q)).slice(0, 50);
   }, [searchTerm, allListings]);
+
+  const handleEdit = async (listing: ListingItem) => {
+    if (!firestore) return;
+
+    setIsLoading(true);
+
+    try {
+      // Une seule lecture Firestore :
+      // uniquement la fiche que l'admin veut modifier.
+      const snapshot = await getDoc(
+        doc(
+          firestore,
+          listing.collection,
+          listing.id
+        )
+      );
+
+      if (!snapshot.exists()) {
+        toast({
+          title: 'Fiche introuvable',
+          variant: 'destructive',
+        });
+
+        return;
+      }
+
+      const data = snapshot.data();
+
+      setEditing({
+        id: snapshot.id,
+        collection: listing.collection,
+        title: data.title || snapshot.id,
+        address: data.address || '',
+        phoneNumber: data.phoneNumber || '',
+        email: data.email || '',
+        website: data.website || '',
+        category: data.category || '',
+        googleMapsUrl: data.googleMapsUrl || '',
+        placeUrl: data.placeUrl || '',
+        instagramUrl: data.instagramUrl || '',
+        facebookUrl: data.facebookUrl || '',
+        latitude:
+          typeof data.latitude === 'number'
+            ? data.latitude
+            : null,
+        longitude:
+          typeof data.longitude === 'number'
+            ? data.longitude
+            : null,
+        lundi: data.lundi || '',
+        mardi: data.mardi || '',
+        mercredi: data.mercredi || '',
+        jeudi: data.jeudi || '',
+        vendredi: data.vendredi || '',
+        samedi: data.samedi || '',
+        dimanche: data.dimanche || '',
+        brands: Array.isArray(data.brands)
+          ? data.brands
+          : [],
+        info: data.info || '',
+      });
+
+      setIsImporting(false);
+      setImportUrl('');
+      setImportError('');
+    } catch (e: any) {
+      toast({
+        title: 'Erreur',
+        description:
+          e?.message ||
+          'Impossible de charger cette fiche.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleImportFromGoogleMaps = async () => {
     if (!importUrl.trim() || !editing) return;
@@ -290,7 +410,7 @@ export default function ListingsManager() {
               </div>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => { setEditing(l); setIsImporting(false); setImportUrl(''); setImportError(''); }} className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"><Edit className="h-4 w-4" /></button>
+              <button onClick={() => handleEdit(l)} className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"><Edit className="h-4 w-4" /></button>
               <button onClick={() => setConfirmDelete(l)} className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"><Trash2 className="h-4 w-4" /></button>
             </div>
           </div>

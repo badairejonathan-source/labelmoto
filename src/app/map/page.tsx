@@ -15,11 +15,12 @@ import LabelMotoLogo from '@/components/app/logo';
 import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
+import { loadPublicMapPoints } from '@/lib/public-map-points';
 import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase, useMemoFirebase, useDoc } from '@/firebase/client';
 import { initializeFirebaseClient } from '@/firebase/config-client';
 import { collection, getDocs, query, limit, doc, getDoc, getFirestore } from "firebase/firestore";
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import locationsData from '@/data/locations.json';
@@ -174,7 +175,6 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
 
 function MapPageComponent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const { width } = useWindowSize();
   const { firestore } = useFirebase();
 
@@ -217,19 +217,43 @@ function MapPageComponent() {
 
   // Synchroniser le ref avec l'état
   useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);
-  // Sync état -> URL (permet au bouton retour de restaurer l'état)
+  // Synchronisation légère état -> URL.
+  // L'History API conserve une URL partageable sans provoquer
+  // de navigation Next.js ni de nouvelle requête GET /map.
   useEffect(() => {
     const params = new URLSearchParams();
+
     if (searchTerm) params.set('search', searchTerm);
-    if (activeFilters.length > 0 && activeFilters.length < 5) params.set('filter', activeFilters.join(','));
+
+    if (activeFilters.length > 0 && activeFilters.length < 5) {
+      params.set('filter', activeFilters.join(','));
+    }
+
     if (selectedId) params.set('selectedId', selectedId);
+
     if (mapCenter[0] !== 46.5 || mapCenter[1] !== 2.2) {
       params.set('lat', mapCenter[0].toFixed(4));
       params.set('lng', mapCenter[1].toFixed(4));
     }
-    if (mapZoom !== 6) params.set('zoom', mapZoom.toString());
-    const newUrl = params.toString() ? '/map?' + params.toString() : '/map';
-    router.replace(newUrl, { scroll: false });
+
+    if (mapZoom !== 6) {
+      params.set('zoom', mapZoom.toString());
+    }
+
+    const newUrl = params.toString()
+      ? '/map?' + params.toString()
+      : '/map';
+
+    const currentUrl =
+      window.location.pathname + window.location.search;
+
+    if (currentUrl !== newUrl) {
+      window.history.replaceState(
+        window.history.state,
+        '',
+        newUrl
+      );
+    }
   }, [searchTerm, activeFilters, selectedId, mapCenter, mapZoom]);
 
 
@@ -237,35 +261,27 @@ function MapPageComponent() {
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 156)) : 0;
   const leftPadding = !isMobile ? 544 : 0;
 
-  // CHARGEMENT STATIQUE DEPUIS points.json
+  // Index public partagé : aucun scan Firestore pour les marqueurs.
   useEffect(() => {
+    let cancelled = false;
+
     setIsLoadingPoints(true);
-    setTimeout(() => {
-    fetch('https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json')
-      .catch(() => fetch('/points.json'))
-      .then(r => r.json())
-      .then((data: any[]) => {
-        const mapped: MapPoint[] = data.map(p => ({
-          id: p.id,
-          latitude: p.lat,
-          longitude: p.lng,
-          title: p.t,
-          slug: p.s,
-          appSection: p.a,
-          category: p.c || 'concession',
-          rating: p.r || null,
-          imgUrl: p.i || null,
-          address: p.addr || '',
-          brands: p.b || [],
-        } as MapPoint));
-        setPoints(mapped);
+
+    loadPublicMapPoints()
+      .then(mapped => {
+        if (cancelled) return;
+        setPoints(mapped as MapPoint[]);
         setIsLoadingPoints(false);
       })
-      .catch(e => {
-        console.error('[MAP] Erreur chargement points.json:', e);
+      .catch(error => {
+        if (cancelled) return;
+        console.error('[MAP] Erreur chargement points.json:', error);
         setIsLoadingPoints(false);
       });
-    }, 200);
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
     // Chargement du cache départements
@@ -528,9 +544,22 @@ function MapPageComponent() {
         <Header
           searchOnly={!isMobile}
           searchTerm={searchTerm}
-          onSearchTermChange={(val: string) => { setSearchTerm(val); }}
+          onSearchTermChange={(val: string) => {
+            if (val !== searchTerm) {
+              setSelectedId(null);
+              setIsDetailView(false);
+              setSelectionSource(null);
+            }
+
+            setSearchTerm(val);
+          }}
           onSearch={() => setSelectionSource('external')}
-          onSuggestionSelect={(lat, lng, bbox, dealerId) => {
+          onSuggestionSelect={(
+            lat: number,
+            lng: number,
+            bbox?: [number, number, number, number],
+            dealerId?: string
+          ) => {
             if (bbox) { setBboxToFit(bbox); setDeptToFit(null); }
             else if (dealerId) handleMarkerClick(dealerId);
             else { setMapCenter([lat, lng]); setSelectionSource('external'); }

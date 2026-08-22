@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { loadSeoPros } from '@/lib/seo-pros';
 import { getDepartmentBySlug, getAllDepartmentSlugs, DEPARTMENTS } from '@/app/lib/departments';
 import { CITIES } from '@/app/lib/cities';
 
@@ -76,55 +76,56 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-async function getCountForDepartment(code: string): Promise<number> {
-  try {
-    const db = getAdminFirestore();
-    const cols = ['concessions', 'associations', 'relais'] as const;
-    let total = 0;
-    for (const col of cols) {
-      const snap = await db.collection(col).where('departement', '==', code).count().get();
-      total += snap.data().count;
-    }
-    return total;
-  } catch {
-    return 0;
-  }
+async function getCountForDepartment(
+  code: string
+): Promise<number> {
+  const allPros = await loadSeoPros();
+
+  return allPros.filter(
+    pro =>
+      ['concessions', 'associations', 'relais'].includes(
+        pro.collection
+      ) &&
+      pro.departement === code
+  ).length;
 }
 
-async function getProsForDepartment(code: string): Promise<Pro[]> {
-  try {
-    const db = getAdminFirestore();
-    const cols = ['concessions', 'associations', 'relais'] as const;
-    const all: Pro[] = [];
-    for (const col of cols) {
-      const snap = await db.collection(col).where('departement', '==', code).limit(300).get();
-      snap.docs.forEach(doc => {
-        const d = doc.data();
-        all.push({
-          id: doc.id,
-          title: d.title || '',
-          address: d.address || '',
-          category: d.category || '',
-          phoneNumber: d.phoneNumber || undefined,
-          website: d.website || undefined,
-          rating: parseRating(d.rating),
-          reviewCount: parseReviewCount(d.reviewCount),
-          slug: d.slug || doc.id,
-          docId: doc.id,
-          collection: col,
-        });
-      });
-    }
-    return all.sort((a, b) => {
-      if (a.rating !== null && b.rating !== null) return b.rating - a.rating;
+async function getProsForDepartment(
+  code: string
+): Promise<Pro[]> {
+  const allPros = await loadSeoPros();
+
+  return allPros
+    .filter(
+      pro =>
+        ['concessions', 'associations', 'relais'].includes(
+          pro.collection
+        ) &&
+        pro.departement === code
+    )
+    .map(pro => ({
+      id: pro.id,
+      title: pro.title,
+      address: pro.address,
+      category: pro.category,
+      phoneNumber: pro.phoneNumber,
+      website: pro.website,
+      rating: pro.rating,
+      reviewCount: pro.reviewCount,
+      slug: pro.slug,
+      docId: pro.id,
+      collection: pro.collection,
+    }))
+    .sort((a, b) => {
+      if (a.rating !== null && b.rating !== null) {
+        return b.rating - a.rating;
+      }
+
       if (a.rating !== null) return -1;
       if (b.rating !== null) return 1;
+
       return a.title.localeCompare(b.title, 'fr');
     });
-  } catch (err) {
-    console.error(`[garages-moto/departement] code=${code}:`, err);
-    return [];
-  }
 }
 
 function ProCard({ pro }: { pro: Pro }) {

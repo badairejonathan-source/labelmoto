@@ -8,7 +8,6 @@ import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
-import { useFirebase } from '@/firebase/client';
 const UserMenuLazy = dynamic(() => import('@/components/app/user-menu'), { 
   ssr: false,
   loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
@@ -16,12 +15,10 @@ const UserMenuLazy = dynamic(() => import('@/components/app/user-menu'), {
 import { useRouter, usePathname } from 'next/navigation';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
-import { collection, query, getDocs, limit } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
-import { extractValidCoordinates } from '@/lib/geohash';
+import { loadPublicMapPoints } from '@/lib/public-map-points';
 
 const brandsList = Object.keys(brandLogos);
-let globalDealersCache: any[] | null = null;
 
 function normalizeStr(str: string): string {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, '').trim();
@@ -99,10 +96,9 @@ const Header: React.FC<any> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { firestore } = useFirebase();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [allDealers, setAllDealers] = useState<any[]>(globalDealersCache || []);
+  const [allDealers, setAllDealers] = useState<any[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoadingGeo, setIsLoadingGeo] = useState(false);
@@ -112,36 +108,35 @@ const Header: React.FC<any> = ({
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const fetchDealers = async () => {
-      if (!firestore || globalDealersCache || !isFocused) return;
-      try {
-        const collections = ['concessions', 'associations', 'relais', 'creators'];
-        const dealers: any[] = [];
-        const seenIds = new Set<string>();
-        for (const colName of collections) {
-          try {
-            const snapshot = await getDocs(query(collection(firestore, colName), limit(8000)));
-            snapshot.docs.forEach(d => {
-              if (seenIds.has(d.id)) return;
-              const data = d.data();
-              const coords = extractValidCoordinates(data);
-              if (!coords) return;
-              seenIds.add(d.id);
-              const appSect = colName === 'associations' ? 'association' : colName === 'relais' ? 'relais' : colName === 'creators' ? 'creator' : (data.appSection || 'shopping');
-              dealers.push({
-                type: 'dealer', label: data.title || d.id,
-                subLabel: data.address, lat: coords.lat, lng: coords.lng,
-                id: d.id, zoom: 15, appSection: appSect,
-              });
-            });
-          } catch (e) {}
-        }
-        globalDealersCache = dealers;
-        setAllDealers(dealers);
-      } catch (e) {}
+    if (!isFocused || allDealers.length > 0) return;
+
+    let cancelled = false;
+
+    loadPublicMapPoints()
+      .then(points => {
+        if (cancelled) return;
+
+        setAllDealers(
+          points.map(point => ({
+            type: 'dealer',
+            label: point.title || point.id,
+            subLabel: point.address || '',
+            lat: point.latitude,
+            lng: point.longitude,
+            id: point.id,
+            zoom: 15,
+            appSection: point.appSection || 'shopping',
+          }))
+        );
+      })
+      .catch(error => {
+        console.error('[HEADER] Erreur chargement index public :', error);
+      });
+
+    return () => {
+      cancelled = true;
     };
-    fetchDealers();
-  }, [firestore, isFocused]);
+  }, [isFocused, allDealers.length]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {

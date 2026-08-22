@@ -78,6 +78,10 @@ const MapComponent = ({
   // Marqueurs affiches independamment du seuil de zoom apres selection d'un departement
   const [markersUnlocked, setMarkersUnlocked] = useState(false);
 
+  // Source de vérité immédiate du mode Leaflet.
+  // false = choroplèthe, true = marqueurs.
+  const markerModeRef = useRef(false);
+
   // Initialisation carte
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -208,7 +212,6 @@ const MapComponent = ({
           paddingBottomRight: [20, 200],
           animate: true,
           duration: 0.8,
-          minZoom: 9,
           maxZoom: 11,
         });
       } else {
@@ -217,10 +220,11 @@ const MapComponent = ({
           paddingBottomRight: [60, 40],
           animate: true,
           duration: 0.8,
-          minZoom: 9,
         });
       }
+      markerModeRef.current = true;
       setMarkersUnlocked(true);
+
       setTimeout(() => {
         isUpdatingFromProps.current = false;
         // Forcer refresh des marqueurs apres zoom departement (meme pattern que bboxToFit)
@@ -233,47 +237,86 @@ const MapComponent = ({
     fitDept();
   }, [deptToFit, leftPadding, isMobile]);
 
-  // Choropleth avec surbrillance au survol
+  // Choropleth + marqueurs : machine de couches Leaflet
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !deptCounts) return;
-    if (map.getZoom() < ZOOM_THRESHOLD && !markersUnlocked && clusterGroupRef.current) { clusterGroupRef.current.clearLayers(); }
 
     const normalStyle = (feature: any) => {
       const code = feature?.properties?.code;
       const count = deptCounts[code]?.total || 0;
-      return { fillColor: getColor(count), weight: 1, color: 'white', fillOpacity: 0.38 };
+
+      return {
+        fillColor: getColor(count),
+        weight: 1,
+        color: 'white',
+        fillOpacity: 0.38,
+      };
     };
 
-    const hoverStyle = { weight: 2, color: '#333', fillOpacity: 0.6 };
+    const hoverStyle = {
+      weight: 2,
+      color: '#333',
+      fillOpacity: 0.6,
+    };
 
-    const buildChoropleth = () => {
-      if (!geojsonDataRef.current) return;
+    const removeDepartmentLabels = () => {
+      labelMarkersRef.current.forEach(marker => {
+        try {
+          if (map.hasLayer(marker)) {
+            map.removeLayer(marker);
+          }
+        } catch {}
+      });
 
+      labelMarkersRef.current = [];
+    };
+
+    const removeChoropleth = () => {
       if (geojsonLayerRef.current) {
-        map.removeLayer(geojsonLayerRef.current);
+        try {
+          if (map.hasLayer(geojsonLayerRef.current)) {
+            map.removeLayer(geojsonLayerRef.current);
+          }
+        } catch {}
+
         geojsonLayerRef.current = null;
       }
-      labelMarkersRef.current.forEach(m => map.removeLayer(m));
-      labelMarkersRef.current = [];
 
-      const currentZoom = map.getZoom();
-      if (currentZoom >= ZOOM_THRESHOLD || markersUnlocked) return;
+      removeDepartmentLabels();
+    };
 
-      geojsonLayerRef.current = L.geoJSON(geojsonDataRef.current, {
+    const ensureChoropleth = (): boolean => {
+      if (!geojsonDataRef.current) return false;
+
+      // Déjà présente : ne surtout pas détruire/reconstruire.
+      if (
+        geojsonLayerRef.current &&
+        map.hasLayer(geojsonLayerRef.current)
+      ) {
+        return true;
+      }
+
+      // Nettoyer seulement une ancienne référence éventuelle.
+      removeChoropleth();
+
+      const layer = L.geoJSON(geojsonDataRef.current, {
         style: normalStyle,
-        onEachFeature: (feature, layer) => {
+
+        onEachFeature: (feature, featureLayer) => {
           const code = feature.properties?.code;
           const nom = feature.properties?.nom;
           const count = deptCounts[code]?.total || 0;
           const counts = deptCounts[code];
 
-          layer.bindTooltip(
-            `<b>${nom}</b><br/>${count} fiche${count > 1 ? 's' : ''}<br/><small>${counts?.concessions || 0} concessions • ${counts?.associations || 0} asso • ${counts?.relais || 0} relais</small>`,
+          featureLayer.bindTooltip(
+            `<b>${nom}</b><br/>${count} fiche${count > 1 ? 's' : ''}<br/><small>${counts?.concessions || 0} concessions &bull; ${counts?.associations || 0} asso &bull; ${counts?.relais || 0} relais</small>`,
             { sticky: true }
           );
 
-          const centroid = (layer as L.Polygon).getBounds().getCenter();
+          const centroid =
+            (featureLayer as L.Polygon).getBounds().getCenter();
+
           const labelMarker = L.marker(centroid, {
             icon: L.divIcon({
               className: 'dept-label',
@@ -284,107 +327,230 @@ const MapComponent = ({
             interactive: false,
             zIndexOffset: -1000,
           });
-          labelMarkersRef.current.push(labelMarker);
-          try { if (map && map.getContainer() && document.body.contains(map.getContainer())) labelMarker.addTo(map); } catch(e) {}
 
-          layer.on('mouseover', () => {
-            (layer as L.Path).setStyle({ ...hoverStyle });
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-              (layer as L.Path).bringToFront();
+          labelMarkersRef.current.push(labelMarker);
+
+          try {
+            labelMarker.addTo(map);
+          } catch {}
+
+          featureLayer.on('mouseover', () => {
+            (featureLayer as L.Path).setStyle({
+              ...hoverStyle,
+            });
+
+            if (
+              !L.Browser.ie &&
+              !L.Browser.opera &&
+              !L.Browser.edge
+            ) {
+              (featureLayer as L.Path).bringToFront();
             }
           });
 
-          layer.on('mouseout', () => {
-            (layer as L.Path).setStyle(normalStyle(feature));
+          featureLayer.on('mouseout', () => {
+            (featureLayer as L.Path).setStyle(
+              normalStyle(feature)
+            );
           });
 
-          layer.on('click', () => {
+          featureLayer.on('click', () => {
+            // Le mode change immédiatement côté Leaflet.
+            markerModeRef.current = true;
+
+            // React sert uniquement à déclencher la
+            // construction du cluster.
             setMarkersUnlocked(true);
-            map.fitBounds((layer as L.Polygon).getBounds(), {
-              paddingTopLeft: isMobile ? [20, 60] : [leftPadding + 40, 40],
-              paddingBottomRight: isMobile ? [20, 200] : [60, 40],
-              maxZoom: isMobile ? 12 : undefined,
-            });
+
+            map.fitBounds(
+              (featureLayer as L.Polygon).getBounds(),
+              {
+                paddingTopLeft: isMobile
+                  ? [20, 60]
+                  : [leftPadding + 40, 40],
+                paddingBottomRight: isMobile
+                  ? [20, 200]
+                  : [60, 40],
+                maxZoom: isMobile ? 12 : undefined,
+              }
+            );
           });
         },
-      }).addTo(map);
+      });
+
+      layer.addTo(map);
+      geojsonLayerRef.current = layer;
+
+      return true;
     };
 
-    const loadAndBuild = async () => {
+    const enterChoroplethMode = () => {
+      // 1. La nouvelle couche doit exister AVANT
+      //    de supprimer les marqueurs.
+      const ready = ensureChoropleth();
+
+      if (!ready) return;
+
+      // 2. Changer le mode immédiatement.
+      markerModeRef.current = false;
+
+      // 3. Maintenant seulement retirer les marqueurs.
+      if (clusterGroupRef.current) {
+        clusterGroupRef.current.clearLayers();
+      }
+
+      markerMapRef.current = {};
+
+      // 4. Synchroniser React.
+      setMarkersUnlocked(false);
+    };
+
+    const enterMarkerMode = () => {
+      if (markerModeRef.current) return;
+
+      markerModeRef.current = true;
+
+      // Le retrait de la choroplèthe est volontairement
+      // effectué dans l'effet marqueurs, APRES leur création.
+      setMarkersUnlocked(true);
+    };
+
+    const syncLayerModeWithZoom = () => {
+      const z = map.getZoom();
+
+      // Entrée dans le mode marqueurs.
+      if (z >= ZOOM_THRESHOLD) {
+        enterMarkerMode();
+        return;
+      }
+
+      // Retour à la vue nationale.
+      if (z < EXIT_THRESHOLD) {
+        enterChoroplethMode();
+        return;
+      }
+
+      // Entre 6.5 et 9 : hystérésis.
+      // On conserve exactement le mode actuel.
+      if (!markerModeRef.current) {
+        ensureChoropleth();
+      }
+    };
+
+    const loadAndSync = async () => {
       if (!geojsonDataRef.current) {
         try {
           const res = await fetch(GEOJSON_URL);
-          if (!res.ok) throw new Error('GeoJSON fetch failed');
+
+          if (!res.ok) {
+            throw new Error('GeoJSON fetch failed');
+          }
+
           geojsonDataRef.current = await res.json();
-        } catch (e) {
-          console.error('❌ Erreur chargement GeoJSON:', e);
+        } catch (error) {
+          console.error(
+            'Erreur chargement GeoJSON:',
+            error
+          );
           return;
         }
       }
-      buildChoropleth();
+
+      syncLayerModeWithZoom();
     };
 
-    loadAndBuild();
+    loadAndSync();
 
-    const handleZoom = () => {
-      const z = map.getZoom();
-      if (z < EXIT_THRESHOLD) {
-        // Retour a la vue nationale : on reverrouille et on remet la choropleth
-        if (markersUnlocked) setMarkersUnlocked(false);
-        if (!geojsonLayerRef.current) buildChoropleth();
-        return;
-      }
-      if (z >= ZOOM_THRESHOLD || markersUnlocked) {
-        if (geojsonLayerRef.current) {
-          map.removeLayer(geojsonLayerRef.current);
-          geojsonLayerRef.current = null;
-        }
-        labelMarkersRef.current.forEach(m => map.removeLayer(m));
-        labelMarkersRef.current = [];
-      }
-    };
+    map.on('zoomend', syncLayerModeWithZoom);
 
-    map.on('zoomend', handleZoom);
     return () => {
-      map.off('zoomend', handleZoom);
-      if (geojsonLayerRef.current) {
-        map.removeLayer(geojsonLayerRef.current);
-        geojsonLayerRef.current = null;
-      }
-      labelMarkersRef.current.forEach(m => map.removeLayer(m));
-      labelMarkersRef.current = [];
+      map.off('zoomend', syncLayerModeWithZoom);
     };
-  }, [deptCounts, isMobile, leftPadding, markersUnlocked]);
+  }, [deptCounts, isMobile, leftPadding]);
 
-  // Marqueurs
+  // Construction des marqueurs
   useEffect(() => {
+    const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
-    if (!clusterGroup || !mapRef.current) return;
+
+    if (!map || !clusterGroup) return;
+
+    const currentZoom = map.getZoom();
+
+    const shouldShowMarkers =
+      markerModeRef.current ||
+      markersUnlocked ||
+      currentZoom >= ZOOM_THRESHOLD;
+
+    // En mode choroplèthe, ne surtout pas vider/reconstruire
+    // le cluster depuis cet effet.
+    if (!shouldShowMarkers) return;
 
     clusterGroup.clearLayers();
     markerMapRef.current = {};
-    const currentZoom = mapRef.current.getZoom();
-    if (currentZoom < ZOOM_THRESHOLD && deptCounts && !markersUnlocked) return;
 
-    
-
-
-    points.forEach((point) => {
+    points.forEach(point => {
       const isSelected = point.id === selectedId;
-      const showLabel = labelPoints && Array.isArray(labelPoints) && labelPoints.some(lp => lp.id === point.id);
-      const marker = L.marker([point.latitude, point.longitude], {
-        icon: createIcon(point, isSelected, !!showLabel)
-      });
 
-      marker.on('click', (e) => {
-        L.DomEvent.stopPropagation(e);
+      const showLabel =
+        Array.isArray(labelPoints) &&
+        labelPoints.some(lp => lp.id === point.id);
+
+      const marker = L.marker(
+        [point.latitude, point.longitude],
+        {
+          icon: createIcon(
+            point,
+            isSelected,
+            !!showLabel
+          ),
+        }
+      );
+
+      marker.on('click', event => {
+        L.DomEvent.stopPropagation(event);
         onMarkerClick(point.id);
       });
 
       markerMapRef.current[point.id] = marker;
       clusterGroup.addLayer(marker);
     });
-  }, [points, labelPoints, selectedId, deptCounts, markersUnlocked]);
+
+    // Les marqueurs ont maintenant été enregistrés dans
+    // le cluster. On laisse Leaflet effectuer un cycle de rendu
+    // avant de retirer l'ancienne choroplèthe.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!markerModeRef.current) return;
+
+        if (geojsonLayerRef.current) {
+          try {
+            if (map.hasLayer(geojsonLayerRef.current)) {
+              map.removeLayer(geojsonLayerRef.current);
+            }
+          } catch {}
+
+          geojsonLayerRef.current = null;
+        }
+
+        labelMarkersRef.current.forEach(marker => {
+          try {
+            if (map.hasLayer(marker)) {
+              map.removeLayer(marker);
+            }
+          } catch {}
+        });
+
+        labelMarkersRef.current = [];
+      });
+    });
+  }, [
+    points,
+    labelPoints,
+    selectedId,
+    deptCounts,
+    markersUnlocked,
+  ]);
 
   // Centrage + zoom au clic marqueur
   useEffect(() => {

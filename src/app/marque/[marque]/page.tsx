@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getBrandBySlug, getAllBrandSlugs } from '@/app/lib/brands';
 import { CITIES } from '@/app/lib/cities';
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { getDepartmentByCode } from '@/app/lib/departments';
+import { loadSeoPros } from '@/lib/seo-pros';
 
 interface Pro {
   id: string;
@@ -53,39 +54,106 @@ function parseRating(raw: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
-async function getProsForBrand(brandValue: string): Promise<Pro[]> {
-  try {
-    const db = getAdminFirestore();
-    const snap = await db.collection('concessions')
-      .where('brands', 'array-contains', brandValue)
-      .limit(500)
-      .get();
+async function getProsForBrand(
+  brandValue: string
+): Promise<Pro[]> {
+  const allPros = await loadSeoPros();
 
-    return snap.docs.map(doc => {
-      const d = doc.data();
-      return {
-        id: doc.id,
-        title: d.title || '',
-        address: d.address || '',
-        category: d.category || '',
-        phoneNumber: d.phoneNumber || undefined,
-        website: d.website || undefined,
-        rating: parseRating(d.rating),
-        reviewCount: d.reviewCount ? Number(d.reviewCount) : null,
-        slug: d.slug || doc.id,
-        docId: doc.id,
-        departement: d.departement || '',
-      };
-    }).sort((a, b) => {
-      if (a.rating !== null && b.rating !== null) return b.rating - a.rating;
+  return allPros
+    .filter(
+      pro =>
+        pro.collection === 'concessions' &&
+        pro.brands.includes(brandValue)
+    )
+    .slice(0, 500)
+    .map(pro => ({
+      id: pro.id,
+      title: pro.title,
+      address: pro.address,
+      category: pro.category,
+      phoneNumber: pro.phoneNumber,
+      website: pro.website,
+      rating: pro.rating,
+      reviewCount: pro.reviewCount,
+      slug: pro.slug,
+      docId: pro.id,
+      departement: pro.departement,
+    }))
+    .sort((a, b) => {
+      if (a.rating !== null && b.rating !== null) {
+        return b.rating - a.rating;
+      }
+
       if (a.rating !== null) return -1;
       if (b.rating !== null) return 1;
+
       return a.title.localeCompare(b.title, 'fr');
     });
-  } catch (err) {
-    console.error(`[marque] brand=${brandValue}:`, err);
-    return [];
+}
+
+interface DepartmentGroup {
+  code: string;
+  name: string;
+  pros: Pro[];
+}
+
+function getDepartmentSortValue(code: string): number {
+  const normalized = code.trim().toUpperCase();
+
+  if (normalized === '2A') return 20.1;
+  if (normalized === '2B') return 20.2;
+
+  const numeric = Number.parseInt(normalized, 10);
+  return Number.isFinite(numeric) ? numeric : 9999;
+}
+
+function getDepartmentAnchor(code: string): string {
+  return `departement-${code.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+}
+
+function groupProsByDepartment(pros: Pro[]): DepartmentGroup[] {
+  const grouped = new Map<string, Pro[]>();
+
+  for (const pro of pros) {
+    const code = pro.departement?.trim().toUpperCase() || 'NC';
+
+    if (!grouped.has(code)) {
+      grouped.set(code, []);
+    }
+
+    grouped.get(code)!.push(pro);
   }
+
+  return Array.from(grouped.entries())
+    .map(([code, departmentPros]) => {
+      const department =
+        code !== 'NC' ? getDepartmentByCode(code) : undefined;
+
+      return {
+        code,
+        name:
+          code === '00'
+            ? 'Pays frontaliers'
+            : code === '20'
+              ? 'Corse'
+              : code === 'NC'
+                ? 'Département non renseigné'
+                : department?.name || `Département ${code}`,
+        pros: departmentPros,
+      };
+    })
+    .sort((a, b) => {
+      if (a.code === 'NC') return 1;
+      if (b.code === 'NC') return -1;
+
+      const diff =
+        getDepartmentSortValue(a.code) -
+        getDepartmentSortValue(b.code);
+
+      if (diff !== 0) return diff;
+
+      return a.name.localeCompare(b.name, 'fr');
+    });
 }
 
 function ProCard({ pro }: { pro: Pro }) {
@@ -131,6 +199,7 @@ export default async function MarquePage({ params }: PageProps) {
   if (!brand) notFound();
 
   const pros = await getProsForBrand(brand.firestoreValue);
+  const departmentGroups = groupProsByDepartment(pros);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -206,10 +275,96 @@ export default async function MarquePage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Liste */}
+        {/* Liste par département */}
         {pros.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pros.map(pro => <ProCard key={pro.id} pro={pro} />)}
+          <div className="space-y-10">
+
+            {/* Sommaire départements */}
+            <div
+              id="sommaire-departements"
+              className="scroll-mt-24 bg-white rounded-3xl border shadow-sm p-5 md:p-6"
+            >
+              <details open>
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">
+                      Accès rapide
+                    </p>
+                    <h2 className="text-lg md:text-xl font-black uppercase tracking-tight">
+                      Trouver par département
+                    </h2>
+                  </div>
+
+                  <span className="shrink-0 rounded-full bg-brand/10 px-3 py-1 text-xs font-black text-brand">
+                    {departmentGroups.length}
+                  </span>
+                </summary>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-5">
+                  {departmentGroups.map(group => (
+                    <a
+                      key={group.code}
+                      href={`#${getDepartmentAnchor(group.code)}`}
+                      className="group rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 hover:border-brand hover:bg-brand/5 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="shrink-0 text-xs font-black text-brand">
+                          {group.code === 'NC' ? '—' : group.code}
+                        </span>
+
+                        <span className="truncate text-[11px] font-bold text-foreground group-hover:text-brand">
+                          {group.name}
+                        </span>
+                      </div>
+
+                      <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-muted-foreground">
+                        {group.pros.length} pro{group.pros.length > 1 ? 's' : ''}
+                      </p>
+                    </a>
+                  ))}
+                </div>
+              </details>
+            </div>
+
+            {/* Départements */}
+            {departmentGroups.map(group => (
+              <section
+                key={group.code}
+                id={getDepartmentAnchor(group.code)}
+                className="scroll-mt-24"
+              >
+                <div className="mb-4 flex items-end justify-between gap-4 border-b border-border/70 pb-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="inline-flex min-w-12 items-center justify-center rounded-xl bg-brand px-3 py-2 text-xs font-black text-white shadow-sm">
+                      {group.code === 'NC' ? '—' : group.code}
+                    </div>
+
+                    <div className="min-w-0">
+                      <h2 className="text-lg md:text-xl font-black uppercase tracking-tight text-foreground">
+                        {group.name}
+                      </h2>
+
+                      <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        {group.pros.length} professionnel{group.pros.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+
+                  <a
+                    href="#sommaire-departements"
+                    className="shrink-0 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-brand hover:underline"
+                  >
+                    ↑ Sommaire
+                  </a>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {group.pros.map(pro => (
+                    <ProCard key={pro.id} pro={pro} />
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         ) : (
           <div className="text-center py-16 text-muted-foreground">
