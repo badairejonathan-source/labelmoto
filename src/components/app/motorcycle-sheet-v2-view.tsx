@@ -217,7 +217,7 @@ export default function MotorcycleSheetV2View({
         <div className="relative h-[280px] md:h-[370px]">
           <Image
             src={displayData.imageUrl}
-            alt={displayData.modelName}
+            alt={displayData.modelName || displayData.model || 'Moto'}
             fill
             priority
             className="object-cover"

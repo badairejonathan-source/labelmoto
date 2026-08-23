@@ -30,13 +30,6 @@ export const metadata: Metadata = {
   authors: [{ name: "L'équipe Label Moto" }],
   creator: "Label Moto",
   publisher: "Label Moto",
-  icons: {
-    icon: [
-      { url: '/images/favicon.ico' },
-      { url: '/images/favicon.webp', type: 'image/webp' },
-    ],
-    apple: [{ url: '/images/favicon.webp' }],
-  },
   openGraph: {
     type: "website",
     locale: "fr_FR",
