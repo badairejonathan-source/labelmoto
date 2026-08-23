@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Script from 'next/script';
 import { pickRelatedModels } from '@/lib/related-models-pool';
+import MotorcycleSheetV2View from '@/components/app/motorcycle-sheet-v2-view';
+import { getMotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
 import { 
   ArrowLeft, 
   Gauge, 
@@ -162,6 +164,11 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     };
   }, [fiche, selectedVariantIndex, modelId]);
 
+  const v2 = useMemo(
+    () => getMotorcycleSheetV2(fiche),
+    [fiche]
+  );
+
   const breadcrumbLd = useMemo(() => {
     if (!displayData) return null;
     return {
@@ -273,6 +280,20 @@ export default function FicheClient({ modelId }: { modelId: string }) {
           </div>
 
           <div className="space-y-10">
+            {v2 ? (
+              <MotorcycleSheetV2View
+                modelId={modelId}
+                displayData={displayData}
+                v2={v2}
+                selectedVariantIndex={selectedVariantIndex}
+                onSelectVariant={setSelectedVariantIndex}
+                relatedModels={relatedModels}
+                reviews={reviews}
+                reviewsLoading={reviewsLoading}
+                onLeaveReview={handleLeaveReviewClick}
+              />
+            ) : (
+              <>
             <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video flex flex-col justify-between">
                 <div className="absolute inset-0 z-0"><Image src={displayData.imageUrl} alt={displayData.modelName} fill className="object-cover opacity-75" priority /></div>
                 <div className="relative z-10 w-full">
@@ -504,6 +525,8 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                   )}
                 </section>
             </section>
+              </>
+            )}
           </div>
         </div>
       </main>
