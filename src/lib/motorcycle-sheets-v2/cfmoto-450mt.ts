@@ -311,7 +311,7 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
     {
       km: 15000,
       title: 'Entretien périodique',
-      price_estimate: 'Tarif à confirmer',
+      price_estimate: '≈ 120–210 €',
       price_type: 'estimate',
 
       operations: [
@@ -356,7 +356,7 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
     {
       km: 25000,
       title: 'Entretien périodique',
-      price_estimate: 'Tarif à confirmer',
+      price_estimate: '≈ 120–210 €',
       price_type: 'estimate',
 
       operations: [
@@ -391,7 +391,7 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
     {
       km: 35000,
       title: 'Entretien périodique',
-      price_estimate: 'Tarif à confirmer',
+      price_estimate: '≈ 120–210 € + liquide de refroidissement',
       price_type: 'estimate',
 
       operations: [
