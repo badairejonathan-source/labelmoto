@@ -77,6 +77,7 @@ export const cfmoto450mtDisplayData = {
   knownIssues: [],
 
   longevityTips: [
+    "En usage sévère — boue, sable, poussière, roulage intensif ou conditions difficiles — le manuel prévoit de réduire les intervalles de maintenance concernés de 50 %.",
     "Respecter le calendrier d'entretien correspondant au millésime exact de la moto.",
     "Contrôler et lubrifier plus fréquemment la chaîne après roulage sous la pluie, dans la boue ou la poussière.",
     "Nettoyer le filtre à air plus fréquemment lors d'un usage régulier hors bitume.",
@@ -399,7 +400,15 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
             'Échéance périodique 5 000 km selon le plan France',
           source_type: 'official_fr',
         },
+        {
+          label:
+            'Liquide de refroidissement : remplacement selon manuel EU',
+          source_type: 'official_eu',
+        },
       ],
+
+      note:
+        "Le manuel européen prévoit le remplacement du liquide de refroidissement à 35 000 km ou 24 mois, selon la première échéance atteinte.",
     },
 
     {
@@ -596,6 +605,21 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
           confidence: 'official_eu',
         },
         {
+          label: 'Admission à froid',
+          value: '0,10 à 0,15 mm',
+          confidence: 'technical_documentation',
+        },
+        {
+          label: 'Échappement à froid',
+          value: '0,25 à 0,31 mm',
+          confidence: 'technical_documentation',
+        },
+        {
+          label: 'Réglage',
+          value: 'Par remplacement des pastilles / poussoirs calibrés selon documentation atelier',
+          confidence: 'technical_documentation',
+        },
+        {
           label: 'Réalisation',
           value: 'Atelier recommandé',
           confidence: 'technical_documentation',
@@ -622,13 +646,56 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
         },
         {
           label: 'Remplacement',
-          value: 'Selon échéance du manuel correspondant au millésime',
+          value: '35 000 km ou 24 mois',
           confidence: 'official_eu',
         },
       ],
 
       note:
         "Ne pas mélanger des liquides de refroidissement de technologies incompatibles. Vérifier le manuel exact du millésime avant remplacement.",
+    },
+
+    {
+      id: 'freinage',
+      title: 'Freinage & liquide de frein',
+      summary:
+        'DOT 4 · liquide à remplacer tous les 24 mois',
+
+      rows: [
+        {
+          label: 'Liquide de frein',
+          value: 'DOT 4',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Remplacement du liquide',
+          value: 'Tous les 24 mois',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Systèmes de freinage',
+          value: 'Contrôle tous les 10 000 km ou 12 mois',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Disques',
+          value: 'Contrôle tous les 10 000 km ou 12 mois',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Plaquettes',
+          value: 'Contrôle tous les 10 000 km ou 12 mois, plus fréquent en usage sévère',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Durites',
+          value: 'Contrôle tous les 10 000 km ou 12 mois',
+          confidence: 'official_eu',
+        },
+      ],
+
+      note:
+        "L'usure réelle des plaquettes dépend fortement de l'usage, du terrain, du chargement et du style de conduite.",
     },
 
     {
@@ -679,8 +746,18 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
           confidence: 'official_eu',
         },
         {
-          label: 'Contrôle',
-          value: 'Plusieurs positions de roue, moto au point mort',
+          label: 'Contrôle de tension',
+          value: 'Tous les 1 000 km et dans plusieurs positions de roue',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Lubrification',
+          value: 'Environ tous les 600 km et immédiatement après roulage sous la pluie',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Méthode',
+          value: 'Moto au point mort, sur béquille latérale',
           confidence: 'official_eu',
         },
         {
@@ -689,8 +766,13 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
           confidence: 'technical_documentation',
         },
         {
-          label: 'Usure chaîne',
-          value: 'Contrôle d’allongement selon procédure constructeur',
+          label: 'Contrôle d’usure',
+          value: 'Mesure sur 20 maillons avec charge de 10 kg',
+          confidence: 'official_eu',
+        },
+        {
+          label: 'Limite d’allongement',
+          value: '320,7 mm sur 20 maillons',
           confidence: 'official_eu',
         },
       ],
@@ -784,7 +866,7 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
       "Conservez systématiquement le carnet d'entretien complété ainsi que toutes les factures de révision, de pièces et de réparation.",
 
     legal_warranty_note:
-      "La garantie commerciale du constructeur est distincte des garanties légales applicables.",
+      "CFMOTO France affiche actuellement la 450MT avec une garantie de 2 ans pièces et main-d'œuvre. Les conditions contractuelles et le carnet de garantie remis avec le véhicule restent prioritaires. La garantie commerciale du constructeur est distincte des garanties légales applicables.",
 
     source_label:
       'CFMOTO France · Garantie moto · vérifié le 23/08/2026',
@@ -955,6 +1037,23 @@ export const cfmoto450mtV2: MotorcycleSheetV2 = {
 
         note:
           "Source technique pour huile, quantités, pneumatiques et entretien détaillé.",
+      },
+
+      {
+        label:
+          'CFMOTO 450MT · documentation atelier CF400-8',
+
+        type:
+          'technical_documentation',
+
+        market:
+          'International',
+
+        model_year:
+          '2024',
+
+        note:
+          "Utilisée pour recouper les jeux aux soupapes à froid et certains couples de serrage. Les données France et le manuel utilisateur européen restent prioritaires lorsqu'ils couvrent le même champ.",
       },
 
       {
