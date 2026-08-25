@@ -120,6 +120,17 @@ function issueLabel(issue: MotorcycleKnownIssueV2) {
   }
 }
 
+const CFMOTO_800MT_CONSUMABLE_PRICES: Record<string, string> = {
+  huile: '≈ 60–70 €',
+  air: '≈ 50 €',
+  bougie: '≈ 43 € les 2',
+  soupapes: 'Inclus révision 30 000 km',
+  refroidissement: '≈ 18–29 €',
+  freinage: 'Liquide ≈ 10 € · plaquettes AV ≈ 73–88 €',
+  pneus: '≈ 290–330 € montés',
+  chaine: '≈ 130–170 € hors pose',
+};
+
 export default function MotorcycleSheetV2View({
   modelId,
   displayData,
@@ -913,18 +924,35 @@ export default function MotorcycleSheetV2View({
                 className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-5">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="font-black">{section.title}</div>
                     <div className="mt-1 text-xs text-zinc-400">
                       {section.summary}
                     </div>
                   </div>
 
-                  <div
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-50 text-lg font-bold transition group-open:rotate-45"
-                    style={{ color: ORANGE }}
-                  >
-                    +
+                  <div className="flex shrink-0 items-center gap-2">
+
+                    {is800mtTabbedPrototype &&
+                    CFMOTO_800MT_CONSUMABLE_PRICES[section.id] ? (
+                      <div className="max-w-[150px] rounded-xl bg-orange-50 px-2.5 py-2 text-right">
+                        <div className="text-[7px] font-black uppercase tracking-[0.12em] text-orange-500">
+                          Prix indicatif
+                        </div>
+
+                        <div className="mt-0.5 text-[10px] font-black leading-3 text-orange-700">
+                          {CFMOTO_800MT_CONSUMABLE_PRICES[section.id]}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 text-lg font-bold transition group-open:rotate-45"
+                      style={{ color: ORANGE }}
+                    >
+                      +
+                    </div>
+
                   </div>
                 </summary>
 
@@ -1258,7 +1286,7 @@ export default function MotorcycleSheetV2View({
                     className="mt-4 flex items-center gap-1 text-[10px] font-black uppercase"
                     style={{ color: ORANGE }}
                   >
-                    À comparer
+                    {model.id ? 'Voir la fiche' : 'À comparer'}
                     <ChevronRight className="h-3 w-3" />
                   </div>
                 </>
@@ -1779,7 +1807,238 @@ export default function MotorcycleSheetV2View({
             <div className="mt-6 space-y-3">
 
               {/* AVANT ACHAT */}
-              <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60">
+              
+                <details
+          id="v2-verdict-budget"
+          className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white"
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 md:px-5">
+            <span className="text-[12px] font-black uppercase tracking-[0.04em] text-zinc-950">
+              Budget
+            </span>
+
+            <span
+              className="text-xl font-black transition group-open:rotate-45"
+              style={{ color: ORANGE }}
+            >
+              +
+            </span>
+          </summary>
+
+
+          <div className="border-t border-zinc-200 p-4 md:p-5">
+
+            {/* ==================================================
+                CHIFFRES PRINCIPAUX
+                MOBILE : 1 CARTE PAR LIGNE
+                DESKTOP : 3 COLONNES
+            ================================================== */}
+
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+
+              {/* BUDGET ENTRETIEN */}
+              <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 md:p-5">
+
+                <div className="text-[10px] font-black uppercase leading-4 tracking-[0.08em] text-zinc-400">
+                  Budget entretien
+                  <br className="hidden md:block" />
+                  jusqu'à 30 000 km
+                </div>
+
+                <div className="mt-2 text-[27px] font-black leading-none tracking-[-0.04em] text-zinc-950">
+                  ≈ 1 300–1 950 €
+                </div>
+
+                <div className="mt-2 text-[12px] font-medium leading-5 text-zinc-500">
+                  Révisions + pneus + freinage éventuel
+                </div>
+
+              </div>
+
+
+              {/* ACHAT NEUF */}
+              <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 md:p-5">
+
+                <div className="text-[10px] font-black uppercase tracking-[0.08em] text-orange-700">
+                  Achat neuf
+                </div>
+
+                <div className="mt-2 text-[27px] font-black leading-none tracking-[-0.04em] text-zinc-950">
+                  {String(
+                    displayData.variants?.[selectedVariantIndex]?.label || ''
+                  )
+                    .toLowerCase()
+                    .includes('explore')
+                    ? '10 999 €'
+                    : '8 999 €'}
+                </div>
+
+                <div className="mt-2 text-[12px] font-medium leading-5 text-zinc-500">
+                  {String(
+                    displayData.variants?.[selectedVariantIndex]?.label || ''
+                  )
+                    .toLowerCase()
+                    .includes('explore')
+                    ? 'Catalogue France · offre observée 9 999 €'
+                    : 'Tarif France'}
+                </div>
+
+              </div>
+
+
+              {/* OCCASION */}
+              <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 md:p-5">
+
+                <div className="text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">
+                  Occasion moyenne
+                </div>
+
+                <div className="mt-2 text-[27px] font-black leading-none tracking-[-0.04em] text-zinc-950">
+                  {String(
+                    displayData.variants?.[selectedVariantIndex]?.label || ''
+                  )
+                    .toLowerCase()
+                    .includes('explore')
+                    ? '≈ 8 800 €'
+                    : '≈ 8 300 €'}
+                </div>
+
+                <div className="mt-2 text-[12px] font-medium leading-5 text-zinc-500">
+                  Moyenne indicative des annonces
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* ==================================================
+                BUDGET PRUDENT
+            ================================================== */}
+
+            <div className="mt-4 rounded-2xl bg-zinc-50 p-4 md:p-5">
+
+              <div className="text-[16px] font-black leading-5 text-zinc-950">
+                Budget prudent jusqu'à 30 000 km
+              </div>
+
+              <div className="mt-4 space-y-3">
+
+                {/* REVISIONS */}
+                <div className="rounded-xl border border-zinc-200 bg-white p-4">
+
+                  <div className="text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">
+                    Révisions programmées
+                  </div>
+
+                  <div className="mt-1 text-[20px] font-black tracking-[-0.03em] text-zinc-950">
+                    910–1 480 €
+                  </div>
+
+                  <div className="mt-1 text-[12px] leading-5 text-zinc-500">
+                    1 000 + 15 000 + 30 000 km
+                  </div>
+
+                </div>
+
+
+                {/* PNEUS */}
+                <div className="rounded-xl border border-zinc-200 bg-white p-4">
+
+                  <div className="text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">
+                    1 train de pneus monté
+                  </div>
+
+                  <div className="mt-1 text-[20px] font-black tracking-[-0.03em] text-zinc-950">
+                    ≈ 290–330 €
+                  </div>
+
+                  <div className="mt-1 text-[12px] leading-5 text-zinc-500">
+                    Avant + arrière, montage compris
+                  </div>
+
+                </div>
+
+
+                {/* FREINAGE */}
+                <div className="rounded-xl border border-zinc-200 bg-white p-4">
+
+                  <div className="text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">
+                    Plaquettes avant
+                  </div>
+
+                  <div className="mt-1 text-[20px] font-black tracking-[-0.03em] text-zinc-950">
+                    ≈ 100–130 €
+                  </div>
+
+                  <div className="mt-1 text-[12px] leading-5 text-zinc-500">
+                    Si leur remplacement devient nécessaire
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              {/* TOTAL */}
+              <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 p-4">
+
+                <div className="text-[10px] font-black uppercase tracking-[0.1em] text-orange-700">
+                  Budget réaliste estimé
+                </div>
+
+                <div className="mt-1 text-[27px] font-black leading-none tracking-[-0.04em] text-orange-600">
+                  1 300 à 1 950 €
+                </div>
+
+                <div className="mt-2 text-[12px] font-medium text-zinc-600">
+                  jusqu'à 30 000 km
+                </div>
+
+              </div>
+
+
+              {/* NOTE */}
+              <p className="mt-4 text-[11px] leading-[1.6] text-zinc-400">
+                Hors kit chaîne si son remplacement devient nécessaire.
+                Prix pièces observés en France au 25/08/2026.
+                Les tarifs atelier varient selon la région et le professionnel.
+                Le prix occasion reste une moyenne indicative et non une cote officielle.
+              </p>
+
+            </div>
+
+
+            {/* ==================================================
+                ARTICLE LABELMOTO
+            ================================================== */}
+
+            <Link
+              href="/info/combien-coute-vraiment-une-moto-par-mois"
+              className="mt-4 flex w-full items-center justify-between gap-4 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-4 transition hover:border-orange-300 hover:bg-orange-100"
+            >
+
+              <div className="min-w-0">
+
+                <div className="text-[9px] font-black uppercase tracking-[0.14em] text-orange-700">
+                  Guide budget LabelMoto
+                </div>
+
+                <div className="mt-1 text-[13px] font-black leading-5 text-zinc-950">
+                  Combien coûte vraiment une moto par mois ?
+                  Le budget réel d’un motard débutant
+                </div>
+
+              </div>
+
+              <ChevronRight className="h-5 w-5 shrink-0 text-orange-600" />
+
+            </Link>
+
+          </div>
+        </details>
+
+<details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60">
 
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
 
@@ -2007,7 +2266,7 @@ export default function MotorcycleSheetV2View({
                     className="mt-4 flex items-center gap-1 text-[10px] font-black uppercase"
                     style={{ color: ORANGE }}
                   >
-                    À comparer
+                    {model.id ? 'Voir la fiche' : 'À comparer'}
                     <ChevronRight className="h-3 w-3" />
                   </div>
                 </>

@@ -235,7 +235,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'huile',
       title: 'Huile moteur & filtre',
-      summary: 'SAE 10W-50 · API SJ+ · JASO MA2 · 2,8 L avec filtre',
+      summary: 'SAE 10W-50 · 2,8 L avec filtre · pièces ≈ 60–70 €',
       rows: [
         { label: 'Viscosité', value: 'SAE 10W-50 recommandé', confidence: 'official_other_market' },
         { label: 'Norme', value: 'API SJ ou supérieur · JASO T903 MA2 privilégié', confidence: 'official_other_market' },
@@ -248,7 +248,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'air',
       title: 'Filtre à air',
-      summary: 'Remplacement à 30 000 km · plus fréquent en environnement poussiéreux',
+      summary: 'Remplacement à 30 000 km · filtre compatible ≈ 50 €',
       rows: [
         { label: 'Remplacement', value: 'Tous les 30 000 km', confidence: 'official_eu' },
         { label: 'Usage poussiéreux', value: 'Remplacement plus fréquent', confidence: 'official_eu' },
@@ -258,7 +258,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'bougie',
       title: 'Bougies',
-      summary: 'NGK LMAR9AI-10 · 1,0 mm · 10 Nm · remplacement à 30 000 km',
+      summary: 'NGK LMAR9AI-10 · 2 bougies ≈ 43 € · remplacement à 30 000 km',
       rows: [
         { label: 'Type', value: 'NGK LMAR9AI-10', confidence: 'official_eu' },
         { label: 'Écartement', value: '1,0 mm', confidence: 'official_other_market' },
@@ -270,7 +270,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'soupapes',
       title: 'Jeu aux soupapes',
-      summary: 'Contrôle à 30 000 km',
+      summary: 'Contrôle à 30 000 km · coût intégré à la grande révision 500–850 €',
       rows: [
         { label: 'Échéance', value: 'Tous les 30 000 km', confidence: 'official_eu' },
         { label: 'Admission à froid', value: '0,10 à 0,15 mm', confidence: 'official_eu' },
@@ -281,7 +281,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'refroidissement',
       title: 'Liquide de refroidissement',
-      summary: 'Liquide organique · capacité historique constructeur 1,3 L + 180 mL',
+      summary: 'Liquide organique · ≈ 1,48 L · budget liquide ≈ 18–29 €',
       rows: [
         { label: 'Technologie', value: 'Liquide organique', confidence: 'official_eu' },
         { label: 'Capacité documentée', value: '1,3 L + 180 mL (≈ 1,48 L)', confidence: 'official_other_market' },
@@ -292,7 +292,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'freinage',
       title: 'Freinage & liquide de frein',
-      summary: 'J.Juan Ø320 / Ø260 mm · DOT 4 ou DOT 5.1 selon table européenne',
+      summary: 'DOT 4/5.1 ≈ 10 € · plaquettes AV ≈ 73–88 € les 2 jeux',
       rows: [
         { label: 'Liquide', value: 'DOT 4 ou DOT 5.1', confidence: 'official_eu' },
         { label: 'Avant', value: 'Double disque Ø320 mm · J.Juan', confidence: 'official_fr' },
@@ -304,7 +304,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'pneus',
       title: 'Pneus & roues',
-      summary: '110/80 R19 · 150/70 R17',
+      summary: '110/80 R19 + 150/70 R17 · train ≈ 247 € hors montage · ≈ 290–330 € monté',
       rows: [
         { label: 'Avant', value: '110/80 R19', confidence: 'official_fr' },
         { label: 'Arrière', value: '150/70 R17', confidence: 'official_fr' },
@@ -315,7 +315,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     {
       id: 'chaine',
       title: 'Chaîne & transmission',
-      summary: 'Contrôle et lubrification tous les 1 000 km',
+      summary: 'Kit chaîne 520 · 16×45 · ≈ 130–170 € hors pose · entretien tous les 1 000 km',
       rows: [
         { label: 'Contrôle / lubrification', value: 'Tous les 1 000 km', confidence: 'official_eu' },
         { label: 'Limite d’allongement historique', value: '320,7 mm maximum sur 20 maillons sous charge de 10 kg', confidence: 'official_other_market' },
