@@ -463,110 +463,135 @@ export default function MotorcycleSheetV2View({
       </div>
 
       {/* REVISIONS */}
-      <section
-        id="revisions"
-        className="scroll-mt-24 overflow-hidden rounded-[28px] bg-white shadow-xl"
-      >
-        <div
-          className="flex items-center gap-3 px-6 py-4 text-xs font-black uppercase tracking-[0.14em] text-white"
-          style={{ backgroundColor: ORANGE }}
-        >
-          <ClipboardList className="h-5 w-5" />
-          Calendrier des révisions
+      <section id="revisions" className="scroll-mt-24 pt-8">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div
+              className="text-[10px] font-black uppercase tracking-[0.22em]"
+              style={{ color: ORANGE }}
+            >
+              Plan d'entretien
+            </div>
+
+            <h2 className="mt-1 text-2xl font-black uppercase tracking-tight md:text-3xl">
+              Révisions & prix estimés
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-500">
+              Fourchettes LabelMoto TTC, pièces et main-d'œuvre.
+              Le prix réel dépend de l'atelier et des opérations nécessaires.
+            </p>
+          </div>
+
+          <div className="w-fit rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-[9px] font-black uppercase tracking-wide text-orange-700">
+            Estimations LabelMoto
+          </div>
         </div>
 
-        <div className="divide-y divide-zinc-100">
-          {schedule.map((service: any, index: number) => (
-            <div
-              key={`${service.km}-${index}`}
-              className="grid gap-4 px-5 py-6 md:grid-cols-[130px_1fr_160px] md:px-7"
-            >
-              <div>
-                <div
-                  className="text-sm font-black"
-                  style={{ color: ORANGE }}
-                >
-                  {service.km
-                    ? `${Number(service.km).toLocaleString('fr-FR')} KM`
-                    : 'ÉCHÉANCE'}
-                </div>
-
-                <div className="mt-1 text-[9px] font-black uppercase tracking-wide text-zinc-400">
-                  {service.title}
-                </div>
-              </div>
-
-              <ul className="grid gap-1.5 text-sm text-zinc-600 md:grid-cols-2">
-                {(service.operations || []).map((operation: any, opIndex: number) => (
-                  <li
-                    key={`${operation.label}-${opIndex}`}
-                    className="flex gap-2"
+        <div className="overflow-hidden rounded-[26px] border border-zinc-200 bg-white shadow-sm">
+          <div className="divide-y divide-zinc-100">
+            {schedule.map((service: any, index: number) => (
+              <div
+                key={`${service.km}-${index}`}
+                className="grid gap-4 px-5 py-5 transition hover:bg-zinc-50/70 md:grid-cols-[120px_minmax(0,1fr)_170px] md:items-center md:px-6"
+              >
+                <div>
+                  <div
+                    className="text-base font-black"
+                    style={{ color: ORANGE }}
                   >
-                    <span style={{ color: ORANGE }}>•</span>
-                    <span>{operation.label}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="md:text-right">
-                <div className="text-[9px] font-black uppercase tracking-wide text-zinc-400">
-                  Budget indicatif
-                </div>
-
-                <div
-                  className="mt-1 text-sm font-black"
-                  style={{ color: ORANGE }}
-                >
-                  {service.price_estimate || 'NC'}
-                </div>
-
-                {service.price_type ? (
-                  <div className="mt-1 text-[8px] font-bold uppercase text-zinc-400">
-                    {service.price_type === 'official'
-                      ? 'Tarif officiel'
-                      : service.price_type === 'observed'
-                        ? 'Tarif observé'
-                        : service.price_type === 'mixed'
-                          ? 'Observé / estimé'
-                          : 'Estimation'}
+                    {service.km
+                      ? `${Number(service.km).toLocaleString('fr-FR')} KM`
+                      : 'ÉCHÉANCE'}
                   </div>
-                ) : null}
+
+                  <div className="mt-1 text-[9px] font-black uppercase tracking-wide text-zinc-400">
+                    {service.title}
+                  </div>
+                </div>
+
+                <ul className="grid gap-x-6 gap-y-1.5 text-xs leading-5 text-zinc-600 sm:grid-cols-2">
+                  {(service.operations || []).map(
+                    (operation: any, opIndex: number) => (
+                      <li
+                        key={`${operation.label}-${opIndex}`}
+                        className="flex gap-2"
+                      >
+                        <span
+                          className="font-black"
+                          style={{ color: ORANGE }}
+                        >
+                          •
+                        </span>
+
+                        <span>{operation.label}</span>
+                      </li>
+                    )
+                  )}
+                </ul>
+
+                <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 md:text-right">
+                  <div className="text-[8px] font-black uppercase tracking-[0.14em] text-orange-700">
+                    Estimation LabelMoto
+                  </div>
+
+                  <div className="mt-1 text-xl font-black text-zinc-950">
+                    {service.price_estimate || 'NC'}
+                  </div>
+
+                  <div className="mt-0.5 text-[8px] font-bold uppercase text-zinc-400">
+                    TTC · pièces + MO
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
-
       {/* BUDGET */}
       {budgetCards.length > 0 ? (
         <section
           id="budget"
-          className="scroll-mt-24 mt-8 rounded-[28px] p-6 text-white shadow-xl md:p-8"
-          style={{
-            background:
-              'linear-gradient(135deg, #e95b0c 0%, #f97316 55%, #fb923c 100%)',
-          }}
+          className="scroll-mt-24 mt-8 rounded-[26px] border border-zinc-200 bg-white p-5 shadow-sm md:p-7"
         >
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/75">
-            {v2.budget?.title || 'Budget entretien sur la durée'}
+          <div className="flex flex-col gap-2 border-b border-zinc-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div
+                className="text-[10px] font-black uppercase tracking-[0.22em]"
+                style={{ color: ORANGE }}
+              >
+                Budget atelier
+              </div>
+
+              <h2 className="mt-1 text-2xl font-black uppercase tracking-tight">
+                {v2.budget?.title || 'Repères de prix'}
+              </h2>
+            </div>
+
+            <div className="text-[9px] font-bold uppercase tracking-wide text-zinc-400">
+              Estimations TTC · France
+            </div>
           </div>
 
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {budgetCards.map((card: any, index: number) => (
               <div
                 key={`${card.label}-${index}`}
-                className="rounded-2xl border border-white/30 bg-white/10 p-5"
+                className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5"
               >
-                <div className="text-[9px] font-black uppercase text-white/70">
+                <div className="text-[9px] font-black uppercase tracking-wide text-zinc-500">
                   {card.label}
                 </div>
 
-                <div className="mt-2 text-xl font-black md:text-2xl">
+                <div
+                  className="mt-3 text-2xl font-black md:text-3xl"
+                  style={{ color: ORANGE }}
+                >
                   {card.value}
                 </div>
 
                 {card.note ? (
-                  <p className="mt-1 text-xs text-white/80">
+                  <p className="mt-2 text-xs leading-5 text-zinc-500">
                     {card.note}
                   </p>
                 ) : null}
@@ -575,13 +600,21 @@ export default function MotorcycleSheetV2View({
           </div>
 
           {v2.budget?.note ? (
-            <p className="mt-5 border-t border-white/20 pt-4 text-xs leading-5 text-white/80">
-              {v2.budget.note}
-            </p>
+            <div className="mt-5 flex gap-3 rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3">
+              <div
+                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100 text-[10px] font-black"
+                style={{ color: ORANGE }}
+              >
+                i
+              </div>
+
+              <p className="text-[11px] leading-5 text-zinc-600">
+                {v2.budget.note}
+              </p>
+            </div>
           ) : null}
         </section>
       ) : null}
-
       {/* DETAIL */}
       {maintenanceDetails.length > 0 ? (
         <section id="detail" className="scroll-mt-24 py-12">
@@ -771,49 +804,42 @@ export default function MotorcycleSheetV2View({
 
       {/* GARANTIE */}
       {v2.warranty ? (
-        <section className="mt-8 rounded-[24px] border border-orange-200 bg-white p-6 shadow-sm md:p-7">
-
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-
-            <div className="max-w-2xl">
-              <div
-                className="text-[10px] font-black uppercase tracking-[0.2em]"
-                style={{ color: ORANGE }}
-              >
-                Garantie constructeur {v2.warranty.market || ''}
-              </div>
-
-              <h3 className="mt-1 text-xl font-black text-zinc-950 md:text-2xl">
-                Conditions de la garantie commerciale
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-zinc-500">
-                Les conditions ci-dessous correspondent au marché et au
-                millésime vérifiés pour cette fiche.
-              </p>
+        <section className="mt-8 rounded-[24px] border border-orange-200 bg-white p-5 shadow-sm md:p-7">
+          <div className="border-b border-zinc-100 pb-5">
+            <div
+              className="text-[10px] font-black uppercase tracking-[0.2em]"
+              style={{ color: ORANGE }}
+            >
+              Garantie constructeur {v2.warranty.market || ''}
             </div>
 
-            <div className="shrink-0 rounded-2xl border border-orange-200 bg-orange-50 px-5 py-4 sm:min-w-[190px]">
-              <div className="text-[9px] font-black uppercase tracking-[0.16em] text-orange-700">
-                Durée constructeur
-              </div>
+            <h3 className="mt-1 text-xl font-black text-zinc-950 md:text-2xl">
+              Conditions de garantie
+            </h3>
 
-              <div className="mt-1 text-3xl font-black text-zinc-950">
-                {v2.warranty.duration}
-              </div>
-
-              {v2.warranty.coverage ? (
-                <div className="mt-1 text-xs font-bold text-zinc-600">
-                  {v2.warranty.coverage}
-                </div>
-              ) : null}
-            </div>
-
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
+              Les conditions ci-dessous correspondent au marché et au
+              millésime vérifiés pour cette fiche.
+            </p>
           </div>
 
+          <div className="mt-5 min-w-0 rounded-2xl border border-orange-200 bg-orange-50 p-5">
+            <div className="text-[9px] font-black uppercase tracking-[0.16em] text-orange-700">
+              Durée constructeur
+            </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            <div className="mt-2 break-words text-2xl font-black leading-[1.08] text-zinc-950 md:text-3xl">
+              {v2.warranty.duration}
+            </div>
 
+            {v2.warranty.coverage ? (
+              <p className="mt-3 max-w-4xl text-xs leading-5 text-zinc-600">
+                {v2.warranty.coverage}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
             {v2.warranty.maintenance_requirement ? (
               <div className="rounded-2xl bg-zinc-50 p-4">
                 <div className="text-[9px] font-black uppercase tracking-[0.15em] text-zinc-400">
@@ -825,7 +851,6 @@ export default function MotorcycleSheetV2View({
                 </p>
               </div>
             ) : null}
-
 
             {v2.warranty.claim_requirement ? (
               <div className="rounded-2xl bg-zinc-50 p-4">
@@ -839,7 +864,6 @@ export default function MotorcycleSheetV2View({
               </div>
             ) : null}
 
-
             {v2.warranty.invoice_advice ? (
               <div className="rounded-2xl bg-zinc-50 p-4">
                 <div className="text-[9px] font-black uppercase tracking-[0.15em] text-zinc-400">
@@ -851,13 +875,10 @@ export default function MotorcycleSheetV2View({
                 </p>
               </div>
             ) : null}
-
           </div>
-
 
           {v2.warranty.original_parts_note ? (
             <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 p-4">
-
               <div className="text-[10px] font-black uppercase tracking-[0.16em] text-orange-800">
                 Conseil LabelMoto
               </div>
@@ -865,15 +886,12 @@ export default function MotorcycleSheetV2View({
               <p className="mt-2 text-xs leading-5 text-zinc-700">
                 {v2.warranty.original_parts_note}
               </p>
-
             </div>
           ) : null}
 
-
-          <div className="mt-5 flex flex-col gap-2 border-t border-zinc-100 pt-4 text-[10px] leading-5 text-zinc-400 md:flex-row md:items-center md:justify-between">
-
+          <div className="mt-5 grid gap-3 border-t border-zinc-100 pt-4 text-[10px] leading-5 text-zinc-400 md:grid-cols-[minmax(0,1fr)_auto]">
             {v2.warranty.legal_warranty_note ? (
-              <span>
+              <span className="min-w-0">
                 {v2.warranty.legal_warranty_note}
               </span>
             ) : (
@@ -881,18 +899,13 @@ export default function MotorcycleSheetV2View({
             )}
 
             {v2.warranty.source_label ? (
-              <span className="font-bold text-zinc-500">
+              <span className="font-bold text-zinc-500 md:max-w-[180px] md:text-right">
                 Source : {v2.warranty.source_label}
               </span>
             ) : null}
-
           </div>
-
         </section>
       ) : null}
-
-
-
       {/* FAQ */}
       {faq.length > 0 ? (
         <section id="faq" className="scroll-mt-24 py-12">
