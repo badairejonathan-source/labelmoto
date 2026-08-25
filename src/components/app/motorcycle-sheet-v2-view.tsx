@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
+import * as ReactTabs from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -190,6 +191,82 @@ export default function MotorcycleSheetV2View({
           reason: m.cc ? `${m.cc} cm³` : undefined,
         }));
 
+  // ==========================================================
+  // PROTOTYPE TABS — CFMOTO 800MT UNIQUEMENT
+  // ==========================================================
+
+  const is800mtTabbedPrototype =
+    modelId === 'cfmoto-800mt-sport-explore-2023-plus';
+
+  const prototypeTabs = [
+    { id: 'revisions', label: 'Révisions' },
+    { id: 'consommables', label: 'Consommables' },
+    { id: 'garantie', label: 'Garantie' },
+    { id: 'faq', label: 'FAQ' },
+    { id: 'sources', label: 'Sources' },
+    { id: 'reviews', label: 'Avis' },
+  ];
+
+  const [activePrototypeTab, setActivePrototypeTab] =
+    ReactTabs.useState('revisions');
+
+  ReactTabs.useEffect(() => {
+    if (!is800mtTabbedPrototype) return;
+
+    const validTabs = prototypeTabs.map((tab) => tab.id);
+
+    const syncFromHash = () => {
+      const hash = window.location.hash.replace('#', '');
+
+      if (validTabs.includes(hash)) {
+        setActivePrototypeTab(hash);
+      }
+    };
+
+    syncFromHash();
+
+    window.addEventListener('hashchange', syncFromHash);
+
+    return () => {
+      window.removeEventListener('hashchange', syncFromHash);
+    };
+  }, [is800mtTabbedPrototype]);
+
+  ReactTabs.useEffect(() => {
+    if (!is800mtTabbedPrototype) return;
+
+    const sections =
+      document.querySelectorAll<HTMLElement>(
+        '[data-v2-tab-section]'
+      );
+
+    sections.forEach((section) => {
+      const tab = section.dataset.v2TabSection;
+
+      section.hidden =
+        tab !== activePrototypeTab;
+    });
+
+    return () => {
+      sections.forEach((section) => {
+        section.hidden = false;
+      });
+    };
+  }, [
+    activePrototypeTab,
+    is800mtTabbedPrototype,
+  ]);
+
+  const openPrototypeTab = (tabId: string) => {
+    setActivePrototypeTab(tabId);
+
+    window.history.replaceState(
+      null,
+      '',
+      `#${tabId}`
+    );
+  };
+
   const budgetCards =
     v2.budget?.cards && v2.budget.cards.length > 0
       ? v2.budget.cards
@@ -220,41 +297,105 @@ export default function MotorcycleSheetV2View({
             alt={displayData.modelName || displayData.model || 'Moto'}
             fill
             priority
-            className="object-cover"
+            className="object-cover brightness-[1.38] saturate-[1.08] contrast-[1.02]"
             sizes="(max-width: 1200px) 100vw, 1200px"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 p-6 md:p-9">
-            <div
-              className="mb-3 inline-flex rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-white"
-              style={{ backgroundColor: ORANGE }}
-            >
-              Fiche entretien enrichie
-            </div>
 
-            <h1 className="max-w-4xl text-4xl font-black tracking-[-0.04em] text-white md:text-6xl">
+            <h1 className="max-w-3xl text-[32px] font-black leading-[0.98] tracking-[-0.04em] text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.65)] md:text-5xl">
               {displayData.modelName}
             </h1>
 
             <p
-              className="mt-2 text-base font-black italic md:text-xl"
+              className="mt-3 text-sm font-black italic md:text-lg"
               style={{ color: '#ff7a22' }}
             >
               Millésime {displayData.year}
             </p>
-
-            {v2.hero_subtitle ? (
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75">
-                {v2.hero_subtitle}
-              </p>
-            ) : null}
           </div>
         </div>
       </section>
 
       {/* CHIFFRES CLES */}
+      {is800mtTabbedPrototype ? (
+        <section
+          id="v2-quickfacts-carousel"
+          className="-mt-1 overflow-hidden rounded-b-[24px] border border-zinc-200 bg-white shadow-sm"
+        >
+          <div
+            id="v2-quickfacts-heading"
+            className="px-4 pb-1 pt-4"
+          >
+            <div
+              className="text-[9px] font-black uppercase tracking-[0.2em]"
+              style={{ color: ORANGE }}
+            >
+              En un coup d'œil
+            </div>
+
+            <div className="mt-1 text-xl font-black uppercase tracking-[-0.03em] text-zinc-950">
+              Les chiffres clés
+            </div>
+          </div>
+
+          <div className="overflow-hidden px-3 pt-3 md:px-0 md:pt-0">
+            <div
+              className="
+                flex snap-x snap-mandatory gap-3
+                overflow-x-auto pb-2 pr-10
+                [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5]
+                [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500
+                md:grid md:grid-cols-6
+                md:gap-0 md:overflow-visible
+                md:px-0 md:pr-0
+              "
+            >
+              {quickFacts.map((item, index) => (
+                <div
+                  key={`${item.label}-${index}`}
+                  className="
+                    min-w-[128px] snap-start
+                    rounded-2xl border border-zinc-100
+                    bg-zinc-50 px-4 py-4
+                    md:min-w-0 md:rounded-none
+                    md:border-0 md:border-r
+                    md:border-zinc-100
+                    md:bg-white md:px-4 md:py-4
+                    md:last:border-r-0
+                  "
+                >
+                  <div
+                    className="
+                      whitespace-nowrap
+                      text-[8px] font-black
+                      uppercase tracking-[0.14em]
+                      text-zinc-400
+                    "
+                  >
+                    {item.label}
+                  </div>
+
+                  <div
+                    className="
+                      mt-1 whitespace-nowrap
+                      text-base font-black
+                      leading-tight text-zinc-950
+                      md:text-lg
+                    "
+                  >
+                    {item.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <>
+
       <section
         className={cn(
           '-mt-1 grid overflow-hidden rounded-b-[24px] border border-zinc-200 bg-white shadow-sm',
@@ -279,6 +420,8 @@ export default function MotorcycleSheetV2View({
         ))}
       </section>
 
+        </>
+      )}
       {/* VARIANTES */}
       {displayData.hasVariants ? (
         <section className="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
@@ -308,9 +451,101 @@ export default function MotorcycleSheetV2View({
         </section>
       ) : null}
 
+
+      {/* TECHNIQUE ACCORDEON 800MT */}
+      {is800mtTabbedPrototype ? (
+        <details
+          id="technique-complete-800mt"
+          className="group mt-4 overflow-hidden rounded-[22px] border border-zinc-200 bg-white shadow-sm"
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+            <div className="min-w-0">
+              <div
+                className="text-[9px] font-black uppercase tracking-[0.18em]"
+                style={{ color: ORANGE }}
+              >
+                Caractéristiques
+              </div>
+
+              <div className="mt-1 text-sm font-black text-zinc-950 md:text-base">
+                Fiche technique complète
+              </div>
+
+              <div className="mt-1 text-[10px] leading-4 text-zinc-400">
+                Moteur, performances, dimensions et partie-cycle
+              </div>
+            </div>
+
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-50 text-xl font-black transition-transform group-open:rotate-45"
+              style={{ color: ORANGE }}
+            >
+              +
+            </div>
+          </summary>
+
+          <div className="border-t border-zinc-100 bg-zinc-50/40 px-4 pb-5 pt-5 md:px-5">
+
+<div className="grid gap-5 lg:grid-cols-2">
+          <div className="rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm">
+            <h3 className="mb-4 text-sm font-black uppercase">
+              Moteur & performances
+            </h3>
+
+            <div className="space-y-3 text-sm">
+              {[
+                ['Type', displayData.engine.type],
+                ['Cylindrée', displayData.engine.displacement],
+                ['Puissance', displayData.engine.power],
+                ['Couple', displayData.engine.torque],
+                ['Alimentation', displayData.engine.alimentation],
+                ['Permis', displayData.engine.bridage],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="flex items-start justify-between gap-4 border-b border-zinc-100 pb-3 last:border-0 last:pb-0"
+                >
+                  <span className="text-zinc-400">{label}</span>
+                  <span className="text-right font-bold">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[24px] border border-blue-100 bg-white p-5 shadow-sm">
+            <h3 className="mb-4 text-sm font-black uppercase">
+              Châssis & dimensions
+            </h3>
+
+            <div className="space-y-3 text-sm">
+              {[
+                ['Poids', displayData.dimensions.wetWeight],
+                ['Hauteur de selle', displayData.dimensions.seatHeight],
+                ['Réservoir', displayData.dimensions.tank],
+                ['Pneu avant', displayData.cycleParts.frontTire],
+                ['Pneu arrière', displayData.cycleParts.rearTire],
+                ['Frein avant', displayData.cycleParts.frontBrake],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="flex items-start justify-between gap-4 border-b border-zinc-100 pb-3 last:border-0 last:pb-0"
+                >
+                  <span className="text-zinc-400">{label}</span>
+                  <span className="max-w-[65%] text-right font-bold">
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      
+          </div>
+        </details>
+      ) : null}
       {/* ENTRETIEN EN BREF */}
       {v2.quick_maintenance && v2.quick_maintenance.length > 0 ? (
-        <section className="mt-8 rounded-[26px] border border-orange-100 bg-white p-5 shadow-sm md:p-7">
+        <section hidden={is800mtTabbedPrototype} className="mt-8 rounded-[26px] border border-orange-100 bg-white p-5 shadow-sm md:p-7">
           <div className="mb-5 flex items-end justify-between gap-3">
             <div>
               <div
@@ -356,31 +591,64 @@ export default function MotorcycleSheetV2View({
       ) : null}
 
       {/* NAVIGATION */}
-      <nav className="sticky top-2 z-30 mt-6 overflow-x-auto rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur">
-        <div className="flex min-w-max gap-1">
-          {[
-            ['#technique', 'Technique'],
-            ['#revisions', 'Révisions'],
-            ['#budget', 'Budget'],
-            ['#detail', 'Entretien détaillé'],
-            ['#fiabilite', 'Fiabilité'],
-            ['#faq', 'FAQ'],
-            ['#sources', 'Sources'],
-            ['#reviews', 'Avis'],
-          ].map(([href, label]) => (
-            <a
-              key={href}
-              href={href}
-              className="rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-wide text-zinc-600 transition hover:bg-orange-50 hover:text-orange-700"
-            >
-              {label}
-            </a>
-          ))}
-        </div>
-      </nav>
+      {is800mtTabbedPrototype ? (
+        <nav
+          id="v2-tabs-navigation"
+          className="sticky top-2 z-30 mt-6 rounded-2xl border border-zinc-200 bg-white/95 p-1.5 shadow-lg backdrop-blur"
+        >
+          <div className="flex gap-1 overflow-x-auto pb-2 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500">
+            {prototypeTabs.map((tab) => {
+              const active =
+                activePrototypeTab === tab.id;
 
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() =>
+                    openPrototypeTab(tab.id)
+                  }
+                  className={cn(
+                    'shrink-0 rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-wide transition',
+                    active
+                      ? 'bg-orange-600 text-white shadow-sm'
+                      : 'text-zinc-500 hover:bg-orange-50 hover:text-orange-700'
+                  )}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+</nav>
+      ) : (
+        <nav className="sticky top-2 z-30 mt-6 overflow-x-auto rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur">
+          <div className="flex min-w-max gap-1">
+            {[
+              ['#technique', 'Technique'],
+              ['#revisions', 'Révisions'],
+              ['#budget', 'Budget'],
+              ['#detail', 'Entretien détaillé'],
+              ['#fiabilite', 'Fiabilité'],
+              ['#faq', 'FAQ'],
+              ['#sources', 'Sources'],
+              ['#reviews', 'Avis'],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-wide text-zinc-600 transition hover:bg-orange-50 hover:text-orange-700"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+      {!is800mtTabbedPrototype ? (
+        <>
       {/* TECHNIQUE */}
-      <section id="technique" className="scroll-mt-24 py-12">
+      <section id="technique" data-v2-tab-section="technique" className="scroll-mt-24 py-12">
         <SectionTitle
           eyebrow="Fiche technique"
           title="Les chiffres utiles"
@@ -442,75 +710,87 @@ export default function MotorcycleSheetV2View({
         </div>
       </section>
 
+
+        </>
+      ) : null}
       {/* GUIDE */}
-      <div className="pb-5 text-center">
-        <div
-          className="text-[10px] font-black uppercase tracking-[0.24em]"
-          style={{ color: ORANGE }}
-        >
-          Propriétaire ou futur acheteur
-        </div>
-
-        <h2 className="mt-2 text-3xl font-black uppercase tracking-[-0.04em] md:text-5xl">
-          Guide entretien & prix
-        </h2>
-
-        {displayData.introduction ? (
-          <p className="mx-auto mt-4 max-w-3xl text-sm leading-6 text-zinc-500">
-            {displayData.introduction}
-          </p>
-        ) : null}
-      </div>
+      {/* En mode onglets, le guide est intégré directement aux lignes de révision */}
 
       {/* REVISIONS */}
-      <section id="revisions" className="scroll-mt-24 pt-8">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <section
+        id="revisions"
+        data-v2-tab-section="revisions"
+        className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6"
+      >
+        <div className="mb-4 flex items-end justify-between gap-4">
           <div>
             <div
-              className="text-[10px] font-black uppercase tracking-[0.22em]"
+              className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600"
               style={{ color: ORANGE }}
             >
-              Plan d'entretien
+              Calendrier d'entretien
             </div>
 
-            <h2 className="mt-1 text-2xl font-black uppercase tracking-tight md:text-3xl">
-              Révisions & prix estimés
+            <h2 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">
+              Révisions
             </h2>
-
-            <p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-500">
-              Fourchettes LabelMoto TTC, pièces et main-d'œuvre.
-              Le prix réel dépend de l'atelier et des opérations nécessaires.
-            </p>
           </div>
 
-          <div className="w-fit rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-[9px] font-black uppercase tracking-wide text-orange-700">
-            Estimations LabelMoto
+          <div className="text-right text-[10px] font-bold uppercase leading-4 text-zinc-400">
+            Touchez une ligne
+            <br />
+            pour le détail
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-[26px] border border-zinc-200 bg-white shadow-sm">
-          <div className="divide-y divide-zinc-100">
-            {schedule.map((service: any, index: number) => (
-              <div
-                key={`${service.km}-${index}`}
-                className="grid gap-4 px-5 py-5 transition hover:bg-zinc-50/70 md:grid-cols-[120px_minmax(0,1fr)_170px] md:items-center md:px-6"
-              >
-                <div>
+        <div className="overflow-hidden rounded-[22px] border border-zinc-200 bg-white shadow-sm">
+          {schedule.map((service: any, index: number) => (
+            <details
+              key={`${service.km}-${index}`}
+              className="group border-b border-zinc-100 last:border-b-0"
+            >
+              <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-4 transition hover:bg-zinc-50 md:px-5">
+                <div className="min-w-0 flex-1">
                   <div
-                    className="text-base font-black"
+                    className="text-base font-black leading-none md:text-lg"
                     style={{ color: ORANGE }}
                   >
                     {service.km
                       ? `${Number(service.km).toLocaleString('fr-FR')} KM`
                       : 'ÉCHÉANCE'}
                   </div>
+                </div>
 
-                  <div className="mt-1 text-[9px] font-black uppercase tracking-wide text-zinc-400">
+                <div className="shrink-0 text-right">
+                  <div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">
+                    Prix estimé
+                  </div>
+
+                  <div className="mt-0.5 text-base font-black text-zinc-950 md:text-lg">
+                    {service.price_estimate || 'NC'}
+                  </div>
+                </div>
+
+                <div
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 text-lg font-black transition-transform group-open:rotate-90"
+                  style={{ color: ORANGE }}
+                >
+                  ›
+                </div>
+              </summary>
+
+              <div className="border-t border-zinc-100 bg-zinc-50/70 px-4 pb-5 pt-4 md:px-5">
+                <div className="mb-3">
+                  <div className="text-[9px] font-black uppercase tracking-wide text-zinc-400">
+                    Opérations prévues
+                  </div>
+
+                  <div className="mt-1 text-sm font-black text-zinc-900">
                     {service.title}
                   </div>
                 </div>
 
-                <ul className="grid gap-x-6 gap-y-1.5 text-xs leading-5 text-zinc-600 sm:grid-cols-2">
+                <ul className="grid gap-2 text-xs leading-5 text-zinc-600 sm:grid-cols-2">
                   {(service.operations || []).map(
                     (operation: any, opIndex: number) => (
                       <li
@@ -524,34 +804,32 @@ export default function MotorcycleSheetV2View({
                           •
                         </span>
 
-                        <span>{operation.label}</span>
+                        <span>
+                          {operation.label}
+                        </span>
                       </li>
                     )
                   )}
                 </ul>
 
-                <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 md:text-right">
-                  <div className="text-[8px] font-black uppercase tracking-[0.14em] text-orange-700">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-200 pt-3">
+                  <span className="text-[9px] font-bold uppercase tracking-wide text-zinc-400">
                     Estimation LabelMoto
-                  </div>
+                  </span>
 
-                  <div className="mt-1 text-xl font-black text-zinc-950">
-                    {service.price_estimate || 'NC'}
-                  </div>
-
-                  <div className="mt-0.5 text-[8px] font-bold uppercase text-zinc-400">
-                    TTC · pièces + MO
-                  </div>
+                  <span className="text-[10px] font-black text-zinc-600">
+                    TTC · pièces + main-d'œuvre
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
+            </details>
+          ))}
         </div>
       </section>
       {/* BUDGET */}
-      {budgetCards.length > 0 ? (
+      {!is800mtTabbedPrototype && budgetCards.length > 0 ? (
         <section
-          id="budget"
+          id="budget" data-v2-tab-section="revisions"
           className="scroll-mt-24 mt-8 rounded-[26px] border border-zinc-200 bg-white p-5 shadow-sm md:p-7"
         >
           <div className="flex flex-col gap-2 border-b border-zinc-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
@@ -617,12 +895,16 @@ export default function MotorcycleSheetV2View({
       ) : null}
       {/* DETAIL */}
       {maintenanceDetails.length > 0 ? (
-        <section id="detail" className="scroll-mt-24 py-12">
-          <SectionTitle
-            eyebrow="Documentation propriétaire"
-            title="Entretien détaillé par organe"
-            text="Ouvrez uniquement la rubrique qui vous intéresse."
-          />
+        <section id="detail" data-v2-tab-section="consommables" className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6">
+                    <div className="mb-5">
+            <div className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600">
+              Documentation propriétaire
+            </div>
+
+            <h2 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">
+              Pièces & consommables
+            </h2>
+          </div>
 
           <div className="space-y-3">
             {maintenanceDetails.map((section) => (
@@ -684,7 +966,7 @@ export default function MotorcycleSheetV2View({
 
       {/* CONSOMMABLES */}
       {consumables.length > 0 ? (
-        <section className="pb-12">
+        <section data-v2-tab-section="consommables" className="mt-4 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6">
           <SectionTitle
             eyebrow="Références utiles"
             title="Consommables & pièces courantes"
@@ -736,8 +1018,10 @@ export default function MotorcycleSheetV2View({
         </section>
       ) : null}
 
+      {!is800mtTabbedPrototype ? (
+        <>
       {/* FIABILITE */}
-      <section id="fiabilite" className="scroll-mt-24">
+      <section id="fiabilite" data-v2-tab-section="fiabilite" className="scroll-mt-24">
         <SectionTitle
           eyebrow="Ne pas confondre rumeur et défaut"
           title="Fiabilité & points à surveiller"
@@ -802,22 +1086,25 @@ export default function MotorcycleSheetV2View({
         ) : null}
       </section>
 
+
+        </>
+      ) : null}
       {/* GARANTIE */}
       {v2.warranty ? (
-        <section className="mt-8 rounded-[24px] border border-orange-200 bg-white p-5 shadow-sm md:p-7">
+        <section data-v2-tab-section="garantie" className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6">
           <div className="border-b border-zinc-100 pb-5">
             <div
-              className="text-[10px] font-black uppercase tracking-[0.2em]"
+              className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600"
               style={{ color: ORANGE }}
             >
               Garantie constructeur {v2.warranty.market || ''}
             </div>
 
-            <h3 className="mt-1 text-xl font-black text-zinc-950 md:text-2xl">
+            <h3 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">
               Conditions de garantie
             </h3>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
+            <p className="mt-2 max-w-2xl text-[13px] font-medium leading-5 text-zinc-500">
               Les conditions ci-dessous correspondent au marché et au
               millésime vérifiés pour cette fiche.
             </p>
@@ -908,11 +1195,16 @@ export default function MotorcycleSheetV2View({
       ) : null}
       {/* FAQ */}
       {faq.length > 0 ? (
-        <section id="faq" className="scroll-mt-24 py-12">
-          <SectionTitle
-            eyebrow="Recherche rapide"
-            title="Questions fréquentes"
-          />
+        <section id="faq" data-v2-tab-section="faq" className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6">
+                    <div className="mb-5">
+            <div className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600">
+              Recherche rapide
+            </div>
+
+            <h2 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">
+              Questions fréquentes
+            </h2>
+          </div>
 
           <div className="space-y-3">
             {faq.map((item: any, index: number) => (
@@ -940,9 +1232,11 @@ export default function MotorcycleSheetV2View({
         </section>
       ) : null}
 
+      {!is800mtTabbedPrototype ? (
+        <>
       {/* EQUIVALENTS */}
       {equivalents.length > 0 ? (
-        <section>
+        <section data-v2-tab-section="technique">
           <SectionTitle
             eyebrow="Comparer avant d’acheter"
             title="Modèles équivalents"
@@ -995,9 +1289,14 @@ export default function MotorcycleSheetV2View({
         </section>
       ) : null}
 
+
+        </>
+      ) : null}
+      {!is800mtTabbedPrototype ? (
+        <>
       {/* VERDICT */}
       {v2.verdict || displayData.conclusion ? (
-        <section
+        <section hidden={is800mtTabbedPrototype} data-v2-tab-section="fiabilite"
           className="mt-12 overflow-hidden rounded-[28px] border border-orange-200 p-6 shadow-xl md:p-8"
           style={{
             background:
@@ -1058,10 +1357,190 @@ export default function MotorcycleSheetV2View({
         </section>
       ) : null}
 
+
+        </>
+      ) : null}
       {/* QUALITE DES DONNEES */}
-      {v2.data_quality ? (
+      {is800mtTabbedPrototype ? (
         <section
           id="sources"
+          data-v2-tab-section="sources"
+          className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div className="mb-4">
+            <div
+              className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600"
+              style={{ color: ORANGE }}
+            >
+              Transparence LabelMoto
+            </div>
+
+            <h2 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">
+              Sources & vérification
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-[13px] font-medium leading-5 text-zinc-500">
+              Nous indiquons le marché, le millésime et le niveau de
+              vérification utilisés pour construire cette fiche.
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-[18px] border border-zinc-100 bg-zinc-50/40">
+
+            <div className="grid grid-cols-2 divide-x divide-y divide-zinc-100 sm:grid-cols-3">
+
+              <div className="p-4">
+                <div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">
+                  Marché
+                </div>
+
+                <div className="mt-1 text-sm font-black text-zinc-900">
+                  {v2.data_quality?.market || '—'}
+                </div>
+              </div>
+
+              <div className="p-4">
+                <div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">
+                  Millésime
+                </div>
+
+                <div className="mt-1 text-sm font-black text-zinc-900">
+                  {v2.data_quality?.model_year || '—'}
+                </div>
+              </div>
+
+              <div className="p-4">
+                <div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">
+                  Vérifié le
+                </div>
+
+                <div className="mt-1 text-sm font-black text-zinc-900">
+                  {v2.data_quality?.last_verified || '—'}
+                </div>
+              </div>
+
+            </div>
+
+
+            <div className="flex flex-wrap gap-2 border-t border-zinc-100 px-4 py-3">
+
+              {v2.data_quality?.manufacturer_fr_verified ? (
+                <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">
+                  Constructeur France vérifié
+                </span>
+              ) : null}
+
+              {v2.data_quality?.european_manual_verified ? (
+                <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">
+                  Manuel Europe vérifié
+                </span>
+              ) : null}
+
+              {v2.data_quality?.technical_documentation_verified ? (
+                <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">
+                  Documentation technique vérifiée
+                </span>
+              ) : null}
+
+            </div>
+
+
+            {v2.data_quality?.sources &&
+            v2.data_quality.sources.length > 0 ? (
+
+              <details className="group border-t border-zinc-100">
+
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4">
+
+                  <div>
+                    <div className="text-sm font-black text-zinc-900">
+                      Sources principales
+                    </div>
+
+                    <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-400">
+                      {v2.data_quality.sources.length} références documentaires
+                    </div>
+                  </div>
+
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 text-lg font-black transition-transform group-open:rotate-45"
+                    style={{ color: ORANGE }}
+                  >
+                    +
+                  </div>
+
+                </summary>
+
+
+                <div className="border-t border-zinc-100 bg-zinc-50/60 p-3">
+
+                  <div className="space-y-2">
+
+                    {v2.data_quality.sources.map(
+                      (source: any, index: number) => (
+
+                        <div
+                          key={`${source.label}-${index}`}
+                          className="rounded-xl border border-zinc-200 bg-white p-3"
+                        >
+
+                          <div className="flex items-start justify-between gap-3">
+
+                            <div className="min-w-0">
+
+                              <div className="text-xs font-black leading-5 text-zinc-900">
+                                {source.label}
+                              </div>
+
+                              <div className="mt-1 text-[9px] font-bold uppercase tracking-wide text-zinc-400">
+                                {[source.market, source.model_year]
+                                  .filter(Boolean)
+                                  .join(' · ')}
+                              </div>
+
+                            </div>
+
+
+                            {source.url ? (
+                              <a
+                                href={source.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="shrink-0 rounded-lg bg-orange-50 px-2.5 py-1.5 text-[8px] font-black uppercase text-orange-700"
+                              >
+                                Ouvrir
+                              </a>
+                            ) : null}
+
+                          </div>
+
+
+                          {source.note ? (
+                            <p className="mt-2 text-[10px] leading-4 text-zinc-500">
+                              {source.note}
+                            </p>
+                          ) : null}
+
+                        </div>
+
+                      )
+                    )}
+
+                  </div>
+
+                </div>
+
+              </details>
+
+            ) : null}
+
+          </div>
+        </section>
+      ) : (
+        <>      {/* QUALITE DES DONNEES */}
+      {v2.data_quality ? (
+        <section
+          id="sources" data-v2-tab-section="sources"
           className="scroll-mt-24 mt-8 rounded-[28px] border border-green-200 bg-white p-6 shadow-sm md:p-8"
         >
           <SectionTitle
@@ -1156,22 +1635,30 @@ export default function MotorcycleSheetV2View({
         </section>
       ) : null}
 
+        </>
+      )}
       {/* AVIS */}
       <section
-        id="reviews"
-        className="scroll-mt-28 space-y-8 py-12"
+        id="reviews" data-v2-tab-section="reviews"
+        className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6 space-y-6"
       >
-        <div className="flex flex-col justify-between gap-4 border-b-4 border-orange-500 pb-4 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3">
-            <h2 className="flex items-center gap-3 text-3xl font-black uppercase tracking-tighter">
-              <MessageSquare className="h-8 w-8 text-orange-600" />
-              Avis des motards
-            </h2>
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+              <div className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600">
+                Communauté LabelMoto
+              </div>
 
-            <div className="rounded-full bg-orange-600 px-4 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow">
-              {reviews?.length || 0} avis
+              <div className="mt-1 flex items-center gap-3">
+                <h2 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950 flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 shrink-0 text-orange-600" />
+                  Avis des motards
+                </h2>
+
+                <div className="rounded-full bg-orange-600 px-3 py-1 text-[9px] font-black uppercase leading-none text-white">
+                  {reviews?.length || 0} avis
+                </div>
+              </div>
             </div>
-          </div>
 
           <Button
             onClick={onLeaveReview}
@@ -1256,6 +1743,305 @@ export default function MotorcycleSheetV2View({
           </div>
         )}
       </section>
+
+      {/* VERDICT EDITORIAL 800MT - PROTOTYPE */}
+      {is800mtTabbedPrototype ? (
+        <section
+          id="verdict-labelmoto-editorial"
+          className="mt-10 overflow-hidden rounded-[26px] border border-zinc-200 bg-white shadow-sm"
+        >
+          <div className="p-5 md:p-8">
+
+            <div
+              className="text-[10px] font-black uppercase tracking-[0.22em]"
+              style={{ color: ORANGE }}
+            >
+              Verdict LabelMoto
+            </div>
+
+
+            <h2 className="mt-2 max-w-3xl text-2xl font-black leading-[1.08] tracking-tight text-zinc-950 md:text-4xl">
+              Une vraie voyageuse,
+              mais le millésime compte
+            </h2>
+
+
+            <p className="mt-4 max-w-4xl text-sm leading-6 text-zinc-600 md:text-[15px] md:leading-7">
+              La 800MT joue surtout la carte du confort, de la polyvalence
+              et de l'équipement. La Sport conserve une approche plus
+              simple et routière, tandis que l'Explore pousse davantage
+              la logique voyage. Pour choisir entre les deux, le niveau
+              d'équipement et l'usage prévu comptent finalement plus que
+              la différence de performances.
+            </p>
+
+
+            <div className="mt-6 space-y-3">
+
+              {/* AVANT ACHAT */}
+              <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60">
+
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+
+                  <div>
+                    <div
+                      className="text-[9px] font-black uppercase tracking-[0.18em]"
+                      style={{ color: ORANGE }}
+                    >
+                      Achat neuf ou occasion
+                    </div>
+
+                    <div className="mt-1 text-sm font-black text-zinc-950 md:text-base">
+                      Avant d'acheter : 3 vérifications utiles
+                    </div>
+                  </div>
+
+                  <div
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-xl font-black shadow-sm transition-transform group-open:rotate-45"
+                    style={{ color: ORANGE }}
+                  >
+                    +
+                  </div>
+
+                </summary>
+
+
+                <div className="border-t border-zinc-200 bg-white px-5 py-5">
+
+                  <div className="space-y-5">
+
+                    <div className="flex gap-3">
+                      <div
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black text-white"
+                        style={{ backgroundColor: ORANGE }}
+                      >
+                        1
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-black text-zinc-900">
+                          Identifier précisément la version et le millésime
+                        </div>
+
+                        <p className="mt-1 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">
+                          Les 800MT Sport et Explore partagent la même base,
+                          mais les équipements et certaines caractéristiques
+                          ont évolué selon les années et les marchés.
+                          Vérifiez donc la version exacte et le millésime
+                          plutôt que de vous fier uniquement au titre de
+                          l'annonce.
+                        </p>
+                      </div>
+                    </div>
+
+
+                    <div className="flex gap-3">
+                      <div
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black text-white"
+                        style={{ backgroundColor: ORANGE }}
+                      >
+                        2
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-black text-zinc-900">
+                          Regarder l'historique avant le kilométrage
+                        </div>
+
+                        <p className="mt-1 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">
+                          Sur une occasion, un carnet cohérent et des factures
+                          permettant de suivre les révisions sont plus
+                          instructifs qu'un faible kilométrage isolé.
+                          La première révision intervient à 1 000 km puis
+                          l'entretien principal suit un rythme de 15 000 km
+                          ou l'échéance prévue par le carnet correspondant à
+                          la moto.
+                        </p>
+                      </div>
+                    </div>
+
+
+                    <div className="flex gap-3">
+                      <div
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black text-white"
+                        style={{ backgroundColor: ORANGE }}
+                      >
+                        3
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-black text-zinc-900">
+                          Vérifier l'équipement réellement présent
+                        </div>
+
+                        <p className="mt-1 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">
+                          Une annonce peut mélanger les équipements de
+                          plusieurs versions ou années. Contrôlez donc
+                          directement sur la moto les équipements qui
+                          comptent pour vous, particulièrement lorsqu'ils
+                          expliquent une différence de prix entre deux
+                          exemplaires.
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </details>
+
+
+              {/* POUR QUEL MOTARD */}
+              <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60">
+
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+
+                  <div>
+                    <div
+                      className="text-[9px] font-black uppercase tracking-[0.18em]"
+                      style={{ color: ORANGE }}
+                    >
+                      Usage
+                    </div>
+
+                    <div className="mt-1 text-sm font-black text-zinc-950 md:text-base">
+                      Pour quel motard ?
+                    </div>
+                  </div>
+
+                  <div
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-xl font-black shadow-sm transition-transform group-open:rotate-45"
+                    style={{ color: ORANGE }}
+                  >
+                    +
+                  </div>
+
+                </summary>
+
+
+                <div className="border-t border-zinc-200 bg-white px-5 py-5">
+
+                  <p className="text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">
+                    La 800MT s'adresse surtout au motard qui cherche un trail
+                    routier confortable pour le quotidien, le duo et le
+                    voyage, avec un niveau d'équipement important sans devoir
+                    immédiatement multiplier les accessoires.
+                  </p>
+
+                  <p className="mt-3 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">
+                    Elle sera moins évidente pour celui qui place la légèreté
+                    ou un usage tout-terrain très engagé au premier plan.
+                    Son gabarit fait partie des éléments à essayer réellement
+                    avant l'achat.
+                  </p>
+
+                </div>
+              </details>
+
+
+              {/* CONSEIL LABELMOTO */}
+              <details className="group overflow-hidden rounded-2xl border border-orange-200 bg-orange-50">
+
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+
+                  <div>
+                    <div className="text-[9px] font-black uppercase tracking-[0.18em] text-orange-700">
+                      Notre recommandation
+                    </div>
+
+                    <div className="mt-1 text-sm font-black text-zinc-950 md:text-base">
+                      Le conseil LabelMoto
+                    </div>
+                  </div>
+
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-xl font-black text-orange-600 shadow-sm transition-transform group-open:rotate-45">
+                    +
+                  </div>
+
+                </summary>
+
+
+                <div className="border-t border-orange-200 bg-white px-5 py-5">
+
+                  <p className="text-sm font-bold leading-6 text-zinc-900 md:text-[15px] md:leading-7">
+                    Entre deux 800MT d'occasion, nous privilégierions un
+                    exemplaire dont la version, le millésime et l'historique
+                    d'entretien sont clairement documentés plutôt qu'une moto
+                    simplement moins kilométrée mais dont le suivi reste
+                    difficile à retracer.
+                  </p>
+
+                </div>
+              </details>
+
+            </div>
+
+          </div>
+        </section>
+      ) : null}
+
+      {/* EQUIVALENTS FOOTER 800MT */}
+      {is800mtTabbedPrototype ? (
+        <>
+      {/* EQUIVALENTS */}
+      {equivalents.length > 0 ? (
+        <section>
+          <SectionTitle
+            eyebrow="Comparer avant d’acheter"
+            title="Modèles équivalents"
+          />
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {equivalents.map((model: any, index: number) => {
+              const content = (
+                <>
+                  <div className="text-sm font-black">{model.name}</div>
+
+                  {model.reason ? (
+                    <div className="mt-1 text-xs leading-5 text-zinc-400">
+                      {model.reason}
+                    </div>
+                  ) : null}
+
+                  <div
+                    className="mt-4 flex items-center gap-1 text-[10px] font-black uppercase"
+                    style={{ color: ORANGE }}
+                  >
+                    À comparer
+                    <ChevronRight className="h-3 w-3" />
+                  </div>
+                </>
+              );
+
+              if (model.id) {
+                return (
+                  <Link
+                    key={model.id}
+                    href={`/fiches/${model.id}?from=${modelId}`}
+                    className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-orange-300 hover:shadow-md"
+                  >
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <div
+                  key={`${model.name}-${index}`}
+                  className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm"
+                >
+                  {content}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
+
+        </>
+      ) : null}
+
     </>
   );
 }

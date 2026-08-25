@@ -265,9 +265,9 @@ export default function FicheClient({ modelId }: { modelId: string }) {
       <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} />
       {breadcrumbLd && <Script id="breadcrumb-fiche-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />}
       
-      <main className="container mx-auto px-4 py-8 relative z-10">
+      <main className="pt-5 md:pt-6 lg:pt-8 container mx-auto px-4 pb-8 relative z-10">
         <div className="max-w-5xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-6 pt-20 md:pt-24">
+          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-6">
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> ACCUEIL</Link>
             <ChevronRight className="h-2 w-2 shrink-0" /><Link href="/entretien" className="hover:text-brand shrink-0">ENTRETIEN</Link>
             <ChevronRight className="h-2 w-2 shrink-0" /><span className="text-foreground truncate font-black">{displayData.modelName}</span>
