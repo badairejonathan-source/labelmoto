@@ -74,7 +74,7 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
                   {brand.models.map((model) => (
                     <Link
                       key={model.id}
-                      href={`/fiches/${model.id}?from=entretien`}
+                      href={`/fiches/${model.id}`}
                       className="flex items-center justify-between p-4 bg-background border rounded-xl hover:border-brand hover:shadow-lg transition-all group"
                     >
                       <span className="font-black text-sm group-hover:text-brand transition-colors">

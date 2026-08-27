@@ -172,22 +172,6 @@ export const CITIES: CityData[] = [
     searchTerms: ["mécanicien moto Lille","concessionnaire moto 59","garage moto Nord","réparation moto Lille","atelier moto Villeneuve-d'Ascq","entretien moto métropole lilloise"],
   },
   {
-    slug: 'annecy', name: 'Annecy', departement: '74', region: 'Auvergne-Rhône-Alpes',
-    metaTitle: "Garage moto Annecy (74) : concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Annecy parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 74. Avis, horaires et contacts directs sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires à Annecy : les pros de votre région',
-    intro: [
-      "Annecy et la Haute-Savoie offrent aux motards des routes d'exception : le col de la Colombière, le col des Aravis, le col du Grand-Colombier et les rives du lac d'Annecy figurent parmi les plus beaux itinéraires des Alpes.",
-      "LabelMoto recense les garages moto et concessionnaires d'Annecy et de Haute-Savoie avec fiches vérifiées, avis et coordonnées directes pour les motards alpins.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto à Annecy ?', a: "Annecy et la Haute-Savoie disposent de nombreux ateliers et concessions. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
-      { q: 'Y a-t-il des spécialistes moto trail à Annecy ?', a: "Oui, plusieurs ateliers annéciens sont spécialisés en trail et enduro, adaptés aux cols alpins. Filtrez sur LabelMoto." },
-      { q: "Quel est le prix d'une révision moto à Annecy ?", a: "À Annecy, comptez 80 à 140 € pour une révision simple, 280 à 450 € pour une révision complète selon la marque." },
-    ],
-    searchTerms: ["mécanicien moto Annecy","concessionnaire moto 74","garage moto Haute-Savoie","réparation moto Annecy","atelier moto col Aravis","entretien moto Alpes"],
-  },
-  {
     slug: 'cannes', name: 'Cannes', departement: '06', region: "Provence-Alpes-Côte d'Azur",
     metaTitle: "Garage moto Cannes (06) : concessions et ateliers vérifiés | LabelMoto",
     metaDescription: "Trouvez votre garage moto à Cannes parmi les professionnels vérifiés : concessions, ateliers et réparateurs dans le département 06. Avis, horaires et contacts directs sur LabelMoto.",
@@ -1242,22 +1226,6 @@ export const CITIES: CityData[] = [
       { q: "Quel est le prix d'une révision moto à Niort ?", a: "Comptez 75 à 130 € pour une révision simple, 240 à 420 € pour une révision complète selon la marque et l'atelier." },
     ],
     searchTerms: ["garage moto Niort","mécanicien moto Niort","concessionnaire moto 79","atelier moto Niort","réparation moto Niort"],
-  },
-  {
-    slug: 'nancy', name: 'Nancy', departement: '54', region: "Grand Est",
-    metaTitle: "Garage moto Nancy (54) : concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Nancy parmi les professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires à Nancy',
-    intro: [
-      "LabelMoto recense les garages moto, concessions et ateliers de Nancy avec fiches vérifiées, horaires et coordonnées directes.",
-      "Trouvez le bon professionnel moto à Nancy : concessionnaire multimarque, atelier spécialisé ou réparateur de proximité, tous référencés et vérifiés sur LabelMoto.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto à Nancy ?', a: "Retrouvez tous les garages moto de Nancy sur LabelMoto : horaires, avis clients et contact direct." },
-      { q: 'Y a-t-il des concessions moto à Nancy ?', a: "Oui, Nancy dispose de concessions référencées sur LabelMoto avec leurs marques et coordonnées." },
-      { q: "Quel est le prix d'une révision moto à Nancy ?", a: "Comptez 75 à 130 € pour une révision simple, 240 à 420 € pour une révision complète selon la marque et l'atelier." },
-    ],
-    searchTerms: ["garage moto Nancy","mécanicien moto Nancy","concessionnaire moto 54","atelier moto Nancy","réparation moto Nancy"],
   },
   {
     slug: 'carpentras', name: 'carpentras', departement: '84', region: "Provence-Alpes-Côte d'Azur",
@@ -2620,22 +2588,6 @@ export const CITIES: CityData[] = [
     searchTerms: ["garage moto Longueau","mécanicien moto Longueau","concessionnaire moto 80","atelier moto Longueau","réparation moto Longueau"],
   },
   {
-    slug: 'lorient', name: 'Lorient', departement: '56', region: "Bretagne",
-    metaTitle: "Garage moto Lorient (56) : concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Lorient parmi les professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires à Lorient',
-    intro: [
-      "LabelMoto recense les garages moto, concessions et ateliers de Lorient avec fiches vérifiées, horaires et coordonnées directes.",
-      "Trouvez le bon professionnel moto à Lorient : concessionnaire multimarque, atelier spécialisé ou réparateur de proximité, tous référencés et vérifiés sur LabelMoto.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto à Lorient ?', a: "Retrouvez tous les garages moto de Lorient sur LabelMoto : horaires, avis clients et contact direct." },
-      { q: 'Y a-t-il des concessions moto à Lorient ?', a: "Oui, Lorient dispose de concessions référencées sur LabelMoto avec leurs marques et coordonnées." },
-      { q: "Quel est le prix d'une révision moto à Lorient ?", a: "Comptez 75 à 130 € pour une révision simple, 240 à 420 € pour une révision complète selon la marque et l'atelier." },
-    ],
-    searchTerms: ["garage moto Lorient","mécanicien moto Lorient","concessionnaire moto 56","atelier moto Lorient","réparation moto Lorient"],
-  },
-  {
     slug: 'calvi', name: 'Calvi', departement: '2B', region: "Corse",
     metaTitle: "Garage moto Calvi (2B) : concessions et ateliers vérifiés | LabelMoto",
     metaDescription: "Trouvez votre garage moto à Calvi parmi les professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
@@ -2794,22 +2746,6 @@ export const CITIES: CityData[] = [
       { q: "Quel est le prix d'une révision moto à Pantin ?", a: "Comptez 75 à 130 € pour une révision simple, 240 à 420 € pour une révision complète selon la marque et l'atelier." },
     ],
     searchTerms: ["garage moto Pantin","mécanicien moto Pantin","concessionnaire moto 93","atelier moto Pantin","réparation moto Pantin"],
-  },
-  {
-    slug: 'la-rochelle', name: 'La Rochelle', departement: '17', region: "Nouvelle-Aquitaine",
-    metaTitle: "Garage moto La Rochelle (17) : concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à La Rochelle parmi les professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires à La Rochelle',
-    intro: [
-      "LabelMoto recense les garages moto, concessions et ateliers de La Rochelle avec fiches vérifiées, horaires et coordonnées directes.",
-      "Trouvez le bon professionnel moto à La Rochelle : concessionnaire multimarque, atelier spécialisé ou réparateur de proximité, tous référencés et vérifiés sur LabelMoto.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto à La Rochelle ?', a: "Retrouvez tous les garages moto de La Rochelle sur LabelMoto : horaires, avis clients et contact direct." },
-      { q: 'Y a-t-il des concessions moto à La Rochelle ?', a: "Oui, La Rochelle dispose de concessions référencées sur LabelMoto avec leurs marques et coordonnées." },
-      { q: "Quel est le prix d'une révision moto à La Rochelle ?", a: "Comptez 75 à 130 € pour une révision simple, 240 à 420 € pour une révision complète selon la marque et l'atelier." },
-    ],
-    searchTerms: ["garage moto La Rochelle","mécanicien moto La Rochelle","concessionnaire moto 17","atelier moto La Rochelle","réparation moto La Rochelle"],
   },
   {
     slug: 'sens', name: 'Sens', departement: '89', region: "Bourgogne-Franche-Comté",
@@ -3497,70 +3433,6 @@ CITIES.push(
 
   // === ÎLE-DE-FRANCE ===
   {
-    slug: 'nanterre', name: 'Nanterre', departement: '92', region: 'Île-de-France',
-    metaTitle: "Garage moto Hauts-de-Seine (92) : 100+ concessions et ateliers | LabelMoto",
-    metaDescription: "Trouvez votre garage moto dans les Hauts-de-Seine parmi 109 professionnels vérifiés : concessions, ateliers et réparateurs à Nanterre, Boulogne-Billancourt, Levallois. Avis et contacts sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires dans les Hauts-de-Seine (92)',
-    intro: [
-      "Les Hauts-de-Seine comptent parmi les départements les mieux équipés en professionnels moto d'Île-de-France : concessions et ateliers à Nanterre, Boulogne-Billancourt, Levallois-Perret, Neuilly-sur-Seine et Issy-les-Moulineaux.",
-      "LabelMoto recense tous les garages moto et concessionnaires du 92 avec fiches vérifiées, avis communauté et coordonnées directes pour les motards franciliens.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto dans le 92 ?', a: "Les Hauts-de-Seine disposent de nombreux ateliers et concessions à Nanterre, Boulogne-Billancourt et Levallois. Retrouvez-les tous sur LabelMoto avec leurs horaires et avis." },
-      { q: 'Y a-t-il des concessions moto à Boulogne-Billancourt ?', a: "Oui, Boulogne-Billancourt et ses environs dans le 92 disposent de plusieurs concessions multimarques. Consultez LabelMoto pour les adresses et avis." },
-      { q: "Quel est le prix d'une révision moto dans le 92 ?", a: "Dans les Hauts-de-Seine, comptez 100 à 150 € pour une révision simple, 300 à 500 € pour une révision complète selon la marque." },
-    ],
-    searchTerms: ["mécanicien moto Nanterre","concessionnaire moto 92","garage moto Hauts-de-Seine","réparation moto Boulogne-Billancourt","atelier moto Levallois","entretien moto 92"],
-  },
-  {
-    slug: 'versailles', name: 'Versailles', departement: '78', region: 'Île-de-France',
-    metaTitle: "Garage moto Versailles (78) : 100+ concessions et ateliers | LabelMoto",
-    metaDescription: "Trouvez votre garage moto dans les Yvelines parmi 105 professionnels vérifiés : concessions, ateliers et réparateurs à Versailles, Saint-Germain-en-Laye, Poissy. Avis et contacts sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires dans les Yvelines (78)',
-    intro: [
-      "Les Yvelines offrent aux motards un accès rapide à la forêt de Rambouillet, aux routes de la Beauce et au vexin normand. Le département compte plus d'une centaine de professionnels moto à Versailles, Saint-Germain-en-Laye, Poissy et Mantes-la-Jolie.",
-      "LabelMoto recense les garages moto et concessionnaires du 78 avec fiches vérifiées, avis et coordonnées pour les motards yvelinois.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto dans les Yvelines ?', a: "Les Yvelines disposent de nombreux ateliers et concessions à Versailles, Saint-Germain-en-Laye et Poissy. Retrouvez-les sur LabelMoto avec leurs horaires." },
-      { q: 'Y a-t-il des concessions moto à Versailles ?', a: "Oui, Versailles et ses environs dans le 78 disposent de concessions multimarques. Consultez LabelMoto pour les adresses complètes et avis." },
-      { q: "Quel est le prix d'une révision moto dans le 78 ?", a: "Dans les Yvelines, comptez 90 à 140 € pour une révision simple, 280 à 450 € pour une révision complète." },
-    ],
-    searchTerms: ["mécanicien moto Versailles","concessionnaire moto 78","garage moto Yvelines","réparation moto Saint-Germain-en-Laye","atelier moto Poissy","entretien moto 78"],
-  },
-  {
-    slug: 'creteil', name: 'Créteil', departement: '94', region: 'Île-de-France',
-    metaTitle: "Garage moto Val-de-Marne (94) : 90+ concessions et ateliers | LabelMoto",
-    metaDescription: "Trouvez votre garage moto dans le Val-de-Marne parmi 94 professionnels vérifiés : concessions, ateliers et réparateurs à Créteil, Vincennes, Vitry-sur-Seine. Avis et contacts sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires dans le Val-de-Marne (94)',
-    intro: [
-      "Le Val-de-Marne regroupe de nombreux professionnels moto entre Créteil, Vincennes, Vitry-sur-Seine et Ivry-sur-Seine, avec un accès rapide aux routes du Brie et de la forêt de Sénart.",
-      "LabelMoto recense les garages moto et concessionnaires du 94 avec fiches vérifiées, avis communauté et coordonnées directes.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto dans le 94 ?', a: "Le Val-de-Marne dispose de nombreux ateliers et concessions à Créteil, Vincennes et Vitry. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
-      { q: 'Y a-t-il des concessions moto à Créteil ?', a: "Oui, Créteil et ses environs dans le 94 disposent de concessions multimarques. Consultez LabelMoto pour les adresses et avis." },
-      { q: "Quel est le prix d'une révision moto dans le 94 ?", a: "Dans le Val-de-Marne, comptez 100 à 150 € pour une révision simple, 300 à 480 € pour une révision complète." },
-    ],
-    searchTerms: ["mécanicien moto Créteil","concessionnaire moto 94","garage moto Val-de-Marne","réparation moto Vincennes","atelier moto Vitry","entretien moto 94"],
-  },
-  {
-    slug: 'saint-denis', name: 'Saint-Denis', departement: '93', region: 'Île-de-France',
-    metaTitle: "Garage moto Seine-Saint-Denis (93) : 80+ concessions et ateliers | LabelMoto",
-    metaDescription: "Trouvez votre garage moto en Seine-Saint-Denis parmi 85 professionnels vérifiés : concessions, ateliers et réparateurs à Saint-Denis, Montreuil, Bobigny. Avis et contacts sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires en Seine-Saint-Denis (93)',
-    intro: [
-      "La Seine-Saint-Denis concentre de nombreux professionnels moto à Saint-Denis, Montreuil, Bobigny et Aubervilliers, avec un accès rapide aux autoroutes du nord et de l'est de l'Île-de-France.",
-      "LabelMoto recense les garages moto et concessionnaires du 93 avec fiches vérifiées, avis et coordonnées directes pour les motards de Seine-Saint-Denis.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto dans le 93 ?', a: "La Seine-Saint-Denis dispose de nombreux ateliers et concessions à Saint-Denis, Montreuil et Bobigny. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
-      { q: 'Y a-t-il des concessions moto à Saint-Denis ?', a: "Oui, Saint-Denis et ses environs dans le 93 disposent de concessions multimarques. Consultez LabelMoto pour les adresses complètes." },
-      { q: "Quel est le prix d'une révision moto dans le 93 ?", a: "En Seine-Saint-Denis, comptez 90 à 140 € pour une révision simple, 280 à 450 € pour une révision complète selon la marque." },
-    ],
-    searchTerms: ["mécanicien moto Saint-Denis","concessionnaire moto 93","garage moto Seine-Saint-Denis","réparation moto Montreuil","atelier moto Bobigny","entretien moto 93"],
-  },
-  {
     slug: 'melun', name: 'Melun', departement: '77', region: 'Île-de-France',
     metaTitle: "Garage moto Seine-et-Marne (77) : 80+ concessions et ateliers | LabelMoto",
     metaDescription: "Trouvez votre garage moto en Seine-et-Marne parmi 82 professionnels vérifiés : concessions, ateliers et réparateurs à Melun, Meaux, Fontainebleau. Avis et contacts sur LabelMoto.",
@@ -3609,22 +3481,6 @@ CITIES.push(
     searchTerms: ["mécanicien moto Cergy","concessionnaire moto 95","garage moto Val-d'Oise","réparation moto Argenteuil","atelier moto Sarcelles","entretien moto 95"],
   },
   // === GRANDES VILLES HORS IDF ===
-  {
-    slug: 'calais', name: 'Calais', departement: '62', region: 'Hauts-de-France',
-    metaTitle: "Garage moto Pas-de-Calais (62) : 110+ concessions et ateliers | LabelMoto",
-    metaDescription: "Trouvez votre garage moto dans le Pas-de-Calais parmi 118 professionnels vérifiés : concessions, ateliers et réparateurs à Calais, Arras, Lens, Boulogne-sur-Mer. Avis et contacts sur LabelMoto.",
-    h1: 'Garages moto et concessionnaires dans le Pas-de-Calais (62)',
-    intro: [
-      "Le Pas-de-Calais est un département traversé par de nombreuses routes et autoroutes qui en font un point de passage incontournable pour les motards du nord de la France et les traversées vers l'Angleterre. Les professionnels moto sont présents à Calais, Arras, Lens et Boulogne-sur-Mer.",
-      "LabelMoto recense les garages moto et concessionnaires du 62 avec fiches vérifiées, avis et coordonnées directes pour les motards du Pas-de-Calais.",
-    ],
-    faq: [
-      { q: 'Où trouver un garage moto dans le Pas-de-Calais ?', a: "Le Pas-de-Calais dispose de nombreux ateliers et concessions à Calais, Arras et Lens. Retrouvez-les sur LabelMoto avec leurs horaires et avis." },
-      { q: 'Y a-t-il des garages moto à Calais ?', a: "Oui, Calais et ses environs dans le 62 disposent de concessions et ateliers multimarques. Consultez LabelMoto pour les adresses et avis." },
-      { q: "Quel est le prix d'une révision moto dans le 62 ?", a: "Dans le Pas-de-Calais, comptez 80 à 130 € pour une révision simple, 260 à 420 € pour une révision complète selon la marque." },
-    ],
-    searchTerms: ["mécanicien moto Calais","concessionnaire moto 62","garage moto Pas-de-Calais","réparation moto Arras","atelier moto Lens","entretien moto Boulogne-sur-Mer"],
-  },
   {
     slug: 'annecy', name: 'Annecy', departement: '74', region: 'Auvergne-Rhône-Alpes',
     metaTitle: "Garage moto Annecy (74) : 100+ concessions et ateliers vérifiés | LabelMoto",

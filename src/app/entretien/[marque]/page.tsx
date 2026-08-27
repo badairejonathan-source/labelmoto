@@ -425,7 +425,7 @@ export default async function EntretienMarquePage({ params }: PageProps) {
             {fiches.map(fiche => (
               <Link
                 key={fiche.id}
-                href={`/fiches/${fiche.id}?from=entretien`}
+                href={`/fiches/${fiche.id}`}
                 className="flex items-center justify-between p-5 bg-white border rounded-2xl hover:border-brand hover:shadow-lg transition-all group"
               >
                 <div>

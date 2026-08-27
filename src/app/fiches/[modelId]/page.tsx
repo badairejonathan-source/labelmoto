@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { permanentRedirect } from 'next/navigation';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import FicheClient from '@/components/app/fiche-client';
 
@@ -79,7 +80,25 @@ export async function generateMetadata({ params }: { params: Promise<{ modelId: 
   };
 }
 
-export default async function Page({ params }: { params: Promise<{ modelId: string }> }) {
+type PageProps = {
+  params: Promise<{ modelId: string }>;
+  searchParams: Promise<{
+    from?: string | string[];
+  }>;
+};
+
+export default async function Page({
+  params,
+  searchParams,
+}: PageProps) {
   const { modelId } = await params;
+  const query = await searchParams;
+
+  // Les anciennes URLs ?from= ont désormais une URL canonique unique.
+  // Les nouveaux liens internes n'utilisent plus ce paramètre.
+  if (query.from !== undefined) {
+    permanentRedirect(`/fiches/${modelId}`);
+  }
+
   return <FicheClient modelId={modelId} />;
 }

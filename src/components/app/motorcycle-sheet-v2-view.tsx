@@ -1296,7 +1296,7 @@ export default function MotorcycleSheetV2View({
                 return (
                   <Link
                     key={model.id}
-                    href={`/fiches/${model.id}?from=${modelId}`}
+                    href={`/fiches/${model.id}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${model.id}`, `/fiches/${modelId}`); }}
                     className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-orange-300 hover:shadow-md"
                   >
                     {content}
@@ -2276,7 +2276,7 @@ export default function MotorcycleSheetV2View({
                 return (
                   <Link
                     key={model.id}
-                    href={`/fiches/${model.id}?from=${modelId}`}
+                    href={`/fiches/${model.id}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${model.id}`, `/fiches/${modelId}`); }}
                     className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-orange-300 hover:shadow-md"
                   >
                     {content}

@@ -171,7 +171,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : city.metaDescription;
 
   return {
-    title: dynamicTitle,
+    title: { absolute: dynamicTitle },
     description: dynamicDesc,
     alternates: { canonical: `https://labelmoto.fr/garages-moto/${city.slug}` },
     openGraph: {
@@ -199,7 +199,7 @@ function parseReviewCount(raw: unknown): number | null {
 }
 
 function ProCard({ pro }: { pro: Pro }) {
-  const href = `/${pro.collection}/${pro.slug || pro.docId}`;
+  const href = pro.collection === "creators" ? `/creators/${pro.slug || pro.docId}` : `/concessions/${pro.slug || pro.docId}`;
   return (
     <div className="bg-white rounded-2xl border border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex flex-col gap-3 p-4 md:p-5">
       <div className="flex items-start justify-between gap-2">

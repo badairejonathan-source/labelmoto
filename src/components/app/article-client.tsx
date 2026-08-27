@@ -462,7 +462,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               </CardContent>
               {ficheId && (
                 <CardFooter className="bg-brand p-3 border-t-0">
-                  <Link href={`/fiches/${ficheId}?from=${id}`} className="text-[10px] font-black uppercase tracking-widest text-white mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
+                  <Link href={`/fiches/${ficheId}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${ficheId}`, `/info/${id}`); }} className="text-[10px] font-black uppercase tracking-widest text-white mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
                 </CardFooter>
               )}
             </Card>

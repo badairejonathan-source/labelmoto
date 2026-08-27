@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Script from 'next/script';
@@ -98,21 +98,36 @@ const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string 
 
 export default function FicheClient({ modelId }: { modelId: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   
-  const from = searchParams.get('from');
-  const returnUrl = from === 'entretien' ? '/entretien' : (from ? `/info/${from}` : '/entretien');
+  const [returnUrl, setReturnUrl] = useState('/entretien');
   const returnLabel = "RETOUR AU CATALOGUE";
 
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => (firestore && modelId) ? doc(firestore, 'motorcycle_sheets', modelId) : null, [firestore, modelId]);
   const { data: fiche, isLoading } = useDoc(ficheRef);
 
-  useEffect(() => { 
-    if (typeof window !== 'undefined') window.scrollTo(0, 0);
-    setSelectedVariantIndex(0); 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+
+      const storageKey = `labelmoto:fiche-return:${modelId}`;
+      const storedReturnUrl =
+        window.sessionStorage.getItem(storageKey);
+
+      if (
+        storedReturnUrl &&
+        storedReturnUrl.startsWith('/')
+      ) {
+        setReturnUrl(storedReturnUrl);
+        window.sessionStorage.removeItem(storageKey);
+      } else {
+        setReturnUrl('/entretien');
+      }
+    }
+
+    setSelectedVariantIndex(0);
   }, [modelId]);
 
   const displayData = useMemo(() => {
@@ -461,7 +476,7 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                       ))}</div></div>
                 )}
                 <section className="pt-12 space-y-8"><h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2"><Bike className="h-8 w-8 text-brand" /> MODÈLES ÉQUIVALENTS</h3><div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{relatedModels.map((m) => (
-                        <Link key={m.id} href={`/fiches/${m.id}?from=${modelId}`} className="group flex items-center justify-between p-6 bg-card rounded-2xl border-2 border-muted hover:border-brand hover:shadow-xl transition-all"><div className="flex flex-col"><span className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{m.name}</span><span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{m.cc} cm³</span></div><div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-all shadow-sm"><ChevronRight className="h-5 w-5" /></div></Link>
+                        <Link key={m.id} href={`/fiches/${m.id}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${m.id}`, `/fiches/${modelId}`); }} className="group flex items-center justify-between p-6 bg-card rounded-2xl border-2 border-muted hover:border-brand hover:shadow-xl transition-all"><div className="flex flex-col"><span className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{m.name}</span><span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{m.cc} cm³</span></div><div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-all shadow-sm"><ChevronRight className="h-5 w-5" /></div></Link>
                 ))}</div></section>
                 <div className="mt-20 pt-10 border-t-4 border-dashed border-muted relative flex flex-col md:flex-row items-center gap-8 bg-muted/10 p-10 rounded-[3rem]"><div className="shrink-0"><ShieldCheck className="h-16 w-16 text-brand" /></div><div className="flex-1"><h3 className="text-2xl font-black uppercase mb-4 text-foreground tracking-tighter">L'AVIS DE L'EXPERT</h3><p className="text-lg text-foreground/80 font-black leading-relaxed italic">"{displayData.conclusion}"</p><div className="flex justify-end items-center mt-8"><p className="text-lg font-black text-foreground italic relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={100} height={100} className="opacity-40 -rotate-12 pointer-events-none -ml-8" loading="lazy"/></div></div></div>
 

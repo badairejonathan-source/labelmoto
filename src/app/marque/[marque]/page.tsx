@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const brand = getBrandBySlug(marque);
   if (!brand) return { title: 'Page introuvable | LabelMoto' };
   return {
-    title: brand.metaTitle,
+    title: { absolute: brand.metaTitle },
     description: brand.metaDescription,
     alternates: { canonical: `https://labelmoto.fr/marque/${brand.slug}` },
     openGraph: {

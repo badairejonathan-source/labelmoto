@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import { getCityBySlug } from '@/app/lib/cities';
-import { permanentRedirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Script from 'next/script';
 import DealershipDetailClient from '@/components/app/dealership-detail-client';
 import type { Dealership } from '@/lib/types';
@@ -39,15 +39,27 @@ async function getDealership(idOrSlug: string): Promise<{ data: Dealership | nul
     // 3. Fallback sur associations/relais
     const collections = ['associations', 'relais'];
     for (const col of collections) {
-      const snap = await db.collection(col).where('slug', '==', idOrSlug).limit(1).get();
-      if (!snap.empty) {
-         const d = snap.docs[0];
-         const data = sanitizeFirestoreData({ id: d.id, ...d.data() });
-         return { data: data as Dealership, type: 'slug' };
+      // Anciennes URLs : tentative directe par ID de document
+      const associationOrRelaisIdDoc = await db.collection(col).doc(idOrSlug).get();
+      if (associationOrRelaisIdDoc.exists) {
+        const data = sanitizeFirestoreData({
+          id: associationOrRelaisIdDoc.id,
+          ...associationOrRelaisIdDoc.data()
+        });
+        return { data: data as Dealership, type: 'id' };
+      }
+
+      // URL canonique actuelle : recherche par slug
+      const slugSnap = await db.collection(col).where('slug', '==', idOrSlug).limit(1).get();
+      if (!slugSnap.empty) {
+        const d = slugSnap.docs[0];
+        const data = sanitizeFirestoreData({ id: d.id, ...d.data() });
+        return { data: data as Dealership, type: 'slug' };
       }
     }
   } catch (error) {
     console.error("[SERVER] Erreur getDealership:", error);
+    throw error;
   }
 
   return { data: null, type: null };
@@ -90,7 +102,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     : `${shortName}${ville ? ' à ' + ville : ''} : horaires, téléphone et adresse. Concessionnaire moto référencé sur LabelMoto.`;
 
     return {
-    title: title,
+    title: { absolute: title },
     description: description,
     alternates: {
       canonical: `/concessions/${pro.slug || pro.id}`,
@@ -108,12 +120,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { data: pro, type } = await getDealership(idOrSlug);
 
   if (!pro) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <h1 className="text-2xl font-black uppercase">Établissement non trouvé</h1>
-        <DealershipDetailClient pro={{ title: "Établissement non trouvé" } as any} />
-      </div>
-    );
+    notFound();
   }
 
   if (type === 'id' && pro.slug && pro.slug !== pro.id) {
