@@ -20,7 +20,6 @@ import { extractValidCoordinates } from "@/lib/geohash";
 import { useFirebase, useMemoFirebase, useDoc } from '@/firebase/client';
 import { initializeFirebaseClient } from '@/firebase/config-client';
 import { collection, getDocs, query, limit, doc, getDoc, getFirestore } from "firebase/firestore";
-import { useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import locationsData from '@/data/locations.json';
@@ -174,7 +173,6 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
 };
 
 function MapPageComponent() {
-  const searchParams = useSearchParams();
   const { width } = useWindowSize();
   const { firestore } = useFirebase();
 
@@ -187,19 +185,15 @@ function MapPageComponent() {
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);
   const [deptCounts, setDeptCounts] = useState<any>(null);
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const filterParam = searchParams.get('filter');
-  const [activeFilters, setActiveFilters] = useState<string[]>(filterParam ? filterParam.split(',').filter(Boolean) : []);
-  const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('selectedId'));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDetailView, setIsDetailView] = useState(false);
-  const initLat = parseFloat(searchParams.get('lat') || '');
-  const initLng = parseFloat(searchParams.get('lng') || '');
-  const initZoom = parseInt(searchParams.get('zoom') || '');
-  const hasInitCoords = !isNaN(initLat) && !isNaN(initLng);
-  const [mapCenter, setMapCenter] = useState<[number, number]>(hasInitCoords ? [initLat, initLng] : [46.5, 2.2]);
-  const [mapZoom, setMapZoom] = useState(hasInitCoords ? (isNaN(initZoom) ? 12 : initZoom) : 6);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
+  const [mapZoom, setMapZoom] = useState(6);
   const [drawerHeight, setDrawerHeight] = useState<'collapsed' | 'half' | 'full'>('collapsed');
-  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(searchParams.get('selectedId') ? 'external' : null);
+  const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(null);
+  const [hasAppliedInitialUrl, setHasAppliedInitialUrl] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
   const [bboxToFit, setBboxToFit] = useState<[number, number, number, number] | null>(null);
@@ -215,12 +209,58 @@ function MapPageComponent() {
     );
   };
 
+  // Lire l'URL après hydratation afin de conserver les deep links
+  // sans forcer toute la page /map en rendu client uniquement.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    const initialSearch = params.get('search') || '';
+    const initialFilter = params.get('filter') || '';
+    const initialSelectedId = params.get('selectedId');
+
+    const initialLat = parseFloat(params.get('lat') || '');
+    const initialLng = parseFloat(params.get('lng') || '');
+    const initialZoom = parseInt(params.get('zoom') || '');
+
+    setSearchTerm(initialSearch);
+
+    setActiveFilters(
+      initialFilter
+        ? initialFilter.split(',').filter(Boolean)
+        : []
+    );
+
+    setSelectedId(initialSelectedId);
+
+    if (
+      Number.isFinite(initialLat) &&
+      Number.isFinite(initialLng)
+    ) {
+      setMapCenter([initialLat, initialLng]);
+      setMapZoom(
+        Number.isFinite(initialZoom)
+          ? initialZoom
+          : 12
+      );
+    }
+
+    setSelectionSource(
+      initialSelectedId
+        ? 'external'
+        : null
+    );
+
+    setHasAppliedInitialUrl(true);
+  }, []);
+
   // Synchroniser le ref avec l'état
   useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);
   // Synchronisation légère état -> URL.
   // L'History API conserve une URL partageable sans provoquer
   // de navigation Next.js ni de nouvelle requête GET /map.
   useEffect(() => {
+    if (!hasAppliedInitialUrl) return;
+
     const params = new URLSearchParams();
 
     if (searchTerm) params.set('search', searchTerm);
@@ -254,15 +294,24 @@ function MapPageComponent() {
         newUrl
       );
     }
-  }, [searchTerm, activeFilters, selectedId, mapCenter, mapZoom]);
+  }, [hasAppliedInitialUrl, searchTerm, activeFilters, selectedId, mapCenter, mapZoom]);
 
 
   const isMobile = width !== undefined && width < 1024;
   const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 156)) : 0;
   const leftPadding = !isMobile ? 544 : 0;
 
+  // L'index national fait plusieurs Mo : inutile de le charger
+  // pour la vue nationale tant qu'aucun professionnel n'est demandé.
+  const shouldLoadPoints =
+    activeFilters.length > 0 ||
+    Boolean(selectedId) ||
+    searchTerm.trim().length > 0;
+
   // Index public partagé : aucun scan Firestore pour les marqueurs.
   useEffect(() => {
+    if (!shouldLoadPoints || points.length > 0) return;
+
     let cancelled = false;
 
     setIsLoadingPoints(true);
@@ -282,7 +331,7 @@ function MapPageComponent() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [shouldLoadPoints, points.length]);
 
     // Chargement du cache départements
   useEffect(() => {

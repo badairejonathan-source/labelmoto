@@ -437,6 +437,8 @@ const MapComponent = ({
       }
     };
 
+    let cancelled = false;
+
     const loadAndSync = async () => {
       if (!geojsonDataRef.current) {
         try {
@@ -446,14 +448,26 @@ const MapComponent = ({
             throw new Error('GeoJSON fetch failed');
           }
 
-          geojsonDataRef.current = await res.json();
+          const data = await res.json();
+
+          if (cancelled || mapRef.current !== map) {
+            return;
+          }
+
+          geojsonDataRef.current = data;
         } catch (error) {
+          if (cancelled) return;
+
           console.error(
             'Erreur chargement GeoJSON:',
             error
           );
           return;
         }
+      }
+
+      if (cancelled || mapRef.current !== map) {
+        return;
       }
 
       syncLayerModeWithZoom();
@@ -464,6 +478,7 @@ const MapComponent = ({
     map.on('zoomend', syncLayerModeWithZoom);
 
     return () => {
+      cancelled = true;
       map.off('zoomend', syncLayerModeWithZoom);
     };
   }, [deptCounts, isMobile, leftPadding]);

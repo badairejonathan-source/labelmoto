@@ -56,11 +56,16 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
 
   useEffect(() => {
     setFirestore(getFirestoreInstance());
-    setAuth(getAuthInstance());
   }, []);
 
   const activateAuth = () => {
-    if (!isAuthActive) setIsAuthActive(true);
+    if (isAuthActive) return;
+
+    const authInstance = getAuthInstance();
+    if (!authInstance) return;
+
+    setAuth(authInstance);
+    setIsAuthActive(true);
   };
 
   useEffect(() => {
