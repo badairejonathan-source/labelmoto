@@ -27,7 +27,7 @@ import AdminProspection from '@/components/app/admin-prospection';
 import AdminStats from '@/components/app/admin-stats';
 import AdminUsers from '@/components/app/admin-users';
 import AdminImageRequests from '@/components/app/admin-image-requests';
-import { updateDoc } from 'firebase/firestore';
+import { updateDoc, limit } from 'firebase/firestore';
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -76,6 +76,8 @@ interface MigrationStats {
   toMigrate: any[];
 }
 
+const ADMIN_REALTIME_LIMIT = 100;
+
 export default function AdminPage() {
   const { firestore, user, profile, isUserLoading } = useFirebase();
   const { toast } = useToast();
@@ -94,14 +96,14 @@ export default function AdminPage() {
 
   const submissionsQuery = useMemoFirebase(() => {
     if (!firestore || !isAdmin) return null;
-    return query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc'));
+    return query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc'), limit(ADMIN_REALTIME_LIMIT));
   }, [firestore, isAdmin]);
 
   const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<Submission>(submissionsQuery);
 
   const commentsQuery = useMemoFirebase(() => {
     if (!firestore || !isAdmin) return null;
-    return query(collection(firestore, 'pending_comments'), orderBy('date', 'desc'));
+    return query(collection(firestore, 'pending_comments'), orderBy('date', 'desc'), limit(ADMIN_REALTIME_LIMIT));
   }, [firestore, isAdmin]);
 
   const { data: pendingComments } = useCollection(commentsQuery);
@@ -134,7 +136,7 @@ export default function AdminPage() {
 
   const modifsQuery = useMemoFirebase(() => {
     if (!firestore || !isAdmin) return null;
-    return query(collection(firestore, 'modification_requests'), where('status', '==', 'pending'));
+    return query(collection(firestore, 'modification_requests'), where('status', '==', 'pending'), limit(ADMIN_REALTIME_LIMIT));
   }, [firestore, isAdmin]);
   const { data: pendingModifs } = useCollection(modifsQuery);
 
