@@ -297,9 +297,10 @@ function MapPageComponent() {
   }, [hasAppliedInitialUrl, searchTerm, activeFilters, selectedId, mapCenter, mapZoom]);
 
 
-  const isMobile = width !== undefined && width < 1024;
-  const bottomPadding = isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 156)) : 0;
-  const leftPadding = !isMobile ? 544 : 0;
+  const isViewportReady = width !== undefined;
+  const isMobile = isViewportReady && width < 1024;
+  const bottomPadding = isViewportReady && isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 156)) : 0;
+  const leftPadding = isViewportReady && !isMobile ? 544 : 0;
 
   // L'index national fait plusieurs Mo : inutile de le charger
   // pour la vue nationale tant qu'aucun professionnel n'est demandé.
@@ -589,9 +590,18 @@ function MapPageComponent() {
         />
       </div>
 
-      <div className={cn("absolute top-6 z-[1500]", isMobile ? "left-6 right-6" : "right-6 w-[400px]")}>
+      <div
+        className={cn(
+          "absolute top-6 z-[1500]",
+          !isViewportReady
+            ? "left-6 right-6 lg:left-auto lg:right-6 lg:w-[400px]"
+            : isMobile
+              ? "left-6 right-6"
+              : "right-6 w-[400px]"
+        )}
+      >
         <Header
-          searchOnly={!isMobile}
+          searchOnly={!isViewportReady || !isMobile}
           searchTerm={searchTerm}
           onSearchTermChange={(val: string) => {
             if (val !== searchTerm) {
@@ -617,7 +627,7 @@ function MapPageComponent() {
 
       </div>
 
-      {!isMobile && (
+      {isViewportReady && !isMobile && (
         <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
           <div className="px-10 py-8 shrink-0 flex items-center justify-between border-b border-muted/30">
             <div className="shrink-0"><LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" /></div>
@@ -664,7 +674,7 @@ function MapPageComponent() {
         </aside>
       )}
 
-      {isMobile && (
+      {isViewportReady && isMobile && (
         <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-2xl transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed'
             ? 'bottom-0 h-[132px]'
             : drawerHeight === 'half'
@@ -702,7 +712,7 @@ function MapPageComponent() {
         </div>
       )}
       {/* Contrôle DOM/TOM mobile — fixe sur la carte et masqué naturellement par le drawer */}
-      {isMobile && (
+      {isViewportReady && isMobile && (
         <div
           className="fixed left-4 z-[1000]"
           style={{ bottom: '148px' }}
@@ -746,19 +756,21 @@ function MapPageComponent() {
       )}
 
       {/* Bouton boussole */}
-      <button
-        type="button"
-        onClick={handleLocate}
-        aria-label="Me localiser"
-        className={cn(
-          "fixed right-4 h-12 w-12 rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95",
-          isMobile ? "z-[1000]" : "z-[1200]"
-        )}
-        style={{ bottom: isMobile ? '148px' : '24px' }}
-      >
-        {isLocating ? <Loader2 className="h-5 w-5 text-brand animate-spin" /> : locateError ? <span className="text-red-500 font-black text-sm">X</span> : <Compass className="h-5 w-5 text-brand" />}
-      </button>
-      {!isMobile && isViewingOverseas && (
+      {isViewportReady && (
+        <button
+          type="button"
+          onClick={handleLocate}
+          aria-label="Me localiser"
+          className={cn(
+            "fixed right-4 h-12 w-12 rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95",
+            isMobile ? "z-[1000]" : "z-[1200]"
+          )}
+          style={{ bottom: isMobile ? '148px' : '24px' }}
+        >
+          {isLocating ? <Loader2 className="h-5 w-5 text-brand animate-spin" /> : locateError ? <span className="text-red-500 font-black text-sm">X</span> : <Compass className="h-5 w-5 text-brand" />}
+        </button>
+      )}
+      {isViewportReady && !isMobile && isViewingOverseas && (
         <button
           type="button"
           onClick={() => { setMapCenter([46.6, 2.4]); setMapZoom(6); setSelectionSource('external'); }}
@@ -767,7 +779,7 @@ function MapPageComponent() {
           ← Retour France métropolitaine
         </button>
       )}
-      {!isMobile && (
+      {isViewportReady && !isMobile && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1200] flex gap-2">
           {[
             { label: "La Reunion", center: [-21.1, 55.5] as [number, number], zoom: 10 },
