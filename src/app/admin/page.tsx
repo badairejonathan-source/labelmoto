@@ -27,7 +27,7 @@ import AdminProspection from '@/components/app/admin-prospection';
 import AdminStats from '@/components/app/admin-stats';
 import AdminUsers from '@/components/app/admin-users';
 import AdminImageRequests from '@/components/app/admin-image-requests';
-import { updateDoc, limit } from 'firebase/firestore';
+import { updateDoc } from 'firebase/firestore';
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
