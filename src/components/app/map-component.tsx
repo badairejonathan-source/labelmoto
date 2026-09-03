@@ -97,16 +97,21 @@ const MapComponent = ({
 
     // Fond raster clair natif Leaflet.
     // Aucun WebGL et aucun bridge MapLibre.
-    L.tileLayer(
-      'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
-      {
-        maxZoom: 20,
-        attribution:
-          '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>, ' +
-          '&copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> ' +
-          '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
-      }
-    ).addTo(map);
+    const cartoKey =
+      process.env.NEXT_PUBLIC_CARTO_BASEMAP_KEY?.trim();
+
+    const basemapUrl =
+      cartoKey
+        ? `https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key=${encodeURIComponent(cartoKey)}`
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    L.tileLayer(basemapUrl, {
+      attribution: cartoKey
+        ? '&copy; OpenStreetMap contributors &copy; CARTO'
+        : '&copy; OpenStreetMap contributors',
+      subdomains: cartoKey ? 'abcd' : 'abc',
+      maxZoom: 20,
+    }).addTo(map);
 
     const initialCenter = selectionSource
       ? getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom)
