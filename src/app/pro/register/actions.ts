@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { getAdminAuth, getAdminFirestore } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { slugify } from '@/lib/utils';
 import { extractValidCoordinates } from '@/lib/geohash';
@@ -25,26 +25,116 @@ const submissionSchema = z.object({
 });
 
 export async function submitProAction(formData: FormData) {
+  // FormData.get() retourne null lorsqu'un champ optionnel
+  // n'existe pas dans le formulaire (ex. photo non ajoutée).
+  // Zod attend ici des chaînes : on normalise donc systématiquement.
+  const getFormString = (
+    key: string
+  ): string => {
+    const value =
+      formData.get(
+        key
+      );
+
+    return typeof value === 'string'
+      ? value
+      : '';
+  };
   console.log("[SUBMIT-PRO] 🚀 Réception d'une nouvelle demande de référencement.");
   
+  const idToken =
+    getFormString('idToken');
+
+  if (!idToken) {
+    return {
+      error:
+        "Votre session n'a pas pu être vérifiée. Reconnectez-vous puis réessayez.",
+    };
+  }
+
+  let decodedToken;
+
+  try {
+    decodedToken =
+      await getAdminAuth().verifyIdToken(
+        idToken
+      );
+  } catch (error) {
+    console.error(
+      '[SUBMIT-PRO] Token Firebase invalide:',
+      error
+    );
+
+    return {
+      error:
+        "Votre session a expiré. Reconnectez-vous puis réessayez.",
+    };
+  }
+
+  if (
+    decodedToken.email_verified !== true
+  ) {
+    return {
+      error:
+        "Vous devez valider votre adresse e-mail avant d'envoyer une demande de fiche.",
+    };
+  }
+
+  const verifiedEmail =
+    typeof decodedToken.email === 'string'
+      ? decodedToken.email.trim().toLowerCase()
+      : '';
+
+  if (!verifiedEmail) {
+    return {
+      error:
+        "Aucune adresse e-mail valide n'est associée à ce compte.",
+    };
+  }
   const rawData = {
-    businessName: formData.get('name'),
-    categoryRequested: formData.get('category'),
-    appSectionRequested: formData.get('appSection'),
-    addressRaw: formData.get('address'),
-    phone: formData.get('phone'),
-    email: formData.get('email'),
-    website: formData.get('website'),
-    description: formData.get('description'),
-    facebook: formData.get('facebook'),
-    instagram: formData.get('instagram'),
-    hp_field: formData.get('hp_field'),
-    horaires: formData.get('horaires'),
-    imageUrl: formData.get('imageUrl'),
-    googleMapsUrl: formData.get('googleMapsUrl'),
+    businessName:
+      getFormString('name'),
+
+    categoryRequested:
+      getFormString('category'),
+
+    appSectionRequested:
+      getFormString('appSection'),
+
+    addressRaw:
+      getFormString('address'),
+
+    phone:
+      getFormString('phone'),
+
+    email:
+      verifiedEmail,
+
+    website:
+      getFormString('website'),
+
+    description:
+      getFormString('description'),
+
+    facebook:
+      getFormString('facebook'),
+
+    instagram:
+      getFormString('instagram'),
+
+    hp_field:
+      getFormString('hp_field'),
+
+    horaires:
+      getFormString('horaires'),
+
+    imageUrl:
+      getFormString('imageUrl'),
+
+    googleMapsUrl:
+      getFormString('googleMapsUrl'),
   };
 
-  console.log('[SUBMIT-PRO] rawData reçu:', JSON.stringify(rawData));
   console.log('[SUBMIT-PRO] rawData reçu:', JSON.stringify(rawData));
   const validated = submissionSchema.safeParse(rawData);
 

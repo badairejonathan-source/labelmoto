@@ -44,11 +44,9 @@ const VILLES_FOOTER = [
 
 const Footer = () => {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
   useEffect(() => {
-    setMounted(true);
     setCurrentYear(new Date().getFullYear());
   }, []);
 
@@ -57,21 +55,89 @@ const Footer = () => {
   const proRegisterLink = "/login?callbackUrl=/pro/register";
 
   return (
-    <footer className="bg-muted/30 border-t border-border/50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-sm">
+    <footer className="border-t border-border/50 bg-muted/30">
+      <div
+        className="
+          container
+          mx-auto
+          px-4
+          pt-1
+          pb-[72px]
+          text-sm
+          sm:px-6
+          md:py-12
+          lg:px-8
+        "
+      >
+        {/* ===================================================
+            GARAGES MOTO PAR VILLE
+            =================================================== */}
+        <div
+          className="
+            mb-6
+            border-b
+            border-border/50
+            pb-6
+            md:mb-10
+            md:pb-10
+          "
+        >
+          <h3
+            className="
+              mb-3
+              flex
+              items-center
+              gap-2
+              text-[9px]
+              font-bold
+              uppercase
+              tracking-[0.16em]
+              text-foreground
+              md:mb-5
+              md:text-[10px]
+              md:font-black
+              md:tracking-[0.2em]
+            "
+          >
+            <span
+              className="
+                text-brand
+              "
+              aria-hidden="true"
+            >
+              🏍
+            </span>
 
-        {/* ── Section villes ── */}
-        <div className="mb-10 pb-10 border-b border-border/50">
-          <h3 className="font-black text-foreground mb-5 uppercase text-[10px] tracking-[0.2em] flex items-center gap-2">
-            <span className="text-brand">🏍️</span>
             Garages moto par ville
           </h3>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+
+          <div
+            className="
+              flex
+              flex-wrap
+              gap-x-3
+              gap-y-1.5
+              md:gap-x-4
+              md:gap-y-2
+            "
+          >
             {VILLES_FOOTER.map(({ slug, name }) => (
               <Link
                 key={slug}
                 href={`/garages-moto/${slug}`}
-                className="text-muted-foreground hover:text-brand transition-colors font-bold text-[9px] uppercase tracking-widest whitespace-nowrap"
+                className="
+                  whitespace-nowrap
+                  text-[8px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.08em]
+                  text-muted-foreground
+                  transition-colors
+                  hover:text-brand
+                  md:text-[9px]
+                  md:font-bold
+                  md:tracking-widest
+                "
               >
                 {name}
               </Link>
@@ -79,87 +145,837 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* ── Colonnes principales ── */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          <div className="md:col-span-1 space-y-4">
-            <div className="w-48 sm:w-56 shrink-0">
+        {/* ===================================================
+            IDENTITE LABELMOTO
+            =================================================== */}
+        <div
+          className="
+            mb-5
+            text-center
+            md:hidden
+          "
+        >
+          <div
+            className="
+              mx-auto
+              w-36
+            "
+          >
+            <LabelMotoLogo noBubble />
+          </div>
+
+          <p
+            className="
+              mx-auto
+              mt-4
+              max-w-[330px]
+              text-center
+              text-[10px]
+              font-medium
+              leading-[1.55]
+              text-muted-foreground
+            "
+          >
+            Label Moto est l&apos;annuaire national indépendant des
+            motards en France. Nous référençons concessions, ateliers
+            et relais pour simplifier votre passion.
+          </p>
+
+          <div
+            className="
+              mt-3
+              flex
+              items-center
+              justify-center
+              gap-1.5
+              text-[8px]
+              font-bold
+              uppercase
+              tracking-[0.12em]
+              text-brand
+            "
+          >
+            <Shield
+              className="
+                h-3
+                w-3
+              "
+            />
+
+            <span>
+              Plateforme de confiance
+            </span>
+          </div>
+        </div>
+
+        {/* ===================================================
+            ACCORDEONS MOBILE
+            =================================================== */}
+        <div
+          className="
+            mb-6
+            border-y
+            border-border/50
+            md:hidden
+          "
+        >
+          {/* A PROPOS */}
+          <details
+            className="
+              group
+              border-b
+              border-border/50
+            "
+          >
+            <summary
+              className="
+                relative
+                flex
+                cursor-pointer
+                list-none
+                items-center
+                justify-center
+                py-3.5
+                text-[9px]
+                font-bold
+                uppercase
+                tracking-[0.16em]
+                text-foreground
+                [&::-webkit-details-marker]:hidden
+              "
+            >
+              <span>
+                À propos
+              </span>
+
+              <span
+                className="
+                  absolute
+                  right-0
+                  text-lg
+                  font-light
+                  leading-none
+                  text-brand
+                  transition-transform
+                  duration-200
+                  group-open:rotate-45
+                "
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </summary>
+
+            <ul
+              className="
+                space-y-3
+                pb-4
+                text-center
+              "
+            >
+              <li>
+                <Link
+                  href="/about"
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Notre mission
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/selection"
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  La Méthode
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/contact"
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Contactez-nous
+                </Link>
+              </li>
+            </ul>
+          </details>
+
+          {/* RESSOURCES */}
+          <details
+            className="
+              group
+              border-b
+              border-border/50
+            "
+          >
+            <summary
+              className="
+                relative
+                flex
+                cursor-pointer
+                list-none
+                items-center
+                justify-center
+                py-3.5
+                text-[9px]
+                font-bold
+                uppercase
+                tracking-[0.16em]
+                text-foreground
+                [&::-webkit-details-marker]:hidden
+              "
+            >
+              <span>
+                Ressources
+              </span>
+
+              <span
+                className="
+                  absolute
+                  right-0
+                  text-lg
+                  font-light
+                  leading-none
+                  text-brand
+                  transition-transform
+                  duration-200
+                  group-open:rotate-45
+                "
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </summary>
+
+            <ul
+              className="
+                space-y-3
+                pb-4
+                text-center
+              "
+            >
+              <li>
+                <Link
+                  href="/info"
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Guides &amp; Conseils
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/map"
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Trouver un pro
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/entretien"
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Catalogues Entretien
+                </Link>
+              </li>
+            </ul>
+          </details>
+
+          {/* ESPACE PRO */}
+          <details
+            className="
+              group
+            "
+          >
+            <summary
+              className="
+                relative
+                flex
+                cursor-pointer
+                list-none
+                items-center
+                justify-center
+                py-3.5
+                text-[9px]
+                font-bold
+                uppercase
+                tracking-[0.16em]
+                text-foreground
+                [&::-webkit-details-marker]:hidden
+              "
+            >
+              <span>
+                Espace pro
+              </span>
+
+              <span
+                className="
+                  absolute
+                  right-0
+                  text-lg
+                  font-light
+                  leading-none
+                  text-brand
+                  transition-transform
+                  duration-200
+                  group-open:rotate-45
+                "
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </summary>
+
+            <ul
+              className="
+                space-y-3
+                pb-4
+                text-center
+              "
+            >
+              <li>
+                <Link
+                  href={proRegisterLink}
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Inscrire mon établissement
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/contact"
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.1em]
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Partenariats
+                </Link>
+              </li>
+            </ul>
+          </details>
+        </div>
+
+        {/* ===================================================
+            VERSION DESKTOP
+            =================================================== */}
+        <div
+          className="
+            mb-12
+            hidden
+            grid-cols-4
+            gap-8
+            md:grid
+          "
+        >
+          <div
+            className="
+              space-y-4
+              md:col-span-1
+            "
+          >
+            <div
+              className="
+                w-48
+                shrink-0
+                sm:w-56
+              "
+            >
               <LabelMotoLogo noBubble />
             </div>
-            <p className="text-[11px] font-bold text-muted-foreground leading-relaxed">
-              Label Moto est l&apos;annuaire national indépendant des motards en France. Nous référençons concessions, ateliers et relais pour simplifier votre passion.
+
+            <p
+              className="
+                text-[11px]
+                font-bold
+                leading-relaxed
+                text-muted-foreground
+              "
+            >
+              Label Moto est l&apos;annuaire national indépendant des
+              motards en France. Nous référençons concessions, ateliers
+              et relais pour simplifier votre passion.
             </p>
-            <div className="flex items-center gap-2 text-brand font-black text-[9px] uppercase tracking-widest">
-              <Shield className="h-3 w-3" />
-              <span>Plateforme de confiance</span>
+
+            <div
+              className="
+                flex
+                items-center
+                gap-2
+                text-[9px]
+                font-black
+                uppercase
+                tracking-widest
+                text-brand
+              "
+            >
+              <Shield
+                className="
+                  h-3
+                  w-3
+                "
+              />
+
+              <span>
+                Plateforme de confiance
+              </span>
             </div>
           </div>
 
           <div>
-            <h3 className="font-black text-foreground mb-4 uppercase text-[10px] tracking-[0.2em]">À propos</h3>
+            <h3
+              className="
+                mb-4
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.2em]
+                text-foreground
+              "
+            >
+              À propos
+            </h3>
+
             <ul className="space-y-3">
-              <li><Link href="/about" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Notre mission</Link></li>
-              <li><Link href="/selection" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">La Méthode</Link></li>
-              <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Contactez-nous</Link></li>
+              <li>
+                <Link
+                  href="/about"
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Notre mission
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/selection"
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  La Méthode
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/contact"
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Contactez-nous
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-black text-foreground mb-4 uppercase text-[10px] tracking-[0.2em]">Ressources</h3>
+            <h3
+              className="
+                mb-4
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.2em]
+                text-foreground
+              "
+            >
+              Ressources
+            </h3>
+
             <ul className="space-y-3">
-              <li><Link href="/info" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Guides &amp; Conseils</Link></li>
-              <li><Link href="/map" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Trouver un pro</Link></li>
-              <li><Link href="/entretien" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Catalogues Entretien</Link></li>
+              <li>
+                <Link
+                  href="/info"
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Guides &amp; Conseils
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/map"
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Trouver un pro
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/entretien"
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Catalogues Entretien
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-black text-foreground mb-4 uppercase text-[10px] tracking-[0.2em]">Espace Pro</h3>
+            <h3
+              className="
+                mb-4
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.2em]
+                text-foreground
+              "
+            >
+              Espace Pro
+            </h3>
+
             <ul className="space-y-3">
-              <li><Link href={proRegisterLink} className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Inscrire mon établissement</Link></li>
-              <li><Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors font-bold uppercase text-[9px] tracking-widest">Partenariats</Link></li>
+              <li>
+                <Link
+                  href={proRegisterLink}
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Inscrire mon établissement
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/contact"
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-widest
+                    text-muted-foreground
+                    transition-colors
+                    hover:text-brand
+                  "
+                >
+                  Partenariats
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* ── Bas de footer ── */}
-        <div className="border-t border-border/50 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-center md:text-left">
+        {/* ===================================================
+            BAS DU FOOTER
+            =================================================== */}
+        <div
+          className="
+            border-t
+            border-border/50
+            pt-5
+            md:pt-8
+          "
+        >
+          <div
+            className="
+              flex
+              flex-col
+              items-center
+              gap-4
+              md:flex-row
+              md:justify-between
+              md:gap-8
+            "
+          >
+            <div
+              className="
+                text-center
+                md:text-left
+              "
+            >
               {currentYear && (
-                <p className="text-[11px] sm:text-xs text-muted-foreground font-bold whitespace-nowrap">
-                  &copy; {currentYear} Label Moto. Plateforme nationale indépendante.
+                <p
+                  className="
+                    text-[9px]
+                    font-semibold
+                    text-muted-foreground
+                    sm:text-xs
+                    md:text-[11px]
+                    md:font-bold
+                  "
+                >
+                  &copy; {currentYear} Label Moto.
+                  <span className="hidden sm:inline">
+                    {' '}Plateforme nationale indépendante.
+                  </span>
                 </p>
               )}
             </div>
-            <div className="flex items-center space-x-6">
-              <span className="sr-only">Réseaux sociaux</span>
+
+            <div
+              className="
+                flex
+                items-center
+                gap-5
+                md:space-x-1
+              "
+            >
+              <span className="sr-only">
+                Réseaux sociaux
+              </span>
+
               <Link
                 href="https://www.instagram.com/labelmoto.fr/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Suivez Label Moto sur Instagram"
-                className="text-muted-foreground hover:text-brand transition-colors"
+                className="
+                  text-muted-foreground
+                  transition-colors
+                  hover:text-brand
+                "
               >
-                <Instagram className="h-5 w-5" />
+                <Instagram
+                  className="
+                    h-4
+                    w-4
+                    md:h-5
+                    md:w-5
+                  "
+                />
               </Link>
-              <button disabled aria-label="Facebook (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30">
-                <Facebook className="h-5 w-5" />
+
+              <button
+                disabled
+                aria-label="Facebook (bientôt disponible)"
+                className="
+                  cursor-not-allowed
+                  text-muted-foreground
+                  opacity-30
+                "
+              >
+                <Facebook
+                  className="
+                    h-4
+                    w-4
+                    md:h-5
+                    md:w-5
+                  "
+                />
               </button>
-              <button disabled aria-label="Youtube (bientôt disponible)" className="text-muted-foreground cursor-not-allowed opacity-30">
-                <Youtube className="h-5 w-5" />
+
+              <button
+                disabled
+                aria-label="Youtube (bientôt disponible)"
+                className="
+                  cursor-not-allowed
+                  text-muted-foreground
+                  opacity-30
+                "
+              >
+                <Youtube
+                  className="
+                    h-4
+                    w-4
+                    md:h-5
+                    md:w-5
+                  "
+                />
               </button>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-8 text-[11px] sm:text-xs font-bold border-t border-dashed border-border/50 pt-6">
-            <Link href="/terms" className="text-muted-foreground hover:text-brand transition-colors">Conditions d&apos;utilisation</Link>
-            <Link href="/privacy" className="text-muted-foreground hover:text-brand transition-colors">Confidentialité &amp; Cookies</Link>
-            <Link href="/legal" className="text-muted-foreground hover:text-brand transition-colors">Mentions Légales</Link>
-            <Link href="/accessibility" className="text-muted-foreground hover:text-brand transition-colors">Accessibilité</Link>
-            <Link href="/contact" className="text-muted-foreground hover:text-brand transition-colors">Contact</Link>
+          <div
+            className="
+              mt-5
+              flex
+              flex-wrap
+              items-center
+              justify-center
+              gap-x-4
+              gap-y-2
+              border-t
+              border-dashed
+              border-border/50
+              pt-4
+              text-[9px]
+              font-medium
+              md:mt-8
+              md:gap-x-6
+              md:gap-y-3
+              md:pt-6
+              md:text-[11px]
+              md:font-bold
+              sm:text-xs
+            "
+          >
+            <Link
+              href="/terms"
+              className="
+                text-muted-foreground
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Conditions d&apos;utilisation
+            </Link>
+
+            <Link
+              href="/privacy"
+              className="
+                text-muted-foreground
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Confidentialité &amp; Cookies
+            </Link>
+
+            <Link
+              href="/legal"
+              className="
+                text-muted-foreground
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Mentions Légales
+            </Link>
+
+            <Link
+              href="/accessibility"
+              className="
+                text-muted-foreground
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Accessibilité
+            </Link>
+
+            <Link
+              href="/contact"
+              className="
+                text-muted-foreground
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Contact
+            </Link>
           </div>
         </div>
-
       </div>
     </footer>
   );

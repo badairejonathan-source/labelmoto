@@ -1,4 +1,5 @@
 'use client';
+import { DEPARTMENTS } from '@/app/lib/departments';
 
 import React, { useState, useEffect, useMemo, Suspense, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
@@ -12,7 +13,7 @@ const UserMenu = dynamic(() => import('@/components/app/user-menu'), {
   loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
 });
 import LabelMotoLogo from '@/components/app/logo';
-import { Compass, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera } from 'lucide-react';
+import { Compass, Search, Crosshair, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera, Menu } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
 import { loadPublicMapPoints } from '@/lib/public-map-points';
@@ -172,6 +173,292 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   );
 };
 
+function compactGeographyValue(
+  value: string
+) {
+  return normalizeText(
+    value
+  ).replace(
+    /[^a-z0-9]/g,
+    ''
+  );
+}
+
+function geographyQueryWithoutBrand(
+  value: string
+) {
+  let compactQuery =
+    compactGeographyValue(
+      value
+    );
+
+  if (!compactQuery) {
+    return '';
+  }
+
+  const brand =
+    MOTORCYCLE_BRANDS.find(
+      candidate => {
+        const compactBrand =
+          compactGeographyValue(
+            candidate
+          );
+
+        return (
+          compactBrand.length >= 3 &&
+          compactQuery.includes(
+            compactBrand
+          )
+        );
+      }
+    );
+
+  if (brand) {
+    const compactBrand =
+      compactGeographyValue(
+        brand
+      );
+
+    compactQuery =
+      compactQuery.replace(
+        compactBrand,
+        ''
+      );
+  }
+
+  return compactQuery;
+}
+
+function resolveCityNameFromQuery(
+  value: string
+): string | null {
+  const geographyQuery =
+    geographyQueryWithoutBrand(
+      value
+    );
+
+  if (!geographyQuery) {
+    return null;
+  }
+
+  for (
+    const info
+    of Object.values(
+      locationsData
+    )
+  ) {
+    const cities =
+      Array.isArray(
+        (info as any)?.cities
+      )
+        ? (info as any).cities
+        : [];
+
+    for (const city of cities) {
+      if (
+        compactGeographyValue(
+          String(city)
+        ) === geographyQuery
+      ) {
+        return String(
+          city
+        );
+      }
+    }
+  }
+
+  return null;
+}
+
+function compactDepartmentValue(
+  value: string
+) {
+  return normalizeText(
+    value
+  ).replace(
+    /[^a-z0-9]/g,
+    ''
+  );
+}
+
+function resolveDepartmentCodeFromQuery(
+  value: string
+): string | null {
+  let query =
+    compactDepartmentValue(
+      value
+    );
+
+  if (!query) {
+    return null;
+  }
+
+  // ===============================================
+  // RETIRER UNE EVENTUELLE MARQUE
+  //
+  // Honda Gironde -> Gironde
+  // BMW Yvelines   -> Yvelines
+  // ===============================================
+
+  for (
+    const brand
+    of MOTORCYCLE_BRANDS
+  ) {
+    const compactBrand =
+      compactDepartmentValue(
+        brand
+      );
+
+    if (
+      compactBrand.length >= 3 &&
+      query.includes(
+        compactBrand
+      )
+    ) {
+      query =
+        query.replace(
+          compactBrand,
+          ''
+        );
+
+      break;
+    }
+  }
+
+  if (!query) {
+    return null;
+  }
+
+  // ===============================================
+  // DEPARTEMENT EN CHIFFRES
+  // ===============================================
+
+  const upper =
+    query.toUpperCase();
+
+  const codeRegex =
+    /^(0[1-9]|[1-8]\d|9[0-5]|2A|2B|97[1-46])$/;
+
+  if (
+    codeRegex.test(
+      upper
+    )
+  ) {
+    return upper;
+  }
+
+  // ===============================================
+  // EVITER LA CONFUSION VILLE / DEPARTEMENT
+  //
+  // "Paris" reste une ville.
+  // ===============================================
+
+  const isExactCity =
+    Object.values(
+      locationsData
+    ).some(
+      (info: any) =>
+        Array.isArray(
+          info?.cities
+        ) &&
+        info.cities.some(
+          (city: string) =>
+            compactDepartmentValue(
+              city
+            ) ===
+            query
+        )
+    );
+
+  if (isExactCity) {
+    return null;
+  }
+
+  // ===============================================
+  // DEPARTEMENT EN TOUTES LETTRES
+  //
+  // Gironde          -> 33
+  // Yvelines         -> 78
+  // Dordogne         -> 24
+  // Loire-Atlantique -> 44
+  // Val-d'Oise       -> 95
+  // Guadeloupe       -> 971
+  //
+  // Accepte aussi le slug :
+  // bouches-du-rhone, val-d-oise...
+  // ===============================================
+
+  const department =
+    DEPARTMENTS.find(
+      item =>
+        compactDepartmentValue(
+          item.name
+        ) ===
+          query ||
+        compactDepartmentValue(
+          item.slug
+        ) ===
+          query
+    );
+
+  return (
+    department?.code
+      ?.toUpperCase() ||
+    null
+  );
+}
+function isMunicipalArrondissementQuery(
+  value: string
+) {
+  const normalized =
+    normalizeText(
+      value
+    );
+
+  const textMatch =
+    normalized.match(
+      /\b(paris|lyon|marseille)\s+\d{1,2}\s*(?:er|e|eme|ieme)?(?:\s+arrondissement)?\b/
+    ) ||
+    normalized.match(
+      /\b\d{1,2}\s*(?:er|e|eme|ieme)?(?:\s+arrondissement)?\s+(?:de\s+)?(paris|lyon|marseille)\b/
+    );
+
+  if (textMatch) {
+    return true;
+  }
+
+  const postalCode =
+    normalized.match(
+      /\b\d{5}\b/
+    )?.[0];
+
+  if (!postalCode) {
+    return false;
+  }
+
+  const number =
+    Number(
+      postalCode.slice(2)
+    );
+
+  return (
+    (
+      postalCode.startsWith('75') &&
+      number >= 1 &&
+      number <= 20
+    ) ||
+    (
+      postalCode.startsWith('69') &&
+      number >= 1 &&
+      number <= 9
+    ) ||
+    (
+      postalCode.startsWith('13') &&
+      number >= 1 &&
+      number <= 16
+    )
+  );
+}
 function MapPageComponent() {
   const { width } = useWindowSize();
   const { firestore } = useFirebase();
@@ -186,6 +473,9 @@ function MapPageComponent() {
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);
   const [deptCounts, setDeptCounts] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [desktopWhat, setDesktopWhat] = useState('');
+  const [desktopWhere, setDesktopWhere] = useState('');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDetailView, setIsDetailView] = useState(false);
@@ -222,7 +512,13 @@ function MapPageComponent() {
     const initialLng = parseFloat(params.get('lng') || '');
     const initialZoom = parseInt(params.get('zoom') || '');
 
-    setSearchTerm(initialSearch);
+    setSearchTerm(
+      initialSearch
+    );
+
+    setAppliedSearchTerm(
+      initialSearch
+    );
 
     setActiveFilters(
       initialFilter
@@ -263,7 +559,7 @@ function MapPageComponent() {
 
     const params = new URLSearchParams();
 
-    if (searchTerm) params.set('search', searchTerm);
+    if (appliedSearchTerm) params.set('search', appliedSearchTerm);
 
     if (activeFilters.length > 0 && activeFilters.length < 5) {
       params.set('filter', activeFilters.join(','));
@@ -294,20 +590,20 @@ function MapPageComponent() {
         newUrl
       );
     }
-  }, [hasAppliedInitialUrl, searchTerm, activeFilters, selectedId, mapCenter, mapZoom]);
+  }, [hasAppliedInitialUrl, appliedSearchTerm, activeFilters, selectedId, mapCenter, mapZoom]);
 
 
   const isViewportReady = width !== undefined;
   const isMobile = isViewportReady && width < 1024;
   const bottomPadding = isViewportReady && isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 156)) : 0;
-  const leftPadding = isViewportReady && !isMobile ? 544 : 0;
+  const leftPadding = 0;
 
   // L'index national fait plusieurs Mo : inutile de le charger
   // pour la vue nationale tant qu'aucun professionnel n'est demandé.
   const shouldLoadPoints =
     activeFilters.length > 0 ||
     Boolean(selectedId) ||
-    searchTerm.trim().length > 0;
+    appliedSearchTerm.trim().length > 0;
 
   // Index public partagé : aucun scan Firestore pour les marqueurs.
   useEffect(() => {
@@ -344,45 +640,875 @@ function MapPageComponent() {
       .catch(() => {});
   }, []);
 
+  const [
+    selectedAreaFeature,
+    setSelectedAreaFeature,
+  ] = useState<any | null>(null);
+
+  function isPointInsideRing(
+    lng: number,
+    lat: number,
+    ring: number[][]
+  ) {
+    let inside = false;
+
+    for (
+      let i = 0, j = ring.length - 1;
+      i < ring.length;
+      j = i++
+    ) {
+      const xi = ring[i][0];
+      const yi = ring[i][1];
+
+      const xj = ring[j][0];
+      const yj = ring[j][1];
+
+      const intersects =
+        (
+          (yi > lat) !==
+          (yj > lat)
+        ) &&
+        (
+          lng <
+          (
+            (xj - xi) *
+            (lat - yi)
+          ) /
+          (
+            (yj - yi) ||
+            Number.EPSILON
+          ) +
+          xi
+        );
+
+      if (intersects) {
+        inside = !inside;
+      }
+    }
+
+    return inside;
+  }
+
+  function isPointInsidePolygon(
+    lng: number,
+    lat: number,
+    polygon: number[][][]
+  ) {
+    if (
+      !polygon.length ||
+      !isPointInsideRing(
+        lng,
+        lat,
+        polygon[0]
+      )
+    ) {
+      return false;
+    }
+
+    // Les anneaux suivants sont d'eventuels trous.
+    for (
+      let i = 1;
+      i < polygon.length;
+      i++
+    ) {
+      if (
+        isPointInsideRing(
+          lng,
+          lat,
+          polygon[i]
+        )
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function isPointInsideGeoFeature(
+    lng: number,
+    lat: number,
+    feature: any
+  ) {
+    if (
+      !Number.isFinite(lng) ||
+      !Number.isFinite(lat)
+    ) {
+      return false;
+    }
+
+    const geometry =
+      feature?.geometry;
+
+    if (!geometry) {
+      return false;
+    }
+
+    if (
+      geometry.type === 'Polygon'
+    ) {
+      return isPointInsidePolygon(
+        lng,
+        lat,
+        geometry.coordinates
+      );
+    }
+
+    if (
+      geometry.type === 'MultiPolygon'
+    ) {
+      return geometry.coordinates.some(
+        (polygon: number[][][]) =>
+          isPointInsidePolygon(
+            lng,
+            lat,
+            polygon
+          )
+      );
+    }
+
+    return false;
+  }
   const searchIntent = useMemo(() => {
-    if (!searchTerm) return null;
-    const lowerQuery = normalizeText(searchTerm);
-    const tokens = lowerQuery.split(" ");
+    if (!appliedSearchTerm) return null;
+
+    const lowerQuery =
+      normalizeText(appliedSearchTerm);
+
+    const tokens =
+      lowerQuery
+        .split(/\s+/)
+        .filter(Boolean);
+
     let brand: string | null = null;
     let dept: string | null = null;
     let postalCode: string | null = null;
+    let postalDept: string | null = null;
     let city: string | null = null;
+    let cityMatched = false;
 
-    const cpMatch = lowerQuery.match(/\b\d{5}\b/);
-    if (cpMatch) postalCode = cpMatch[0];
+    // ===============================================
+    // CODE POSTAL
+    // ===============================================
 
-    const deptRegex = /^(0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-46])$/;
-    for (const token of tokens) {
-      if (deptRegex.test(token.toUpperCase()) && token.length <= 3) { dept = token.toUpperCase(); break; }
+    const cpMatch =
+      lowerQuery.match(
+        /\b\d{5}\b/
+      );
+
+    if (cpMatch) {
+      postalCode =
+        cpMatch[0];
+
+      postalDept =
+        postalCode.startsWith('97')
+          ? postalCode.substring(0, 3)
+          : postalCode.substring(0, 2);
     }
 
-    brand = MOTORCYCLE_BRANDS.find(b => lowerQuery.includes(normalizeText(b))) || null;
+    // ===============================================
+    // ARRONDISSEMENT
+    //
+    // La détection est faite AVANT celle du département.
+    // ===============================================
 
-    let cityTokens = tokens.filter(t => t !== postalCode && t !== dept && (!brand || !normalizeText(brand).includes(t)));
-    if (cityTokens.length > 0) city = cityTokens.join(" ");
+    const cityFirstArrondissement =
+      lowerQuery.match(
+        /\b(paris|lyon|marseille)\s+(\d{1,2})\s*(?:er|e|eme)?(?:\s+arrondissement)?\b/
+      );
 
-    let targetGeo: { coords: [number, number], zoom: number } | null = null;
-    if (postalCode) {
-      const deptCode = postalCode.substring(0, 2);
-      const loc = Object.entries(locationsData).find(([k]) => k.startsWith(deptCode));
-      if (loc) targetGeo = { coords: (loc[1] as any).center, zoom: 12 };
-    } else if (!dept && city) {
-      for (const [, info] of Object.entries(locationsData)) {
-        const foundCity = (info as any).cities.find((c: string) => normalizeText(c) === city || city?.includes(normalizeText(c)));
-        if (foundCity) { targetGeo = { coords: (info as any).center, zoom: 11 }; break; }
+    const numberFirstArrondissement =
+      lowerQuery.match(
+        /\b(\d{1,2})\s*(?:er|e|eme)?(?:\s+arrondissement)?\s+(?:de\s+)?(paris|lyon|marseille)\b/
+      );
+
+    let arrondissement:
+      {
+        city: string;
+        number: number;
+        postalCode: string;
+        dept: string;
+      } | null = null;
+
+    let arrondissementCity:
+      string | null = null;
+
+    let arrondissementNumber:
+      number | null = null;
+
+    if (cityFirstArrondissement) {
+      arrondissementCity =
+        cityFirstArrondissement[1];
+
+      arrondissementNumber =
+        Number(
+          cityFirstArrondissement[2]
+        );
+    }
+    else if (numberFirstArrondissement) {
+      arrondissementCity =
+        numberFirstArrondissement[2];
+
+      arrondissementNumber =
+        Number(
+          numberFirstArrondissement[1]
+        );
+    }
+
+    const arrondissementConfig:
+      Record<
+        string,
+        {
+          max: number;
+          dept: string;
+          prefix: string;
+        }
+      > = {
+        paris: {
+          max: 20,
+          dept: '75',
+          prefix: '75',
+        },
+        lyon: {
+          max: 9,
+          dept: '69',
+          prefix: '69',
+        },
+        marseille: {
+          max: 16,
+          dept: '13',
+          prefix: '13',
+        },
+      };
+
+    if (
+      arrondissementCity &&
+      arrondissementNumber
+    ) {
+      const config =
+        arrondissementConfig[
+          arrondissementCity
+        ];
+
+      if (
+        config &&
+        arrondissementNumber >= 1 &&
+        arrondissementNumber <= config.max
+      ) {
+        arrondissement = {
+          city:
+            arrondissementCity,
+
+          number:
+            arrondissementNumber,
+
+          dept:
+            config.dept,
+
+          postalCode:
+            `${
+              config.prefix
+            }${
+              String(
+                arrondissementNumber
+              ).padStart(3, '0')
+            }`,
+        };
       }
-    } else if (dept && city) {
-      const loc = Object.entries(locationsData).find(([k]) => k.startsWith(dept));
-      if (loc) targetGeo = { coords: (loc[1] as any).center, zoom: 11 };
     }
 
-    return { brand, dept, postalCode, city, targetGeo };
-  }, [searchTerm]);
+    // ===============================================
+    // DEPARTEMENT
+    //
+    // Paris 13 -> le token 13 est ignoré ici.
+    // "13" seul reste bien Bouches-du-Rhône.
+    // ===============================================
+
+    const deptRegex =
+      /^(0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-46])$/;
+
+    for (const token of tokens) {
+      const upperToken =
+        token.toUpperCase();
+
+      const isArrondissementNumber =
+        Boolean(
+          arrondissement &&
+          token ===
+            String(
+              arrondissement.number
+            )
+        );
+
+      if (isArrondissementNumber) {
+        continue;
+      }
+
+      if (
+        deptRegex.test(
+          upperToken
+        ) &&
+        token.length <= 3
+      ) {
+        dept =
+          upperToken;
+
+        break;
+      }
+    }
+
+    // ===============================================
+    // DEPARTEMENT EN CHIFFRES OU EN LETTRES
+    //
+    // 33 = Gironde
+    // 78 = Yvelines
+    // 24 = Dordogne
+    // ===============================================
+
+    const resolvedDepartmentCode =
+      !arrondissement &&
+      !postalCode
+        ? resolveDepartmentCodeFromQuery(
+            appliedSearchTerm
+          )
+        : null;
+
+    if (
+      !dept &&
+      resolvedDepartmentCode
+    ) {
+      dept =
+        resolvedDepartmentCode;
+    }
+
+    const resolvedCityName =
+      !dept &&
+      !arrondissement &&
+      !postalCode
+        ? resolveCityNameFromQuery(
+            appliedSearchTerm
+          )
+        : null;
+    // ===============================================
+    // MARQUE
+    //
+    // Permet notamment :
+    // CF Moto = CFMOTO
+    // ===============================================
+
+    const compactQuery =
+      lowerQuery.replace(
+        /[^a-z0-9]/g,
+        ''
+      );
+
+    brand =
+      MOTORCYCLE_BRANDS.find(
+        candidate => {
+          const normalizedCandidate =
+            normalizeText(
+              candidate
+            );
+
+          const compactCandidate =
+            normalizedCandidate.replace(
+              /[^a-z0-9]/g,
+              ''
+            );
+
+          return (
+            lowerQuery.includes(
+              normalizedCandidate
+            ) ||
+            (
+              compactCandidate.length >= 3 &&
+              compactQuery.includes(
+                compactCandidate
+              )
+            )
+          );
+        }
+      ) || null;
+
+    const compactBrand =
+      brand
+        ? normalizeText(
+            brand
+          ).replace(
+            /[^a-z0-9]/g,
+            ''
+          )
+        : '';
+
+    const genericMotoTokens =
+      new Set([
+        'moto',
+        'motos',
+        'motard',
+        'motards',
+      ]);
+
+    // ===============================================
+    // VILLE
+    // ===============================================
+
+    if (arrondissement) {
+      city =
+        arrondissement.city;
+
+      cityMatched =
+        true;
+    }
+    else if (dept) {
+      city =
+        null;
+
+      cityMatched =
+        false;
+    }
+    else if (resolvedCityName) {
+      city =
+        normalizeText(
+          resolvedCityName
+        );
+
+      cityMatched =
+        true;
+    }
+    else {
+      const cityTokens =
+        tokens.filter(
+          token => {
+            const compactToken =
+              token.replace(
+                /[^a-z0-9]/g,
+                ''
+              );
+
+            if (
+              postalCode &&
+              token === postalCode
+            ) {
+              return false;
+            }
+
+            if (
+              dept &&
+              token.toUpperCase() === dept
+            ) {
+              return false;
+            }
+
+            if (
+              brand &&
+              compactToken &&
+              compactBrand.includes(
+                compactToken
+              )
+            ) {
+              return false;
+            }
+
+            if (
+              genericMotoTokens.has(
+                token
+              )
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        );
+
+      if (cityTokens.length > 0) {
+        city =
+          cityTokens.join(' ');
+      }
+    }
+
+    // ===============================================
+    // GEO DE SECOURS
+    //
+    // Sur la homepage les lat/lng exacts sont déjà fournis.
+    // Ce bloc sert surtout pour les deep links /map.
+    // ===============================================
+
+    let targetGeo:
+      {
+        coords: [number, number];
+        zoom: number;
+      } | null = null;
+
+    if (arrondissement) {
+      const loc =
+        Object.entries(
+          locationsData
+        ).find(
+          ([key]) =>
+            key.startsWith(
+              arrondissement.dept
+            )
+        );
+
+      if (loc) {
+        targetGeo = {
+          coords:
+            (loc[1] as any).center,
+          zoom: 13,
+        };
+      }
+    }
+    else if (postalCode) {
+      const departmentCode =
+        postalDept ||
+        postalCode.substring(0, 2);
+
+      const loc =
+        Object.entries(
+          locationsData
+        ).find(
+          ([key]) =>
+            key.startsWith(
+              departmentCode
+            )
+        );
+
+      if (loc) {
+        targetGeo = {
+          coords:
+            (loc[1] as any).center,
+          zoom: 12,
+        };
+      }
+    }
+    else if (city) {
+      // IMPORTANT :
+      // locationsData.info.center correspond au département.
+      //
+      // Le centre exact d'une ville est obtenu au moment
+      // de la validation via l'API Adresse.
+    }
+    if (
+      !targetGeo &&
+      dept
+    ) {
+      const loc =
+        Object.entries(
+          locationsData
+        ).find(
+          ([key]) =>
+            key.startsWith(
+              dept
+            )
+        );
+
+      if (loc) {
+        targetGeo = {
+          coords:
+            (loc[1] as any).center,
+          zoom: 9,
+        };
+      }
+    }
+
+    // ===============================================
+    // TEXTE LIBRE
+    // ===============================================
+
+    const freeTextTokens =
+      !brand &&
+      !dept &&
+      !postalCode &&
+      !cityMatched &&
+      !arrondissement
+        ? tokens.filter(
+            token =>
+              !genericMotoTokens.has(
+                token
+              )
+          )
+        : [];
+
+    return {
+      brand,
+      dept,
+      postalCode,
+      postalDept,
+      city,
+      cityMatched,
+      arrondissement,
+      targetGeo,
+      freeTextTokens,
+    };
+  }, [appliedSearchTerm]);
+  const selectedAreaMeta =
+    useMemo(() => {
+      const current =
+        searchIntent?.arrondissement;
+
+      let city:
+        'paris' |
+        'lyon' |
+        'marseille' |
+        null = null;
+
+      let number:
+        number | null = null;
+
+      if (current) {
+        const normalizedCity =
+          normalizeText(
+            current.city
+          );
+
+        if (
+          normalizedCity === 'paris' ||
+          normalizedCity === 'lyon' ||
+          normalizedCity === 'marseille'
+        ) {
+          city =
+            normalizedCity as
+              'paris' |
+              'lyon' |
+              'marseille';
+
+          number =
+            Number(
+              current.number
+            );
+        }
+      }
+
+      // Un code postal d'arrondissement doit produire
+      // exactement le meme polygone.
+      if (
+        !city &&
+        searchIntent?.postalCode
+      ) {
+        const cp =
+          searchIntent.postalCode;
+
+        const areaNumber =
+          Number(
+            cp.slice(2)
+          );
+
+        if (
+          cp.startsWith('75') &&
+          areaNumber >= 1 &&
+          areaNumber <= 20
+        ) {
+          city = 'paris';
+          number = areaNumber;
+        }
+        else if (
+          cp.startsWith('69') &&
+          areaNumber >= 1 &&
+          areaNumber <= 9
+        ) {
+          city = 'lyon';
+          number = areaNumber;
+        }
+        else if (
+          cp.startsWith('13') &&
+          areaNumber >= 1 &&
+          areaNumber <= 16
+        ) {
+          city = 'marseille';
+          number = areaNumber;
+        }
+      }
+
+      if (
+        !city ||
+        !number
+      ) {
+        return null;
+      }
+
+      if (city === 'paris') {
+        return {
+          city,
+          number,
+          code:
+            `751${
+              String(number).padStart(
+                2,
+                '0'
+              )
+            }`,
+          file:
+            '/arrondissements/paris.geojson',
+        };
+      }
+
+      if (city === 'lyon') {
+        return {
+          city,
+          number,
+          code:
+            `6938${number}`,
+          file:
+            '/arrondissements/lyon.geojson',
+        };
+      }
+
+      return {
+        city,
+        number,
+        code:
+          `132${
+            String(number).padStart(
+              2,
+              '0'
+            )
+          }`,
+        file:
+          '/arrondissements/marseille.geojson',
+      };
+    }, [
+      searchIntent,
+    ]);
+
+  // Charger la limite administrative sélectionnée :
+  // arrondissement OU département.
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadBoundary =
+      async () => {
+        let file:
+          string | null = null;
+
+        let code:
+          string | null = null;
+
+        if (selectedAreaMeta) {
+          file =
+            selectedAreaMeta.file;
+
+          code =
+            selectedAreaMeta.code;
+        }
+        else if (
+          searchIntent?.dept
+        ) {
+          file =
+            '/departements.geojson';
+
+          code =
+            searchIntent.dept;
+        }
+
+        if (
+          !file ||
+          !code
+        ) {
+          setSelectedAreaFeature(
+            null
+          );
+
+          return;
+        }
+
+        try {
+          const response =
+            await fetch(
+              file
+            );
+
+          if (!response.ok) {
+            throw new Error(
+              `GeoJSON ${response.status}`
+            );
+          }
+
+          const data =
+            await response.json();
+
+          if (cancelled) {
+            return;
+          }
+
+          const normalizedCode =
+            String(
+              code
+            ).toUpperCase();
+
+          const feature =
+            data?.features?.find(
+              (candidate: any) =>
+                String(
+                  candidate?.properties?.code ||
+                  ''
+                ).toUpperCase() ===
+                normalizedCode
+            );
+
+          setSelectedAreaFeature(
+            feature ||
+            null
+          );
+        }
+        catch (error) {
+          if (cancelled) {
+            return;
+          }
+
+          console.error(
+            'Erreur chargement limite administrative:',
+            error
+          );
+
+          setSelectedAreaFeature(
+            null
+          );
+        }
+      };
+
+    void loadBoundary();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    selectedAreaMeta,
+    searchIntent?.dept,
+  ]);
+  // Centrer automatiquement une recherche géographique
+  // lorsqu'aucune coordonnée explicite n'est déjà dans l'URL.
+  useEffect(() => {
+    if (!hasAppliedInitialUrl) return;
+    if (!searchIntent?.targetGeo) return;
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    if (
+      params.has('lat') &&
+      params.has('lng')
+    ) {
+      return;
+    }
+
+    setMapCenter(
+      searchIntent.targetGeo.coords
+    );
+
+    setMapZoom(
+      searchIntent.targetGeo.zoom
+    );
+
+    setSelectionSource(
+      'external'
+    );
+  }, [
+    hasAppliedInitialUrl,
+    searchIntent,
+  ]);
 
   // Si on arrive via une fiche (selectedId) sans filtre choisi, activer le filtre de sa collection
   useEffect(() => {
@@ -396,33 +1522,241 @@ function MapPageComponent() {
 
   const filteredPoints = useMemo(() => {
     return points.filter(p => {
-      if (p.appSection === 'both') {
-        if (!activeFilters.includes('shopping') && !activeFilters.includes('service')) return false;
-      } else {
-        if (!activeFilters.includes(p.appSection)) return false;
-      }
-      if (!searchIntent) return true;
+      const hasCategoryFilters =
+        activeFilters.length > 0;
 
-      const { brand, dept, postalCode, targetGeo } = searchIntent;
-      const pDept = getItemDepartment(p);
-      const pBrands = (p.brands || []).map((b: string) => normalizeText(b));
-      const pTitle = normalizeText(p.title);
+      // ===============================================
+      // CATEGORIE
+      // ===============================================
+
+      if (hasCategoryFilters) {
+        if (p.appSection === 'both') {
+          if (
+            !activeFilters.includes('shopping') &&
+            !activeFilters.includes('service')
+          ) {
+            return false;
+          }
+        }
+        else if (
+          !activeFilters.includes(
+            p.appSection
+          )
+        ) {
+          return false;
+        }
+      }
+
+      if (!searchIntent) {
+        return hasCategoryFilters;
+      }
+
+      const {
+        brand,
+        dept,
+        postalCode,
+        postalDept,
+        cityMatched,
+        freeTextTokens,
+      } = searchIntent;
+
+      const pDept =
+        getItemDepartment(p);
+
+      const pBrands =
+        (
+          (p as any).brands ||
+          []
+        ).map(
+          (value: string) =>
+            normalizeText(value)
+        );
+
+      const pTitle =
+        normalizeText(
+          p.title || ''
+        );
+
+      const pCategory =
+        normalizeText(
+          (p as any).category || ''
+        );
+
+      const pAddress =
+        normalizeText(
+          (p as any).address ||
+          (p as any).addr ||
+          ''
+        );
+
+      // ===============================================
+      // MARQUE
+      // ===============================================
 
       if (brand) {
-        const normBrand = normalizeText(brand);
-        if (!pTitle.includes(normBrand) && !pBrands.some((b: string) => b.includes(normBrand))) return false;
-      }
-      if (dept && pDept !== dept) return false;
+        const compactBrand =
+          normalizeText(
+            brand
+          ).replace(
+            /[^a-z0-9]/g,
+            ''
+          );
 
-      if (targetGeo && mapBounds && mapZoom >= 11 && (postalCode || searchIntent.city)) {
-        const isInViewport = p.latitude >= mapBounds.getSouth() && p.latitude <= mapBounds.getNorth() &&
-                             p.longitude >= mapBounds.getWest() && p.longitude <= mapBounds.getEast();
-        if (!isInViewport) return false;
+        const compactTitle =
+          pTitle.replace(
+            /[^a-z0-9]/g,
+            ''
+          );
+
+        const compactPointBrands =
+          pBrands.map(
+            value =>
+              value.replace(
+                /[^a-z0-9]/g,
+                ''
+              )
+          );
+
+        const brandMatches =
+          compactTitle.includes(
+            compactBrand
+          ) ||
+          compactPointBrands.some(
+            pointBrand =>
+              pointBrand.includes(
+                compactBrand
+              ) ||
+              compactBrand.includes(
+                pointBrand
+              )
+          );
+
+        if (!brandMatches) {
+          return false;
+        }
       }
+
+      // ===============================================
+      // ARRONDISSEMENT EXACT
+      //
+      // Le contour administratif devient la
+      // source de verite.
+      //
+      // Aucun viewport approximatif.
+      // Aucun simple test de code postal.
+      // ===============================================
+
+      if (selectedAreaMeta) {
+        if (!selectedAreaFeature) {
+          return false;
+        }
+
+        if (
+          !isPointInsideGeoFeature(
+            Number(
+              p.longitude
+            ),
+            Number(
+              p.latitude
+            ),
+            selectedAreaFeature
+          )
+        ) {
+          return false;
+        }
+      }
+      else {
+        // =============================================
+        // DEPARTEMENT CLASSIQUE
+        // =============================================
+
+        if (
+          dept &&
+          pDept !== dept
+        ) {
+          return false;
+        }
+
+        // =============================================
+        // CODE POSTAL CLASSIQUE
+        // hors arrondissement
+        // =============================================
+
+        if (
+          postalDept &&
+          pDept !== postalDept
+        ) {
+          return false;
+        }
+
+        // =============================================
+        // VILLE / CODE POSTAL :
+        // logique viewport existante conservee.
+        // =============================================
+
+        if (
+          mapBounds &&
+          mapZoom >= 11 &&
+          (
+            postalCode ||
+            cityMatched
+          )
+        ) {
+          const isInViewport =
+            p.latitude >=
+              mapBounds.getSouth() &&
+            p.latitude <=
+              mapBounds.getNorth() &&
+            p.longitude >=
+              mapBounds.getWest() &&
+            p.longitude <=
+              mapBounds.getEast();
+
+          if (!isInViewport) {
+            return false;
+          }
+        }
+      }
+
+      // ===============================================
+      // TEXTE LIBRE
+      // ===============================================
+
+      if (
+        freeTextTokens.length > 0
+      ) {
+        const haystack =
+          [
+            pTitle,
+            pCategory,
+            pAddress,
+            ...pBrands,
+          ].join(' ');
+
+        const matchesFreeText =
+          freeTextTokens.every(
+            token =>
+              haystack.includes(
+                token
+              )
+          );
+
+        if (!matchesFreeText) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [points, searchIntent, activeFilters, mapBounds, mapZoom]);
-
+  }, [
+    points,
+    searchIntent,
+    selectedAreaMeta,
+    selectedAreaFeature,
+    activeFilters,
+    mapBounds,
+    mapZoom,
+  ]);
   const listPoints = useMemo(() => {
     return [...filteredPoints]
       .sort((a, b) => {
@@ -459,24 +1793,188 @@ function MapPageComponent() {
   }, [mapCenter]);
 
   const labelPoints = useMemo(() => {
-    if (mapZoom < 13) return [];
-    const gridStep = mapZoom < 14 ? 0.012 : 0.006;
-    const seen = new Set<string>();
-    const results: MapPoint[] = [];
+    // ---------------------------------------------------------
+    // NOMS DES PROFESSIONNELS SELON LE ZOOM
+    //
+    // Plus on zoome, plus le nombre de noms augmente.
+    // Les points visibles et proches du centre sont prioritaires.
+    // ---------------------------------------------------------
 
-    const selected = filteredPoints.find(p => p.id === selectedId);
-    if (selected) {
-      seen.add(`${Math.floor(selected.latitude / gridStep)},${Math.floor(selected.longitude / gridStep)}`);
-      results.push(selected);
+    if (mapZoom < 13) {
+      return [];
     }
-    filteredPoints.forEach(p => {
-      if (p.id === selectedId) return;
-      const key = `${Math.floor(p.latitude / gridStep)},${Math.floor(p.longitude / gridStep)}`;
-      if (!seen.has(key)) { seen.add(key); results.push(p); }
-    });
-    return results;
-  }, [filteredPoints, mapZoom, selectedId]);
 
+    const gridStep =
+      mapZoom < 14
+        ? 0.018
+        : mapZoom < 15
+          ? 0.0075
+          : mapZoom < 16
+            ? 0.003
+            : mapZoom < 17
+              ? 0.0012
+              : 0.0005;
+
+    const maxLabels =
+      mapZoom < 14
+        ? 4
+        : mapZoom < 15
+          ? 7
+          : mapZoom < 16
+            ? 12
+            : mapZoom < 17
+              ? 20
+              : 32;
+
+    const seen =
+      new Set<string>();
+
+    const results: MapPoint[] =
+      [];
+
+    // ---------------------------------------------------------
+    // PROFESSIONNEL SELECTIONNE
+    // Toujours prioritaire.
+    // ---------------------------------------------------------
+
+    const selected =
+      filteredPoints.find(
+        point =>
+          point.id === selectedId
+      );
+
+    if (selected) {
+      const selectedKey =
+        `${Math.floor(
+          selected.latitude /
+            gridStep
+        )},${Math.floor(
+          selected.longitude /
+            gridStep
+        )}`;
+
+      seen.add(
+        selectedKey
+      );
+
+      results.push(
+        selected
+      );
+    }
+
+    // ---------------------------------------------------------
+    // UNIQUEMENT LES POINTS DANS LE VIEWPORT
+    // ---------------------------------------------------------
+
+    const candidates =
+      filteredPoints
+        .filter(point => {
+          if (
+            point.id ===
+            selectedId
+          ) {
+            return false;
+          }
+
+          if (!mapBounds) {
+            return true;
+          }
+
+          return (
+            point.latitude >=
+              mapBounds.getSouth() &&
+            point.latitude <=
+              mapBounds.getNorth() &&
+            point.longitude >=
+              mapBounds.getWest() &&
+            point.longitude <=
+              mapBounds.getEast()
+          );
+        })
+
+        // -----------------------------------------------------
+        // PRIORITE AUX POINTS LES PLUS PROCHES DU CENTRE
+        // -----------------------------------------------------
+
+        .sort((a, b) => {
+          const distanceA =
+            Math.pow(
+              a.latitude -
+                mapCenter[0],
+              2
+            ) +
+            Math.pow(
+              a.longitude -
+                mapCenter[1],
+              2
+            );
+
+          const distanceB =
+            Math.pow(
+              b.latitude -
+                mapCenter[0],
+              2
+            ) +
+            Math.pow(
+              b.longitude -
+                mapCenter[1],
+              2
+            );
+
+          return (
+            distanceA -
+            distanceB
+          );
+        });
+
+    // ---------------------------------------------------------
+    // GRILLE ANTI-SATURATION
+    // ---------------------------------------------------------
+
+    for (
+      const point of candidates
+    ) {
+      if (
+        results.length >=
+        maxLabels
+      ) {
+        break;
+      }
+
+      const key =
+        `${Math.floor(
+          point.latitude /
+            gridStep
+        )},${Math.floor(
+          point.longitude /
+            gridStep
+        )}`;
+
+      if (
+        seen.has(
+          key
+        )
+      ) {
+        continue;
+      }
+
+      seen.add(
+        key
+      );
+
+      results.push(
+        point
+      );
+    }
+
+    return results;
+  }, [
+    filteredPoints,
+    mapZoom,
+    selectedId,
+    mapCenter,
+    mapBounds,
+  ]);
   const handleMarkerClick = useCallback((id: string) => {
     const p = points.find(x => x.id === id);
     if (p) {
@@ -545,7 +2043,7 @@ function MapPageComponent() {
                   : undefined
               }
             >
-              {activeFilters.length === 0 ? 'Choisir un filtre' : 'Catégories actives'}
+              {activeFilters.length === 0 ? (searchTerm.trim() ? 'Recherche active' : 'Choisir un filtre') : 'Catégories actives'}
             </p>
 
             {activeFilters.length === 0 && (
@@ -568,9 +2066,458 @@ function MapPageComponent() {
     return <div className="flex items-center justify-center gap-8"><div className="flex gap-4">{filters.map(renderFilter)}</div></div>;
   };
 
+  async function handleDirectMapSearch(
+    queryOverride?: string
+  ) {
+    const rawQuery =
+      (
+        queryOverride ??
+        searchTerm
+      ).trim();
+
+    if (!rawQuery) {
+      setSearchTerm('');
+      setAppliedSearchTerm('');
+      setSelectedId(null);
+      setIsDetailView(false);
+      setBboxToFit(null);
+      setDeptToFit(null);
+      setSelectedAreaFeature(null);
+      return;
+    }
+
+    setSearchTerm(
+      rawQuery
+    );
+
+    setAppliedSearchTerm(
+      rawQuery
+    );
+
+    setSelectedId(
+      null
+    );
+
+    setIsDetailView(
+      false
+    );
+
+    setBboxToFit(
+      null
+    );
+
+    setDeptToFit(
+      null
+    );
+
+    setSelectedAreaFeature(
+      null
+    );
+
+    setSelectionSource(
+      'external'
+    );
+
+    // ===============================================
+    // DEPARTEMENT
+    //
+    // Exactement le même chemin :
+    //
+    // 33
+    // Gironde
+    // Honda 33
+    // Honda Gironde
+    // ===============================================
+
+    const departmentCode =
+      resolveDepartmentCodeFromQuery(
+        rawQuery
+      );
+
+    if (departmentCode) {
+      setDeptToFit(
+        departmentCode
+      );
+
+      return;
+    }
+
+    // ===============================================
+    // ARRONDISSEMENT
+    //
+    // Le polygone officiel prend ensuite le relais.
+    // ===============================================
+
+    if (
+      isMunicipalArrondissementQuery(
+        rawQuery
+      )
+    ) {
+      return;
+    }
+
+    const normalizedQuery =
+      normalizeText(
+        rawQuery
+      );
+
+    const postalCode =
+      normalizedQuery.match(
+        /\b\d{5}\b/
+      )?.[0] ||
+      null;
+
+    // ===============================================
+    // CODES POSTAUX GENERIQUES DES GRANDES VILLES
+    //
+    // 75000 -> Paris
+    // 69000 -> Lyon
+    // 13000 -> Marseille
+    //
+    // Les codes d'arrondissements restent gérés
+    // séparément :
+    // 75001-75020
+    // 69001-69009
+    // 13001-13016
+    // ===============================================
+
+    const genericPostalCity =
+      postalCode === '75000'
+        ? 'Paris'
+        : postalCode === '69000'
+          ? 'Lyon'
+          : postalCode === '13000'
+            ? 'Marseille'
+            : null;
+
+    if (genericPostalCity) {
+      try {
+        const params =
+          new URLSearchParams();
+
+        params.set(
+          'q',
+          genericPostalCity
+        );
+
+        params.set(
+          'limit',
+          '1'
+        );
+
+        params.set(
+          'autocomplete',
+          '0'
+        );
+
+        params.set(
+          'type',
+          'municipality'
+        );
+
+        const response =
+          await fetch(
+            `https://data.geopf.fr/geocodage/search?${params.toString()}`
+          );
+
+        if (!response.ok) {
+          console.warn(
+            'Geocodage ville generique impossible :',
+            genericPostalCity
+          );
+
+          return;
+        }
+
+        const data =
+          await response.json();
+
+        const coordinates =
+          data?.features?.[0]
+            ?.geometry
+            ?.coordinates;
+
+        if (
+          !Array.isArray(
+            coordinates
+          ) ||
+          coordinates.length < 2
+        ) {
+          console.warn(
+            'Coordonnees ville generique introuvables :',
+            genericPostalCity
+          );
+
+          return;
+        }
+
+        const lng =
+          Number(
+            coordinates[0]
+          );
+
+        const lat =
+          Number(
+            coordinates[1]
+          );
+
+        if (
+          !Number.isFinite(lat) ||
+          !Number.isFinite(lng)
+        ) {
+          return;
+        }
+
+        setMapCenter([
+          lat,
+          lng,
+        ]);
+
+        // Même niveau que la recherche par nom de ville.
+        setMapZoom(
+          12
+        );
+
+        setSelectionSource(
+          'external'
+        );
+      }
+      catch (error) {
+        console.error(
+          'Erreur geocodage ville generique :',
+          error
+        );
+      }
+
+      return;
+    }
+    // ===============================================
+    // VILLE
+    // ===============================================
+
+    const cityName =
+      resolveCityNameFromQuery(
+        rawQuery
+      );
+
+    const compactQuery =
+      compactGeographyValue(
+        rawQuery
+      );
+
+    const detectedBrand =
+      MOTORCYCLE_BRANDS.find(
+        candidate => {
+          const compactBrand =
+            compactGeographyValue(
+              candidate
+            );
+
+          return (
+            compactBrand.length >= 3 &&
+            compactQuery.includes(
+              compactBrand
+            )
+          );
+        }
+      ) || null;
+
+    let locationQuery:
+      string | null = null;
+
+    if (postalCode) {
+      locationQuery =
+        postalCode;
+    }
+    else if (cityName) {
+      locationQuery =
+        cityName;
+    }
+    else if (!detectedBrand) {
+      // Ville qui ne serait pas encore présente
+      // dans notre index local.
+      locationQuery =
+        rawQuery;
+    }
+
+    // Recherche uniquement par marque :
+    // aucun déplacement de carte.
+    if (!locationQuery) {
+      return;
+    }
+
+    try {
+      const params =
+        new URLSearchParams();
+
+      params.set(
+        'q',
+        locationQuery
+      );
+
+      params.set(
+        'limit',
+        '1'
+      );
+
+      params.set(
+        'autocomplete',
+        '0'
+      );
+
+      if (!postalCode) {
+        params.set(
+          'type',
+          'municipality'
+        );
+      }
+
+      const response =
+        await fetch(
+          `https://data.geopf.fr/geocodage/search?${params.toString()}`
+        );
+
+      if (!response.ok) {
+        console.warn(
+          'Geocodage impossible :',
+          locationQuery
+        );
+
+        return;
+      }
+
+      const data =
+        await response.json();
+
+      const feature =
+        data?.features?.[0];
+
+      const coordinates =
+        feature?.geometry?.coordinates;
+
+      if (
+        !Array.isArray(
+          coordinates
+        ) ||
+        coordinates.length < 2
+      ) {
+        console.warn(
+          'Coordonnees introuvables :',
+          locationQuery
+        );
+
+        return;
+      }
+
+      const lng =
+        Number(
+          coordinates[0]
+        );
+
+      const lat =
+        Number(
+          coordinates[1]
+        );
+
+      if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng)
+      ) {
+        return;
+      }
+
+      setMapCenter([
+        lat,
+        lng,
+      ]);
+
+      setMapZoom(
+        postalCode
+          ? 13
+          : 12
+      );
+
+      setSelectionSource(
+        'external'
+      );
+    }
+    catch (error) {
+      console.error(
+        'Erreur geocodage recherche :',
+        error
+      );
+    }
+  }
   return (
-    <div className="relative w-full h-screen [height:100dvh] overflow-hidden bg-background">
-      <div className="absolute inset-0 z-0">
+    <div className="relative w-full h-screen [height:100dvh] overflow-hidden bg-[#f7f7f5]">
+      {isViewportReady && !isMobile && (
+        <header className="absolute inset-x-0 top-0 z-[1600] h-[80px] border-b border-black/[0.06] bg-white/95 backdrop-blur-xl">
+          <div className="flex h-full items-center px-8">
+            <div className="flex w-[410px] shrink-0 items-center">
+              <LabelMotoLogo
+                noBubble
+                className="w-[150px] border-none bg-transparent px-0 shadow-none"
+              />
+            </div>
+
+            <nav className="flex h-full items-center gap-9 text-[14px] font-bold text-foreground">
+              <a
+                href="/map"
+                className="flex h-full items-center border-b-[3px] border-brand text-brand"
+              >
+                Carte
+              </a>
+
+              <a
+                href="/entretien"
+                className="flex h-full items-center border-b-[3px] border-transparent transition-colors hover:text-brand"
+              >
+                Entretien
+              </a>
+
+              <a
+                href="/info"
+                className="flex h-full items-center border-b-[3px] border-transparent transition-colors hover:text-brand"
+              >
+                Guides & conseils
+              </a>
+
+              <a
+                href="/"
+                className="flex h-full items-center border-b-[3px] border-transparent transition-colors hover:text-brand"
+              >
+                Fiches moto
+              </a>
+            </nav>
+
+            <div className="ml-auto flex items-center gap-3">
+              <Link
+                href="/login"
+                className="text-[12px] font-semibold text-foreground transition-colors hover:text-brand"
+              >
+                Connexion
+              </Link>
+
+              <Link
+                href="/account"
+                aria-label="Menu"
+                className="flex h-10 w-10 items-center justify-center rounded-[0.95rem] bg-white shadow-md transition-all hover:shadow-lg active:scale-95"
+              >
+                <Menu className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </header>
+      )}
+
+      <div
+        className={cn(
+          "absolute z-0",
+          !isViewportReady || isMobile
+            ? "inset-0"
+            : "left-[608px] right-6 top-[104px] bottom-[214px] overflow-hidden rounded-[28px] border border-black/[0.06] bg-[#f1f2f2] shadow-[0_8px_30px_rgba(0,0,0,0.05)]"
+        )}
+      >
         <MapComponent
           points={filteredPoints}
           labelPoints={labelPoints}
@@ -586,18 +2533,19 @@ function MapPageComponent() {
           deptCounts={deptCounts}
           deptToFit={deptToFit}
           bboxToFit={bboxToFit}
+          selectedAreaFeature={selectedAreaFeature}
           isMobile={isMobile}
         />
       </div>
 
       <div
         className={cn(
-          "absolute top-6 z-[1500]",
+          "absolute z-[1500]",
           !isViewportReady
-            ? "left-6 right-6 lg:left-auto lg:right-6 lg:w-[400px]"
+            ? "left-6 right-6 top-6 lg:left-auto lg:right-6 lg:w-[400px]"
             : isMobile
-              ? "left-6 right-6"
-              : "right-6 w-[400px]"
+              ? "left-6 right-6 top-6"
+              : "hidden"
         )}
       >
         <Header
@@ -610,9 +2558,15 @@ function MapPageComponent() {
               setSelectionSource(null);
             }
 
-            setSearchTerm(val);
+            setSearchTerm(
+              val
+            );
+
+            if (!val.trim()) {
+              setAppliedSearchTerm('');
+            }
           }}
-          onSearch={() => setSelectionSource('external')}
+          onSearch={handleDirectMapSearch}
           onSuggestionSelect={(
             lat: number,
             lng: number,
@@ -628,21 +2582,150 @@ function MapPageComponent() {
       </div>
 
       {isViewportReady && !isMobile && (
-        <aside className="absolute top-6 left-6 bottom-6 w-[520px] bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl z-[1000] border border-white/40 flex flex-col overflow-hidden">
-          <div className="px-10 py-8 shrink-0 flex items-center justify-between border-b border-muted/30">
+        <form
+          data-map-home-search
+          onSubmit={(event) => {
+            event.preventDefault();
+
+            const combinedSearch = [
+              desktopWhat.trim(),
+              desktopWhere.trim(),
+            ]
+              .filter(Boolean)
+              .join(' ');
+
+            setSelectedId(null);
+            setIsDetailView(false);
+            setSelectionSource(null);
+
+            if (!combinedSearch) {
+              setAppliedSearchTerm('');
+              return;
+            }
+
+            handleDirectMapSearch(
+              combinedSearch
+            );
+          }}
+          className="absolute left-6 top-[104px] z-[1500] w-[560px] rounded-[1.65rem] border border-black/[0.035] bg-white/[0.97] p-3 shadow-[0_18px_48px_rgba(0,0,0,0.09)]"
+        >
+          <label
+            className="flex min-h-[55px] items-center gap-3 rounded-[1rem] border border-border/75 bg-white px-4"
+          >
+            <Search
+              className="h-[18px] w-[18px] shrink-0 text-brand"
+            />
+
+            <input
+              value={desktopWhat}
+              onChange={(event) => {
+                const value =
+                  event.target.value;
+
+                setDesktopWhat(
+                  value
+                );
+
+                setSelectedId(null);
+                setIsDetailView(false);
+                setSelectionSource(null);
+
+                if (
+                  !value.trim() &&
+                  !desktopWhere.trim()
+                ) {
+                  setAppliedSearchTerm('');
+                }
+              }}
+              placeholder="Que recherchez-vous ?"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+              className="min-w-0 flex-1 bg-transparent text-[14px] font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground md:text-[13px] md:font-bold"
+            />
+          </label>
+
+          <label
+            className="mt-2 flex min-h-[55px] items-center gap-3 rounded-[1rem] border border-border/75 bg-white px-4"
+          >
+            <MapPin
+              className="h-[18px] w-[18px] shrink-0 text-brand"
+            />
+
+            <input
+              value={desktopWhere}
+              onChange={(event) => {
+                const value =
+                  event.target.value;
+
+                setDesktopWhere(
+                  value
+                );
+
+                setSelectedId(null);
+                setIsDetailView(false);
+                setSelectionSource(null);
+
+                if (
+                  !value.trim() &&
+                  !searchTerm.trim()
+                ) {
+                  setAppliedSearchTerm('');
+                }
+              }}
+              placeholder="Où ? Ville ou code postal"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+              className="min-w-0 flex-1 bg-transparent text-[14px] font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground md:text-[13px] md:font-bold"
+            />
+
+            <button
+              type="button"
+              onClick={handleLocate}
+              aria-label="Utiliser ma position"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-brand transition-colors hover:bg-brand/5"
+            >
+              {isLocating ? (
+                <Loader2
+                  className="
+                    h-4
+                    w-4
+                    animate-spin
+                  "
+                />
+              ) : (
+                <Crosshair
+                  className="h-4 w-4"
+                />
+              )}
+            </button>
+          </label>
+
+          <button
+            type="submit"
+            className="mt-2 min-h-[50px] w-full rounded-[0.95rem] bg-brand text-[15px] font-semibold text-white shadow-lg transition-all hover:bg-brand/90 active:scale-[0.99] md:text-[13px] md:font-black"
+          >
+            Rechercher
+          </button>
+        </form>
+      )}
+      {isViewportReady && !isMobile && (
+        <aside className="absolute left-6 top-[310px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
+          <div className="hidden">
             <div className="shrink-0"><LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" /></div>
             <div className="shrink-0"><UserMenu /></div>
           </div>
-          <div className="px-10 py-8 pb-6 shrink-0 space-y-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Catégories actives</p>
+          <div className="mb-3 shrink-0 space-y-3 rounded-[24px] border border-black/[0.06] bg-white p-4 shadow-[0_6px_24px_rgba(0,0,0,0.045)]">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Explorer par catégorie</p>
             <FilterButtons />
           </div>
-          <div ref={listScrollRef} className="flex-1 overflow-y-auto p-10 pt-4 custom-scrollbar">
+          <div ref={listScrollRef} className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
             {isDetailView && selectedId ? (
               <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
             ) : (
               <div className="space-y-4">
-                {activeFilters.length === 0 && !isLoadingPoints && (
+                {activeFilters.length === 0 && !searchTerm.trim() && !isLoadingPoints && (
                   <div className="rounded-3xl border-2 border-dashed border-brand/40 bg-brand/5 px-6 py-5 mb-4">
                     <p className="text-sm font-black uppercase tracking-wide text-brand mb-1">
                       Choisissez un filtre
@@ -712,6 +2795,53 @@ function MapPageComponent() {
         </div>
       )}
       {/* Contrôle DOM/TOM mobile — fixe sur la carte et masqué naturellement par le drawer */}
+      {!isMobile && (
+        <div
+          data-map-ad-space
+          className="
+            absolute
+            bottom-6
+            left-[608px]
+            right-6
+            z-[1000]
+            flex
+            h-[166px]
+            items-center
+            justify-center
+            overflow-hidden
+            rounded-[26px]
+            border
+            border-dashed
+            border-black/10
+            bg-white/70
+          "
+        >
+          <div className="text-center">
+            <p
+              className="
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.28em]
+                text-muted-foreground
+              "
+            >
+              Espace publicitaire
+            </p>
+
+            <p
+              className="
+                mt-2
+                text-[12px]
+                font-medium
+                text-muted-foreground/60
+              "
+            >
+              Emplacement réservé
+            </p>
+          </div>
+        </div>
+      )}
       {isViewportReady && isMobile && (
         <div
           className="fixed left-4 z-[1000]"
@@ -762,10 +2892,11 @@ function MapPageComponent() {
           onClick={handleLocate}
           aria-label="Me localiser"
           className={cn(
-            "fixed right-4 h-12 w-12 rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95",
-            isMobile ? "z-[1000]" : "z-[1200]"
+            isMobile
+              ? "fixed right-4 h-12 w-12 rounded-full bg-white shadow-xl border-2 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[1000]"
+              : "absolute right-10 bottom-[230px] z-[1200] flex h-10 w-10 items-center justify-center rounded-[14px] border border-black/[0.06] bg-white/95 shadow-lg transition-all hover:scale-105 active:scale-95"
           )}
-          style={{ bottom: isMobile ? '148px' : '24px' }}
+          style={isMobile ? { bottom: '148px' } : undefined}
         >
           {isLocating ? <Loader2 className="h-5 w-5 text-brand animate-spin" /> : locateError ? <span className="text-red-500 font-black text-sm">X</span> : <Compass className="h-5 w-5 text-brand" />}
         </button>
@@ -774,13 +2905,13 @@ function MapPageComponent() {
         <button
           type="button"
           onClick={() => { setMapCenter([46.6, 2.4]); setMapZoom(6); setSelectionSource('external'); }}
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[1200] px-5 py-3 rounded-full bg-brand text-white shadow-xl text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
+          className="absolute bottom-[274px] left-[624px] z-[1200] rounded-[12px] bg-brand px-4 py-2.5 text-[9px] font-black uppercase tracking-[0.07em] text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
         >
           ← Retour France métropolitaine
         </button>
       )}
       {isViewportReady && !isMobile && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1200] flex gap-2">
+        <div className="absolute bottom-[230px] left-[624px] z-[1200] flex gap-2">
           {[
             { label: "La Reunion", center: [-21.1, 55.5] as [number, number], zoom: 10 },
             { label: "Martinique", center: [14.6, -61.0] as [number, number], zoom: 10 },
@@ -788,7 +2919,7 @@ function MapPageComponent() {
           ].map(t => (
             <button key={t.label} type="button"
               onClick={() => { setMapCenter(t.center); setMapZoom(t.zoom); setSelectionSource('external'); }}
-              className="px-3 py-2 rounded-full bg-white/95 shadow-md border border-border text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand hover:border-brand transition-all min-h-[36px]"
+              className="min-h-[34px] rounded-[12px] border border-black/[0.07] bg-white/95 px-3 py-2 text-[9px] font-bold uppercase tracking-[0.07em] text-muted-foreground shadow-md transition-all hover:border-brand/40 hover:text-brand hover:shadow-lg active:scale-95"
             >{t.label}</button>
           ))}
         </div>

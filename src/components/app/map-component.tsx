@@ -9,6 +9,7 @@ import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { MapPoint } from '@/lib/types';
 
+
 interface DeptCounts {
   [code: string]: { total: number; concessions: number; associations: number; relais: number };
 }
@@ -33,6 +34,7 @@ interface MapComponentProps {
   deptCounts?: DeptCounts | null;
   deptToFit?: string | null;
   bboxToFit?: [number, number, number, number] | null; // [west, south, east, north]
+  selectedAreaFeature?: any | null;
   isMobile?: boolean;
 }
 
@@ -63,7 +65,7 @@ const MapComponent = ({
   onMarkerClick, onMapClick, onMapChange,
   onUserInteraction, bottomPadding = 0, leftPadding = 0,
   isLocating = false, onLocateEnd = () => {}, onLocateError = () => {}, onLocationFound = () => {},
-  selectionSource, deptCounts = null, deptToFit = null, bboxToFit = null, isMobile = false
+  selectionSource, deptCounts = null, deptToFit = null, bboxToFit = null, selectedAreaFeature = null, isMobile = false
 }: MapComponentProps) => {
 
   const mapRef = useRef<L.Map | null>(null);
@@ -74,6 +76,7 @@ const MapComponent = ({
   const geojsonLayerRef = useRef<L.GeoJSON | null>(null);
   const labelMarkersRef = useRef<L.Marker[]>([]);
   const geojsonDataRef = useRef<any>(null);
+  const selectedAreaLayerRef = useRef<L.GeoJSON | null>(null);
   const currentZoomRef = useRef<number>(zoom);
   // Marqueurs affiches independamment du seuil de zoom apres selection d'un departement
   const [markersUnlocked, setMarkersUnlocked] = useState(false);
@@ -92,11 +95,18 @@ const MapComponent = ({
       zoomControl: false,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }).addTo(map);
+    // Fond raster clair natif Leaflet.
+    // Aucun WebGL et aucun bridge MapLibre.
+    L.tileLayer(
+      'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
+      {
+        maxZoom: 20,
+        attribution:
+          '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>, ' +
+          '&copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> ' +
+          '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+      }
+    ).addTo(map);
 
     const initialCenter = selectionSource
       ? getOffsettedCenter(map, center, leftPadding, bottomPadding, zoom)
@@ -567,18 +577,186 @@ const MapComponent = ({
     markersUnlocked,
   ]);
 
+  // ==========================================================
+  // ARRONDISSEMENT SELECTIONNE
+  //
+  // Calque indépendant du GeoJSON départemental.
+  // ==========================================================
+
+  useEffect(() => {
+    const map =
+      mapRef.current;
+
+    if (!map) {
+      return;
+    }
+
+    // Retirer l'ancienne zone.
+    if (
+      selectedAreaLayerRef.current
+    ) {
+      try {
+        if (
+          map.hasLayer(
+            selectedAreaLayerRef.current
+          )
+        ) {
+          map.removeLayer(
+            selectedAreaLayerRef.current
+          );
+        }
+      }
+      catch {}
+
+      selectedAreaLayerRef.current =
+        null;
+    }
+
+    if (!selectedAreaFeature) {
+      return;
+    }
+
+    const layer =
+      L.geoJSON(
+        selectedAreaFeature,
+        {
+          interactive: false,
+
+          style: {
+            color: '#f97316',
+            weight: 3,
+            opacity: 0.95,
+
+            fillColor: '#f97316',
+            fillOpacity: 0.10,
+
+            lineCap: 'round',
+            lineJoin: 'round',
+          },
+        }
+      );
+
+    layer.addTo(
+      map
+    );
+
+    selectedAreaLayerRef.current =
+      layer;
+
+    try {
+      layer.bringToFront();
+    }
+    catch {}
+
+    const bounds =
+      layer.getBounds();
+
+    if (!bounds.isValid()) {
+      return;
+    }
+
+    isUpdatingFromProps.current =
+      true;
+
+    if (isMobile) {
+      map.fitBounds(
+        bounds,
+        {
+          paddingTopLeft: [
+            20,
+            70,
+          ],
+
+          paddingBottomRight: [
+            20,
+            bottomPadding + 60,
+          ],
+
+          animate: true,
+          duration: 0.8,
+          maxZoom: 14,
+        }
+      );
+    }
+    else {
+      map.fitBounds(
+        bounds,
+        {
+          paddingTopLeft: [
+            leftPadding + 40,
+            40,
+          ],
+
+          paddingBottomRight: [
+            60,
+            40,
+          ],
+
+          animate: true,
+          duration: 0.8,
+          maxZoom: 14,
+        }
+      );
+    }
+
+    // Les marqueurs doivent rester disponibles même
+    // si le fitBounds traverse le seuil choroplèthe.
+    setMarkersUnlocked(
+      true
+    );
+
+    const timer =
+      window.setTimeout(
+        () => {
+          isUpdatingFromProps.current =
+            false;
+
+          if (
+            clusterGroupRef.current
+          ) {
+            map.fire(
+              'zoomend'
+            );
+          }
+        },
+        900
+      );
+
+    return () => {
+      window.clearTimeout(
+        timer
+      );
+    };
+  }, [
+    selectedAreaFeature,
+    leftPadding,
+    bottomPadding,
+    isMobile,
+  ]);
   // Centrage + zoom au clic marqueur
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !selectionSource) return;
 
     isUpdatingFromProps.current = true;
-    const targetZoom = selectionSource === 'marker' ? Math.max(map.getZoom(), 14) : map.getZoom();
+    const targetZoom =
+      selectionSource === 'marker'
+        ? Math.max(
+            map.getZoom(),
+            14
+          )
+        : zoom;
     const finalCenter = getOffsettedCenter(map, center, leftPadding, bottomPadding, targetZoom);
     map.flyTo(finalCenter, targetZoom, { duration: 0.8 });
 
     setTimeout(() => { isUpdatingFromProps.current = false; }, 1000);
-  }, [center, leftPadding, bottomPadding, selectionSource]);
+  }, [
+    center,
+    zoom,
+    leftPadding,
+    bottomPadding,
+    selectionSource,
+  ]);
 
   useEffect(() => {
     const map = mapRef.current;

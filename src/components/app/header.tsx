@@ -107,6 +107,19 @@ const Header: React.FC<any> = ({
   const geoDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Empêche une ancienne réponse de géocodage
+  // de remplacer les suggestions de la recherche courante.
+  const geoAbortRef =
+    useRef<AbortController | null>(
+      null
+    );
+
+  const geoRequestIdRef =
+    useRef(
+      0
+    );
+  const suggestionsListId = 'labelmoto-search-suggestions';
+
   useEffect(() => {
     if (!isFocused || allDealers.length > 0) return;
 
@@ -149,7 +162,44 @@ const Header: React.FC<any> = ({
   }, []);
 
   const generateSuggestions = useCallback(async (term: string) => {
-    if (term.trim().length < 2) { setSuggestions([]); return; }
+    // Chaque nouvelle recherche invalide immédiatement
+    // les requêtes géographiques précédentes.
+    const requestId =
+      ++geoRequestIdRef.current;
+
+    if (
+      geoDebounceRef.current
+    ) {
+      clearTimeout(
+        geoDebounceRef.current
+      );
+
+      geoDebounceRef.current =
+        null;
+    }
+
+    if (
+      geoAbortRef.current
+    ) {
+      geoAbortRef.current.abort();
+
+      geoAbortRef.current =
+        null;
+    }
+
+    setIsLoadingGeo(
+      false
+    );
+
+    if (
+      term.trim().length < 2
+    ) {
+      setSuggestions(
+        []
+      );
+
+      return;
+    }
 
     const raw = term.trim();
     const normalized = normalizeStr(raw);
@@ -244,11 +294,51 @@ const Header: React.FC<any> = ({
     if (cityResults.length < 3 && normalized.length >= 3 && !/^\d+$/.test(raw)) {
       if (geoDebounceRef.current) clearTimeout(geoDebounceRef.current);
       geoDebounceRef.current = setTimeout(async () => {
+        // La recherche a pu changer pendant les 300 ms
+        // de debounce géographique.
+        if (
+          requestId !==
+          geoRequestIdRef.current
+        ) {
+          return;
+        }
+
+        const controller =
+          new AbortController();
+
+        geoAbortRef.current =
+          controller;
         try {
           setIsLoadingGeo(true);
-          const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(raw)}&type=municipality&limit=5&autocomplete=1`);
+          const res =
+            await fetch(
+              `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(raw)}&type=municipality&limit=5&autocomplete=1`,
+              {
+                signal:
+                  controller.signal,
+              }
+            );
+          if (
+            requestId !==
+              geoRequestIdRef.current ||
+            controller.signal.aborted
+          ) {
+            return;
+          }
+
           if (!res.ok) return;
-          const data = await res.json();
+          const data =
+            await res.json();
+
+          // Une réponse arrivée trop tard ne doit jamais
+          // modifier la liste courante.
+          if (
+            requestId !==
+              geoRequestIdRef.current ||
+            controller.signal.aborted
+          ) {
+            return;
+          }
           const geoResults: Suggestion[] = [];
           data.features?.forEach((f: any) => {
             const city = f.properties.city || f.properties.label;
@@ -263,7 +353,12 @@ const Header: React.FC<any> = ({
               geoResults.push({ type: 'city', label: city, subLabel: deptName, lat, lng, zoom: 13, bbox, score: 80 });
             }
           });
-          if (geoResults.length > 0) {
+          if (
+            geoResults.length > 0 &&
+            requestId ===
+              geoRequestIdRef.current &&
+            !controller.signal.aborted
+          ) {
             setSuggestions(prev => {
               const combined = [...geoResults, ...prev];
               const dedup = combined.filter((s, i, arr) =>
@@ -272,63 +367,333 @@ const Header: React.FC<any> = ({
               return dedup.slice(0, 10);
             });
           }
-        } catch (e) {
-        } finally {
-          setIsLoadingGeo(false);
+        }
+        catch (e) {
+          const error =
+            e as Error;
+
+          if (
+            error?.name !==
+            'AbortError'
+          ) {
+            console.error(
+              '[HEADER] Erreur géocodage :',
+              error
+            );
+          }
+        }
+        finally {
+          // Une ancienne requête ne doit pas modifier
+          // le loader d'une recherche plus récente.
+          if (
+            requestId ===
+            geoRequestIdRef.current
+          ) {
+            if (
+              geoAbortRef.current ===
+              controller
+            ) {
+              geoAbortRef.current =
+                null;
+            }
+
+            setIsLoadingGeo(
+              false
+            );
+          }
         }
       }, 300);
     }
   }, [allDealers]);
 
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => generateSuggestions(searchTerm), 150);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [searchTerm, generateSuggestions]);
+    // Dès que le texte change, invalider et annuler
+    // immédiatement l'ancien géocodage.
+    ++geoRequestIdRef.current;
 
-  const handleSuggestionClick = (s: Suggestion) => {
-    const isGeo = s.type === "city" || s.type === "dept" || s.type === "cp" || s.type === "arrondissement";
-    if (isGeo) {
-      onSearchTermChange("");
-    } else {
-      onSearchTermChange(s.label);
+    if (
+      geoDebounceRef.current
+    ) {
+      clearTimeout(
+        geoDebounceRef.current
+      );
+
+      geoDebounceRef.current =
+        null;
     }
-    setShowSuggestions(false);
-    setSelectedIndex(-1);
 
-    if (window.location.pathname !== '/map') {
-      const queryParams = new URLSearchParams();
-      if (s.lat && s.lng) { queryParams.set('lat', s.lat.toString()); queryParams.set('lng', s.lng.toString()); }
-      if (s.zoom) queryParams.set('zoom', s.zoom.toString());
-      if (s.id) queryParams.set('selectedId', s.id);
-      if (s.appSection && s.appSection !== 'both') queryParams.set('filter', s.appSection);
-      queryParams.set('search', s.label);
-      router.push(`/map?${queryParams.toString()}`);
-    } else {
-      // Sur la page /map — déclencher fitBounds via onSuggestionSelect
-      if (onSuggestionSelect && s.lat && s.lng) {
-        setTimeout(() => onSuggestionSelect(s.lat!, s.lng!, s.bbox, s.id, s.appSection), 10);
-      } else {
-        setTimeout(() => onSearch(), 10);
+    if (
+      geoAbortRef.current
+    ) {
+      geoAbortRef.current.abort();
+
+      geoAbortRef.current =
+        null;
+    }
+
+    setIsLoadingGeo(
+      false
+    );
+
+    if (
+      debounceRef.current
+    ) {
+      clearTimeout(
+        debounceRef.current
+      );
+    }
+
+    debounceRef.current =
+      setTimeout(
+        () =>
+          generateSuggestions(
+            searchTerm
+          ),
+        150
+      );
+
+    return () => {
+      if (
+        debounceRef.current
+      ) {
+        clearTimeout(
+          debounceRef.current
+        );
       }
-    }
-  };
+    };
+  }, [
+    searchTerm,
+    generateSuggestions,
+  ]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions || suggestions.length === 0) {
-      if (e.key === 'Enter') { onSearch(); setShowSuggestions(false); }
+  // Nettoyage final lorsque le Header disparaît.
+  useEffect(() => {
+    return () => {
+      if (
+        geoDebounceRef.current
+      ) {
+        clearTimeout(
+          geoDebounceRef.current
+        );
+      }
+
+      if (
+        geoAbortRef.current
+      ) {
+        geoAbortRef.current.abort();
+      }
+    };
+  }, []);
+  const handleSuggestionClick = (
+    s: Suggestion
+  ) => {
+    const isGeo =
+      s.type === 'city' ||
+      s.type === 'dept' ||
+      s.type === 'cp' ||
+      s.type === 'arrondissement';
+
+    // Toujours conserver le libellé visible.
+    // Exemple : Gironde reste affiché "Gironde".
+    onSearchTermChange(
+      s.label
+    );
+
+    setShowSuggestions(
+      false
+    );
+
+    setSelectedIndex(
+      -1
+    );
+
+    if (
+      window.location.pathname !==
+      '/map'
+    ) {
+      const queryParams =
+        new URLSearchParams();
+
+      if (
+        s.lat &&
+        s.lng
+      ) {
+        queryParams.set(
+          'lat',
+          s.lat.toString()
+        );
+
+        queryParams.set(
+          'lng',
+          s.lng.toString()
+        );
+      }
+
+      if (s.zoom) {
+        queryParams.set(
+          'zoom',
+          s.zoom.toString()
+        );
+      }
+
+      if (s.id) {
+        queryParams.set(
+          'selectedId',
+          s.id
+        );
+      }
+
+      if (
+        s.appSection &&
+        s.appSection !== 'both'
+      ) {
+        queryParams.set(
+          'filter',
+          s.appSection
+        );
+      }
+
+      queryParams.set(
+        'search',
+        s.label
+      );
+
+      router.push(
+        `/map?${queryParams.toString()}`
+      );
+
       return;
     }
-    if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setSelectedIndex(prev => Math.max(prev - 1, -1)); }
+
+    // ===============================================
+    // SUR /map :
+    //
+    // Ville / département / CP / arrondissement
+    // utilisent TOUS handleDirectMapSearch.
+    //
+    // Plus de chemin différent via bbox/lat/lng.
+    // ===============================================
+
+    if (isGeo) {
+      setTimeout(
+        () => {
+          onSearch(
+            s.label
+          );
+        },
+        0
+      );
+
+      return;
+    }
+
+    // Professionnel précis :
+    // conserver le centrage exact sur sa fiche.
+    if (
+      onSuggestionSelect &&
+      s.lat &&
+      s.lng
+    ) {
+      setTimeout(
+        () => {
+          onSuggestionSelect(
+            s.lat!,
+            s.lng!,
+            s.bbox,
+            s.id,
+            s.appSection
+          );
+        },
+        0
+      );
+
+      return;
+    }
+
+    setTimeout(
+      () => {
+        onSearch(
+          s.label
+        );
+      },
+      0
+    );
+  };
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (
+      !showSuggestions ||
+      suggestions.length === 0
+    ) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+
+        onSearch(
+          searchTerm
+        );
+
+        setShowSuggestions(
+          false
+        );
+      }
+
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+
+      setSelectedIndex(
+        previous =>
+          Math.min(
+            previous + 1,
+            suggestions.length - 1
+          )
+      );
+    }
+    else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+
+      setSelectedIndex(
+        previous =>
+          Math.max(
+            previous - 1,
+            -1
+          )
+      );
+    }
     else if (e.key === 'Enter') {
       e.preventDefault();
-      if (selectedIndex >= 0 && suggestions[selectedIndex]) handleSuggestionClick(suggestions[selectedIndex]);
-      else { onSearch(); setShowSuggestions(false); }
-    }
-    else if (e.key === 'Escape') { setShowSuggestions(false); setSelectedIndex(-1); }
-  };
 
+      if (
+        selectedIndex >= 0 &&
+        suggestions[selectedIndex]
+      ) {
+        handleSuggestionClick(
+          suggestions[selectedIndex]
+        );
+      }
+      else {
+        onSearch(
+          searchTerm
+        );
+
+        setShowSuggestions(
+          false
+        );
+      }
+    }
+    else if (e.key === 'Escape') {
+      setShowSuggestions(
+        false
+      );
+
+      setSelectedIndex(
+        -1
+      );
+    }
+  };
   const clearSearch = () => {
     onSearchTermChange(''); setSuggestions([]); setShowSuggestions(false); setSelectedIndex(-1);
     inputRef.current?.focus();
@@ -340,6 +705,20 @@ const Header: React.FC<any> = ({
         <Input
           ref={inputRef}
           type="text"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={showSuggestions}
+          aria-controls={
+            showSuggestions
+              ? suggestionsListId
+              : undefined
+          }
+          aria-activedescendant={
+            selectedIndex >= 0
+              ? `${suggestionsListId}-${selectedIndex}`
+              : undefined
+          }
+          aria-label="Rechercher un professionnel, une marque ou une zone"
           placeholder={placeholderText}
           className={cn(
             "rounded-full shadow-2xl bg-white/95 focus:bg-white border-none font-bold transition-all pl-6 md:pl-10 pr-[112px] md:pr-[132px] h-12 md:h-14 text-base",
@@ -354,6 +733,8 @@ const Header: React.FC<any> = ({
         />
         {searchTerm && (
           <button
+            type="button"
+            aria-label="Effacer la recherche"
             onClick={clearSearch}
             className={cn(
               "absolute top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-brand transition-colors z-10",
@@ -366,22 +747,33 @@ const Header: React.FC<any> = ({
           </button>
         )}
         <Button
+          type="button"
+          aria-label="Lancer la recherche"
           className={cn(
             "absolute top-1/2 right-1 -translate-y-1/2 bg-brand rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all ring-2 ring-white",
             pathname === "/map"
               ? "h-[52px] w-[52px] md:h-[56px] md:w-[56px]"
               : "h-[56px] w-[56px] md:h-[64px] md:w-[64px]"
           )}
-          onClick={() => { onSearch(); setShowSuggestions(false); }}
+          onClick={() => { onSearch(searchTerm); setShowSuggestions(false); }}
         >
           <Search className="h-6 w-6 md:h-7 md:w-7" />
         </Button>
       </div>
 
       {showSuggestions && (suggestions.length > 0 || isLoadingGeo) && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[2rem] shadow-2xl z-[1600] max-h-[60vh] overflow-y-auto py-3 border-2 border-white">
+        <div
+          id={suggestionsListId}
+          role="listbox"
+          aria-label="Suggestions de recherche"
+          className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[2rem] shadow-2xl z-[1600] max-h-[60vh] overflow-y-auto py-3 border-2 border-white"
+        >
           {suggestions.map((s, idx) => (
             <button
+              id={`${suggestionsListId}-${idx}`}
+              type="button"
+              role="option"
+              aria-selected={idx === selectedIndex}
               key={idx}
               className={cn("w-full flex items-center gap-4 px-6 py-4 text-left group transition-colors", idx === selectedIndex ? "bg-brand/10" : "hover:bg-muted")}
               onClick={() => handleSuggestionClick(s)}

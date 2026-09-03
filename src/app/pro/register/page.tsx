@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -21,7 +21,27 @@ function RegisterProContent() {
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
+  useEffect(() => {
+    if (isUserLoading) return;
+
+    if (!user) {
+      router.replace(
+        '/login?callbackUrl=/pro/register'
+      );
+      return;
+    }
+
+    if (!user.emailVerified) {
+      router.replace(
+        '/verify-email?callbackUrl=/pro/register'
+      );
+    }
+  }, [
+    user,
+    isUserLoading,
+    router,
+  ]);
   const [horaires, setHoraires] = useState<Record<string, {om:string,fm:string,oa:string,fa:string,ferme:boolean}>>({
     lundi:    {om:'',fm:'',oa:'',fa:'',ferme:false},
     mardi:    {om:'',fm:'',oa:'',fa:'',ferme:false},
@@ -45,11 +65,43 @@ function RegisterProContent() {
     
     const formData = new FormData(e.currentTarget);
     if (!user?.email) {
-      toast({ title: "Erreur", description: "Vous devez être connecté pour soumettre une fiche.", variant: "destructive" });
+      toast({
+        title: "Erreur",
+        description: "Vous devez être connecté pour soumettre une fiche.",
+        variant: "destructive",
+      });
       setIsPending(false);
       return;
     }
-    formData.set('email', user.email);
+
+    if (!user.emailVerified) {
+      toast({
+        title: "E-mail non vérifié",
+        description:
+          "Validez votre adresse e-mail avant d'envoyer une demande de fiche.",
+        variant: "destructive",
+      });
+
+      router.push(
+        '/verify-email?callbackUrl=/pro/register'
+      );
+
+      setIsPending(false);
+      return;
+    }
+
+    formData.set(
+      'email',
+      user.email
+    );
+
+    const idToken =
+      await user.getIdToken(true);
+
+    formData.set(
+      'idToken',
+      idToken
+    );
     const horairesFinal: Record<string,string> = {};
     Object.entries(horaires).forEach(([j,h]) => { horairesFinal[j] = formatHoraire(h); });
     formData.set('horaires', JSON.stringify(horairesFinal));
