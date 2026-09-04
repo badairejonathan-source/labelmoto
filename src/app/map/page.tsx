@@ -28,7 +28,7 @@ import brandLogos from '@/data/brand-logos';
 
 const MOTORCYCLE_BRANDS = [
   "Suzuki", "Yamaha", "Honda", "BMW Motorrad", "BMW", "Kawasaki",
-  "Harley-Davidson", "Triumph", "Kymco", "CF Moto", "Peugeot Motocycles",
+  "Harley-Davidson", "Harley", "Triumph", "Kymco", "CF Moto", "Peugeot Motocycles",
   "Piaggio", "Royal Enfield", "Ducati", "KTM", "Aprilia", "Vespa",
   "Indian", "Moto Guzzi", "SYM", "Can-Am", "MV Agusta", "Norton",
   "Zontes", "VOGE", "Mash", "QJ Motor", "Benelli", "Kove", "Orcal",
@@ -476,7 +476,159 @@ function MapPageComponent() {
   const [desktopWhat, setDesktopWhat] = useState('');
   const [desktopWhere, setDesktopWhere] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const [
+    resolvedProfessionalId,
+    setResolvedProfessionalId,
+  ] = useState<string | null>(null);
+
+  // LABELMOTO CLEAR RESOLVED PROFESSIONAL
+  useEffect(() => {
+    if (
+      !appliedSearchTerm.trim()
+    ) {
+      setResolvedProfessionalId(
+        null
+      );
+    }
+  }, [
+    appliedSearchTerm,
+  ]);
+  const [
+    forceProfessionalTextSearch,
+    setForceProfessionalTextSearch,
+  ] = useState(false);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  // LABELMOTO RECENT SEARCHES
+  const [
+    recentSearches,
+    setRecentSearches,
+  ] = useState<string[]>([]);
+
+  const [
+    recentSearchPanel,
+    setRecentSearchPanel,
+  ] = useState<
+    'mobile' |
+    'desktop' |
+    null
+  >(null);
+
+  const recentSearchStorageKey =
+    'labelmoto-map-recent-searches-v1';
+
+  useEffect(() => {
+    try {
+      const raw =
+        window.localStorage.getItem(
+          recentSearchStorageKey
+        );
+
+      if (!raw) {
+        return;
+      }
+
+      const parsed =
+        JSON.parse(raw);
+
+      if (!Array.isArray(parsed)) {
+        return;
+      }
+
+      setRecentSearches(
+        parsed
+          .filter(
+            item =>
+              typeof item ===
+              'string'
+          )
+          .slice(0, 6)
+      );
+    }
+    catch {
+      // Historique invalide :
+      // on repart simplement d'une liste vide.
+    }
+  }, []);
+
+  useEffect(() => {
+    const openFromInput = (
+      target: EventTarget | null
+    ) => {
+      if (
+        !(target instanceof HTMLInputElement)
+      ) {
+        return false;
+      }
+
+      setRecentSearchPanel(
+        window.innerWidth < 1024
+          ? 'mobile'
+          : 'desktop'
+      );
+
+      return true;
+    };
+
+    const handleFocusIn = (
+      event: FocusEvent
+    ) => {
+      openFromInput(
+        event.target
+      );
+    };
+
+    const handlePointerDown = (
+      event: PointerEvent
+    ) => {
+      if (
+        openFromInput(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      const target =
+        event.target instanceof Element
+          ? event.target
+          : null;
+
+      if (
+        target?.closest(
+          '[data-recent-search-root]'
+        )
+      ) {
+        return;
+      }
+
+      setRecentSearchPanel(
+        null
+      );
+    };
+
+    document.addEventListener(
+      'focusin',
+      handleFocusIn
+    );
+
+    document.addEventListener(
+      'pointerdown',
+      handlePointerDown
+    );
+
+    return () => {
+      document.removeEventListener(
+        'focusin',
+        handleFocusIn
+      );
+
+      document.removeEventListener(
+        'pointerdown',
+        handlePointerDown
+      );
+    };
+  }, []);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDetailView, setIsDetailView] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([46.5, 2.2]);
@@ -485,6 +637,75 @@ function MapPageComponent() {
   const [selectionSource, setSelectionSource] = useState<'marker' | 'card' | 'external' | null>(null);
   const [hasAppliedInitialUrl, setHasAppliedInitialUrl] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
+
+  const [brandCitySearch, setBrandCitySearch] =
+    useState<{
+      brand: string;
+      city: string;
+      center: [number, number];
+    } | null>(null);
+
+  const [manualAreaSearchActive, setManualAreaSearchActive] =
+    useState(false);
+
+  // Zone réellement utilisée pour filtrer les professionnels.
+  //
+  // mapBounds = position visible actuelle de la carte
+  // searchAreaBounds = dernière zone validée par la recherche
+  //
+  // Ainsi, déplacer la carte ne modifie plus immédiatement
+  // les marqueurs.
+  const [searchAreaBounds, setSearchAreaBounds] =
+    useState<any>(null);
+
+  const [searchAreaZoom, setSearchAreaZoom] =
+    useState(6);
+
+  const [
+    hasPendingSearchArea,
+    setHasPendingSearchArea,
+  ] = useState(false);
+
+  const [
+    areaSearchActive,
+    setAreaSearchActive,
+  ] = useState(false);
+
+  // Dernière vue réellement atteinte par un déplacement manuel.
+  // Elle reste en attente jusqu'au clic sur le bouton de zone.
+  const pendingMapCenterRef =
+    useRef<[number, number] | null>(null);
+
+  const pendingMapZoomRef =
+    useRef<number | null>(null);
+
+  // LABELMOTO DRAWER IDLE RESET
+  useEffect(() => {
+    const hasSearchOrResult =
+      appliedSearchTerm.trim().length > 0 ||
+      activeFilters.length > 0 ||
+      Boolean(selectedId);
+
+    if (
+      !hasSearchOrResult &&
+      !isDetailView
+    ) {
+      setDrawerHeight(
+        'collapsed'
+      );
+    }
+  }, [
+    appliedSearchTerm,
+    activeFilters.length,
+    selectedId,
+    isDetailView,
+  ]);
+
+  const drawerTouchStartYRef =
+    useRef<number | null>(null);
+
+  const drawerTouchStartedAtTopRef =
+    useRef(false);
   const [deptToFit, setDeptToFit] = useState<string | null>(null);
   const [bboxToFit, setBboxToFit] = useState<[number, number, number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
@@ -595,15 +816,259 @@ function MapPageComponent() {
 
   const isViewportReady = width !== undefined;
   const isMobile = isViewportReady && width < 1024;
-  const bottomPadding = isViewportReady && isMobile ? (drawerHeight === 'full' ? 500 : (drawerHeight === 'half' ? 350 : 156)) : 0;
+
+  // LABELMOTO MAP TOUCH LOCK
+  //
+  // /map n'est pas une page scrollable :
+  // seuls Leaflet, le drawer et la barre horizontale
+  // des catégories peuvent réagir aux gestes tactiles.
+  useEffect(() => {
+    const html =
+      document.documentElement;
+
+    const body =
+      document.body;
+
+    const previous = {
+      htmlOverflow:
+        html.style.overflow,
+      htmlOverscroll:
+        html.style.overscrollBehavior,
+      bodyOverflow:
+        body.style.overflow,
+      bodyOverscroll:
+        body.style.overscrollBehavior,
+      bodyHeight:
+        body.style.height,
+    };
+
+    html.style.overflow =
+      'hidden';
+
+    html.style.overscrollBehavior =
+      'none';
+
+    body.style.overflow =
+      'hidden';
+
+    body.style.overscrollBehavior =
+      'none';
+
+    body.style.height =
+      '100dvh';
+
+    const preventPagePan = (
+      event: TouchEvent
+    ) => {
+      const target =
+        event.target instanceof Element
+          ? event.target
+          : null;
+
+      if (!target) {
+        event.preventDefault();
+        return;
+      }
+
+      // La carte reste manipulable.
+      if (
+        target.closest(
+          '.leaflet-container'
+        )
+      ) {
+        return;
+      }
+
+      // Le drawer reste manipulable.
+      if (
+        target.closest(
+          '[data-mobile-results-drawer]'
+        )
+      ) {
+        return;
+      }
+
+      // Les catégories restent scrollables horizontalement.
+      if (
+        target.closest(
+          '.filter-scroll'
+        )
+      ) {
+        return;
+      }
+
+      // Tout le reste de l'interface est immobile.
+      event.preventDefault();
+    };
+
+    document.addEventListener(
+      'touchmove',
+      preventPagePan,
+      {
+        passive: false,
+      }
+    );
+
+    return () => {
+      document.removeEventListener(
+        'touchmove',
+        preventPagePan
+      );
+
+      html.style.overflow =
+        previous.htmlOverflow;
+
+      html.style.overscrollBehavior =
+        previous.htmlOverscroll;
+
+      body.style.overflow =
+        previous.bodyOverflow;
+
+      body.style.overscrollBehavior =
+        previous.bodyOverscroll;
+
+      body.style.height =
+        previous.bodyHeight;
+    };
+  }, []);
+  const hasDrawerResultContext =
+    appliedSearchTerm.trim().length > 0 ||
+    activeFilters.length > 0 ||
+    Boolean(selectedId);
+
+  const bottomPadding =
+    isViewportReady && isMobile
+      ? (
+          hasDrawerResultContext
+            ? 220
+            : 156
+        )
+      : 0;
   const leftPadding = 0;
 
   // L'index national fait plusieurs Mo : inutile de le charger
   // pour la vue nationale tant qu'aucun professionnel n'est demandé.
+  // ==========================================================
+  // RECHERCHE PUREMENT GEOGRAPHIQUE
+  //
+  // Sans catégorie, marque ou métier explicite :
+  // la recherche sert uniquement à déplacer la carte.
+  //
+  // Rennes / Vannes / Brest / Strasbourg / Lyon / etc.
+  // => aucun professionnel tant qu'un filtre n'est pas choisi.
+  // ==========================================================
+
+  const isPureGeoSearch = useMemo(() => {
+    const raw =
+      appliedSearchTerm.trim();
+
+    if (forceProfessionalTextSearch) {
+      return false;
+    }
+
+    if (!raw) {
+      return false;
+    }
+
+    const normalized =
+      normalizeText(raw);
+
+    const hasBrandIntent =
+      MOTORCYCLE_BRANDS.some(
+        brand => {
+          const normalizedBrand =
+            normalizeText(
+              brand
+            );
+
+          return (
+            normalized ===
+              normalizedBrand ||
+            normalized.includes(
+              normalizedBrand
+            )
+          );
+        }
+      );
+
+    if (hasBrandIntent) {
+      return false;
+    }
+
+    const professionalTerms =
+      [
+        'garage',
+        'garages',
+        'atelier',
+        'ateliers',
+        'concession',
+        'concessions',
+        'concessionnaire',
+        'concessionnaires',
+        'mecanicien',
+        'mecanique',
+        'association',
+        'associations',
+        'relais',
+        'transporteur',
+        'transport',
+        'preparateur',
+        'preparation',
+        'peintre',
+        'peinture',
+        'carrossier',
+        'carrosserie',
+        'sellier',
+        'sellerie',
+        'photographe',
+        'photographie',
+        'equipement',
+        'equipementier',
+        'accessoire',
+        'accessoires',
+        'pieces moto',
+        'location moto',
+      ];
+
+    const hasProfessionalIntent =
+      professionalTerms.some(
+        term => {
+          const normalizedTerm =
+            normalizeText(
+              term
+            );
+
+          return (
+            normalized ===
+              normalizedTerm ||
+            normalized.includes(
+              normalizedTerm
+            )
+          );
+        }
+      );
+
+    if (hasProfessionalIntent) {
+      return false;
+    }
+
+    // Une recherche texte sans intention professionnelle
+    // explicite est traitée comme une localisation.
+    //
+    // Le géocodeur IGN se charge ensuite de décider
+    // si cette localisation existe réellement.
+    return true;
+  }, [
+    appliedSearchTerm,
+    forceProfessionalTextSearch,
+  ]);
   const shouldLoadPoints =
     activeFilters.length > 0 ||
     Boolean(selectedId) ||
-    appliedSearchTerm.trim().length > 0;
+    (
+      appliedSearchTerm.trim().length > 0 &&
+      !isPureGeoSearch
+    );
 
   // Index public partagé : aucun scan Firestore pour les marqueurs.
   useEffect(() => {
@@ -1216,19 +1681,55 @@ function MapPageComponent() {
     // TEXTE LIBRE
     // ===============================================
 
+    // LABELMOTO PROFESSIONAL SEARCH OVERRIDE GEO
+    //
+    // Exemple :
+    // "Atelier 70" correspond à un professionnel.
+    // Le "70" ne doit donc PLUS être interprété
+    // comme le département 70.
+    if (forceProfessionalTextSearch) {
+      dept =
+        null;
+
+      postalCode =
+        null;
+
+      postalDept =
+        null;
+
+      city =
+        null;
+
+      cityMatched =
+        false;
+
+      arrondissement =
+        null;
+
+      targetGeo =
+        null;
+    }
+
     const freeTextTokens =
-      !brand &&
-      !dept &&
-      !postalCode &&
-      !cityMatched &&
-      !arrondissement
+      forceProfessionalTextSearch
         ? tokens.filter(
             token =>
               !genericMotoTokens.has(
                 token
               )
           )
-        : [];
+        : !brand &&
+            !dept &&
+            !postalCode &&
+            !cityMatched &&
+            !arrondissement
+          ? tokens.filter(
+              token =>
+                !genericMotoTokens.has(
+                  token
+                )
+            )
+          : [];
 
     return {
       brand,
@@ -1241,7 +1742,10 @@ function MapPageComponent() {
       targetGeo,
       freeTextTokens,
     };
-  }, [appliedSearchTerm]);
+  }, [
+    appliedSearchTerm,
+    forceProfessionalTextSearch,
+  ]);
   const selectedAreaMeta =
     useMemo(() => {
       const current =
@@ -1520,7 +2024,233 @@ function MapPageComponent() {
     if (section) setActiveFilters([section]);
   }, [selectedId, points, activeFilters.length]);
 
+  // ==========================================================
+  // ARRONDISSEMENT GEOJSON OFFICIEL
+  //
+  // Paris     : 20
+  // Lyon      : 9
+  // Marseille : 16
+  // ==========================================================
+
+  useEffect(() => {
+    const arrondissement =
+      searchIntent?.arrondissement;
+
+    if (!arrondissement) {
+      setSelectedAreaFeature(
+        null
+      );
+
+      return;
+    }
+
+    let cancelled =
+      false;
+
+    const loadArrondissement =
+      async () => {
+        try {
+          const response =
+            await fetch(
+              `/arrondissements/${arrondissement.city}.geojson`,
+              {
+                cache: 'force-cache',
+              }
+            );
+
+          if (!response.ok) {
+            throw new Error(
+              `GeoJSON arrondissement HTTP ${response.status}`
+            );
+          }
+
+          const data =
+            await response.json();
+
+          if (cancelled) {
+            return;
+          }
+
+          const features =
+            Array.isArray(
+              data?.features
+            )
+              ? data.features
+              : [];
+
+          const targetNumber =
+            arrondissement.number;
+
+          const targetPostalCode =
+            arrondissement.postalCode;
+
+          const arrondissementPattern =
+            new RegExp(
+              `\\b0?${targetNumber}\\s*(?:er|e|eme)?\\b`,
+              'i'
+            );
+
+          const feature =
+            features.find(
+              (candidate: any) => {
+                const properties =
+                  candidate?.properties ||
+                  {};
+
+                const directNumberValues =
+                  [
+                    properties.c_ar,
+                    properties.numero,
+                    properties.number,
+                    properties.arrondissement,
+                    properties.numero_arrondissement,
+                    properties.code_arr,
+                    properties.code_ar,
+                  ];
+
+                if (
+                  directNumberValues.some(
+                    value =>
+                      Number(value) ===
+                      targetNumber
+                  )
+                ) {
+                  return true;
+                }
+
+                const directPostalValues =
+                  [
+                    properties.postalCode,
+                    properties.codePostal,
+                    properties.code_postal,
+                    properties.codepostal,
+                    properties.cp,
+                  ];
+
+                if (
+                  directPostalValues.some(
+                    value =>
+                      String(
+                        value ?? ''
+                      ) ===
+                      targetPostalCode
+                  )
+                ) {
+                  return true;
+                }
+
+                return Object.values(
+                  properties
+                ).some(
+                  value => {
+                    const text =
+                      normalizeText(
+                        String(
+                          value ?? ''
+                        )
+                      );
+
+                    if (
+                      text ===
+                      normalizeText(
+                        targetPostalCode
+                      )
+                    ) {
+                      return true;
+                    }
+
+                    return (
+                      text.includes(
+                        'arrondissement'
+                      ) &&
+                      arrondissementPattern.test(
+                        text
+                      )
+                    );
+                  }
+                );
+              }
+            ) ||
+            (
+              features.length >=
+              targetNumber
+                ? features[
+                    targetNumber - 1
+                  ]
+                : null
+            );
+
+          if (!feature) {
+            console.warn(
+              '[MAP] Arrondissement introuvable dans le GeoJSON :',
+              arrondissement
+            );
+
+            setSelectedAreaFeature(
+              null
+            );
+
+            return;
+          }
+
+          setSelectedAreaFeature(
+            feature
+          );
+        }
+        catch (error) {
+          if (cancelled) {
+            return;
+          }
+
+          console.error(
+            '[MAP] Erreur GeoJSON arrondissement :',
+            error
+          );
+
+          setSelectedAreaFeature(
+            null
+          );
+        }
+      };
+
+    loadArrondissement();
+
+    return () => {
+      cancelled =
+        true;
+    };
+  }, [
+    searchIntent?.arrondissement?.city,
+    searchIntent?.arrondissement?.number,
+    searchIntent?.arrondissement?.postalCode,
+  ]);
   const filteredPoints = useMemo(() => {
+
+    // LABELMOTO RESOLVED PROFESSIONAL PRIORITY
+    //
+    // Si le moteur a identifié une fiche exacte,
+    // elle devient la réponse finale.
+    if (resolvedProfessionalId) {
+      const resolvedPoint =
+        points.find(
+          point =>
+            point.id ===
+            resolvedProfessionalId
+        );
+
+      return resolvedPoint
+        ? [resolvedPoint]
+        : [];
+    }
+
+    // GEO SEUL : AUCUN PROFESSIONNEL
+    if (
+      isPureGeoSearch &&
+      activeFilters.length === 0 &&
+      !selectedId
+    ) {
+      return [];
+    }
     return points.filter(p => {
       const hasCategoryFilters =
         activeFilters.length > 0;
@@ -1547,6 +2277,32 @@ function MapPageComponent() {
         }
       }
 
+      // =====================================================
+      // ZONE VALIDEE MANUELLEMENT
+      //
+      // Le déplacement de la carte seul ne change rien.
+      // Ce filtre n'est activé qu'après clic sur :
+      // "Rechercher dans cette zone".
+      // =====================================================
+
+      if (
+        areaSearchActive &&
+        searchAreaBounds
+      ) {
+        const isInsideValidatedArea =
+          p.latitude >=
+            searchAreaBounds.getSouth() &&
+          p.latitude <=
+            searchAreaBounds.getNorth() &&
+          p.longitude >=
+            searchAreaBounds.getWest() &&
+          p.longitude <=
+            searchAreaBounds.getEast();
+
+        if (!isInsideValidatedArea) {
+          return false;
+        }
+      }
       if (!searchIntent) {
         return hasCategoryFilters;
       }
@@ -1695,8 +2451,8 @@ function MapPageComponent() {
         // =============================================
 
         if (
-          mapBounds &&
-          mapZoom >= 11 &&
+          searchAreaBounds &&
+          searchAreaZoom >= 11 &&
           (
             postalCode ||
             cityMatched
@@ -1704,13 +2460,13 @@ function MapPageComponent() {
         ) {
           const isInViewport =
             p.latitude >=
-              mapBounds.getSouth() &&
+              searchAreaBounds.getSouth() &&
             p.latitude <=
-              mapBounds.getNorth() &&
+              searchAreaBounds.getNorth() &&
             p.longitude >=
-              mapBounds.getWest() &&
+              searchAreaBounds.getWest() &&
             p.longitude <=
-              mapBounds.getEast();
+              searchAreaBounds.getEast();
 
           if (!isInViewport) {
             return false;
@@ -1733,7 +2489,32 @@ function MapPageComponent() {
             ...pBrands,
           ].join(' ');
 
-        const matchesFreeText =
+        const compactProfessionalText = (
+          value: string
+        ) =>
+          value
+            .normalize('NFD')
+            .replace(
+              /[\u0300-\u036f]/g,
+              ''
+            )
+            .toLowerCase()
+            .replace(
+              /[^a-z0-9]+/g,
+              ''
+            );
+
+        const compactHaystack =
+          compactProfessionalText(
+            haystack
+          );
+
+        const compactQuery =
+          compactProfessionalText(
+            appliedSearchTerm
+          );
+
+        const matchesTokenSearch =
           freeTextTokens.every(
             token =>
               haystack.includes(
@@ -1741,7 +2522,16 @@ function MapPageComponent() {
               )
           );
 
-        if (!matchesFreeText) {
+        const matchesCompactSearch =
+          compactQuery.length >= 3 &&
+          compactHaystack.includes(
+            compactQuery
+          );
+
+        if (
+          !matchesTokenSearch &&
+          !matchesCompactSearch
+        ) {
           return false;
         }
       }
@@ -1754,11 +2544,363 @@ function MapPageComponent() {
     selectedAreaMeta,
     selectedAreaFeature,
     activeFilters,
-    mapBounds,
-    mapZoom,
+    isPureGeoSearch,
+    selectedId,
+    searchAreaBounds,
+    searchAreaZoom,
+    areaSearchActive,
+    appliedSearchTerm,
+    resolvedProfessionalId,
   ]);
+  // =====================================================
+  // PROXIMITE MARQUE + VILLE
+  //
+  // 40 km en priorité.
+  // Puis 80 km s'il n'existe aucun résultat.
+  // Puis les 3 professionnels les plus proches.
+  // =====================================================
+
+  const brandCityNearbyPoints = useMemo(() => {
+    if (
+      !brandCitySearch ||
+      manualAreaSearchActive
+    ) {
+      return null;
+    }
+
+    const compact = (value: unknown) =>
+      String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '');
+
+    const queryKey =
+      compact(appliedSearchTerm);
+
+    const brandKey =
+      compact(brandCitySearch.brand);
+
+    if (
+      !queryKey ||
+      !brandKey ||
+      !queryKey.includes(brandKey)
+    ) {
+      return null;
+    }
+
+    const brandAliases =
+      brandKey === 'harley' ||
+      brandKey === 'harleydavidson'
+        ? ['harley', 'harleydavidson']
+        : [brandKey];
+
+    const toRadians =
+      (value: number) =>
+        value * Math.PI / 180;
+
+    const distanceKm = (
+      lat1: number,
+      lng1: number,
+      lat2: number,
+      lng2: number
+    ) => {
+      const earthRadiusKm = 6371;
+
+      const dLat =
+        toRadians(lat2 - lat1);
+
+      const dLng =
+        toRadians(lng2 - lng1);
+
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRadians(lat1)) *
+          Math.cos(toRadians(lat2)) *
+          Math.sin(dLng / 2) ** 2;
+
+      return (
+        earthRadiusKm *
+        2 *
+        Math.atan2(
+          Math.sqrt(a),
+          Math.sqrt(1 - a)
+        )
+      );
+    };
+
+    const categoryMatches = (p: MapPoint) => {
+      if (activeFilters.length === 0) {
+        return true;
+      }
+
+      const section =
+        compact((p as any).appSection);
+
+      const categoryText = compact([
+        (p as any).appSection,
+        (p as any).category,
+        (p as any).activite,
+      ].join(' '));
+
+      return activeFilters.some(filter => {
+        if (section === compact(filter)) {
+          return true;
+        }
+
+        if (filter === 'shopping') {
+          return (
+            categoryText.includes('concession') ||
+            categoryText.includes('magasin') ||
+            categoryText.includes('shopping')
+          );
+        }
+
+        if (filter === 'service') {
+          return (
+            categoryText.includes('garage') ||
+            categoryText.includes('atelier') ||
+            categoryText.includes('service')
+          );
+        }
+
+        if (filter === 'association') {
+          return categoryText.includes('association');
+        }
+
+        if (filter === 'relais') {
+          return categoryText.includes('relais');
+        }
+
+        if (filter === 'creator') {
+          return (
+            categoryText.includes('creator') ||
+            categoryText.includes('createur')
+          );
+        }
+
+        return true;
+      });
+    };
+
+    const candidates =
+      points
+        .filter(p => {
+          if (!categoryMatches(p)) {
+            return false;
+          }
+
+          const rawBrands =
+            Array.isArray((p as any).brands)
+              ? (p as any).brands.join(' ')
+              : (p as any).brands;
+
+          const haystack = compact([
+            p.title,
+            (p as any).name,
+            (p as any).brand,
+            (p as any).marque,
+            rawBrands,
+            (p as any).activite,
+          ].join(' '));
+
+          return brandAliases.some(
+            alias =>
+              haystack.includes(alias)
+          );
+        })
+        .map(p => ({
+          point: p,
+          distance: distanceKm(
+            brandCitySearch.center[0],
+            brandCitySearch.center[1],
+            p.latitude,
+            p.longitude
+          ),
+        }))
+        .sort(
+          (a, b) =>
+            a.distance - b.distance
+        );
+
+    const cityKey =
+      compact(
+        brandCitySearch.city
+      );
+
+    const exactCityCandidates =
+      candidates.filter(item => {
+        const p =
+          item.point;
+
+        const locationText =
+          compact([
+            p.title,
+            (p as any).city,
+            (p as any).ville,
+            (p as any).address,
+            (p as any).adresse,
+            (p as any).shortAddress,
+          ].join(' '));
+
+        return (
+          cityKey.length >= 3 &&
+          locationText.includes(
+            cityKey
+          )
+        );
+      });
+
+    const within40 =
+      candidates.filter(
+        item => item.distance <= 40
+      );
+
+    const within80 =
+      candidates.filter(
+        item => item.distance <= 80
+      );
+
+    const selected =
+      exactCityCandidates.length > 0
+        ? exactCityCandidates
+        : within40.length > 0
+          ? within40
+          : within80.length > 0
+            ? within80
+            : candidates.slice(0, 3);
+
+    return selected
+      .slice(0, 12)
+      .map(item => item.point);
+  }, [
+    points,
+    brandCitySearch,
+    manualAreaSearchActive,
+    activeFilters,
+    appliedSearchTerm,
+  ]);
+
+  const effectiveFilteredPoints =
+    brandCityNearbyPoints ??
+    filteredPoints;
+
+  // Ajuste uniquement le zoom pour montrer la périphérie.
+  // Le centre reste la ville demandée.
+  useEffect(() => {
+    if (
+      !brandCitySearch ||
+      manualAreaSearchActive ||
+      !brandCityNearbyPoints?.length
+    ) {
+      return;
+    }
+
+    const first =
+      brandCityNearbyPoints[0];
+
+    const compactLocation =
+      (value: unknown) =>
+        String(value ?? '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '');
+
+    const cityKey =
+      compactLocation(
+        brandCitySearch.city
+      );
+
+    const firstLocationText =
+      compactLocation([
+        first.title,
+        (first as any).city,
+        (first as any).ville,
+        (first as any).address,
+        (first as any).adresse,
+        (first as any).shortAddress,
+      ].join(' '));
+
+    const firstIsInExactCity =
+      cityKey.length >= 3 &&
+      firstLocationText.includes(
+        cityKey
+      );
+
+    if (firstIsInExactCity) {
+      // Yamaha Marseille :
+      // le professionnel existe dans Marseille.
+      // On centre directement le viewport dessus.
+      setMapCenter([
+        first.latitude,
+        first.longitude,
+      ]);
+
+      setMapZoom(13);
+
+      setSelectionSource(
+        'external'
+      );
+
+      setHasPendingSearchArea(
+        false
+      );
+
+      return;
+    }
+
+    // Sinon on conserve la ville comme centre
+    // et on élargit pour trouver la périphérie :
+    // exemple Harley Rennes -> La Mézière.
+    const latDelta =
+      Math.abs(
+        first.latitude -
+        brandCitySearch.center[0]
+      );
+
+    const lngDelta =
+      Math.abs(
+        first.longitude -
+        brandCitySearch.center[1]
+      );
+
+    const approxKm =
+      Math.max(
+        latDelta * 111,
+        lngDelta * 75
+      );
+
+    const targetZoom =
+      approxKm <= 8
+        ? 12
+        : approxKm <= 20
+          ? 10
+          : approxKm <= 40
+            ? 9
+            : approxKm <= 80
+              ? 8
+              : 7;
+
+    setMapZoom(prev =>
+      Math.min(prev, targetZoom)
+    );
+
+    setSelectionSource(
+      'external'
+    );
+
+    setHasPendingSearchArea(
+      false
+    );
+  }, [
+    brandCitySearch,
+    brandCityNearbyPoints,
+    manualAreaSearchActive,
+  ]);
+
   const listPoints = useMemo(() => {
-    return [...filteredPoints]
+    return [...effectiveFilteredPoints]
       .sort((a, b) => {
         if (a.id === selectedId) return -1;
         if (b.id === selectedId) return 1;
@@ -1767,7 +2909,7 @@ function MapPageComponent() {
         return distA - distB;
       })
       .slice(0, 60);
-  }, [filteredPoints, mapCenter, selectedId]);
+  }, [effectiveFilteredPoints, mapCenter, selectedId]);
 
   // Quand une fiche est sélectionnée, elle remonte en tête de liste
   // (cf. tri dans listPoints). On fait suivre le conteneur scrollable
@@ -1992,88 +3134,508 @@ function MapPageComponent() {
     }
     setSelectedId(id);
     setIsDetailView(false);
-    if (isMobile) setDrawerHeight('half');
+    if (isMobile) setDrawerHeight('collapsed');
   }, [points, isMobile]);
 
   const FilterButtons = ({ mobile = false }) => {
+    // L'ancienne barre située dans le drawer mobile
+    // est désactivée : la barre flottante est désormais
+    // commune au mobile et au desktop.
+    if (mobile) {
+      return null;
+    }
+
     const filters = [
-      { id: 'shopping', label: 'CONCESS', icon: Bike },
-      { id: 'service', label: 'ATELIER', icon: Wrench },
-      { id: 'association', label: 'ASSO', icon: Users },
-      { id: 'relais', label: 'RELAIS', icon: Utensils },
-      { id: 'creator', label: 'CRÉATEURS', icon: Camera }
+      { id: 'shopping', label: 'Concessions', icon: Bike },
+      { id: 'service', label: 'Garages', icon: Wrench },
+      { id: 'association', label: 'Associations', icon: Users },
+      { id: 'relais', label: 'Relais motards', icon: Utensils },
+      { id: 'creator', label: 'Créateurs', icon: Camera },
     ];
 
-    const renderFilter = (f: typeof filters[0]) => {
-      const isActive = activeFilters.includes(f.id);
-      return (
-        <button key={f.id} onClick={() => setActiveFilters(prev => prev.includes(f.id) ? prev.filter(x => x !== f.id) : [...prev, f.id])} className="flex flex-col items-center gap-2 group shrink-0">
-          <div className={cn("h-12 w-12 rounded-full flex items-center justify-center transition-all border-2 shadow-sm", isActive ? "bg-brand text-white border-white scale-110 shadow-lg" : "bg-white text-muted-foreground border-transparent hover:border-brand/20")}>
-            <f.icon className="h-6 w-6" />
-          </div>
-          <span className={cn("text-[9px] font-black uppercase tracking-tight leading-none text-center", isActive ? "text-foreground" : "text-muted-foreground")}>{f.label}</span>
-        </button>
-      );
-    };
+    return (
+      <div
+        className="filter-scroll flex w-max items-center gap-2"
+      >
+        {filters.map(filter => {
+          const isActive =
+            activeFilters.includes(
+              filter.id
+            );
 
-    if (mobile) {
+          return (
+            <button
+              key={filter.id}
+              type="button"
+              onClick={() => {
+                setActiveFilters(prev =>
+                  prev.includes(filter.id)
+                    ? prev.filter(
+                        id => id !== filter.id
+                      )
+                    : [...prev, filter.id]
+                );
+              }}
+              className={cn(
+                "flex h-10 shrink-0 items-center gap-2 rounded-full border px-3.5",
+                "text-[12px] font-semibold shadow-sm transition-all active:scale-[0.97]",
+                isActive
+                  ? "border-brand bg-brand text-white shadow-md"
+                  : "border-black/[0.09] bg-white text-[#333] hover:border-brand/35"
+              )}
+            >
+              <filter.icon
+                className="h-4 w-4 shrink-0"
+              />
+
+              <span>
+                {filter.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
+
+  function rememberRecentSearch(
+    query: string
+  ) {
+    const cleaned =
+      query
+        .trim()
+        .replace(
+          /\s+/g,
+          ' '
+        );
+
+    if (!cleaned) {
+      return;
+    }
+
+    setRecentSearches(prev => {
+      const normalized =
+        cleaned.toLocaleLowerCase(
+          'fr'
+        );
+
+      const next = [
+        cleaned,
+        ...prev.filter(
+          item =>
+            item.toLocaleLowerCase(
+              'fr'
+            ) !== normalized
+        ),
+      ].slice(0, 6);
+
+      try {
+        window.localStorage.setItem(
+          recentSearchStorageKey,
+          JSON.stringify(next)
+        );
+      }
+      catch {
+        // La recherche continue même
+        // si localStorage est indisponible.
+      }
+
+      return next;
+    });
+  }
+
+  function clearRecentSearches() {
+    setRecentSearches([]);
+
+    try {
+      window.localStorage.removeItem(
+        recentSearchStorageKey
+      );
+    }
+    catch {
+      // Rien à faire.
+    }
+  }
+
+  function runRecentSearch(
+    query: string
+  ) {
+    setRecentSearchPanel(
+      null
+    );
+
+    if (
+      window.innerWidth < 1024
+    ) {
+      setSearchTerm(
+        query
+      );
+    }
+    else {
+      setDesktopWhat(
+        query
+      );
+
+      setDesktopWhere(
+        ''
+      );
+    }
+
+    void handleDirectMapSearch(
+      query
+    );
+  }
+
+  const RecentSearchesPanel =
+    () => {
+      if (!recentSearchPanel) {
+        return null;
+      }
+
+      const hasActiveSearchText =
+        recentSearchPanel === 'mobile'
+          ? Boolean(
+              searchTerm.trim()
+            )
+          : Boolean(
+              desktopWhat.trim() ||
+              desktopWhere.trim()
+            );
+
+      if (hasActiveSearchText) {
+        return null;
+      }
+
       return (
         <div
+          data-recent-search-root
           className={cn(
-            "relative w-full bg-white rounded-t-[28px] px-2 overflow-visible transition-all duration-300",
-            activeFilters.length === 0
-              ? "min-h-[132px] pt-5 pb-1"
-              : "min-h-[96px] pt-3 pb-0"
+            "fixed z-[2400] overflow-hidden",
+            "rounded-[20px] border border-black/[0.07]",
+            "bg-white shadow-[0_14px_40px_rgba(0,0,0,0.17)]",
+            recentSearchPanel === 'mobile'
+              ? "left-6 right-6 top-[158px]"
+              : "left-6 top-[286px] w-[560px]"
           )}
         >
-          <div className="text-center px-12 mb-2">
-            <p
-              className={cn(
-                "inline-flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300",
-                activeFilters.length === 0
-                  ? "bg-brand text-white rounded-full px-4 py-2 shadow-md animate-bounce motion-reduce:animate-none"
-                  : "text-muted-foreground"
-              )}
-              style={
-                activeFilters.length === 0
-                  ? {
-                      animationDuration: '550ms',
-                      animationIterationCount: 1,
-                    }
-                  : undefined
-              }
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              px-4
+              pb-2
+              pt-3
+            "
+          >
+            <span
+              className="
+                text-[11px]
+                font-semibold
+                text-[#303030]
+              "
             >
-              {activeFilters.length === 0 ? (searchTerm.trim() ? 'Recherche active' : 'Choisir un filtre') : 'Catégories actives'}
-            </p>
+              Recherches récentes
+            </span>
 
-            {activeFilters.length === 0 && (
-              <p className="mt-1.5 text-[10px] font-bold leading-tight text-muted-foreground">
-                Choisissez une catégorie pour afficher les pros
-              </p>
+            {recentSearches.length > 0 && (
+              <button
+                type="button"
+                onClick={
+                  clearRecentSearches
+                }
+                className="
+                  text-[11px]
+                  font-semibold
+                  text-brand
+                "
+              >
+                Effacer
+              </button>
             )}
           </div>
 
-          <button onClick={() => setDrawerHeight(prev => prev === 'collapsed' ? 'half' : (prev === 'full' ? 'half' : 'collapsed'))} className="absolute top-4 right-6 z-[1600] p-2 bg-muted/20 hover:bg-muted/40 rounded-full text-brand transition-all">
-            {drawerHeight === 'collapsed' ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-          </button>
+          {recentSearches.length === 0 ? (
+            <div
+              className="
+                px-4
+                pb-4
+                pt-1
+                text-[12px]
+                text-muted-foreground
+              "
+            >
+              Aucune recherche récente
+            </div>
+          ) : (
+            <div className="pb-2">
+              {recentSearches.map(
+                item => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() =>
+                      runRecentSearch(
+                        item
+                      )
+                    }
+                    className="
+                      flex
+                      w-full
+                      items-center
+                      gap-3
+                      px-4
+                      py-3
+                      text-left
+                      transition-colors
+                      hover:bg-black/[0.035]
+                      active:bg-black/[0.06]
+                    "
+                  >
+                    <span
+                      className="
+                        flex
+                        h-7
+                        w-7
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-black/[0.045]
+                        text-[15px]
+                        text-muted-foreground
+                      "
+                    >
+                      ↺
+                    </span>
 
-          <div className="flex overflow-x-auto gap-4 px-2 pb-1 filter-scroll">
-            {filters.map(f => <div key={f.id} className="flex-shrink-0">{renderFilter(f)}</div>)}
-          </div>
+                    <span
+                      className="
+                        min-w-0
+                        flex-1
+                        truncate
+                        text-[13px]
+                        font-medium
+                        text-[#252525]
+                      "
+                    >
+                      {item}
+                    </span>
+                  </button>
+                )
+              )}
+            </div>
+          )}
         </div>
       );
-    }
-    return <div className="flex items-center justify-center gap-8"><div className="flex gap-4">{filters.map(renderFilter)}</div></div>;
-  };
+    };
 
   async function handleDirectMapSearch(
     queryOverride?: string
   ) {
+        // RESET RESULTAT PROFESSIONNEL PRECEDENT
+    setResolvedProfessionalId(
+      null
+    );
+
+// RESET PROXIMITE MARQUE VILLE
+    setBrandCitySearch(
+      null
+    );
+
+    setManualAreaSearchActive(
+      false
+    );
+
+    // RESET FALLBACK NOM PRO
+    setForceProfessionalTextSearch(
+      false
+    );
+    // RESET RECHERCHE DANS CETTE ZONE
+    //
+    // Une nouvelle recherche explicite reprend la main
+    // sur une éventuelle zone choisie manuellement.
+    setHasPendingSearchArea(
+      false
+    );
+
+    setAreaSearchActive(
+      false
+    );
+
+    setSearchAreaBounds(
+      null
+    );
     const rawQuery =
       (
         queryOverride ??
         searchTerm
       ).trim();
+
+    if (rawQuery) {
+      rememberRecentSearch(
+        rawQuery
+      );
+
+      setRecentSearchPanel(
+        null
+      );
+    }
+
+    // =====================================================
+    // NOM DE PROFESSIONNEL PRIORITAIRE
+    //
+    // Speed Bike 06
+    // speed bike 06
+    // speedbike 06
+    // SPEED-BIKE-06
+    //
+    // => même fiche, avant toute interprétation géographique.
+    // =====================================================
+
+    const compactProfessionalQuery = (
+      value: unknown
+    ) =>
+      String(value ?? '')
+        .normalize('NFD')
+        .replace(
+          /[\u0300-\u036f]/g,
+          ''
+        )
+        .toLowerCase()
+        .replace(
+          /[^a-z0-9]+/g,
+          ''
+        );
+
+    const professionalQueryKey =
+      compactProfessionalQuery(
+        rawQuery
+      );
+
+    if (
+      professionalQueryKey.length >= 3
+    ) {
+      let professionalPoints =
+        points;
+
+      try {
+        const completeProfessionalPoints =
+          (
+            await loadPublicMapPoints()
+          ) as MapPoint[];
+
+        if (
+          completeProfessionalPoints.length > 0
+        ) {
+          professionalPoints =
+            completeProfessionalPoints;
+        }
+      }
+      catch {
+        // Le cache courant reste utilisable
+        // si l'index complet est momentanément indisponible.
+      }
+
+      const exactProfessional =
+        professionalPoints.find(
+          point => {
+            const possibleNames = [
+              point.title,
+              (point as any).name,
+            ];
+
+            return possibleNames.some(
+              value =>
+                compactProfessionalQuery(
+                  value
+                ) ===
+                professionalQueryKey
+            );
+          }
+        );
+
+      if (exactProfessional) {
+        if (
+          professionalPoints.length > 0
+        ) {
+          setPoints(
+            professionalPoints
+          );
+        }
+
+        setForceProfessionalTextSearch(
+          true
+        );
+
+        setAppliedSearchTerm(
+          rawQuery
+        );
+
+        setSearchTerm(
+          rawQuery
+        );
+
+        setSelectedId(
+          exactProfessional.id
+        );
+
+        // RESULTAT PROFESSIONNEL FINAL
+        setResolvedProfessionalId(
+          exactProfessional.id
+        );
+
+        setIsDetailView(
+          false
+        );
+
+        setBboxToFit(
+          null
+        );
+
+        setDeptToFit(
+          null
+        );
+
+        setSelectedAreaFeature(
+          null
+        );
+
+        setAreaSearchActive(
+          false
+        );
+
+        setSearchAreaBounds(
+          null
+        );
+
+        setBrandCitySearch(
+          null
+        );
+
+        setMapCenter([
+          exactProfessional.latitude,
+          exactProfessional.longitude,
+        ]);
+
+        setMapZoom(
+          15
+        );
+
+        setSelectionSource(
+          'external'
+        );
+
+        if (isMobile) {
+          setDrawerHeight(
+            'collapsed'
+          );
+        }
+
+        return;
+      }
+    }
 
     if (!rawQuery) {
       setSearchTerm('');
@@ -2295,11 +3857,6 @@ function MapPageComponent() {
     // VILLE
     // ===============================================
 
-    const cityName =
-      resolveCityNameFromQuery(
-        rawQuery
-      );
-
     const compactQuery =
       compactGeographyValue(
         rawQuery
@@ -2322,6 +3879,57 @@ function MapPageComponent() {
         }
       ) || null;
 
+    // ==========================================================
+    // MARQUE + LOCALISATION
+    //
+    // Honda Rennes -> Rennes
+    // BMW Lyon     -> Lyon
+    // Honda        -> chaine vide, donc aucun déplacement
+    // ==========================================================
+
+    let locationCandidate =
+      rawQuery.trim();
+
+    if (detectedBrand) {
+      const normalizedRaw =
+        normalizeText(
+          rawQuery
+        );
+
+      const normalizedBrand =
+        normalizeText(
+          detectedBrand
+        );
+
+      const escapedBrand =
+        normalizedBrand.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          '\\$&'
+        );
+
+      locationCandidate =
+        normalizedRaw
+          .replace(
+            new RegExp(
+              `(^|\\s)${escapedBrand}(?=\\s|$)`,
+              'g'
+            ),
+            ' '
+          )
+          .replace(
+            /\s+/g,
+            ' '
+          )
+          .trim();
+    }
+
+    const cityName =
+      locationCandidate
+        ? resolveCityNameFromQuery(
+            locationCandidate
+          )
+        : null;
+
     let locationQuery:
       string | null = null;
 
@@ -2333,11 +3941,12 @@ function MapPageComponent() {
       locationQuery =
         cityName;
     }
-    else if (!detectedBrand) {
+    else if (locationCandidate) {
       // Ville qui ne serait pas encore présente
-      // dans notre index local.
+      // dans notre index local :
+      // IGN tentera directement le géocodage.
       locationQuery =
-        rawQuery;
+        locationCandidate;
     }
 
     // Recherche uniquement par marque :
@@ -2383,6 +3992,10 @@ function MapPageComponent() {
           locationQuery
         );
 
+        setForceProfessionalTextSearch(
+          true
+        );
+
         return;
       }
 
@@ -2406,6 +4019,12 @@ function MapPageComponent() {
           locationQuery
         );
 
+        // Ce n'est probablement pas une ville :
+        // on recherche alors ce texte dans les professionnels.
+        setForceProfessionalTextSearch(
+          true
+        );
+
         return;
       }
 
@@ -2424,6 +4043,20 @@ function MapPageComponent() {
         !Number.isFinite(lng)
       ) {
         return;
+      }
+
+      // ACTIVER PROXIMITE MARQUE VILLE
+      // Exemple : Harley Rennes -> centre Rennes,
+      // puis recherche des Harley les plus proches.
+      if (
+        detectedBrand &&
+        !postalCode
+      ) {
+        setBrandCitySearch({
+          brand: detectedBrand,
+          city: locationQuery,
+          center: [lat, lng] as [number, number],
+        });
       }
 
       setMapCenter([
@@ -2448,6 +4081,54 @@ function MapPageComponent() {
       );
     }
   }
+  const handleSearchThisArea = () => {
+    // ZONE MANUELLE PRIORITAIRE
+    setManualAreaSearchActive(
+      true
+    );
+
+    if (!mapBounds) {
+      return;
+    }
+
+    const nextCenter =
+      pendingMapCenterRef.current;
+
+    const nextZoom =
+      pendingMapZoomRef.current ??
+      mapZoom;
+
+    if (nextCenter) {
+      setMapCenter(
+        nextCenter
+      );
+    }
+
+    setMapZoom(
+      nextZoom
+    );
+
+    setSearchAreaBounds(
+      mapBounds
+    );
+
+    setSearchAreaZoom(
+      nextZoom
+    );
+
+    setAreaSearchActive(
+      true
+    );
+
+    setHasPendingSearchArea(
+      false
+    );
+
+    setSelectionSource(
+      null
+    );
+  };
+
   return (
     <div className="relative w-full h-screen [height:100dvh] overflow-hidden bg-[#f7f7f5]">
       {isViewportReady && !isMobile && (
@@ -2519,7 +4200,7 @@ function MapPageComponent() {
         )}
       >
         <MapComponent
-          points={filteredPoints}
+          points={effectiveFilteredPoints}
           labelPoints={labelPoints}
           center={mapCenter}
           zoom={mapZoom}
@@ -2527,7 +4208,64 @@ function MapPageComponent() {
           selectionSource={selectionSource}
           onMarkerClick={handleMarkerClick}
           onMapClick={() => { setSelectedId(null); setIsDetailView(false); }}
-          onMapChange={(c, z, b) => { setMapCenter(c); setMapZoom(z); setMapBounds(b); setSelectionSource(null); }}
+          onMapChange={(c, z, b) => {
+            // Le déplacement manuel reste uniquement une vue en attente.
+            // On ne réinjecte plus c/z dans les props Leaflet ici.
+            pendingMapCenterRef.current =
+              c;
+
+            pendingMapZoomRef.current =
+              z;
+
+            setMapBounds(
+              b
+            );
+
+            setSelectionSource(
+              null
+            );
+          }}
+
+          onViewportSettled={(
+            bounds,
+            zoom,
+            userInitiated
+          ) => {
+            if (userInitiated) {
+              setHasPendingSearchArea(
+                true
+              );
+
+              return;
+            }
+
+            // Une recherche explicite valide automatiquement
+            // le viewport obtenu.
+            if (
+              selectionSource ===
+              'external'
+            ) {
+              setSearchAreaBounds(
+                bounds
+              );
+
+              setSearchAreaZoom(
+                zoom
+              );
+
+              // Indispensable pour Honda Rennes, BMW Lyon, etc.
+              // Les professionnels restent enfermés dans
+              // la dernière zone validée.
+              setAreaSearchActive(
+                true
+              );
+
+              setHasPendingSearchArea(
+                false
+              );
+            }
+          }}
+
           bottomPadding={bottomPadding}
           leftPadding={leftPadding}
           deptCounts={deptCounts}
@@ -2536,6 +4274,34 @@ function MapPageComponent() {
           selectedAreaFeature={selectedAreaFeature}
           isMobile={isMobile}
         />
+
+        {hasPendingSearchArea &&
+          shouldLoadPoints && (
+            <button
+              type="button"
+              aria-label="Rechercher dans cette zone"
+              onClick={
+                handleSearchThisArea
+              }
+              className={cn(
+                "absolute left-1/2 z-[2000] -translate-x-1/2",
+                "flex items-center gap-2 whitespace-nowrap",
+                "rounded-full border border-black/[0.08] bg-white",
+                "px-5 py-3 text-[13px] font-semibold text-[#1f1f1f]",
+                "shadow-[0_8px_26px_rgba(0,0,0,0.18)]",
+                "transition hover:-translate-y-0.5",
+                isMobile
+                  ? "top-[228px]"
+                  : "top-5"
+              )}
+            >
+              <Search
+                className="h-4 w-4 text-brand"
+              />
+
+              Rechercher dans cette zone
+            </button>
+          )}
       </div>
 
       <div
@@ -2567,15 +4333,133 @@ function MapPageComponent() {
             }
           }}
           onSearch={handleDirectMapSearch}
-          onSuggestionSelect={(
+          onSuggestionSelect={async (
             lat: number,
             lng: number,
             bbox?: [number, number, number, number],
             dealerId?: string
           ) => {
-            if (bbox) { setBboxToFit(bbox); setDeptToFit(null); }
-            else if (dealerId) handleMarkerClick(dealerId);
-            else { setMapCenter([lat, lng]); setSelectionSource('external'); }
+            if (dealerId) {
+
+              let suggestionProfessionalPoints =
+                points;
+
+              if (
+                !suggestionProfessionalPoints.some(
+                  point =>
+                    point.id === dealerId
+                )
+              ) {
+                try {
+                  const allSuggestionPoints =
+                    (
+                      await loadPublicMapPoints()
+                    ) as MapPoint[];
+
+                  if (
+                    allSuggestionPoints.length > 0
+                  ) {
+                    suggestionProfessionalPoints =
+                      allSuggestionPoints;
+
+                    setPoints(
+                      allSuggestionPoints
+                    );
+                  }
+                }
+                catch {
+                  // Le clic continue avec les données disponibles.
+                }
+              }
+
+              // MEME MOTEUR POUR LES SUGGESTIONS
+              setResolvedProfessionalId(
+                dealerId
+              );
+
+              // LABELMOTO PROFESSIONAL SUGGESTION OVERRIDE GEO
+              setForceProfessionalTextSearch(
+                true
+              );
+
+              const professionalSearchTerm =
+                searchTerm.trim();
+
+              if (professionalSearchTerm) {
+                setAppliedSearchTerm(
+                  professionalSearchTerm
+                );
+              }
+              // Une suggestion professionnelle est prioritaire
+              // sur toute bbox géographique éventuelle.
+              setBboxToFit(
+                null
+              );
+
+              setDeptToFit(
+                null
+              );
+
+              setSelectedAreaFeature(
+                null
+              );
+
+              setAreaSearchActive(
+                false
+              );
+
+              setSearchAreaBounds(
+                null
+              );
+
+              setHasPendingSearchArea(
+                false
+              );
+
+              setBrandCitySearch(
+                null
+              );
+
+              setMapCenter([
+                lat,
+                lng,
+              ]);
+
+              setMapZoom(
+                15
+              );
+
+              setSelectionSource(
+                'external'
+              );
+
+              handleMarkerClick(
+                dealerId
+              );
+
+              return;
+            }
+
+            if (bbox) {
+              setBboxToFit(
+                bbox
+              );
+
+              setDeptToFit(
+                null
+              );
+
+              return;
+            }
+
+            setMapCenter([
+              lat,
+              lng,
+            ]);
+
+            setSelectionSource(
+              'external'
+            );
           }}
         />
 
@@ -2710,15 +4594,36 @@ function MapPageComponent() {
           </button>
         </form>
       )}
+      <RecentSearchesPanel />
+
+      {/* Catégories flottantes */}
+      {isViewportReady && (
+        <div
+          className={cn(
+            "z-[1450] overflow-hidden",
+            isMobile
+              ? "fixed left-0 right-0 top-[170px]"
+              : "absolute left-6 top-[310px] w-[560px]"
+          )}
+        >
+          <div
+            className={cn(
+              "filter-scroll touch-pan-x overscroll-x-contain overflow-x-auto pb-2",
+              isMobile
+                ? "px-4"
+                : "px-0"
+            )}
+          >
+            <FilterButtons />
+          </div>
+        </div>
+      )}
+
       {isViewportReady && !isMobile && (
-        <aside className="absolute left-6 top-[310px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
+        <aside className="absolute left-6 top-[366px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
           <div className="hidden">
             <div className="shrink-0"><LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" /></div>
             <div className="shrink-0"><UserMenu /></div>
-          </div>
-          <div className="mb-3 shrink-0 space-y-3 rounded-[24px] border border-black/[0.06] bg-white p-4 shadow-[0_6px_24px_rgba(0,0,0,0.045)]">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Explorer par catégorie</p>
-            <FilterButtons />
           </div>
           <div ref={listScrollRef} className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
             {isDetailView && selectedId ? (
@@ -2738,7 +4643,7 @@ function MapPageComponent() {
                 )}
                 <div className="flex items-center justify-between px-2 mb-4">
                   <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                    {isLoadingPoints ? "Chargement national..." : `${filteredPoints.length} Résultats trouvés`}
+                    {isLoadingPoints ? "Chargement national..." : `${effectiveFilteredPoints.length} Résultats trouvés`}
                   </span>
                 </div>
                 {listPoints.map(p => (
@@ -2758,24 +4663,189 @@ function MapPageComponent() {
       )}
 
       {isViewportReady && isMobile && (
-        <div className={cn("fixed left-0 right-0 bg-white rounded-t-[28px] shadow-2xl transition-all duration-500 ease-out z-[1100]", drawerHeight === 'collapsed'
-            ? 'bottom-0 h-[132px]'
-            : drawerHeight === 'half'
-              ? 'bottom-0 h-[65vh]'
-              : 'top-[220px] bottom-0 h-auto')}>
-          <div className="h-full flex flex-col">
-            <div className="shrink-0"><FilterButtons mobile /></div>
+        <div
+          data-mobile-results-drawer
+          className={cn(
+            "fixed left-0 right-0 overflow-hidden bg-white rounded-t-[28px] shadow-2xl",
+            "transition-all duration-500 ease-out z-[1100]",
+            drawerHeight === 'collapsed'
+              ? (
+                  hasDrawerResultContext
+                    ? 'bottom-0 h-[205px]'
+                    : 'bottom-0 h-[132px]'
+                )
+              : drawerHeight === 'half'
+                ? 'bottom-0 h-[65vh]'
+                : 'top-[220px] bottom-0 h-auto'
+          )}
+          onTouchStartCapture={(event) => {
+            event.stopPropagation();
+
+            drawerTouchStartYRef.current =
+              event.touches[0]?.clientY ?? null;
+
+            drawerTouchStartedAtTopRef.current =
+              (listScrollRef.current?.scrollTop ?? 0) <= 1;
+          }}
+          onTouchEndCapture={(event) => {
+            event.stopPropagation();
+
+            const startY =
+              drawerTouchStartYRef.current;
+
+            const endY =
+              event.changedTouches[0]?.clientY ?? null;
+
+            drawerTouchStartYRef.current =
+              null;
+
+            if (
+              startY === null ||
+              endY === null
+            ) {
+              return;
+            }
+
+            const deltaY =
+              endY - startY;
+
+            if (
+              drawerHeight === 'collapsed'
+            ) {
+              if (deltaY < -45) {
+                setDrawerHeight('half');
+              }
+
+              return;
+            }
+
+            const isAtTop =
+              (listScrollRef.current?.scrollTop ?? 0) <= 1;
+
+            if (
+              drawerTouchStartedAtTopRef.current &&
+              isAtTop &&
+              deltaY > 55
+            ) {
+              setDrawerHeight('collapsed');
+
+              drawerTouchStartedAtTopRef.current =
+                false;
+
+              return;
+            }
+
+            if (
+              drawerHeight === 'half' &&
+              drawerTouchStartedAtTopRef.current &&
+              isAtTop &&
+              deltaY < -70
+            ) {
+              setDrawerHeight('full');
+
+              drawerTouchStartedAtTopRef.current =
+                false;
+
+              return;
+            }
+
+            drawerTouchStartedAtTopRef.current =
+              false;
+          }}
+          onTouchCancel={() => {
+            drawerTouchStartYRef.current =
+              null;
+
+            drawerTouchStartedAtTopRef.current =
+              false;
+          }}
+        >
+          {/* LABELMOTO DRAWER ROUTE BACKDROP */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 430 733"
+            preserveAspectRatio="none"
+            className="
+              pointer-events-none
+              absolute
+              inset-y-0
+              left-[8%]
+              z-0
+              h-full
+              w-[104%]
+            "
+          >
+            {/* halo blanc comme sur la homepage */}
+            <path
+              d="
+                M354 8
+                C365 102 290 111 313 195
+                C343 294 415 338 389 446
+                C369 528 285 549 210 566
+                C125 584 68 637 75 733
+              "
+              fill="none"
+              stroke="white"
+              strokeWidth="7"
+              strokeLinecap="round"
+              strokeOpacity="0.72"
+            />
+
+            {/* route orange LabelMoto */}
+            <path
+              d="
+                M354 8
+                C365 102 290 111 313 195
+                C343 294 415 338 389 446
+                C369 528 285 549 210 566
+                C125 584 68 637 75 733
+              "
+              fill="none"
+              stroke="#e75b00"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeOpacity="0.21"
+            />
+
+            {/* petite ligne secondaire légère */}
+            <path
+              d="
+                M430 132
+                C355 118 306 142 260 177
+                C218 209 175 219 126 207
+              "
+              fill="none"
+              stroke="#edf1f3"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeOpacity="0.55"
+            />
+          </svg>
+
+          <div className="relative z-[1] h-full flex flex-col">
+            <div className="shrink-0 flex justify-center pt-2.5 pb-1">
+              <div className="h-1 w-10 rounded-full bg-black/20" />
+            </div>
             <div
               ref={listScrollRef}
               className={cn(
-                "flex-1 overflow-y-auto custom-scrollbar",
+                "flex-1 custom-scrollbar overscroll-contain",
+                drawerHeight === 'collapsed'
+                  ? "overflow-hidden"
+                  : "overflow-y-auto",
                 isDetailView
                   ? "px-5 pt-2 pb-5"
                   : "px-4 pt-1 pb-4"
               )}
+              onTouchStart={(event) => {
+                event.stopPropagation();
+              }}
+              onTouchMove={(event) => {
+                event.stopPropagation();
+              }}
             >
               {isDetailView && selectedId ? (
-                <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('half'); }} />
+                <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('collapsed'); }} />
               ) : (
                 <div className="space-y-4">
                   {listPoints.map(p => (

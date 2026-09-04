@@ -24,6 +24,12 @@ interface MapComponentProps {
   onMapClick: () => void;
   onMapChange: (center: [number, number], zoom: number, bounds: L.LatLngBounds) => void;
   onUserInteraction?: () => void;
+
+  onViewportSettled?: (
+    bounds: L.LatLngBounds,
+    zoom: number,
+    userInitiated: boolean
+  ) => void;
   bottomPadding?: number;
   leftPadding?: number;
   isLocating?: boolean;
@@ -63,7 +69,7 @@ const getOffsettedCenter = (map: L.Map, latlng: [number, number], leftPadding: n
 const MapComponent = ({
   points = [], labelPoints = [], center, zoom, selectedId,
   onMarkerClick, onMapClick, onMapChange,
-  onUserInteraction, bottomPadding = 0, leftPadding = 0,
+  onUserInteraction, onViewportSettled, bottomPadding = 0, leftPadding = 0,
   isLocating = false, onLocateEnd = () => {}, onLocateError = () => {}, onLocationFound = () => {},
   selectionSource, deptCounts = null, deptToFit = null, bboxToFit = null, selectedAreaFeature = null, isMobile = false
 }: MapComponentProps) => {
@@ -73,11 +79,26 @@ const MapComponent = ({
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markerMapRef = useRef<Record<string, L.Marker>>({});
   const isUpdatingFromProps = useRef(false);
+
+  // true uniquement lorsqu'un déplacement vient réellement
+  // d'une action de l'utilisateur.
+  const userInteractionRef =
+    useRef(false);
   const geojsonLayerRef = useRef<L.GeoJSON | null>(null);
   const labelMarkersRef = useRef<L.Marker[]>([]);
   const geojsonDataRef = useRef<any>(null);
   const selectedAreaLayerRef = useRef<L.GeoJSON | null>(null);
   const currentZoomRef = useRef<number>(zoom);
+
+  const onViewportSettledRef =
+    useRef(onViewportSettled);
+
+  useEffect(() => {
+    onViewportSettledRef.current =
+      onViewportSettled;
+  }, [
+    onViewportSettled,
+  ]);
   // Marqueurs affiches independamment du seuil de zoom apres selection d'un departement
   const [markersUnlocked, setMarkersUnlocked] = useState(false);
 
@@ -131,34 +152,243 @@ const MapComponent = ({
     mapRef.current = map;
 
     const handleTouchStart = () => {
-      if (!isUpdatingFromProps.current) onUserInteraction?.();
+      // Une interaction physique annule immédiatement
+      // un éventuel flag de déplacement programmatique.
+      isUpdatingFromProps.current =
+        false;
+
+      userInteractionRef.current =
+        true;
+
+      onUserInteraction?.();
     };
 
-    containerRef.current?.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
-    containerRef.current?.addEventListener('mousedown', handleTouchStart, { capture: true });
-
-    map.on('movestart zoomstart', () => {
-      if (!isUpdatingFromProps.current) onUserInteraction?.();
-    });
-
-    map.on('moveend zoomend', () => {
-      if (map && !isUpdatingFromProps.current) {
-        const z = map.getZoom();
-        currentZoomRef.current = z;
-        onMapChange([map.getCenter().lat, map.getCenter().lng], z, map.getBounds());
+    containerRef.current?.addEventListener(
+      'touchstart',
+      handleTouchStart,
+      {
+        capture: true,
+        passive: true,
       }
-    });
+    );
+
+    containerRef.current?.addEventListener(
+      'mousedown',
+      handleTouchStart,
+      {
+        capture: true,
+      }
+    );
+
+    containerRef.current?.addEventListener(
+      'wheel',
+      handleTouchStart,
+      {
+        capture: true,
+        passive: true,
+      }
+    );
+
+    map.on(
+      'movestart zoomstart',
+      () => {
+        if (
+          isUpdatingFromProps.current
+        ) {
+          return;
+        }
+
+        userInteractionRef.current =
+          true;
+
+        onUserInteraction?.();
+      }
+    );
+
+    // VIEWPORT SETTLED LABELMOTO
+    //
+    // Un déplacement utilisateur met simplement la nouvelle
+    // zone "en attente".
+    //
+    // Un déplacement programmatique peut valider automatiquement
+    // la zone issue d'une recherche explicite.
+    map.on(
+      'moveend',
+      () => {
+        if (!map) {
+          return;
+        }
+
+        const z =
+          map.getZoom();
+
+        const bounds =
+          map.getBounds();
+
+        currentZoomRef.current =
+          z;
+
+        const userInitiated =
+          userInteractionRef.current &&
+          !isUpdatingFromProps.current;
+
+        onViewportSettledRef.current?.(
+          bounds,
+          z,
+          userInitiated
+        );
+
+        if (
+          !isUpdatingFromProps.current
+        ) {
+          onMapChange(
+            [
+              map.getCenter().lat,
+              map.getCenter().lng,
+            ],
+            z,
+            bounds
+          );
+        }
+
+        userInteractionRef.current =
+          false;
+      }
+    );
 
     map.on('click', onMapClick);
 
     return () => {
       containerRef.current?.removeEventListener('touchstart', handleTouchStart);
       containerRef.current?.removeEventListener('mousedown', handleTouchStart);
+      containerRef.current?.removeEventListener(
+        'wheel',
+        handleTouchStart
+      );
+
       map.remove();
       mapRef.current = null;
     };
   }, []);
 
+  // ==========================================================
+  // ZONE ADMINISTRATIVE SELECTIONNEE
+  //
+  // Polygone orange exact pour les arrondissements.
+  // ==========================================================
+
+  useEffect(() => {
+    const map =
+      mapRef.current;
+
+    if (!map) {
+      return;
+    }
+
+    if (
+      selectedAreaLayerRef.current
+    ) {
+      try {
+        if (
+          map.hasLayer(
+            selectedAreaLayerRef.current
+          )
+        ) {
+          map.removeLayer(
+            selectedAreaLayerRef.current
+          );
+        }
+      }
+      catch {}
+
+      selectedAreaLayerRef.current =
+        null;
+    }
+
+    if (!selectedAreaFeature) {
+      return;
+    }
+
+    const layer =
+      L.geoJSON(
+        selectedAreaFeature,
+        {
+          interactive: false,
+
+          style: {
+            color: '#f97316',
+            weight: 3,
+            opacity: 0.95,
+
+            fillColor: '#f97316',
+            fillOpacity: 0.10,
+
+            lineCap: 'round',
+            lineJoin: 'round',
+          },
+        }
+      );
+
+    layer.addTo(
+      map
+    );
+
+    try {
+      layer.bringToFront();
+    }
+    catch {}
+
+    selectedAreaLayerRef.current =
+      layer;
+
+    const bounds =
+      layer.getBounds();
+
+    if (!bounds.isValid()) {
+      return;
+    }
+
+    isUpdatingFromProps.current =
+      true;
+
+    map.fitBounds(
+      bounds,
+      {
+        paddingTopLeft:
+          isMobile
+            ? [20, 120]
+            : [leftPadding + 35, 35],
+
+        paddingBottomRight:
+          isMobile
+            ? [20, 190]
+            : [35, 35],
+
+        animate: true,
+        duration: 0.7,
+        maxZoom: 15,
+      }
+    );
+
+    const timer =
+      window.setTimeout(
+        () => {
+          isUpdatingFromProps.current =
+            false;
+        },
+        850
+      );
+
+    return () => {
+      window.clearTimeout(
+        timer
+      );
+    };
+  }, [
+    selectedAreaFeature,
+    leftPadding,
+    isMobile,
+  ]);
   // fitBounds sur une bbox ville [west, south, east, north]
   useEffect(() => {
     const map = mapRef.current;
@@ -504,6 +734,19 @@ const MapComponent = ({
     const clusterGroup = clusterGroupRef.current;
 
     if (!map || !clusterGroup) return;
+
+    // POINTS VIDES : NETTOYAGE IMMEDIAT
+    //
+    // Une recherche géographique seule doit supprimer
+    // les clusters précédemment affichés, quel que soit le zoom.
+    if (points.length === 0) {
+      clusterGroup.clearLayers();
+
+      markerMapRef.current =
+        {};
+
+      return;
+    }
 
     const currentZoom = map.getZoom();
 
