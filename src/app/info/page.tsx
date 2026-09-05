@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, Suspense, useMemo } from 'react';
+import React, { useState, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSearchParams, useRouter } from 'next/navigation';
 
-import Header from '@/components/app/header';
+import LabelMotoLogo from '@/components/app/logo';
+import UserMenu from '@/components/app/user-menu';
+import EntretienRoadBackdrop from '@/components/app/entretien-road-backdrop';
 import { Loader2, Map, FileText, ChevronRight, Home, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ const getArticleCategories = (article: any) => {
     const id = (article.id || '').toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
     const cats: string[] = [];
-    
+
     if (
         id.includes('a2') || 
         id.includes('occasion') || 
@@ -40,11 +41,11 @@ const getArticleCategories = (article: any) => {
     ) {
         cats.push('A2');
     }
-    
+
     if (id.includes('motogp') || id.includes('gp-france') || id.includes('event') || id.includes('circuit')) {
         cats.push('EVENT');
     }
-    
+
     if (
         id.includes('taille') || 
         id.includes('zfe') || 
@@ -60,7 +61,7 @@ const getArticleCategories = (article: any) => {
     }
 
     if (cats.length === 0) cats.push('TIPS');
-    
+
     return cats;
 };
 
@@ -85,9 +86,9 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
         if (id.includes('milieu-de-gamme')) return "/images/casques-milieu-de-gamme-2026.webp";
         if (id.includes('haut-de-gamme') && id.includes('casques')) return "/images/casques-haut-de-gamme-2026.webp";
         if (id.includes('meilleurs-casques')) return "/images/casque-meilleur-casque-2026.webp";
-        
+
         if (article.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
-        
+
         return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop";
     }, [article]);
 
@@ -98,13 +99,13 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
           <Link href={`/info/${article.id}`} className="group block py-8 border-b last:border-b-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
                 <div className="md:col-span-2">
-                    <h2 className="text-2xl md:text-3xl font-black text-foreground leading-tight group-hover:text-brand transition-colors uppercase tracking-tighter">{title}</h2>
-                    <p className="mt-3 text-base text-muted-foreground line-clamp-3 leading-relaxed font-medium">{article.description || article.intro_conclusion || article.intro?.[0] || ""}</p>
-                    <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground font-black uppercase tracking-widest"><FileText className="h-3.5 w-3.5 text-brand" /><span>Par {article.author || "L'équipe Label Moto"}</span></div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-[1.08] tracking-[-0.03em] group-hover:text-brand transition-colors">{title}</h2>
+                    <p className="mt-3 text-base text-muted-foreground line-clamp-3 leading-relaxed font-normal">{article.description || article.intro_conclusion || article.intro?.[0] || ""}</p>
+                    <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground font-semibold uppercase tracking-[0.08em]"><FileText className="h-3.5 w-3.5 text-brand" /><span>Par {article.author || "L'équipe Label Moto"}</span></div>
                 </div>
                 <div className="relative aspect-video rounded-2xl overflow-hidden order-first md:order-last border-2 border-white shadow-lg bg-muted">
                     <Image 
-                        src={imageUrl} 
+                        src={imageUrl.replace(/^https?:\/\/(?:www\.)?labelmoto\.fr(?=\/)/, '')}
                         alt={title} 
                         fill 
                         className="object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -119,26 +120,16 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
 };
 
 function InfoPageComponent() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const searchParam = searchParams.get('search');
-    const [searchTerm, setSearchTerm] = useState(searchParam || '');
     const [activeCategory, setActiveCategory] = useState('ALL');
-    
+
     const firestore = useFirestore();
     const articlesRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
     const { data: allArticles, isLoading } = useCollection(articlesRef);
 
-    const handleSearchTermChange = (newTerm: string) => setSearchTerm(newTerm);
-    const handleSearch = () => { if (searchTerm.trim() !== '') router.push(`/map?search=${encodeURIComponent(searchTerm)}`); };
-    const handleFilterChange = (filter: 'shopping' | 'service') => router.push(`/map?filter=${filter}`);
-    
-    useEffect(() => setSearchTerm(searchParam || ''), [searchParam]);
-
     const filteredArticles = useMemo(() => {
         if (!allArticles) return [];
         const EXCLUDED_ARTICLE_IDS = ['entretien-moto-intervalles-prix-conseils-par-modele', 'meilleurs-casques-moto-entree-de-gamme-2026', 'meilleurs-casques-moto-milieu-de-gamme-2026', 'meilleurs-casques-moto-haut-de-gamme-2026'];
-        
+
         return [...allArticles]
             .filter(a => {
                 if (EXCLUDED_ARTICLE_IDS.includes(a.id)) return false;
@@ -159,26 +150,206 @@ function InfoPageComponent() {
     }, [allArticles, activeCategory]);
 
     return (
-        <div className="bg-background min-h-screen relative">
-            <Header searchTerm={searchTerm} onSearchTermChange={handleSearchTermChange} onSearch={handleSearch} activeFilter={null} onFilterChange={handleFilterChange} placeholderText="Recherche par departement , ville , marque, nom ... " />
-            
-            <div className="fixed inset-0 flex items-center justify-center -z-10 pointer-events-none overflow-hidden">
-                <Image
-                    src="/images/logo-moto.webp"
-                    alt="Label Moto Watermark"
-                    width={600}
-                    height={192}
-                    className="opacity-[0.05] rotate-[-15deg]"
-                />
+        <div className="relative isolate min-h-screen overflow-hidden bg-[#fbfcfc]">
+            {/* Courbe de fond identique à /entretien */}
+            <div
+                aria-hidden="true"
+                className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    z-0
+                    opacity-[0.66]
+                "
+            >
+                <EntretienRoadBackdrop />
             </div>
 
-            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+            {/* Header harmonisé avec la homepage et /entretien */}
+            <div className="lg:hidden">
+        <header
+                className="
+                    relative
+                    z-30
+                    mx-auto
+                    flex
+                    w-full
+                    max-w-6xl
+                    items-center
+                    justify-between
+                    px-5
+                    pb-3
+                    pt-5
+                    sm:px-6
+                    md:pt-6
+                    lg:px-8
+                "
+            >
+                <div
+                    className="
+                        w-[150px]
+                        shrink-0
+                        sm:w-[165px]
+                        md:w-[175px]
+                    "
+                >
+                    <LabelMotoLogo noBubble />
+                </div>
+
+                <UserMenu />
+            </header>
+      </div>
+
+      <header
+        className="
+          hidden
+          h-[80px]
+          border-b
+          border-black/[0.06]
+          bg-white/95
+          backdrop-blur-xl
+          lg:block
+        "
+      >
+        <div
+          className="
+            flex
+            h-full
+            items-center
+            px-8
+          "
+        >
+          <div
+            className="
+              flex
+              w-[410px]
+              shrink-0
+              items-center
+            "
+          >
+            <LabelMotoLogo
+              noBubble
+              className="
+                w-[150px]
+                border-none
+                bg-transparent
+                px-0
+                shadow-none
+              "
+            />
+          </div>
+
+          <nav
+            className="
+              flex
+              h-full
+              items-center
+              gap-9
+              text-[14px]
+              font-bold
+              text-foreground
+            "
+          >
+            <Link
+              href="/map"
+              className="
+                flex
+                h-full
+                items-center
+                border-b-[3px]
+                border-transparent
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Carte
+            </Link>
+
+            <Link
+              href="/entretien"
+              className="
+                flex
+                h-full
+                items-center
+                border-b-[3px]
+                border-transparent
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Entretien
+            </Link>
+
+            <Link
+              href="/info"
+              className="
+                flex
+                h-full
+                items-center
+                border-b-[3px]
+                border-brand
+                text-brand
+              "
+            >
+              Guides &amp; conseils
+            </Link>
+
+            <Link
+              href="/"
+              className="
+                flex
+                h-full
+                items-center
+                border-b-[3px]
+                border-transparent
+                transition-colors
+                hover:text-brand
+              "
+            >
+              Fiches moto
+            </Link>
+          </nav>
+
+          <div
+            className="
+              ml-auto
+              flex
+              items-center
+            "
+          >
+            <UserMenu />
+          </div>
+        </div>
+      </header>
+
+            <main
+                className="
+                    container
+                    relative
+                    z-10
+                    mx-auto
+                    px-4
+                    py-8
+                    sm:px-6
+                    lg:px-8
+
+                    before:pointer-events-none
+                    before:absolute
+                    before:inset-0
+                    before:z-0
+                    before:bg-white/48
+                    before:content-['']
+
+                    [&>*]:relative
+                    [&>*]:z-10
+                "
+            >
                 <div className="max-w-6xl mx-auto">
-                    <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-6 md:pt-8"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
-                    
+                    <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.08em] mb-8 pt-3 md:pt-6"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
+
                     <div className="text-center mb-8">
-                        <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">Conseils pratiques</h1>
-                        <div className="mt-4 w-20 h-1.5 bg-brand mx-auto rounded-full" />
+                        <h1 className="text-[32px] md:text-5xl font-bold text-foreground tracking-[-0.035em] leading-[1.02]">Conseils pratiques</h1>
+                        <div className="mt-4 w-16 h-1 bg-brand mx-auto rounded-full" />
                     </div>
 
                     <div className="flex flex-wrap justify-center gap-3 mb-8">
@@ -188,7 +359,7 @@ function InfoPageComponent() {
                                 variant={activeCategory === cat.id ? 'default' : 'outline'}
                                 onClick={() => setActiveCategory(cat.id)}
                                 className={cn(
-                                    "rounded-full font-black uppercase text-[10px] tracking-widest h-10 px-6 transition-all shadow-md",
+                                    "rounded-full font-semibold text-[11px] tracking-[0.04em] h-10 px-6 transition-all shadow-md",
                                     activeCategory === cat.id 
                                         ? "bg-brand text-white border-brand scale-105" 
                                         : "bg-white text-muted-foreground hover:border-brand/50 hover:text-brand"
@@ -224,8 +395,8 @@ function InfoPageComponent() {
                                     ))}
                                     {filteredArticles.length === 0 && (
                                         <div className="text-center text-muted-foreground py-20 border-2 border-dashed rounded-3xl bg-muted/10">
-                                            <p className="text-lg font-black uppercase tracking-tighter">Aucun article dans cette catégorie.</p>
-                                            <Button variant="ghost" onClick={() => setActiveCategory('ALL')} className="mt-4 font-black uppercase text-xs tracking-widest text-brand">Voir tous les articles</Button>
+                                            <p className="text-lg font-semibold tracking-[-0.02em]">Aucun article dans cette catégorie.</p>
+                                            <Button variant="ghost" onClick={() => setActiveCategory('ALL')} className="mt-4 font-semibold text-xs text-brand">Voir tous les articles</Button>
                                         </div>
                                     )}
                                 </>
@@ -235,7 +406,7 @@ function InfoPageComponent() {
                             <div className="md:sticky md:top-28 space-y-6">
                                 <Card className="overflow-hidden shadow-2xl border-none bg-card/50 backdrop-blur-md rounded-3xl ring-1 ring-white/20">
                                     <CardHeader className="p-6 bg-brand text-brand-foreground">
-                                        <CardTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-widest"><Map className="h-6 w-6"/>Trouver un pro</CardTitle>
+                                        <CardTitle className="flex items-center gap-3 text-xl font-semibold tracking-[-0.02em]"><Map className="h-6 w-6"/>Trouver un pro</CardTitle>
                                     </CardHeader>
                                     <CardContent className="p-6">
                                         <Link href="/map" className="block group rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-muted">
@@ -244,7 +415,7 @@ function InfoPageComponent() {
                                         <p className="text-muted-foreground text-sm mt-6 font-medium leading-relaxed">Trouvez les meilleures concessions et ateliers moto en France sur notre carte interactive.</p>
                                     </CardContent>
                                     <CardFooter className="px-6 pb-8">
-                                        <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-black uppercase text-xs tracking-widest py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
+                                        <Button asChild className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-semibold text-xs py-6 rounded-full shadow-lg transition-all hover:scale-[1.02] active:scale-95">
                                             <Link href="/map">Voir la carte interactive</Link>
                                         </Button>
                                     </CardFooter>
@@ -252,9 +423,9 @@ function InfoPageComponent() {
 
                                 <div className="bg-muted/30 p-8 rounded-[2.5rem] border-2 border-dashed border-muted-foreground/10 text-center">
                                     <Sparkles className="h-8 w-8 text-brand mx-auto mb-4 opacity-50" />
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-foreground mb-2">Entretien & Fiches</h3>
-                                    <p className="text-[10px] font-bold text-muted-foreground leading-relaxed mb-6">Accédez aux périodicités et budgets de révision par modèle.</p>
-                                    <Button asChild variant="outline" className="w-full rounded-full border-brand text-brand hover:bg-brand/10 font-black uppercase text-[9px] tracking-widest">
+                                    <h3 className="text-sm font-semibold tracking-[-0.01em] text-foreground mb-2">Entretien & Fiches</h3>
+                                    <p className="text-[11px] font-normal text-muted-foreground leading-relaxed mb-6">Accédez aux périodicités et budgets de révision par modèle.</p>
+                                    <Button asChild variant="outline" className="w-full rounded-full border-brand text-brand hover:bg-brand/10 font-semibold text-[10px]">
                                         <Link href="/entretien">Consulter le catalogue</Link>
                                     </Button>
                                 </div>
@@ -272,7 +443,7 @@ export default function InfoPage() {
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
                 <Loader2 className="h-12 w-12 animate-spin text-brand mb-4" />
-                <p className="font-black uppercase tracking-widest text-[10px] animate-pulse">Initialisation...</p>
+                <p className="font-semibold tracking-[0.04em] text-[10px] animate-pulse">Initialisation...</p>
             </div>
         }>
             <InfoPageComponent />

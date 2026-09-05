@@ -651,6 +651,8 @@ const MapComponent = ({
     };
 
     const enterMarkerMode = () => {
+      removeChoropleth();
+
       if (markerModeRef.current) return;
 
       markerModeRef.current = true;

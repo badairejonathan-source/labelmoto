@@ -15,19 +15,10 @@ export default function MapLayout({
 }) {
   return (
     <>
-      <link rel="preconnect" href="https://tiles.stadiamaps.com" crossOrigin="anonymous" />
-
       <link
-        rel="preload"
-        as="image"
-        media="(max-resolution: 1.5dppx)"
-        fetchPriority="high"
-      />
-      <link
-        rel="preload"
-        as="image"
-        media="(min-resolution: 1.51dppx)"
-        fetchPriority="high"
+        rel="preconnect"
+        href="https://tiles.stadiamaps.com"
+        crossOrigin="anonymous"
       />
 
       {children}

@@ -4,13 +4,13 @@ import dynamic from 'next/dynamic';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, Building2, Instagram } from 'lucide-react';
+import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, Utensils, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
 const UserMenuLazy = dynamic(() => import('@/components/app/user-menu'), { 
   ssr: false,
-  loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
+  loading: () => <div className="h-10 w-[132px] sm:h-11 sm:w-[150px] rounded-full bg-white/50" />
 });
 import { useRouter, usePathname } from 'next/navigation';
 import locationsData from '@/data/locations.json';
@@ -862,29 +862,7 @@ const Header: React.FC<any> = ({
           </div>
         </div>
         <div className="shrink-0 flex items-center gap-3">
-          <a
-            href="https://www.instagram.com/labelmoto.fr/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram LabelMoto"
-            className={cn(
-              "flex items-center justify-center rounded-full bg-white/95 shadow-xl border-2 border-white text-brand hover:scale-105 active:scale-95 transition-all",
-              pathname === "/map"
-                ? "h-[38px] w-[38px]"
-                : "h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14"
-            )}
-          >
-            <Instagram className="h-5 w-5 md:h-6 md:w-6" />
-          </a>
-          {pathname === "/map" ? (
-            <div className="w-14 h-14 flex items-center justify-end overflow-visible">
-              <div className="scale-[0.72] origin-right">
-                <UserMenuLazy />
-              </div>
-            </div>
-          ) : (
-            <UserMenuLazy />
-          )}
+          <UserMenuLazy />
         </div>
       </div>
       <div

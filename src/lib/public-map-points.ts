@@ -13,6 +13,9 @@ export interface PublicMapPoint {
 }
 
 const PUBLIC_POINTS_URL =
+  '/points.json';
+
+const PUBLIC_POINTS_REMOTE_URL =
   'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json';
 
 let publicMapPointsPromise: Promise<PublicMapPoint[]> | null = null;
@@ -36,7 +39,7 @@ async function fetchPointsJson(url: string): Promise<any[]> {
 export function loadPublicMapPoints(): Promise<PublicMapPoint[]> {
   if (!publicMapPointsPromise) {
     publicMapPointsPromise = fetchPointsJson(PUBLIC_POINTS_URL)
-      .catch(() => fetchPointsJson('/points.json'))
+      .catch(() => fetchPointsJson(PUBLIC_POINTS_REMOTE_URL))
       .then(data =>
         data
           .map((p: any) => ({

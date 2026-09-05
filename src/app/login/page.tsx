@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebase } from '@/firebase/client';
@@ -34,6 +34,13 @@ function LoginContent() {
   const { toast } = useToast();
 
   const callbackUrl = searchParams.get('callbackUrl') || '/';
+
+  // LABELMOTO DIRECT REGISTER TAB
+  useEffect(() => {
+    if (searchParams.get('mode') === 'register') {
+      setActiveTab('register');
+    }
+  }, [searchParams]);
 
   const onLoginSubmit = async (values: any) => {
     if (!auth) return;

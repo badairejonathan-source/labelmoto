@@ -19,11 +19,34 @@ export default function UserMenu() {
   const auth = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+    activateAuth();
+  }, []);
   const pseudo = profile?.displayName || profile?.pseudo || user?.email?.split('@')[0] || '';
   const initial = pseudo?.[0]?.toUpperCase() || '?';
   const isAdmin = profile?.role === 'admin';
   if (!mounted) return null;
+
+  if (!user) {
+    return (
+      <div className="flex items-center gap-2">
+        <Link
+          href="/login"
+          className="inline-flex h-10 items-center justify-center rounded-full px-3 text-xs font-semibold text-foreground transition-colors hover:bg-black/[0.04] md:h-11 md:px-4 md:text-sm"
+        >
+          Connexion
+        </Link>
+
+        <Link
+          href="/login?mode=register"
+          className="inline-flex h-10 items-center justify-center rounded-full bg-brand px-3 text-xs font-semibold text-white shadow-sm transition-all hover:bg-brand/90 active:scale-[0.98] md:h-11 md:px-4 md:text-sm"
+        >
+          S'inscrire
+        </Link>
+      </div>
+    );
+  }
   return (
     <DropdownMenu onOpenChange={(open) => open && activateAuth()}>
       <DropdownMenuTrigger asChild>
