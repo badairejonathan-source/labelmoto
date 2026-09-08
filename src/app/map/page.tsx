@@ -13,18 +13,227 @@ const UserMenu = dynamic(() => import('@/components/app/user-menu'), {
   loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
 });
 import LabelMotoLogo from '@/components/app/logo';
-import { Compass, Search, Crosshair, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera, Menu } from 'lucide-react';
+import { Compass, Search, Crosshair, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera, Menu, Instagram, Mail } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
 import { loadPublicMapPoints } from '@/lib/public-map-points';
 import { extractValidCoordinates } from "@/lib/geohash";
-import { useFirebase, useMemoFirebase, useDoc } from '@/firebase/client';
+import { useFirebase, useMemoFirebase, useDoc, useUser } from '@/firebase/client';
 import { initializeFirebaseClient } from '@/firebase/config-client';
-import { collection, getDocs, query, limit, doc, getDoc, getFirestore } from "firebase/firestore";
+import { collection, getDocs, query, limit, doc, getDoc, getFirestore, where } from "firebase/firestore";
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
+import {
+  professionalMatchesCategory,
+  type ProfessionalCategorySlug,
+} from '@/app/lib/professional-categories';
+
+type MapDirectoryFilterId =
+  | ProfessionalCategorySlug
+  | 'association'
+  | 'relais';
+
+const MAP_DIRECTORY_FILTER_IDS:
+  readonly MapDirectoryFilterId[] = [
+    'concessionnaires-revendeurs',
+    'ateliers-mecaniciens',
+    'association',
+    'relais',
+    'equipement-accessoires',
+    'location-moto',
+    'transport-moto',
+    'preparateurs-moto',
+    'peintres-carrossiers',
+    'selliers-moto',
+    'photographes-videastes',
+    'formation-moto-ecoles',
+  ];
+
+const MAP_DIRECTORY_FILTER_ID_SET =
+  new Set<string>(
+    MAP_DIRECTORY_FILTER_IDS
+  );
+
+function normalizeMapDirectoryFilterId(
+  raw: string
+): MapDirectoryFilterId | null {
+  const value =
+    String(
+      raw ||
+      ''
+    ).trim();
+
+  if (!value) {
+    return null;
+  }
+
+  const legacyMap:
+    Record<string, MapDirectoryFilterId> = {
+      shopping: 'concessionnaires-revendeurs',
+      service: 'ateliers-mecaniciens',
+      creator: 'photographes-videastes',
+    };
+
+  const normalized =
+    legacyMap[value] ||
+    value;
+
+  return MAP_DIRECTORY_FILTER_ID_SET.has(
+    normalized
+  )
+    ? normalized as MapDirectoryFilterId
+    : null;
+}
+
+function mapPointMatchesDirectoryFilter(
+  point: MapPoint,
+  filter: string
+): boolean {
+  const normalized =
+    normalizeMapDirectoryFilterId(
+      filter
+    );
+
+  if (!normalized) {
+    return false;
+  }
+
+  if (
+    normalized === 'association'
+  ) {
+    return (
+      point.appSection ===
+      'association'
+    );
+  }
+
+  if (
+    normalized === 'relais'
+  ) {
+    return (
+      point.appSection ===
+      'relais'
+    );
+  }
+
+  if (
+    point.appSection ===
+      'association' ||
+    point.appSection ===
+      'relais'
+  ) {
+    return false;
+  }
+
+  /*
+   * Les fiches creator actuelles correspondent
+   * aux photographes / vidéastes.
+   */
+  if (
+    point.appSection ===
+    'creator'
+  ) {
+    return (
+      normalized ===
+      'photographes-videastes'
+    );
+  }
+
+  return professionalMatchesCategory(
+    {
+      title:
+        point.title,
+
+      category:
+        point.category,
+
+      appSection:
+        point.appSection,
+
+      collection:
+        'concessions',
+
+      creatorType:
+        (point as any)
+          .creatorType,
+
+      activite:
+        (point as any)
+          .activite,
+
+      specialties:
+        (point as any)
+          .specialties,
+    },
+    normalized
+  );
+}
+
+function primaryMapDirectoryFilterForPoint(
+  point: MapPoint
+): MapDirectoryFilterId | null {
+  if (
+    point.appSection ===
+    'association'
+  ) {
+    return 'association';
+  }
+
+  if (
+    point.appSection ===
+    'relais'
+  ) {
+    return 'relais';
+  }
+
+  if (
+    point.appSection ===
+    'creator'
+  ) {
+    return 'photographes-videastes';
+  }
+
+  /*
+   * Pour une fiche ouverte directement,
+   * service doit donner priorité à Atelier.
+   */
+  if (
+    point.appSection ===
+    'service'
+  ) {
+    return 'ateliers-mecaniciens';
+  }
+
+  const matched =
+    MAP_DIRECTORY_FILTER_IDS.find(
+      filter =>
+        filter !==
+          'association' &&
+        filter !==
+          'relais' &&
+        mapPointMatchesDirectoryFilter(
+          point,
+          filter
+        )
+    );
+
+  if (matched) {
+    return matched;
+  }
+
+  if (
+    point.appSection ===
+      'shopping' ||
+    point.appSection ===
+      'both'
+  ) {
+    return 'concessionnaires-revendeurs';
+  }
+
+  return null;
+}
 
 const MOTORCYCLE_BRANDS = [
   "Suzuki", "Yamaha", "Honda", "BMW Motorrad", "BMW", "Kawasaki",
@@ -45,6 +254,8 @@ const MapComponent = dynamic(
 
 const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: string, point?: MapPoint, onBack: () => void }) => {
   const { firestore } = useFirebase();
+  const { user } = useUser();
+
   const col = point?.appSection === 'association' ? 'associations' : (point?.appSection === 'relais' ? 'relais' : (point?.appSection === 'creator' ? 'creators' : 'concessions'));
 
   const docRef = useMemoFirebase(() => {
@@ -54,50 +265,369 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
 
   const { data: pro, isLoading } = useDoc<Dealership>(docRef);
 
+  const ADMIN_EMAILS = [
+    'badjoe950@hotmail.com',
+    'badaire.jonathan@gmail.com',
+  ];
+
+  const isAdmin = Boolean(
+    typeof user?.email === 'string' &&
+    ADMIN_EMAILS.includes(user.email)
+  );
+
+  const trackSidebarStat = (
+    field:
+      | 'stats_tel'
+      | 'stats_web'
+      | 'stats_itineraire'
+      | 'stats_instagram'
+  ) => {
+    if (
+      isAdmin ||
+      !pro ||
+      !dealershipId
+    ) {
+      return;
+    }
+
+    void fetch('/api/track-stat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        collection: col,
+        id: dealershipId,
+        field,
+        title: pro.title || '',
+        departement:
+          (pro as any).departement || '',
+      }),
+      keepalive: true,
+    })
+      .then(response => {
+        if (!response.ok) {
+          console.warn(
+            '[MAP SIDEBAR] track-stat refusé',
+            {
+              status: response.status,
+              collection: col,
+              id: dealershipId,
+              field,
+            }
+          );
+        }
+      })
+      .catch(error => {
+        console.warn(
+          '[MAP SIDEBAR] track-stat indisponible',
+          error
+        );
+      });
+  };
+
   if (isLoading) return <div className="p-8 space-y-6"><Skeleton className="h-48 w-full rounded-3xl" /><Skeleton className="h-8 w-3/4" /></div>;
   if (!pro) return null;
 
   if (point?.appSection === 'creator') {
+    const creatorData =
+      pro as any;
+
+    const creatorName =
+      String(
+        creatorData.displayName ||
+        pro.title ||
+        'Créateur LabelMoto'
+      ).trim();
+
+    const creatorCorpus =
+      [
+        creatorData.creatorType,
+        creatorData.activite,
+        pro.category,
+        creatorData.info,
+        creatorData.description,
+        creatorData.bio,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+    const creatorExplicitType =
+      String(
+        creatorData.creatorType ||
+        creatorData.activite ||
+        ''
+      ).trim();
+
+    const hasPhoto =
+      /photo|photograph/.test(
+        creatorCorpus
+      );
+
+    const hasVideo =
+      /vid[ée]o|videograph|film/.test(
+        creatorCorpus
+      );
+
+    const hasEvent =
+      /event|événement|evenement/.test(
+        creatorCorpus
+      );
+
+    let creatorActivity =
+      creatorExplicitType;
+
+    if (!creatorActivity) {
+      if (hasPhoto && hasVideo) {
+        creatorActivity =
+          'Photographe & vidéaste moto';
+      }
+      else if (hasPhoto) {
+        creatorActivity =
+          'Photographe moto';
+      }
+      else if (hasVideo) {
+        creatorActivity =
+          'Vidéaste moto';
+      }
+      else {
+        creatorActivity =
+          pro.category ||
+          'Créateur moto';
+      }
+
+      if (
+        hasEvent &&
+        !/événementiel/i.test(
+          creatorActivity
+        )
+      ) {
+        creatorActivity +=
+          ' • Événementiel';
+      }
+    }
+
+    const rawAddress =
+      String(
+        pro.address ||
+        ''
+      ).trim();
+
+    let creatorLocation =
+      String(
+        creatorData.city ||
+        creatorData.ville ||
+        creatorData.publicLocationLabel ||
+        ''
+      ).trim();
+
+    if (
+      !creatorLocation &&
+      rawAddress
+    ) {
+      const postalMatch =
+        rawAddress.match(
+          /\b\d{5}\s+([^,]+)/i
+        );
+
+      if (postalMatch?.[1]) {
+        creatorLocation =
+          postalMatch[1].trim();
+      }
+      else {
+        const addressParts =
+          rawAddress
+            .split(',')
+            .map(
+              (part: string) =>
+                part.trim()
+            )
+            .filter(Boolean)
+            .filter(
+              (part: string) =>
+                !/^france$/i.test(part)
+            );
+
+        if (
+          addressParts.length === 1
+        ) {
+          creatorLocation =
+            addressParts[0];
+        }
+        else if (
+          addressParts.length > 1
+        ) {
+          creatorLocation =
+            addressParts[
+              addressParts.length - 1
+            ];
+        }
+      }
+    }
+
+    const creatorImage =
+      String(
+        creatorData.photoUrl ||
+        creatorData.imageUrl ||
+        creatorData.imgUrl ||
+        ''
+      ).trim();
+
+    const directInstagram =
+      String(
+        creatorData.instagramUrl ||
+        ''
+      ).trim();
+
+    const oldInstagram =
+      String(
+        creatorData.instagram ||
+        ''
+      )
+        .trim()
+        .replace(/^@/, '');
+
+    const creatorInstagram =
+      /^https?:\/\//i.test(
+        directInstagram
+      )
+        ? directInstagram
+        : (
+            oldInstagram
+              ? `https://www.instagram.com/${oldInstagram}/`
+              : ''
+          );
+
+    const creatorWebsite =
+      String(
+        creatorData.website ||
+        ''
+      ).trim();
+
+    const creatorEmail =
+      String(
+        creatorData.email ||
+        ''
+      ).trim();
+
+    const initials =
+      creatorName
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(
+          (part: string) =>
+            part[0]?.toUpperCase() ||
+            ''
+        )
+        .join('');
+
     return (
-      <div className="bg-white rounded-[2.5rem] p-8 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300">
-        <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-8 transition-colors">
-          <ArrowLeft className="h-4 w-4" /> Retour à la liste
+      <div className="animate-in fade-in slide-in-from-left-4 duration-300">
+        <button
+          onClick={onBack}
+          className="mb-5 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:text-brand"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour à la liste
         </button>
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            {(pro as any).photoUrl ? (
-              <img src={(pro as any).photoUrl} alt={pro.title} className="w-16 h-16 rounded-full object-cover border-4 border-brand" />
+
+        <div className="relative overflow-hidden rounded-[2rem] border border-brand/15 bg-[#fff1e5] p-6 shadow-sm">
+          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-brand/10 blur-2xl" />
+
+          <div className="relative flex items-center gap-4">
+            {creatorImage ? (
+              <img
+                src={creatorImage}
+                alt={creatorName}
+                className="h-20 w-20 shrink-0 rounded-[1.5rem] border-[3px] border-brand bg-white object-cover shadow-md"
+              />
             ) : (
-              <div className="w-16 h-16 rounded-full bg-brand/20 flex items-center justify-center border-4 border-brand">
-                <span className="text-2xl font-black text-brand">{pro.title?.[0]?.toUpperCase()}</span>
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.5rem] border-[3px] border-brand bg-white/75 text-2xl font-black text-foreground shadow-sm">
+                {initials}
               </div>
             )}
-            <div>
-              <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-1">{pro.title}</h3>
-              <p className="text-sm font-black uppercase text-brand italic">{(pro as any).activite || pro.category}</p>
+
+            <div className="min-w-0 flex-1">
+              <span className="mb-2 inline-flex rounded-full border border-brand/15 bg-white/70 px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.18em] text-muted-foreground">
+                Profil créateur
+              </span>
+
+              <h3 className="break-words text-2xl font-black uppercase leading-[0.95] tracking-[-0.02em] text-foreground">
+                {creatorName}
+              </h3>
+
+              <p className="mt-2 text-[10px] font-black uppercase tracking-[0.12em] text-brand">
+                {creatorActivity}
+              </p>
+
+              {creatorLocation && (
+                <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5 text-brand" />
+                  Basé à {creatorLocation}
+                </div>
+              )}
             </div>
           </div>
-          {(pro as any).description && (
-            <p className="text-sm text-muted-foreground leading-relaxed">{(pro as any).description}</p>
+
+          {(creatorInstagram ||
+            creatorWebsite ||
+            creatorEmail) && (
+            <div className="relative mt-5 flex flex-wrap gap-2">
+              {creatorInstagram && (
+                <a
+                  href={creatorInstagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() =>
+                    trackSidebarStat(
+                      'stats_instagram'
+                    )
+                  }
+                  className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-4 text-[9px] font-black uppercase tracking-widest text-white shadow-md transition hover:opacity-90"
+                >
+                  <Instagram className="h-3.5 w-3.5" />
+                  Instagram
+                </a>
+              )}
+
+              {creatorWebsite && (
+                <a
+                  href={creatorWebsite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() =>
+                    trackSidebarStat(
+                      'stats_web'
+                    )
+                  }
+                  className="inline-flex h-10 items-center gap-2 rounded-full border border-brand/15 bg-white/75 px-4 text-[9px] font-black uppercase tracking-widest text-foreground transition hover:border-brand/35 hover:bg-white"
+                >
+                  <Globe className="h-3.5 w-3.5 text-brand" />
+                  Portfolio
+                </a>
+              )}
+
+              {creatorEmail && (
+                <a
+                  href={`mailto:${creatorEmail}`}
+                  className="inline-flex h-10 items-center gap-2 rounded-full border border-brand/15 bg-white/50 px-4 text-[9px] font-black uppercase tracking-widest text-foreground transition hover:border-brand/35 hover:bg-white"
+                >
+                  <Mail className="h-3.5 w-3.5 text-brand" />
+                  Contact
+                </a>
+              )}
+            </div>
           )}
-          <div className="space-y-3">
-            {(pro as any).instagram && (
-              <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-2xl">
-                <Camera className="h-4 w-4 text-brand shrink-0" />
-                <a href={`https://instagram.com/${(pro as any).instagram.replace('@','')}`} target="_blank" rel="noreferrer" className="font-bold text-brand text-sm hover:underline">{(pro as any).instagram}</a>
-              </div>
-            )}
-            {(pro as any).ville && (
-              <div className="flex items-center gap-3 p-3 bg-muted/20 rounded-2xl">
-                <MapPin className="h-4 w-4 text-brand shrink-0" />
-                <span className="font-bold text-sm">{(pro as any).ville}</span>
-              </div>
-            )}
-          </div>
-          <div className="pt-4 border-t border-dashed">
-            <Link href={`/creators/${pro.slug || pro.id}`} className="block text-center p-4 bg-muted/20 rounded-2xl hover:bg-brand/5 group transition-colors">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-brand">Voir le profil complet</span>
-              <ChevronRight className="inline-block h-3 w-3 ml-2 text-muted-foreground group-hover:text-brand" />
+
+          <div className="relative mt-4 border-t border-brand/10 pt-3">
+            <Link
+              href={`/creators/${pro.slug || pro.id}`}
+              className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-brand transition hover:opacity-70"
+            >
+              Profil complet
+              <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
@@ -121,6 +651,11 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
           target="_blank"
           rel="noopener noreferrer"
           className="block bg-muted/30 p-5 rounded-3xl border-2 border-dashed hover:border-brand hover:bg-brand/5 transition-all group"
+          onClick={() =>
+            trackSidebarStat(
+              'stats_itineraire'
+            )
+          }
         >
           <div className="flex items-start gap-3">
             <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
@@ -133,12 +668,12 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
         <div className="grid grid-cols-3 gap-2">
           {pro.phoneNumber && (
             <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
-              <a href={`tel:${pro.phoneNumber}`}><Phone className="mr-1 h-3 w-3 md:h-4 w-4" /> Appeler</a>
+              <a href={`tel:${pro.phoneNumber}`} onClick={() => trackSidebarStat('stats_tel')}><Phone className="mr-1 h-3 w-3 md:h-4 w-4" /> Appeler</a>
             </Button>
           )}
           {pro.website && (
             <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
-              <a href={pro.website} target="_blank" rel="noopener noreferrer"><Globe className="mr-1 h-3 w-3 md:h-4 w-4" /> Site</a>
+              <a href={pro.website} target="_blank" rel="noopener noreferrer" onClick={() => trackSidebarStat('stats_web')}><Globe className="mr-1 h-3 w-3 md:h-4 w-4" /> Site</a>
             </Button>
           )}
           <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
@@ -471,6 +1006,165 @@ function MapPageComponent() {
 
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);
+
+  const loadLiveMapPoints =
+    useCallback(
+      async (): Promise<MapPoint[]> => {
+        try {
+          const { firebaseApp } =
+            initializeFirebaseClient();
+
+          if (!firebaseApp) {
+            return [];
+          }
+
+          const db =
+            getFirestore(firebaseApp);
+
+          const snapshot =
+            await getDocs(
+              query(
+                collection(db, 'cache'),
+                where(
+                  'kind',
+                  '==',
+                  'map_point_live'
+                )
+              )
+            );
+
+          return snapshot.docs
+            .map(document => {
+              const data =
+                document.data();
+
+              const latitude =
+                Number(data.lat);
+
+              const longitude =
+                Number(data.lng);
+
+              return {
+                id:
+                  String(
+                    data.id || ''
+                  ),
+                latitude,
+                longitude,
+                title:
+                  String(
+                    data.t ||
+                    data.title ||
+                    data.id ||
+                    ''
+                  ),
+                slug:
+                  String(
+                    data.s ||
+                    data.slug ||
+                    data.id ||
+                    ''
+                  ),
+                appSection:
+                  String(
+                    data.a ||
+                    data.appSection ||
+                    'shopping'
+                  ),
+                category:
+                  String(
+                    data.c ||
+                    data.category ||
+                    'concession'
+                  ),
+                rating:
+                  data.r ?? null,
+                imgUrl:
+                  data.i || null,
+                address:
+                  String(
+                    data.addr ||
+                    data.address ||
+                    ''
+                  ),
+                brands:
+                  Array.isArray(data.b)
+                    ? data.b
+                    : [],
+              } as MapPoint;
+            })
+            .filter(
+              point =>
+                point.id &&
+                Number.isFinite(
+                  point.latitude
+                ) &&
+                Number.isFinite(
+                  point.longitude
+                )
+            );
+        }
+        catch (error) {
+          console.warn(
+            '[MAP] Index live indisponible:',
+            error
+          );
+
+          return [];
+        }
+      },
+      []
+    );
+
+  const loadCompleteMapPoints =
+    useCallback(
+      async (): Promise<MapPoint[]> => {
+        const [
+          staticPoints,
+          livePoints,
+        ] =
+          await Promise.all([
+            loadPublicMapPoints(),
+            loadLiveMapPoints(),
+          ]);
+
+        const merged =
+          new Map<string, MapPoint>();
+
+        for (
+          const point
+          of staticPoints as MapPoint[]
+        ) {
+          merged.set(
+            point.id,
+            point
+          );
+        }
+
+        for (
+          const point
+          of livePoints
+        ) {
+          /*
+           * Le point live est prioritaire :
+           * il permet aussi de refléter une
+           * modification récente avant la
+           * prochaine reconstruction du JSON.
+           */
+          merged.set(
+            point.id,
+            point
+          );
+        }
+
+        return Array.from(
+          merged.values()
+        );
+      },
+      [
+        loadLiveMapPoints,
+      ]
+    );
   const [deptCounts, setDeptCounts] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [desktopWhat, setDesktopWhat] = useState('');
@@ -515,6 +1209,148 @@ function MapPageComponent() {
 
   const recentSearchStorageKey =
     'labelmoto-map-recent-searches-v1';
+
+  // LABELMOTO DESKTOP POPOVER EXCLUSIVITY
+  useEffect(() => {
+    const closeFilterMenu = () => {
+      const filterRoot =
+        document.querySelector<HTMLDetailsElement>(
+          '[data-map-filter-root]'
+        );
+
+      if (
+        filterRoot?.open
+      ) {
+        filterRoot.open =
+          false;
+      }
+    };
+
+    const handleDesktopPointerDown = (
+      event: PointerEvent
+    ) => {
+      if (
+        window.innerWidth < 1024
+      ) {
+        return;
+      }
+
+      const target =
+        event.target;
+
+      if (
+        !(target instanceof Node)
+      ) {
+        return;
+      }
+
+      const filterRoot =
+        document.querySelector<HTMLDetailsElement>(
+          '[data-map-filter-root]'
+        );
+
+      const recentRoot =
+        document.querySelector<HTMLElement>(
+          '[data-recent-search-root]'
+        );
+
+      const searchForm =
+        document.querySelector<HTMLElement>(
+          '[data-map-home-search]'
+        );
+
+      const insideFilter =
+        Boolean(
+          filterRoot?.contains(
+            target
+          )
+        );
+
+      const insideRecent =
+        Boolean(
+          recentRoot?.contains(
+            target
+          )
+        );
+
+      const insideSearchForm =
+        Boolean(
+          searchForm?.contains(
+            target
+          )
+        );
+
+      const clickedSearchInput =
+        target instanceof HTMLInputElement &&
+        insideSearchForm;
+
+      if (!insideFilter) {
+        closeFilterMenu();
+      }
+
+      // Cliquer dans Filtres ferme immédiatement
+      // le panneau de recherches récentes.
+      if (insideFilter) {
+        setRecentSearchPanel(
+          null
+        );
+
+        return;
+      }
+
+      // Un input de recherche est le déclencheur normal
+      // de RecentSearchesPanel : on ne le ferme pas ici.
+      if (
+        !insideRecent &&
+        !clickedSearchInput
+      ) {
+        setRecentSearchPanel(
+          null
+        );
+      }
+    };
+
+    const handleDesktopEscape = (
+      event: KeyboardEvent
+    ) => {
+      if (
+        event.key !== 'Escape' ||
+        window.innerWidth < 1024
+      ) {
+        return;
+      }
+
+      closeFilterMenu();
+
+      setRecentSearchPanel(
+        null
+      );
+    };
+
+    document.addEventListener(
+      'pointerdown',
+      handleDesktopPointerDown,
+      true
+    );
+
+    document.addEventListener(
+      'keydown',
+      handleDesktopEscape
+    );
+
+    return () => {
+      document.removeEventListener(
+        'pointerdown',
+        handleDesktopPointerDown,
+        true
+      );
+
+      document.removeEventListener(
+        'keydown',
+        handleDesktopEscape
+      );
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -741,10 +1577,27 @@ function MapPageComponent() {
       initialSearch
     );
 
-    setActiveFilters(
+    const normalizedInitialFilters =
       initialFilter
-        ? initialFilter.split(',').filter(Boolean)
-        : []
+        ? initialFilter
+            .split(',')
+            .map(
+              normalizeMapDirectoryFilterId
+            )
+            .filter(
+              (
+                value
+              ): value is MapDirectoryFilterId =>
+                value !== null
+            )
+        : [];
+
+    setActiveFilters(
+      Array.from(
+        new Set(
+          normalizedInitialFilters
+        )
+      )
     );
 
     setSelectedId(initialSelectedId);
@@ -782,7 +1635,7 @@ function MapPageComponent() {
 
     if (appliedSearchTerm) params.set('search', appliedSearchTerm);
 
-    if (activeFilters.length > 0 && activeFilters.length < 5) {
+    if (activeFilters.length > 0) {
       params.set('filter', activeFilters.join(','));
     }
 
@@ -1062,12 +1915,20 @@ function MapPageComponent() {
     appliedSearchTerm,
     forceProfessionalTextSearch,
   ]);
+  const isMunicipalArrondissementSearch =
+    isMunicipalArrondissementQuery(
+      appliedSearchTerm
+    );
+
   const shouldLoadPoints =
     activeFilters.length > 0 ||
     Boolean(selectedId) ||
     (
       appliedSearchTerm.trim().length > 0 &&
-      !isPureGeoSearch
+      (
+        !isPureGeoSearch ||
+        isMunicipalArrondissementSearch
+      )
     );
 
   // Index public partagé : aucun scan Firestore pour les marqueurs.
@@ -1078,7 +1939,7 @@ function MapPageComponent() {
 
     setIsLoadingPoints(true);
 
-    loadPublicMapPoints()
+    loadCompleteMapPoints()
       .then(mapped => {
         if (cancelled) return;
         setPoints(mapped as MapPoint[]);
@@ -1093,7 +1954,11 @@ function MapPageComponent() {
     return () => {
       cancelled = true;
     };
-  }, [shouldLoadPoints, points.length]);
+  }, [
+    shouldLoadPoints,
+    points.length,
+    loadCompleteMapPoints,
+  ]);
 
     // Chargement du cache départements
   useEffect(() => {
@@ -1279,12 +2144,12 @@ function MapPageComponent() {
 
     const cityFirstArrondissement =
       lowerQuery.match(
-        /\b(paris|lyon|marseille)\s+(\d{1,2})\s*(?:er|e|eme)?(?:\s+arrondissement)?\b/
+        /\b(paris|lyon|marseille)\s+(\d{1,2})\s*(?:er|e|eme|ieme)?(?:\s+arrondissement)?\b/
       );
 
     const numberFirstArrondissement =
       lowerQuery.match(
-        /\b(\d{1,2})\s*(?:er|e|eme)?(?:\s+arrondissement)?\s+(?:de\s+)?(paris|lyon|marseille)\b/
+        /\b(\d{1,2})\s*(?:er|e|eme|ieme)?(?:\s+arrondissement)?\s+(?:de\s+)?(paris|lyon|marseille)\b/
       );
 
     let arrondissement:
@@ -1606,13 +2471,14 @@ function MapPageComponent() {
       } | null = null;
 
     if (arrondissement) {
+      const arrondissementDept = arrondissement.dept;
       const loc =
         Object.entries(
           locationsData
         ).find(
           ([key]) =>
             key.startsWith(
-              arrondissement.dept
+              arrondissementDept
             )
         );
 
@@ -1658,13 +2524,14 @@ function MapPageComponent() {
       !targetGeo &&
       dept
     ) {
+      const departmentCode = dept;
       const loc =
         Object.entries(
           locationsData
         ).find(
           ([key]) =>
             key.startsWith(
-              dept
+              departmentCode
             )
         );
 
@@ -1878,6 +2745,17 @@ function MapPageComponent() {
   // Charger la limite administrative sélectionnée :
   // arrondissement OU département.
   useEffect(() => {
+    /*
+     * Un arrondissement est géré exclusivement
+     * par le chargeur officiel situé plus bas.
+     *
+     * Cela empêche deux effets concurrents
+     * d'écrire selectedAreaFeature.
+     */
+    if (searchIntent?.arrondissement) {
+      return;
+    }
+
     let cancelled = false;
 
     const loadBoundary =
@@ -2020,8 +2898,16 @@ function MapPageComponent() {
     if (!selectedId || points.length === 0) return;
     const target = points.find(p => p.id === selectedId);
     if (!target) return;
-    const section = target.appSection === 'both' ? 'shopping' : target.appSection;
-    if (section) setActiveFilters([section]);
+    const filter =
+      primaryMapDirectoryFilterForPoint(
+        target
+      );
+
+    if (filter) {
+      setActiveFilters(
+        [filter]
+      );
+    }
   }, [selectedId, points, activeFilters.length]);
 
   // ==========================================================
@@ -2037,12 +2923,16 @@ function MapPageComponent() {
       searchIntent?.arrondissement;
 
     if (!arrondissement) {
-      setSelectedAreaFeature(
-        null
-      );
-
       return;
     }
+
+    /*
+     * Pendant le chargement du nouvel arrondissement,
+     * supprimer une éventuelle ancienne limite.
+     */
+    setSelectedAreaFeature(
+      null
+    );
 
     let cancelled =
       false;
@@ -2243,9 +3133,13 @@ function MapPageComponent() {
         : [];
     }
 
-    // GEO SEUL : AUCUN PROFESSIONNEL
+    // GEO SEUL :
+    // une ville ou un département seuls peuvent rester
+    // sans professionnels, mais un arrondissement doit
+    // afficher ses professionnels.
     if (
       isPureGeoSearch &&
+      !isMunicipalArrondissementSearch &&
       activeFilters.length === 0 &&
       !selectedId
     ) {
@@ -2256,25 +3150,24 @@ function MapPageComponent() {
         activeFilters.length > 0;
 
       // ===============================================
-      // CATEGORIE
+      // 12 FILTRES LABELMOTO
+      //
+      // OU entre les filtres sélectionnés.
+      // Les critères marque / zone / recherche
+      // continuent ensuite à s appliquer en ET.
       // ===============================================
 
-      if (hasCategoryFilters) {
-        if (p.appSection === 'both') {
-          if (
-            !activeFilters.includes('shopping') &&
-            !activeFilters.includes('service')
-          ) {
-            return false;
-          }
-        }
-        else if (
-          !activeFilters.includes(
-            p.appSection
-          )
-        ) {
-          return false;
-        }
+      if (
+        hasCategoryFilters &&
+        !activeFilters.some(
+          filter =>
+            mapPointMatchesDirectoryFilter(
+              p,
+              filter
+            )
+        )
+      ) {
+        return false;
       }
 
       // =====================================================
@@ -2319,7 +3212,7 @@ function MapPageComponent() {
       const pDept =
         getItemDepartment(p);
 
-      const pBrands =
+      const pBrands: string[] =
         (
           (p as any).brands ||
           []
@@ -2545,6 +3438,7 @@ function MapPageComponent() {
     selectedAreaFeature,
     activeFilters,
     isPureGeoSearch,
+    isMunicipalArrondissementSearch,
     selectedId,
     searchAreaBounds,
     searchAreaZoom,
@@ -2630,57 +3524,19 @@ function MapPageComponent() {
     };
 
     const categoryMatches = (p: MapPoint) => {
-      if (activeFilters.length === 0) {
+      if (
+        activeFilters.length === 0
+      ) {
         return true;
       }
 
-      const section =
-        compact((p as any).appSection);
-
-      const categoryText = compact([
-        (p as any).appSection,
-        (p as any).category,
-        (p as any).activite,
-      ].join(' '));
-
-      return activeFilters.some(filter => {
-        if (section === compact(filter)) {
-          return true;
-        }
-
-        if (filter === 'shopping') {
-          return (
-            categoryText.includes('concession') ||
-            categoryText.includes('magasin') ||
-            categoryText.includes('shopping')
-          );
-        }
-
-        if (filter === 'service') {
-          return (
-            categoryText.includes('garage') ||
-            categoryText.includes('atelier') ||
-            categoryText.includes('service')
-          );
-        }
-
-        if (filter === 'association') {
-          return categoryText.includes('association');
-        }
-
-        if (filter === 'relais') {
-          return categoryText.includes('relais');
-        }
-
-        if (filter === 'creator') {
-          return (
-            categoryText.includes('creator') ||
-            categoryText.includes('createur')
-          );
-        }
-
-        return true;
-      });
+      return activeFilters.some(
+        filter =>
+          mapPointMatchesDirectoryFilter(
+            p,
+            filter
+          )
+      );
     };
 
     const candidates =
@@ -3139,24 +3995,106 @@ function MapPageComponent() {
 
   const FilterButtons = ({ mobile = false }) => {
     // L'ancienne barre située dans le drawer mobile
-    // est désactivée : la barre flottante est désormais
-    // commune au mobile et au desktop.
+    // reste désactivée : cette barre flottante
+    // est commune au mobile et au desktop.
     if (mobile) {
       return null;
     }
 
-    const filters = [
-      { id: 'shopping', label: 'Concessions', icon: Bike },
-      { id: 'service', label: 'Garages', icon: Wrench },
-      { id: 'association', label: 'Associations', icon: Users },
-      { id: 'relais', label: 'Relais motards', icon: Utensils },
-      { id: 'creator', label: 'Créateurs', icon: Camera },
+    const filters: Array<{
+      id: MapDirectoryFilterId;
+      label: string;
+      icon: React.ComponentType<{
+        className?: string;
+      }>;
+    }> = [
+      {
+        id: 'concessionnaires-revendeurs',
+        label: 'Concessions',
+        icon: Bike,
+      },
+      {
+        id: 'ateliers-mecaniciens',
+        label: 'Ateliers',
+        icon: Wrench,
+      },
+      {
+        id: 'association',
+        label: 'Associations',
+        icon: Users,
+      },
+      {
+        id: 'relais',
+        label: 'Relais moto',
+        icon: Utensils,
+      },
+      {
+        id: 'equipement-accessoires',
+        label: 'Équipement & accessoires',
+        icon: Bike,
+      },
+      {
+        id: 'location-moto',
+        label: 'Location moto',
+        icon: MapPin,
+      },
+      {
+        id: 'transport-moto',
+        label: 'Transport moto',
+        icon: MapIcon,
+      },
+      {
+        id: 'preparateurs-moto',
+        label: 'Préparateur moto',
+        icon: Wrench,
+      },
+      {
+        id: 'peintres-carrossiers',
+        label: 'Peintres - carrossiers',
+        icon: Wrench,
+      },
+      {
+        id: 'selliers-moto',
+        label: 'Sellerie',
+        icon: Bike,
+      },
+      {
+        id: 'photographes-videastes',
+        label: 'Photographe - vidéaste',
+        icon: Camera,
+      },
+      {
+        id: 'formation-moto-ecoles',
+        label: 'Formateur conduite',
+        icon: Users,
+      },
     ];
 
     return (
       <div
-        className="filter-scroll flex w-max items-center gap-2"
+        className={cn(
+          "filter-scroll",
+          isMobile
+            ? "flex w-max min-w-full flex-nowrap items-center gap-2 pr-2"
+            : "grid w-full grid-cols-6 gap-2"
+        )}
       >
+        {activeFilters.length > 0 && isMobile && (
+          <button
+            type="button"
+            onClick={() =>
+              setActiveFilters([])
+            }
+            className={cn(
+              "flex h-10 shrink-0 items-center justify-center rounded-full border px-3",
+              "whitespace-nowrap text-[11px] font-semibold shadow-sm transition-all active:scale-[0.97]",
+              "border-brand/30 bg-brand/10 text-brand hover:bg-brand/20"
+            )}
+          >
+            Réinitialiser
+          </button>
+        )}
+
         {filters.map(filter => {
           const isActive =
             activeFilters.includes(
@@ -3167,18 +4105,26 @@ function MapPageComponent() {
             <button
               key={filter.id}
               type="button"
+              aria-pressed={isActive}
               onClick={() => {
                 setActiveFilters(prev =>
                   prev.includes(filter.id)
                     ? prev.filter(
-                        id => id !== filter.id
+                        id =>
+                          id !== filter.id
                       )
-                    : [...prev, filter.id]
+                    : [
+                        ...prev,
+                        filter.id,
+                      ]
                 );
               }}
               className={cn(
-                "flex h-10 shrink-0 items-center gap-2 rounded-full border px-3.5",
-                "text-[12px] font-semibold shadow-sm transition-all active:scale-[0.97]",
+                "flex h-10 items-center justify-center gap-1.5 rounded-full border px-3",
+                "whitespace-nowrap text-[11px] font-semibold shadow-sm transition-all active:scale-[0.97]",
+                isMobile
+                  ? "shrink-0"
+                  : "min-w-0 w-full",
                 isActive
                   ? "border-brand bg-brand text-white shadow-md"
                   : "border-black/[0.09] bg-white text-[#333] hover:border-brand/35"
@@ -3505,6 +4451,10 @@ function MapPageComponent() {
         )
         .toLowerCase()
         .replace(
+          /&/g,
+          ' et '
+        )
+        .replace(
           /[^a-z0-9]+/g,
           ''
         );
@@ -3523,7 +4473,7 @@ function MapPageComponent() {
       try {
         const completeProfessionalPoints =
           (
-            await loadPublicMapPoints()
+            await loadCompleteMapPoints()
           ) as MapPoint[];
 
         if (
@@ -3538,8 +4488,59 @@ function MapPageComponent() {
         // si l'index complet est momentanément indisponible.
       }
 
+      /*
+       * =====================================================
+       * MARQUE SEULE = FILTRE DE MARQUE
+       * =====================================================
+       *
+       * Une recherche comme :
+       *
+       * Honda
+       * Yamaha
+       * BMW
+       * CFMOTO
+       *
+       * ne doit jamais être interprétée comme une fiche
+       * professionnelle exacte portant ce même nom.
+       *
+       * On laisse donc la recherche normale par marque
+       * continuer sans sélectionner un point et sans
+       * déplacer la carte.
+       */
+
+      const isBrandOnlyQuery =
+        professionalPoints.some(
+          point =>
+            (
+              (point as any).brands ||
+              []
+            ).some(
+              (brand: string) =>
+                compactProfessionalQuery(
+                  brand
+                ) ===
+                professionalQueryKey
+            )
+        );
+
+      if (isBrandOnlyQuery) {
+        setResolvedProfessionalId(
+          null
+        );
+
+        setSelectedId(
+          null
+        );
+
+        setForceProfessionalTextSearch(
+          false
+        );
+      }
+
       const exactProfessional =
-        professionalPoints.find(
+        isBrandOnlyQuery
+          ? undefined
+          : professionalPoints.find(
           point => {
             const possibleNames = [
               point.title,
@@ -4153,7 +5154,7 @@ function MapPageComponent() {
                 href="/entretien"
                 className="flex h-full items-center border-b-[3px] border-transparent transition-colors hover:text-brand"
               >
-                Entretien
+                Entretien / fiches techniques
               </a>
 
               <a
@@ -4163,12 +5164,6 @@ function MapPageComponent() {
                 Guides & conseils
               </a>
 
-              <a
-                href="/"
-                className="flex h-full items-center border-b-[3px] border-transparent transition-colors hover:text-brand"
-              >
-                Fiches moto
-              </a>
             </nav>
 
             <div className="ml-auto flex items-center gap-3">
@@ -4353,7 +5348,7 @@ function MapPageComponent() {
                 try {
                   const allSuggestionPoints =
                     (
-                      await loadPublicMapPoints()
+                      await loadCompleteMapPoints()
                     ) as MapPoint[];
 
                   if (
@@ -4493,42 +5488,234 @@ function MapPageComponent() {
           }}
           className="absolute left-6 top-[104px] z-[1500] w-[560px] rounded-[1.65rem] border border-black/[0.035] bg-white/[0.97] p-3 shadow-[0_18px_48px_rgba(0,0,0,0.09)]"
         >
-          <label
-            className="flex min-h-[55px] items-center gap-3 rounded-[1rem] border border-border/75 bg-white px-4"
+          <div
+            className="relative"
           >
-            <Search
-              className="h-[18px] w-[18px] shrink-0 text-brand"
-            />
+            <label
+              className="flex min-h-[55px] items-center gap-3 rounded-[1rem] border border-border/75 bg-white px-4 pr-[118px]"
+            >
+              <Search
+                className="h-[18px] w-[18px] shrink-0 text-brand"
+              />
 
-            <input
-              value={desktopWhat}
-              onChange={(event) => {
-                const value =
-                  event.target.value;
+              <input
+                value={desktopWhat}
+                onChange={(event) => {
+                  const value =
+                    event.target.value;
 
-                setDesktopWhat(
-                  value
-                );
+                  setDesktopWhat(
+                    value
+                  );
 
-                setSelectedId(null);
-                setIsDetailView(false);
-                setSelectionSource(null);
+                  setSelectedId(null);
+                  setIsDetailView(false);
+                  setSelectionSource(null);
 
+                  if (
+                    !value.trim() &&
+                    !desktopWhere.trim()
+                  ) {
+                    setAppliedSearchTerm(
+                      ''
+                    );
+                  }
+                }}
+                type="search"
+                placeholder="Que recherchez-vous ?"
+                className="min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
+              />
+            </label>
+
+            <details
+              data-map-filter-root
+              onToggle={(event) => {
                 if (
-                  !value.trim() &&
-                  !desktopWhere.trim()
+                  event.currentTarget.open
                 ) {
-                  setAppliedSearchTerm('');
+                  setRecentSearchPanel(
+                    null
+                  );
                 }
               }}
-              placeholder="Que recherchez-vous ?"
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              className="min-w-0 flex-1 bg-transparent text-[14px] font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground md:text-[13px] md:font-bold"
-            />
-          </label>
+              className="group absolute right-2 top-1/2 z-[1900] -translate-y-1/2"
+            >
+              <summary
+                className={cn(
+                  "flex h-[39px] cursor-pointer list-none items-center gap-1.5 rounded-xl border px-3 text-[12px] font-semibold shadow-sm transition-colors [&::-webkit-details-marker]:hidden",
+                  activeFilters.length > 0
+                    ? "border-brand bg-brand text-white"
+                    : "border-black/[0.08] bg-white text-foreground hover:border-brand/40"
+                )}
+              >
+                <span>
+                  {activeFilters.length > 0
+                    ? `Filtres (${activeFilters.length})`
+                    : 'Filtres'}
+                </span>
 
+                <ChevronDown
+                  className="h-3.5 w-3.5 transition-transform group-open:rotate-180"
+                />
+              </summary>
+
+              <div
+                className="absolute right-0 top-[calc(100%+10px)] z-[1900] w-[420px] overflow-hidden rounded-[1rem] border border-black/[0.08] bg-white shadow-[0_18px_45px_rgba(0,0,0,0.16)]"
+              >
+                <div
+                  className="border-b border-black/[0.06] px-4 py-3"
+                >
+                  <p
+                    className="text-[12px] font-bold text-foreground"
+                  >
+                    Filtrer par catégorie
+                  </p>
+
+                  <p
+                    className="mt-0.5 text-[11px] text-muted-foreground"
+                  >
+                    Plusieurs choix possibles
+                  </p>
+                </div>
+
+                <div
+                  className="max-h-[360px] overflow-y-auto p-2"
+                >
+                  {[
+                    {
+                      id: 'concessionnaires-revendeurs',
+                      label: 'Concessions',
+                      icon: Bike,
+                    },
+                    {
+                      id: 'ateliers-mecaniciens',
+                      label: 'Ateliers',
+                      icon: Wrench,
+                    },
+                    {
+                      id: 'association',
+                      label: 'Associations',
+                      icon: Users,
+                    },
+                    {
+                      id: 'relais',
+                      label: 'Relais moto',
+                      icon: Utensils,
+                    },
+                    {
+                      id: 'equipement-accessoires',
+                      label: 'Équipement & accessoires',
+                      icon: Bike,
+                    },
+                    {
+                      id: 'location-moto',
+                      label: 'Location moto',
+                      icon: MapPin,
+                    },
+                    {
+                      id: 'transport-moto',
+                      label: 'Transport moto',
+                      icon: MapIcon,
+                    },
+                    {
+                      id: 'preparateurs-moto',
+                      label: 'Préparateur moto',
+                      icon: Wrench,
+                    },
+                    {
+                      id: 'peintres-carrossiers',
+                      label: 'Peintres - carrossiers',
+                      icon: Wrench,
+                    },
+                    {
+                      id: 'selliers-moto',
+                      label: 'Sellerie',
+                      icon: Bike,
+                    },
+                    {
+                      id: 'photographes-videastes',
+                      label: 'Photographe - vidéaste',
+                      icon: Camera,
+                    },
+                    {
+                      id: 'formation-moto-ecoles',
+                      label: 'Formateur conduite',
+                      icon: Users,
+                    },
+                  ].map(filter => {
+                    const isActive =
+                      activeFilters.includes(
+                        filter.id
+                      );
+
+                    return (
+                      <button
+                        key={filter.id}
+                        type="button"
+                        aria-pressed={isActive}
+                        onClick={() => {
+                          setActiveFilters(prev =>
+                            prev.includes(filter.id)
+                              ? prev.filter(
+                                  id =>
+                                    id !== filter.id
+                                )
+                              : [
+                                  ...prev,
+                                  filter.id,
+                                ]
+                          );
+                        }}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] transition-colors",
+                          isActive
+                            ? "bg-brand/10 font-semibold text-brand"
+                            : "text-foreground hover:bg-muted/60"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px] font-black",
+                            isActive
+                              ? "border-brand bg-brand text-white"
+                              : "border-black/20 bg-white"
+                          )}
+                        >
+                          {isActive ? '✓' : ''}
+                        </span>
+
+                        <filter.icon
+                          className="h-4 w-4 shrink-0"
+                        />
+
+                        <span
+                          className="min-w-0 flex-1"
+                        >
+                          {filter.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {activeFilters.length > 0 && (
+                  <div
+                    className="border-t border-black/[0.06] p-2"
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveFilters([])
+                      }
+                      className="w-full rounded-xl px-3 py-2 text-center text-[12px] font-semibold text-brand hover:bg-brand/5"
+                    >
+                      Réinitialiser les filtres
+                    </button>
+                  </div>
+                )}
+              </div>
+            </details>
+          </div>
           <label
             className="mt-2 flex min-h-[55px] items-center gap-3 rounded-[1rem] border border-border/75 bg-white px-4"
           >
@@ -4596,36 +5783,50 @@ function MapPageComponent() {
       )}
       <RecentSearchesPanel />
 
-      {/* Catégories flottantes */}
-      {isViewportReady && (
+      {/* Filtres flottants — mobile uniquement */}
+      {isViewportReady && isMobile && (
         <div
           className={cn(
-            "z-[1450] overflow-hidden",
+            "z-[1450]",
             isMobile
-              ? "fixed left-0 right-0 top-[170px]"
-              : "absolute left-6 top-[310px] w-[560px]"
+              ? "fixed left-0 right-0 top-[170px] overflow-hidden"
+              : "absolute left-6 top-[310px] w-[620px] overflow-visible"
           )}
         >
           <div
+            aria-label="Filtres de la carte"
             className={cn(
-              "filter-scroll touch-pan-x overscroll-x-contain overflow-x-auto pb-2",
+              "filter-scroll",
               isMobile
-                ? "px-4"
-                : "px-0"
+                ? "touch-pan-x overscroll-x-contain overflow-x-auto scroll-smooth px-4 pb-2"
+                : "overflow-visible px-0 pb-2"
             )}
           >
+            {!isMobile && activeFilters.length > 0 && (
+              <div className="mb-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveFilters([])
+                  }
+                  className="rounded-full border border-brand/30 bg-white px-3 py-1.5 text-[11px] font-semibold text-brand shadow-sm hover:bg-brand/5"
+                >
+                  Réinitialiser
+                </button>
+              </div>
+            )}
             <FilterButtons />
           </div>
         </div>
       )}
 
       {isViewportReady && !isMobile && (
-        <aside className="absolute left-6 top-[366px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
+        <aside className="absolute left-6 top-[326px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
           <div className="hidden">
             <div className="shrink-0"><LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" /></div>
             <div className="shrink-0"><UserMenu /></div>
           </div>
-          <div ref={listScrollRef} className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+          <div ref={listScrollRef} className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pr-1 custom-scrollbar">
             {isDetailView && selectedId ? (
               <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
             ) : (
@@ -4649,6 +5850,7 @@ function MapPageComponent() {
                 {listPoints.map(p => (
                   <div key={p.id} ref={el => { cardRefs.current[p.id] = el; }}>
                     <DealershipCardItem
+                      className="w-full min-w-0 max-w-full"
                       point={p}
                       isSelected={p.id === selectedId}
                       onClick={() => handleMarkerClick(p.id)}
@@ -4851,6 +6053,7 @@ function MapPageComponent() {
                   {listPoints.map(p => (
                     <div key={p.id} ref={el => { cardRefs.current[p.id] = el; }}>
                       <DealershipCardItem
+                        className="w-full min-w-0 max-w-full"
                         point={p}
                         isSelected={p.id === selectedId}
                         onClick={() => handleMarkerClick(p.id)}

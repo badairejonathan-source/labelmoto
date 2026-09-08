@@ -30,14 +30,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Suzuki en France : 276 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Suzuki en France parmi 276 adresses vérifiées. SV650, GSX-S750, V-Strom, Katana — concessions officielles avec horaires et contacts sur LabelMoto.",
     h1: 'Concessionnaires Suzuki en France',
+    aboutTitle: "À propos de Suzuki",
     intro: [
-      "Suzuki est l'une des marques moto les plus implantées en France avec plus de 270 points de vente et d'entretien. Des roadsters GSX-S aux trails V-Strom en passant par le légendaire SV650, le réseau Suzuki couvre tout le territoire.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés Suzuki en France avec fiches vérifiées, avis communauté et coordonnées directes.",
+      "Suzuki naît à Hamamatsu en 1909 comme fabricant de métiers à tisser avant d’entrer dans le deux-roues motorisé avec le Power Free de 1952. La marque conserve une base technique forte au Japon : le Hamamatsu Plant produit aujourd’hui des motos et des moteurs de moto et abrite également un centre technique. Suzuki s’appuie parallèlement sur une production internationale selon les marchés et les cylindrées."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Japon · 1909 / moto 1952",
+        "description": "Suzuki est fondée à Hamamatsu en 1909 et lance le Power Free en 1952."
+      },
+      {
+        "label": "Fondateur",
+        "value": "Michio Suzuki",
+        "description": "Michio Suzuki fonde Suzuki Loom Works avant la diversification vers la mobilité."
+      },
+      {
+        "label": "Site moto",
+        "value": "Hamamatsu Plant",
+        "description": "Le site produit actuellement des motos et des moteurs de moto."
+      },
+      {
+        "label": "Production 2024",
+        "value": "≈ 80 000 motos à Hamamatsu",
+        "description": "Suzuki indique environ 80 000 motos produites sur le site au cours de l’exercice 2024."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-suzuki",
+        "title": "Histoire de Suzuki",
+        "content": "Michio Suzuki fonde Suzuki Loom Works à Hamamatsu en 1909. Après plusieurs décennies dans le textile, Suzuki entre dans la motorisation avec le Power Free de 36 cm³ en 1952. L’entreprise devient Suzuki Motor Co., Ltd. en 1954 puis développe rapidement des motos complètes."
+      },
+      {
+        "id": "hamamatsu-production",
+        "title": "Hamamatsu, production et développement",
+        "content": "Le Hamamatsu Plant produit actuellement des motos et des moteurs de moto. Suzuki indique une production d’environ 80 000 motos sur l’exercice 2024 et la présence, au sud du site, d’un centre technique dédié aux essais et au développement des motos. Des modèles majeurs destinés à l’export y sont assemblés."
+      },
+      {
+        "id": "moteurs-identite-suzuki",
+        "title": "Moteurs et identité technique",
+        "content": "Suzuki développe historiquement ses propres moteurs et a construit son image autour de solutions mécaniques efficaces, du deux-temps aux quatre-temps modernes. La production reste toutefois internationale : le pays d’assemblage peut changer selon la cylindrée, le marché et le modèle."
+      },
+      {
+        "id": "entretien-suzuki",
+        "title": "Révisions et entretien",
+        "content": "Une GSX-8S, une V-Strom, une Hayabusa ou un scooter Suzuki ont des calendriers différents. La réputation de robustesse ne remplace pas la documentation constructeur : intervalles, références et coûts doivent être rattachés au modèle et au millésime."
+      },
+      {
+        "id": "faq-suzuki",
+        "title": "FAQ Suzuki",
+        "content": "Suzuki est une marque japonaise née à Hamamatsu. Son activité moto débute en 1952 avec le Power Free. Le site de Hamamatsu fabrique toujours des motos et moteurs, mais toutes les Suzuki ne sont pas produites au Japon : l’origine dépend de la gamme et du marché."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Suzuki près de chez moi ?", a: "LabelMoto recense 276 points de vente et d'entretien Suzuki en France. Utilisez la carte interactive ou la recherche par ville pour trouver l'adresse la plus proche." },
-      { q: "Quel est le prix d'une révision Suzuki SV650 ?", a: "Une révision SV650 coûte environ 200 à 350 € en concession officielle selon le kilométrage. Les intervalles Suzuki sont généralement de 6 000 km." },
-      { q: "Les motos Suzuki sont-elles fiables ?", a: "Oui, Suzuki est réputé pour la fiabilité de ses modèles. Le SV650 et le V-Strom 650 figurent régulièrement parmi les motos les plus fiables de leur catégorie." },
+      {
+        "q": "Quelle est l’origine de Suzuki ?",
+        "a": "Suzuki naît à Hamamatsu en 1909 comme fabricant de métiers à tisser avant d’entrer dans le deux-roues motorisé avec le Power Free de 1952. La marque conserve une base technique forte au Japon : le Hamamatsu Plant produit aujourd’hui des motos et des moteurs de moto et abrite également un centre technique."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Suzuki ?",
+        "a": "Le Hamamatsu Plant produit actuellement des motos et des moteurs de moto. Suzuki indique une production d’environ 80 000 motos sur l’exercice 2024 et la présence, au sud du site, d’un centre technique dédié aux essais et au développement des motos."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Suzuki ?",
+        "a": "Une GSX-8S, une V-Strom, une Hayabusa ou un scooter Suzuki ont des calendriers différents. La réputation de robustesse ne remplace pas la documentation constructeur : intervalles, références et coûts doivent être rattachés au modèle et au millésime."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Suzuki ?",
+        "a": "Suzuki est une marque japonaise née à Hamamatsu. Son activité moto débute en 1952 avec le Power Free. Le site de Hamamatsu fabrique toujours des motos et moteurs, mais toutes les Suzuki ne sont pas produites au Japon : l’origine dépend de la gamme et du marché."
+      }
     ],
   },
   {
@@ -48,14 +110,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Yamaha en France : 248 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Yamaha en France parmi 248 adresses vérifiées. MT-07, MT-09, R1, Tracer, TMAX — concessions officielles avec horaires et contacts sur LabelMoto.",
     h1: 'Concessionnaires Yamaha en France',
+    aboutTitle: "À propos de Yamaha",
     intro: [
-      "Yamaha dispose d'un des réseaux les plus denses en France avec plus de 240 concessions et ateliers agréés. Des motos MT au TMAX en passant par les R-series, les YZF et les trails Ténéré, Yamaha propose une gamme complète pour tous les styles de pilotage.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés Yamaha en France avec fiches vérifiées, avis et coordonnées directes pour trouver le pro Yamaha le plus proche.",
+      "Yamaha Motor Co., Ltd. est fondée le 1er juillet 1955 après la séparation de l’activité moto de Nippon Gakki, aujourd’hui Yamaha Corporation. Genichi Kawakami en devient le premier président et la YA-1 est la première moto de la nouvelle entreprise. Yamaha Motor dispose aujourd’hui d’un réseau industriel mondial, tandis qu’au Japon la production moto a été progressivement consolidée autour de l’Iwata Main Factory. La compétition reste un axe historique fort de la marque."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Japon · 1955",
+        "description": "Yamaha Motor est fondée le 1er juillet 1955."
+      },
+      {
+        "label": "Fondateur",
+        "value": "Genichi Kawakami",
+        "description": "Kawakami dirige le lancement de l’activité moto et devient le premier président de Yamaha Motor."
+      },
+      {
+        "label": "Première moto",
+        "value": "YA-1 · 1955",
+        "description": "La YA-1 est la première moto Yamaha et remporte des succès en compétition dès sa première année."
+      },
+      {
+        "label": "Base japonaise",
+        "value": "Iwata · Shizuoka",
+        "description": "Yamaha a consolidé une part importante de ses opérations de production moto autour de l’Iwata Main Factory."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-yamaha",
+        "title": "Histoire de Yamaha Motor",
+        "content": "Yamaha Motor naît en 1955 de la séparation de l’activité moto de Nippon Gakki. Genichi Kawakami est le premier président de la nouvelle société et la YA-1 devient son premier modèle. La compétition accompagne immédiatement le lancement de la marque, qui remporte des courses japonaises dès 1955."
+      },
+      {
+        "id": "iwata-production-yamaha",
+        "title": "Iwata et production mondiale",
+        "content": "Au Japon, Yamaha a regroupé progressivement des opérations de production moto autour de l’Iwata Main Factory. En 2011, les lignes moteurs et véhicules complets y ont été consolidées, puis une nouvelle phase de regroupement des rôles de production autour d’Iwata a été annoncée en 2021 avec achèvement prévu en 2024. Yamaha reste parallèlement un constructeur mondial avec de nombreux sites hors du Japon."
+      },
+      {
+        "id": "moteurs-course-yamaha",
+        "title": "Moteurs, design et compétition",
+        "content": "La compétence moteur est centrale dans l’histoire de Yamaha Motor. La marque développe une large variété de motorisations et utilise depuis ses débuts la compétition comme terrain d’expérience et de communication. Yamaha célébrait en 2025 les 70 ans de sa fondation et de ses activités sportives."
+      },
+      {
+        "id": "entretien-yamaha",
+        "title": "Révisions et entretien",
+        "content": "Un MT-125, un Ténéré 700, un Tracer, un XMAX ou une YZF-R1 ne partagent pas les mêmes exigences. Les intervalles et pièces doivent être vérifiés sur la documentation du modèle, du marché et du millésime concernés."
+      },
+      {
+        "id": "faq-yamaha",
+        "title": "FAQ Yamaha",
+        "content": "Yamaha Motor est une entreprise japonaise distincte de Yamaha Corporation depuis 1955, même si les deux partagent l’héritage de Nippon Gakki et le symbole des diapasons. La YA-1 est sa première moto. Yamaha produit aujourd’hui dans plusieurs pays : l’origine d’un modèle doit être vérifiée individuellement."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Yamaha près de chez moi ?", a: "LabelMoto recense 248 points de vente et d'entretien Yamaha en France. Utilisez la carte interactive pour trouver l'adresse la plus proche de vous." },
-      { q: "Quel est le prix d'une révision Yamaha MT-07 ?", a: "Une révision MT-07 coûte environ 250 à 400 € en concession officielle. Les intervalles Yamaha sont de 10 000 km pour ce modèle." },
-      { q: "Quelle Yamaha choisir en permis A2 ?", a: "La MT-03, la YZF-R3 et la XSR300 sont les modèles Yamaha les plus populaires en A2. La MT-125 est idéale pour le permis A1. Consultez les fiches techniques sur LabelMoto pour comparer les coûts d'entretien." },
+      {
+        "q": "Quelle est l’origine de Yamaha ?",
+        "a": "Yamaha Motor Co., Ltd. est fondée le 1er juillet 1955 après la séparation de l’activité moto de Nippon Gakki, aujourd’hui Yamaha Corporation. Genichi Kawakami en devient le premier président et la YA-1 est la première moto de la nouvelle entreprise."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Yamaha ?",
+        "a": "Au Japon, Yamaha a regroupé progressivement des opérations de production moto autour de l’Iwata Main Factory. En 2011, les lignes moteurs et véhicules complets y ont été consolidées, puis une nouvelle phase de regroupement des rôles de production autour d’Iwata a été annoncée en 2021 avec achèvement prévu en 2024."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Yamaha ?",
+        "a": "Un MT-125, un Ténéré 700, un Tracer, un XMAX ou une YZF-R1 ne partagent pas les mêmes exigences. Les intervalles et pièces doivent être vérifiés sur la documentation du modèle, du marché et du millésime concernés."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Yamaha ?",
+        "a": "Yamaha Motor est une entreprise japonaise distincte de Yamaha Corporation depuis 1955, même si les deux partagent l’héritage de Nippon Gakki et le symbole des diapasons. La YA-1 est sa première moto. Yamaha produit aujourd’hui dans plusieurs pays : l’origine d’un modèle doit être vérifiée individuellement."
+      }
     ],
   },
   {
@@ -66,14 +190,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Honda en France : 235 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Honda en France parmi 235 adresses vérifiées. CB500, CB650R, Africa Twin, CB1000R — concessions officielles avec horaires et contacts sur LabelMoto.",
     h1: 'Concessionnaires Honda en France',
+    aboutTitle: "À propos de Honda",
     intro: [
-      "Honda est la marque moto numéro un mondiale et dispose d'un réseau solide en France avec plus de 230 concessions et ateliers agréés. Des scooters SH aux trails Africa Twin en passant par les CB, les CBR et les NC, Honda couvre tous les usages.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés Honda en France avec fiches vérifiées, avis communauté et coordonnées directes.",
+      "Honda Motor Co., Ltd. est fondée à Hamamatsu en 1948 après les premiers travaux de Soichiro Honda sur des moteurs auxiliaires pour bicyclettes. La marque devient ensuite le leader mondial du deux-roues par le volume. En mai 2025, Honda a franchi le cap de 500 millions de motos produites cumulativement. Son activité repose sur une ingénierie interne forte et un réseau industriel mondial capable de produire plus de 20 millions de motos par an dans 23 pays et territoires."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Japon · 1948",
+        "description": "Honda Motor Co., Ltd. est fondée à Hamamatsu le 24 septembre 1948."
+      },
+      {
+        "label": "Figures fondatrices",
+        "value": "Soichiro Honda · Takeo Fujisawa",
+        "description": "Leur complémentarité technique et commerciale structure les débuts de Honda."
+      },
+      {
+        "label": "Jalon mondial",
+        "value": "500 millions · 2025",
+        "description": "Honda a atteint 500 millions de motos produites cumulativement en mai 2025."
+      },
+      {
+        "label": "Réseau industriel",
+        "value": "37 sites · 23 pays/territoires",
+        "description": "Honda annonce une capacité mondiale supérieure à 20 millions de motos par an."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-honda",
+        "title": "Histoire de Honda",
+        "content": "Soichiro Honda crée le Honda Technical Research Institute en 1946. Le moteur A-Type est lancé en 1947, puis Honda Motor Co., Ltd. est fondée en septembre 1948. En 1949, la Dream D-Type devient la première moto complète développée par Honda, marquant le passage du moteur auxiliaire au constructeur de motos à part entière."
+      },
+      {
+        "id": "production-mondiale-honda",
+        "title": "Production mondiale",
+        "content": "Honda applique depuis longtemps une logique de production locale au plus près des marchés. En 2025, le groupe indiquait disposer de 37 entités de production moto dans 23 pays et territoires, avec une capacité annuelle supérieure à 20 millions d’unités. Le lieu de fabrication varie donc selon le modèle et le marché."
+      },
+      {
+        "id": "moteurs-rd-honda",
+        "title": "Moteurs, R&D et identité technique",
+        "content": "La conception moteur fait partie du cœur historique de Honda. Le groupe développe une très grande variété de motorisations et de plateformes, tout en répartissant leur industrialisation dans son réseau mondial. La marque associe ainsi ingénierie interne, production à grande échelle et adaptation locale."
+      },
+      {
+        "id": "entretien-honda",
+        "title": "Révisions et entretien",
+        "content": "Une CB125F, une Forza, une NC750X, une Africa Twin ou une Gold Wing ne partagent ni les mêmes opérations ni les mêmes coûts. La réputation de fiabilité de Honda ne remplace pas la documentation du modèle : intervalle, année, marché et référence moteur doivent être vérifiés avant toute publication d’entretien."
+      },
+      {
+        "id": "faq-honda",
+        "title": "FAQ Honda",
+        "content": "Honda est une marque japonaise fondée en 1948. Elle a franchi le cap de 500 millions de motos produites en 2025 et représente environ 40 % des ventes mondiales de motos sur l’exercice FY2025 selon son briefing officiel. Toutes les Honda ne sont pas fabriquées au Japon : la production est répartie dans un réseau mondial."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Honda près de chez moi ?", a: "LabelMoto recense 235 points de vente et d'entretien Honda en France. Utilisez la carte interactive pour trouver l'adresse la plus proche de vous." },
-      { q: "Quel est le prix d'une révision Honda CB500 ?", a: "Une révision Honda CB500 coûte environ 200 à 350 € en concession officielle. Les intervalles Honda sont généralement de 12 000 km pour ce modèle." },
-      { q: "Honda propose-t-il des motos en permis A2 ?", a: "Oui, Honda dispose d'une gamme A2 complète : CB500F, CB500X, CBR500R, CB125R et CB125F. Toutes sont bridables à 35 kW pour le permis A2." },
+      {
+        "q": "Quelle est l’origine de Honda ?",
+        "a": "Honda Motor Co., Ltd. est fondée à Hamamatsu en 1948 après les premiers travaux de Soichiro Honda sur des moteurs auxiliaires pour bicyclettes. La marque devient ensuite le leader mondial du deux-roues par le volume."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Honda ?",
+        "a": "Honda applique depuis longtemps une logique de production locale au plus près des marchés. En 2025, le groupe indiquait disposer de 37 entités de production moto dans 23 pays et territoires, avec une capacité annuelle supérieure à 20 millions d’unités."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Honda ?",
+        "a": "Une CB125F, une Forza, une NC750X, une Africa Twin ou une Gold Wing ne partagent ni les mêmes opérations ni les mêmes coûts. La réputation de fiabilité de Honda ne remplace pas la documentation du modèle : intervalle, année, marché et référence moteur doivent être vérifiés avant toute publication d’entretien."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Honda ?",
+        "a": "Honda est une marque japonaise fondée en 1948. Elle a franchi le cap de 500 millions de motos produites en 2025 et représente environ 40 % des ventes mondiales de motos sur l’exercice FY2025 selon son briefing officiel. Toutes les Honda ne sont pas fabriquées au Japon : la production est répartie dans un réseau mondial."
+      }
     ],
   },
   {
@@ -84,14 +270,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Kawasaki en France : 127 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Kawasaki en France parmi 127 adresses vérifiées. Z650, Z900, Ninja 400, Versys, Z125 — concessions officielles avec horaires et contacts sur LabelMoto.",
     h1: 'Concessionnaires Kawasaki en France',
+    aboutTitle: "À propos de Kawasaki",
     intro: [
-      "Kawasaki et son identité verte emblématique sont présents en France avec plus de 125 concessionnaires et ateliers agréés. Des Z125 aux H2R en passant par les Ninja, les Z et les Versys, la gamme Kawasaki couvre du 125cc à la supermoto.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés Kawasaki en France avec fiches vérifiées, avis et coordonnées directes.",
+      "Kawasaki est une marque japonaise issue du groupe industriel Kawasaki Heavy Industries. La production de ses premiers moteurs de moto débute en 1953 en s’appuyant sur des compétences acquises dans le développement de moteurs d’avion. Aujourd’hui, Kawasaki Motors, Ltd. a son siège et son site principal à Akashi, où sont fabriqués notamment des motos et des moteurs. L’histoire de la marque inclut également l’héritage de Meguro, important dans le développement des grosses cylindrées japonaises."
+    ],
+    highlights: [
+      {
+        "label": "Origine moto",
+        "value": "Japon · 1953",
+        "description": "Kawasaki commence à produire ses premiers moteurs de moto en 1953."
+      },
+      {
+        "label": "Cœur industriel",
+        "value": "Akashi · Hyogo",
+        "description": "Kawasaki Motors a son siège et son Head Works à Akashi."
+      },
+      {
+        "label": "Héritage",
+        "value": "Aircraft + Meguro",
+        "description": "L’aéronautique et l’héritage Meguro ont contribué à l’identité technique de la marque."
+      },
+      {
+        "label": "Familles emblématiques",
+        "value": "Z · Ninja · H2",
+        "description": "Kawasaki associe fortement son image aux moteurs performants et aux modèles sportifs."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-kawasaki",
+        "title": "Histoire de Kawasaki moto",
+        "content": "Kawasaki Heavy Industries commence à produire des moteurs de moto en 1953 en utilisant le savoir-faire issu des moteurs d’avion. La marque développe ensuite des modèles devenus emblématiques, des Mach et Z aux Ninja puis aux machines suralimentées H2."
+      },
+      {
+        "id": "akashi-meguro",
+        "title": "Akashi et l’héritage Meguro",
+        "content": "Akashi est le centre industriel majeur de Kawasaki Motors : le site produit des motos, des moteurs et d’autres véhicules powersports. Meguro, constructeur japonais historique, est également intégré à l’histoire Kawasaki et contribue au développement de la lignée W et au savoir-faire de la marque sur les grosses cylindrées."
+      },
+      {
+        "id": "moteurs-performance-kawasaki",
+        "title": "Moteurs et culture performance",
+        "content": "Kawasaki développe historiquement ses propres moteurs et relie fortement son image à la performance mécanique. Les familles Z, Ninja et H2 illustrent cette continuité, avec des architectures et niveaux de technologie très différents selon les générations."
+      },
+      {
+        "id": "entretien-kawasaki",
+        "title": "Révisions et entretien",
+        "content": "Une Ninja 400/500, une Z650, une Versys, une Z900 ou une ZX-10R ne se traitent pas comme une seule famille. Les périodicités, jeux aux soupapes, consommables et coûts doivent être documentés sur le manuel correspondant au modèle et au millésime."
+      },
+      {
+        "id": "faq-kawasaki",
+        "title": "FAQ Kawasaki",
+        "content": "Kawasaki est une marque japonaise issue de Kawasaki Heavy Industries. Sa branche moto exploite un héritage industriel et aéronautique, avec Akashi comme site central. Toutes les Kawasaki ne sont pas nécessairement assemblées au Japon : le réseau industriel de la marque est international et l’origine doit être vérifiée modèle par modèle."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Kawasaki près de chez moi ?", a: "LabelMoto recense 127 points de vente et d'entretien Kawasaki en France. Utilisez la carte interactive pour trouver l'adresse la plus proche." },
-      { q: "Quel est le prix d'une révision Kawasaki Z650 ?", a: "Une révision Z650 coûte environ 200 à 350 € en concession officielle. Les intervalles Kawasaki sont généralement de 12 000 km." },
-      { q: "Quelle Kawasaki choisir en permis A2 ?", a: "La Ninja 500 SE, la Z500 et la Z650 (bridée) sont les modèles Kawasaki les plus recommandés en A2. La Z125 est parfaite pour le permis A1." },
+      {
+        "q": "Quelle est l’origine de Kawasaki ?",
+        "a": "Kawasaki est une marque japonaise issue du groupe industriel Kawasaki Heavy Industries. La production de ses premiers moteurs de moto débute en 1953 en s’appuyant sur des compétences acquises dans le développement de moteurs d’avion."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Kawasaki ?",
+        "a": "Kawasaki développe historiquement ses propres moteurs et relie fortement son image à la performance mécanique. Les familles Z, Ninja et H2 illustrent cette continuité, avec des architectures et niveaux de technologie très différents selon les générations."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Kawasaki ?",
+        "a": "Une Ninja 400/500, une Z650, une Versys, une Z900 ou une ZX-10R ne se traitent pas comme une seule famille. Les périodicités, jeux aux soupapes, consommables et coûts doivent être documentés sur le manuel correspondant au modèle et au millésime."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Kawasaki ?",
+        "a": "Kawasaki est une marque japonaise issue de Kawasaki Heavy Industries. Sa branche moto exploite un héritage industriel et aéronautique, avec Akashi comme site central. Toutes les Kawasaki ne sont pas nécessairement assemblées au Japon : le réseau industriel de la marque est international et l’origine doit être vérifiée modèle par modèle."
+      }
     ],
   },
   {
@@ -120,14 +368,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire BMW Motorrad en France : 109 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire BMW Motorrad en France parmi 109 adresses vérifiées. GS, R1250, S1000RR, F900R, G310R — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires BMW Motorrad en France',
+    aboutTitle: "À propos de BMW Motorrad",
     intro: [
-      "BMW Motorrad est la référence premium du marché moto en France avec plus de 100 concessions agréées. Des routières GS aux sportives S1000RR en passant par les roadsters R et les F, BMW Motorrad propose une gamme haut de gamme couvrant tous les styles.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés BMW Motorrad en France avec fiches vérifiées, avis et coordonnées directes.",
+      "BMW Motorrad est la branche moto du BMW Group. Son histoire de constructeur commence en 1923 avec la R 32, qui installe deux signatures durables : le moteur boxer et la transmission par arbre. Berlin-Spandau est aujourd’hui le site industriel de référence de la marque et a célébré sa quatre-millionième moto en avril 2026. BMW Motorrad reste cependant un constructeur mondial : selon les familles, la production ou certains composants peuvent aussi provenir de partenaires et de sites hors d’Allemagne."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Allemagne · 1923",
+        "description": "La R 32 présentée en 1923 marque le début de BMW comme constructeur de motos."
+      },
+      {
+        "label": "Site de référence",
+        "value": "Berlin-Spandau",
+        "description": "Le site berlinois produit des motos BMW depuis 1969."
+      },
+      {
+        "label": "Signature",
+        "value": "Boxer + cardan",
+        "description": "Le boxer et la transmission par arbre sont des marqueurs historiques de BMW Motorrad."
+      },
+      {
+        "label": "Jalon industriel",
+        "value": "4 000 000 à Berlin · 2026",
+        "description": "BMW a célébré la quatre-millionième moto produite à Berlin en avril 2026."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-bmw-motorrad",
+        "title": "Histoire de BMW Motorrad",
+        "content": "La BMW R 32 est dévoilée en 1923 avec un bicylindre boxer et une transmission par arbre. Conçue sous la responsabilité de Max Friz, elle établit une architecture devenue emblématique. BMW Motorrad a depuis développé une gamme beaucoup plus large, du monocylindre aux quatre et six cylindres, en conservant le boxer comme l’un de ses principaux symboles."
+      },
+      {
+        "id": "berlin-spandau",
+        "title": "Berlin-Spandau, cœur industriel",
+        "content": "BMW fabrique des motos à Berlin-Spandau depuis 1969. Le site reste la grande référence industrielle de BMW Motorrad et a franchi en avril 2026 le cap des quatre millions de motos produites. Il concentre une part importante de la production des modèles premium destinés aux marchés mondiaux."
+      },
+      {
+        "id": "production-et-moteurs",
+        "title": "Conception BMW et production internationale",
+        "content": "L’ingénierie BMW Motorrad s’inscrit dans l’écosystème technique du BMW Group, mais toutes les motos et tous les composants ne sont pas fabriqués en Allemagne. Certaines petites cylindrées ou familles de moteurs sont industrialisées avec des partenaires et des sites internationaux. Le pays de fabrication doit donc être vérifié sur le modèle et le millésime concernés."
+      },
+      {
+        "id": "entretien-bmw",
+        "title": "Révisions et entretien",
+        "content": "Une G 310, une F 900, une R 1300 GS, une S 1000 RR ou une R 18 ont des architectures et des besoins très différents. Les périodicités, opérations et coûts ne doivent jamais être généralisés à toute la marque : les données du manuel et du réseau correspondant au modèle exact restent la référence."
+      },
+      {
+        "id": "faq-bmw",
+        "title": "FAQ BMW Motorrad",
+        "content": "BMW Motorrad est une marque allemande dont la première moto est la R 32 de 1923. Berlin-Spandau est son site industriel majeur, mais toute la gamme n’y est pas produite. Le boxer et le cardan restent des signatures historiques, sans résumer à eux seuls toutes les architectures proposées par BMW Motorrad."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire BMW Motorrad près de chez moi ?", a: "LabelMoto recense 109 concessions BMW Motorrad en France. Utilisez la carte interactive pour trouver l'adresse et les horaires du concessionnaire le plus proche." },
-      { q: "Quel est le prix d'entretien d'une BMW GS ?", a: "L'entretien d'une BMW R1250GS coûte environ 400 à 600 € pour une révision standard. Les intervalles BMW sont de 10 000 km. Un grand entretien (40 000 km) peut atteindre 1 500 €." },
-      { q: "BMW propose-t-il des motos en permis A2 ?", a: "Oui, la BMW G310R et la F900R (bridée) sont homologuées A2. La G310GS est également disponible en version bridée pour les jeunes permis." },
+      {
+        "q": "Quelle est l’origine de BMW Motorrad ?",
+        "a": "BMW Motorrad est la branche moto du BMW Group. Son histoire de constructeur commence en 1923 avec la R 32, qui installe deux signatures durables : le moteur boxer et la transmission par arbre."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de BMW Motorrad ?",
+        "a": "BMW fabrique des motos à Berlin-Spandau depuis 1969. Le site reste la grande référence industrielle de BMW Motorrad et a franchi en avril 2026 le cap des quatre millions de motos produites."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une BMW Motorrad ?",
+        "a": "Une G 310, une F 900, une R 1300 GS, une S 1000 RR ou une R 18 ont des architectures et des besoins très différents. Les périodicités, opérations et coûts ne doivent jamais être généralisés à toute la marque : les données du manuel et du réseau correspondant au modèle exact restent la référence."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur BMW Motorrad ?",
+        "a": "BMW Motorrad est une marque allemande dont la première moto est la R 32 de 1923. Berlin-Spandau est son site industriel majeur, mais toute la gamme n’y est pas produite. Le boxer et le cardan restent des signatures historiques, sans résumer à eux seuls toutes les architectures proposées par BMW Motorrad."
+      }
     ],
   },
   {
@@ -138,14 +448,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Triumph en France : 93 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Triumph en France parmi 93 adresses vérifiées. Bonneville, Tiger, Trident, Street Triple, Speed Twin — concessions officielles sur LabelMoto.",
     h1: 'Concessionnaires Triumph en France',
+    aboutTitle: "À propos de Triumph",
     intro: [
-      "Triumph, marque britannique légendaire fondée en 1902, dispose d'un réseau solide en France avec plus de 90 concessions agréées. Des roadsters Trident et Street Triple aux trails Tiger en passant par les Bonneville néo-classiques, Triumph séduit par son caractère unique.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés Triumph en France avec fiches vérifiées, avis et coordonnées directes.",
+      "Triumph est une marque britannique dont l’histoire moto commence en 1902 après des débuts dans le cycle à Coventry en 1887. La Triumph moderne renaît en 1990 avec une nouvelle gamme développée à Hinckley sous l’impulsion de John Bloor. Aujourd’hui encore, Triumph indique que le design, la construction des prototypes et l’ingénierie commencent à Hinckley, tandis que la fabrication est répartie dans un réseau international comprenant le Royaume-Uni, la Thaïlande et le Brésil."
+    ],
+    highlights: [
+      {
+        "label": "Origine moto",
+        "value": "Royaume-Uni · 1902",
+        "description": "La première Triumph motorisée est produite en 1902 après les débuts de l’entreprise dans le cycle."
+      },
+      {
+        "label": "Renaissance moderne",
+        "value": "Hinckley · 1990",
+        "description": "La marque moderne renaît avec une nouvelle gamme présentée en 1990."
+      },
+      {
+        "label": "Conception",
+        "value": "Hinckley",
+        "description": "Triumph indique que design, prototypes et ingénierie débutent à Hinckley."
+      },
+      {
+        "label": "Propriété",
+        "value": "Bloor Holdings",
+        "description": "Triumph Motorcycles Limited est une société privée détenue par Bloor Holdings, propriété de John Bloor."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-triumph",
+        "title": "Histoire de Triumph",
+        "content": "L’entreprise est fondée dans le cycle à Coventry en 1887 par Siegfried Bettmann et produit sa première moto en 1902. Après la disparition de l’ancienne structure industrielle, John Bloor relance Triumph : une nouvelle gamme est présentée en 1990 et la marque moderne s’organise autour de Hinckley."
+      },
+      {
+        "id": "hinckley-production",
+        "title": "Hinckley et production mondiale",
+        "content": "Hinckley reste le cœur de la conception Triumph. La FAQ officielle actuelle indique que chaque moto commence sa vie à Hinckley, où se déroulent le design, la construction des prototypes et l’ingénierie. Triumph exploite parallèlement un réseau mondial de fabrication avec des sites au Royaume-Uni, en Thaïlande et au Brésil."
+      },
+      {
+        "id": "moteurs-triumph",
+        "title": "Moteurs et identité technique",
+        "content": "Triumph a construit une forte identité autour de ses trois-cylindres et de ses bicylindres Modern Classic, tout en ajoutant de nouvelles familles monocylindres. L’ingénierie est pilotée par Triumph, mais l’industrialisation et le site d’assemblage peuvent varier selon la plateforme."
+      },
+      {
+        "id": "entretien-triumph",
+        "title": "Révisions et entretien",
+        "content": "Une Speed 400, une Street Triple, une Tiger 900, une Bonneville ou une Rocket 3 n’ont pas les mêmes opérations ni les mêmes budgets. Les périodicités doivent être vérifiées sur la documentation du modèle et de l’année concernés."
+      },
+      {
+        "id": "faq-triumph",
+        "title": "FAQ Triumph",
+        "content": "Triumph est une marque britannique dont l’histoire moto commence en 1902. La marque moderne est centrée sur Hinckley depuis 1990. Les Triumph ne sont pas toutes fabriquées au Royaume-Uni : la production est internationale, tandis que la conception et l’ingénierie restent fortement ancrées à Hinckley."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Triumph près de chez moi ?", a: "LabelMoto recense 93 concessions Triumph en France. Utilisez la carte interactive pour trouver l'adresse la plus proche avec les horaires et contacts." },
-      { q: "Quel est le prix d'entretien d'un Triumph Trident 660 ?", a: "Une révision Trident 660 coûte environ 280 à 420 € en concession officielle. Les intervalles Triumph sont de 16 000 km — parmi les plus longs du marché." },
-      { q: "Triumph propose-t-il des motos en permis A2 ?", a: "Oui, la Trident 660 est bridable à 35 kW pour le permis A2, tout en conservant ses performances une fois le permis A obtenu. C'est l'une des meilleures motos A2 du marché." },
+      {
+        "q": "Quelle est l’origine de Triumph ?",
+        "a": "Triumph est une marque britannique dont l’histoire moto commence en 1902 après des débuts dans le cycle à Coventry en 1887. La Triumph moderne renaît en 1990 avec une nouvelle gamme développée à Hinckley sous l’impulsion de John Bloor."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Triumph ?",
+        "a": "Hinckley reste le cœur de la conception Triumph. La FAQ officielle actuelle indique que chaque moto commence sa vie à Hinckley, où se déroulent le design, la construction des prototypes et l’ingénierie."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Triumph ?",
+        "a": "Une Speed 400, une Street Triple, une Tiger 900, une Bonneville ou une Rocket 3 n’ont pas les mêmes opérations ni les mêmes budgets. Les périodicités doivent être vérifiées sur la documentation du modèle et de l’année concernés."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Triumph ?",
+        "a": "Triumph est une marque britannique dont l’histoire moto commence en 1902. La marque moderne est centrée sur Hinckley depuis 1990. Les Triumph ne sont pas toutes fabriquées au Royaume-Uni : la production est internationale, tandis que la conception et l’ingénierie restent fortement ancrées à Hinckley."
+      }
     ],
   },
   {
@@ -228,14 +600,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire KTM en France : 54 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire KTM en France parmi 54 adresses vérifiées. Duke 125, 390, 790, Adventure, RC — concessions officielles avec contacts directs sur LabelMoto.",
     h1: 'Concessionnaires KTM en France',
+    aboutTitle: "À propos de KTM",
     intro: [
-      "KTM, la marque autrichienne au casque orange, dispose d'un réseau de plus de 50 concessions agréées en France. Des Duke 125 aux Adventure 1290 en passant par les RC sportives et les Enduro, KTM propose des motos sportives et techniquement avancées pour les pilotes exigeants.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés KTM en France avec fiches vérifiées, avis et coordonnées directes.",
+      "KTM est une marque autrichienne née à Mattighofen, dont la production de motos en série commence en 1953. Son identité reste profondément liée à la compétition et à la philosophie « Ready to Race ». Depuis la restructuration de 2025, KTM AG est détenue à 100 % par Bajaj Mobility AG, elle-même contrôlée à environ 74,9 % par une filiale de Bajaj Auto. La production est internationale : l’Autriche reste le cœur de la marque, tandis que certaines petites cylindrées sont produites en Inde et les KTM 790 Duke/Adventure en Chine dans le cadre du partenariat avec CFMOTO."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Autriche · 1953",
+        "description": "La production en série des motos KTM démarre à Mattighofen en 1953."
+      },
+      {
+        "label": "Cœur de marque",
+        "value": "Mattighofen",
+        "description": "KTM conserve en Autriche son ancrage historique, technique et industriel."
+      },
+      {
+        "label": "Groupe actuel",
+        "value": "Bajaj Mobility AG",
+        "description": "KTM AG est détenue à 100 % par Bajaj Mobility AG, sous contrôle du groupe Bajaj Auto."
+      },
+      {
+        "label": "Production mondiale",
+        "value": "Autriche · Inde · Chine",
+        "description": "Le lieu de fabrication varie selon la plateforme et le modèle."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-ktm",
+        "title": "Histoire de KTM",
+        "content": "KTM trouve son origine dans l’atelier ouvert par Hans Trunkenpolz à Mattighofen dans les années 1930. La production en série de motos commence en 1953. La marque se construit ensuite autour du tout-terrain, de la compétition et d’une philosophie produit centrée sur la légèreté et la performance."
+      },
+      {
+        "id": "groupe-ktm-2026",
+        "title": "KTM après la restructuration de 2025",
+        "content": "La structure actionnariale a profondément changé. Bajaj Auto a pris le contrôle du groupe fin 2025. En 2026, Bajaj Mobility AG est la holding de KTM AG ; elle détient KTM AG à 100 % et est elle-même contrôlée à environ 74,9 % par Bajaj Auto International Holdings AG, filiale indirecte de Bajaj Auto. Les marques KTM, Husqvarna et GASGAS restent réunies dans ce groupe."
+      },
+      {
+        "id": "production-ktm",
+        "title": "Production : Autriche, Inde et Chine",
+        "content": "L’Autriche reste le cœur industriel de KTM, dont la production a été relancée à plein régime en 2025. Bajaj produit de nombreuses petites cylindrées KTM et Husqvarna à Chakan en Inde. KTM indique par ailleurs que le partenariat avec CFMOTO supervise la production mondiale en Chine des 790 Duke et 790 Adventure."
+      },
+      {
+        "id": "entretien-ktm",
+        "title": "Révisions et entretien",
+        "content": "Une 125 Duke, une 390 Adventure, une 690, une 890/990 ou une EXC ne partagent pas les mêmes contraintes. Les modèles offroad et sportifs sont particulièrement sensibles à l’usage réel. Les intervalles et coûts doivent donc être documentés au niveau du modèle et du millésime."
+      },
+      {
+        "id": "faq-ktm",
+        "title": "FAQ KTM",
+        "content": "KTM reste une marque autrichienne par son origine et son ancrage à Mattighofen, mais son groupe est aujourd’hui sous contrôle Bajaj Auto. Toutes les KTM ne sont pas fabriquées en Autriche : certaines familles sont produites en Inde et en Chine. Le lieu réel de fabrication doit être vérifié pour le modèle concerné."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire KTM près de chez moi ?", a: "LabelMoto recense 54 concessions KTM en France. Utilisez la carte interactive pour trouver l'adresse la plus proche avec les horaires et contacts." },
-      { q: "Quel est le prix d'entretien d'une KTM Duke ?", a: "Une révision KTM 125 Duke coûte environ 200 à 320 € en concession officielle. Les intervalles KTM sont de 5 000 km, soit plus fréquents que la moyenne — à anticiper dans le budget." },
-      { q: "KTM propose-t-elle des motos en permis A2 ?", a: "Oui, la KTM 390 Duke, la 390 Adventure et la RC390 sont parfaitement adaptées au permis A2. La Duke 125 est idéale pour le permis A1." },
+      {
+        "q": "Quelle est l’origine de KTM ?",
+        "a": "KTM est une marque autrichienne née à Mattighofen, dont la production de motos en série commence en 1953. Son identité reste profondément liée à la compétition et à la philosophie « Ready to Race »."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de KTM ?",
+        "a": "La structure actionnariale a profondément changé. Bajaj Auto a pris le contrôle du groupe fin 2025."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une KTM ?",
+        "a": "Une 125 Duke, une 390 Adventure, une 690, une 890/990 ou une EXC ne partagent pas les mêmes contraintes. Les modèles offroad et sportifs sont particulièrement sensibles à l’usage réel."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur KTM ?",
+        "a": "KTM reste une marque autrichienne par son origine et son ancrage à Mattighofen, mais son groupe est aujourd’hui sous contrôle Bajaj Auto. Toutes les KTM ne sont pas fabriquées en Autriche : certaines familles sont produites en Inde et en Chine. Le lieu réel de fabrication doit être vérifié pour le modèle concerné."
+      }
     ],
   },
   {
@@ -283,96 +717,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaires CFMOTO en France : adresses et contacts | LabelMoto",
     metaDescription: "Trouvez un concessionnaire CFMOTO en France avec LabelMoto. Découvrez les professionnels référencés, l’histoire de CFMOTO, ses moteurs et son partenariat industriel avec KTM.",
     h1: 'Concessionnaires CFMOTO en France',
-    aboutTitle: 'À propos de CFMOTO',
+    aboutTitle: "À propos de CFMOTO",
     intro: [
-      "Fondée en Chine en 1989, CFMOTO est devenue l’un des constructeurs chinois les plus intégrés dans l’univers de la moto et des véhicules de loisirs. L’entreprise a commencé par fabriquer des composants et des moteurs avant de développer ses propres véhicules, ses moteurs refroidis par liquide, ses motos, ses scooters et ses modèles tout-terrain.",
-      "Sa coopération avec KTM a ensuite renforcé ses compétences en ingénierie, en production et en développement de plateformes de moyenne et forte cylindrée. Aujourd’hui, CFMOTO associe une base industrielle chinoise, des centres de recherche et développement internationaux et une gamme tournée vers les marchés mondiaux.",
+      "Fondée en 1989 et basée à Hangzhou, CFMOTO est un constructeur chinois intégré de motos et de véhicules powersports. L’entreprise développe des moteurs, des véhicules complets et des composants, avec une activité R&D internationale. Sa coopération stratégique avec KTM a débuté en 2011 puis s’est structurée autour d’une coentreprise industrielle en Chine. Cette relation concerne certaines productions et plateformes, mais elle ne signifie pas que toute la gamme CFMOTO utilise des moteurs KTM."
     ],
     highlights: [
       {
-        label: "Origine",
-        value: "Chine · 1989",
-        description: "CFMOTO est née comme fabricant de composants et de moteurs pour deux-roues.",
+        "label": "Origine",
+        "value": "Chine · 1989",
+        "description": "CFMOTO est fondée en 1989 et a son siège à Hangzhou."
       },
       {
-        label: "Siège industriel",
-        value: "Hangzhou",
-        description: "Le groupe s’appuie sur une importante base industrielle située dans la province du Zhejiang.",
+        "label": "Base industrielle",
+        "value": "Hangzhou",
+        "description": "Le groupe y concentre une part importante de sa production et de sa R&D."
       },
       {
-        label: "Positionnement",
-        value: "Moto & powersports",
-        description: "CFMOTO développe des motos, scooters, moteurs, quads, SSV et équipements associés.",
+        "label": "Positionnement",
+        "value": "Moto & powersports",
+        "description": "CFMOTO développe motos, véhicules tout-terrain, solutions électriques et composants."
       },
       {
-        label: "Partenaire majeur",
-        value: "KTM",
-        description: "CFMOTO et KTM coopèrent sur le développement, la fabrication et certaines plateformes moteur.",
-      },
+        "label": "Partenariat majeur",
+        "value": "KTM · depuis 2011",
+        "description": "La coopération CFMOTO-KTM couvre des activités commerciales, industrielles et de production ciblées."
+      }
     ],
     accordions: [
       {
-        id: "histoire-cfmoto",
-        title: "Histoire de CFMOTO",
-        content: "CFMOTO, également liée à la société Zhejiang CFMOTO Power, a été fondée en 1989 en Chine. L’entreprise ne s’est pas développée à l’origine comme une simple marque de motos complètes : elle a d’abord construit son savoir-faire dans les pièces et les moteurs. En 1997, elle annonce le développement de son premier moteur refroidi par liquide, puis lance un scooter refroidi par liquide en 2000. Cette progression, du composant vers le moteur puis vers le véhicule complet, explique la place importante de la mécanique dans l’identité de CFMOTO.",
+        "id": "histoire-cfmoto",
+        "title": "Histoire de CFMOTO",
+        "content": "CFMOTO est créée en 1989 en Chine et construit progressivement son savoir-faire autour des moteurs, des composants puis des véhicules complets. La marque se développe ensuite à l’international sur les motos et les véhicules tout-terrain, avec Hangzhou comme base principale."
       },
       {
-        id: "conception-rd",
-        title: "Conception et bureaux d’étude",
-        content: "CFMOTO dispose d’équipes de recherche et développement réparties dans plusieurs pays. Sa communication internationale met en avant plusieurs centres d’innovation et un portefeuille important de brevets et de droits de propriété intellectuelle. La conception des produits combine les compétences du groupe en ingénierie moteur, châssis, électronique et véhicules de loisirs avec une recherche de design adaptée aux marchés européens, asiatiques et nord-américains. Certains projets de style ont également été associés à des studios européens, mais il faut distinguer le design, l’ingénierie et la fabrication.",
+        "id": "industrie-rd-cfmoto",
+        "title": "Industrie, R&D et intégration",
+        "content": "CFMOTO se présente comme un constructeur intégré assurant la R&D, la production et la distribution de motos, véhicules tout-terrain et composants. Ses communications récentes mettent en avant plusieurs centres d’innovation et un développement technique de plus en plus international."
       },
       {
-        id: "usine-fabrication",
-        title: "Usines et niveau d’intégration",
-        content: "CFMOTO possède une base industrielle à Hangzhou, dans la province du Zhejiang, et développe elle-même des moteurs, des motos, des scooters, des quads et des SSV. L’entreprise annonce une production couvrant notamment les moteurs refroidis par liquide, les véhicules complets et leurs composants. Son modèle industriel est donc plus intégré que celui d’un importateur qui ferait uniquement assembler des motos par un fournisseur tiers. Selon les modèles et les marchés, certaines pièces électroniques, périphériques ou consommables peuvent toutefois provenir de fournisseurs spécialisés.",
+        "id": "partenariat-ktm",
+        "title": "Le partenariat CFMOTO-KTM",
+        "content": "La coopération stratégique avec KTM remonte à 2011. Une coentreprise industrielle a ensuite été mise en place en Chine. KTM indique aujourd’hui que son partenariat avec CFMOTO supervise notamment la production mondiale en Chine des KTM 790 Duke et 790 Adventure. Pour les CFMOTO utilisant des technologies apparentées à l’univers KTM, la filiation exacte doit être décrite modèle par modèle."
       },
       {
-        id: "moteurs-cfmoto",
-        title: "Origine et conception des moteurs CFMOTO",
-        content: "CFMOTO a construit son identité autour du développement de moteurs refroidis par liquide. La marque a développé ses propres familles de monocylindres et de bicylindres, dont la plateforme 650 est devenue l’une de ses bases majeures pour les motos de moyenne cylindrée. Les moteurs CFMOTO ne doivent donc pas être décrits comme de simples moteurs génériques : leur conception, leur industrialisation et leur évolution sont liées au savoir-faire interne du groupe, même si certains composants peuvent être fournis par des équipementiers spécialisés.",
+        "id": "entretien-cfmoto",
+        "title": "Révisions et entretien",
+        "content": "Les besoins d’une 450MT, d’une 700MT, d’une 800MT, d’une 800NK ou d’une autre CFMOTO diffèrent fortement. L’origine d’une plateforme ne suffit pas à déduire les intervalles ou les pièces : manuel utilisateur, documentation atelier et millésime exact doivent rester prioritaires."
       },
       {
-        id: "partenariat-ktm",
-        title: "Partenariat et moteurs partagés avec KTM",
-        content: "La coopération entre CFMOTO et KTM a commencé par une collaboration commerciale et industrielle, avant de se formaliser avec la coentreprise CFMOTO-KTMR2R. Cette coopération a concerné la production de motos KTM en Chine, le développement industriel et la fabrication de certaines plateformes de moyenne cylindrée. CFMOTO a également produit sous licence des moteurs liés à la famille KTM LC8c et a développé des modèles utilisant des bases techniques issues de cette coopération. Cette coopération ne signifie toutefois pas que toutes les CFMOTO utilisent des moteurs KTM : selon les modèles, il peut s’agir d’un moteur produit sous licence, d’une base technique issue du partenariat ou d’une plateforme développée à partir de technologies communes.",
-      },
-      {
-        id: "modele-800-1250",
-        title: "Les modèles CFMOTO liés à l’écosystème KTM",
-        content: "Les CFMOTO 800MT, 800NK et certaines versions de la gamme 800 ont été associées à la plateforme bicylindre KTM LC8c de 799 cm3, adaptée et industrialisée dans le cadre de la coopération entre les deux groupes. La famille CFMOTO 1250 utilise quant à elle une architecture V-twin issue de l’univers KTM LC8, fortement retravaillée et fabriquée sous licence pour les modèles CFMOTO. L’origine exacte peut varier selon l’année, la version et le marché : la fiche technique, le numéro de moteur et le manuel d’atelier restent les références à privilégier.",
-      },
-      {
-        id: "autres-partenariats",
-        title: "Autres partenaires et pièces mécaniques",
-        content: "CFMOTO utilise, comme tous les constructeurs, des composants provenant d’équipementiers spécialisés : freinage, roulements, injection, embrayage, transmission, suspension, pneumatiques et électronique peuvent varier selon les modèles. Une coopération industrielle ne signifie pas nécessairement que l’ensemble de ces pièces est identique à celui d’une marque partenaire. Pour chaque modèle, il faut donc distinguer les pièces réellement communes, les pièces fabriquées sous licence, les composants d’équipementiers et les éléments simplement compatibles.",
-      },
-      {
-        id: "entretien-revisions",
-        title: "Révisions et entretien",
-        content: "L’entretien d’une CFMOTO dépend du modèle, de la cylindrée, de l’année et du marché de commercialisation. Les intervalles peuvent différer entre une 450MT, une 650MT, une 800MT, une 800NK ou une 1250TR. Pour connaître les opérations et échéances applicables, il est recommandé de consulter le manuel utilisateur et le carnet d’entretien correspondant exactement au modèle et à sa version. Les intervalles et les coûts d’entretien doivent être vérifiés modèle par modèle.",
-      },
+        "id": "faq-cfmoto",
+        "title": "FAQ CFMOTO",
+        "content": "CFMOTO est un constructeur chinois fondé en 1989. La marque développe ses propres familles de moteurs et travaille aussi avec des partenaires technologiques. Son lien avec KTM est réel et structuré, mais toutes les CFMOTO ne sont pas équipées d’un moteur KTM. L’origine exacte d’une mécanique doit être vérifiée pour le modèle concerné."
+      }
     ],
     faq: [
       {
-        q: "CFMOTO est-elle une marque chinoise ?",
-        a: "Oui. CFMOTO est un constructeur chinois fondé en 1989.",
+        "q": "Quelle est l’origine de CFMOTO ?",
+        "a": "Fondée en 1989 et basée à Hangzhou, CFMOTO est un constructeur chinois intégré de motos et de véhicules powersports. L’entreprise développe des moteurs, des véhicules complets et des composants, avec une activité R&D internationale."
       },
       {
-        q: "CFMOTO fabrique-t-elle ses propres moteurs ?",
-        a: "Oui. Le groupe développe et produit ses propres familles de moteurs, tout en utilisant également des composants provenant d’équipementiers spécialisés.",
+        "q": "Que faut-il savoir sur la conception et la fabrication de CFMOTO ?",
+        "a": "CFMOTO se présente comme un constructeur intégré assurant la R&D, la production et la distribution de motos, véhicules tout-terrain et composants. Ses communications récentes mettent en avant plusieurs centres d’innovation et un développement technique de plus en plus international."
       },
       {
-        q: "CFMOTO a-t-elle un lien avec KTM ?",
-        a: "Oui. CFMOTO et KTM coopèrent sur la production, le développement industriel et certaines plateformes moteur.",
+        "q": "Comment aborder l’entretien d’une CFMOTO ?",
+        "a": "Les besoins d’une 450MT, d’une 700MT, d’une 800MT, d’une 800NK ou d’une autre CFMOTO diffèrent fortement. L’origine d’une plateforme ne suffit pas à déduire les intervalles ou les pièces : manuel utilisateur, documentation atelier et millésime exact doivent rester prioritaires."
       },
       {
-        q: "Toutes les CFMOTO ont-elles un moteur KTM ?",
-        a: "Non. La coopération concerne certaines familles et certains modèles, notamment autour de plateformes de moyenne et forte cylindrée. Il faut vérifier l’origine technique modèle par modèle.",
-      },
-      {
-        q: "CFMOTO fabrique-t-elle uniquement des motos ?",
-        a: "Non. Le groupe développe également des scooters, des quads, des SSV, des moteurs et différents composants.",
-      },
+        "q": "Quels sont les points clés à retenir sur CFMOTO ?",
+        "a": "CFMOTO est un constructeur chinois fondé en 1989. La marque développe ses propres familles de moteurs et travaille aussi avec des partenaires technologiques. Son lien avec KTM est réel et structuré, mais toutes les CFMOTO ne sont pas équipées d’un moteur KTM. L’origine exacte d’une mécanique doit être vérifiée pour le modèle concerné."
+      }
     ],
   },
   {
@@ -437,14 +851,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Zontes en France : 46 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Zontes en France parmi 46 adresses vérifiées. 125G, 350T, 350ADV, 350R — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires Zontes en France',
+    aboutTitle: "À propos de Zontes",
     intro: [
-      "Zontes est une marque chinoise qui monte rapidement sur le marché français avec plus de 40 concessionnaires agréés. Ses roadsters 125 et 350cc proposent un design moderne et une finition soignée à des prix très compétitifs, séduisant particulièrement les jeunes motards en permis A1 et A2.",
-      "LabelMoto recense tous les concessionnaires et distributeurs Zontes en France avec fiches vérifiées et coordonnées directes.",
+      "Zontes est l’une des marques de Guangdong Tayo Motorcycle Technology, entreprise chinoise fondée en 2003. Tayo met en avant un haut niveau d’intégration industrielle, l’usinage de précision, la fabrication de composants et un portefeuille important de brevets. La montée en gamme récente de Zontes est illustrée par la famille 703 et son moteur trois-cylindres de 699 cm³, présenté par Zontes France comme développé intégralement en interne."
+    ],
+    highlights: [
+      {
+        "label": "Origine industrielle",
+        "value": "Chine · 2003",
+        "description": "Guangdong Tayo Motorcycle Technology est fondée en 2003."
+      },
+      {
+        "label": "Groupe",
+        "value": "Tayo Motorcycle",
+        "description": "Zontes est l’une des marques de Guangdong Tayo Motorcycle Technology."
+      },
+      {
+        "label": "Innovation",
+        "value": "413 brevets indiqués",
+        "description": "Le profil officiel mentionne 256 brevets de design, 121 modèles d’utilité et 36 brevets d’invention."
+      },
+      {
+        "label": "Montée en gamme",
+        "value": "3 cylindres · 699 cm³",
+        "description": "Le moteur de la famille 703 est présenté par Zontes France comme conçu intégralement en interne."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-zontes",
+        "title": "Histoire de Zontes",
+        "content": "Zontes est une marque de Guangdong Tayo Motorcycle Technology, société fondée en 2003. Le groupe se positionne sur les motos de moyenne et grosse cylindrée avec une stratégie centrée sur l’innovation, la fabrication intégrée et le développement international."
+      },
+      {
+        "id": "tayo-integration-zontes",
+        "title": "Tayo, intégration industrielle et brevets",
+        "content": "Le profil officiel de Tayo indique un site de 600 mu, environ 3 600 salariés et un portefeuille de 256 brevets de design, 121 modèles d’utilité et 36 brevets d’invention. Ces données appuient l’image d’un constructeur fortement orienté industrialisation et développement interne, sans pour autant signifier que chaque composant de chaque moto est fabriqué en interne."
+      },
+      {
+        "id": "moteur-703-zontes",
+        "title": "Le moteur trois-cylindres 703",
+        "content": "La famille 703 marque une étape importante dans la montée en cylindrée de Zontes. Zontes France présente le moteur trois-cylindres de 699 cm³ comme développé intégralement en interne. Cette affirmation est solide pour cette famille précise, mais ne doit pas être extrapolée à l’origine de chaque moteur ou composant de toute la gamme."
+      },
+      {
+        "id": "entretien-zontes",
+        "title": "Révisions et entretien",
+        "content": "Une 125, une 350/368 et une 703 n’ont pas la même mécanique ni le même calendrier. Les intervalles, références de consommables et coûts doivent être établis sur la documentation du modèle et du millésime concernés."
+      },
+      {
+        "id": "faq-zontes",
+        "title": "FAQ Zontes",
+        "content": "Zontes est une marque chinoise de Guangdong Tayo Motorcycle Technology. Tayo est fondée en 2003 et revendique un important portefeuille de brevets. La marque développe certaines motorisations en interne, dont le trois-cylindres 699 cm³ de la famille 703. Il ne faut toutefois pas conclure que tous les composants de toute la gamme sont fabriqués par Tayo sans vérification modèle par modèle."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Zontes près de chez moi ?", a: "LabelMoto recense 46 points de vente Zontes en France. Zontes est souvent vendu chez des concessionnaires multimarques. Utilisez la carte interactive pour trouver le plus proche." },
-      { q: "Zontes est-elle une marque fiable ?", a: "Zontes a progressé en qualité sur ses derniers modèles. Les 350cc reçoivent des retours positifs en termes de finition et de motorisation. Le réseau SAV se développe mais reste moins dense que les grandes marques." },
-      { q: "Quelle Zontes choisir en permis A1 ou A2 ?", a: "La Zontes 125G et 125 ZT sont bien adaptées au permis A1. Pour le permis A2, la 350T et la 350ADV offrent un bon rapport prestations/prix dans la catégorie adventure/roadster." },
+      {
+        "q": "Quelle est l’origine de Zontes ?",
+        "a": "Zontes est l’une des marques de Guangdong Tayo Motorcycle Technology, entreprise chinoise fondée en 2003. Tayo met en avant un haut niveau d’intégration industrielle, l’usinage de précision, la fabrication de composants et un portefeuille important de brevets."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Zontes ?",
+        "a": "Le profil officiel de Tayo indique un site de 600 mu, environ 3 600 salariés et un portefeuille de 256 brevets de design, 121 modèles d’utilité et 36 brevets d’invention. Ces données appuient l’image d’un constructeur fortement orienté industrialisation et développement interne, sans pour autant signifier que chaque composant de chaque moto est fabriqué en interne."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Zontes ?",
+        "a": "Une 125, une 350/368 et une 703 n’ont pas la même mécanique ni le même calendrier. Les intervalles, références de consommables et coûts doivent être établis sur la documentation du modèle et du millésime concernés."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Zontes ?",
+        "a": "Zontes est une marque chinoise de Guangdong Tayo Motorcycle Technology. Tayo est fondée en 2003 et revendique un important portefeuille de brevets. La marque développe certaines motorisations en interne, dont le trois-cylindres 699 cm³ de la famille 703. Il ne faut toutefois pas conclure que tous les composants de toute la gamme sont fabriqués par Tayo sans vérification modèle par modèle."
+      }
     ],
   },
   {
@@ -549,14 +1025,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Husqvarna en France : 23 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Husqvarna en France parmi 23 adresses vérifiées. Svartpilen, Vitpilen, Norden 901 — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires Husqvarna Motorcycles en France',
+    aboutTitle: "À propos de Husqvarna",
     intro: [
-      "Husqvarna Motorcycles, marque suédoise appartenant au groupe KTM (Pierer Mobility), dispose d'une vingtaine de concessionnaires agréés en France. Ses roadsters au design scandinave épuré (Svartpilen, Vitpilen) et son adventure Norden 901 séduisent une clientèle urbaine et lifestyle exigeante.",
-      "LabelMoto recense tous les concessionnaires Husqvarna Motorcycles en France avec fiches vérifiées et coordonnées directes.",
+      "Husqvarna est une marque d’origine suédoise dont la production moto débute en 1903. Son identité s’est construite autour du motocross, de l’enduro et des machines légères. Après plusieurs changements de propriétaire, Husqvarna Motorcycles rejoint le groupe KTM en 2013. Le groupe est aujourd’hui intégré à Bajaj Mobility AG, tandis que la marque conserve une identité propre et partage une partie importante de son environnement technique et industriel avec KTM."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Suède · 1903",
+        "description": "Husqvarna produit sa première moto en 1903 à Huskvarna."
+      },
+      {
+        "label": "Héritage",
+        "value": "Motocross · Enduro",
+        "description": "Le tout-terrain constitue l’un des piliers historiques de la marque."
+      },
+      {
+        "label": "Intégration moderne",
+        "value": "KTM Group · depuis 2013",
+        "description": "Husqvarna Motorcycles rejoint l’écosystème KTM en 2013."
+      },
+      {
+        "label": "Groupe actuel",
+        "value": "Bajaj Mobility AG",
+        "description": "La communication officielle Husqvarna présente aujourd’hui l’ancien groupe PIERER Mobility sous le nom Bajaj Mobility AG."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-husqvarna",
+        "title": "Histoire de Husqvarna",
+        "content": "Les origines industrielles de Husqvarna remontent à 1689 en Suède, mais l’aventure moto commence en 1903 avec une bicyclette motorisée. La marque développe ensuite une réputation internationale en tout-terrain, notamment en motocross et enduro."
+      },
+      {
+        "id": "transitions-husqvarna",
+        "title": "Des origines suédoises à l’organisation actuelle",
+        "content": "Husqvarna Motorcycles passe notamment sous contrôle BMW en 2007 avant d’être acquise par le groupe KTM en 2013. La marque officielle indique aujourd’hui que ce groupe est connu sous le nom de Bajaj Mobility AG. L’héritage reste suédois, alors que l’organisation moderne est intégrée à un groupe industriel autrichien sous contrôle Bajaj."
+      },
+      {
+        "id": "plateformes-ktm-husqvarna",
+        "title": "Plateformes et moteurs partagés avec KTM",
+        "content": "De nombreuses Husqvarna modernes utilisent des bases mécaniques, composants et plateformes proches de KTM. Cela ne signifie pas que chaque modèle est strictement identique : géométrie, réglages, électronique, équipement et positionnement peuvent différer. Les correspondances doivent être vérifiées modèle par modèle."
+      },
+      {
+        "id": "entretien-husqvarna",
+        "title": "Révisions et entretien",
+        "content": "Une TE ou FE d’enduro, une Norden 901, une Vitpilen, une Svartpilen ou une 701 Supermoto n’ont pas les mêmes contraintes. L’usage offroad peut aussi modifier fortement la fréquence de contrôle. Les données de maintenance doivent donc être rattachées au modèle, au millésime et à l’usage réel."
+      },
+      {
+        "id": "faq-husqvarna",
+        "title": "FAQ Husqvarna",
+        "content": "Husqvarna est historiquement une marque suédoise et produit des motos depuis 1903. Son organisation moderne est intégrée au groupe KTM, aujourd’hui sous Bajaj Mobility AG. De nombreux modèles partagent des technologies avec KTM, mais il faut vérifier la plateforme et la version avant de conclure à une équivalence technique complète."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Husqvarna Motorcycles près de chez moi ?", a: "LabelMoto recense 23 concessions Husqvarna en France. Husqvarna est souvent vendu chez les mêmes concessionnaires que KTM. Utilisez la carte interactive pour trouver le plus proche." },
-      { q: "Quelle est la différence entre KTM et Husqvarna ?", a: "Husqvarna et KTM partagent la même plateforme technique mais diffèrent par le design et le positionnement. Husqvarna vise un style plus urbain et scandinave, KTM reste plus sportif et agressif. Les moteurs sont souvent identiques." },
-      { q: "Quel est le prix d'entretien d'une Husqvarna Svartpilen ?", a: "Les intervalles Husqvarna sont de 7 500 km, soit proches de KTM. Comptez 250 à 400 € pour une révision en concession officielle." },
+      {
+        "q": "Quelle est l’origine de Husqvarna Motorcycles ?",
+        "a": "Husqvarna est une marque d’origine suédoise dont la production moto débute en 1903. Son identité s’est construite autour du motocross, de l’enduro et des machines légères."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Husqvarna Motorcycles ?",
+        "a": "De nombreuses Husqvarna modernes utilisent des bases mécaniques, composants et plateformes proches de KTM. Cela ne signifie pas que chaque modèle est strictement identique : géométrie, réglages, électronique, équipement et positionnement peuvent différer."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Husqvarna Motorcycles ?",
+        "a": "Une TE ou FE d’enduro, une Norden 901, une Vitpilen, une Svartpilen ou une 701 Supermoto n’ont pas les mêmes contraintes. L’usage offroad peut aussi modifier fortement la fréquence de contrôle."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Husqvarna Motorcycles ?",
+        "a": "Husqvarna est historiquement une marque suédoise et produit des motos depuis 1903. Son organisation moderne est intégrée au groupe KTM, aujourd’hui sous Bajaj Mobility AG. De nombreux modèles partagent des technologies avec KTM, mais il faut vérifier la plateforme et la version avant de conclure à une équivalence technique complète."
+      }
     ],
   },
   {
@@ -567,14 +1105,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire QJ Motor en France : 27 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire QJ Motor en France parmi 27 adresses vérifiées. SRK 400, SRK 600, SRT 800, SRS 400 — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires QJ Motor en France',
+    aboutTitle: "À propos de QJMotor",
     intro: [
-      "QJ Motor est la marque premium du groupe Qianjiang (propriétaire de Benelli) et monte rapidement en France avec plus de 25 concessionnaires agréés. Ses roadsters et trails (SRK 400, SRK 600, SRT 800, SRS 400) proposent une technologie moderne à des prix agressifs, concurrençant directement les 400 à 650cc japonais.",
-      "LabelMoto recense tous les concessionnaires QJ Motor en France avec fiches vérifiées et coordonnées directes.",
+      "QJMotor est la marque internationale de Qianjiang Motorcycle, entreprise chinoise fondée en 1985 à Wenling, dans le Zhejiang. Qianjiang acquiert Benelli en 2005 puis rejoint l’écosystème Geely en 2016, avant le lancement de la marque QJMOTOR en 2020. Le groupe dispose d’une importante capacité de production de motos et de moteurs et développe plusieurs architectures mécaniques. Une coopération stratégique avec Harley-Davidson est annoncée en 2019."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Chine · 1985",
+        "description": "Qianjiang Motorcycle trouve son origine à Wenling, dans le Zhejiang."
+      },
+      {
+        "label": "Groupe",
+        "value": "Geely · depuis 2016",
+        "description": "Geely devient le principal actionnaire de Qianjiang en 2016."
+      },
+      {
+        "label": "Marque liée",
+        "value": "Benelli · depuis 2005",
+        "description": "Qianjiang acquiert Benelli en 2005."
+      },
+      {
+        "label": "Gamme moteur",
+        "value": "50 à 1200 cm³",
+        "description": "QJMotor annonce des motorisations couvrant un large éventail de cylindrées et d’architectures."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-qjmotor",
+        "title": "Histoire de QJMotor",
+        "content": "L’entreprise Qianjiang naît en 1985 à Wenling. Elle est introduite en Bourse de Shenzhen en 1999, acquiert Benelli en 2005, rejoint l’écosystème Geely en 2016 puis lance QJMOTOR en 2020 comme marque internationale à vocation plus haut de gamme."
+      },
+      {
+        "id": "qianjiang-geely-benelli",
+        "title": "Qianjiang, Geely et Benelli",
+        "content": "QJMotor, Qianjiang, Geely et Benelli ne sont pas des synonymes. Qianjiang est l’entité industrielle moto, QJMotor est la marque internationale, Benelli est une marque italienne détenue par Qianjiang et Geely est le groupe de contrôle. Cette organisation explique l’existence de ressources et de plateformes communes au sein du groupe."
+      },
+      {
+        "id": "industrie-partenariats-qj",
+        "title": "Industrie, moteurs et partenariats",
+        "content": "QJMotor développe plusieurs familles de moteurs et s’appuie sur une importante base industrielle. En 2019, Qianjiang a annoncé une coopération stratégique avec Harley-Davidson pour développer de nouveaux produits. Cela ne signifie pas que toute la gamme QJMotor partage des moteurs Harley-Davidson ou Benelli : le lien doit être démontré modèle par modèle."
+      },
+      {
+        "id": "entretien-qjmotor",
+        "title": "Révisions et entretien",
+        "content": "Une SRK, une SRV, une SRT ou une sportive multicylindre n’ont pas les mêmes besoins. Les éventuelles parentés avec Benelli ou d’autres projets du groupe ne suffisent pas à déduire une compatibilité de pièce. Manuel, code moteur, référence de pièce et millésime doivent être vérifiés."
+      },
+      {
+        "id": "faq-qjmotor",
+        "title": "FAQ QJMotor",
+        "content": "QJMotor est une marque chinoise issue de Qianjiang Motorcycle. Qianjiang appartient à l’écosystème Geely et détient Benelli depuis 2005. QJMotor développe et produit de nombreux moteurs, mais les correspondances avec Benelli, Harley-Davidson ou d’autres partenaires ne doivent jamais être généralisées à toute la gamme."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire QJ Motor près de chez moi ?", a: "LabelMoto recense 27 points de vente QJ Motor en France. QJ Motor est souvent distribué chez des concessionnaires multimarques. Consultez la carte interactive pour trouver le plus proche." },
-      { q: "QJ Motor est-elle une marque sérieuse ?", a: "QJ Motor appartient au groupe Qianjiang qui possède Benelli depuis 2005 et a noué des partenariats avec des constructeurs européens. Les modèles SRK et SRT reçoivent des retours positifs pour leur équipement et leur rapport qualité-prix." },
-      { q: "Quelle QJ Motor choisir en permis A2 ?", a: "La SRK 400 et la SRS 400 sont parfaitement adaptées au permis A2, avec des prestations comparables aux 400cc japonais pour un prix nettement inférieur. La SRT 800 (bridée) convient aussi aux permis A2 avancés." },
+      {
+        "q": "Quelle est l’origine de QJ Motor ?",
+        "a": "QJMotor est la marque internationale de Qianjiang Motorcycle, entreprise chinoise fondée en 1985 à Wenling, dans le Zhejiang. Qianjiang acquiert Benelli en 2005 puis rejoint l’écosystème Geely en 2016, avant le lancement de la marque QJMOTOR en 2020."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de QJ Motor ?",
+        "a": "QJMotor développe plusieurs familles de moteurs et s’appuie sur une importante base industrielle. En 2019, Qianjiang a annoncé une coopération stratégique avec Harley-Davidson pour développer de nouveaux produits."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une QJ Motor ?",
+        "a": "Une SRK, une SRV, une SRT ou une sportive multicylindre n’ont pas les mêmes besoins. Les éventuelles parentés avec Benelli ou d’autres projets du groupe ne suffisent pas à déduire une compatibilité de pièce."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur QJ Motor ?",
+        "a": "QJMotor est une marque chinoise issue de Qianjiang Motorcycle. Qianjiang appartient à l’écosystème Geely et détient Benelli depuis 2005. QJMotor développe et produit de nombreux moteurs, mais les correspondances avec Benelli, Harley-Davidson ou d’autres partenaires ne doivent jamais être généralisées à toute la gamme."
+      }
     ],
   },
   {
@@ -585,14 +1185,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Benelli en France : 20 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Benelli en France parmi 20 adresses vérifiées. TRK 502, Leoncino, 752S, TNT 600 — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires Benelli en France',
+    aboutTitle: "À propos de Benelli",
     intro: [
-      "Benelli, marque italienne fondée en 1911 et aujourd'hui appartenant au groupe Qianjiang, dispose d'une vingtaine de distributeurs agréés en France. Ses modèles TRK 502 (trail), Leoncino (scrambler) et 752S (roadster) proposent un style italien à des prix très accessibles.",
-      "LabelMoto recense tous les concessionnaires et distributeurs Benelli en France avec fiches vérifiées et coordonnées directes.",
+      "Benelli est une marque moto italienne née à Pesaro en 1911. Son histoire associe compétition, mécanique et design italien. Depuis 2005, la marque s’appuie sur l’écosystème industriel de Qianjiang : les sources officielles Benelli attribuent à Qianjiang la production et à Keeway un rôle dans la nouvelle administration, le design et le marketing, tandis que Pesaro reste un centre important pour le style et la R&D. Qianjiang a rejoint l’écosystème Geely en 2016. La Benelli contemporaine combine donc un héritage italien fort avec une base industrielle chinoise."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Italie · 1911",
+        "description": "Benelli est née à Pesaro et fait partie des marques moto italiennes historiques."
+      },
+      {
+        "label": "Centre italien",
+        "value": "Pesaro",
+        "description": "Le Centro Stile et la R&D Benelli restent ancrés à Pesaro."
+      },
+      {
+        "label": "Base industrielle",
+        "value": "Qianjiang",
+        "description": "Depuis 2005, la production moderne de Benelli s’appuie sur le groupe Qianjiang."
+      },
+      {
+        "label": "Groupe élargi",
+        "value": "Geely · depuis 2016",
+        "description": "Qianjiang a rejoint Geely Holding en 2016, sans faire de Geely le fabricant direct des motos Benelli."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-benelli",
+        "title": "Histoire de Benelli",
+        "content": "Benelli naît à Pesaro en 1911 autour de la famille Benelli. L’atelier commence par la réparation et les pièces, construit son premier moteur en 1919 puis sa première véritable moto en 1921. La compétition et l’innovation mécanique installent ensuite durablement le nom Benelli dans l’histoire du motocyclisme italien."
+      },
+      {
+        "id": "pesaro-style-rd",
+        "title": "Pesaro, style et développement",
+        "content": "Le siège historique de Pesaro conserve un rôle réel dans la définition des produits. Le Centro Stile Benelli, créé en 2015, et les équipes R&D de Pesaro sont mis en avant par la marque pour le design et le développement de plusieurs modèles. Cela ne signifie pas que toutes les pièces ou toute l’ingénierie sont exclusivement italiennes."
+      },
+      {
+        "id": "qianjiang-production",
+        "title": "Qianjiang, Keeway et fabrication moderne",
+        "content": "En 2005, Benelli est reprise dans l’écosystème Qianjiang/Keeway. Benelli indique que Qianjiang a pris en charge la production, tandis que Keeway a conduit la nouvelle administration, le design et le marketing depuis Pesaro. La production moderne s’appuie largement sur les capacités industrielles de Qianjiang en Chine."
+      },
+      {
+        "id": "moteurs-plateformes-benelli",
+        "title": "Moteurs et plateformes partagées",
+        "content": "Plusieurs Benelli contemporaines utilisent des moteurs ou plateformes développés au sein de l’écosystème Qianjiang, parfois proches de modèles QJMotor. Il faut toutefois distinguer plateforme commune, moteur apparenté, réglages spécifiques et pièces réellement interchangeables : ces équivalences doivent être vérifiées modèle par modèle."
+      },
+      {
+        "id": "entretien-faq-benelli",
+        "title": "Entretien et FAQ Benelli",
+        "content": "Les intervalles et consommables varient fortement entre une BN 125, une Leoncino, une TRK 502, une TRK 702 ou une TRK 800. Benelli reste une marque italienne par son histoire et son identité, mais sa production actuelle repose largement sur Qianjiang en Chine. Le design et une partie du développement restent liés à Pesaro. Les correspondances de moteurs ou de pièces avec QJMotor doivent toujours être vérifiées sur la version et le millésime concernés."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Benelli près de chez moi ?", a: "LabelMoto recense 20 points de vente Benelli en France. Benelli est souvent distribué chez des concessionnaires multimarques. Consultez la carte interactive." },
-      { q: "Benelli est-elle une marque fiable ?", a: "Les modèles récents (2020+) de Benelli ont progressé en fiabilité. Le TRK 502 est le modèle le plus vendu et le mieux noté. L'entretien reste moins cher que les marques européennes équivalentes." },
-      { q: "Quel est le prix d'entretien d'une Benelli TRK 502 ?", a: "Comptez 200 à 350 € pour une révision Benelli TRK 502 en concession officielle. Les intervalles sont de 6 000 km." },
+      {
+        "q": "Quelle est l’origine de Benelli ?",
+        "a": "Benelli est une marque moto italienne née à Pesaro en 1911. Son histoire associe compétition, mécanique et design italien."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Benelli ?",
+        "a": "Le siège historique de Pesaro conserve un rôle réel dans la définition des produits. Le Centro Stile Benelli, créé en 2015, et les équipes R&D de Pesaro sont mis en avant par la marque pour le design et le développement de plusieurs modèles."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Benelli ?",
+        "a": "Les intervalles et consommables varient fortement entre une BN 125, une Leoncino, une TRK 502, une TRK 702 ou une TRK 800. Benelli reste une marque italienne par son histoire et son identité, mais sa production actuelle repose largement sur Qianjiang en Chine."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Benelli ?",
+        "a": "Les intervalles et consommables varient fortement entre une BN 125, une Leoncino, une TRK 502, une TRK 702 ou une TRK 800. Benelli reste une marque italienne par son histoire et son identité, mais sa production actuelle repose largement sur Qianjiang en Chine. Le design et une partie du développement restent liés à Pesaro. Les correspondances de moteurs ou de pièces avec QJMotor doivent toujours être vérifiées sur la version et le millésime concernés."
+      }
     ],
   },
   {
@@ -675,14 +1337,76 @@ export const BRANDS: BrandData[] = [
     metaTitle: "Concessionnaire Kove en France : 18 adresses vérifiées | LabelMoto",
     metaDescription: "Trouvez votre concessionnaire Kove en France parmi 18 adresses vérifiées. 450 Rally, 800X, 500X — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires Kove en France',
+    aboutTitle: "À propos de Kove",
     intro: [
-      "Kove est une marque chinoise créée en partenariat avec KTM, présente dans une vingtaine de concessionnaires en France. Ses modèles adventure et enduro (450 Rally, 800X, 500X) utilisent des technologies directement issues du savoir-faire KTM, offrant des performances élevées à des prix très compétitifs.",
-      "LabelMoto recense tous les concessionnaires et distributeurs Kove en France avec fiches vérifiées et coordonnées directes.",
+      "Kove est une marque chinoise fondée en 2017 à Chongqing. Elle se présente comme une entreprise technologique intégrant la R&D, la fabrication et la vente de motos de moyenne et grosse cylindrée ainsi que de composants clés. La compétition fait partie de son identité : en 2025, Beñat Fernandez a remporté le Championnat du monde FIM Supersport 300 sur Kove, offrant au constructeur chinois son premier titre mondial dans la catégorie. Pour les moteurs, les affirmations d’origine doivent rester vérifiées modèle par modèle."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Chine · 2017",
+        "description": "Kove est fondée en 2017 à Chongqing."
+      },
+      {
+        "label": "Positionnement",
+        "value": "Performance · Rallye · ADV",
+        "description": "La marque concentre son image sur les motos sportives, rallye et adventure."
+      },
+      {
+        "label": "R&D",
+        "value": "100+ brevets accordés",
+        "description": "Kove annonce plus de 100 brevets accordés sur le groupe motopropulseur, le châssis et d’autres systèmes."
+      },
+      {
+        "label": "Compétition",
+        "value": "Champion WorldSSP300 · 2025",
+        "description": "Beñat Fernandez a offert à Kove son premier titre mondial WorldSSP300 en 2025."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-kove",
+        "title": "Histoire de Kove",
+        "content": "Kove est créée à Chongqing en 2017 avec un positionnement directement orienté performance, rallye, adventure et sport. La marque se développe rapidement à l’international en s’appuyant sur une forte présence en compétition et sur un discours d’intégration technique."
+      },
+      {
+        "id": "rd-fabrication-kove",
+        "title": "R&D et fabrication",
+        "content": "Kove se présente comme une entreprise intégrant recherche, développement, fabrication et vente. Sa communication actuelle met en avant un système technique complet allant du groupe motopropulseur au châssis et à la fabrication intelligente, ainsi qu’un portefeuille de plus de 100 brevets accordés."
+      },
+      {
+        "id": "competition-moteurs-kove",
+        "title": "Compétition et moteurs : ce qui est vérifié",
+        "content": "Le Dakar et la compétition de vitesse sont des vitrines majeures pour Kove. En 2025, la marque a remporté son premier titre mondial WorldSSP300. En revanche, l’origine exacte des moteurs de série doit être traitée avec prudence : les générations, partenaires industriels et niveaux de développement peuvent varier selon les modèles. Il est préférable de documenter le code moteur et l’année plutôt que d’affirmer qu’une mécanique est entièrement maison ou issue d’un fournisseur externe sans preuve directe."
+      },
+      {
+        "id": "entretien-kove",
+        "title": "Révisions et entretien",
+        "content": "Une 450 Rally, une 800X ou une sportive Kove n’ont pas les mêmes contraintes. L’usage rallye ou offroad peut accélérer l’usure et modifier les contrôles à effectuer. Les données d’entretien doivent venir du manuel correspondant au modèle, à la version et au marché."
+      },
+      {
+        "id": "faq-kove",
+        "title": "FAQ Kove",
+        "content": "Kove est une marque chinoise fondée à Chongqing en 2017. Elle met en avant une intégration importante de la R&D et de la fabrication. Son engagement en compétition est avéré, avec un titre mondial WorldSSP300 en 2025. L’origine des moteurs doit toutefois être vérifiée au cas par cas, en particulier sur les modèles ayant connu plusieurs générations techniques."
+      }
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Kove près de chez moi ?", a: "LabelMoto recense 18 points de vente Kove en France. Kove est souvent distribué chez des concessionnaires multimarques spécialisés trail. Consultez la carte interactive." },
-      { q: "Kove est-elle vraiment liée à KTM ?", a: "Kove a été fondée avec des ingénieurs issus de KTM et utilise certaines technologies communes. La 450 Rally utilise une motorisation proche de la KTM 450 Rally. C'est une garantie de sérieux technique pour une marque émergente." },
-      { q: "Quel est le rapport qualité-prix d'une Kove ?", a: "Excellent. La Kove 450 Rally est proposée à environ 7 000-8 000 €, soit bien moins qu'une KTM 450 Rally équivalente. Les propriétaires soulignent la qualité des composants et les performances en trail." },
+      {
+        "q": "Quelle est l’origine de Kove ?",
+        "a": "Kove est une marque chinoise fondée en 2017 à Chongqing. Elle se présente comme une entreprise technologique intégrant la R&D, la fabrication et la vente de motos de moyenne et grosse cylindrée ainsi que de composants clés."
+      },
+      {
+        "q": "Que faut-il savoir sur la conception et la fabrication de Kove ?",
+        "a": "Kove se présente comme une entreprise intégrant recherche, développement, fabrication et vente. Sa communication actuelle met en avant un système technique complet allant du groupe motopropulseur au châssis et à la fabrication intelligente, ainsi qu’un portefeuille de plus de 100 brevets accordés."
+      },
+      {
+        "q": "Comment aborder l’entretien d’une Kove ?",
+        "a": "Une 450 Rally, une 800X ou une sportive Kove n’ont pas les mêmes contraintes. L’usage rallye ou offroad peut accélérer l’usure et modifier les contrôles à effectuer."
+      },
+      {
+        "q": "Quels sont les points clés à retenir sur Kove ?",
+        "a": "Kove est une marque chinoise fondée à Chongqing en 2017. Elle met en avant une intégration importante de la R&D et de la fabrication. Son engagement en compétition est avéré, avec un titre mondial WorldSSP300 en 2025. L’origine des moteurs doit toutefois être vérifiée au cas par cas, en particulier sur les modèles ayant connu plusieurs générations techniques."
+      }
     ],
   },
 
