@@ -116,7 +116,7 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
           <div className="flex items-center gap-1.5 mb-3">
             <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
             <span className="text-[9px] font-bold text-muted-foreground truncate uppercase">
-              {fullDetails?.address || point.title.split('-').pop() || "Adresse"}
+              {fullDetails?.address || (point as any)?.address || (point as any)?.addr || point.title.split('-').pop() || "Adresse"}
             </span>
           </div>
 

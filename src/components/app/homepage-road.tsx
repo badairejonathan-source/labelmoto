@@ -87,45 +87,116 @@ const QUICK_CHOICES: QuickChoice[] = [
   },
 ];
 
+const HOME_BRAND_SLUGS:
+  Record<string, string> = {
+  "aprilia": "aprilia",
+  "benelli": "benelli",
+  "beta": "beta",
+  "bmw": "bmw",
+  "bmwmotorrad": "bmw",
+  "cardy": "cardy",
+  "cfmoto": "cf-moto",
+  "dafy": "dafy",
+  "dafymoto": "dafy",
+  "docbiker": "docbiker",
+  "ducati": "ducati",
+  "fantic": "fantic",
+  "harleydavidson": "harley-davidson",
+  "honda": "honda",
+  "husqvarna": "husqvarna",
+  "husqvarnamotorcycles": "husqvarna",
+  "indian": "indian",
+  "indianmotorcycle": "indian",
+  "kawasaki": "kawasaki",
+  "kove": "kove",
+  "ktm": "ktm",
+  "kymco": "kymco",
+  "mash": "mash",
+  "motoaxxe": "moto-axxe",
+  "motoguzzi": "moto-guzzi",
+  "peugeotmotocycles": "peugeot-motocycles",
+  "piaggio": "piaggio",
+  "qjmotor": "qj-motor",
+  "rieju": "rieju",
+  "royalenfield": "royal-enfield",
+  "sherco": "sherco",
+  "speedway": "speedway",
+  "suzuki": "suzuki",
+  "teamaxe": "teamaxe",
+  "triumph": "triumph",
+  "vespa": "vespa",
+  "voge": "voge",
+  "yamaha": "yamaha",
+  "zontes": "zontes",
+  };
+
+function homeBrandHref(
+  brand: string
+): string {
+  const key =
+    brand
+      .normalize('NFD')
+      .replace(
+        /[\u0300-\u036f]/g,
+        ''
+      )
+      .toLowerCase()
+      .replace(
+        /&/g,
+        'et'
+      )
+      .replace(
+        /[^a-z0-9]/g,
+        ''
+      );
+
+  const slug =
+    HOME_BRAND_SLUGS[key];
+
+  return slug
+    ? `/marque/${slug}`
+    : `/map?search=${encodeURIComponent(brand)}`;
+}
+
 const PRO_CHOICES: ProChoice[] = [
   {
     label: 'Garages & ateliers',
-    href: '/map?filter=service',
+    href: '/metiers/ateliers-mecaniciens',
     icon: Wrench,
   },
   {
     label: 'Concessions',
-    href: '/map?filter=shopping',
+    href: '/metiers/concessionnaires-revendeurs',
     icon: Store,
   },
   {
     label: 'Transporteurs moto',
-    href: '/map?search=transporteur%20moto',
+    href: '/metiers/transport-moto',
     icon: Truck,
   },
   {
     label: 'Préparateurs',
-    href: '/map?search=préparateur%20moto',
+    href: '/metiers/preparateurs-moto',
     icon: Settings,
   },
   {
-    label: 'Peintres',
-    href: '/map?search=peintre%20moto',
+    label: 'Peintre - carrossier',
+    href: '/metiers/peintres-carrossiers',
     icon: Paintbrush,
   },
   {
     label: 'Photographes',
-    href: '/map?search=photographe%20moto',
+    href: '/metiers/photographes-videastes',
     icon: Camera,
   },
   {
     label: 'Équipementiers',
-    href: '/map?search=équipement%20moto',
+    href: '/metiers/equipement-accessoires',
     icon: ShoppingBag,
   },
   {
     label: 'Associations',
-    href: '/map?filter=association',
+    href: '/associations',
     icon: Users,
   },
 ];
@@ -4584,7 +4655,7 @@ function DesktopUniverseSection() {
             </div>
 
             <Link
-              href="/map"
+              href="/metiers"
               className="
                 mt-6
                 flex
@@ -4714,7 +4785,7 @@ function DesktopUniverseSection() {
               {manufacturers.map(brand => (
                 <Link
                   key={brand}
-                  href={`/map?search=${encodeURIComponent(brand)}`}
+                  href={homeBrandHref(brand)}
                   className="
                     flex
                     h-[66px]
@@ -5473,7 +5544,7 @@ export default function HomepageRoad() {
                     hover:text-brand
                   "
                 >
-                  Entretien
+                  Entretien / fiches techniques
                 </Link>
 
                 <Link
@@ -5488,17 +5559,6 @@ export default function HomepageRoad() {
                   Guides & conseils
                 </Link>
 
-                <Link
-                  href="/entretien#fiches-par-modele"
-                  className="
-                    text-[14px]
-                    font-semibold
-                    transition-colors
-                    hover:text-brand
-                  "
-                >
-                  Fiches moto
-                </Link>
               </nav>
 
               <UserMenu />

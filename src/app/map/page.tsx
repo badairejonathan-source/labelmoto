@@ -327,7 +327,77 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
   };
 
   if (isLoading) return <div className="p-8 space-y-6"><Skeleton className="h-48 w-full rounded-3xl" /><Skeleton className="h-8 w-3/4" /></div>;
-  if (!pro) return null;
+  if (!pro) {
+    const fallbackSlugOrId =
+      point?.slug ||
+      dealershipId;
+
+    const fallbackAddress =
+      String(
+        (point as any)?.address ||
+        (point as any)?.addr ||
+        ''
+      ).trim();
+
+    const fallbackHref =
+      point?.appSection === 'creator'
+        ? `/creators/${fallbackSlugOrId}`
+        : point?.appSection === 'association'
+          ? '/associations'
+          : point?.appSection === 'relais'
+            ? '/relais-motards'
+            : `/concessions/${fallbackSlugOrId}`;
+
+    return (
+      <div
+        data-map-detail-fallback
+        className="bg-white rounded-[2.5rem] p-8 shadow-sm animate-in fade-in slide-in-from-left-4 duration-300"
+      >
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand mb-8 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour à la liste
+        </button>
+
+        <div className="space-y-5">
+          <div>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-brand">
+              Professionnel
+            </p>
+
+            <h2 className="text-xl font-black uppercase leading-tight">
+              {point?.title || 'Fiche professionnelle'}
+            </h2>
+          </div>
+
+          {fallbackAddress && (
+            <div className="flex items-start gap-3 rounded-2xl bg-muted/30 p-4">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+
+              <p className="text-xs font-bold text-muted-foreground">
+                {fallbackAddress}
+              </p>
+            </div>
+          )}
+
+          <p className="text-xs font-medium leading-relaxed text-muted-foreground">
+            Le détail n'a pas pu être chargé directement dans la carte.
+            La fiche publique reste accessible ci-dessous.
+          </p>
+
+          <Link
+            href={fallbackHref}
+            className="block rounded-2xl border border-brand/20 bg-brand/5 p-4 text-center text-[10px] font-black uppercase tracking-widest text-brand transition-colors hover:bg-brand/10"
+          >
+            Voir la fiche complète →
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (point?.appSection === 'creator') {
     const creatorData =
@@ -1170,6 +1240,8 @@ function MapPageComponent() {
   const [desktopWhat, setDesktopWhat] = useState('');
   const [desktopWhere, setDesktopWhere] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const initialUrlSearchReplayRef =
+    useRef(false);
   const [
     resolvedProfessionalId,
     setResolvedProfessionalId,
@@ -1622,6 +1694,63 @@ function MapPageComponent() {
 
     setHasAppliedInitialUrl(true);
   }, []);
+
+  // LABELMOTO HOME TO MAP SEARCH REPLAY
+  //
+  // Une recherche provenant d’une autre page doit suivre
+  // exactement le même moteur qu’une recherche lancée
+  // directement depuis /map.
+  useEffect(() => {
+    if (
+      !hasAppliedInitialUrl ||
+      !firestore ||
+      initialUrlSearchReplayRef.current
+    ) {
+      return;
+    }
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const initialSearch =
+      (
+        params.get('search') ||
+        ''
+      ).trim();
+
+    initialUrlSearchReplayRef.current =
+      true;
+
+    if (!initialSearch) {
+      return;
+    }
+
+    if (
+      window.innerWidth < 1024
+    ) {
+      setSearchTerm(
+        initialSearch
+      );
+    }
+    else {
+      setDesktopWhat(
+        initialSearch
+      );
+
+      setDesktopWhere(
+        ''
+      );
+    }
+
+    void handleDirectMapSearch(
+      initialSearch
+    );
+  }, [
+    hasAppliedInitialUrl,
+    firestore,
+  ]);
 
   // Synchroniser le ref avec l'état
   useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);

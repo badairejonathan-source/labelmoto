@@ -626,7 +626,49 @@ export default function AdminPage() {
                         </div>
                         <div className="flex items-center gap-4">
                            <Badge variant={sub.status === 'published' ? 'brand' : 'destructive'} className="text-[9px] uppercase tracking-widest font-black px-4">{sub.status}</Badge>
-                           <Button variant="ghost" size="icon" onClick={() => handleOpenDetail(sub)} className="rounded-full hover:bg-white transition-all hover:scale-110"><ExternalLink className="h-4 w-4" /></Button>
+                           <Button
+  variant="ghost"
+  size="icon"
+  aria-label="Ouvrir la fiche publique"
+  title="Ouvrir la fiche publique"
+  onClick={(event) => {
+    event.stopPropagation();
+
+    const publishedId =
+      String(
+        sub.publishedDocId ||
+        ''
+      ).trim();
+
+    if (!publishedId) {
+      toast({
+        variant: 'destructive',
+        title: 'Fiche publique introuvable',
+        description: 'Aucun identifiant de publication disponible pour cette archive.',
+      });
+
+      return;
+    }
+
+    const publicHref =
+      sub.publishedCollection === 'creators'
+        ? `/creators/${publishedId}`
+        : sub.publishedCollection === 'associations'
+          ? `/map?selectedId=${encodeURIComponent(publishedId)}`
+          : sub.publishedCollection === 'relais'
+            ? `/map?selectedId=${encodeURIComponent(publishedId)}`
+            : `/concessions/${publishedId}`;
+
+    window.open(
+      publicHref,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  }}
+  className="rounded-full hover:bg-white transition-all hover:scale-110"
+>
+  <ExternalLink className="h-4 w-4" />
+</Button>
                         </div>
                      </div>
                    ))}
